@@ -7,7 +7,7 @@
 # (4) To run any of the examples, cd into the GRTExamples folder and then run: ./ExampleName
 # If you just want to build the GRT as a library to use in your own projects then type: make grtlib
 GRT_SRC_DIR = ../GRT
-GRT_EXAMPLES_DIR = ../GRTExamples
+GRT_EXAMPLES_DIR = ../examples
 GRT_CLASSIFICATION_MODULES = ClassificationModules/AdaBoost/*.cpp ClassificationModules/AdaBoost/WeakClassifiers/*.cpp \
                              ClassificationModules/ANBC/*.cpp \
                              ClassificationModules/BAG/*.cpp \
@@ -148,12 +148,14 @@ grtWindows: grtlibWindows
 #Builds the GRT as a static library for OSX and Linux
 grtlib: $(GRT_SRC)
 	@echo "----------------- Building GRT -----------------"
+	#Remove any old object files
+	rm -f *.o
     	#Compile the GRT source code as object files
 	$(CC) -c $(GRT_SRC) $(GRT_HEADERS) $(CFLAGS)
-    	#Move the object files to a new directoy
-	mv -f `find . -maxdepth 1 -name "*.o"` $(GRT_OBJS_DIR)
     	#Create the static library file
-	ar rcs $(GRT_LIB) $(GRT_OBJS_DIR)/*.o
+	ar rcs $(GRT_LIB) *.o
+	#Cleanup the object files
+	rm -f *.o
 	
 #Builds the GRT as a static library for Windows (this still needs work!)
 grtlibWindows: $(GRT_SRC)
@@ -237,7 +239,7 @@ grtExamples: $(GRT_EXAMPLES_SRC) $(GRT_SRC) $(GRT_LIB)
 	$(CC) UtilExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/UtilExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	
     	#Tidy things up
-	mv -f `find . -maxdepth 1 -name "*.o"` $(GRT_OBJS_DIR)
+	rm *.o
 	#Copy the example data files into the GRT_EXAMPLES_DIR
 ifeq ($(shell uname),Linux)
 	cp -fu `find $(GRT_EXAMPLES_DIR) -maxdepth 3 -name "*.txt"` $(GRT_EXAMPLES_OUTPUT_DIR)
@@ -252,4 +254,4 @@ cleanGRTExamples:
 	rm -f $(GRT_EXAMPLES_OUTPUT_DIR)/*.out
 
 clean: cleanGRTExamples
-	rm -f *.o $(GRT_OBJS_DIR)/*.o *.a
+	rm -f *.o *.a
