@@ -1,12 +1,11 @@
 # Gesture Recognition Toolkit (GRT)
 
-The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, C++ machine learning library 
-that has been specifically designed for real-time gesture recognition.
+The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, C++ machine learning library designed for real-time gesture recognition.
 
 ##Building the GRT
 
-You can find a makefile in the GRTBuild folder that will compile the GRT as a static library (on Linux and OSX systems) and also
-compile all the example projects. See the README file in the GRTBuild folder for more info.
+You can find a makefile in the build folder that will compile the GRT as a static library (on Linux and OSX systems) and also
+compile all the example projects. See the README file in the build folder for more info.
 
 If you want to directly include the source code in your own C++ projects, then you can do this without using the makefile. See
 Installing and using the GRT in your C++ projects section for more information on this.
@@ -39,7 +38,7 @@ you placed the GRT folder in on your hard drive, for instance you might have to 
 
 ##Tutorials and Examples
 
-You can find a large number of tutorials and examples in the GRTExamples folder.  You can also find a
+You can find a large number of tutorials and examples in the examples folder.  You can also find a
 wide range of examples and references on the main GRT wiki:
 
 http://www.nickgillian.com/wiki/pmwiki.php?n=GRT.GestureRecognitionToolkit

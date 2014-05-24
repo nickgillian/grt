@@ -148,17 +148,17 @@ grtWindows: grtlibWindows
 #Builds the GRT as a static library for OSX and Linux
 grtlib: $(GRT_SRC)
 	@echo "----------------- Building GRT -----------------"
-    #Compile the GRT source code as object files
+    	#Compile the GRT source code as object files
 	$(CC) -c $(GRT_SRC) $(GRT_HEADERS) $(CFLAGS)
-    #Move the object files to a new directoy
+    	#Move the object files to a new directoy
 	mv -f `find . -maxdepth 1 -name "*.o"` $(GRT_OBJS_DIR)
-    #Create the static library file
+    	#Create the static library file
 	ar rcs $(GRT_LIB) $(GRT_OBJS_DIR)/*.o
 	
 #Builds the GRT as a static library for Windows (this still needs work!)
 grtlibWindows: $(GRT_SRC)
 	@echo "----------------- Building GRT for Windows -----------------"
-    #Compile the GRT source code as object files
+    	#Compile the GRT source code as object files
 	$(CC) -c $(GRT_SRC) $(GRT_HEADERS) $(CFLAGS)
 	@echo "Cleaning up object files..."
 	#Move the object files to a new directory
@@ -175,7 +175,7 @@ testMove:
 #Build the GRT examples as individual examples (linking against the GRT library)
 grtExamples: $(GRT_EXAMPLES_SRC) $(GRT_SRC) $(GRT_LIB)
 	@echo "----------------- Building GRT Examples -----------------"
-    #Compile the example code to create the object files
+    	#Compile the example code to create the object files
 	$(CC) -c $(CLASSIFICATION_EXAMPLES_SRC) $(GRT_HEADERS) $(CFLAGS)
 	$(CC) -c $(CLUSTERING_EXAMPLES_SRC) $(GRT_HEADERS) $(CFLAGS)
 	$(CC) -c $(DATA_STRUCTURES_EXAMPLES_SRC) $(GRT_HEADERS) $(CFLAGS)
@@ -186,7 +186,7 @@ grtExamples: $(GRT_EXAMPLES_SRC) $(GRT_SRC) $(GRT_LIB)
 	$(CC) -c $(TUTORIALS_EXAMPLES_SRC) $(GRT_HEADERS) $(CFLAGS)
 	$(CC) -c $(CORE_ALGORITHMS_EXAMPLES_SRC) $(GRT_HEADERS) $(CFLAGS)
 	$(CC) -c $(UTIL_EXAMPLES_SRC) $(GRT_HEADERS) $(CFLAGS)
-    #Compile the actual output examples (which all end in .out) and link against the GRT library
+    	#Compile the actual output examples (which all end in .out) and link against the GRT library
 	$(CC) AdaBoostExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/AdaBoostExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) ANBCExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/ANBCExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) BAGExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/BAGExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
@@ -236,7 +236,7 @@ grtExamples: $(GRT_EXAMPLES_SRC) $(GRT_SRC) $(GRT_LIB)
 	$(CC) SVDExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/SVDExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) UtilExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/UtilExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	
-    #Tidy things up
+    	#Tidy things up
 	mv -f `find . -maxdepth 1 -name "*.o"` $(GRT_OBJS_DIR)
 	#Copy the example data files into the GRT_EXAMPLES_DIR
 ifeq ($(shell uname),Linux)
