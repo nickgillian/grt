@@ -55,7 +55,7 @@ LIBS = -lgrt
 CC = g++
 CFLAGS = -g -O2 -Wall $(LIB_DIR)
 GRT_OBJS_DIR = objs
-GRT_EXAMPLES_OUTPUT_DIR = GRTExamples
+GRT_EXAMPLES_OUTPUT_DIR = examples
 
 #These are the paths to the example files
 #Classification Module Examples
@@ -148,15 +148,13 @@ grtWindows: grtlibWindows
 #Builds the GRT as a static library for OSX and Linux
 grtlib: $(GRT_SRC)
 	@echo "----------------- Building GRT -----------------"
-	#Remove any old object files
-	rm -f *.o
     	#Compile the GRT source code as object files
 	$(CC) -c $(GRT_SRC) $(GRT_HEADERS) $(CFLAGS)
-    	#Create the static library file
-	ar rcs $(GRT_LIB) *.o
-	#Cleanup the object files
-	rm -f *.o
-	
+	#Move the object files to a new directoy
+	mv -f `find . -maxdepth 1 -name "*.o"` $(GRT_OBJS_DIR)
+	#Create the static library file
+	ar rcs $(GRT_LIB) $(GRT_OBJS_DIR)/*.o
+
 #Builds the GRT as a static library for Windows (this still needs work!)
 grtlibWindows: $(GRT_SRC)
 	@echo "----------------- Building GRT for Windows -----------------"
