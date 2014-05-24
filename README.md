@@ -2,6 +2,36 @@
 
 The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, C++ machine learning library designed for real-time gesture recognition.
 
+The toolkit is developed with the following core design principles:
+* **Accessibility:**  The GRT is a general-purpose tool for facilitating non-specialists to create their own machine-learning based systems. Emphasis is placed on ease of use, with a clear and consistent coding convention applied throughout the toolkit.
+* **Flexibility:**  To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture.  This architecture is built around a set of core modules and a central gesture recognition pipeline. The input to both the modules and pipeline consists of an N-dimensional double precision vector, making the toolkit flexible to the type of input signal.
+* **Choice:**  To date, there is no single machine-learning algorithm that can be used to recognize all gestures. It is therefore crucial for a user to be able to choose from, and quickly experiment with, a number of algorithms to see which might work best for their particular task. The GRT features a broad range of machine-learning algorithms such as AdaBoost, Decision Trees, Dynamic Time Warping, Hidden Markov Models, K-Nearest Neighbor, Linear and Logistic Regression, Naive Bayes, Multilayer Perceptrons, Random Forests, Support Vector Machines5 and more. In addition to supporting a broad range of algorithms, the toolkit's architecture facilities a user to seamlessly switch between different algorithms with minimal modications to the users code.
+* **Supporting Infrastructure:** Building sophisticated machine-learning based systems requires more than just a state-of-the-art classifier. In many real-world scenarios, the input to a classification algorithm needs to first be preprocessed and have salient features extracted.  The GRT therefore supports a wide range of
+pre/post processing, feature extraction and feature selection algorithms, including popular preprocessing filters (e.g. Moving Average Filter), embedded feature extraction algorithms (e.g. AdaBoost), dimensionality reduction techniques (e.g. Principle Component Analysis), and unsupervised quantizers (e.g. K-Means Quantizer, Self Organizing Map Quantizer).  Accurate labeling of datasets is also critical to building robust machine-learning based systems.
+The toolkit therefore contains extensive support for recording, labeling and managing supervised and unsupervised datasets for classification, regression and time-series analysis.
+* **Customizability:** In addition to supporting non-specialists, the GRT is designed to enable more advanced users to precisely customize their own recognition systems. The toolkit's modular design also facilitates an advanced user to incorporate their own algorithms within the GRT framework by wrapping their custom algorithm within a class that inherits from one of the GRT base classes.
+* **Realtime Support:** The GRT supports common techniques for performing offline analysis on pre-recorded datasets, such as partitioning data into validation and test datasets, running cross validation, computing accuracy metrics, etc.. In addition to these offline techniques, the toolkit is designed to enable a user to seamlessly move from the offline analysis phase to the real-time recognition phase.
+
+##GRT Architecture
+To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set 
+of core **modules** and a central **gesture recognition pipeline**.
+
+The input to both the modules and pipeline consists of an **N-dimensional double-precision vector**, making the toolkit flexible to the type of input signal. 
+The algorithms in each module can be used as standalone classes; alternatively a pipeline can be used to chain modules together to create a more sophisticated gesture-recognition system. The GRT includes modules for preprocessing, feature extraction, clustering, classification, regression and post processing.
+
+The toolkit's source code is structured as following:
+* **ClassificationModules:** Contains all the GRT classification algorithms, such as AdaBoost, Naive Bayes, K-Nearest Neighbor, Support Vector Machines, and more.
+* **ClusteringModules:** Contains all the GRT clustering algorithms, including K-Means, Gaussian Mixture Models and Self-Organizing Maps.
+* **ContextModules:** Contains all the GRT context modules, these are modules that can be connected to a gesture recognition pipeline to input additional context to a real-time classification system.
+* **CoreAlgorithms:** Contains a number of algorithms that are used across the GRT, such as Particle Filters, Principal Component Analysis and Restricted Boltzmann Machines.
+* **CoreModules:** Contains all the GRT base classes, such as MLBase, Classifier, FeatureExtraction, etc..
+* **DataStructures:** Contains all the GRT classes for recording, saving and loading datasets.
+* **FeatureExtractionModules:** Contains all the GRT feature extraction modules.  These include FFT, Quantizers and TimeDomainFeatures.
+* **PostProcessingModules:** Contains all the GRT post processing modules, including ClassLabelFilter and ClassLabelTimeoutFilter.
+* **PreProcessingModules:** Contains all the GRT pre processing modules, including LowPassFilter, HighPassFilter, DeadZone, and many more.
+* **RegressionModules:** Contains all the GRT regression modules, such as MLP Neural Networks, Linear Regression, and Logistic Regression.
+* **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random and Matrix.
+
 ##Building the GRT
 
 You can find a makefile in the build folder that will compile the GRT as a static library (on Linux and OSX systems) and also
