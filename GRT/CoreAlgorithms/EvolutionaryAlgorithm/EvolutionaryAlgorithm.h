@@ -1,3 +1,14 @@
+/**
+ @file
+ @author  Nicholas Gillian <ngillian@media.mit.edu>
+ @version 1.0
+ 
+ @brief This class implements a template based EvolutionaryAlgorithm.
+ 
+ @remark This implementation is based on Michalewicz, Zbigniew. Genetic algorithms + data structures= evolution programs. springer, 1996.
+ 
+ */
+
 /*
  GRT MIT License
  Copyright (c) <2013> <Nicholas Gillian, Media Lab, MIT>

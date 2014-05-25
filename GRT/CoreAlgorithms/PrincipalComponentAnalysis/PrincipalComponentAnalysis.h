@@ -16,6 +16,8 @@
  The PCA algorithm will automatically mean subtract the input data, and also normalize the data if required.  To use
  this algorithm, the user should first run the computeFeatureVector(...) function to build the PCA feature vector and
  then run the project(...) function to project new data onto the new principal subspace.
+ 
+ @remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
  */
 
 /**

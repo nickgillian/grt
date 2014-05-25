@@ -1,3 +1,14 @@
+/**
+ @file
+ @author  Nicholas Gillian <ngillian@media.mit.edu>
+ @version 1.0
+ 
+ @brief This class implements a template based ParticleSwarmOptimization algorithm.
+ 
+ @remark This implementation is based on Reyes-Sierra, Margarita, and CA Coello Coello. "Multi-objective particle swarm optimizers: A survey of the state-of-the-art." International journal of computational intelligence research 2, no. 3 (2006): 287-308.
+ 
+ */
+
 /*
  GRT MIT License
  Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>

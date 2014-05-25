@@ -6,6 +6,8 @@
  @brief This class implements a Multilayer Perceptron Artificial Neural Network.
  
  @example RegressionModulesExamples/MLPRegressionExample/MLPRegressionExample.cpp
+ 
+ @remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
  */
 
 /**

@@ -6,6 +6,8 @@
  @brief This class implements the Gaussian Mixture Model Classifier algorithm. The Gaussian Mixture Model 
  Classifier (GMM) is basic but useful classification algorithm that can be used to classify an N-dimensional signal.
  
+ @remark This implementation is based on Duda, Richard O., and Peter E. Hart. Pattern classification and scene analysis. Vol. 3. New York: Wiley, 1973.
+ 
  @example ClassificationModulesExamples/GMMExample/GMMExample.cpp
  
  @note The GMM algorithm can fail to train on some occasions, if this happens just try and run the training algorithm

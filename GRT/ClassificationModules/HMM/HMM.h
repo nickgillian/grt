@@ -4,6 +4,8 @@
  @version 1.0
  
  @brief This class acts as the main interface for using a Hidden Markov Model.
+ 
+ @remark This implementation is based on Rabiner, Lawrence. "A tutorial on hidden Markov models and selected applications in speech recognition." Proceedings of the IEEE 77.2 (1989): 257-286.
  */
 
 /**

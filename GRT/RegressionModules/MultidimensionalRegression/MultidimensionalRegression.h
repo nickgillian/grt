@@ -12,6 +12,8 @@
  that can successfully map all N-dimensions at once.
  
  @example RegressionModulesExamples/MultidimensionalRegressionExample/MultidimensionalRegressionExample.cpp
+ 
+ @remark This implementation is a wrapper for other GRT regression algorithms.
  */
 
 /**

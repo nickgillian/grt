@@ -9,6 +9,8 @@
  trees at training time and outputting the class with the majority vote over all the trees in the ensemble.
  
  @example ClassificationModulesExamples/RandomForestsExample/RandomForestsExample.cpp
+ 
+ @remark This implementation is based on Breiman, Leo. "Random forests." Machine learning 45, no. 1 (2001): 5-32.
  */
 
 /**

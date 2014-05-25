@@ -14,6 +14,8 @@
  You can find out more about the DTW algorithm in <a href="http://www.nickgillian.com/papers/Gillian_NDDTW.pdf">Gillian, N. (2011) Recognition of multivariate temporal musical gestures using n-dimensional dynamic time warping</a>.
  
  The DTW algorithm is part of the GRT classification modules.
+ 
+ @remark This implementation is based on <a href="http://www.nickgillian.com/papers/Gillian_NDDTW.pdf">Gillian, N. (2011) Recognition of multivariate temporal musical gestures using n-dimensional dynamic time warping</a>.
 
  @example ClassificationModulesExamples/DTWExample/DTWExample.cpp
  */

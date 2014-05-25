@@ -9,6 +9,8 @@
  the KNN, GMM or ANBC algorithms) might not be able to solve.
  
  @example ClassificationModulesExamples/SVMExample/SVMExample.cpp
+ 
+ @remark This implementation is a wrapper for LIBSVM: Chang, Chih-Chung, and Chih-Jen Lin. "LIBSVM: a library for support vector machines." ACM Transactions on Intelligent Systems and Technology (TIST) 2, no. 3 (2011): 27.
  */
 
 /**

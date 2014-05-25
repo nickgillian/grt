@@ -1,3 +1,14 @@
+/**
+ @file
+ @author  Nicholas Gillian <ngillian@media.mit.edu>
+ @version 1.0
+ 
+ @brief This class implements a template based ParticleFilter.  The user is required to implement the predict and update functions for their specific task.
+ 
+ @remark This implementation is based on Gillian N. et. al., Gestures Everywhere: A Multimodal Sensor Fusion and Analysis Framework for Pervasive Displays, Pervaisve Displays, 2014
+ 
+ */
+
 /*
  GRT MIT License
  Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>

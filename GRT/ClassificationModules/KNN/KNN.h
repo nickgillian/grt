@@ -15,6 +15,8 @@
  the enableNullRejection paramter to false.
  
  @example ClassificationModulesExamples/KNNExample/KNNExample.cpp
+ 
+ @remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
  */
 
 /**

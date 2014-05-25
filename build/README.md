@@ -1,4 +1,5 @@
-##This folder contains an example Makefile for building the GRT (as a static library) and also for building the GRT examples.
+##Build
+This folder contains an example Makefile for building the GRT (as a static library) and also for building the GRT examples.
 
 ##Supported Operating Systems
 This Makefile currently works on Linux/OSX.  There is currently limited Windows support, however this is a work in progress.

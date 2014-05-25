@@ -6,6 +6,8 @@
  @brief The Softmax Classifier is a simple but effective classifier (based on logisitc regression) that works well on problems that are linearly separable.
  
  @example ClassificationModulesExamples/SoftmaxExample/SoftmaxExample.cpp
+ 
+ @remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
  */
 
 /**

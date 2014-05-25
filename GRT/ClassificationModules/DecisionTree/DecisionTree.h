@@ -7,6 +7,8 @@
  classifiers that work well on even complex classification tasks.  Decision Trees partition the feature
  space into a set of rectangular regions, classifying a new datum by finding which region it belongs to.  
  
+ @remark This implementation is based on Ross Quinlan's ID3 Decision Tree algorithm: http://en.wikipedia.org/wiki/ID3_algorithm
+ 
  @example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
  */
 

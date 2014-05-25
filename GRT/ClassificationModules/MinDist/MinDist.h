@@ -6,6 +6,8 @@
  @brief This class implements the MinDist classifier algorithm.
  
  @example ClassificationModulesExamples/MinDistExample/MinDistExample.cpp
+ 
+ @remark This implementation is custom algorithm, publication forthcoming.
  */
 
 /**

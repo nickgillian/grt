@@ -6,6 +6,8 @@
  
  @brief This class implements a Bernoulli Restricted Boltzmann machine.
  
+ @remark This implementation is based on the RBM algorithm in the DeepLearnToolbox: https://github.com/rasmusbergpalm/DeepLearnToolbox
+ 
  */
 
 /**

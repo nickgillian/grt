@@ -9,6 +9,8 @@
  to decision tree methods, the BAG class can be used with any type of GRT classifier. Bagging is a special case of 
  the model averaging.
  
+ @remark This implementation is based on Breiman, Leo. "Bagging predictors." Machine learning 24, no. 2 (1996): 123-140.
+ 
  @example ClassificationModulesExamples/BAGExample/BAGExample.cpp
  */
 

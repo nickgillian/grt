@@ -13,6 +13,8 @@
  instances misclassified by previous classifiers. The default number of boosting rounds for AdaBoost is 20, however 
  this can easily be set using the GRT::AdaBoost::setNumBoostingIterations(UINT numBoostingIterations) function or 
  via the AdaBoost constructor.
+
+ @remark This implementation is based on Schapire, Robert E., and Yoav Freund. Boosting: Foundations and Algorithms. MIT Press, 2012.
  
  @note   There are two classification modes, GRT::AdaBoost::PredictionMethods (MAX_POSITIVE_VALE and MAX_VALUE), which can give
          different classification results so you should experiment with each mode to achieve the best results for your classification task.
