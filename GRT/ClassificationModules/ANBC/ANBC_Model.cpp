@@ -63,8 +63,8 @@ bool ANBC_Model::train(UINT classLabel,MatrixDouble &trainingData,VectorDouble &
 		for(UINT i=0; i<M; i++){
 			sigma[j] += SQR( trainingData[i][j]-mu[j] );
         }
-
-		sigma[j] = sqrt( sigma[j]/double(M-1) );
+        sigma[j] += 0.01; //Add a small amount to the standard deviation to ensure it is not zero
+        sigma[j] = sqrt( sigma[j]/double(M-1) );
         
         if( sigma[j] == 0 ){
             return false;

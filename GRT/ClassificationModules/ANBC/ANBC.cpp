@@ -172,8 +172,8 @@ bool ANBC::train_(ClassificationData &labelledTrainingData){
                 return false;
             }
             for(UINT j=0; j<numInputDimensions; j++){
-                if( models[k].mu[j] == 0 ){
-                    errorLog << "train_(ClassificationData &labelledTrainingData) - The mean of column " << j+1 << " is zero! Check the training data" << endl;
+                if( models[k].sigma[j] == 0 ){
+                    errorLog << "train_(ClassificationData &labelledTrainingData) - The standard deviation of column " << j+1 << " is zero! Check the training data" << endl;
                     models.clear();
                     return false;
                 }
@@ -193,7 +193,6 @@ bool ANBC::train_(ClassificationData &labelledTrainingData){
     //Flag that the models have been trained
     trained = true;
     return trained;
-    
 }
     
 bool ANBC::predict_(VectorDouble &inputVector){
@@ -231,23 +230,30 @@ bool ANBC::predict_(VectorDouble &inputVector){
         classLikelihoods[k] = classDistances[k];
         
         //If the distances are very far away then they could be -inf or nan so catch this so the sum still works
-        if( std::isinf(classLikelihoods[k]) || std::isnan(classLikelihoods[k]) ) classLikelihoods[k] = -10000;
-        
-        //Make the 
-        classLikelihoods[k] = exp( classLikelihoods[k] );
-        classLikelihoodsSum += classLikelihoods[k];
+        if( std::isinf(classLikelihoods[k]) || std::isnan(classLikelihoods[k]) ){
+            classLikelihoods[k] = 0;
+        }else{
+            classLikelihoods[k] = exp( classLikelihoods[k] );
+            classLikelihoodsSum += classLikelihoods[k];
 
-        //The loglikelihood values are negative so we want the values closest to 0
-		if( classDistances[k] > minDist ){
-			minDist = classDistances[k];
-			predictedClassLabel = k;
-		}
+            //The loglikelihood values are negative so we want the values closest to 0
+            if( classDistances[k] > minDist ){
+                minDist = classDistances[k];
+                predictedClassLabel = k;
+            }
+        }
+    }
+
+    //If the class likelihoods sum is zero then all classes are -INF
+    if( classLikelihoodsSum == 0 ){
+        predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
+        maxLikelihood = 0;
+        return true;
     }
     
     //Normalize the classlikelihoods
     for(UINT k=0; k<numClasses; k++){
-        if( classLikelihoodsSum == 0 ) classLikelihoods[k] = 0;
-        else classLikelihoods[k] /= classLikelihoodsSum;
+        classLikelihoods[k] /= classLikelihoodsSum;
     }
     maxLikelihood = classLikelihoods[predictedClassLabel];
     
