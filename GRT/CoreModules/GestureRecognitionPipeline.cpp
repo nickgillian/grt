@@ -77,6 +77,7 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionP
     warningLog.setProceedingText("[WARNING GRP]");
     testingLog.setProceedingText("[TEST GRP]");
 
+    //Invoke the equals operator to copy the rhs data to this instance
 	*this = rhs;
 }
 
@@ -254,7 +255,6 @@ bool GestureRecognitionPipeline::train(const ClassificationData &trainingData){
     numTrainingSamples = processedTrainingData.getNumSamples();
     
     //Train the classifier
-    cout << "Training classifier..." << endl;
     trained = classifier->train_( processedTrainingData );
     if( !trained ){
         errorLog << "train(ClassificationData trainingData) - Failed To Train Classifier: " << classifier->getLastErrorMessage() << endl;
@@ -2470,7 +2470,7 @@ bool GestureRecognitionPipeline::setClassifier(const Classifier &classifier){
     //Delete any previous classifier and regressifier
     deleteClassifier();
     deleteRegressifier();
-    
+
     //Create a new instance of the classifier and then clone the values across from the reference classifier
     this->classifier = classifier.createNewInstance();
     
@@ -2479,7 +2479,7 @@ bool GestureRecognitionPipeline::setClassifier(const Classifier &classifier){
         return false;
     }
     
-    //Validate that the classifier was cloned correctly
+    //Deep copy the data from the rhs classifier into this classifier
     if( !this->classifier->deepCopyFrom( &classifier ) ){
         deleteClassifier();
         pipelineMode = PIPELINE_MODE_NOT_SET;

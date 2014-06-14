@@ -511,6 +511,19 @@
         </property>
        </widget>
       </widget>
+      <widget class="QPushButton" name="dataIO_enableOSCInputButton">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>0</y>
+         <width>231</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable OSC Input</string>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="page_3">
@@ -946,7 +959,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">

@@ -5,6 +5,7 @@ Core::Core(QObject *parent) : QObject(parent)
     coreRunning = false;
     stopMainThread = false;
     verbose = true;
+    enableOSCInput = true;
     enableOSCControlCommands = true;
     infoMessage = "";
     version = GRT_GUI_VERSION;
@@ -57,7 +58,7 @@ bool Core::start(){
         qDebug() << STRING_TO_QSTRING("Core::start() - Starting main thread...");
 
     try{
-        mainThread = new boost::thread( boost::bind( &Core::mainThreadFunction, this) );
+        mainThread.reset( new boost::thread( boost::bind( &Core::mainThreadFunction, this) ) );
     }catch( std::exception const &error ){
         QString qstr = "ERROR: Core::start() - Failed to start server thread! Exception: ";
         qstr += error.what();
@@ -90,6 +91,7 @@ bool Core::stop(){
 
     //Wait for it to stop
     mainThread->join();
+    mainThread.reset();
 
     return true;
 }
@@ -140,6 +142,12 @@ bool Core::resetOSCServer(int incomingOSCDataPort){
 bool Core::setVersion(std::string version){
     boost::mutex::scoped_lock lock( mutex );
     this->version = version;
+    return true;
+}
+
+bool Core::setEnableOSCInput(bool state){
+    boost::mutex::scoped_lock lock( mutex );
+    enableOSCInput = state;
     return true;
 }
 
@@ -667,9 +675,15 @@ bool Core::setTargetVectorSize(int targetVectorSize){
 }
 
 bool Core::setMainDataAddress(std::string address){
-    boost::mutex::scoped_lock lock( mutex );
-    if( this->incomingDataAddress != address ){
-        this->incomingDataAddress = address;
+    bool addressUpdated = false;
+    {
+        boost::mutex::scoped_lock lock( mutex );
+        if( this->incomingDataAddress != address ){
+            this->incomingDataAddress = address;
+
+        }
+    }
+    if( addressUpdated ){
         emit newInfoMessage( "Data address updated" );
     }
     return true;
@@ -716,10 +730,16 @@ bool Core::setDatasetInfoText(std::string infoText){
 }
 
 bool Core::setTrainingClassLabel(int trainingClassLabel){
-     boost::mutex::scoped_lock lock( mutex );
-     if( (unsigned int)trainingClassLabel != this->trainingClassLabel ){
-        this->trainingClassLabel = (unsigned int)trainingClassLabel;
-         emit trainingClassLabelChanged( trainingClassLabel );
+    bool classLabelUpdated = false;
+    {
+        boost::mutex::scoped_lock lock( mutex );
+        if( (unsigned int)trainingClassLabel != this->trainingClassLabel ){
+            this->trainingClassLabel = (unsigned int)trainingClassLabel;
+            classLabelUpdated = true;
+        }
+     }
+     if( classLabelUpdated ){
+        emit trainingClassLabelChanged( trainingClassLabel );
      }
      return true;
 }
@@ -982,6 +1002,22 @@ void Core::mainThreadFunction(){
 
 bool Core::processOSCMessage( const OSCMessage &m ){
 
+    bool allowOSCInput = true;
+    bool allowOSCControlCommands = true;
+    string dataAddress = "";
+
+    {
+        boost::mutex::scoped_lock lock( mutex );
+        allowOSCInput = enableOSCInput;
+        allowOSCControlCommands = enableOSCControlCommands;
+        dataAddress = incomingDataAddress;
+    }
+
+    //If we are not allowing any OSC input then there is nothing todo
+    if( !allowOSCInput ){
+        return true;
+    }
+
     //Emit the OSC message
     string msg = "[IN] " + m.getAddressPattern();
     for(unsigned int i=0; i<m.getNumArgs(); i++){
@@ -1000,14 +1036,6 @@ bool Core::processOSCMessage( const OSCMessage &m ){
         msg += " ";
     }
     emit newOSCMessage( msg );
-
-    bool allowOSCControlCommands = true;
-    string dataAddress = "";
-    {
-        boost::mutex::scoped_lock lock( mutex );
-        allowOSCControlCommands = enableOSCControlCommands;
-        dataAddress = incomingDataAddress;
-    }
 
     if( m.getAddressPattern() == "/Setup" && allowOSCControlCommands ){
         if( m.getNumArgs() == 3 ){
@@ -1035,7 +1063,7 @@ bool Core::processOSCMessage( const OSCMessage &m ){
 
             emit dataChanged( inputData );
         }else{
-            emit newWarningMessage( "WARNING: The data vector size does not match!" );
+            //emit newWarningMessage( "WARNING: The data vector size does not match!" );
             return false;
         }
     }
@@ -1272,8 +1300,6 @@ bool Core::train(){
         emit newInfoMessage( "Can't start training, training already in process" );
         return false;
     }
-
-    cout << "train()" << endl;
 
     //Launch a new training phase
     bool result = false;

@@ -10,8 +10,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     //Register the log callbacks
     GRT::TrainingLog::registerObserver( *this );
-    GRT::WarningLog::registerObserver( *this );
-    GRT::ErrorLog::registerObserver( *this );
+    //GRT::WarningLog::registerObserver( *this );
+    //GRT::ErrorLog::registerObserver( *this );
 
     //Register the custom data types
     qRegisterMetaType< std::string >("std::string");
@@ -145,6 +145,8 @@ bool MainWindow::initDataIOView(){
 
     ui->dataIO_enableOSCCommandsButton->setCheckable( true );
     ui->dataIO_enableOSCCommandsButton->setChecked( true );
+    ui->dataIO_enableOSCInputButton->setCheckable( true );
+    ui->dataIO_enableOSCInputButton->setChecked( true );
     ui->dataIO_oscIncomingPortSpinBox->setRange(1,50000);
     ui->dataIO_numInputDimensionsField->setText( QString::number( 1 )  );
     ui->dataIO_targetVectorSizeField->setText( QString::number( 1 )  );
@@ -429,6 +431,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->setup_resetAllButton, SIGNAL(clicked()), this, SLOT(resetAll()));
 
     connect(ui->dataIO_infoButton, SIGNAL(clicked()), this, SLOT(showDataIOInfo()));
+    connect(ui->dataIO_enableOSCInputButton, SIGNAL(clicked()), this, SLOT(updateOSCInput()));
     connect(ui->dataIO_enableOSCCommandsButton, SIGNAL(clicked()), this, SLOT(updateOSCControlCommands()));
     connect(ui->dataIO_mainDataAddressTextField, SIGNAL(editingFinished()), this, SLOT(updateDataAddress()));
     connect(ui->dataIO_oscIncomingPortSpinBox, SIGNAL(valueChanged(int)), &core, SLOT(resetOSCServer(int)));
@@ -784,6 +787,7 @@ void MainWindow::updatePipelineMode(unsigned int pipelineMode){
             ui->dataLabelingTool_trainingDataTab->insertTab( 1, tabHistory[1], "Dataset Stats" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 2, tabHistory[2], "Class Counter" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 3, tabHistory[3], "PCA Projection" );
+            ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
         break;
         case Core::REGRESSION_MODE:
             setupDefaultRegressifier();
@@ -793,7 +797,6 @@ void MainWindow::updatePipelineMode(unsigned int pipelineMode){
             ui->setupView_classificationModeButton->setChecked( false );
             ui->setupView_timeseriesModeButton->setChecked( false );
             ui->dataLabellingTool_recordingControlsWidget->setCurrentIndex( REGRESSION_VIEW );
-            ui->dataLabelingTool_trainingDataTab->removeTab( 1 );
             ui->predictionWindow_classificationRegressionResultsView->setCurrentIndex( REGRESSION_VIEW );
             ui->dataIO_targetVectorSizeField->setText( QString::number( ui->setupView_numOutputsSpinBox->value() ) );
             ui->dataLabellingTool_numTargetDimensionsField->setText( QString::number( ui->setupView_numOutputsSpinBox->value() ) );
@@ -806,6 +809,7 @@ void MainWindow::updatePipelineMode(unsigned int pipelineMode){
             ui->dataLabelingTool_trainingDataTab->insertTab( 0, tabHistory[0], "Table View" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 1, tabHistory[1], "Dataset Stats" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 2, tabHistory[3], "PCA Projection" );
+            ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
         break;
         case Core::TIMESERIES_CLASSIFICATION_MODE:
             setPipelineModeAsTimeseriesMode();
@@ -862,6 +866,11 @@ void MainWindow::showDataIOInfo(){
     infoText += "The OSC Output Setup lets you control the ip address and port of where the realtime output of the application will be sent. \n\n";
     infoText += "Checkout the main GUI wiki for more info: www.nickgillian.com/wiki/pmwiki.php/GRT/GUI \n\n";
     QMessageBox::information(0, "Information", infoText);
+}
+
+void MainWindow::updateOSCInput(){
+    bool state = ui->dataIO_enableOSCInputButton->isChecked();
+    core.setEnableOSCInput( state );
 }
 
 void MainWindow::updateOSCControlCommands(){
@@ -1413,8 +1422,6 @@ void MainWindow::pipelineTrainingStarted(){
 
 void MainWindow::pipelineTrainingFinished(bool result){
 
-    //qDebug() << "pipelineTrainingFinished(bool result): " << result;
-
     if( !result ){
         QString infoText;
         infoText += "Training Failed!";
@@ -1619,7 +1626,7 @@ void MainWindow::pipelineTestingFinished(bool result){
 
 void MainWindow::updateTrainingResults(const GRT::TrainingResult &trainingResult){
 
-    qDebug() << "updateTrainingResults(const GRT::TrainingResult &trainingResult,const GRT::MLBase *model)";
+    //qDebug() << "updateTrainingResults(const GRT::TrainingResult &trainingResult,const GRT::MLBase *model)";
 
     QString infoText;
 
@@ -2013,7 +2020,7 @@ void MainWindow::updatePipelineConfiguration(){
 
 void MainWindow::resetPipelineConfiguration(){
 
-    qDebug() << "resetPipelineConfiguration()" ;
+    //qDebug() << "resetPipelineConfiguration()" ;
 
     /*
 
@@ -2120,6 +2127,15 @@ void MainWindow::updatePredictionResults(unsigned int predictedClassLabel,double
     ui->predictionWindow_maximumLikelihood->setText( QString::number( maximumLikelihood ) );
 
     const size_t K = classLabels.size();
+
+    if( K != classLikelihoods.size() ){
+        errorLog << "updatePredictionResults(...) The size of the class labels vector does not match the size of the class likelihoods vector!" << endl;
+        return;
+    }
+    if( K != classDistances.size() ){
+        errorLog << "updatePredictionResults(...) The size of the class labels vector does not match the size of the class distances vector!" << endl;
+        return;
+    }
 
     QString infoText;
     for(size_t k=0; k<K; k++){

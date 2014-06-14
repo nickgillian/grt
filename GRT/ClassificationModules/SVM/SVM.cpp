@@ -31,6 +31,9 @@ SVM::SVM(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool
     model = NULL;
 	param.weight_label = NULL;
 	param.weight = NULL;
+    prob.l = 0;
+    prob.x = NULL;
+    prob.y = NULL;
 	trained = false;
 	problemSet = false;
 	param.svm_type = C_SVC;
@@ -70,6 +73,9 @@ SVM::SVM(const SVM &rhs){
     model = NULL;
 	param.weight_label = NULL;
 	param.weight = NULL;
+    prob.l = 0;
+    prob.x = NULL;
+    prob.y = NULL;
     classType = "SVM";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -82,7 +88,7 @@ SVM::SVM(const SVM &rhs){
 
 
 SVM::~SVM(){
-	clear();
+    clear();
 }
     
 SVM& SVM::operator=(const SVM &rhs){
@@ -91,10 +97,9 @@ SVM& SVM::operator=(const SVM &rhs){
         this->clear();
         
         //SVM variables
-        this->problemSet = rhs.problemSet;
+        this->problemSet = false; //We do not copy the problem set
         this->model = rhs.deepCopyModel();
-        this->param = rhs.param;
-        this->prob = rhs.prob;
+        this->deepCopyParam( rhs.param, this->param );
         this->numInputDimensions = rhs.numInputDimensions;
         this->kFoldValue = rhs.kFoldValue;
         this->classificationThreshold = rhs.classificationThreshold;
@@ -118,10 +123,9 @@ bool SVM::deepCopyFrom(const Classifier *classifier){
         this->clear();
         
         //SVM variables
-        this->problemSet = ptr->problemSet;
+        this->problemSet = false;
         this->model = ptr->deepCopyModel();
-        this->param = ptr->param;
-        this->prob = ptr->prob;
+        this->deepCopyParam( ptr->param, this->param );
         this->numInputDimensions = ptr->numInputDimensions;
         this->kFoldValue = ptr->kFoldValue;
         this->classificationThreshold = ptr->classificationThreshold;
@@ -362,6 +366,8 @@ bool SVM::trainSVM(){
         for(UINT k=0; k<getNumClasses(); k++){
             classLabels[k] = model->label[k];
         }
+        classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
+        classDistances.resize(numClasses,DEFAULT_NULL_DISTANCE_VALUE);
     }
 
     return trained;
@@ -1157,8 +1163,7 @@ struct svm_model* SVM::deepCopyModel() const{
     UINT halfNumClasses = 0;
     
     //Init the memory for the model
-    struct svm_model *m;
-    m = new svm_model;
+    struct svm_model *m = new svm_model;
     m->nr_class = 0;
     m->l = 0;
     m->SV = NULL;
@@ -1253,7 +1258,81 @@ struct svm_model* SVM::deepCopyModel() const{
     m->free_sv = 1;
     
     return m;
-    
+}
+
+bool SVM::deepCopyProblem( const struct svm_problem &source, struct svm_problem &target, const unsigned int numInputDimensions ) const{
+
+    //Cleanup the target memory
+    if( target.y != NULL ){
+        delete[] target.y;
+        target.y = NULL;
+    }
+    if( target.x != NULL ){
+        for(int i=0; i<target.l; i++){
+            delete[] target.x[i];
+            target.x[i] = NULL;
+        }
+    }
+
+    //Deep copy the source to the target
+    target.l = source.l;
+
+    if( source.x != NULL ){
+        target.x = new svm_node*[ target.l ];
+        for(int i=0; i<target.l; i++){
+            target.x[i] = new svm_node[ numInputDimensions+1 ];
+            for(unsigned int j=0; j<numInputDimensions+1; j++){
+                target.x[i][j] = source.x[i][j];
+            }
+        }
+    }
+
+    if( source.y != NULL ){
+        target.y = new double[ target.l ];
+        for(int i=0; i<target.l; i++){
+            target.y[i] = source.y[i];
+        }
+    }
+
+    return true;
+}
+
+bool SVM::deepCopyParam( const svm_parameter &source_param, svm_parameter &target_param ) const{
+
+    //Cleanup any dynamic memory in the target
+    if( target_param.weight_label != NULL ){
+        delete[] target_param.weight_label;
+        target_param.weight_label = NULL;
+    }
+    if( target_param.weight != NULL ){
+        delete[] target_param.weight;
+        target_param.weight = NULL;
+    }
+
+    //Copy the non dynamic variables
+    target_param.svm_type = source_param.svm_type;
+    target_param.kernel_type = source_param.kernel_type;
+    target_param.degree = source_param.degree;
+    target_param.gamma = source_param.gamma;
+    target_param.coef0 = source_param.coef0;
+    target_param.cache_size = source_param.cache_size;
+    target_param.eps = source_param.eps;
+    target_param.C = source_param.C;
+    target_param.nr_weight = source_param.nr_weight;
+    target_param.nu = source_param.nu;
+    target_param.p = source_param.p;
+    target_param.shrinking = source_param.shrinking;
+    target_param.probability = source_param.probability;
+
+    //Copy any dynamic memory
+    if( source_param.weight_label != NULL ){
+
+    }
+    if( source_param.weight != NULL ){
+
+    }
+
+    return true;
 }
     
 bool SVM::loadLegacyModelFromFile( fstream &file ){

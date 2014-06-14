@@ -65,7 +65,7 @@ public:
 	/**
      Default Destructor
 	*/
-	~GestureRecognitionPipeline(void);
+    virtual ~GestureRecognitionPipeline(void);
 	
 	/**
      Equals Constructor. Performs a depp copy of the data from the rhs pipeline into this pipeline.

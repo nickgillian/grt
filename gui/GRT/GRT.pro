@@ -44,7 +44,6 @@ LIBS += "C:\SDK\EyesWeb XMI SDK\5.3.0\lib"
 LIBS += -lboost_thread
 LIBS += -lboost_date_time
 LIBS += -lboost_system
-LIBS += -lboost_signals
 LIBS += -lboost_chrono
 
 SOURCES += main.cpp\

@@ -77,6 +77,11 @@ struct svm_node
 
 struct svm_problem
 {
+    svm_problem(){
+        y = NULL;
+        x = NULL;
+    }
+
 	int l;
 	double *y;
 	struct svm_node **x;

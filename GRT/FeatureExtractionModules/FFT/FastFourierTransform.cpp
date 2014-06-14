@@ -189,7 +189,7 @@ bool FastFourierTransform::computeFFT( VectorDouble &data ){
     
 bool FastFourierTransform::windowData( VectorDouble &data ){
     
-    if( data.size() < windowSize ){
+    if( data.size() != windowSize ){
         errorLog << "The size of the data vector (" << data.size() << ") does not match the windowSize: " << windowSize << endl;
         return false;
     }

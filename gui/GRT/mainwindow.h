@@ -108,6 +108,7 @@ private slots:
 
     ////////////////////////////////// DATA IO TOOL FUNCTIONS ////////////////////////////////
     void showDataIOInfo();
+    void updateOSCInput();
     void updateOSCControlCommands();
     void resetOSCServer( int port );
     void resetOSCClient();

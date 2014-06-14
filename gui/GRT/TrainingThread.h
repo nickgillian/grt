@@ -42,7 +42,7 @@ protected:
 
     boost::mutex mutex;
     boost::mutex trainingMutex;
-    boost::thread *mainThread;
+    boost::shared_ptr< boost::thread > mainThread;
     bool threadRunning;
     bool stopMainThread;
     bool verbose;

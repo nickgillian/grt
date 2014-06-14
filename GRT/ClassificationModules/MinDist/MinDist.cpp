@@ -197,8 +197,13 @@ bool MinDist::predict_(VectorDouble &inputVector){
     
     //Normalize the classlikelihoods
 	if( classLikelihoodsSum != 0 ){
+        double sum = 0;
     	for(UINT k=0; k<numClasses; k++){
-        	classLikelihoods[k] = (classLikelihoodsSum-classLikelihoods[k])/classLikelihoodsSum;
+        	classLikelihoods[k] = classLikelihoodsSum-classLikelihoods[k];
+            sum += classLikelihoods[k];
+    	}
+        for(UINT k=0; k<numClasses; k++){
+        	classLikelihoods[k] = classLikelihoods[k]/sum;
     	}
         maxLikelihood = classLikelihoods[predictedClassLabel];
 	}else maxLikelihood = classLikelihoods[predictedClassLabel];

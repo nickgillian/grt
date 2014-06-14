@@ -352,7 +352,7 @@ protected:
     bool loadLegacyModelFromFile( fstream &file );
     
     struct svm_model *deepCopyModel() const;
-    struct svm_problem deepCopyProblemSet() const;
+    bool deepCopyProblem( const struct svm_problem &source_problem, struct svm_problem &target_problem, const unsigned int numInputDimensions ) const;
     bool deepCopyParam( const svm_parameter &source_param, svm_parameter &target_param ) const;
     
 	bool problemSet;

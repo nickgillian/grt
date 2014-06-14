@@ -88,6 +88,7 @@ public slots:
     bool resetOSCClient(std::string clientAddress,int clientPort);
     bool resetOSCServer(int incomingOSCDataPort);
     bool setVersion(std::string version);
+    bool setEnableOSCInput(bool state);
     bool setEnableOSCControlCommands(bool state);
     bool setPipelineMode(unsigned int pipelineMode);
     bool setRecordingState(bool state);
@@ -136,10 +137,11 @@ protected:
 
     //Core Stuff
     boost::mutex mutex;
-    boost::thread *mainThread;
+    boost::shared_ptr< boost::thread > mainThread;
     bool coreRunning;
     bool stopMainThread;
     bool verbose;
+    bool enableOSCInput;
     bool enableOSCControlCommands;
 
     //OSC Stuff

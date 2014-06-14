@@ -29,7 +29,7 @@ bool TrainingThread::start(){
         qDebug() << STRING_TO_QSTRING("TrainingThread::start() - Starting training thread...");
 
     try{
-        mainThread = new boost::thread( boost::bind( &TrainingThread::mainThreadFunction, this) );
+        mainThread.reset( new boost::thread( boost::bind( &TrainingThread::mainThreadFunction, this) ) );
     }catch( std::exception const &error ){
         QString qstr = "ERROR: Core::start() - Failed to start training thread! Exception: ";
         qstr += error.what();
@@ -62,6 +62,7 @@ bool TrainingThread::stop(){
 
     //Wait for it to stop
     mainThread->join();
+    mainThread.reset();
 
     return true;
 }
@@ -78,8 +79,10 @@ bool TrainingThread::getTrainingInProcess(){
 
 bool TrainingThread::startNewTraining(const GRT::Trainer &trainer ){
 
+    //Check to make sure another training task is not in process
     if( getTrainingInProcess() ) return false;
 
+    //Flag that a new training task should be started using the new trainer
     boost::mutex::scoped_lock lock( mutex );
     this->startTraining = true;
     this->trainer = trainer;
@@ -120,7 +123,7 @@ void TrainingThread::mainThreadFunction(){
         if( runTraining ){
             emit pipelineTrainingStarted();
 
-            //Start the training
+            //Start the training, the thread will pause here until the training has finished
             bool result = trainer.train();
 
             //Flag that the training has stopped
@@ -136,7 +139,12 @@ void TrainingThread::mainThreadFunction(){
                 emit newHelpMessage( trainer.getLastErrorMessage() );
             }
 
-            emit pipelineUpdated( trainer.getPipeline() );
+            GRT::GestureRecognitionPipeline tempPipeline;
+            {
+                boost::mutex::scoped_lock lock( mutex );
+                tempPipeline = trainer.getPipeline();
+            }
+            emit pipelineUpdated( tempPipeline );
             emit pipelineTrainingFinished( result );
         }
 
