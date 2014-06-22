@@ -35,6 +35,17 @@ The toolkit's source code is structured as following:
 * **RegressionModules:** Contains all the GRT regression modules, such as MLP Neural Networks, Linear Regression, and Logistic Regression.
 * **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random and Matrix.
 
+##Tutorials and Examples
+
+You can find a large number of tutorials and examples in the examples folder.  You can also find a
+wide range of examples and references on the main GRT wiki:
+
+http://www.nickgillian.com/wiki/pmwiki.php?n=GRT.GestureRecognitionToolkit
+
+##Forum
+
+You can find the main GRT forum at: [http://www.nickgillian.com/forum/](http://www.nickgillian.com/forum/)
+
 ##Building the GRT
 
 You can find a makefile in the build folder that will compile the GRT as a static library (on Linux and OSX systems) and also
@@ -68,17 +79,6 @@ Note that, depending on your IDE, you may have to specify the physical path that
 you placed the GRT folder in on your hard drive, for instance you might have to write something like:
 
     #include "/Users/Nick/Documents/Dev/cpp/gesture-recognition-toolkit/GRT/GRT.h"
-
-##Tutorials and Examples
-
-You can find a large number of tutorials and examples in the examples folder.  You can also find a
-wide range of examples and references on the main GRT wiki:
-
-http://www.nickgillian.com/wiki/pmwiki.php?n=GRT.GestureRecognitionToolkit
-
-##Forum
-
-You can find the main GRT forum at: [http://www.nickgillian.com/forum/](http://www.nickgillian.com/forum/)
 
 ##License
 

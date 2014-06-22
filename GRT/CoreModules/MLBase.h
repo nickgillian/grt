@@ -36,6 +36,7 @@
 #include "../DataStructures/ClassificationData.h"
 #include "../DataStructures/RegressionData.h"
 #include "../DataStructures/TimeSeriesClassificationData.h"
+#include "../DataStructures/TimeSeriesClassificationDataStream.h"
 
 namespace GRT{
 
@@ -137,6 +138,23 @@ public:
      @return returns true if the classifier was successfully trained, false otherwise
      */
     virtual bool train_(TimeSeriesClassificationData &trainingData);
+    
+    /**
+     This is the main training interface for TimeSeriesClassificationDataStream.
+     By default it will call the train_ function, unless it is overwritten by the derived class.
+     
+     @param TimeSeriesClassificationDataStream trainingData: the training data that will be used to train the ML model
+     @return returns true if the classifier was successfully trained, false otherwise
+     */
+    virtual bool train(TimeSeriesClassificationDataStream trainingData);
+    
+    /**
+     This is the main training interface for referenced TimeSeriesClassificationDataStream. This should be overwritten by the derived class.
+     
+     @param TimeSeriesClassificationDataStream &trainingData: a reference to the training data that will be used to train the ML model
+     @return returns true if the classifier was successfully trained, false otherwise
+     */
+    virtual bool train_(TimeSeriesClassificationDataStream &trainingData);
     
     /**
      This is the main training interface for UnlabelledData.

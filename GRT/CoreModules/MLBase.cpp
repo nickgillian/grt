@@ -88,6 +88,10 @@ bool MLBase::train_(RegressionData &trainingData){ return false; }
 bool MLBase::train(TimeSeriesClassificationData trainingData){ return train_( trainingData ); }
 
 bool MLBase::train_(TimeSeriesClassificationData &trainingData){ return false; }
+    
+bool MLBase::train(TimeSeriesClassificationDataStream trainingData){ return train_( trainingData ); }
+    
+bool MLBase::train_(TimeSeriesClassificationDataStream &trainingData){ return false; }
 
 bool MLBase::train(UnlabelledData trainingData){ return train_( trainingData ); }
 

@@ -28,7 +28,7 @@
 
  \section intro_sec Introduction
  
-  The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, c++ machine learning library that has been specifically designed for real-time gesture recognition.
+  The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, c++ machine learning library for real-time gesture recognition.
  The GRT has been designed to:
  - be easy to use and integrate into your existing c++ projects
  - be compatible with any type of sensor or data input
@@ -109,6 +109,7 @@
 #include "ClassificationModules/BAG/BAG.h"
 #include "ClassificationModules/DecisionTree/DecisionTree.h"
 #include "ClassificationModules/DTW/DTW.h"
+#include "ClassificationModules/FiniteStateMachine/FiniteStateMachine.h"
 #include "ClassificationModules/GMM/GMM.h"
 #include "ClassificationModules/HMM/HMM.h"
 #include "ClassificationModules/KNN/KNN.h"
