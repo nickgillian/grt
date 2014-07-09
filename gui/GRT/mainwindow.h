@@ -136,6 +136,7 @@ private slots:
     void updateDatasetStatsView();
     void updateClassStatsGraph();
     void updatePCAProjectionGraph();
+    void updateTimeseriesGraph();
 
     //////////////////////////////// PIPELINE TOOl FUNCTIONS ////////////////////////////////
     void showPipelineToolInfo();
@@ -222,6 +223,7 @@ private:
     TimeseriesGraph *regressionGraph;
     GRT::ErrorLog errorLog;
     GRT::WarningLog warningLog;
+    vector< Qt::GlobalColor > defaultGraphColors;
 
     enum Views{SETUP_VIEW=0,DATA_IO_VIEW,DATA_LABELING_VIEW,PIPELINE_VIEW,TRAINING_TOOL_VIEW,PREDICTION_VIEW,LOG_VIEW};
 

@@ -22,20 +22,21 @@
 
 namespace GRT{
     
-ThresholdCrossingDetector::ThresholdCrossingDetector(UINT analysisMode,UINT thresholdCrossingMode,double lowerThreshold,double upperThreshold,UINT searchWindowSize,UINT searchTimeoutDuration,UINT offsetFilterSize){
+ThresholdCrossingDetector::ThresholdCrossingDetector(UINT analysisMode,UINT thresholdCrossingMode,UINT detectionTimeoutMode,double lowerThreshold,double upperThreshold,double hysteresisThreshold,UINT searchWindowSize,UINT searchTimeoutDuration,UINT offsetFilterSize){
     
     this->analysisMode = analysisMode;
     this->thresholdCrossingMode = thresholdCrossingMode;
+    this->detectionTimeoutMode = detectionTimeoutMode;
     this->searchWindowSize = searchWindowSize;
     this->searchTimeoutDuration = searchTimeoutDuration;
     this->offsetFilterSize = offsetFilterSize;
     this->lowerThreshold = lowerThreshold;
     this->upperThreshold = upperThreshold;
+    this->hysteresisThreshold = hysteresisThreshold;
     
     enableSearch = false;
     thresholdCrossingDetected = false;
     analysisValue = 0;
-    searchTimeoutCounter = 0;
     searchWindowIndex = 0;
     currentSearchState = SEARCHING_FOR_FIRST_THRESHOLD_CROSSING;
     
@@ -46,6 +47,7 @@ ThresholdCrossingDetector::ThresholdCrossingDetector(const ThresholdCrossingDete
     this->analysisValue = rhs.analysisValue;
     this->lowerThreshold = rhs.lowerThreshold;
     this->upperThreshold = rhs.upperThreshold;
+    this->hysteresisThreshold = rhs.hysteresisThreshold;
     this->enableSearch = rhs.enableSearch;
     this->thresholdCrossingDetected = rhs.thresholdCrossingDetected;
     this->analysisMode = rhs.analysisMode;
@@ -69,6 +71,7 @@ ThresholdCrossingDetector& ThresholdCrossingDetector::operator=(const ThresholdC
         this->analysisValue = rhs.analysisValue;
         this->lowerThreshold = rhs.lowerThreshold;
         this->upperThreshold = rhs.upperThreshold;
+        this->hysteresisThreshold = rhs.hysteresisThreshold;
         this->enableSearch = rhs.enableSearch;
         this->thresholdCrossingDetected = rhs.thresholdCrossingDetected;
         this->analysisMode = rhs.analysisMode;
@@ -112,12 +115,35 @@ bool ThresholdCrossingDetector::update( const double x ){
             break;
     }
     
-    //Check to see if we should search
+    //Check to see if we should start searching again
     if( currentSearchState == NO_SEARCH_GATE_TIME_OUT ){
-        if( ++searchTimeoutCounter >= searchTimeoutDuration ){
-            currentSearchState = SEARCHING_FOR_FIRST_THRESHOLD_CROSSING;
-            searchTimeoutCounter = 0;
-        }else return false;
+        
+        switch( detectionTimeoutMode ){
+            case TIMEOUT_COUNTER:
+                if( searchTimeoutCounter.getMilliSeconds() >= searchTimeoutDuration ){
+                    currentSearchState = SEARCHING_FOR_FIRST_THRESHOLD_CROSSING;
+                    searchTimeoutCounter.stop();
+                }else return false;
+                break;
+            case HYSTERESIS_THRESHOLD:
+                switch ( thresholdCrossingMode ) {
+                    case UPPER_THRESHOLD_CROSSING:
+                        if( analysisValue <= hysteresisThreshold ){
+                            currentSearchState = SEARCHING_FOR_FIRST_THRESHOLD_CROSSING;
+                        }else return false;
+                        break;
+                    case LOWER_THRESHOLD_CROSSING:
+                        if( analysisValue >= hysteresisThreshold ){
+                            currentSearchState = SEARCHING_FOR_FIRST_THRESHOLD_CROSSING;
+                        }else return false;
+                        break;
+                    default:
+                        break;
+                }
+                
+                break;
+        }
+        
     }
     
     if( thresholdCrossingMode == UPPER_THRESHOLD_CROSSING || thresholdCrossingMode == LOWER_THRESHOLD_CROSSING || thresholdCrossingMode == UPPER_OR_LOWER_THRESHOLD_CROSSING ){
@@ -128,7 +154,7 @@ bool ThresholdCrossingDetector::update( const double x ){
                     upperThresholdCrossingFound = true;
                     thresholdCrossingDetected = true;
                     currentSearchState = NO_SEARCH_GATE_TIME_OUT;
-                    searchTimeoutCounter = 0;
+                    searchTimeoutCounter.start();
                 }
                 break;
             case LOWER_THRESHOLD_CROSSING:
@@ -136,7 +162,7 @@ bool ThresholdCrossingDetector::update( const double x ){
                     lowerThresholdCrossingFound = true;
                     thresholdCrossingDetected = true;
                     currentSearchState = NO_SEARCH_GATE_TIME_OUT;
-                    searchTimeoutCounter = 0;
+                    searchTimeoutCounter.start();
                 }
                 break;
             case UPPER_OR_LOWER_THRESHOLD_CROSSING:
@@ -144,12 +170,12 @@ bool ThresholdCrossingDetector::update( const double x ){
                     upperThresholdCrossingFound = true;
                     thresholdCrossingDetected = true;
                     currentSearchState = NO_SEARCH_GATE_TIME_OUT;
-                    searchTimeoutCounter = 0;
+                    searchTimeoutCounter.start();
                 }else if( analysisValue <= lowerThreshold ){
                     lowerThresholdCrossingFound = true;
                     thresholdCrossingDetected = true;
                     currentSearchState = NO_SEARCH_GATE_TIME_OUT;
-                    searchTimeoutCounter = 0;
+                    searchTimeoutCounter.start();
                 }
                 break;
             default:
@@ -168,9 +194,9 @@ bool ThresholdCrossingDetector::update( const double x ){
         
         //If we are in the NO_SEARCH_GATE_TIME_OUT state then we need to update the counter
         if( currentSearchState == NO_SEARCH_GATE_TIME_OUT ){
-            if( ++searchTimeoutCounter >= searchTimeoutDuration ){
+            if( searchTimeoutCounter.getMilliSeconds() >= searchTimeoutDuration ){
                 currentSearchState = SEARCHING_FOR_FIRST_THRESHOLD_CROSSING;
-                searchTimeoutCounter = 0;
+                searchTimeoutCounter.stop();
             }
         }
         
@@ -197,14 +223,14 @@ bool ThresholdCrossingDetector::update( const double x ){
                 if( thresholdCrossingMode == UPPER_THEN_LOWER_THRESHOLD_CROSSING && lowerThresholdCrossingFound ){
                     currentSearchState = NO_SEARCH_GATE_TIME_OUT;
                     searchWindowIndex = 0;
-                    searchTimeoutCounter = 0;
+                    searchTimeoutCounter.start();
                     thresholdCrossingDetected = true;
                     break;
                 }
                 if( thresholdCrossingMode == LOWER_THEN_UPPER_THRESHOLD_CROSSING && upperThresholdCrossingFound ){
                     currentSearchState = NO_SEARCH_GATE_TIME_OUT;
                     searchWindowIndex = 0;
-                    searchTimeoutCounter = 0;
+                    searchTimeoutCounter.start();
                     thresholdCrossingDetected = true;
                     break;
                 }
@@ -232,14 +258,14 @@ bool ThresholdCrossingDetector::reset(){
     thresholdCrossingDetected = false;
     analysisValue = 0;
     searchWindowIndex = 0;
-    searchTimeoutCounter = 0;
+    searchTimeoutCounter.stop();
     
     return true;
 }
     
 bool ThresholdCrossingDetector::triggerSearchTimeout(){
     currentSearchState = NO_SEARCH_GATE_TIME_OUT;
-    searchTimeoutCounter = 0;
+    searchTimeoutCounter.start();
     return true;
 }
     
@@ -272,7 +298,7 @@ UINT ThresholdCrossingDetector::getSearchWindowIndex() const{
 }
 
 UINT ThresholdCrossingDetector::getSearchTimeoutCounter() const{
-    return searchTimeoutCounter;
+    return (UINT)searchTimeoutCounter.getMilliSeconds();
 }
 
 UINT ThresholdCrossingDetector::getSearchTimeoutDuration() const{
@@ -281,6 +307,18 @@ UINT ThresholdCrossingDetector::getSearchTimeoutDuration() const{
     
 double ThresholdCrossingDetector::getAnalysisValue() const{
     return analysisValue;
+}
+    
+double ThresholdCrossingDetector::getUpperThreshold() const{
+    return upperThreshold;
+}
+
+double ThresholdCrossingDetector::getLowerThreshold() const{
+    return lowerThreshold;
+}
+
+double ThresholdCrossingDetector::getHysteresisThreshold() const{
+    return hysteresisThreshold;
 }
     
 bool ThresholdCrossingDetector::setEnableSearch(const bool enableSearch){
@@ -295,6 +333,11 @@ bool ThresholdCrossingDetector::setAnalysisMode(const UINT analysisMode){
     
 bool ThresholdCrossingDetector::setThresholdCrossingMode(const UINT thresholdCrossingMode){
     this->thresholdCrossingMode = thresholdCrossingMode; 
+    return reset();
+}
+    
+bool ThresholdCrossingDetector::setDetectionTimeoutMode(const UINT detectionTimeoutMode){
+    this->detectionTimeoutMode = detectionTimeoutMode;
     return reset();
 }
     
@@ -321,6 +364,11 @@ bool ThresholdCrossingDetector::setLowerThreshold(const double lowerThreshold){
 bool ThresholdCrossingDetector::setUpperThreshold(const double upperThreshold){ 
     this->upperThreshold = upperThreshold; 
     return reset(); 
-} 
+}
+    
+bool ThresholdCrossingDetector::setHysteresisThreshold(const double hysteresisThreshold){
+    this->hysteresisThreshold = hysteresisThreshold;
+    return reset();
+}
 
 }//End of namespace GRT

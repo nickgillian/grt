@@ -97,7 +97,7 @@ public:
 	
 	@return returns the current time elapsed in milliseconds (1000 milliseconds == 1 second) or 0 if the timer is not running
 	*/
-    signed long getMilliSeconds(){
+    signed long getMilliSeconds() const {
         if( !timerRunning ) return 0;
 
         unsigned long now = getSystemTime();
@@ -125,7 +125,7 @@ public:
      
      @return returns the current time elapsed in seconds or 0 if the timer is not running
      */
-    double getSeconds(){
+    double getSeconds() const {
         if( !timerRunning ) return 0;
         return getMilliSeconds()/1000.0;
     }
@@ -135,14 +135,14 @@ public:
 	
 	@return returns true if the timer is running, false otherwise
 	*/
-    bool running(){ return timerRunning; }
+    bool running() const { return timerRunning; }
 
     /**
 	Gets if the countdown time has been reached.
 	
 	@return returns true if the countdown time has been reached, false otherwise
 	*/
-    bool getTimerReached(){
+    bool getTimerReached() const {
 	    if( !timerRunning ){
             return false;
         }
@@ -153,7 +153,7 @@ public:
 	/**
 	This function is now deprecated, you should use getTimerReached() instead.
 	*/
-	bool timerReached(){
+	bool timerReached() const {
 		return getTimerReached();
     }
 
@@ -162,7 +162,7 @@ public:
 	
 	@return returns the current system time.
 	*/
-    static unsigned long getSystemTime( ) {
+    static unsigned long getSystemTime( ){
 #ifdef __GRT_OSX_BUILD__
         struct timeval now;
         gettimeofday( &now, NULL );

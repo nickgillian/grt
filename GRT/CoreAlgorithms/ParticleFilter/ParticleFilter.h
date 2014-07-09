@@ -49,7 +49,7 @@ public:
         verbose = true;
         normWeights = true;
         initMode = INIT_MODE_UNIFORM;
-        estimationMode = MEAN;
+        estimationMode = WEIGHTED_MEAN;
         numParticles = 0;
         stateVectorSize = 0;
         numDeadParticles = 0;
@@ -128,18 +128,13 @@ public:
     }
     
     /**
-     Initializes the particles.
+     Initializes the particles.  The size of the init model sets the number of dimensions in the state vector.  The size of the process
+     noise and measurement noise vectors can be different, depending on the exact problem you are using the ParticleFilter to solve.
      */
     virtual bool init(const unsigned int numParticles,const vector< VectorDouble > &initModel,const VectorDouble &processNoise,const VectorDouble &measurementNoise){
         
         //Clear any previous setup
         clear();
-        
-        //Check to make sure the init model and process noise vectors are the same size
-        if( initModel.size() != processNoise.size() ){
-            errorLog << "ERROR: The number of dimensions in the initModel and processNoise vectors do not match!" << endl;
-            return false;
-        }
         
         //Check to make sure each vector in the initModel has 2 dimensions, these are min and max or mu and sigma depening on the init mode
         for(unsigned int i=0; i<initModel.size(); i++){
@@ -716,6 +711,21 @@ protected:
      */
     double gauss(double x,double mu,double sigma){
         return 1.0/(SQRT_TWO_PI*sigma) * exp( -SQR(x-mu)/(2.0*SQR(sigma)) );
+    }
+    
+    /**
+     Computes the Radial Basic Function (RBF) for the input x, given mu, alpha, and the RBF weight.
+     For speed, this function does not check to make sure the size of x and mu are the same. The user
+     must therefore ensure that mu has the same size as x before they call this function.
+     
+     @param const double x: the x value for the RBF function
+     @param const double mu: the center of the RBF function
+     @param double sigma: the sigma value for the RBF function
+     @param double weight: the weight for this RBF function. Default value=1.0
+     @return returns the RBF function output for input x, given mu, alpha and the weight
+     */
+    double rbf(const double x,const double mu,double sigma,double weight=1.0){
+        return weight * exp( -SQR( fabs(x-mu) / sigma ) );
     }
     
     /**

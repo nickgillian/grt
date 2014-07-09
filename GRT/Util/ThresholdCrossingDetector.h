@@ -48,7 +48,7 @@ public:
      @param UINT searchTimeoutDuration: sets the duration (in samples) that the threshold detector will ignore any new threshold crossings after detecting a valid threshold crossing
      @param UINT offsetFilterSize: sets the size of the moving average filter used to offset the input value (if the analysisMode is set to MOVING_OFFSET_ANALYSIS_MODE)
      */
-    ThresholdCrossingDetector(UINT analysisMode = RAW_DATA_ANALYSIS_MODE,UINT thresholdCrossingMode = UPPER_THRESHOLD_CROSSING,double lowerThreshold = -1,double upperThreshold = 1,UINT searchWindowSize = 20,UINT searchTimeoutDuration = 20,UINT offsetFilterSize = 10);
+    ThresholdCrossingDetector(UINT analysisMode = RAW_DATA_ANALYSIS_MODE,UINT thresholdCrossingMode = UPPER_THRESHOLD_CROSSING,UINT detectionTimeoutMode = TIMEOUT_COUNTER,double lowerThreshold = -1,double upperThreshold = 1,double hysteresisThreshold = 0,UINT searchWindowSize = 20,UINT searchTimeoutDuration = 1000,UINT offsetFilterSize = 10);
     
     /**
      Default Destructor.
@@ -145,6 +145,21 @@ public:
     double getAnalysisValue() const;
     
     /**
+     @return gets the upper threshold value
+     */
+    double getUpperThreshold() const;
+    
+    /**
+     @return gets the lower threshold value
+     */
+    double getLowerThreshold() const;
+    
+    /**
+     @return gets the hysteresis threshold value
+     */
+    double getHysteresisThreshold() const;
+    
+    /**
      Sets if the algorithm can perform the threshold crossing search. If enableSearch is set to false, then the algorithm will never 
      search for a threshold crossing.
      
@@ -187,12 +202,23 @@ public:
     bool setOffsetFilterSize(const UINT offsetFilterSize);
     
     /**
-     Sets the searchTimeoutDuration, this is the number of updates that will be ignored after a threshold crossing has been detected.
+     Sets the searchTimeoutDuration, this is the time (in milliseconds) that will be ignored after a threshold crossing has been detected.
+     
+     @param const UINT searchTimeoutDuration: the new searchTimeoutDuration in milliseconds
+     @return returns true if the parameter was updated, false otherwise
+     */
+    bool setSearchTimeoutDuration(const UINT searchTimeoutDuration);
+    
+    /**
+     Sets the detectionTimeoutMode, this controls how the detection algorithm triggers detection timeouts after a threshold crossing has been detected.
+     If the detectionTimeoutMode is TIMEOUT_COUNTER then the detection algorithm will wait for until the searchTimeoutDuration before searching for 
+     the next threshold crossing.  Alternatively, if the detectionTimeoutMode is HYSTERESIS_THRESHOLD then the detection algorithm will wait for the 
+     analysis signal to pass the hysteresisThreshold (regardless of the time this takes) before searching for a new threshold crossing.
      
      @param const UINT searchTimeoutDuration: the new searchTimeoutDuration
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setSearchTimeoutDuration(const UINT searchTimeoutDuration);
+    bool setDetectionTimeoutMode(const UINT detectionTimeoutMode);
     
     /**
      Sets the lowerThreshold value, this lower threshold that must be crossed to trigger a LOWER_THRESHOLD_CROSSING.
@@ -210,20 +236,30 @@ public:
      */
     bool setUpperThreshold(const double upperThreshold);
     
+    /**
+     Sets the hysteresisThreshold value, this threshold is used to debounce triggers if the detectionTimeoutMode is set to HYSTERESIS_THRESHOLD.
+     
+     @param const double hysteresisThreshold: the new hysteresisThreshold
+     @return returns true if the parameter was updated, false otherwise
+     */
+    bool setHysteresisThreshold(const double hysteresisThreshold);
+    
 protected:
     double analysisValue;
     double lowerThreshold;
     double upperThreshold;
+    double hysteresisThreshold;
     bool enableSearch;
     bool thresholdCrossingDetected;
     unsigned int analysisMode;
     unsigned int thresholdCrossingMode;
-    unsigned int searchTimeoutCounter;
+    unsigned int detectionTimeoutMode;
     unsigned int searchTimeoutDuration;
     unsigned int searchWindowSize;
     unsigned int searchWindowIndex;
     unsigned int offsetFilterSize;
     unsigned int currentSearchState;
+    Timer searchTimeoutCounter;
     MovingAverageFilter movingAverageFilter;
     Derivative derivative;
     
@@ -237,6 +273,8 @@ public:
                                 LOWER_THEN_UPPER_THRESHOLD_CROSSING};
     
     enum AnalysisModes{RAW_DATA_ANALYSIS_MODE=0,MOVING_OFFSET_ANALYSIS_MODE,DERIVATIVE_ANALYSIS_MODE};
+    
+    enum DetectionTimeoutMode{TIMEOUT_COUNTER=0,HYSTERESIS_THRESHOLD};
 	
 };
 

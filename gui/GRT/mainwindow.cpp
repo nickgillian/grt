@@ -47,6 +47,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         tabHistory.push_back( ui->dataLabelingTool_trainingDataTab->widget(i) );
     }
 
+    //Setup the default graph colors
+    defaultGraphColors.push_back( Qt::red );
+    defaultGraphColors.push_back( Qt::green );
+    defaultGraphColors.push_back( Qt::blue );
+    defaultGraphColors.push_back( Qt::magenta );
+    defaultGraphColors.push_back( Qt::yellow );
+    defaultGraphColors.push_back( Qt::cyan );
+    defaultGraphColors.push_back( Qt::gray );
+    defaultGraphColors.push_back( Qt::darkRed );
+    defaultGraphColors.push_back( Qt::darkGreen );
+    defaultGraphColors.push_back( Qt::darkBlue );
+    defaultGraphColors.push_back( Qt::darkMagenta );
+    defaultGraphColors.push_back( Qt::darkYellow );
+    defaultGraphColors.push_back( Qt::darkCyan );
+    defaultGraphColors.push_back( Qt::darkGray );
+
     //Initialize the views
     initMainMenu();
     initSetupView();
@@ -787,6 +803,7 @@ void MainWindow::updatePipelineMode(unsigned int pipelineMode){
             ui->dataLabelingTool_trainingDataTab->insertTab( 1, tabHistory[1], "Dataset Stats" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 2, tabHistory[2], "Class Counter" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 3, tabHistory[3], "PCA Projection" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 4, tabHistory[4], "Timeseries Graph" );
             ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
         break;
         case Core::REGRESSION_MODE:
@@ -1133,6 +1150,9 @@ void MainWindow::updateTrainingTabView(int tabIndex){
             if( tabIndex == 3 ){
                 updatePCAProjectionGraph();
             }
+            if( tabIndex == 4 ){
+                updateTimeseriesGraph();
+            }
         break;
         case Core::REGRESSION_MODE:
             if( tabIndex == 0 ){
@@ -1289,6 +1309,89 @@ void MainWindow::updatePCAProjectionGraph(){
 
     plot->setTitle("PCA Projection");
     plot->rescaleAxes();
+    plot->replot();
+}
+
+void MainWindow::updateTimeseriesGraph(){
+
+    GRT::ClassificationData classificationData = core.getClassificationTrainingData();
+    const unsigned int numDimensions = classificationData.getNumDimensions();
+    const unsigned int graphWidth = classificationData.getNumSamples();
+    bool lockRanges = false;
+    GRT::MatrixDouble data(graphWidth,numDimensions);
+    vector< unsigned int > labels(graphWidth);
+    double minRange = numeric_limits< double >::max();
+    double maxRange = numeric_limits< double >::min();
+    double maxLabel = numeric_limits< double >::min();
+    vector< Qt::GlobalColor > &colors = defaultGraphColors;
+
+    //Get the data and the class labels
+    for(unsigned int i=0; i<graphWidth; i++){
+        labels[i] = classificationData[i].getClassLabel();
+        for(unsigned int j=0; j<numDimensions; j++){
+            data[i][j] = classificationData[i][j];
+        }
+    }
+
+    //Get the data to plot
+    QVector< double > x( graphWidth );
+    vector< QVector<double> > y(numDimensions, QVector<double>(graphWidth) );
+    QVector<double> z(graphWidth);
+
+    for (unsigned int i=0; i<graphWidth; i++){
+      x[i] = i;
+      z[i] = labels[i];
+      if( z[i] > maxLabel ) maxLabel = z[i];
+      for(unsigned int j=0; j<numDimensions; j++){
+          y[j][i] = data[i][j];
+          if( !lockRanges ){
+            if( data[i][j] < minRange ) minRange = data[i][j];
+            else if( data[i][j] > maxRange ) maxRange = data[i][j];
+          }
+      }
+    }
+
+    //Plot the data timeseries
+    QCustomPlot *plot = ui->dataLabelingTool_timeseriesDataGraph;
+
+    //Clear any previous graphs
+    plot->clearGraphs();
+
+    //Create the graphs
+    for(unsigned int j=0; j<numDimensions; j++){
+        plot->addGraph();
+        plot->graph(j)->setPen( QPen( colors[j%colors.size()] ));
+        plot->graph(j)->setData(x, y[j]);
+    }
+
+    // give the axes some labels:
+    plot->xAxis->setLabel("Time");
+    plot->yAxis->setLabel("Data");
+
+    // set axes ranges, so we see all data:
+    plot->xAxis->setRange(0, graphWidth);
+    plot->yAxis->setRange(minRange, maxRange);
+    plot->replot();
+
+
+    ////////////////// Plot the labels timeseries //////////////////
+    plot = ui->dataLabelingTool_timeseriesLabelGraph;
+
+    //Clear any previous graphs
+    plot->clearGraphs();
+
+    //Create the graphs
+    plot->addGraph();
+    plot->graph(0)->setPen( QPen( colors[0] ));
+    plot->graph(0)->setData(x, z);
+
+    // give the axes some labels:
+    plot->xAxis->setLabel("Time");
+    plot->yAxis->setLabel("Label");
+
+    // set axes ranges, so we see all data:
+    plot->xAxis->setRange(0, graphWidth);
+    plot->yAxis->setRange(0, maxLabel);
     plot->replot();
 }
 

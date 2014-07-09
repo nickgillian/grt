@@ -959,7 +959,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>4</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -1018,6 +1018,44 @@
            <width>811</width>
            <height>286</height>
           </rect>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="tab_5">
+        <attribute name="title">
+         <string>Page</string>
+        </attribute>
+        <widget class="QCustomPlot" name="dataLabelingTool_timeseriesDataGraph" native="true">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>796</width>
+           <height>131</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QCustomPlot" name="dataLabelingTool_timeseriesLabelGraph" native="true">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>150</y>
+           <width>796</width>
+           <height>116</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QScrollBar" name="dataLabelingTool_timeseriesSlider">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>280</y>
+           <width>796</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </widget>
