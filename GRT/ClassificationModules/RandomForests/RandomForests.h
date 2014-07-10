@@ -52,7 +52,7 @@ public:
      @param const UINT maxDepth: sets the maximum depth of the tree. Default value = 10
      @param const bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      */
-	RandomForests(const UINT forestSize=10,const UINT numRandomSplits=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool useScaling=false);
+	RandomForests(const UINT forestSize=10,const UINT numRandomSplits=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const UINT trainingMode = DecisionTree::BEST_RANDOM_SPLIT,const bool useScaling=false);
     
     /**
      Defines the copy constructor.
@@ -159,13 +159,6 @@ public:
     UINT getForestSize() const;
     
     /**
-     Gets the current training mode. This will be one of the TrainingModes enums.
-     
-     @return returns the training mode
-     */
-    UINT getTrainingMode() const;
-    
-    /**
      Gets the number of random spilts that will be used to search for the best spliting value for each node.
      
      @return returns the number of steps that will be used to search for the best spliting value for each node
@@ -186,6 +179,13 @@ public:
      @return returns the maximum depth of the tree
      */
     UINT getMaxDepth() const;
+    
+    /**
+     Gets the training mode that will be used to train each DecisionTree in the forest.
+     
+     @return returns the trainingMode
+     */
+    UINT getTrainingMode() const;
     
     /**
      Sets the number of trees in the forest.  Changing this value will clear any previously trained model.
@@ -225,6 +225,14 @@ public:
      */
     bool setMaxDepth(const UINT maxDepth);
     
+    /**
+     Sets the training mode used to train each DecisionTree in the forest, this should be one of the DecisionTree::TrainingModes enums.
+     
+     @param const UINT trainingMode: the new trainingMode, this should be one of the DecisionTree::TrainingModes enums
+     @return returns true if the trainingMode was set successfully, false otherwise
+     */
+    bool setTrainingMode(const UINT trainingMode);
+    
 protected:
     bool loadLegacyModelFromFile( fstream &file );
     
@@ -232,6 +240,7 @@ protected:
     UINT numRandomSplits;
     UINT minNumSamplesPerNode;
     UINT maxDepth;
+    UINT trainingMode;
     vector< DecisionTreeNode* > forest;
     
     static RegisterClassifierModule< RandomForests > registerModule;

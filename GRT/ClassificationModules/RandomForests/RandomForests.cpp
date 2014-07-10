@@ -25,12 +25,13 @@ namespace GRT{
 //Register the RandomForests module with the Classifier base class
 RegisterClassifierModule< RandomForests >  RandomForests::registerModule("RandomForests");
 
-RandomForests::RandomForests(const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool useScaling)
+RandomForests::RandomForests(const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool useScaling)
 {
     this->forestSize = forestSize;
     this->numRandomSplits = numRandomSplits;
     this->minNumSamplesPerNode = minNumSamplesPerNode;
     this->maxDepth = maxDepth;
+    this->trainingMode = trainingMode;
     this->useScaling = useScaling;
     classType = "RandomForests";
     classifierType = classType;
@@ -62,20 +63,21 @@ RandomForests& RandomForests::operator=(const RandomForests &rhs){
         //Clear this tree
         clear();
         
-        if( rhs.getTrained() ){
-            //Deep copy the forest
-            for(UINT i=0; i<rhs.forest.size(); i++){
-                this->forest.push_back( rhs.forest[i]->deepCopyTree() );
-            }
-        }
-        
-        this->forestSize = rhs.forestSize;
-        this->numRandomSplits = rhs.numRandomSplits;
-        this->minNumSamplesPerNode = rhs.minNumSamplesPerNode;
-        this->maxDepth = rhs.maxDepth;
-
         //Copy the base classifier variables
-        copyBaseVariables( (Classifier*)&rhs );
+        if( copyBaseVariables( (Classifier*)&rhs ) ){
+            if( rhs.getTrained() ){
+                //Deep copy the forest
+                for(UINT i=0; i<rhs.forest.size(); i++){
+                    this->forest.push_back( rhs.forest[i]->deepCopyTree() );
+                }
+            }
+            
+            this->forestSize = rhs.forestSize;
+            this->numRandomSplits = rhs.numRandomSplits;
+            this->minNumSamplesPerNode = rhs.minNumSamplesPerNode;
+            this->maxDepth = rhs.maxDepth;
+            this->trainingMode = rhs.trainingMode;
+        }else errorLog << "deepCopyFrom(const Classifier *classifier) - Failed to copy base variables!" << endl;
 	}
 	return *this;
 }
@@ -91,20 +93,23 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
         //Clear this tree
         this->clear();
         
-        if( ptr->getTrained() ){
-            //Deep copy the forest
-            for(UINT i=0; i<ptr->forest.size(); i++){
-                this->forest.push_back( ptr->forest[i]->deepCopyTree() );
+        if( copyBaseVariables( classifier ) ){
+            if( ptr->getTrained() ){
+                //Deep copy the forest
+                for(UINT i=0; i<ptr->forest.size(); i++){
+                    this->forest.push_back( ptr->forest[i]->deepCopyTree() );
+                }
             }
+            
+            this->forestSize = ptr->forestSize;
+            this->numRandomSplits = ptr->numRandomSplits;
+            this->minNumSamplesPerNode = ptr->minNumSamplesPerNode;
+            this->maxDepth = ptr->maxDepth;
+            
+            return true;
         }
         
-        this->forestSize = ptr->forestSize;
-        this->numRandomSplits = ptr->numRandomSplits;
-        this->minNumSamplesPerNode = ptr->minNumSamplesPerNode;
-        this->maxDepth = ptr->maxDepth;
-        
-        //Copy the base classifier variables
-        return copyBaseVariables( classifier );
+        errorLog << "deepCopyFrom(const Classifier *classifier) - Failed to copy base variables!" << endl;
     }
     return false;
 }
@@ -140,7 +145,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
     //Train the random forest
     DecisionTree tree;
     tree.enableScaling( false ); //We have already scaled the training data so we do not need to scale it again
-    tree.setTrainingMode( DecisionTree::BEST_RANDOM_SPLIT );
+    tree.setTrainingMode( trainingMode );
     tree.setNumSplittingSteps( numRandomSplits );
     tree.setMinNumSamplesPerNode( minNumSamplesPerNode );
     tree.setMaxDepth( maxDepth );
@@ -246,6 +251,7 @@ bool RandomForests::print() const{
     cout << "NumSplittingSteps: " << numRandomSplits << endl;
     cout << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
     cout << "MaxDepth: " << maxDepth << endl;
+    cout << "TrainingMode: " << trainingMode << endl;
     cout << "ForestBuilt: " << (trained ? 1 : 0) << endl;
     
     cout << "Forest:\n";
@@ -294,6 +300,7 @@ bool RandomForests::saveModelToFile(fstream &file) const{
     file << "NumSplittingSteps: " << numRandomSplits << endl;
     file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
     file << "MaxDepth: " << maxDepth << endl;
+    file << "TrainingMode: " << trainingMode << endl;
     file << "ForestBuilt: " << (trained ? 1 : 0) << endl;
     
     if( trained ){
@@ -385,6 +392,13 @@ bool RandomForests::loadModelFromFile(fstream &file){
     file >> maxDepth;
     
     file >> word;
+    if(word != "TrainingMode:"){
+        errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
+        return false;
+    }
+    file >> trainingMode;
+    
+    file >> word;
     if(word != "ForestBuilt:"){
         errorLog << "loadModelFromFile(string filename) - Could not find the ForestBuilt!" << endl;
         return false;
@@ -451,6 +465,10 @@ UINT RandomForests::getMaxDepth()const{
     return maxDepth;
 }
     
+UINT RandomForests::getTrainingMode() const {
+    return trainingMode;
+}
+    
 bool RandomForests::setForestSize(const UINT forestSize){
     if( forestSize > 0 ){
         this->forestSize = forestSize;
@@ -481,6 +499,17 @@ bool RandomForests::setMaxDepth(const UINT maxDepth){
         this->maxDepth = maxDepth;
         return true;
     }
+    return false;
+}
+    
+bool RandomForests::setTrainingMode(const UINT trainingMode){
+    
+    if( trainingMode == DecisionTree::BEST_ITERATIVE_SPILT || trainingMode == DecisionTree::BEST_RANDOM_SPLIT ){
+        this->trainingMode = trainingMode;
+        return true;
+    }
+    
+    warningLog << "setTrainingMode(const UINT mode) - Unknown training mode!" << endl;
     return false;
 }
     
@@ -559,6 +588,9 @@ bool RandomForests::loadLegacyModelFromFile( fstream &file ){
         return false;
     }
     file >> maxDepth;
+    
+    //Set this as the default as it is not in the file
+    trainingMode = DecisionTree::BEST_RANDOM_SPLIT;
     
     file >> word;
     if(word != "ForestBuilt:"){
