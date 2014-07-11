@@ -28,20 +28,20 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef GRT_DECISION_TREE_NODE_HEADER
-#define GRT_DECISION_TREE_NODE_HEADER
+#ifndef GRT_CLUSTER_TREE_NODE_HEADER
+#define GRT_CLUSTER_TREE_NODE_HEADER
 
 #include "../../Util/Node.h"
 
 namespace GRT{
     
-class DecisionTreeNode : public Node{
+class ClusterTreeNode : public Node{
 public:
     /**
      Default Constructor. Sets all the pointers to NULL.
      */
-    DecisionTreeNode(){
-        nodeType = "DecisionTreeNode";
+    ClusterTreeNode(){
+        nodeType = "ClusterTreeNode";
         parent = NULL;
         leftChild = NULL;
         rightChild = NULL;
@@ -51,7 +51,7 @@ public:
     /**
      Default Destructor. Cleans up any memory.
      */
-    virtual ~DecisionTreeNode(){
+    virtual ~ClusterTreeNode(){
         clear();
     }
     
@@ -83,10 +83,11 @@ public:
      @param VectorDouble &classLikelihoods: a reference to a vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &classLikelihoods) const{
+    virtual bool predict(const VectorDouble &x,VectorDouble &y) const{
         
         if( isLeafNode ){
-            classLikelihoods = classProbabilities;
+            if( y.size() != 1 ) y.resize( 1 );
+            y[0] = clusterLabel;
             return true;
         }
         
@@ -95,10 +96,10 @@ public:
         
         if( predict( x ) ){
             if( rightChild )
-                return rightChild->predict( x, classLikelihoods );
+                return rightChild->predict( x, y );
         }else{
             if( leftChild )
-                return leftChild->predict( x, classLikelihoods );
+                return leftChild->predict( x, y );
         }
         
         return false;
@@ -118,7 +119,7 @@ public:
         nodeSize = 0;
         featureIndex = 0;
         threshold = 0;
-        classProbabilities.clear();
+        clusterLabel = 0;
         
         return true;
     }
@@ -135,11 +136,7 @@ public:
         for(UINT i=0; i<depth; i++) tab += "\t";
         
         cout << tab << "depth: " << depth << " nodeSize: " << nodeSize << " featureIndex: " << featureIndex << " threshold " << threshold << " isLeafNode: " << isLeafNode << endl;
-        cout << tab << "ClassProbabilities: ";
-        for(UINT i=0; i<classProbabilities.size(); i++){
-            cout << classProbabilities[i] << "\t";
-        }
-        cout << endl;
+        cout << tab << "ClusterLabel: " << clusterLabel << endl;
         
         if( leftChild != NULL ){
             cout << tab << "LeftChild: " << endl;
@@ -155,14 +152,14 @@ public:
     }
     
     /**
-     This function returns a deep copy of the DecisionTreeNode and all it's children.
+     This function returns a deep copy of the ClusterTreeNode and all it's children.
      The user is responsible for managing the dynamic data that is returned from this function as a pointer.
      
-     @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
+     @return returns a pointer to a deep copy of the ClusterTreeNode, or NULL if the deep copy was not successful
      */
     virtual Node* deepCopyNode() const{
         
-        DecisionTreeNode *node = new DecisionTreeNode;
+        ClusterTreeNode *node = new ClusterTreeNode;
         
         if( node == NULL ){
             return NULL;
@@ -174,7 +171,7 @@ public:
         node->nodeSize = nodeSize;
         node->featureIndex = featureIndex;
         node->threshold = threshold;
-        node->classProbabilities = classProbabilities;
+        node->clusterLabel = clusterLabel;
         
         //Recursively deep copy the left child
         if( leftChild ){
@@ -191,14 +188,8 @@ public:
         return (Node*)node;
     }
     
-    /**
-     This function returns a deep copy of the DecisionTreeNode and all it's children.
-     The user is responsible for managing the dynamic data that is returned from this function as a pointer.
-     
-     @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
-     */
-    DecisionTreeNode* deepCopyTree() const{
-        DecisionTreeNode *node = (DecisionTreeNode*)deepCopyNode();
+    ClusterTreeNode* deepCopyTree() const{
+        ClusterTreeNode *node = (ClusterTreeNode*)deepCopyNode();
         return node;
     }
     
@@ -221,15 +212,6 @@ public:
     }
     
     /**
-     This function returns the number of classes in the class probabilities vector.
-     
-     @return returns the number of classes in the class probabilities vector
-     */
-    UINT getNumClasses() const{
-        return (UINT)classProbabilities.size();
-    }
-    
-    /**
      This function returns the threshold, this is the value used to compute the decision threshold.
      
      @return returns the threshold
@@ -239,130 +221,41 @@ public:
     }
     
     /**
-     This function returns the class probabilities vector.
+     This function returns the cluster label.
      
-     @return returns the classProbabilities vector
+     @return returns the cluster label.
      */
-    VectorDouble getClassProbabilities() const{
-        return classProbabilities;
+    UINT getClusterLabel() const{
+        return clusterLabel;
     }
     
     /**
-     This function sets the Decision Tree Node.
+     This function sets the Cluster Tree Node.
      
      @param const UINT nodeSize: sets the node size, this is the number of training samples at that node
      @param const UINT featureIndex: sets the index of the feature that should be used for the threshold spilt
      @param const double threshold: set the threshold value used for the spilt
-     @param const VectorDouble &classProbabilities: the vector of class probabilities at this node
+     @param const UINT clusterLabel: the cluster label for this node
      @return returns true if the node was set, false otherwise
      */
-    bool set(const UINT nodeSize,const UINT featureIndex,const double threshold,const VectorDouble &classProbabilities){
+    bool set(const UINT nodeSize,const UINT featureIndex,const double threshold,const UINT clusterLabel){
         this->nodeSize = nodeSize;
         this->featureIndex = featureIndex;
         this->threshold = threshold;
-        this->classProbabilities = classProbabilities;
+        this->clusterLabel = clusterLabel;
         return true;
     }
     
 protected:
-    /**
-     This saves the DecisionTreeNode custom parameters to a file. It will be called automatically by the Node base class
-     if the saveToFile function is called.
-     
-     @param fstream &file: a reference to the file the parameters will be saved to
-     @return returns true if the model was saved successfully, false otherwise
-     */
-    virtual bool saveParametersToFile(fstream &file) const{
-        
-        if(!file.is_open())
-        {
-            errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
-            return false;
-        }
-        
-        //Save the custom DecisionTreeNode parameters
-        file << "NodeSize: " << nodeSize << endl;
-        file << "FeatureIndex: " << featureIndex << endl;
-        file << "Threshold: " << threshold << endl;
-        file << "NumClasses: " << classProbabilities.size() << endl;
-        file << "ClassProbabilities: ";
-        for(UINT i=0; i<classProbabilities.size(); i++){
-            file << classProbabilities[i];
-            if( i < classProbabilities.size()-1 ) file << "\t";
-            else file << endl;
-        }
-        
-        return true;
-    }
-    
-    /**
-     This loads the Decision Tree Node parameters from a file.
-     
-     @param fstream &file: a reference to the file the parameters will be loaded from
-     @return returns true if the model was loaded successfully, false otherwise
-     */
-    virtual bool loadParametersFromFile(fstream &file){
-        
-        if(!file.is_open())
-        {
-            errorLog << "loadFromFile(fstream &file) - File is not open!" << endl;
-            return false;
-        }
-        
-        string word;
-        UINT numClasses;
-        
-        //Load the custom DecisionTreeNode Parameters
-        file >> word;
-        if( word != "NodeSize:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NodeSize header!" << endl;
-            return false;
-        }
-        file >> nodeSize;
-        
-        file >> word;
-        if( word != "FeatureIndex:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndex header!" << endl;
-            return false;
-        }
-        file >> featureIndex;
-        
-        file >> word;
-        if( word != "Threshold:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find Threshold header!" << endl;
-            return false;
-        }
-        file >> threshold;
-        
-        file >> word;
-        if( word != "NumClasses:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NumClasses header!" << endl;
-            return false;
-        }
-        file >> numClasses;
-        classProbabilities.resize( numClasses );
-        
-        file >> word;
-        if( word != "ClassProbabilities:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find ClassProbabilities header!" << endl;
-            return false;
-        }
-        for(UINT i=0; i<numClasses; i++){
-            file >> classProbabilities[i];
-        }
-        
-        return true;
-    }
-    
+    UINT clusterLabel;
     UINT nodeSize;
     UINT featureIndex;
     double threshold;
-    VectorDouble classProbabilities;
     
-    static RegisterNode< DecisionTreeNode > registerModule;
+    static RegisterNode< ClusterTreeNode > registerModule;
 };
 
 } //End of namespace GRT
 
-#endif //GRT_DECISION_TREE_NODE_HEADER
+#endif //GRT_CLUSTER_TREE_NODE_HEADER
 

@@ -28,48 +28,50 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef GRT_REGRESSION_TREE_HEADER
-#define GRT_REGRESSION_TREE_HEADER
+#ifndef GRT_CLUSTER_TREE_HEADER
+#define GRT_CLUSTER_TREE_HEADER
 
-#include "../../CoreModules/Regressifier.h"
-#include "RegressionTreeNode.h"
+#include "../../CoreModules/Clusterer.h"
+#include "../../CoreAlgorithms/Tree/Tree.h"
+#include "ClusterTreeNode.h"
 
 namespace GRT{
 
-class RegressionTree : public Regressifier
+class ClusterTree : public Tree, public Clusterer
 {
 public:
     /**
      Default Constructor
-
+     
      @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node. Default value = 100
      @param UINT minNumSamplesPerNode: sets the minimum number of samples that are allowed per node, if the number of samples is below that, the node will become a leafNode.  Default value = 5
      @param UINT maxDepth: sets the maximum depth of the tree. Default value = 10
      @param bool removeFeaturesAtEachSpilt: sets if a feature is removed at each spilt so it can not be used again. Default value = false
      @param UINT trainingMode: sets the training mode, this should be one of the TrainingMode enums. Default value = BEST_ITERATIVE_SPILT
      @param bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
+     @param const double minRMSErrorPerNode: sets the minimum RMS error that allowed per node, if the RMS error is below that, the node will become a leafNode. Default value = 1.0
      */
-	RegressionTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false);
+	ClusterTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false,const double minRMSErrorPerNode = 1.0);
     
     /**
      Defines the copy constructor.
      
-     @param const RegressionTree &rhs: the instance from which all the data will be copied into this instance
+     @param const ClusterTree &rhs: the instance from which all the data will be copied into this instance
      */
-    RegressionTree(const RegressionTree &rhs);
+    ClusterTree(const ClusterTree &rhs);
     
     /**
      Default Destructor
      */
-	virtual ~RegressionTree(void);
+	virtual ~ClusterTree(void);
     
     /**
-     Defines how the data from the rhs RegressionTree should be copied to this RegressionTree
+     Defines how the data from the rhs ClusterTree should be copied to this ClusterTree
      
-     @param const RegressionTree &rhs: another instance of a RegressionTree
-     @return returns a pointer to this instance of the RegressionTree
+     @param const ClusterTreev &rhs: another instance of a ClusterTree
+     @return returns a pointer to this instance of the ClusterTree
      */
-	RegressionTree &operator=(const RegressionTree &rhs);
+	ClusterTree &operator=(const ClusterTree &rhs);
     
     /**
      This is required for the Gesture Recognition Pipeline for when the pipeline.setRegressifier(...) method is called.
@@ -78,7 +80,7 @@ public:
      @param Regressifier *regressifier: a pointer to the Regressifier Base Class, this should be pointing to another RegressionTree instance
      @return returns true if the clone was successfull, false otherwise
     */
-	virtual bool deepCopyFrom(const Regressifier *regressifier);
+	virtual bool deepCopyFrom(const Clusterer *cluster);
     
     /**
      This trains the RegressionTree model, using the labelled regression data.
@@ -87,7 +89,7 @@ public:
      @param RegressionData trainingData: a reference to the training data
      @return returns true if the RegressionTree model was trained, false otherwise
     */
-    virtual bool train_(RegressionData &trainingData);
+    virtual bool train_(MatrixDouble &trainingData);
     
     /**
      This predicts the class of the inputVector.
@@ -156,130 +158,56 @@ public:
      
      @return returns a pointer to a deep copy of the regression tree
      */
-    RegressionTreeNode* deepCopyTree() const;
+    ClusterTreeNode* deepCopyTree() const;
     
     /**
      Gets a pointer to the regression tree. NULL will be returned if the decision tree model has not be trained.
      
      @return returns a const pointer to the regression tree
      */
-    const RegressionTreeNode* getTree() const;
+    const ClusterTreeNode* getTree() const;
     
     /**
-     Gets the current training mode. This will be one of the TrainingModes enums.
+     Gets the predicted cluster label from the most recent call to predict( ... ).  
+     The cluster label will be zero if the model has been trained but no prediction has been run.
      
-     @return returns the training mode
+     @return returns the most recent predicted cluster label
      */
-    UINT getTrainingMode() const;
+    UINT getPredictedClusterLabel() const;
     
     /**
-     Gets the number of steps that will be used to search for the best spliting value for each node.
+     Gets the minimum root mean squared error value that needs to be exceeded for the tree to continue growing at a specific node.
+     If the RMS error is below this value then the node will be made into a leaf node.
      
-     If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
-     If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
-     
-     @return returns the number of steps that will be used to search for the best spliting value for each node
+     @return returns the minimum RMS error per node
      */
-    UINT getNumSplittingSteps() const;
+    double getMinRMSErrorPerNode() const;
     
     /**
-     Gets the minimum number of samples that are allowed per node, if the number of samples at a node is below 
-     this value then the node will automatically become a leaf node.
+     Gets the predicted cluster label from the most recent call to predict( ... ).
+     The cluster label will be zero if the model has been trained but no prediction has been run.
      
-     @return returns the minimum number of samples that are allowed per node
+     @return returns the most recent predicted cluster label
      */
-    UINT getMinNumSamplesPerNode() const;
-    
-    /**
-     Gets the maximum depth of the tree.
-     
-     @return returns the maximum depth of the tree
-     */
-    UINT getMaxDepth() const;
-    
-    /**
-     Gets if a feature is removed at each spilt so it can not be used again.
-     
-     @return returns true if a feature is removed at each spilt so it can not be used again, false otherwise
-     */
-    bool getRemoveFeaturesAtEachSpilt() const;
-    
-    /**
-     Sets the training mode, this should be one of the TrainingModes enums.
-     
-     @param const UINT trainingMode: the new trainingMode, this should be one of the TrainingModes enums
-     @return returns true if the trainingMode was set successfully, false otherwise
-     */
-    bool setTrainingMode(const UINT trainingMode);
-    
-    /**
-     Sets the number of steps that will be used to search for the best spliting value for each node.
-     
-     If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
-     If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
-     
-     A higher value will increase the chances of building a better model, but will take longer to train the model.
-     Value must be larger than zero.
-     
-     @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setNumSplittingSteps(const UINT numSplittingSteps);
-    
-    /**
-     Sets the minimum number of samples that are allowed per node, if the number of samples at a node is below this value then the node will automatically 
-     become a leaf node.
-     Value must be larger than zero.
-     
-     @param UINT minNumSamplesPerNode: the minimum number of samples that are allowed per node
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setMinNumSamplesPerNode(const UINT minNumSamplesPerNode);
-    
-    /**
-     Sets the maximum depth of the tree, any node that reaches this depth will automatically become a leaf node.
-     Value must be larger than zero.
-     
-     @param UINT maxDepth: the maximum depth of the tree
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setMaxDepth(const UINT maxDepth);
-    
-    /**
-     Sets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be 
-     removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
-     be used, regardless of how many times it has been used again.
-     
-     @param bool removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
+    bool setMinRMSErrorPerNode(const double minRMSErrorPerNode);
     
     using MLBase::train; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::predict; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
     
 protected:
+    double minRMSErrorPerNode;
+    UINT predictedClusterLabel;  ///<The most recent predicted cluster label
     
-    UINT trainingMode;
-    UINT numSplittingSteps;
-    UINT minNumSamplesPerNode;
-    UINT maxDepth;
-    bool removeFeaturesAtEachSpilt;
-    RegressionTreeNode *tree;
-    
-    RegressionTreeNode* buildTree( const RegressionData &trainingData, RegressionTreeNode *parent, vector< UINT > features );
-    bool computeBestSpilt( const RegressionData &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
-    bool computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
+    ClusterTreeNode* buildTree( const MatrixDouble &trainingData, ClusterTreeNode *parent, vector< UINT > features, UINT &clusterLabel );
+    bool computeBestSpilt( const MatrixDouble &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
+    bool computeBestSpiltBestIterativeSpilt( const MatrixDouble &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
     //bool computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
 
-    static RegisterRegressifierModule< RegressionTree > registerModule;
-    
-public:
-    enum TrainingMode{BEST_ITERATIVE_SPILT=0,BEST_RANDOM_SPLIT,NUM_TRAINING_MODES};
+    static RegisterClustererModule< ClusterTree > registerModule;
     
 };
 
 } //End of namespace GRT
 
-#endif //GRT_REGRESSION_TREE_HEADER
+#endif //GRT_CLUSTER_TREE_HEADER
 

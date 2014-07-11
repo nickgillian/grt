@@ -75,6 +75,7 @@
 #include "CoreAlgorithms/ParticleFilter/ParticleFilter.h"
 #include "CoreAlgorithms/ParticleSwarmOptimization/ParticleSwarmOptimization.h"
 #include "CoreAlgorithms/PrincipalComponentAnalysis/PrincipalComponentAnalysis.h"
+#include "CoreAlgorithms/Tree/Tree.h"
 
 //Include the PreProcessing Modules
 #include "PreProcessingModules/Derivative.h"
@@ -127,6 +128,7 @@
 #include "RegressionModules/RegressionTree/RegressionTree.h"
 
 //Include the Clustering algorithms
+#include "ClusteringModules/ClusterTree/ClusterTree.h"
 #include "ClusteringModules/KMeans/KMeans.h"
 #include "ClusteringModules/GaussianMixtureModels/GaussianMixtureModels.h"
 #include "ClusteringModules/HierarchicalClustering/HierarchicalClustering.h"

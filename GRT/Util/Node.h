@@ -75,7 +75,6 @@ public:
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
     virtual bool predict(const VectorDouble &x,VectorDouble &y) const{
-        
         return false;
     }
     

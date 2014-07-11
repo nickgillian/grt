@@ -36,11 +36,12 @@
 #define GRT_DECISION_TREE_HEADER
 
 #include "../../CoreModules/Classifier.h"
+#include "../../CoreAlgorithms/Tree/Tree.h"
 #include "DecisionTreeNode.h"
 
 namespace GRT{
 
-class DecisionTree : public Classifier
+class DecisionTree : public Tree, public Classifier
 {
 public:
     /**
@@ -169,108 +170,11 @@ public:
      */
     const DecisionTreeNode* getTree() const;
     
-    /**
-     Gets the current training mode. This will be one of the TrainingModes enums.
-     
-     @return returns the training mode
-     */
-    UINT getTrainingMode() const;
-    
-    /**
-     Gets the number of steps that will be used to search for the best spliting value for each node.
-     
-     If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
-     If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
-     
-     @return returns the number of steps that will be used to search for the best spliting value for each node
-     */
-    UINT getNumSplittingSteps() const;
-    
-    /**
-     Gets the minimum number of samples that are allowed per node, if the number of samples at a node is below 
-     this value then the node will automatically become a leaf node.
-     
-     @return returns the minimum number of samples that are allowed per node
-     */
-    UINT getMinNumSamplesPerNode() const;
-    
-    /**
-     Gets the maximum depth of the tree.
-     
-     @return returns the maximum depth of the tree
-     */
-    UINT getMaxDepth() const;
-    
-    /**
-     Gets if a feature is removed at each spilt so it can not be used again.
-     
-     @return returns true if a feature is removed at each spilt so it can not be used again, false otherwise
-     */
-    bool getRemoveFeaturesAtEachSpilt() const;
-    
-    /**
-     Sets the training mode, this should be one of the TrainingModes enums.
-     
-     @param const UINT trainingMode: the new trainingMode, this should be one of the TrainingModes enums
-     @return returns true if the trainingMode was set successfully, false otherwise
-     */
-    bool setTrainingMode(const UINT trainingMode);
-    
-    /**
-     Sets the number of steps that will be used to search for the best spliting value for each node.
-     
-     If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
-     If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
-     
-     A higher value will increase the chances of building a better model, but will take longer to train the model.
-     Value must be larger than zero.
-     
-     @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setNumSplittingSteps(const UINT numSplittingSteps);
-    
-    /**
-     Sets the minimum number of samples that are allowed per node, if the number of samples at a node is below this value then the node will automatically 
-     become a leaf node.
-     Value must be larger than zero.
-     
-     @param UINT minNumSamplesPerNode: the minimum number of samples that are allowed per node
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setMinNumSamplesPerNode(const UINT minNumSamplesPerNode);
-    
-    /**
-     Sets the maximum depth of the tree, any node that reaches this depth will automatically become a leaf node.
-     Value must be larger than zero.
-     
-     @param UINT maxDepth: the maximum depth of the tree
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setMaxDepth(const UINT maxDepth);
-    
-    /**
-     Sets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be 
-     removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
-     be used, regardless of how many times it has been used again.
-     
-     @param bool removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
-    
     using MLBase::train; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::predict; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
     
 protected:
     bool loadLegacyModelFromFile( fstream &file );
-    
-    UINT trainingMode;
-    UINT numSplittingSteps;
-    UINT minNumSamplesPerNode;
-    UINT maxDepth;
-    bool removeFeaturesAtEachSpilt;
-    DecisionTreeNode *decisionTree;
     
     DecisionTreeNode* buildTree( const ClassificationData &trainingData, DecisionTreeNode *parent, vector< UINT > features, const vector< UINT > &classLabels );
     bool computeBestSpilt( const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
@@ -280,9 +184,6 @@ protected:
     
     
     static RegisterClassifierModule< DecisionTree > registerModule;
-    
-public:
-    enum TrainingMode{BEST_ITERATIVE_SPILT=0,BEST_RANDOM_SPLIT,NUM_TRAINING_MODES};
     
 };
 

@@ -31,11 +31,11 @@
 #ifndef GRT_REGRESSION_TREE_NODE_HEADER
 #define GRT_REGRESSION_TREE_NODE_HEADER
 
-#include "../../ClassificationModules/DecisionTree/DecisionTreeNode.h"
+#include "../../Util/Node.h"
 
 namespace GRT{
     
-class RegressionTreeNode : public DecisionTreeNode{
+class RegressionTreeNode : public Node{
 public:
     /**
      Default Constructor. Sets all the pointers to NULL.
@@ -86,7 +86,7 @@ public:
     virtual bool predict(const VectorDouble &x,VectorDouble &regressionData) const{
         
         if( isLeafNode ){
-            regressionData = classProbabilities;
+            regressionData = this->regressionData;
             return true;
         }
         
@@ -118,7 +118,7 @@ public:
         nodeSize = 0;
         featureIndex = 0;
         threshold = 0;
-        classProbabilities.clear();
+        regressionData.clear();
         
         return true;
     }
@@ -135,9 +135,9 @@ public:
         for(UINT i=0; i<depth; i++) tab += "\t";
         
         cout << tab << "depth: " << depth << " nodeSize: " << nodeSize << " featureIndex: " << featureIndex << " threshold " << threshold << " isLeafNode: " << isLeafNode << endl;
-        cout << tab << "ClassProbabilities: ";
-        for(UINT i=0; i<classProbabilities.size(); i++){
-            cout << classProbabilities[i] << "\t";
+        cout << tab << "RegressionData: ";
+        for(UINT i=0; i<regressionData.size(); i++){
+            cout << regressionData[i] << "\t";
         }
         cout << endl;
         
@@ -174,7 +174,7 @@ public:
         node->nodeSize = nodeSize;
         node->featureIndex = featureIndex;
         node->threshold = threshold;
-        node->classProbabilities = classProbabilities;
+        node->regressionData = regressionData;
         
         //Recursively deep copy the left child
         if( leftChild ){
@@ -196,8 +196,28 @@ public:
         return node;
     }
     
+    /**
+     This function sets the Decision Tree Node.
+     
+     @param const UINT nodeSize: sets the node size, this is the number of training samples at that node
+     @param const UINT featureIndex: sets the index of the feature that should be used for the threshold spilt
+     @param const double threshold: set the threshold value used for the spilt
+     @param const VectorDouble &regressionData: the regression data at this node
+     @return returns true if the node was set, false otherwise
+     */
+    bool set(const UINT nodeSize,const UINT featureIndex,const double threshold,const VectorDouble &regressionData){
+        this->nodeSize = nodeSize;
+        this->featureIndex = featureIndex;
+        this->threshold = threshold;
+        this->regressionData = regressionData;
+        return true;
+    }
+    
 protected:
-
+    UINT nodeSize;
+    UINT featureIndex;
+    double threshold;
+    VectorDouble regressionData;
     
     static RegisterNode< RegressionTreeNode > registerModule;
 };
