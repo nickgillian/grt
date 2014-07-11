@@ -1,5 +1,6 @@
 objs
 libgrt.a
 *.out
+*.DS_Store
 build/examples/*.txt
 build/examples/*.csv
