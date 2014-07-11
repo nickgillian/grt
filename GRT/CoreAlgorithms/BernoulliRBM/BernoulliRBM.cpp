@@ -74,22 +74,22 @@ bool BernoulliRBM::predict_(VectorDouble &inputData,VectorDouble &outputData){
     return true;
 }
     
-bool BernoulliRBM::predict_(MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex){
+bool BernoulliRBM::predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex){
     
     if( !trained ){
-        errorLog << "predict_(MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex) - Failed to run prediction - the model has not been trained." << endl;
+        errorLog << "predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex) - Failed to run prediction - the model has not been trained." << endl;
         return false;
     }
     
     if( inputData.getNumCols() != numVisibleUnits ){
-        errorLog << "predict_(MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex) -";
+        errorLog << "predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex) -";
         errorLog << " Failed to run prediction - the number of columns in the input matrix (" << inputData.getNumCols() << ")";
         errorLog << " does not match the number of visible units (" << numVisibleUnits << ")." << endl;
         return false;
     }
     
     if( outputData.getNumCols() != numHiddenUnits ){
-        errorLog << "predict_(MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex) -";
+        errorLog << "predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex) -";
         errorLog << " Failed to run prediction - the number of columns in the output matrix (" << outputData.getNumCols() << ")";
         errorLog << " does not match the number of hidden units (" << numHiddenUnits << ")." << endl;
         return false;

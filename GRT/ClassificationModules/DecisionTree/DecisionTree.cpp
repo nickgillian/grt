@@ -138,6 +138,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         trainingData.scale(0, 1);
     }
     
+    //Setup the valid features - at this point all features can be used
     vector< UINT > features(N);
     for(UINT i=0; i<N; i++){
         features[i] = i;
@@ -155,7 +156,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     //Flag that the algorithm has been trained
     trained = true;
 
-    return trained;
+    return true;
 }
 
 bool DecisionTree::predict_(VectorDouble &inputVector){

@@ -615,7 +615,7 @@ bool RegressionData::loadDatasetFromFile(const string &filename){
 
 	//Get the main training data
 	file >> word;
-	if(word != "RegressionData:"){
+	if( word != "RegressionData:" && word != "LabelledRegressionData:" ){
         errorLog << "loadDatasetFromFile(const string &filename) - Failed to find RegressionData!" << endl;
 		file.close();
 		return false;

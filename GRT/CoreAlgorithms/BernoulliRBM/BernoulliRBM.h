@@ -67,15 +67,16 @@ public:
     bool predict_(VectorDouble &inputData,VectorDouble &outputData);
     
     /**
-     This is the main prediction interface for referenced VectorDouble data.  It propagates the input data up through the RBM.
-     The RBM should be trained first before you use this function.
-     The size of the input data must match the number of visible units.
+     This function is used during the training phase to propagate the input data up through the RBM, this gives P( h_j = 1 | input )
+     If you are using this function then you should make sure the RBM is trained first before you use it.
+     The size of the matrices must match the size of the model.
      
-     @param VectorDouble &inputData: a reference to the input data that will be used to train the RBM model
-     @param VectorDouble &outputData: a reference to the output data that will be used to train the RBM model
+     @param const MatrixDouble &inputData: a reference to the input data
+     @param MatrixDouble &outputData: a reference to the output data that will store the results of the propagation
+     @param const UINT rowIndex: the row in the inputData/outputData that should be used for the propagation
      @return returns true if the prediction was successful, false otherwise
      */
-    bool predict_(MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex);
+    bool predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex);
     
     /**
      This is the main training interface for referenced MatrixDouble data.
@@ -159,8 +160,6 @@ protected:
     inline double sigmoidRandom(const double &x){
         return (1.0 / (1.0 + exp(-x)) > rand.getRandomNumberUniform(0.0,1.0)) ? 1.0 : 0.0;
     }
-    
-    UINT binomial(const UINT n,const double p);
 
     bool randomizeWeightsForTraining;
     UINT numVisibleUnits;

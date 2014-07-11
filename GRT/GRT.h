@@ -124,6 +124,7 @@
 #include "RegressionModules/LinearRegression/LinearRegression.h"
 #include "RegressionModules/LogisticRegression/LogisticRegression.h"
 #include "RegressionModules/MultidimensionalRegression/MultidimensionalRegression.h"
+#include "RegressionModules/RegressionTree/RegressionTree.h"
 
 //Include the Clustering algorithms
 #include "ClusteringModules/KMeans/KMeans.h"
