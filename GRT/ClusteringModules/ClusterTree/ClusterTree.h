@@ -3,9 +3,7 @@
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
  
- @brief This class implements a basic Regression Tree.
- 
- @remark This algorithm is still under development.
+ @brief This class implements a Cluster Tree. This can be used to automatically build a cluster model (where each leaf node in the tree is given a unique cluster label) and then predict the best cluster label for a new input sample.
  */
 
 /**

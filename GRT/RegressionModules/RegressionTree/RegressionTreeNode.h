@@ -3,9 +3,8 @@
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
  
- @brief This file implements a DecisionTreeNode, which is a specific type of node used for a DecisionTree.
+ @brief This file implements a RegressionTreeNode, which is a specific type of node used for a RegressionTree.
  
- @example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
  */
 
 /**
