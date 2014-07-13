@@ -298,7 +298,7 @@ bool ClusterTree::loadModelFromFile(fstream &file){
     file >> word;
     
     //Find the file type header
-    if(word != "GRT_CLUSTERER_TREE_MODEL_FILE_V1.0"){
+    if(word != "GRT_CLUSTER_TREE_MODEL_FILE_V1.0"){
         Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
         return false;
     }
