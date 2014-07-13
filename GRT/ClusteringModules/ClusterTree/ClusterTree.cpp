@@ -242,7 +242,7 @@ bool ClusterTree::saveModelToFile(fstream &file) const{
 	}
     
 	//Write the header info
-	file << "GRT_CLUSTER_TREE_MODEL_FILE_V1.0\n";
+	file << "GRT_CLUSTER_TREE_MODEL_FILE_V1.0" << endl;
     
     //Write the classifier settings to the file
     if( !Clusterer::saveBaseSettingsToFile(file) ){
@@ -295,9 +295,9 @@ bool ClusterTree::loadModelFromFile(fstream &file){
     }
     
     std::string word;
-    file >> word;
     
     //Find the file type header
+    file >> word;
     if(word != "GRT_CLUSTER_TREE_MODEL_FILE_V1.0"){
         Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
         return false;

@@ -97,6 +97,15 @@ bool Clusterer::copyBaseVariables(const Clusterer *clusterer){
     
     return true;
 }
+
+bool Clusterer::train_(MatrixDouble &trainingData){
+    return false;
+}
+    
+bool Clusterer::train_(ClassificationData &trainingData){
+    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    return train_( data );
+}
     
 bool Clusterer::reset(){
     

@@ -66,6 +66,22 @@ public:
     bool copyBaseVariables(const Clusterer *Clusterer);
     
     /**
+     This is the main interface for training the clusterer model.
+     
+     @param MatrixDouble &trainingData: a reference to the training data that will be used to train the ML model
+     @return returns true if the model was successfully trained, false otherwise
+     */
+    virtual bool train_(MatrixDouble &trainingData);
+    
+    /**
+     Override the main ClassificationData train function to pass MatrixDouble data to the Clusterer train function.
+     
+     @param ClassificationData &trainingData: a reference to the training data that will be used to train the ML model
+     @return returns true if the model was successfully trained, false otherwise
+     */
+    virtual bool train_(ClassificationData &trainingData);
+    
+    /**
      This resets the Clusterer.
      This overrides the reset function in the MLBase base class.
      
