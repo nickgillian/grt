@@ -31,8 +31,7 @@
 #ifndef GRT_TREE_HEADER
 #define GRT_TREE_HEADER
 
-#include "../../CoreModules/GRTBase.h"
-#include "../../Util/Node.h"
+#include "Node.h"
 
 namespace GRT{
 

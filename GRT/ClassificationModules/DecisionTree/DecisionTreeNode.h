@@ -31,7 +31,7 @@
 #ifndef GRT_DECISION_TREE_NODE_HEADER
 #define GRT_DECISION_TREE_NODE_HEADER
 
-#include "../../Util/Node.h"
+#include "../../CoreAlgorithms/Tree/Node.h"
 
 namespace GRT{
     

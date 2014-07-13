@@ -98,7 +98,7 @@ bool DecisionTree::deepCopyFrom(const Classifier *classifier){
         
         if( ptr->getTrained() ){
             //Deep copy the tree
-            this->tree = ptr->deepCopyTree();
+            this->tree = (DecisionTreeNode*)ptr->deepCopyTree();
         }
         
         this->numSplittingSteps = ptr->numSplittingSteps;

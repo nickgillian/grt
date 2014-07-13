@@ -30,8 +30,7 @@
 #ifndef GRT_NODE_HEADER
 #define GRT_NODE_HEADER
 
-#include "GRTCommon.h"
-#include "../CoreModules/GRTBase.h"
+#include "../../CoreModules/GRTBase.h"
 
 namespace GRT{
     
@@ -86,16 +85,23 @@ public:
      */
     virtual bool clear(){
         
+        //Set the parent pointer to null, this is safe as the parent pointer does not own the memory
         parent = NULL;
         
         if( leftChild != NULL ){
+            //Recursively clean up the left child
             leftChild->clear();
+            
+            //Clean up the left child
             delete leftChild;
             leftChild = NULL;
         }
         
         if( rightChild != NULL ){
+            //Recursively clean up the right child
             rightChild->clear();
+            
+            //Clean up the right child
             delete rightChild;
             rightChild = NULL;
         }
@@ -253,8 +259,6 @@ public:
             file >> word;
             if( word != "RightChild" ){
                 errorLog << "loadFromFile(fstream &file) - Failed to find RightChild header!" << endl;
-                cout << "WORD: " << word << endl;
-                cout << "Depth: " << depth << endl;
                 return false;
             }
             rightChild = createNewInstance();
@@ -349,7 +353,7 @@ public:
      
      @return returns true if this node has a leftChild, false otherwise
      */
-    bool getHasLeftChild() const{
+    bool getHasLeftChild() const {
         return (leftChild != NULL);
     }
     
@@ -358,7 +362,7 @@ public:
      
      @return returns true if this node has a rightChild, false otherwise
      */
-    bool getHasRightChild() const{
+    bool getHasRightChild() const {
         return (rightChild != NULL);
     }
     

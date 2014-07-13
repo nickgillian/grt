@@ -22,7 +22,8 @@ GRT_CLASSIFICATION_MODULES = ClassificationModules/AdaBoost/*.cpp Classification
                              ClassificationModules/SVM/LIBSVM/*.cpp \
                              ClassificationModules/HMM/*.cpp \
                              ClassificationModules/MinDist/*.cpp
-GRT_CLUSTERING_MODULES = ClusteringModules/GaussianMixtureModels/*.cpp \
+GRT_CLUSTERING_MODULES = ClusteringModules/ClusterTree/*.cpp \
+						 ClusteringModules/GaussianMixtureModels/*.cpp \
                          ClusteringModules/KMeans/*.cpp \
                          ClusteringModules/HierarchicalClustering/*.cpp \
                          ClusteringModules/SelfOrganizingMap/*.cpp
@@ -30,18 +31,18 @@ GRT_CONTEXT_MODULES = ContextModules/*.cpp
 GRT_DATA_STRUCTURES = DataStructures/*.cpp
 GRT_FEATURE_EXTRACTION_MODULES = FeatureExtractionModules/FFT/*.cpp \
                                  FeatureExtractionModules/KMeansQuantizer/*.cpp \
-				 FeatureExtractionModules/KMeansFeatures/*.cpp \
+				 				 FeatureExtractionModules/KMeansFeatures/*.cpp \
                                  FeatureExtractionModules/MovementIndex/*.cpp \
                                  FeatureExtractionModules/MovementTrajectoryFeatures/*.cpp \
                                  FeatureExtractionModules/SOMQuantizer/*.cpp \
                                  FeatureExtractionModules/TimeDomainFeatures/*.cpp \
                                  FeatureExtractionModules/TimeseriesBuffer/*.cpp \
                                  FeatureExtractionModules/ZeroCrossingCounter/*.cpp
-GRT_CORE_ALGORITHMS = CoreAlgorithms/BernoulliRBM/*.cpp CoreAlgorithms/PrincipalComponentAnalysis/*.cpp
+GRT_CORE_ALGORITHMS = CoreAlgorithms/BernoulliRBM/*.cpp CoreAlgorithms/PrincipalComponentAnalysis/*.cpp CoreAlgorithms/Tree/*.cpp
 GRT_PIPELINE = CoreModules/*.cpp
 GRT_POST_PROCESSING_MODULES = PostProcessingModules/*.cpp
 GRT_PRE_PROCESSING_MODULES = PreProcessingModules/*.cpp
-GRT_REGRESSION_MODULES = RegressionModules/ArtificialNeuralNetworks/MLP/*.cpp RegressionModules/LinearRegression/*.cpp RegressionModules/LogisticRegression/*.cpp RegressionModules/MultidimensionalRegression/*.cpp
+GRT_REGRESSION_MODULES = RegressionModules/ArtificialNeuralNetworks/MLP/*.cpp RegressionModules/LinearRegression/*.cpp RegressionModules/LogisticRegression/*.cpp RegressionModules/MultidimensionalRegression/*.cpp RegressionModules/RegressionTree/*.cpp
 GRT_UTIL = Util/*.cpp
 _GRT_SRC = $(GRT_CLASSIFICATION_MODULES) $(GRT_CLUSTERING_MODULES) $(GRT_CONTEXT_MODULES) $(GRT_DATA_STRUCTURES) \
            $(GRT_FEATURE_EXTRACTION_MODULES) $(GRT_CORE_ALGORITHMS) $(GRT_PIPELINE) $(GRT_POST_PROCESSING_MODULES) \

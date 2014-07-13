@@ -32,11 +32,12 @@
 #define GRT_REGRESSION_TREE_HEADER
 
 #include "../../CoreModules/Regressifier.h"
+#include "../../CoreAlgorithms/Tree/Tree.h"
 #include "RegressionTreeNode.h"
 
 namespace GRT{
 
-class RegressionTree : public Regressifier
+class RegressionTree : public Tree, public Regressifier
 {
 public:
     /**
@@ -48,8 +49,9 @@ public:
      @param bool removeFeaturesAtEachSpilt: sets if a feature is removed at each spilt so it can not be used again. Default value = false
      @param UINT trainingMode: sets the training mode, this should be one of the TrainingMode enums. Default value = BEST_ITERATIVE_SPILT
      @param bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
+     @param const double minRMSErrorPerNode: sets the minimum RMS error that allowed per node, if the RMS error is below that, the node will become a leafNode. Default value = 0.01
      */
-	RegressionTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false);
+	RegressionTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false,const double minRMSErrorPerNode = 0.01);
     
     /**
      Defines the copy constructor.
@@ -166,116 +168,33 @@ public:
     const RegressionTreeNode* getTree() const;
     
     /**
-     Gets the current training mode. This will be one of the TrainingModes enums.
+     Gets the minimum root mean squared error value that needs to be exceeded for the tree to continue growing at a specific node.
+     If the RMS error is below this value then the node will be made into a leaf node.
      
-     @return returns the training mode
+     @return returns the minimum RMS error per node
      */
-    UINT getTrainingMode() const;
+    double getMinRMSErrorPerNode() const;
     
     /**
-     Gets the number of steps that will be used to search for the best spliting value for each node.
+     Sets the minimum RMS error that needs to be exceeded for the tree to continue growing at a specific node.
      
-     If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
-     If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
-     
-     @return returns the number of steps that will be used to search for the best spliting value for each node
+     @return returns true if the parameter was updated
      */
-    UINT getNumSplittingSteps() const;
-    
-    /**
-     Gets the minimum number of samples that are allowed per node, if the number of samples at a node is below 
-     this value then the node will automatically become a leaf node.
-     
-     @return returns the minimum number of samples that are allowed per node
-     */
-    UINT getMinNumSamplesPerNode() const;
-    
-    /**
-     Gets the maximum depth of the tree.
-     
-     @return returns the maximum depth of the tree
-     */
-    UINT getMaxDepth() const;
-    
-    /**
-     Gets if a feature is removed at each spilt so it can not be used again.
-     
-     @return returns true if a feature is removed at each spilt so it can not be used again, false otherwise
-     */
-    bool getRemoveFeaturesAtEachSpilt() const;
-    
-    /**
-     Sets the training mode, this should be one of the TrainingModes enums.
-     
-     @param const UINT trainingMode: the new trainingMode, this should be one of the TrainingModes enums
-     @return returns true if the trainingMode was set successfully, false otherwise
-     */
-    bool setTrainingMode(const UINT trainingMode);
-    
-    /**
-     Sets the number of steps that will be used to search for the best spliting value for each node.
-     
-     If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
-     If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
-     
-     A higher value will increase the chances of building a better model, but will take longer to train the model.
-     Value must be larger than zero.
-     
-     @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setNumSplittingSteps(const UINT numSplittingSteps);
-    
-    /**
-     Sets the minimum number of samples that are allowed per node, if the number of samples at a node is below this value then the node will automatically 
-     become a leaf node.
-     Value must be larger than zero.
-     
-     @param UINT minNumSamplesPerNode: the minimum number of samples that are allowed per node
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setMinNumSamplesPerNode(const UINT minNumSamplesPerNode);
-    
-    /**
-     Sets the maximum depth of the tree, any node that reaches this depth will automatically become a leaf node.
-     Value must be larger than zero.
-     
-     @param UINT maxDepth: the maximum depth of the tree
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setMaxDepth(const UINT maxDepth);
-    
-    /**
-     Sets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be 
-     removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
-     be used, regardless of how many times it has been used again.
-     
-     @param bool removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
-     @return returns true if the parameter was set, false otherwise
-     */
-    bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
+    bool setMinRMSErrorPerNode(const double minRMSErrorPerNode);
     
     using MLBase::train; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::predict; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
     
 protected:
-    
-    UINT trainingMode;
-    UINT numSplittingSteps;
-    UINT minNumSamplesPerNode;
-    UINT maxDepth;
-    bool removeFeaturesAtEachSpilt;
-    RegressionTreeNode *tree;
+    double minRMSErrorPerNode;
     
     RegressionTreeNode* buildTree( const RegressionData &trainingData, RegressionTreeNode *parent, vector< UINT > features );
     bool computeBestSpilt( const RegressionData &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
     bool computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
     //bool computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
+    bool computeNodeRegressionData( const RegressionData &trainingData, VectorDouble &regressionData );
 
     static RegisterRegressifierModule< RegressionTree > registerModule;
-    
-public:
-    enum TrainingMode{BEST_ITERATIVE_SPILT=0,BEST_RANDOM_SPLIT,NUM_TRAINING_MODES};
     
 };
 

@@ -22,10 +22,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace GRT{
 
-//Register the ClusterTree module with the Classifier base class
-RegisterClustererModule< ClusterTree >  ClusterTree::registerModule("ClusterTree");
-    
+//Register the ClusterTreeNode with the Node base class
 RegisterNode< ClusterTreeNode > ClusterTreeNode::registerModule("ClusterTreeNode");
+    
+//Register the ClusterTree module with the Clusterer base class
+RegisterClustererModule< ClusterTree >  ClusterTree::registerModule("ClusterTree");
 
 ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const double minRMSErrorPerNode){
     tree = NULL;

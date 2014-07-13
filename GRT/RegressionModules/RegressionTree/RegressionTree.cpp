@@ -21,13 +21,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "RegressionTree.h"
 
 namespace GRT{
-
-//Register the DecisionTree module with the Classifier base class
-RegisterRegressifierModule< RegressionTree >  RegressionTree::registerModule("RegressionTree");
     
+//Register the RegressionTreeNode with the Node base class
 RegisterNode< RegressionTreeNode > RegressionTreeNode::registerModule("RegressionTreeNode");
 
-RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling)
+//Register the RegressionTree module with the Regressifier base class
+RegisterRegressifierModule< RegressionTree >  RegressionTree::registerModule("RegressionTree");
+
+RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const double minRMSErrorPerNode)
 {
     tree = NULL;
     this->numSplittingSteps = numSplittingSteps;
@@ -36,23 +37,24 @@ RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSam
     this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
     this->trainingMode = trainingMode;
     this->useScaling = useScaling;
-    classType = "RegressionTree";
-    regressifierType = classType;
-    debugLog.setProceedingText("[DEBUG RegressionTree]");
-    errorLog.setProceedingText("[ERROR RegressionTree]");
-    trainingLog.setProceedingText("[TRAINING RegressionTree]");
-    warningLog.setProceedingText("[WARNING RegressionTree]");
+    this->minRMSErrorPerNode = minRMSErrorPerNode;
+    Regressifier::classType = "RegressionTree";
+    regressifierType = Regressifier::classType;
+    Regressifier::debugLog.setProceedingText("[DEBUG RegressionTree]");
+    Regressifier::errorLog.setProceedingText("[ERROR RegressionTree]");
+    Regressifier::trainingLog.setProceedingText("[TRAINING RegressionTree]");
+    Regressifier::warningLog.setProceedingText("[WARNING RegressionTree]");
     
 }
     
 RegressionTree::RegressionTree(const RegressionTree &rhs){
     tree = NULL;
-    classType = "RegressionTree";
-    regressifierType = classType;
-    debugLog.setProceedingText("[DEBUG RegressionTree]");
-    errorLog.setProceedingText("[ERROR RegressionTree]");
-    trainingLog.setProceedingText("[TRAINING RegressionTree]");
-    warningLog.setProceedingText("[WARNING RegressionTree]");
+    Regressifier::classType = "RegressionTree";
+    regressifierType = Regressifier::classType;
+    Regressifier::debugLog.setProceedingText("[DEBUG RegressionTree]");
+    Regressifier::errorLog.setProceedingText("[ERROR RegressionTree]");
+    Regressifier::trainingLog.setProceedingText("[TRAINING RegressionTree]");
+    Regressifier::warningLog.setProceedingText("[WARNING RegressionTree]");
     *this = rhs;
 }
 
@@ -64,11 +66,11 @@ RegressionTree::~RegressionTree(void)
 RegressionTree& RegressionTree::operator=(const RegressionTree &rhs){
 	if( this != &rhs ){
         //Clear this tree
-        clear();
+        this->clear();
         
         if( rhs.getTrained() ){
             //Deep copy the tree
-            tree = (RegressionTreeNode*)rhs.deepCopyTree();
+            this->tree = (RegressionTreeNode*)rhs.deepCopyTree();
         }
         
         this->numSplittingSteps = rhs.numSplittingSteps;
@@ -76,8 +78,9 @@ RegressionTree& RegressionTree::operator=(const RegressionTree &rhs){
         this->maxDepth = rhs.maxDepth;
         this->removeFeaturesAtEachSpilt = rhs.removeFeaturesAtEachSpilt;
         this->trainingMode = rhs.trainingMode;
+        this->minRMSErrorPerNode = rhs.minRMSErrorPerNode;
 
-        //Copy the base classifier variables
+        //Copy the base variables
         copyBaseVariables( (Regressifier*)&rhs );
 	}
 	return *this;
@@ -95,7 +98,7 @@ bool RegressionTree::deepCopyFrom(const Regressifier *regressifier){
         this->clear();
         
         if( ptr->getTrained() ){
-            //Deep copy the decision tree
+            //Deep copy the tree
             this->tree = (RegressionTreeNode*)ptr->deepCopyTree();
         }
         
@@ -104,8 +107,9 @@ bool RegressionTree::deepCopyFrom(const Regressifier *regressifier){
         this->maxDepth = ptr->maxDepth;
         this->removeFeaturesAtEachSpilt = ptr->removeFeaturesAtEachSpilt;
         this->trainingMode = ptr->trainingMode;
+        this->minRMSErrorPerNode = ptr->minRMSErrorPerNode;
         
-        //Copy the base classifier variables
+        //Copy the base variables
         return copyBaseVariables( regressifier );
     }
     return false;
@@ -121,7 +125,7 @@ bool RegressionTree::train_(RegressionData &trainingData){
     const unsigned int T = trainingData.getNumTargetDimensions();
     
     if( M == 0 ){
-        errorLog << "train_(RegressionData &trainingData) - Training data has zero samples!" << endl;
+        Regressifier::errorLog << "train_(RegressionData &trainingData) - Training data has zero samples!" << endl;
         return false;
     }
     
@@ -147,7 +151,7 @@ bool RegressionTree::train_(RegressionData &trainingData){
     
     if( tree == NULL ){
         clear();
-        errorLog << "train_(RegressionData &trainingData) - Failed to build tree!" << endl;
+        Regressifier::errorLog << "train_(RegressionData &trainingData) - Failed to build tree!" << endl;
         return false;
     }
     
@@ -160,16 +164,30 @@ bool RegressionTree::train_(RegressionData &trainingData){
 bool RegressionTree::predict_(VectorDouble &inputVector){
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << endl;
+        Regressifier::errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << endl;
         return false;
     }
     
     if( tree == NULL ){
-        errorLog << "predict_(VectorDouble &inputVector) - DecisionTree pointer is null!" << endl;
+        Regressifier::errorLog << "predict_(VectorDouble &inputVector) - Tree pointer is null!" << endl;
         return false;
     }
     
+	if( inputVector.size() != numInputDimensions ){
+        Regressifier::errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
+		return false;
+	}
     
+    if( useScaling ){
+        for(UINT n=0; n<numInputDimensions; n++){
+            inputVector[n] = scale(inputVector[n], inputVectorRanges[n].minValue, inputVectorRanges[n].maxValue, 0, 1);
+        }
+    }
+    
+    if( !tree->predict( inputVector, regressionData ) ){
+        Regressifier::errorLog << "predict_(VectorDouble &inputVector) - Failed to predict!" << endl;
+        return false;
+    }
     
     return true;
 }
@@ -214,7 +232,7 @@ bool RegressionTree::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
 	{
-		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
+		Regressifier::errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
 		return false;
 	}
     
@@ -223,7 +241,7 @@ bool RegressionTree::saveModelToFile(fstream &file) const{
     
     //Write the classifier settings to the file
     if( !Regressifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        Regressifier::errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
 		return false;
     }
     
@@ -237,7 +255,7 @@ bool RegressionTree::saveModelToFile(fstream &file) const{
     if( tree != NULL ){
         file << "Tree:\n";
         if( !tree->saveToFile( file ) ){
-            errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << endl;
+            Regressifier::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << endl;
             return false;
         }
     }
@@ -266,7 +284,7 @@ bool RegressionTree::loadModelFromFile(fstream &file){
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
+        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
         return false;
     }
     
@@ -275,54 +293,54 @@ bool RegressionTree::loadModelFromFile(fstream &file){
     
     //Find the file type header
     if(word != "GRT_REGRESSION_TREE_MODEL_FILE_V1.0"){
-        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
+        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Regressifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        Regressifier::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
         return false;
     }
     
     file >> word;
     if(word != "NumSplittingSteps:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
+        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
         return false;
     }
     file >> numSplittingSteps;
     
     file >> word;
     if(word != "MinNumSamplesPerNode:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
+        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
         return false;
     }
     file >> minNumSamplesPerNode;
     
     file >> word;
     if(word != "MaxDepth:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
+        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
         return false;
     }
     file >> maxDepth;
     
     file >> word;
     if(word != "RemoveFeaturesAtEachSpilt:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
+        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
         return false;
     }
     file >> removeFeaturesAtEachSpilt;
     
     file >> word;
     if(word != "TrainingMode:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
+        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
         return false;
     }
     file >> trainingMode;
     
     file >> word;
     if(word != "TreeBuilt:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << endl;
+        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << endl;
         return false;
     }
     file >> trained;
@@ -330,7 +348,7 @@ bool RegressionTree::loadModelFromFile(fstream &file){
     if( trained ){
         file >> word;
         if(word != "Tree:"){
-            errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << endl;
+            Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << endl;
             return false;
         }
     
@@ -339,14 +357,14 @@ bool RegressionTree::loadModelFromFile(fstream &file){
         
         if( tree == NULL ){
             clear();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to create new RegressionTreeNode!" << endl;
+            Regressifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new RegressionTreeNode!" << endl;
             return false;
         }
         
         tree->setParent( NULL );
         if( !tree->loadFromFile( file ) ){
             clear();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
+            Regressifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
             return false;
         }
     }
@@ -360,68 +378,19 @@ RegressionTreeNode* RegressionTree::deepCopyTree() const{
         return NULL;
     }
 
-    return tree->deepCopyTree();
+    return (RegressionTreeNode*)tree->deepCopyNode();
 }
 
 const RegressionTreeNode* RegressionTree::getTree() const{
-    return tree;
+    return (RegressionTreeNode*)tree;
 }
     
-UINT RegressionTree::getTrainingMode() const{
-    return trainingMode;
-}
-    
-UINT RegressionTree::getNumSplittingSteps()const{
-    return numSplittingSteps;
+double RegressionTree::getMinRMSErrorPerNode() const{
+    return minRMSErrorPerNode;
 }
 
-UINT RegressionTree::getMinNumSamplesPerNode()const{
-    return minNumSamplesPerNode;
-}
-
-UINT RegressionTree::getMaxDepth()const{
-    return maxDepth;
-}
-    
-bool RegressionTree::getRemoveFeaturesAtEachSpilt() const{
-    return removeFeaturesAtEachSpilt;
-}
-    
-bool RegressionTree::setTrainingMode(const UINT trainingMode){
-    if( trainingMode >= BEST_ITERATIVE_SPILT && trainingMode < NUM_TRAINING_MODES ){
-        this->trainingMode = trainingMode;
-        return true;
-    }
-    warningLog << "Unknown trainingMode: " << trainingMode << endl;
-    return false;
-}
-    
-bool RegressionTree::setNumSplittingSteps(const UINT numSplittingSteps){
-    if( numSplittingSteps > 0 ){
-        this->numSplittingSteps = numSplittingSteps;
-        return true;
-    }
-    return false;
-}
-
-bool RegressionTree::setMinNumSamplesPerNode(const UINT minNumSamplesPerNode){
-    if( minNumSamplesPerNode > 0 ){
-        this->minNumSamplesPerNode = minNumSamplesPerNode;
-        return true;
-    }
-    return false;
-}
-
-bool RegressionTree::setMaxDepth(const UINT maxDepth){
-    if( maxDepth > 0 ){
-        this->maxDepth = maxDepth;
-        return true;
-    }
-    return false;
-}
-    
-bool RegressionTree::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
-    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+bool RegressionTree::setMinRMSErrorPerNode(const double minRMSErrorPerNode){
+    this->minRMSErrorPerNode = minRMSErrorPerNode;
     return true;
 }
     
@@ -430,7 +399,7 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
     const UINT M = trainingData.getNumSamples();
     const UINT N = trainingData.getNumInputDimensions();
     const UINT T = trainingData.getNumTargetDimensions();
-    VectorDouble nodeHistogram; //TODO!
+    VectorDouble regressionData(T);
     
     //Get the depth
     UINT depth = 0;
@@ -457,10 +426,13 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
         //Flag that this is a leaf node
         node->setIsLeafNode( true );
         
-        //Set the node
-        node->set( trainingData.getNumSamples(), 0, 0, nodeHistogram );
+        //Compute the regression data that will be stored at this node
+        computeNodeRegressionData( trainingData, regressionData );
         
-        trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << trainingData.getNumSamples() << endl;
+        //Set the node
+        node->set( trainingData.getNumSamples(), 0, 0, regressionData );
+        
+        Regressifier::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << trainingData.getNumSamples() << endl;
         
         return node;
     }
@@ -474,14 +446,32 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
         return NULL;
     }
     
-    trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " Threshold: " << threshold << " MinError: " << minError << endl;
+    Regressifier::trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " Threshold: " << threshold << " MinError: " << minError << endl;
+    
+    //If the minError is below the minRMSError then create a leaf node and return
+    if( minError <= minRMSErrorPerNode ){
+        //Compute the regression data that will be stored at this node
+        computeNodeRegressionData( trainingData, regressionData );
+        
+        //Set the node
+        node->set( trainingData.getNumSamples(), featureIndex, threshold, regressionData );
+        
+        Regressifier::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << endl;
+        
+        return node;
+    }
     
     //Set the node
-    node->set( trainingData.getNumSamples(), features[ featureIndex ], threshold, nodeHistogram );
+    node->set( trainingData.getNumSamples(), featureIndex, threshold, regressionData );
     
     //Remove the selected feature so we will not use it again
     if( removeFeaturesAtEachSpilt ){
-        features.erase( features.begin()+featureIndex );
+        for(size_t i=0; i<features.size(); i++){
+            if( features[i] == featureIndex ){
+                features.erase( features.begin()+i );
+                break;
+            }
+        }
     }
     
     //Split the data
@@ -511,12 +501,12 @@ bool RegressionTree::computeBestSpilt( const RegressionData &trainingData, const
             //return computeBestSpiltBestRandomSpilt( trainingData, features, featureIndex, threshold, minError );
             break;
         default:
-            errorLog << "Uknown trainingMode!" << endl;
+            Regressifier::errorLog << "Uknown trainingMode!" << endl;
             return false;
             break;
     }
     
-    return true;
+    return false;
 }
     
 bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError ){
@@ -546,13 +536,14 @@ bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &t
         maxRange = ranges[n].maxValue;
         step = (maxRange-minRange)/double(numSplittingSteps);
         threshold = minRange;
+        featureIndex = features[n];
         while( threshold <= maxRange ){
             
             //Iterate over each sample and work out what group it falls into
             for(UINT i=0; i<M; i++){
-                groupID = trainingData[ i ].getInputVector()[features[n]] >= threshold ? 1 : 0;
+                groupID = trainingData[i].getInputVector()[featureIndex] >= threshold ? 1 : 0;
                 groupIndex[i] = groupID;
-                groupMean[ groupID ] += trainingData[ i ].getInputVector()[features[n]];
+                groupMean[ groupID ] += trainingData[i].getInputVector()[featureIndex];
                 groupCounter[ groupID ]++;
             }
             groupMean[0] /= groupCounter[0] > 0 ? groupCounter[0] : 1;
@@ -560,18 +551,18 @@ bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &t
             
             //Compute the MSE for each group
             for(UINT i=0; i<M; i++){
-                groupMSE[ groupIndex[i] ] += SQR( groupMean[ groupIndex[i] ] - trainingData[ i ].getInputVector()[features[n]] );
+                groupMSE[ groupIndex[i] ] += Regressifier::SQR( groupMean[ groupIndex[i] ] - trainingData[ i ].getInputVector()[features[n]] );
             }
             groupMSE[0] /= groupCounter[0] > 0 ? groupCounter[0] : 1;
             groupMSE[1] /= groupCounter[1] > 0 ? groupCounter[1] : 1;
             
-            error = groupMSE[0] + groupMSE[1];
+            error = sqrt( groupMSE[0] + groupMSE[1] );
             
             //Store the best threshold and feature index
             if( error < minError ){
                 minError = error;
                 bestThreshold = threshold;
-                bestFeatureIndex = n;
+                bestFeatureIndex = featureIndex;
             }
             
             //Update the threshold
@@ -656,7 +647,34 @@ bool RegressionTree::computeBestSpiltBestRandomSpilt( const RegressionData &trai
     return true;
 }
     
-
 */
+    
+    //Compute the regression data that will be stored at this node
+bool RegressionTree::computeNodeRegressionData( const RegressionData &trainingData, VectorDouble &regressionData ){
+    
+    const UINT M = trainingData.getNumSamples();
+    const UINT N = trainingData.getNumInputDimensions();
+    const UINT T = trainingData.getNumTargetDimensions();
+    
+    if( M == 0 ){
+        Regressifier::errorLog << "computeNodeRegressionData(...) - Failed to compute regression data, there are zero training samples!" << endl;
+        return false;
+    }
+    
+    //Make sure the regression data is the correct size
+    regressionData.clear();
+    regressionData.resize( T, 0 );
+    
+    //The regression data at this node is simply an average over all the training data at this node
+    for(unsigned int j=0; j<N; j++){
+        for(unsigned int i=0; i<M; i++){
+            regressionData[j] += trainingData[i].getTargetVector()[j];
+        }
+        regressionData[j] /= M;
+    }
+    
+    return true;
+}
+    
 } //End of namespace GRT
 

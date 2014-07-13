@@ -184,10 +184,9 @@ public:
     double getMinRMSErrorPerNode() const;
     
     /**
-     Gets the predicted cluster label from the most recent call to predict( ... ).
-     The cluster label will be zero if the model has been trained but no prediction has been run.
+     Sets the minimum RMS error that needs to be exceeded for the tree to continue growing at a specific node.
      
-     @return returns the most recent predicted cluster label
+     @return returns true if the parameter was updated
      */
     bool setMinRMSErrorPerNode(const double minRMSErrorPerNode);
     

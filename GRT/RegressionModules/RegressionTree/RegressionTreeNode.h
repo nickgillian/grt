@@ -31,7 +31,7 @@
 #ifndef GRT_REGRESSION_TREE_NODE_HEADER
 #define GRT_REGRESSION_TREE_NODE_HEADER
 
-#include "../../Util/Node.h"
+#include "../../CoreAlgorithms/Tree/Node.h"
 
 namespace GRT{
     
@@ -83,10 +83,10 @@ public:
      @param VectorDouble &classLikelihoods: a reference to a vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &regressionData) const{
+    virtual bool predict(const VectorDouble &x,VectorDouble &y) const{
         
         if( isLeafNode ){
-            regressionData = this->regressionData;
+            y = this->regressionData;
             return true;
         }
         
@@ -95,10 +95,10 @@ public:
         
         if( predict( x ) ){
             if( rightChild )
-                return rightChild->predict( x, regressionData );
+                return rightChild->predict( x, y );
         }else{
             if( leftChild )
-                return leftChild->predict( x, regressionData );
+                return leftChild->predict( x, y );
         }
         
         return false;
@@ -169,22 +169,22 @@ public:
         }
         
         //Copy this node into the node
-        node->depth = depth;
-        node->isLeafNode = isLeafNode;
-        node->nodeSize = nodeSize;
-        node->featureIndex = featureIndex;
-        node->threshold = threshold;
-        node->regressionData = regressionData;
+        node->depth = this->depth;
+        node->isLeafNode = this->isLeafNode;
+        node->nodeSize = this->nodeSize;
+        node->featureIndex = this->featureIndex;
+        node->threshold = this->threshold;
+        node->regressionData = this->regressionData;
         
         //Recursively deep copy the left child
-        if( leftChild ){
-            node->leftChild = leftChild->deepCopyNode();
+        if( this->leftChild ){
+            node->leftChild = this->leftChild->deepCopyNode();
             node->leftChild->setParent( node );
         }
         
         //Recursively deep copy the right child
-        if( rightChild ){
-            node->rightChild = rightChild->deepCopyNode();
+        if( this->rightChild ){
+            node->rightChild = this->rightChild->deepCopyNode();
             node->rightChild->setParent( node );
         }
         

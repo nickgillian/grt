@@ -201,6 +201,7 @@ bool Regressifier::loadBaseSettingsFromFile(fstream &file){
     
     if( trained ){
         //Resize the regression data vector
+        regressionData.clear();
         regressionData.resize(numOutputDimensions,0);
     }
     
