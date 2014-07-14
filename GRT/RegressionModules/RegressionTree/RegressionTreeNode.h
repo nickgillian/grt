@@ -213,6 +213,94 @@ public:
     }
     
 protected:
+    /**
+     This saves the ClusterTreeNode custom parameters to a file. It will be called automatically by the Node base class
+     if the saveToFile function is called.
+     
+     @param fstream &file: a reference to the file the parameters will be saved to
+     @return returns true if the model was saved successfully, false otherwise
+     */
+    virtual bool saveParametersToFile(fstream &file) const{
+        
+        if(!file.is_open())
+        {
+            errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
+            return false;
+        }
+        
+        //Save the custom ClusterTreeNode parameters
+        file << "NodeSize: " << nodeSize << endl;
+        file << "FeatureIndex: " << featureIndex << endl;
+        file << "Threshold: " << threshold << endl;
+        file << "RegressionDataSize: " << regressionData.size() << endl;
+        file << "RegressionData: ";
+        for(unsigned int i=0; i<regressionData.size(); i++){
+            file << regressionData[i] << " ";
+        }
+        file << endl;
+        
+        return true;
+    }
+    
+    /**
+     This loads the ClusterTreeNode parameters from a file.
+     
+     @param fstream &file: a reference to the file the parameters will be loaded from
+     @return returns true if the model was loaded successfully, false otherwise
+     */
+    virtual bool loadParametersFromFile(fstream &file){
+        
+        if(!file.is_open())
+        {
+            errorLog << "loadFromFile(fstream &file) - File is not open!" << endl;
+            return false;
+        }
+        
+        string word;
+        UINT regressionDataSize = 0;
+        
+        //Load the custom ClusterTreeNode Parameters
+        file >> word;
+        if( word != "NodeSize:" ){
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NodeSize header!" << endl;
+            return false;
+        }
+        file >> nodeSize;
+        
+        file >> word;
+        if( word != "FeatureIndex:" ){
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndex header!" << endl;
+            return false;
+        }
+        file >> featureIndex;
+        
+        file >> word;
+        if( word != "Threshold:" ){
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find Threshold header!" << endl;
+            return false;
+        }
+        file >> threshold;
+        
+        file >> word;
+        if( word != "RegressionDataSize:" ){
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find RegressionDataSize header!" << endl;
+            return false;
+        }
+        file >> regressionDataSize;
+        regressionData.resize(regressionDataSize);
+        
+        file >> word;
+        if( word != "RegressionData:" ){
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find RegressionData header!" << endl;
+            return false;
+        }
+        for(unsigned int i=0; i<regressionData.size(); i++){
+            file >> regressionData[i];
+        }
+        
+        return true;
+    }
+    
     UINT nodeSize;
     UINT featureIndex;
     double threshold;

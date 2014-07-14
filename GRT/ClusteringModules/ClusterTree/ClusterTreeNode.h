@@ -245,6 +245,78 @@ public:
     }
     
 protected:
+    /**
+     This saves the ClusterTreeNode custom parameters to a file. It will be called automatically by the Node base class
+     if the saveToFile function is called.
+     
+     @param fstream &file: a reference to the file the parameters will be saved to
+     @return returns true if the model was saved successfully, false otherwise
+     */
+    virtual bool saveParametersToFile(fstream &file) const{
+        
+        if(!file.is_open())
+        {
+            errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
+            return false;
+        }
+        
+        //Save the custom ClusterTreeNode parameters
+        file << "NodeSize: " << nodeSize << endl;
+        file << "FeatureIndex: " << featureIndex << endl;
+        file << "Threshold: " << threshold << endl;
+        file << "ClusterLabel: " << clusterLabel << endl;
+        
+        return true;
+    }
+    
+    /**
+     This loads the ClusterTreeNode parameters from a file.
+     
+     @param fstream &file: a reference to the file the parameters will be loaded from
+     @return returns true if the model was loaded successfully, false otherwise
+     */
+    virtual bool loadParametersFromFile(fstream &file){
+        
+        if(!file.is_open())
+        {
+            errorLog << "loadFromFile(fstream &file) - File is not open!" << endl;
+            return false;
+        }
+        
+        string word;
+        
+        //Load the custom ClusterTreeNode Parameters
+        file >> word;
+        if( word != "NodeSize:" ){
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NodeSize header!" << endl;
+            return false;
+        }
+        file >> nodeSize;
+        
+        file >> word;
+        if( word != "FeatureIndex:" ){
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndex header!" << endl;
+            return false;
+        }
+        file >> featureIndex;
+        
+        file >> word;
+        if( word != "Threshold:" ){
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find Threshold header!" << endl;
+            return false;
+        }
+        file >> threshold;
+        
+        file >> word;
+        if( word != "ClusterLabel:" ){
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find ClusterLabel header!" << endl;
+            return false;
+        }
+        file >> clusterLabel;
+        
+        return true;
+    }
+    
     UINT clusterLabel;
     UINT nodeSize;
     UINT featureIndex;
