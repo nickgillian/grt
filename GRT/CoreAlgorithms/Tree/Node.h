@@ -429,15 +429,9 @@ protected:
      */
     virtual bool saveParametersToFile(fstream &file) const{
         
-        cout << "Node::saveParametersToFile\n";
+        warningLog << "Node::saveParametersToFile - If you are seeing this message then the inheriting class has not overwritten the custom saveParametersToFile function!\n";
         
-        if(!file.is_open())
-        {
-            errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
-            return false;
-        }
-        
-        return true;
+        return false;
     }
     
     /**
@@ -449,15 +443,9 @@ protected:
      */
     virtual bool loadParametersFromFile(fstream &file){
         
-        cout << "Node::loadParametersFromFile\n";
+        warningLog << "Node::loadParametersFromFile - If you are seeing this message then the inheriting class has not overwritten the custom loadParametersFromFile function!\n";
         
-        if(!file.is_open())
-        {
-            errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << endl;
-            return false;
-        }
-        
-        return true;
+        return false;
     }
     
     string nodeType;

@@ -69,12 +69,8 @@ public:
      @param const ClusterTreev &rhs: another instance of a ClusterTree
      @return returns a pointer to this instance of the ClusterTree
      */
-<<<<<<< HEAD
     ClusterTree &operator=(const ClusterTree &rhs);
-=======
-     ClusterTree &operator=(const ClusterTree &rhs);
->>>>>>> f77d20adb65904b062de772cb6e469d20d538119
-    
+
     /**
      This is required for the Gesture Recognition Pipeline for when the pipeline.setRegressifier(...) method is called.
      It clones the data from the Base Class Regressifier pointer (which should be pointing to an RegressionTree instance) into this instance
