@@ -56,7 +56,7 @@ LIBS = -lgrt
 GRT_HEADERS_INSTALL_DIR = /usr/local/include/grt
 GRT_LIB_INSTALL_DIR = /usr/local/lib
 CC = g++
-CFLAGS = -g -Wall $(LIB_DIR)
+CFLAGS = -g -Wall -O2 $(LIB_DIR)
 GRT_OBJS_DIR = objs
 GRT_EXAMPLES_OUTPUT_DIR = examples
 
@@ -79,7 +79,8 @@ CLASSIFICATION_EXAMPLES_SRC = $(ADABOOST_EXAMPLE_SRC) $(ANBC_EXAMPLE_SRC) $(BAG_
 #Clustering Module Examples
 KMEANS_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/ClusteringModulesExamples/KMeansExample/KMeansExample.cpp
 GMM_CLUSTER_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/ClusteringModulesExamples/GaussianMixtureModelsExample/GaussianMixtureModelsExample.cpp
-CLUSTERING_EXAMPLES_SRC = $(KMEANS_EXAMPLE_SRC) $(GMM_CLUSTER_EXAMPLE_SRC)
+CLUSTER_TREE_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/ClusteringModulesExamples/ClusterTreeExample/ClusterTreeExample.cpp
+CLUSTERING_EXAMPLES_SRC = $(KMEANS_EXAMPLE_SRC) $(GMM_CLUSTER_EXAMPLE_SRC) $(CLUSTER_TREE_EXAMPLE_SRC)
 
 #Datastructures Examples
 LCD_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/DatastructuresExamples/ClassificationDataExample/ClassificationDataExample.cpp
@@ -193,6 +194,7 @@ grtExamples: $(GRT_EXAMPLES_SRC) $(GRT_SRC) $(GRT_LIB)
 	$(CC) AdaBoostExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/AdaBoostExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) ANBCExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/ANBCExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) BAGExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/BAGExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
+	$(CC) ClusterTreeExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/ClusterTreeExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) DecisionTreeExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/DecisionTreeExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) DTWExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/DTWExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) GMMExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/GMMExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)

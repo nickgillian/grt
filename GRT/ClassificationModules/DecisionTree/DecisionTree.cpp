@@ -21,11 +21,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "DecisionTree.h"
 
 namespace GRT{
+    
+//Register the DecisionTreeNode with the Node base class
+RegisterNode< DecisionTreeNode > DecisionTreeNode::registerModule("DecisionTreeNode");
 
 //Register the DecisionTree module with the Classifier base class
 RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule("DecisionTree");
-    
-RegisterNode< DecisionTreeNode > DecisionTreeNode::registerModule("DecisionTreeNode");
 
 DecisionTree::DecisionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling)
 {

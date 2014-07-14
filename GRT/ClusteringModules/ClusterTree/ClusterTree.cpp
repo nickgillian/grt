@@ -219,40 +219,40 @@ bool ClusterTree::print() const{
     
 bool ClusterTree::saveModelToFile(string filename) const{
 
-    if( !trained ) return false;
+    	if( !trained ) return false;
     
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::out);
+        std::fstream file;
+        file.open(filename.c_str(), std::ios::out);
     
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
+    	if( !saveModelToFile( file ) ){
+        	return false;
+    	}
 
-	file.close();
+        file.close();
 
-	return true;
+        return true;
 }
     
 bool ClusterTree::saveModelToFile(fstream &file) const{
     
-	if(!file.is_open())
-	{
-		Clusterer::errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
-		return false;
-	}
+        if(!file.is_open())
+        {
+            Clusterer::errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
+            return false;
+        }
     
-	//Write the header info
-	file << "GRT_CLUSTER_TREE_MODEL_FILE_V1.0" << endl;
+        //Write the header info
+        file << "GRT_CLUSTER_TREE_MODEL_FILE_V1.0" << endl;
     
-   	 //Write the classifier settings to the file
+        //Write the classifier settings to the file
     	if( !Clusterer::saveBaseSettingsToFile(file) ){
         	Clusterer::errorLog <<"saveModelToFile(fstream &file) - Failed to save base settings to file!" << endl;
-		return false;
+            	return false;
     	}
     
     	file << "NumSplittingSteps: " << numSplittingSteps << endl;
     	file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
-   	file << "MaxDepth: " << maxDepth << endl;
+        file << "MaxDepth: " << maxDepth << endl;
     	file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << endl;
     	file << "TrainingMode: " << trainingMode << endl;
     	file << "MinRMSErrorPerNode: " << minRMSErrorPerNode << endl;
@@ -271,117 +271,117 @@ bool ClusterTree::saveModelToFile(fstream &file) const{
 
 bool ClusterTree::loadModelFromFile(string filename){
 
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::in);
-    
-    	if( !loadModelFromFile( file ) ){
-       	 	return false;
-    	}
-    
-   	file.close();
+        std::fstream file;
+        file.open(filename.c_str(), std::ios::in);
+        
+            if( !loadModelFromFile( file ) ){
+                return false;
+            }
+        
+        file.close();
 
-	return true;
+        return true;
 }
     
 bool ClusterTree::loadModelFromFile(fstream &file){
     
-    clear();
+    	clear();
     
-    if(!file.is_open())
-    {
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
-        return false;
-    }
+    	if(!file.is_open())
+    	{
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
+        	return false;
+    	}
     
-    std::string word;
+    	std::string word;
     
-    //Find the file type header
-    file >> word;
-    if(word != "GRT_CLUSTER_TREE_MODEL_FILE_V1.0"){
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
-        return false;
-    }
+    	//Find the file type header
+    	file >> word;
+    	if(word != "GRT_CLUSTER_TREE_MODEL_FILE_V1.0"){
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
+        	return false;
+    	}
     
-    //Load the base settings from the file
-    if( !Clusterer::loadBaseSettingsFromFile(file) ){
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
-        return false;
-    }
+    	//Load the base settings from the file
+    	if( !Clusterer::loadBaseSettingsFromFile(file) ){
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        	return false;
+    	}
     
-    file >> word;
-    if(word != "NumSplittingSteps:"){
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
-        return false;
-    }
-    file >> numSplittingSteps;
+    	file >> word;
+    	if(word != "NumSplittingSteps:"){
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
+        	return false;
+    	}
+    	file >> numSplittingSteps;
     
-    file >> word;
-    if(word != "MinNumSamplesPerNode:"){
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
-        return false;
-    }
-    file >> minNumSamplesPerNode;
+    	file >> word;
+    	if(word != "MinNumSamplesPerNode:"){
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
+        	return false;
+    	}
+    	file >> minNumSamplesPerNode;
     
-    file >> word;
-    if(word != "MaxDepth:"){
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
-        return false;
-    }
-    file >> maxDepth;
+    	file >> word;
+    	if(word != "MaxDepth:"){
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
+        	return false;
+    	}
+    	file >> maxDepth;
     
-    file >> word;
-    if(word != "RemoveFeaturesAtEachSpilt:"){
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
-        return false;
-    }
-    file >> removeFeaturesAtEachSpilt;
+    	file >> word;
+    	if(word != "RemoveFeaturesAtEachSpilt:"){
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
+        	return false;
+    	}
+    	file >> removeFeaturesAtEachSpilt;
     
-    file >> word;
-    if(word != "TrainingMode:"){
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
-        return false;
-    }
-    file >> trainingMode;
+    	file >> word;
+    	if(word != "TrainingMode:"){
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
+        	return false;
+    	}
+    	file >> trainingMode;
     
-    file >> word;
-    if(word != "MinRMSErrorPerNode:"){
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the MinRMSErrorPerNode!" << endl;
-        return false;
-    }
-    file >> minRMSErrorPerNode;
+    	file >> word;
+    	if(word != "MinRMSErrorPerNode:"){
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the MinRMSErrorPerNode!" << endl;
+        	return false;
+    	}	
+    	file >> minRMSErrorPerNode;
     
-    file >> word;
-    if(word != "TreeBuilt:"){
-        Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << endl;
-        return false;
-    }
-    file >> trained;
-    
-    if( trained ){
-        file >> word;
-        if(word != "Tree:"){
-            Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << endl;
-            return false;
+    	file >> word;
+    	if(word != "TreeBuilt:"){
+        	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << endl;
+        	return false;
         }
+    	file >> trained;
     
-        //Create a new tree
-        tree = new ClusterTreeNode;
+    	if( trained ){
+        	file >> word;
+        	if(word != "Tree:"){
+            		Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << endl;
+            		return false;
+        	}
+    
+        	//Create a new tree
+       		tree = new ClusterTreeNode;
         
-        if( tree == NULL ){
-            clear();
-            Clusterer::errorLog << "loadModelFromFile(fstream &file) - Failed to create new RegressionTreeNode!" << endl;
-            return false;
-        }
+        	if( tree == NULL ){
+                clear();
+                Clusterer::errorLog << "loadModelFromFile(fstream &file) - Failed to create new RegressionTreeNode!" << endl;
+                return false;
+        	}
         
-        tree->setParent( NULL );
-        if( !tree->loadFromFile( file ) ){
-            clear();
-            Clusterer::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
-            return false;
-        }
-    }
+        	tree->setParent( NULL );
+        	if( !tree->loadFromFile( file ) ){
+                clear();
+                Clusterer::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
+                return false;
+        	}
+    	}
     
-    return true;
+    	return true;
 }
     
 ClusterTreeNode* ClusterTree::deepCopyTree() const{
@@ -412,99 +412,99 @@ bool ClusterTree::setMinRMSErrorPerNode(const double minRMSErrorPerNode){
     
 ClusterTreeNode* ClusterTree::buildTree(const MatrixDouble &trainingData,ClusterTreeNode *parent,vector< UINT > features,UINT &clusterLabel){
     
-    const UINT M = trainingData.getNumRows();
-    
-    //Get the depth
-    UINT depth = 0;
-    
-    if( parent != NULL )
-        depth = parent->getDepth() + 1;
-    
-    //If there are no training data then return NULL
-    if( M == 0 )
-        return NULL;
-    
-    //Create the new node
-    ClusterTreeNode *node = new ClusterTreeNode;
-    
-    if( node == NULL )
-        return NULL;
-    
-    //Set the parent
-    node->initNode( parent, depth );
-    
-    //If there are no features left then create a leaf node and return
-    if( features.size() == 0 || M < minNumSamplesPerNode || depth >= maxDepth ){
+        const UINT M = trainingData.getNumRows();
         
-        //Update the clusterLabel
-        clusterLabel++;
+        //Get the depth
+        UINT depth = 0;
         
-        //Flag that this is a leaf node
-        node->setIsLeafNode( true );
+        if( parent != NULL )
+            depth = parent->getDepth() + 1;
         
-        //Set the node
-        node->set( M, 0, 0, clusterLabel );
+        //If there are no training data then return NULL
+        if( M == 0 )
+            return NULL;
         
-        Clusterer::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << endl;
+        //Create the new node
+        ClusterTreeNode *node = new ClusterTreeNode;
         
-        return node;
-    }
-    
-    //Compute the best spilt point
-    UINT featureIndex = 0;
-    double threshold = 0;
-    double minError = 0;
-    if( !computeBestSpilt( trainingData, features, featureIndex, threshold, minError ) ){
-        delete node;
-        return NULL;
-    }
-    
-    Clusterer::trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " Threshold: " << threshold << " MinError: " << minError << endl;
-    
-    //If the minError is below the minRMSError then create a leaf node and return
-    if( minError <= minRMSErrorPerNode ){
-        //Update the clusterLabel
-        clusterLabel++;
+        if( node == NULL )
+            return NULL;
         
-        //Flag that this is a leaf node
-        node->setIsLeafNode( true );
+        //Set the parent
+        node->initNode( parent, depth );
         
-        //Set the node
-        node->set( M, featureIndex, threshold, clusterLabel );
+        //If there are no features left then create a leaf node and return
+        if( features.size() == 0 || M < minNumSamplesPerNode || depth >= maxDepth ){
+            
+            //Update the clusterLabel
+            clusterLabel++;
+            
+            //Flag that this is a leaf node
+            node->setIsLeafNode( true );
+            
+            //Set the node
+            node->set( M, 0, 0, clusterLabel );
+            
+            Clusterer::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << endl;
+            
+            return node;
+        }
         
-        Clusterer::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << endl;
+        //Compute the best spilt point
+        UINT featureIndex = 0;
+        double threshold = 0;
+        double minError = 0;
+        if( !computeBestSpilt( trainingData, features, featureIndex, threshold, minError ) ){
+            delete node;
+            return NULL;
+        }
         
-        return node;
-    }
-    
-    //Set the node (any node that is not a leaf node has a cluster label of 0
-    node->set( M, featureIndex, threshold, 0 );
-    
-    //Remove the selected feature so we will not use it again
-    if( removeFeaturesAtEachSpilt ){
-        for(size_t i=0; i<features.size(); i++){
-            if( features[i] == featureIndex ){
-                features.erase( features.begin()+i );
-                break;
+        Clusterer::trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " Threshold: " << threshold << " MinError: " << minError << endl;
+        
+        //If the minError is below the minRMSError then create a leaf node and return
+        if( minError <= minRMSErrorPerNode ){
+            //Update the clusterLabel
+            clusterLabel++;
+            
+            //Flag that this is a leaf node
+            node->setIsLeafNode( true );
+            
+            //Set the node
+            node->set( M, featureIndex, threshold, clusterLabel );
+            
+            Clusterer::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << endl;
+            
+            return node;
+        }
+        
+        //Set the node (any node that is not a leaf node has a cluster label of 0
+        node->set( M, featureIndex, threshold, 0 );
+        
+        //Remove the selected feature so we will not use it again
+        if( removeFeaturesAtEachSpilt ){
+            for(size_t i=0; i<features.size(); i++){
+                if( features[i] == featureIndex ){
+                    features.erase( features.begin()+i );
+                    break;
+                }
             }
         }
-    }
-    
-    //Split the data
-    MatrixDouble lhs;
-    MatrixDouble rhs;
-    
-    for(UINT i=0; i<M; i++){
-        if( node->predict( trainingData.getRowVector(i) ) ){
-            rhs.push_back(trainingData.getRowVector(i));
-        }else lhs.push_back(trainingData.getRowVector(i));
-    }
-    
-    //Run the recursive tree building on the children
-    node->setLeftChild( buildTree( lhs, node, features, clusterLabel ) );
-    node->setRightChild( buildTree( rhs, node, features, clusterLabel ) );
-    
-    return node;
+        
+        //Split the data
+        MatrixDouble lhs;
+        MatrixDouble rhs;
+        
+        for(UINT i=0; i<M; i++){
+            if( node->predict( trainingData.getRowVector(i) ) ){
+                rhs.push_back(trainingData.getRowVector(i));
+            }else lhs.push_back(trainingData.getRowVector(i));
+        }
+        
+        //Run the recursive tree building on the children
+        node->setLeftChild( buildTree( lhs, node, features, clusterLabel ) );
+        node->setRightChild( buildTree( rhs, node, features, clusterLabel ) );
+        
+        return node;
 }
     
 bool ClusterTree::computeBestSpilt( const MatrixDouble &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError ){

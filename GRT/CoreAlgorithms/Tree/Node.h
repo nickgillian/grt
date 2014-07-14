@@ -44,6 +44,11 @@ public:
         parent = NULL;
         leftChild = NULL;
         rightChild = NULL;
+        debugLog.setProceedingText("[DEBUG Node]");
+        errorLog.setProceedingText("[ERROR Node]");
+        trainingLog.setProceedingText("[TRAINING Node]");
+        testingLog.setProceedingText("[TESTING Node]");
+        warningLog.setProceedingText("[WARNING Node]");
         clear();
     }
     
@@ -287,7 +292,7 @@ public:
     virtual Node* deepCopyNode() const{
         
         Node *node = createNewInstance();
-        
+
         if( node == NULL ){
             return NULL;
         }
@@ -429,7 +434,7 @@ protected:
      */
     virtual bool saveParametersToFile(fstream &file) const{
         
-        warningLog << "Node::saveParametersToFile - If you are seeing this message then the inheriting class has not overwritten the custom saveParametersToFile function!\n";
+        warningLog << "saveParametersToFile(fstream &file) - If you are seeing this message then the inheriting class has not overwritten the custom saveParametersToFile function!" << endl;
         
         return false;
     }
@@ -443,7 +448,7 @@ protected:
      */
     virtual bool loadParametersFromFile(fstream &file){
         
-        warningLog << "Node::loadParametersFromFile - If you are seeing this message then the inheriting class has not overwritten the custom loadParametersFromFile function!\n";
+        warningLog << "loadParametersFromFile(fstream &file) - If you are seeing this message then the inheriting class has not overwritten the custom loadParametersFromFile function!" << endl;
         
         return false;
     }
