@@ -61,7 +61,7 @@ public:
     /**
      Default Destructor
      */
-	virtual ~ClusterTree(void);
+     virtual ~ClusterTree(void);
     
     /**
      Defines how the data from the rhs ClusterTree should be copied to this ClusterTree
@@ -69,7 +69,7 @@ public:
      @param const ClusterTreev &rhs: another instance of a ClusterTree
      @return returns a pointer to this instance of the ClusterTree
      */
-	ClusterTree &operator=(const ClusterTree &rhs);
+     ClusterTree &operator=(const ClusterTree &rhs);
     
     /**
      This is required for the Gesture Recognition Pipeline for when the pipeline.setRegressifier(...) method is called.
@@ -78,7 +78,7 @@ public:
      @param Regressifier *regressifier: a pointer to the Regressifier Base Class, this should be pointing to another RegressionTree instance
      @return returns true if the clone was successfull, false otherwise
     */
-	virtual bool deepCopyFrom(const Clusterer *cluster);
+    virtual bool deepCopyFrom(const Clusterer *cluster);
     
     /**
      This trains the RegressionTree model, using the labelled regression data.
