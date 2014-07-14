@@ -49,7 +49,7 @@ public:
      @param bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      @param const double minRMSErrorPerNode: sets the minimum RMS error that allowed per node, if the RMS error is below that, the node will become a leafNode. Default value = 0.01
      */
-	ClusterTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false,const double minRMSErrorPerNode = 0.01);
+    ClusterTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false,const double minRMSErrorPerNode = 0.01);
     
     /**
      Defines the copy constructor.
@@ -69,7 +69,7 @@ public:
      @param const ClusterTreev &rhs: another instance of a ClusterTree
      @return returns a pointer to this instance of the ClusterTree
      */
-	ClusterTree &operator=(const ClusterTree &rhs);
+    ClusterTree &operator=(const ClusterTree &rhs);
     
     /**
      This is required for the Gesture Recognition Pipeline for when the pipeline.setRegressifier(...) method is called.
@@ -78,7 +78,7 @@ public:
      @param Regressifier *regressifier: a pointer to the Regressifier Base Class, this should be pointing to another RegressionTree instance
      @return returns true if the clone was successfull, false otherwise
     */
-	virtual bool deepCopyFrom(const Clusterer *cluster);
+    virtual bool deepCopyFrom(const Clusterer *cluster);
     
     /**
      This trains the RegressionTree model, using the labelled regression data.
