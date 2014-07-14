@@ -61,7 +61,7 @@ public:
     /**
      Default Destructor
      */
-	virtual ~ClusterTree(void);
+     virtual ~ClusterTree(void);
     
     /**
      Defines how the data from the rhs ClusterTree should be copied to this ClusterTree
@@ -69,7 +69,11 @@ public:
      @param const ClusterTreev &rhs: another instance of a ClusterTree
      @return returns a pointer to this instance of the ClusterTree
      */
+<<<<<<< HEAD
     ClusterTree &operator=(const ClusterTree &rhs);
+=======
+     ClusterTree &operator=(const ClusterTree &rhs);
+>>>>>>> f77d20adb65904b062de772cb6e469d20d538119
     
     /**
      This is required for the Gesture Recognition Pipeline for when the pipeline.setRegressifier(...) method is called.

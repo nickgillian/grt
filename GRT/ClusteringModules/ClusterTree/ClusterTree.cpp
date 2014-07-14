@@ -235,7 +235,7 @@ bool ClusterTree::saveModelToFile(string filename) const{
     
 bool ClusterTree::saveModelToFile(fstream &file) const{
     
-    if(!file.is_open())
+	if(!file.is_open())
 	{
 		Clusterer::errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
 		return false;
@@ -244,29 +244,29 @@ bool ClusterTree::saveModelToFile(fstream &file) const{
 	//Write the header info
 	file << "GRT_CLUSTER_TREE_MODEL_FILE_V1.0" << endl;
     
-    //Write the classifier settings to the file
-    if( !Clusterer::saveBaseSettingsToFile(file) ){
-        Clusterer::errorLog <<"saveModelToFile(fstream &file) - Failed to save base settings to file!" << endl;
+   	 //Write the classifier settings to the file
+    	if( !Clusterer::saveBaseSettingsToFile(file) ){
+        	Clusterer::errorLog <<"saveModelToFile(fstream &file) - Failed to save base settings to file!" << endl;
 		return false;
-    }
+    	}
     
-    file << "NumSplittingSteps: " << numSplittingSteps << endl;
-    file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
-    file << "MaxDepth: " << maxDepth << endl;
-    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << endl;
-    file << "TrainingMode: " << trainingMode << endl;
-    file << "MinRMSErrorPerNode: " << minRMSErrorPerNode << endl;
-    file << "TreeBuilt: " << (tree != NULL ? 1 : 0) << endl;
+    	file << "NumSplittingSteps: " << numSplittingSteps << endl;
+    	file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
+   	file << "MaxDepth: " << maxDepth << endl;
+    	file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << endl;
+    	file << "TrainingMode: " << trainingMode << endl;
+    	file << "MinRMSErrorPerNode: " << minRMSErrorPerNode << endl;
+    	file << "TreeBuilt: " << (tree != NULL ? 1 : 0) << endl;
     
-    if( tree != NULL ){
-        file << "Tree:\n";
-        if( !tree->saveToFile( file ) ){
-            Clusterer::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << endl;
-            return false;
-        }
-    }
+    	if( tree != NULL ){
+        	file << "Tree:\n";
+        	if( !tree->saveToFile( file ) ){
+            		Clusterer::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << endl;
+            		return false;
+        	}
+    	}
     
-    return true;
+    	return true;
 }
 
 bool ClusterTree::loadModelFromFile(string filename){
@@ -274,14 +274,13 @@ bool ClusterTree::loadModelFromFile(string filename){
 	std::fstream file; 
 	file.open(filename.c_str(), std::ios::in);
     
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
+    	if( !loadModelFromFile( file ) ){
+       	 	return false;
+    	}
     
-    file.close();
+   	file.close();
 
 	return true;
-
 }
     
 bool ClusterTree::loadModelFromFile(fstream &file){
