@@ -314,6 +314,8 @@ vector< TrainingResult > MLBase::getTrainingResults() const{
 }
 
 bool MLBase::saveBaseSettingsToFile(fstream &file) const{
+	
+	debugLog << "saveBaseSettingsToFile(...)" << endl;
     
     if( !file.is_open() ){
         errorLog << "saveBaseSettingsToFile(fstream &file) - The file is not open!" << endl;

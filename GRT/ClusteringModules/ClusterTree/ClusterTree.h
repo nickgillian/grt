@@ -4,6 +4,8 @@
  @version 1.0
  
  @brief This class implements a Cluster Tree. This can be used to automatically build a cluster model (where each leaf node in the tree is given a unique cluster label) and then predict the best cluster label for a new input sample.
+ 
+ @remark This module is still under development
  */
 
 /**
@@ -198,7 +200,7 @@ protected:
     ClusterTreeNode* buildTree( const MatrixDouble &trainingData, ClusterTreeNode *parent, vector< UINT > features, UINT &clusterLabel );
     bool computeBestSpilt( const MatrixDouble &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
     bool computeBestSpiltBestIterativeSpilt( const MatrixDouble &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
-    //bool computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
+    bool computeBestSpiltBestRandomSpilt( const MatrixDouble &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
 
     static RegisterClustererModule< ClusterTree > registerModule;
     

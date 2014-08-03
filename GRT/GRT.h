@@ -97,6 +97,7 @@
 #include "FeatureExtractionModules/KMeansQuantizer/KMeansQuantizer.h"
 #include "FeatureExtractionModules/KMeansFeatures/KMeansFeatures.h"
 #include "FeatureExtractionModules/RBMQuantizer/RBMQuantizer.h"
+#include "FeatureExtractionModules/SOMQuantizer/SOMQuantizer.h"
 #include "FeatureExtractionModules/TimeseriesBuffer/TimeseriesBuffer.h"
 
 //Include the PostProcessing Modules

@@ -235,7 +235,7 @@ bool ClusterTree::saveModelToFile(string filename) const{
     
 bool ClusterTree::saveModelToFile(fstream &file) const{
     
-        if(!file.is_open())
+        if( !file.is_open() )
         {
             Clusterer::errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
             return false;
@@ -244,10 +244,10 @@ bool ClusterTree::saveModelToFile(fstream &file) const{
         //Write the header info
         file << "GRT_CLUSTER_TREE_MODEL_FILE_V1.0" << endl;
     
-        //Write the classifier settings to the file
-    	if( !Clusterer::saveBaseSettingsToFile(file) ){
-        	Clusterer::errorLog <<"saveModelToFile(fstream &file) - Failed to save base settings to file!" << endl;
-            	return false;
+        //Write the clusterer settings to the file
+    	if( !saveClustererSettingsToFile(file) ){
+        	Clusterer::errorLog <<"saveModelToFile(fstream &file) - Failed to save clusterer settings to file!" << endl;
+            return false;
     	}
     
     	file << "NumSplittingSteps: " << numSplittingSteps << endl;
@@ -261,8 +261,8 @@ bool ClusterTree::saveModelToFile(fstream &file) const{
     	if( tree != NULL ){
         	file << "Tree:\n";
         	if( !tree->saveToFile( file ) ){
-            		Clusterer::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << endl;
-            		return false;
+            	Clusterer::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << endl;
+            	return false;
         	}
     	}
     
@@ -274,9 +274,9 @@ bool ClusterTree::loadModelFromFile(string filename){
         std::fstream file;
         file.open(filename.c_str(), std::ios::in);
         
-            if( !loadModelFromFile( file ) ){
-                return false;
-            }
+        if( !loadModelFromFile( file ) ){
+        	return false;
+        }
         
         file.close();
 
@@ -303,7 +303,7 @@ bool ClusterTree::loadModelFromFile(fstream &file){
     	}
     
     	//Load the base settings from the file
-    	if( !Clusterer::loadBaseSettingsFromFile(file) ){
+    	if( !loadClustererSettingsFromFile(file) ){
         	Clusterer::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
         	return false;
     	}
@@ -412,99 +412,99 @@ bool ClusterTree::setMinRMSErrorPerNode(const double minRMSErrorPerNode){
     
 ClusterTreeNode* ClusterTree::buildTree(const MatrixDouble &trainingData,ClusterTreeNode *parent,vector< UINT > features,UINT &clusterLabel){
     
-        const UINT M = trainingData.getNumRows();
+    const UINT M = trainingData.getNumRows();
+
+    //Get the depth
+    UINT depth = 0;
+    
+    if( parent != NULL )
+        depth = parent->getDepth() + 1;
+    
+    //If there are no training data then return NULL
+    if( M == 0 )
+        return NULL;
+    
+    //Create the new node
+    ClusterTreeNode *node = new ClusterTreeNode;
+    
+    if( node == NULL )
+        return NULL;
+    
+    //Set the parent
+    node->initNode( parent, depth );
+    
+    //If there are no features left then create a leaf node and return
+    if( features.size() == 0 || M < minNumSamplesPerNode || depth >= maxDepth ){
         
-        //Get the depth
-        UINT depth = 0;
+        //Update the clusterLabel
+        clusterLabel++;
         
-        if( parent != NULL )
-            depth = parent->getDepth() + 1;
+        //Flag that this is a leaf node
+        node->setIsLeafNode( true );
         
-        //If there are no training data then return NULL
-        if( M == 0 )
-            return NULL;
+        //Set the node - the feature and threshold are both 0
+        node->set( M, 0, 0, clusterLabel );
         
-        //Create the new node
-        ClusterTreeNode *node = new ClusterTreeNode;
-        
-        if( node == NULL )
-            return NULL;
-        
-        //Set the parent
-        node->initNode( parent, depth );
-        
-        //If there are no features left then create a leaf node and return
-        if( features.size() == 0 || M < minNumSamplesPerNode || depth >= maxDepth ){
-            
-            //Update the clusterLabel
-            clusterLabel++;
-            
-            //Flag that this is a leaf node
-            node->setIsLeafNode( true );
-            
-            //Set the node
-            node->set( M, 0, 0, clusterLabel );
-            
-            Clusterer::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << endl;
-            
-            return node;
-        }
-        
-        //Compute the best spilt point
-        UINT featureIndex = 0;
-        double threshold = 0;
-        double minError = 0;
-        if( !computeBestSpilt( trainingData, features, featureIndex, threshold, minError ) ){
-            delete node;
-            return NULL;
-        }
-        
-        Clusterer::trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " Threshold: " << threshold << " MinError: " << minError << endl;
-        
-        //If the minError is below the minRMSError then create a leaf node and return
-        if( minError <= minRMSErrorPerNode ){
-            //Update the clusterLabel
-            clusterLabel++;
-            
-            //Flag that this is a leaf node
-            node->setIsLeafNode( true );
-            
-            //Set the node
-            node->set( M, featureIndex, threshold, clusterLabel );
-            
-            Clusterer::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << endl;
-            
-            return node;
-        }
-        
-        //Set the node (any node that is not a leaf node has a cluster label of 0
-        node->set( M, featureIndex, threshold, 0 );
-        
-        //Remove the selected feature so we will not use it again
-        if( removeFeaturesAtEachSpilt ){
-            for(size_t i=0; i<features.size(); i++){
-                if( features[i] == featureIndex ){
-                    features.erase( features.begin()+i );
-                    break;
-                }
-            }
-        }
-        
-        //Split the data
-        MatrixDouble lhs;
-        MatrixDouble rhs;
-        
-        for(UINT i=0; i<M; i++){
-            if( node->predict( trainingData.getRowVector(i) ) ){
-                rhs.push_back(trainingData.getRowVector(i));
-            }else lhs.push_back(trainingData.getRowVector(i));
-        }
-        
-        //Run the recursive tree building on the children
-        node->setLeftChild( buildTree( lhs, node, features, clusterLabel ) );
-        node->setRightChild( buildTree( rhs, node, features, clusterLabel ) );
+        Clusterer::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << endl;
         
         return node;
+    }
+    
+    //Compute the best spilt point
+    UINT featureIndex = 0;
+    double threshold = 0;
+    double minError = 0;
+    if( !computeBestSpilt( trainingData, features, featureIndex, threshold, minError ) ){
+        delete node;
+        return NULL;
+    }
+    
+    Clusterer::trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " Threshold: " << threshold << " MinError: " << minError << endl;
+    
+    //If the minError is below the minRMSError then create a leaf node and return
+    if( minError <= minRMSErrorPerNode ){
+        //Update the clusterLabel
+        clusterLabel++;
+        
+        //Flag that this is a leaf node
+        node->setIsLeafNode( true );
+        
+        //Set the node
+        node->set( M, featureIndex, threshold, clusterLabel );
+        
+        Clusterer::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << endl;
+        
+        return node;
+    }
+    
+    //Set the node (any node that is not a leaf node has a cluster label of 0
+    node->set( M, featureIndex, threshold, 0 );
+    
+    //Remove the selected feature so we will not use it again
+    if( removeFeaturesAtEachSpilt ){
+        for(size_t i=0; i<features.size(); i++){
+            if( features[i] == featureIndex ){
+                features.erase( features.begin()+i );
+                break;
+            }
+        }
+    }
+    
+    //Split the data
+    MatrixDouble lhs;
+    MatrixDouble rhs;
+    
+    for(UINT i=0; i<M; i++){
+        if( node->predict( trainingData.getRowVector(i) ) ){
+            rhs.push_back(trainingData.getRowVector(i));
+        }else lhs.push_back(trainingData.getRowVector(i));
+    }
+    
+    //Run the recursive tree building on the children
+    node->setLeftChild( buildTree( lhs, node, features, clusterLabel ) );
+    node->setRightChild( buildTree( rhs, node, features, clusterLabel ) );
+    
+    return node;
 }
     
 bool ClusterTree::computeBestSpilt( const MatrixDouble &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError ){
@@ -514,7 +514,7 @@ bool ClusterTree::computeBestSpilt( const MatrixDouble &trainingData, const vect
             return computeBestSpiltBestIterativeSpilt( trainingData, features, featureIndex, threshold, minError );
             break;
         case BEST_RANDOM_SPLIT:
-            //return computeBestSpiltBestRandomSpilt( trainingData, features, featureIndex, threshold, minError );
+            return computeBestSpiltBestRandomSpilt( trainingData, features, featureIndex, threshold, minError );
             break;
         default:
             Clusterer::errorLog << "Uknown trainingMode!" << endl;
@@ -530,6 +530,8 @@ bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixDouble &traini
     const UINT M = trainingData.getNumRows();
     const UINT N = (UINT)features.size();
     
+    //Clusterer::debugLog << "computeBestSpiltBestIterativeSpilt() M: " << M << endl;
+    
     if( N == 0 ) return false;
     
     minError = numeric_limits<double>::max();
@@ -541,9 +543,9 @@ bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixDouble &traini
     double maxRange = 0;
     double step = 0;
     vector< UINT > groupIndex(M);
-    VectorDouble groupCounter(2,0);
-    VectorDouble groupMean(2,0);
-    VectorDouble groupMSE(2,0);
+    vector< double > groupCounter(2);
+    vector< double > groupMean(2);
+    vector< double > groupMSE(2);
     vector< MinMax > ranges = trainingData.getRanges();
 
     //Loop over each feature and try and find the best split point
@@ -557,9 +559,9 @@ bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixDouble &traini
         while( threshold <= maxRange ){
             
             //Reset the counters to zero
-            std::fill(groupCounter.begin(),groupCounter.end(),0);
-            std::fill(groupMean.begin(),groupMean.end(),0);
-            std::fill(groupMSE.begin(),groupMSE.end(),0);
+            groupCounter[0] = groupCounter[1] = 0;
+            groupMean[0] = groupMean[1] = 0;
+            groupMSE[0] = groupMSE[1] = 0;
             
             //Iterate over each sample and work out what group it falls into
             for(UINT i=0; i<M; i++){
@@ -593,6 +595,81 @@ bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixDouble &traini
             
             //Update the threshold
             threshold += step;
+        }
+    }
+    
+    //Set the best feature index and threshold
+    featureIndex = bestFeatureIndex;
+    threshold = bestThreshold;
+    
+    return true;
+}
+    
+bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixDouble &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError ){
+    
+    const UINT M = trainingData.getNumRows();
+    const UINT N = (UINT)features.size();
+    
+    Clusterer::debugLog << "computeBestSpiltBestRandomSpilt() M: " << M << endl;
+    
+    if( N == 0 ) return false;
+    
+    minError = numeric_limits<double>::max();
+    UINT bestFeatureIndex = 0;
+    UINT groupID = 0;
+    double bestThreshold = 0;
+    double error = 0;
+    double minRange = 0;
+    double maxRange = 0;
+    double step = 0;
+    vector< UINT > groupIndex(M);
+    vector< double > groupCounter(2);
+    vector< double > groupMean(2);
+    vector< double > groupMSE(2);
+    vector< MinMax > ranges = trainingData.getRanges();
+    
+    //Loop over each feature and try and find the best split point
+    for(UINT n=0; n<N; n++){
+        featureIndex = features[n];
+        
+        for(UINT m=0; m<numSplittingSteps; m++){
+            //Randomly select a threshold value
+            threshold = random.getRandomNumberUniform(ranges[n].minValue,ranges[n].maxValue);
+            
+            //Reset the counters to zero
+            groupCounter[0] = groupCounter[1] = 0;
+            groupMean[0] = groupMean[1] = 0;
+            groupMSE[0] = groupMSE[1] = 0;
+            
+            //Iterate over each sample and work out what group it falls into
+            for(UINT i=0; i<M; i++){
+                groupID = trainingData[i][featureIndex] >= threshold ? 1 : 0;
+                groupIndex[i] = groupID;
+                
+                //Update the group mean and group counters
+                groupMean[ groupID ] += trainingData[i][featureIndex];
+                groupCounter[ groupID ]++;
+            }
+            
+            //Compute the group mean
+            groupMean[0] /= (groupCounter[0] > 0 ? groupCounter[0] : 1);
+            groupMean[1] /= (groupCounter[1] > 0 ? groupCounter[1] : 1);
+            
+            //Compute the MSE for each group
+            for(UINT i=0; i<M; i++){
+                groupMSE[ groupIndex[i] ] += MLBase::SQR( groupMean[ groupIndex[i] ] - trainingData[i][featureIndex] );
+            }
+            groupMSE[0] /= (groupCounter[0] > 0 ? groupCounter[0] : 1);
+            groupMSE[1] /= (groupCounter[1] > 0 ? groupCounter[1] : 1);
+            
+            error = sqrt( groupMSE[0] + groupMSE[1] );
+            
+            //Store the best threshold and feature index
+            if( error < minError ){
+                minError = error;
+                bestThreshold = threshold;
+                bestFeatureIndex = featureIndex;
+            }
         }
     }
     

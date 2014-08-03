@@ -124,6 +124,10 @@ bool Clusterer::clear(){
 }
     
 bool Clusterer::saveClustererSettingsToFile(fstream &file) const{
+	
+	debugLog << "saveClustererSettingsToFile(...)" << endl;
+    debugLog << "trained: " << trained << endl;
+    debugLog << "MLBase::trained: " << MLBase::trained << endl;
     
     if( !file.is_open() ){
         errorLog << "saveClustererSettingsToFile(fstream &file) - The file is not open!" << endl;
@@ -133,11 +137,15 @@ bool Clusterer::saveClustererSettingsToFile(fstream &file) const{
     if( !MLBase::saveBaseSettingsToFile( file ) ) return false;
     
     file << "NumClusters: " << numClusters << endl;
-    file << "Ranges: " << endl;
+	
+	if( trained ){
+		debugLog << "saveClustererSettingsToFile(...) SAVING RANGES" << endl;
+    	file << "Ranges: " << endl;
     
-    for(UINT i=0; i<ranges.size(); i++){
-        file << ranges[i].minValue << "\t" << ranges[i].maxValue << endl;
-    }
+    	for(UINT i=0; i<ranges.size(); i++){
+        	file << ranges[i].minValue << "\t" << ranges[i].maxValue << endl;
+    	}
+	}
     
     return true;
 }
@@ -165,19 +173,21 @@ bool Clusterer::loadClustererSettingsFromFile(fstream &file){
     }
     file >> numClusters;
     
-    //Load if the Ranges
-    file >> word;
-    if( word != "Ranges:" ){
-        errorLog << "loadClustererSettingsFromFile(fstream &file) - Failed to read Ranges header!" << endl;
-        clear();
-        return false;
-    }
-    ranges.resize(numInputDimensions);
+    //Load if the Ranges (if the model has been trained)
+	if( trained ){
+    	file >> word;
+    	if( word != "Ranges:" ){
+        	errorLog << "loadClustererSettingsFromFile(fstream &file) - Failed to read Ranges header!" << endl;
+        	clear();
+        	return false;
+    	}
+    	ranges.resize(numInputDimensions);
     
-    for(UINT i=0; i<ranges.size(); i++){
-        file >> ranges[i].minValue;
-        file >> ranges[i].maxValue;
-    }
+    	for(UINT i=0; i<ranges.size(); i++){
+        	file >> ranges[i].minValue;
+        	file >> ranges[i].maxValue;
+    	}
+	}
     
     return true;
 }

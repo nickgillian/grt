@@ -434,6 +434,8 @@ protected:
      */
     virtual bool saveParametersToFile(fstream &file) const{
         
+        cout << "Node::saveParametersToFile()" << endl;
+        
         warningLog << "saveParametersToFile(fstream &file) - If you are seeing this message then the inheriting class has not overwritten the custom saveParametersToFile function!" << endl;
         
         return false;
