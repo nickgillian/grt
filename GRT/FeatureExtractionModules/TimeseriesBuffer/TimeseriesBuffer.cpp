@@ -143,8 +143,8 @@ bool TimeseriesBuffer::saveModelToFile(fstream &file) const{
     file << "GRT_TIMESERIES_BUFFER_FILE_V1.0" << endl;
     
     //Save the base settings to the file
-    if( !saveBaseSettingsToFile( file ) ){
-        errorLog << "saveModelToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+    if( !saveFeatureExtractionSettingsToFile( file ) ){
+        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
         return false;
     }
     
@@ -171,8 +171,8 @@ bool TimeseriesBuffer::loadModelFromFile(fstream &file){
         return false;     
     }
     
-    if( !loadBaseSettingsFromFile( file ) ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+    if( !loadFeatureExtractionSettingsFromFile( file ) ){
+        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
         return false;
     }
     

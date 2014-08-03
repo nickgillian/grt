@@ -151,8 +151,8 @@ bool KMeansQuantizer::saveModelToFile(fstream &file) const{
     file << "KMEANS_QUANTIZER_FILE_V1.0" << endl;
 	
     //Second, you should save the base feature extraction settings to the file
-    if( !saveBaseSettingsToFile( file ) ){
-        errorLog << "saveModelToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+    if( !saveFeatureExtractionSettingsToFile( file ) ){
+        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
         return false;
     }
     
@@ -195,8 +195,8 @@ bool KMeansQuantizer::loadModelFromFile(fstream &file){
     }
     
     //Second, you should load the base feature extraction settings to the file
-    if( !loadBaseSettingsFromFile( file ) ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+    if( !loadFeatureExtractionSettingsFromFile( file ) ){
+        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
         return false;
     }
     

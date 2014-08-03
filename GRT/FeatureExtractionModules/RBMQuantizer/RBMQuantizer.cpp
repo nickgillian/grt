@@ -151,8 +151,8 @@ bool RBMQuantizer::saveModelToFile(fstream &file) const{
     file << "RBM_QUANTIZER_FILE_V1.0" << endl;
 	
     //Save the base feature extraction settings to the file
-    if( !saveBaseSettingsToFile( file ) ){
-        errorLog << "saveModelToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+    if( !saveFeatureExtractionSettingsToFile( file ) ){
+        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
         return false;
     }
     
@@ -189,8 +189,8 @@ bool RBMQuantizer::loadModelFromFile(fstream &file){
     }
     
     //Second, you should load the base feature extraction settings to the file
-    if( !loadBaseSettingsFromFile( file ) ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+    if( !loadFeatureExtractionSettingsFromFile( file ) ){
+        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
         return false;
     }
     
