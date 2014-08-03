@@ -29,6 +29,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <string>
 #include <float.h>
 #include <cmath>
+#include <math.h>
 #include <time.h>
 #include <map>
 #include <limits>
