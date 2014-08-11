@@ -162,6 +162,10 @@ bool DecisionTree::train_(ClassificationData &trainingData){
 
 bool DecisionTree::predict_(VectorDouble &inputVector){
     
+    predictedClassLabel = 0;
+	maxLikelihood = -10000;
+    
+    //Validate the input is OK and the model is trained properly
     if( !trained ){
         Classifier::errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << endl;
         return false;
@@ -172,16 +176,12 @@ bool DecisionTree::predict_(VectorDouble &inputVector){
         return false;
     }
     
-    predictedClassLabel = 0;
-	maxLikelihood = -10000;
-    
-    if( !trained ) return false;
-    
 	if( inputVector.size() != numInputDimensions ){
         Classifier::errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
 		return false;
 	}
     
+    //Scale the input data if needed
     if( useScaling ){
         for(UINT n=0; n<numInputDimensions; n++){
             inputVector[n] = scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0, 1);
@@ -191,21 +191,24 @@ bool DecisionTree::predict_(VectorDouble &inputVector){
     if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
+    //Run the decision tree prediction
     if( !tree->predict( inputVector, classLikelihoods ) ){
         Classifier::errorLog << "predict_(VectorDouble &inputVector) - Failed to predict!" << endl;
         return false;
     }
     
-    UINT K = (UINT)classLikelihoods.size();
+    //Find the maximum likelihood
+    //The tree automatically returns proper class likelihoods so we don't need to do anything else
     UINT maxIndex = 0;
     maxLikelihood = 0;
-    for(UINT k=0; k<K; k++){
+    for(UINT k=0; k<numClasses; k++){
         if( classLikelihoods[k] > maxLikelihood ){
             maxLikelihood = classLikelihoods[k];
             maxIndex = k;
         }
     }
     
+    //Set the predicated class label
     predictedClassLabel = classLabels[ maxIndex ];
     
     return true;
@@ -216,6 +219,7 @@ bool DecisionTree::clear(){
     //Clear the Classifier variables
     Classifier::clear();
     
+    //Delete the tree if it exists
     if( tree != NULL ){
         tree->clear();
         delete tree;
@@ -480,7 +484,7 @@ DecisionTreeNode* DecisionTree::buildTree(const ClassificationData &trainingData
         }
     }
     
-    //Split the data
+    //Split the data into a left and right dataset
     ClassificationData lhs(N);
     ClassificationData rhs(N);
     

@@ -45,6 +45,291 @@ Node* Node::createInstanceFromString(string const &nodeType){
 Node* Node::createNewInstance() const{
     return createInstanceFromString( nodeType );
 }
+    
+Node::Node(){
+    nodeType = "";
+    parent = NULL;
+    leftChild = NULL;
+    rightChild = NULL;
+    debugLog.setProceedingText("[DEBUG Node]");
+    errorLog.setProceedingText("[ERROR Node]");
+    trainingLog.setProceedingText("[TRAINING Node]");
+    testingLog.setProceedingText("[TESTING Node]");
+    warningLog.setProceedingText("[WARNING Node]");
+    clear();
+}
+
+Node::~Node(){
+    clear();
+}
+
+bool Node::predict(const VectorDouble &x) const{
+    return false;
+}
+
+bool Node::predict(const VectorDouble &x,VectorDouble &y) const{
+    return false;
+}
+
+bool Node::clear(){
+    
+    //Set the parent pointer to null, this is safe as the parent pointer does not own the memory
+    parent = NULL;
+    
+    if( leftChild != NULL ){
+        //Recursively clean up the left child
+        leftChild->clear();
+        
+        //Clean up the left child
+        delete leftChild;
+        leftChild = NULL;
+    }
+    
+    if( rightChild != NULL ){
+        //Recursively clean up the right child
+        rightChild->clear();
+        
+        //Clean up the right child
+        delete rightChild;
+        rightChild = NULL;
+    }
+    
+    depth = 0;
+    isLeafNode = false;
+    
+    return true;
+}
+
+bool Node::print() const{
+    
+    string tab = "";
+    for(UINT i=0; i<depth; i++) tab += "\t";
+    
+    cout << tab << "depth: " << depth << " isLeafNode: " << isLeafNode << endl;
+    
+    if( leftChild != NULL ){
+        cout << tab << "LeftChild: " << endl;
+        leftChild->print();
+    }
+    
+    if( rightChild != NULL ){
+        cout << tab << "RightChild: " << endl;
+        rightChild->print();
+    }
+    
+    return true;
+}
+
+bool Node::saveToFile(fstream &file) const{
+    
+    if(!file.is_open())
+    {
+        errorLog << "saveToFile(fstream &file) - File is not open!" << endl;
+        return false;
+    }
+    
+    file << "NodeType: " << nodeType << endl;
+    file << "Depth: " << depth << endl;
+    file << "IsLeafNode: " << isLeafNode << endl;
+    file << "HasLeftChild: " << getHasLeftChild() << endl;
+    file << "HasRightChild: " << getHasRightChild() << endl;
+    
+    //If there is a left child then load the left child's data
+    if( getHasLeftChild() ){
+        file << "LeftChild\n";
+        if( !leftChild->saveToFile( file ) ){
+            errorLog << "saveToFile(fstream &file) - Failed to save left child at depth: " << depth << endl;
+            return false;
+        }
+    }
+    
+    //If there is a right child then load the right child's data
+    if( getHasRightChild() ){
+        file << "RightChild\n";
+        if( !rightChild->saveToFile( file ) ){
+            errorLog << "saveToFile(fstream &file) - Failed to save right child at depth: " << depth << endl;
+            return false;
+        }
+    }
+    
+    //Save the custom parameters to the file
+    if( !saveParametersToFile( file ) ){
+        errorLog << "saveToFile(fstream &file) - Failed to save parameters to file at depth: " << depth << endl;
+        return false;
+    }
+    
+    return true;
+}
+
+bool Node::loadFromFile(fstream &file){
+    
+    //Clear any previous nodes
+    clear();
+    
+    if(!file.is_open())
+    {
+        errorLog << "loadFromFile(fstream &file) - File is not open!" << endl;
+        return false;
+    }
+    
+    string word;
+    bool hasLeftChild = false;
+    bool hasRightChild = false;
+    
+    file >> word;
+    if( word != "NodeType:" ){
+        errorLog << "loadFromFile(fstream &file) - Failed to find Node header!" << endl;
+        return false;
+    }
+    file >> nodeType;
+    
+    file >> word;
+    if( word != "Depth:" ){
+        errorLog << "loadFromFile(fstream &file) - Failed to find Depth header!" << endl;
+        return false;
+    }
+    file >> depth;
+    
+    file >> word;
+    if( word != "IsLeafNode:" ){
+        errorLog << "loadFromFile(fstream &file) - Failed to find IsLeafNode header!" << endl;
+        return false;
+    }
+    file >> isLeafNode;
+    
+    file >> word;
+    if( word != "HasLeftChild:" ){
+        errorLog << "loadFromFile(fstream &file) - Failed to find HasLeftChild header!" << endl;
+        return false;
+    }
+    file >> hasLeftChild;
+    
+    file >> word;
+    if( word != "HasRightChild:" ){
+        errorLog << "loadFromFile(fstream &file) - Failed to find HasRightChild header!" << endl;
+        return false;
+    }
+    file >> hasRightChild;
+    
+    if( hasLeftChild ){
+        file >> word;
+        if( word != "LeftChild" ){
+            errorLog << "loadFromFile(fstream &file) - Failed to find LeftChild header!" << endl;
+            return false;
+        }
+        leftChild = createNewInstance();
+        leftChild->setParent( this );
+        if( !leftChild->loadFromFile(file) ){
+            errorLog << "loadFromFile(fstream &file) - Failed to load left child at depth: " << depth << endl;
+            return false;
+        }
+    }
+    
+    if( hasRightChild ){
+        file >> word;
+        if( word != "RightChild" ){
+            errorLog << "loadFromFile(fstream &file) - Failed to find RightChild header!" << endl;
+            return false;
+        }
+        rightChild = createNewInstance();
+        rightChild->setParent( this );
+        if( !rightChild->loadFromFile( file ) ){
+            errorLog << "loadFromFile(fstream &file) - Failed to load right child at depth: " << depth << endl;
+            return false;
+        }
+    }
+    
+    //Load the custom parameters from a file
+    if( !loadParametersFromFile( file ) ){
+        errorLog << "loadParametersFromFile(fstream &file) - Failed to load parameters from file at depth: " << depth << endl;
+        return false;
+    }
+    
+    return true;
+}
+
+Node* Node::deepCopyNode() const{
+    
+    Node *node = createNewInstance();
+    
+    if( node == NULL ){
+        return NULL;
+    }
+    
+    //Copy this node into the node
+    node->setDepth( depth );
+    node->setIsLeafNode( isLeafNode );
+    
+    //Recursively deep copy the left child
+    if( getHasLeftChild() ){
+        node->setLeftChild( leftChild->deepCopyNode() );
+        node->leftChild->setParent( node );
+    }
+    
+    //Recursively deep copy the right child
+    if( getHasRightChild() ){
+        node->setRightChild( rightChild->deepCopyNode() );
+        node->rightChild->setParent( node );
+    }
+    
+    return node;
+}
+
+string Node::getNodeType() const{
+    return nodeType;
+}
+
+UINT Node::getDepth() const{
+    return depth;
+}
+
+bool Node::getIsLeafNode() const{
+    return isLeafNode;
+}
+
+bool Node::getHasParent() const{
+    return (parent != NULL);
+}
+
+bool Node::getHasLeftChild() const {
+    return (leftChild != NULL);
+}
+
+bool Node::getHasRightChild() const {
+    return (rightChild != NULL);
+}
+
+bool Node::initNode(Node *parent,const UINT depth,const bool isLeafNode){
+    this->parent = parent;
+    this->depth = depth;
+    this->isLeafNode = isLeafNode;
+    return true;
+}
+
+bool Node::setParent(Node *parent){
+    this->parent = parent;
+    return true;
+}
+
+bool Node::setLeftChild(Node *leftChild){
+    this->leftChild = leftChild;
+    return true;
+}
+
+bool Node::setRightChild(Node *rightChild){
+    this->rightChild = rightChild;
+    return true;
+}
+
+bool Node::setDepth(const UINT depth){
+    this->depth = depth;
+    return true;
+}
+
+bool Node::setIsLeafNode(const bool isLeafNode){
+    this->isLeafNode = isLeafNode;
+    return true;
+}
 
 } //End of namespace GRT
 

@@ -106,6 +106,7 @@ bool Tree::setNumSplittingSteps(const UINT numSplittingSteps){
         this->numSplittingSteps = numSplittingSteps;
         return true;
     }
+    warningLog << "setNumSplittingSteps(const UINT numSplittingSteps) - The number of splitting steps must be greater than zero!" << endl;
     return false;
 }
 
@@ -114,6 +115,7 @@ bool Tree::setMinNumSamplesPerNode(const UINT minNumSamplesPerNode){
         this->minNumSamplesPerNode = minNumSamplesPerNode;
         return true;
     }
+    warningLog << "setMinNumSamplesPerNode(const UINT minNumSamplesPerNode) - The minimum number of samples per node must be greater than zero!" << endl;
     return false;
 }
 
@@ -122,6 +124,7 @@ bool Tree::setMaxDepth(const UINT maxDepth){
         this->maxDepth = maxDepth;
         return true;
     }
+    warningLog << "setMaxDepth(const UINT maxDepth) - The maximum depth must be greater than zero!" << endl;
     return false;
 }
     

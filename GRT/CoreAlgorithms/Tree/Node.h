@@ -39,25 +39,12 @@ public:
     /**
      Default Constructor. Sets all the pointers to NULL.
      */
-    Node(){
-        nodeType = "";
-        parent = NULL;
-        leftChild = NULL;
-        rightChild = NULL;
-        debugLog.setProceedingText("[DEBUG Node]");
-        errorLog.setProceedingText("[ERROR Node]");
-        trainingLog.setProceedingText("[TRAINING Node]");
-        testingLog.setProceedingText("[TESTING Node]");
-        warningLog.setProceedingText("[WARNING Node]");
-        clear();
-    }
+    Node();
     
     /**
      Default Destructor. Cleans up any memory.
      */
-    virtual ~Node(){
-        clear();
-    }
+    virtual ~Node();
     
     /**
      This function predicts if the input is greater than or equal to the nodes threshold.
@@ -66,9 +53,7 @@ public:
      @param const VectorDouble &x: the input vector that will be used for the prediction
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x) const{
-        return false;
-    }
+    virtual bool predict(const VectorDouble &x) const;
     
     /**
      This function recursively predicts if the probability of the input vector.  
@@ -78,9 +63,7 @@ public:
      @param VectorDouble &y: a reference to a vector that will store the results
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &y) const{
-        return false;
-    }
+    virtual bool predict(const VectorDouble &x,VectorDouble &y) const;
     
     /**
      This functions cleans up any dynamic memory assigned by the node.
@@ -88,34 +71,7 @@ public:
      
      @return returns true of the node was cleared correctly, false otherwise
      */
-    virtual bool clear(){
-        
-        //Set the parent pointer to null, this is safe as the parent pointer does not own the memory
-        parent = NULL;
-        
-        if( leftChild != NULL ){
-            //Recursively clean up the left child
-            leftChild->clear();
-            
-            //Clean up the left child
-            delete leftChild;
-            leftChild = NULL;
-        }
-        
-        if( rightChild != NULL ){
-            //Recursively clean up the right child
-            rightChild->clear();
-            
-            //Clean up the right child
-            delete rightChild;
-            rightChild = NULL;
-        }
-        
-        depth = 0;
-        isLeafNode = false;
-        
-        return true;
-    }
+    virtual bool clear();
     
     /**
      This functions prints the node data to std::out.
@@ -123,25 +79,7 @@ public:
      
      @return returns true if the data was printed correctly, false otherwise
      */
-    virtual bool print() const{
-        
-        string tab = "";
-        for(UINT i=0; i<depth; i++) tab += "\t";
-        
-        cout << tab << "depth: " << depth << " isLeafNode: " << isLeafNode << endl;
-        
-        if( leftChild != NULL ){
-            cout << tab << "LeftChild: " << endl;
-            leftChild->print();
-        }
-        
-        if( rightChild != NULL ){
-            cout << tab << "RightChild: " << endl;
-            rightChild->print();
-        }
-        
-        return true;
-    }
+    virtual bool print() const;
     
     /**
      This saves the Node to a file.
@@ -149,46 +87,7 @@ public:
      @param fstream &file: a reference to the file the Node model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveToFile(fstream &file) const{
-        
-        if(!file.is_open())
-        {
-            errorLog << "saveToFile(fstream &file) - File is not open!" << endl;
-            return false;
-        }
-        
-        file << "NodeType: " << nodeType << endl;
-        file << "Depth: " << depth << endl;
-        file << "IsLeafNode: " << isLeafNode << endl;
-        file << "HasLeftChild: " << getHasLeftChild() << endl;
-        file << "HasRightChild: " << getHasRightChild() << endl;
-        
-        //If there is a left child then load the left child's data
-        if( getHasLeftChild() ){
-            file << "LeftChild\n";
-            if( !leftChild->saveToFile( file ) ){
-                errorLog << "saveToFile(fstream &file) - Failed to save left child at depth: " << depth << endl;
-                return false;
-            }
-        }
-        
-        //If there is a right child then load the right child's data
-        if( getHasRightChild() ){
-            file << "RightChild\n";
-            if( !rightChild->saveToFile( file ) ){
-                errorLog << "saveToFile(fstream &file) - Failed to save right child at depth: " << depth << endl;
-                return false;
-            }
-        }
-        
-        //Save the custom parameters to the file
-        if( !saveParametersToFile( file ) ){
-            errorLog << "saveToFile(fstream &file) - Failed to save parameters to file at depth: " << depth << endl;
-            return false;
-        }
-        
-        return true;
-    }
+    virtual bool saveToFile(fstream &file) const;
     
     /**
      This loads the Node from a file.
@@ -196,92 +95,7 @@ public:
      @param fstream &file: a reference to the file the Node model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadFromFile(fstream &file){
-        
-        //Clear any previous nodes
-        clear();
-        
-        if(!file.is_open())
-        {
-            errorLog << "loadFromFile(fstream &file) - File is not open!" << endl;
-            return false;
-        }
-        
-        string word;
-        bool hasLeftChild = false;
-        bool hasRightChild = false;
-        
-        file >> word;
-        if( word != "NodeType:" ){
-            errorLog << "loadFromFile(fstream &file) - Failed to find Node header!" << endl;
-            return false;
-        }
-        file >> nodeType;
-        
-        file >> word;
-        if( word != "Depth:" ){
-            errorLog << "loadFromFile(fstream &file) - Failed to find Depth header!" << endl;
-            return false;
-        }
-        file >> depth;
- 
-        file >> word;
-        if( word != "IsLeafNode:" ){
-            errorLog << "loadFromFile(fstream &file) - Failed to find IsLeafNode header!" << endl;
-            return false;
-        }
-        file >> isLeafNode;
-        
-        file >> word;
-        if( word != "HasLeftChild:" ){
-            errorLog << "loadFromFile(fstream &file) - Failed to find HasLeftChild header!" << endl;
-            return false;
-        }
-        file >> hasLeftChild;
-        
-        file >> word;
-        if( word != "HasRightChild:" ){
-            errorLog << "loadFromFile(fstream &file) - Failed to find HasRightChild header!" << endl;
-            return false;
-        }
-        file >> hasRightChild;
-        
-        if( hasLeftChild ){
-            file >> word;
-            if( word != "LeftChild" ){
-                errorLog << "loadFromFile(fstream &file) - Failed to find LeftChild header!" << endl;
-                return false;
-            }
-            leftChild = createNewInstance();
-            leftChild->setParent( this );
-            if( !leftChild->loadFromFile(file) ){
-                errorLog << "loadFromFile(fstream &file) - Failed to load left child at depth: " << depth << endl;
-                return false;
-            }
-        }
-        
-        if( hasRightChild ){
-            file >> word;
-            if( word != "RightChild" ){
-                errorLog << "loadFromFile(fstream &file) - Failed to find RightChild header!" << endl;
-                return false;
-            }
-            rightChild = createNewInstance();
-            rightChild->setParent( this );
-            if( !rightChild->loadFromFile( file ) ){
-                errorLog << "loadFromFile(fstream &file) - Failed to load right child at depth: " << depth << endl;
-                return false;
-            }
-        }
-        
-        //Load the custom parameters from a file
-        if( !loadParametersFromFile( file ) ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to load parameters from file at depth: " << depth << endl;
-            return false;
-        }
-        
-        return true;
-    }
+    virtual bool loadFromFile(fstream &file);
     
     /**
      This function returns a deep copy of the Node and all it's children.
@@ -289,41 +103,14 @@ public:
      
      @return returns a pointer to a deep copy of the Node, or NULL if the deep copy was not successful
      */
-    virtual Node* deepCopyNode() const{
-        
-        Node *node = createNewInstance();
-
-        if( node == NULL ){
-            return NULL;
-        }
-        
-        //Copy this node into the node
-        node->setDepth( depth );
-        node->setIsLeafNode( isLeafNode );
-        
-        //Recursively deep copy the left child
-        if( getHasLeftChild() ){
-            node->setLeftChild( leftChild->deepCopyNode() );
-            node->leftChild->setParent( node );
-        }
-        
-        //Recursively deep copy the right child
-        if( getHasRightChild() ){
-            node->setRightChild( rightChild->deepCopyNode() );
-            node->rightChild->setParent( node );
-        }
-        
-        return node;
-    }
+    virtual Node* deepCopyNode() const;
     
     /**
      This function returns the node type, this is the type of node defined by the class that inherits from the Node base class.
      
      @return returns the nodeType
      */
-    string getNodeType() const{
-        return nodeType;
-    }
+    string getNodeType() const;
     
     /**
      This function returns the depth of the node. The depth is the level in the tree at which the node is located, the root node has a
@@ -331,77 +118,47 @@ public:
      
      @return returns the depth of the node in the tree
      */
-    UINT getDepth() const{
-        return depth;
-    }
+    UINT getDepth() const;
     
     /**
      This function returns true if this node is a leaf node, false otherwise.
      
      @return returns true if this node is a leaf node, false otherwise
      */
-    bool getIsLeafNode() const{
-        return isLeafNode;
-    }
+    bool getIsLeafNode() const;
     
     /**
      This function returns true if this node has a parent, false otherwise.
      
      @return returns true if this node has a parent, false otherwise
      */
-    bool getHasParent() const{
-        return (parent != NULL);
-    }
+    bool getHasParent() const;
     
     /**
      This function returns true if this node has a leftChild, false otherwise.
      
      @return returns true if this node has a leftChild, false otherwise
      */
-    bool getHasLeftChild() const {
-        return (leftChild != NULL);
-    }
+    bool getHasLeftChild() const;
     
     /**
      This function returns true if this node has a rightChild, false otherwise.
      
      @return returns true if this node has a rightChild, false otherwise
      */
-    bool getHasRightChild() const {
-        return (rightChild != NULL);
-    }
+    bool getHasRightChild() const;
     
-    bool initNode(Node *parent,const UINT depth,const bool isLeafNode = false){
-        this->parent = parent;
-        this->depth = depth;
-        this->isLeafNode = isLeafNode;
-        return true;
-    }
+    bool initNode(Node *parent,const UINT depth,const bool isLeafNode = false);
     
-    bool setParent(Node *parent){
-        this->parent = parent;
-        return true;
-    }
+    bool setParent(Node *parent);
     
-    bool setLeftChild(Node *leftChild){
-        this->leftChild = leftChild;
-        return true;
-    }
+    bool setLeftChild(Node *leftChild);
     
-    bool setRightChild(Node *rightChild){
-        this->rightChild = rightChild;
-        return true;
-    }
+    bool setRightChild(Node *rightChild);
     
-    bool setDepth(const UINT depth){
-        this->depth = depth;
-        return true;
-    }
+    bool setDepth(const UINT depth);
     
-    bool setIsLeafNode(const bool isLeafNode){
-        this->isLeafNode = isLeafNode;
-        return true;
-    }
+    bool setIsLeafNode(const bool isLeafNode);
     
     /**
      Defines a map between a string (which will contain the name of the node, such as DecisionTreeNode) and a function returns a new instance of that node.
