@@ -150,6 +150,9 @@ public:
     bool setBatchSize(const UINT batchSize);
     bool setBatchStepSize(const UINT batchStepSize);
     
+    using MLBase::train; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
+    using MLBase::predict; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
+    
 protected:
     bool loadLegacyModelFromFile(fstream &file);
     
