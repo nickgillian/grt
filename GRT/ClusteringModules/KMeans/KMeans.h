@@ -41,10 +41,10 @@ namespace GRT{
 class KMeans : public Clusterer{
 
 public:
-	/**
-     Default Constructor.
+     /**
+       Default Constructor.
      */
-	KMeans(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const double minChange=1.0e-5,const bool computeTheta=true);
+    KMeans(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const double minChange=1.0e-5,const bool computeTheta=true);
 
     /**
      Defines how the data from the rhs KMeans should be copied to this KMeans
@@ -66,7 +66,7 @@ public:
      */
     KMeans &operator=(const KMeans &rhs);
     
-	/**
+     /**
      This deep copies the variables and models from the Clusterer pointer to this KMeans instance.
      This overrides the base deep copy function for the Clusterer modules.
      
@@ -121,9 +121,9 @@ public:
      @param UnlabelledData &trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
-	virtual bool train_(UnlabelledData &trainingData);
+     virtual bool train_(UnlabelledData &trainingData);
     
-	/**
+    /**
      This saves the trained KMeans model to a file.
      This overrides the saveModelToFile function in the base class.
      
@@ -162,8 +162,8 @@ public:
     //bool predict(VectorDouble inputVector,UINT &predictedClusterLabel,double &maxLikelihood,VectorDouble &clusterLikelihoods);
 
     //Getters
-	double getTheta(){ return finalTheta; }
-	bool getModelTrained(){ return trained; }
+    double getTheta(){ return finalTheta; }
+    bool getModelTrained(){ return trained; }
 
     VectorDouble getTrainingThetaLog() const{ return thetaTracker; }
     MatrixDouble getClusters() const{ return clusters; }
@@ -192,16 +192,16 @@ public:
 
 protected:
     UINT estep(const MatrixDouble &data);
-	void mstep(const MatrixDouble &data);
-	double calculateTheta(const MatrixDouble &data);
-	inline double SQR(const double a) {return a*a;};
+    void mstep(const MatrixDouble &data);
+    double calculateTheta(const MatrixDouble &data);
+    inline double SQR(const double a) {return a*a;};
 
     bool computeTheta;
     UINT numTrainingSamples;            ///<Number of training examples
-	UINT nchg;                          ///<Number of values changes
-	double finalTheta;
+    UINT nchg;                          ///<Number of values changes
+    double finalTheta;
     MatrixDouble clusters;
-	vector< UINT > assign, count;
+    vector< UINT > assign, count;
     VectorDouble thetaTracker;
     
 private:
