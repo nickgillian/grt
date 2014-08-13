@@ -133,7 +133,7 @@ bool MatrixDouble::resize(const unsigned int rows,const unsigned int cols){
     return Matrix<double>::resize(rows, cols);
 }
  
-bool MatrixDouble::print(const string title){
+bool MatrixDouble::print(const string title) const {
     
     if( dataPtr == NULL ) return false;
     

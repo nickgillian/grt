@@ -106,7 +106,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixDouble &data,
 
     //Get the eigenvectors and eigenvalues
     eigenvectors = eig.getEigenvectors();
-    VectorDouble eigenvalues = eig.getRealEigenvalues();
+    eigenvalues = eig.getRealEigenvalues();
 
     //Any eigenvalues less than 0 are not worth anything so set to 0
     for(UINT i=0; i<eigenvalues.size(); i++){
@@ -165,6 +165,9 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixDouble &data,
         errorLog << "computeFeatureVector(const MatrixDouble &data,UINT analysisMode) - Unknown analysis mode!" << endl;
         break;
     }
+    
+    //Get the raw eigenvalues (encase the user asks for these later)
+    eigenvalues = eig.getRealEigenvalues();
 
     //Flag that the features have been computed
     trained = true;
@@ -210,14 +213,14 @@ bool PrincipalComponentAnalysis::project(const MatrixDouble &data,MatrixDouble &
 	return true;
 }
     
-void PrincipalComponentAnalysis::print(string title){
+bool PrincipalComponentAnalysis::print(string title) const{
     
     if( title != "" ){
         cout << title << endl;
     }
     if( !trained ){
         cout << "Not Trained!\n";
-        return;
+        return false;
     }
     cout << "NumInputDimensions: " << numInputDimensions << " NumPrincipalComponents: " << numPrincipalComponents << endl;
     cout << "ComponentWeights: ";
@@ -231,6 +234,12 @@ void PrincipalComponentAnalysis::print(string title){
     }
     cout << endl;
     eigenvectors.print("Eigenvectors:");
+    
+    return true;
+}
+    
+MatrixDouble PrincipalComponentAnalysis::getEigenVectors() const{
+    return eigenvectors;
 }
 
 }//End of namespace GRT

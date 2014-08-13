@@ -129,7 +129,7 @@ public:
      @param const string title: sets the title of the data that will be printed to std::cout
      @return returns true or false, indicating if the print was successful
      */
-    bool print(const string title="");
+    bool print(const string title="") const;
     
     /**
      Transposes the data.

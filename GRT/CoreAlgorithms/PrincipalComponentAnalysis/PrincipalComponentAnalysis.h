@@ -103,38 +103,38 @@ class PrincipalComponentAnalysis : public GRTBase{
      Returns true if the module was trained.
      @return returns true if the module has been trained, false otherwise
      */
-    bool getTrained(){ return trained; }
+    bool getTrained() const { return trained; }
     
     /**
      Returns true if z-normalization is being applied to new data.
      @return returns true if the normData is true, false otherwise
      */
-    bool getNormData(){ return normData; }
+    bool getNormData() const { return normData; }
     
     /**
      Returns the number of input dimensions in the original input data.
      @return returns the numInputDimensions parameter.
      */
-    UINT getNumInputDimensions(){ return numInputDimensions; }
+    UINT getNumInputDimensions() const { return numInputDimensions; }
     
     /**
      Returns the number of principal components that was required to reach the maxVariance parameter.
      @return returns the number of principal components that was required to reach the maxVariance parameter
      */
-    UINT getNumPrincipalComponents(){ return numPrincipalComponents; }
+    UINT getNumPrincipalComponents() const { return numPrincipalComponents; }
     
     /**
      Returns the maxVariance parameter, set by the user when the computeFeatureVector was called.
      returns the maxVariance parameter, set by the user when the computeFeatureVector was called
      */
-    double getMaxVariance(){ return maxVariance; }
+    double getMaxVariance() const { return maxVariance; }
     
     /**
      Returns the mean shift vector, computed during the computeFeatureVector function. New data will be subtracted
      by this value before it is projected onto the principal subspace.
      @return returns the mean shift vector, computed during the computeFeatureVector function
      */
-    VectorDouble getMeanVector(){ return mean; }
+    VectorDouble getMeanVector() const { return mean; }
     
     /**
      Returns the standard deviation vector that is used to normalize new data, this is computed during the 
@@ -142,19 +142,31 @@ class PrincipalComponentAnalysis : public GRTBase{
      be z-normalized by this value before it is projected onto the principal subspace.
      @return returns the stdDev vector, computed during the computeFeatureVector function
      */
-    VectorDouble getStdDevVector(){ return stdDev; }
+    VectorDouble getStdDevVector() const { return stdDev; }
     
     /**
      Returns the weights for each principal component, these weights sum to 1.
      @return returns a vector of the weights for each principal component, these weights sum to 1
      */
-    VectorDouble getComponentWeights(){ return componentWeights; }
+    VectorDouble getComponentWeights() const { return componentWeights; }
+    
+    /**
+     Returns the raw eigen values (these are not sorted).
+     @return returns a vector of the raw eigen values
+     */
+    VectorDouble getEigenValues() const { return eigenvalues; }
     
     /**
      A helper function that prints the PCA info. If the user sets the title string, then this will be written in
      addition with the PCA data.
      */
-    void print(string title="");
+    virtual bool print(string title="") const;
+    
+    /**
+     Returns a matrix containing the eigen vectors.
+     @return returns a matrix containing the raw eigen vectors
+     */
+    MatrixDouble getEigenVectors() const;
 	
 protected:
     bool computeFeatureVector_(const MatrixDouble &data,UINT analysisMode);
@@ -167,6 +179,7 @@ protected:
     VectorDouble mean;
     VectorDouble stdDev;
     VectorDouble componentWeights;
+    VectorDouble eigenvalues;
     vector< IndexedDouble > sortedEigenvalues;
     MatrixDouble eigenvectors;
     
