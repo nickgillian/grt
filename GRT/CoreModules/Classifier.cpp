@@ -354,7 +354,7 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
             clear();
             return false;
         }
-        classLabels.resize(numClasses);
+        classLabels.resize( numClasses );
         for(UINT i=0; i<classLabels.size(); i++){
             file >> classLabels[i];
         }
@@ -363,7 +363,7 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
             //Load if the Ranges
             file >> word;
             if( word != "Ranges:" ){
-                errorLog << "loadClustererSettingsFromFile(fstream &file) - Failed to read Ranges header!" << endl;
+                errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read Ranges header!" << endl;
                 clear();
                 return false;
             }
