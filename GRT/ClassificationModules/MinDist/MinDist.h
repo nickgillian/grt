@@ -165,7 +165,7 @@ public:
      
      @return returns true if the gamma parameter was updated successfully, false otherwise
     */
-	bool setNullRejectionCoeff(double nullRejectionCoeff);
+	virtual bool setNullRejectionCoeff(double nullRejectionCoeff);
     
     /**
      Sets the numClusters parameter.

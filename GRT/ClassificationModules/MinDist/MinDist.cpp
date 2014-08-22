@@ -93,7 +93,6 @@ bool MinDist::train_(ClassificationData &labelledTrainingData){
     const unsigned int M = labelledTrainingData.getNumSamples();
     const unsigned int N = labelledTrainingData.getNumDimensions();
     const unsigned int K = labelledTrainingData.getNumClasses();
-    models.clear();
     
     if( M == 0 ){
         errorLog << "train_(ClassificationData &labelledTrainingData) - Training data has zero samples!" << endl;
@@ -109,6 +108,7 @@ bool MinDist::train_(ClassificationData &labelledTrainingData){
     numClasses = K;
     models.resize(K);
     classLabels.resize(K);
+    nullRejectionThresholds.resize(K);
     ranges = labelledTrainingData.getRanges();
     
     //Scale the training data if needed
@@ -146,6 +146,9 @@ bool MinDist::train_(ClassificationData &labelledTrainingData){
             return false;
         }
         
+        //Set the null rejection threshold
+        nullRejectionThresholds[k] = models[k].getRejectionThreshold();
+        
     }
     
     trained = true;
@@ -179,31 +182,27 @@ bool MinDist::predict_(VectorDouble &inputVector){
     if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
-    double classLikelihoodsSum = 0;
+    double sum = 0;
     double minDist = numeric_limits<double>::max();
 	for(UINT k=0; k<numClasses; k++){
+        //Compute the distance for class k
 		classDistances[k] = models[k].predict( inputVector );
-        
-        //At this point the class likelihoods and class distances are the same thing
-        classLikelihoods[k] = classDistances[k];
-        classLikelihoodsSum += classDistances[k];
 
         //Keep track of the best value
 		if( classDistances[k] < minDist ){
 			minDist = classDistances[k];
 			predictedClassLabel = k;
 		}
+        
+        //Set the class likelihoods as 1.0 / dist[k], the small number is to stop divide by zero
+        classLikelihoods[k] = 1.0 / (classDistances[k] + 0.0001);
+        sum += classLikelihoods[k];
     }
     
     //Normalize the classlikelihoods
-	if( classLikelihoodsSum != 0 ){
-        double sum = 0;
-    	for(UINT k=0; k<numClasses; k++){
-        	classLikelihoods[k] = classLikelihoodsSum-classLikelihoods[k];
-            sum += classLikelihoods[k];
-    	}
+	if( sum != 0 ){
         for(UINT k=0; k<numClasses; k++){
-        	classLikelihoods[k] = classLikelihoods[k]/sum;
+        	classLikelihoods[k] /= sum;
     	}
         maxLikelihood = classLikelihoods[predictedClassLabel];
 	}else maxLikelihood = classLikelihoods[predictedClassLabel];
@@ -224,6 +223,7 @@ bool MinDist::clear(){
     
     //Clear the MinDist variables
     models.clear();
+    
     return true;
 }
 

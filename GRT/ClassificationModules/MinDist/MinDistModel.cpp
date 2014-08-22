@@ -74,7 +74,7 @@ bool MinDistModel::train(UINT classLabel,MatrixDouble &trainingData,UINT numClus
 	trainingMu = 0;
 	trainingSigma = 0;
     
-    //Now compute the threshold
+    //Now compute the rejection threshold
     const UINT M = trainingData.getNumRows();
     const UINT N = trainingData.getNumCols();
 	VectorDouble predictions(M);
@@ -85,7 +85,7 @@ bool MinDistModel::train(UINT classLabel,MatrixDouble &trainingData,UINT numClus
 			testData[j] = trainingData[i][j];
         }
         
-		predictions[i] = predict(testData);
+		predictions[i] = predict( testData );
         trainingMu += predictions[i];
 	}
     
@@ -98,7 +98,7 @@ bool MinDistModel::train(UINT classLabel,MatrixDouble &trainingData,UINT numClus
     }
 	trainingSigma = sqrt( trainingSigma / (double(M)-1.0) );
     
-	rejectionThreshold = trainingMu+(trainingSigma*gamma);
+	rejectionThreshold = trainingMu + ( trainingSigma * gamma );
 	return true;
 	
 }
@@ -124,7 +124,7 @@ double MinDistModel::predict(const VectorDouble &inputVector){
 }
 	
 void MinDistModel::recomputeThresholdValue(){
-	rejectionThreshold = trainingMu+(trainingSigma*gamma);
+	rejectionThreshold = trainingMu + ( trainingSigma * gamma );
 }
 	
 UINT MinDistModel::getClassLabel() const{
