@@ -82,7 +82,7 @@ bool KNN::deepCopyFrom(const Classifier *classifier){
     if( classifier == NULL ) return false;
     
     if( this->getClassifierType() == classifier->getClassifierType() ){
-        //Invoke the equals operator
+        //Get a pointer the KNN copy instance
         KNN *ptr = (KNN*)classifier;
         
         this->K = ptr->K;
@@ -125,7 +125,7 @@ bool KNN::train_(ClassificationData &trainingData){
     this->trainingData = trainingData;
     
     //Set the class labels
-    classLabels.resize(numClasses);
+    classLabels.resize( numClasses );
     for(UINT k=0; k<numClasses; k++){
         classLabels[k] = trainingData.getClassTracker()[k].classLabel;
     }
@@ -324,7 +324,7 @@ bool KNN::predict_(VectorDouble &inputVector){
     
     //Scale the input vector if needed
     if( useScaling ){
-        for(UINT i=0; i<inputVector.size(); i++){
+        for(UINT i=0; i<numInputDimensions; i++){
             inputVector[i] = scale(inputVector[i], ranges[i].minValue, ranges[i].maxValue, 0, 1);
         }
     }
@@ -396,10 +396,11 @@ bool KNN::predict(const VectorDouble &inputVector,const UINT K){
     }
 
     //Predict the class ID using the labels of the K nearest neighbours
-    if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
-    else for(UINT i=0; i<classLikelihoods.size(); i++){ classLikelihoods[i] = 0; }
-    if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
-    else for(UINT i=0; i<classDistances.size(); i++){ classDistances[i] = 0; }
+    if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses);
+    if( classDistances.size() != numClasses ) classDistances.resize(numClasses);
+    
+    std::fill(classLikelihoods.begin(),classLikelihoods.end(),0);
+    std::fill(classDistances.begin(),classDistances.end(),0);
 
     //Count the classes
     for(UINT k=0; k<neighbours.size(); k++){
@@ -432,13 +433,13 @@ bool KNN::predict(const VectorDouble &inputVector,const UINT K){
     }
 
     //Compute the average distances per class
-    for(UINT i=0; i<classDistances.size(); i++){
+    for(UINT i=0; i<numClasses; i++){
         if( classLikelihoods[i] > 0 )   classDistances[i] /= classLikelihoods[i];
         else classDistances[i] = BIG_DISTANCE;
     }
 
     //Normalize the likelihoods
-    for(UINT i=0; i<classLikelihoods.size(); i++){
+    for(UINT i=0; i<numClasses; i++){
         classLikelihoods[i] /= double( neighbours.size() );
     }
 
