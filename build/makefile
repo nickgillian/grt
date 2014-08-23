@@ -122,10 +122,11 @@ MULTIDIMENSIONAL_REGRESSION_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/RegressionModulesE
 REGRESSION_EXAMPLES_SRC = $(MLP_EXAMPLE_SRC) $(LINEAR_REGRESSION_EXAMPLE_SRC) $(LOGISTIC_REGRESSION_EXAMPLE_SRC) $(MULTIDIMENSIONAL_REGRESSION_EXAMPLE_SRC)
 
 #Tutorial Examples
+GETTING_STARTED_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/Tutorials/GettingStarted/GettingStarted.cpp
 HELLO_WORLD_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/Tutorials/HelloWorld/HelloWorld.cpp
 MACHINE_LEARNING_101_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/Tutorials/MachineLearning101/MachineLearning101.cpp
 CUSTOM_FEATURE_EXTRACTION_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/Tutorials/CustomFeatureExtraction/*.cpp
-TUTORIALS_EXAMPLES_SRC = $(HELLO_WORLD_EXAMPLE_SRC) $(MACHINE_LEARNING_101_EXAMPLE_SRC) $(CUSTOM_FEATURE_EXTRACTION_EXAMPLE_SRC)
+TUTORIALS_EXAMPLES_SRC = $(GETTING_STARTED_EXAMPLE_SRC) $(HELLO_WORLD_EXAMPLE_SRC) $(MACHINE_LEARNING_101_EXAMPLE_SRC) $(CUSTOM_FEATURE_EXTRACTION_EXAMPLE_SRC)
 
 #Core Algorithms Examples
 PCA_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/CoreAlgorithmsExamples/PrincipalComponentAnalysisExample/PrincipalComponentAnalysisExample.cpp
@@ -231,6 +232,7 @@ grtExamples: $(GRT_EXAMPLES_SRC) $(GRT_SRC) $(GRT_LIB)
 	$(CC) LinearRegressionExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/LinearRegressionExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) LogisticRegressionExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/LogisticRegressionExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) MultidimensionalRegressionExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/MultidimensionalRegressionExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
+	$(CC) GettingStarted.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/GettingStarted.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) HelloWorld.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/HelloWorld.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) MachineLearning101.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/MachineLearning101.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) CustomFeatureExtractionExample.o Accumulator.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/CustomFeatureExtractionExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
