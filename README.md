@@ -46,7 +46,8 @@ This example demonstrates a few key components of the GRT.  Namely, it shows:
 * how to use a test dataset to test the accuracy of a classification model
 * how to print the test results
 
-    #include "GRT.h"
+    //Include the main GRT header
+	#include "GRT.h"
     using namespace GRT;
 	
     bool generateDataset( const string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions  );
