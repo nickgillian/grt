@@ -48,7 +48,7 @@ This example demonstrates a few key components of the GRT, such as:
 
 You can find this source code and a large number of other examples and tutorials in the GRT examples folder.
 
-```<C++>
+```C++
 //Include the main GRT header
 #include "GRT.h"
 using namespace GRT;
