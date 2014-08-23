@@ -52,6 +52,7 @@ You can find this source code and a large number of other examples and tutorials
 //Include the main GRT header
 #include "GRT.h"
 using namespace GRT;
+
 bool generateDataset( const string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions  );
 
 int main (int argc, const char * argv[])
