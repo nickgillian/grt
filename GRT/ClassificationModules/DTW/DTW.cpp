@@ -406,7 +406,7 @@ bool DTW::predict_(MatrixDouble &inputTimeSeries){
 	for(UINT k=0; k<numTemplates; k++){
 		//Perform DTW
 		classDistances[k] = computeDistance(templatesBuffer[k].timeSeries,*timeSeriesPtr,distanceMatrices[k],warpPaths[k]);
-        classLikelihoods[k] = classDistances[k];
+        classLikelihoods[k] = 1.0 / classDistances[k];
         sum += classLikelihoods[k];
 	}
 
@@ -423,11 +423,13 @@ bool DTW::predict_(MatrixDouble &inputTimeSeries){
     //Normalize the class likelihoods and check which class has the maximum likelihood
     UINT maxLikelihoodIndex = 0;
     maxLikelihood = 0;
-    for(UINT k=0; k<numTemplates; k++){
-        classLikelihoods[k] = (sum-classLikelihoods[k])/sum;
-        if( classLikelihoods[k] > maxLikelihood ){
-            maxLikelihood = classLikelihoods[k];
-            maxLikelihoodIndex = k;
+    if( sum > 0 ){
+        for(UINT k=0; k<numTemplates; k++){
+            classLikelihoods[k] /= sum;
+            if( classLikelihoods[k] > maxLikelihood ){
+                maxLikelihood = classLikelihoods[k];
+                maxLikelihoodIndex = k;
+            }
         }
     }
 
@@ -466,9 +468,8 @@ bool DTW::predict_(VectorDouble &inputVector){
     }
     predictedClassLabel = 0;
     maxLikelihood = DEFAULT_NULL_LIKELIHOOD_VALUE;
-    for(UINT c=0; c<classLikelihoods.size(); c++){
-        classLikelihoods[c] = DEFAULT_NULL_LIKELIHOOD_VALUE;
-    }
+    std::fill(classLikelihoods.begin(),classLikelihoods.end(),DEFAULT_NULL_LIKELIHOOD_VALUE);
+    std::fill(classDistances.begin(),classDistances.end(),0);
 
 	if( numInputDimensions != inputVector.size() ){
         errorLog << "predict_(VectorDouble &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.size() << endl;
@@ -484,9 +485,11 @@ bool DTW::predict_(VectorDouble &inputVector){
     }
 
     //Copy the data into a temporary matrix
-    MatrixDouble predictionTimeSeries(continuousInputDataBuffer.getSize(),numInputDimensions);
-    for(UINT i=0; i<predictionTimeSeries.getNumRows(); i++){
-        for(UINT j=0; j<predictionTimeSeries.getNumCols(); j++){
+    const UINT M = continuousInputDataBuffer.getSize();
+    const UINT N = numInputDimensions;
+    MatrixDouble predictionTimeSeries(M,N);
+    for(UINT i=0; i<M; i++){
+        for(UINT j=0; j<N; j++){
             predictionTimeSeries[i][j] = continuousInputDataBuffer[i][j];
         }
     }
@@ -520,6 +523,7 @@ bool DTW::clear(){
 }
 
 bool DTW::recomputeNullRejectionThresholds(){
+    
 	if(!trained) return false;
 
     //Copy the null rejection thresholds into one buffer so they can easily be accessed from the base class
