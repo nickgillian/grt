@@ -36,7 +36,7 @@ The toolkit's source code is structured as following:
 * **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random and Matrix.
 
 ##Getting Started Example
-This example demonstrates a few key components of the GRT.  Namely, it shows:
+This example demonstrates a few key components of the GRT, such as:
 * how to generate and save a basic labeled dataset
 * how to save/load this data to/from a CSV file
 * how to split a dataset into a training and test partition
@@ -46,7 +46,9 @@ This example demonstrates a few key components of the GRT.  Namely, it shows:
 * how to use a test dataset to test the accuracy of a classification model
 * how to print the test results
 
-```<c++>
+You can find this source code and a large number of other examples and tutorials in the GRT examples folder.
+
+```<C++>
 //Include the main GRT header
 #include "GRT.h"
 using namespace GRT;
