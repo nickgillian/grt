@@ -111,8 +111,9 @@ DMA_FILTER_SRC = $(GRT_EXAMPLES_DIR)/PreprocessingModulesExamples/DoubleMovingAv
 HP_FILTER_SRC = $(GRT_EXAMPLES_DIR)/PreprocessingModulesExamples/HighPassFilterExample/HighPassFilterExample.cpp
 LP_FILTER_SRC = $(GRT_EXAMPLES_DIR)/PreprocessingModulesExamples/LowPassFilterExample/LowPassFilterExample.cpp
 MA_FILTER_SRC = $(GRT_EXAMPLES_DIR)/PreprocessingModulesExamples/MovingAverageFilterExample/MovingAverageFilterExample.cpp
+MD_FILTER_SRC = $(GRT_EXAMPLES_DIR)/PreprocessingModulesExamples/MedianFilterExample/MedianFilterExample.cpp
 SG_FILTER_SRC = $(GRT_EXAMPLES_DIR)/PreprocessingModulesExamples/SavitskyGolayFilterExample/SavitskyGolayFilterExample.cpp
-PRE_PROCESSING_EXAMPLES_SRC = $(DEAD_ZONE_SRC) $(DERIVATIVE_SRC) $(DMA_FILTER_SRC) $(HP_FILTER_SRC) $(LP_FILTER_SRC) $(MA_FILTER_SRC) $(SG_FILTER_SRC)
+PRE_PROCESSING_EXAMPLES_SRC = $(DEAD_ZONE_SRC) $(DERIVATIVE_SRC) $(DMA_FILTER_SRC) $(HP_FILTER_SRC) $(LP_FILTER_SRC) $(MA_FILTER_SRC) $(MD_FILTER_SRC) $(SG_FILTER_SRC)
 
 #Regression Module Examples
 MLP_EXAMPLE_SRC = $(GRT_EXAMPLES_DIR)/RegressionModulesExamples/MLPRegressionExample/MLPRegressionExample.cpp
@@ -227,6 +228,7 @@ grtExamples: $(GRT_EXAMPLES_SRC) $(GRT_SRC) $(GRT_LIB)
 	$(CC) HighPassFilterExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/HighPassFilterExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) LowPassFilterExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/LowPassFilterExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) MovingAverageFilterExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/MovingAverageFilterExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
+	$(CC) MedianFilterExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/MedianFilterExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) SavitskyGolayFilterExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/SavitskyGolayFilterExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) MLPRegressionExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/MLPRegressionExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
 	$(CC) LinearRegressionExample.o -o $(GRT_EXAMPLES_OUTPUT_DIR)/LinearRegressionExample.out $(GRT_HEADERS) $(CFLAGS) $(LIBS)
