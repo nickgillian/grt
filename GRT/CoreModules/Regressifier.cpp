@@ -147,13 +147,11 @@ bool Regressifier::saveBaseSettingsToFile(fstream &file) const{
 		for(UINT j=0; j<numInputDimensions; j++){
 			file << inputVectorRanges[j].minValue << "\t" << inputVectorRanges[j].maxValue << endl;
 		}
-		file << endl;
         
 		file << "OutputVectorRanges: \n";
 		for(UINT j=0; j<numOutputDimensions; j++){
 			file << targetVectorRanges[j].minValue << "\t" << targetVectorRanges[j].maxValue << endl;
 		}
-		file << endl;
     }
     
     return true;

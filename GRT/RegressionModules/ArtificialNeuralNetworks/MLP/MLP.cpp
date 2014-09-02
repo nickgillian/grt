@@ -1148,6 +1148,13 @@ bool MLP::loadModelFromFile(fstream &file){
         errorLog << "loadModelFromFile(fstream &file) - Failed to find file header!" << endl;
 		return false;
 	}
+    
+    //Load the base settings from the file
+    if( !Regressifier::loadBaseSettingsFromFile( file ) ){
+        file.close();
+        errorLog << "loadModelFromFile(fstream &file) - Failed to load regressifier base settings from file!" << endl;
+		return false;
+    }
 
 	file >> word;
 	if(word != "NumInputNeurons:"){
