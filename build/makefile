@@ -53,7 +53,7 @@ GRT_HEADERS = -I$(GRT_SRC_DIR)
 GRT_LIB = libgrt.a
 LIB_DIR = -L.
 LIBS = -lgrt
-GRT_HEADERS_INSTALL_DIR = /usr/local/include/grt
+GRT_HEADERS_INSTALL_DIR = /usr/local/include
 GRT_LIB_INSTALL_DIR = /usr/local/lib
 CC = g++
 CFLAGS = -g -Wall -O2 $(LIB_DIR)
@@ -257,8 +257,20 @@ ifeq ($(shell uname),Darwin)
 	cp -f `find $(GRT_EXAMPLES_DIR) -maxdepth 3 -name "*.csv"` $(GRT_EXAMPLES_OUTPUT_DIR)
 endif
 
+uninstall:
+	rm -rf $(GRT_HEADERS_INSTALL_DIR)/GRT
+	rm -f $(GRT_LIB_INSTALL_DIR)/$(GRT_LIB)
+	
 install:
-	@echo "Installing static library to " + $(GRT_LIB_INSTALL_DIR)
+	@echo "Copying library headers to" $(GRT_HEADERS_INSTALL_DIR)
+ifeq ($(shell uname),Linux)
+	cp -R $(GRT_SRC_DIR) $(GRT_HEADERS_INSTALL_DIR)
+endif
+ifeq ($(shell uname),Darwin)
+	cp -R $(GRT_SRC_DIR) $(GRT_HEADERS_INSTALL_DIR)
+endif
+	@echo "Copying static library to" $(GRT_LIB_INSTALL_DIR)
+	cp $(GRT_LIB) $(GRT_LIB_INSTALL_DIR)
 	
 cleanGRTExamples:
 	rm -f $(GRT_EXAMPLES_OUTPUT_DIR)/*.out
