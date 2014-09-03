@@ -208,24 +208,27 @@ public:
      @param SENSOR_DATA &data: the template data structure containing any data you need to pass to the update function.
      @return returns true if the filter was run successfully, false otherwise
      */
-    bool filter(SENSOR_DATA &data){
+    virtual bool filter(SENSOR_DATA &data){
         
         if( !initialized ){
             errorLog << "ERROR: The particle filter has not been initialized!" << endl;
             return false;
         }
         
+        unsigned int i = 0;
+        typename vector< PARTICLE >::iterator iter;
+        
         //The main particle prediction loop
-        for(unsigned int i=0; i<numParticles; i++){
-            if( !predict( particles[i] ) ){
+        for( iter = particles.begin(), i = 0; iter != particles.end(); ++iter, i++ ){
+            if( !predict( *iter ) ){
                 errorLog << "ERROR: Particle " << i << " failed prediction!" << endl;
                 return false;
             }
         }
         
         //The main particle update loop
-        for(unsigned int i=0; i<numParticles; i++){
-            if( !update( particles[i], data ) ){
+        for( iter = particles.begin(), i = 0; iter != particles.end(); ++iter, i++ ){
+            if( !update( *iter, data ) ){
                 errorLog << "ERROR: Particle " << i << " failed update!" << endl;
                 return false;
             }
@@ -245,10 +248,14 @@ public:
             return false;
         }
         
-        //Resample the particles
-        if( !resample() ){
-            errorLog << "ERROR: Failed to resample particles!" << endl;
-            return false;
+        //Check to see if we should resample the particles for the next iteration
+        if( checkForResample() ){
+        
+            //Resample the particles
+            if( !resample() ){
+                errorLog << "ERROR: Failed to resample particles!" << endl;
+                return false;
+            }
         }
         
         return true;
@@ -259,7 +266,7 @@ public:
      
      @return returns true if the filter was cleared successfully, false otherwise
      */
-    bool clear(){
+    virtual bool clear(){
         initialized = false;
         numParticles = 0;
         stateVectorSize = 0;
@@ -502,11 +509,11 @@ protected:
         //Compute the total particle weight
         double wNorm = 0;
         numDeadParticles = 0;
-        for(unsigned int i=0; i<numParticles; i++){
-            wNorm += particles[i].w;
+        typename vector< PARTICLE >::iterator iter;
+        for( iter = particles.begin(); iter != particles.end(); ++iter ){
+            wNorm += iter->w;
             
-            if( std::isinf( particles[i].w ) ){
-                cout << "particle is inf!\n";
+            if( std::isinf( iter->w ) ){
                 numDeadParticles++;
             }
         }
@@ -524,8 +531,8 @@ protected:
         }
         
         //Normalized the weights so they sum to 1
-        for(unsigned int i=0; i<numParticles; i++){
-            particles[i].w /= wNorm;
+        for( iter = particles.begin(); iter != particles.end(); ++iter ){
+            iter->w /= wNorm;
         }
 
         return true;
@@ -540,6 +547,7 @@ protected:
      */
     virtual bool computeEstimate(){
         
+        typename vector< PARTICLE >::iterator iter;
         const unsigned int N = x.size();
         unsigned int bestIndex = 0;
         unsigned int robustMeanParticleCounter = 0;
@@ -552,11 +560,11 @@ protected:
                     x[j] = 0;
                 }
                 
-                for(unsigned int i=0; i<numParticles; i++){
+                for( iter = particles.begin(); iter != particles.end(); ++iter ){
                     for(unsigned int j=0; j<N; j++){
-                        x[j] += particles[i][j];
+                        x[j] += iter->x[j];
                     }
-                    estimationLikelihood += std::isnan(particles[i].w) ? 0 : particles[i].w;
+                    estimationLikelihood += std::isnan(iter->w) ? 0 : iter->w;
                 }
                 
                 for(unsigned int j=0; j<N; j++){
@@ -568,15 +576,15 @@ protected:
                 for(unsigned int j=0; j<N; j++){
                     x[j] = 0;
                     sum = 0;
-                    for(unsigned int i=0; i<numParticles; i++){
-                        x[j] += particles[i][j] * particles[i].w;
-                        sum += particles[i].w;
+                    for( iter = particles.begin(); iter != particles.end(); ++iter ){
+                        x[j] += iter->x[j] * iter->w;
+                        sum += iter->w;
                     }
                     x[j] /= sum;
                 }
                 
-                for(unsigned int i=0; i<numParticles; i++){
-                    estimationLikelihood += std::isnan(particles[i].w) ? 0 : particles[i].w;
+                for( iter = particles.begin(); iter != particles.end(); ++iter ){
+                    estimationLikelihood += std::isnan(iter->w) ? 0 : iter->w;
                 }
                 estimationLikelihood /= double(numParticles);
                 break;
@@ -596,13 +604,13 @@ protected:
                 }
                 
                 //Use all the particles within a given distance of that weight
-                for(unsigned int i=0; i<numParticles; i++){
-                    if( fabs( particles[i].w - particles[bestIndex].w ) <= robustMeanWeightDistance ){
+                for( iter = particles.begin(); iter != particles.end(); ++iter ){
+                    if( fabs( iter->w - particles[bestIndex].w ) <= robustMeanWeightDistance ){
                         for(unsigned int j=0; j<N; j++){
-                            x[j] += particles[i][j] * particles[i].w;
+                            x[j] += iter->x[j] * iter->w;
                         }
-                        estimationLikelihood += std::isnan(particles[i].w) ? 0 : particles[i].w;
-                        sum += particles[i].w;
+                        estimationLikelihood += std::isnan(iter->w) ? 0 : iter->w;
+                        sum += iter->w;
                         robustMeanParticleCounter++;
                     }
                 }
@@ -629,6 +637,16 @@ protected:
                 break;
         }
         
+        return true;
+    }
+    
+    /**
+     This function checks to see if the particles should be resampled for the next iteration of filtering.
+     This is a virtual function, so you can override it in your derived class if needed.
+     
+     @return returns true if the particles should be resampled, false otherwise
+     */
+    virtual bool checkForResample(){
         return true;
     }
     
