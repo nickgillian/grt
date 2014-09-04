@@ -1,11 +1,10 @@
 ## Build
 
 
-### iSoft Linux or ArchLinux
+### iSoft Linux or base on ArchLinux
 
 ```
 sudo pacman -S qtcreator qt5-base
-qmake -v
 qmake
 make
 ```

@@ -121,7 +121,8 @@ HEADERS += ../../GRT/CoreAlgorithms/BernoulliRBM/*.h \
            ../../GRT/CoreAlgorithms/EvolutionaryAlgorithm/*.h \
            ../../GRT/CoreAlgorithms/ParticleFilter/*.h \
            ../../GRT/CoreAlgorithms/ParticleSwarmOptimization/*.h \
-           ../../GRT/CoreAlgorithms/PrincipalComponentAnalysis/*.h
+           ../../GRT/CoreAlgorithms/PrincipalComponentAnalysis/*.h  \
+           ../../GRT/CoreAlgorithms/Tree/*.h
 
 #Add the GRT Pipeline and Core Modules headers
 HEADERS += ../../GRT/CoreModules/*.h
@@ -184,7 +185,8 @@ SOURCES += ../../GRT/ContextModules/*.cpp
 
 #Add the Core Alogrithm source
 SOURCES += ../../GRT/CoreAlgorithms/BernoulliRBM/*.cpp \
-           ../../GRT/CoreAlgorithms/PrincipalComponentAnalysis/*.cpp
+           ../../GRT/CoreAlgorithms/PrincipalComponentAnalysis/*.cpp    \
+           ../../GRT/CoreAlgorithms/Tree/*.cpp
 
 #Add the GRT Pipeline and Core Modules source
 SOURCES += ../../GRT/CoreModules/*.cpp
