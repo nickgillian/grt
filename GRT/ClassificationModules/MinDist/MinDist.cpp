@@ -85,22 +85,22 @@ bool MinDist::deepCopyFrom(const Classifier *classifier){
     return false;
 }
     
-bool MinDist::train_(ClassificationData &labelledTrainingData){
+bool MinDist::train_(ClassificationData &trainingData){
     
     //Clear any previous models
     clear();
     
-    const unsigned int M = labelledTrainingData.getNumSamples();
-    const unsigned int N = labelledTrainingData.getNumDimensions();
-    const unsigned int K = labelledTrainingData.getNumClasses();
+    const unsigned int M = trainingData.getNumSamples();
+    const unsigned int N = trainingData.getNumDimensions();
+    const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
-        errorLog << "train_(ClassificationData &labelledTrainingData) - Training data has zero samples!" << endl;
+        errorLog << "train_(trainingData &labelledTrainingData) - Training data has zero samples!" << endl;
         return false;
     }
     
     if( M <= numClusters ){
-        errorLog << "train_(ClassificationData &labelledTrainingData) - There are not enough training samples for the number of clusters. Either reduce the number of clusters or increase the number of training samples!" << endl;
+        errorLog << "train_(trainingData &labelledTrainingData) - There are not enough training samples for the number of clusters. Either reduce the number of clusters or increase the number of training samples!" << endl;
         return false;
     }
     
@@ -109,25 +109,27 @@ bool MinDist::train_(ClassificationData &labelledTrainingData){
     models.resize(K);
     classLabels.resize(K);
     nullRejectionThresholds.resize(K);
-    ranges = labelledTrainingData.getRanges();
+    ranges = trainingData.getRanges();
     
     //Scale the training data if needed
     if( useScaling ){
         //Scale the training data between 0 and 1
-        labelledTrainingData.scale(0, 1);
+        trainingData.scale(0, 1);
     }
     
     //Train each of the models
     for(UINT k=0; k<numClasses; k++){
         
+        trainingLog << "Training model for class: " << trainingData.getClassTracker()[k].classLabel << endl;
+        
         //Get the class label for the kth class
-        UINT classLabel = labelledTrainingData.getClassTracker()[k].classLabel;
+        UINT classLabel = trainingData.getClassTracker()[k].classLabel;
         
         //Set the kth class label
         classLabels[k] = classLabel;
         
         //Get all the training data for this class
-        ClassificationData classData = labelledTrainingData.getClassData(classLabel);
+        ClassificationData classData = trainingData.getClassData(classLabel);
         MatrixDouble data(classData.getNumSamples(),N);
         
         //Copy the training data into a matrix
