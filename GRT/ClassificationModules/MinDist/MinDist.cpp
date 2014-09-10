@@ -141,7 +141,7 @@ bool MinDist::train_(ClassificationData &trainingData){
         
         //Train the model for this class
         models[k].setGamma( nullRejectionCoeff );
-        if( !models[k].train(classLabel,data,numClusters) ){
+        if( !models[k].train(classLabel,data,numClusters,minChange,maxNumEpochs) ){
             errorLog << "train_(ClassificationData &labelledTrainingData) - Failed to train model for class: " << classLabel;
             errorLog << ". This is might be because this class does not have enough training samples! You should reduce the number of clusters or increase the number of training samples for this class." << endl;
             models.clear();

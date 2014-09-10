@@ -56,7 +56,7 @@ public:
      */
 	MinDistModel &operator=(const MinDistModel &rhs);
 	
-	bool train(UINT classLabel,MatrixDouble &trainingData,UINT numClusters);
+	bool train(UINT classLabel,MatrixDouble &trainingData,UINT numClusters,double minChange,UINT maxNumEpochs);
 	double predict(const VectorDouble &observation);
 	void recomputeThresholdValue();
 	

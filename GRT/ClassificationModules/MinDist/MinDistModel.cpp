@@ -46,10 +46,9 @@ MinDistModel& MinDistModel:: operator=(const MinDistModel &rhs){
 	return *this;
 }
 	
-bool MinDistModel::train(UINT classLabel,MatrixDouble &trainingData,UINT numClusters){
+bool MinDistModel::train(UINT classLabel,MatrixDouble &trainingData,UINT numClusters,double minChange,UINT maxNumEpochs){
 	
 	if( trainingData.getNumRows() < numClusters ){
-        
         return false;
     }
 	
@@ -60,8 +59,8 @@ bool MinDistModel::train(UINT classLabel,MatrixDouble &trainingData,UINT numClus
 	//Find the clusters
 	KMeans kmeans;
     kmeans.setNumClusters(numClusters);
-	kmeans.setMinChange( 1.0e-5 );
-	kmeans.setMaxNumEpochs( 1000 );
+	kmeans.setMinChange( minChange );
+	kmeans.setMaxNumEpochs( maxNumEpochs );
 	
 	if( !kmeans.train_(trainingData) ){
 		return false;
