@@ -94,7 +94,7 @@ bool FFT::deepCopyFrom(const FeatureExtraction *featureExtraction){
     return false;
 }
     
-bool FFT::saveModelToFile(const string filename) const{
+bool FFT::saveModelToFile(string filename) const{
 
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -108,7 +108,7 @@ bool FFT::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool FFT::loadModelFromFile(const string filename){
+bool FFT::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

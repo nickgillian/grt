@@ -25,7 +25,7 @@ namespace GRT{
 //Register the ClassLabelTimeoutFilter module with the PostProcessing base class
 RegisterPostProcessingModule< ClassLabelTimeoutFilter > ClassLabelTimeoutFilter::registerModule("ClassLabelTimeoutFilter");
     
-ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(double timeoutDuration,UINT filterMode){
+ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(unsigned long timeoutDuration,UINT filterMode){
     classType = "ClassLabelTimeoutFilter";
     postProcessingType = classType;
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
@@ -122,7 +122,7 @@ bool ClassLabelTimeoutFilter::reset(){
     return true;
 }
     
-bool ClassLabelTimeoutFilter::init(double timeoutDuration,UINT filterMode){
+bool ClassLabelTimeoutFilter::init(unsigned long timeoutDuration,UINT filterMode){
 
     initialized = false;
     
@@ -338,7 +338,7 @@ bool ClassLabelTimeoutFilter::loadModelFromFile(fstream &file){
     return init(timeoutDuration,filterMode);
 }
     
-bool ClassLabelTimeoutFilter::setTimeoutDuration(double timeoutDuration){
+bool ClassLabelTimeoutFilter::setTimeoutDuration(unsigned long timeoutDuration){
     if( timeoutDuration < 0 ) return false;
     this->timeoutDuration = timeoutDuration;
     if( initialized ){

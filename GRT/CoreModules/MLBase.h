@@ -272,7 +272,7 @@ public:
      @param const string filename: the name of the file to save the model to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(const string filename) const;
+    virtual bool saveModelToFile(string filename) const;
     
     /**
      This saves the trained model to a file.
@@ -289,7 +289,7 @@ public:
      @param const string filename: the name of the file to load the model from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(const string filename);
+    virtual bool loadModelFromFile(string filename);
     
     /**
      This loads a trained model from a file.

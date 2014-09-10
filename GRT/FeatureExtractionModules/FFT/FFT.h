@@ -126,7 +126,7 @@ public:
      @param const string filename: the filename to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(const string filename) const;
+    virtual bool saveModelToFile(string filename) const;
     
     /**
      This saves the feature extraction settings to a file.
@@ -134,7 +134,7 @@ public:
      @param fstream &file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool loadModelFromFile(const string filename);
+    virtual bool loadModelFromFile(string filename);
     
     /**
      This saves the feature extraction settings to a file.

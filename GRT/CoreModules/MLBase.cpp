@@ -109,7 +109,7 @@ bool MLBase::predict(MatrixDouble inputMatrix){ return predict_( inputMatrix ); 
     
 bool MLBase::predict_(MatrixDouble &inputMatrix){ return false; }
 
-bool MLBase::MLBase::map(VectorDouble inputVector){ return map_( inputVector ); }
+bool MLBase::map(VectorDouble inputVector){ return map_( inputVector ); }
 
 bool MLBase::map_(VectorDouble &inputVector){ return false; }
 
@@ -128,7 +128,7 @@ bool MLBase::clear(){
 
 bool MLBase::print() const { return true; }
 
-bool MLBase::saveModelToFile(const string filename) const{
+bool MLBase::saveModelToFile(string filename) const{
     
     if( !trained ) return false;
     
@@ -146,7 +146,7 @@ bool MLBase::saveModelToFile(const string filename) const{
 
 bool MLBase::saveModelToFile(fstream &file) const { return false; }
 
-bool MLBase::loadModelFromFile(const string filename){
+bool MLBase::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

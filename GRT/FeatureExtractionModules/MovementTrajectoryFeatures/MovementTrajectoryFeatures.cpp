@@ -110,7 +110,7 @@ bool MovementTrajectoryFeatures::reset(){
     return false;
 }
     
-bool MovementTrajectoryFeatures::saveModelToFile(const string filename) const{
+bool MovementTrajectoryFeatures::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -124,7 +124,7 @@ bool MovementTrajectoryFeatures::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool MovementTrajectoryFeatures::loadModelFromFile(const string filename){
+bool MovementTrajectoryFeatures::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
