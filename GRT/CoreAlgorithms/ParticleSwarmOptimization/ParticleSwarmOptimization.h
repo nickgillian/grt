@@ -44,8 +44,11 @@ public:
     /**
      Default Constructor.
      */
-    ParticleSwarmOptimization(){
+    ParticleSwarmOptimization() : infoLog("[ParticleSwarmOptimization]"), errorLog("[ERROR ParticleSwarmOptimization]") {
         initialized = false;
+        minImprovement = 1.0e-10;
+        maxIter = 500;
+        maxNumIterNoChange = 10;
     }
     
     /**
@@ -70,8 +73,8 @@ public:
      This function initializes the PSO algorithm.  This allows the user to set the number of particles, the size of the particle state vector (set by K),
      the minimum and maximum range of the space the PSO algorithm should search, and the propagation model.
      
-     The default propagation model for each particle is just gaussian noise, in that case the propagation model will be a K*2 dimensional vector, with
-     the first K values represent mu for each dimension and the remaining K values representing sigma for each dimension.
+     The default propagation model for each particle is just Gaussian noise, in that case the propagation model will be a K dimensional vector, with
+     each element representing sigma for the Gaussian noise for each dimension.
      
      After you call this function, you can call the search() function to run the actual search. You can reset the particles at any time using the reset() function.
      
@@ -82,7 +85,7 @@ public:
      @param const vector< double > &propagationModel: the propagation model used for each particle, this is normally just gaussian noise (see above)
      @return returns true if the PSO algorithm was initialized successfully, false otherwise
      */
-    bool init(const unsigned int numParticles,const unsigned int K,const vector<double> &xMin,const vector<double> &xMax,const vector< double > &propagationModel){
+    virtual bool init(const unsigned int numParticles,const unsigned int K,const vector<double> &xMin,const vector<double> &xMax,const vector< double > &propagationModel){
         
         initialized = false;
         
@@ -108,7 +111,7 @@ public:
         particles.resize(numParticles);
         typename vector< PARTICLE_TYPE >::iterator pIter = particles.begin();
         for(pIter = particles.begin(); pIter != particles.end(); pIter++){
-            pIter->setRandomSeed( random.getRandomNumberInt(0, 10000) );
+            pIter->setRandomSeed( random.getRandomNumberInt(0, 100000) );
             pIter->init(K,xMin,xMax);
         }
         
@@ -127,7 +130,7 @@ public:
      
      @return returns true if the PSO algorithm was reset successfully, false otherwise
      */
-    bool reset(){
+    virtual bool reset(){
         
         if( !initialized ) return false;
         
@@ -145,23 +148,23 @@ public:
      @param OBSERVATION_TYPE &observation: a reference to the observation data used for the search
      @return returns true if the search ran successfully, false otherwise
      */
-    bool search(OBSERVATION_TYPE &observation){
+    virtual bool search(OBSERVATION_TYPE &observation){
         
         if( !initialized ) return false;
 
         //Propagate all the particles
         typename vector< PARTICLE_TYPE >::iterator pIter;
         for(pIter = particles.begin(); pIter != particles.end(); pIter++){
-            pIter->propagate( propagationModel );
+            if( !pIter->propagate( propagationModel ) ){
+                errorLog << "search(...) - Particle propagation failed!" << endl;
+                return false;
+            }
         }
         
         unsigned int iterCounter = 0;
-        unsigned int maxIter = 500;
         unsigned int numIterNoChangeCounter = 0;
-        unsigned int maxNumIterNoChange = 10;
         double currentMaxima = 0;
         double lastMaxima = 0;
-        double minImprovement = 0.001;
         double delta = 0;
         bool keepSearching = true;
         
@@ -180,15 +183,18 @@ public:
             if( delta < minImprovement ){
                 if( ++numIterNoChangeCounter >= maxNumIterNoChange ){
                     keepSearching = false;
-                    //printf("Reached No Change Limit....Stopping Search at iteration: %i with a change of: %f\n",iterCounter,fabs( currentMaxima - lastMaxima ));
+                    infoLog << "search(...) - Reached no change limit, stopping search at iteration: " << iterCounter << " with a change of: " << fabs( currentMaxima - lastMaxima ) << endl;
                 }
             }else numIterNoChangeCounter = 0;
             
             if( ++iterCounter == maxIter ){
                 keepSearching = false;
-                //printf("Max Iteration Value Reached...Stopping Search at iteration %i\n",iterCounter);
+                infoLog << "search(...) - Max iteration reached, stopping search at iteration: " << iterCounter << endl;
             }
         }
+        
+        //Compute the final state estimation
+        finalX = globalBestX;
         
         return true;
     }
@@ -200,7 +206,7 @@ public:
      @param OBSERVATION_TYPE &observation: a reference to the observation data used for the search
      @return returns true if the search ran successfully, false otherwise
      */
-    double searchIteration(OBSERVATION_TYPE &observation){
+    virtual double searchIteration(OBSERVATION_TYPE &observation){
         
         if( !initialized ) return 0;
         
@@ -256,7 +262,11 @@ public:
 
     bool initialized;   ///< A flag to indicate if the PSO algorithm has been initialized
     unsigned int K;     ///< The size of the particles state vector
+    double minImprovement;
+    unsigned int maxIter;
+    unsigned int maxNumIterNoChange;
     double globalBestCost;  ///< The current global best cost over all the particles
+    vector< double > finalX;  ///< The final estimate
     vector< double > globalBestX;   ///< The state vector of the particle with the best cost
     vector< double > xMin;  ///< The minimum range of the state space
     vector< double > xMax;  ///< The maximum range of the state space
@@ -264,6 +274,9 @@ public:
     vector< PARTICLE_TYPE > particles;  ///< A vector containing all the particles used for the search
     vector< vector< double > > globalBestXHistory;  ///< A buffer to keep track of the search history
     vector< vector< PARTICLE_TYPE > > iterHistory;  ///< A buffer to keep track of the search history
+    
+    InfoLog infoLog;
+    ErrorLog errorLog;
 };
     
 }
