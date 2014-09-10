@@ -160,15 +160,13 @@ bool MinDist::train_(ClassificationData &trainingData){
 
 bool MinDist::predict_(VectorDouble &inputVector){
     
+    predictedClassLabel = 0;
+	maxLikelihood = 0;
+    
     if( !trained ){
         errorLog << "predict_(VectorDouble &inputVector) - MinDist Model Not Trained!" << endl;
         return false;
     }
-    
-    predictedClassLabel = 0;
-	maxLikelihood = 0;
-    
-    if( !trained ) return false;
     
 	if( inputVector.size() != numInputDimensions ){
         errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
