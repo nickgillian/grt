@@ -152,6 +152,8 @@ public:
     
     using MLBase::train; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::predict; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
+    using MLBase::train_; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
+    using MLBase::predict_; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
     
 protected:
     bool loadLegacyModelFromFile(fstream &file);
