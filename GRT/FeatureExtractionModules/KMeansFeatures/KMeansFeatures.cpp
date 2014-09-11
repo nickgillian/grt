@@ -453,7 +453,7 @@ bool KMeansFeatures::projectDataThroughLayer( const VectorDouble &input, VectorD
     
     UINT i,j = 0;
     //double gamma = 2.0*SQR(alpha);
-    double gamma = 2.0*SQR( 1 );
+    //double gamma = 2.0*SQR( 1 );
     for(i=0; i<M; i++){
         output[i] = 0;
         for(j=0; j<N; j++){
