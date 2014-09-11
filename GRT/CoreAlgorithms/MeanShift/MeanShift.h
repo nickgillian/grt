@@ -39,8 +39,13 @@ namespace GRT {
 
 class MeanShift : public MLBase{
 public:
-    MeanShift() : infoLog("[MeanShift]"),warningLog("[WARNING MeanShift]"),errorLog("[ERROR MeanShift]"),trainingLog("[TRAINING MeanShift]") {
+    MeanShift() {
         classType = "MeanShift";
+        infoLog.setProceedingText("[MeanShift]");
+        debugLog.setProceedingText("[DEBUG MeanShift]");
+        errorLog.setProceedingText("[ERROR MeanShift]");
+        trainingLog.setProceedingText("[TRAINING MeanShift]");
+        warningLog.setProceedingText("[WARNING MeanShift]");
     }
     
     virtual ~MeanShift(){
@@ -54,7 +59,6 @@ public:
         
         const unsigned int numDimensions = (unsigned int)meanStart.size();
         const unsigned int numPoints = (unsigned int)points.size();
-        const unsigned int imgSize = imgWidth * imgHeight;
         const double gamma = 1.0 / (2 * SQR(sigma) );
         unsigned int iteration = 0;
         VectorDouble numer(2,0);
@@ -133,8 +137,6 @@ public:
         return mean;
     }
     
-protected:
-    
     double gaussKernel( const double &x, const double &mu, const double gamma ){
         return exp( gamma * SQR(x-mu) );
     }
@@ -160,6 +162,8 @@ protected:
         
     }
     
+protected:
+
     VectorDouble mean;
     
 };
