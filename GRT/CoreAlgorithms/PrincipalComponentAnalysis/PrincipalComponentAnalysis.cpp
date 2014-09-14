@@ -213,6 +213,42 @@ bool PrincipalComponentAnalysis::project(const MatrixDouble &data,MatrixDouble &
 	return true;
 }
     
+bool PrincipalComponentAnalysis::project(const VectorDouble &data,VectorDouble &prjData){
+    
+    const unsigned int N = (unsigned int)data.size();
+    
+    if( !trained ){
+        warningLog << "project(const VectorDouble &data,VectorDouble &prjData) - The PrincipalComponentAnalysis module has not been trained!" << endl;
+        return false;
+    }
+	if( N != numInputDimensions ){
+        warningLog << "project(const VectorDouble &data,VectorDouble &prjData) - The size of the input vector (" << N << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << endl;
+		return false;
+	}
+    
+    VectorDouble msData = data;
+    
+    if( normData ){
+        //Mean subtract the data
+        for(UINT j=0; j<numInputDimensions; j++)
+            msData[j] = (msData[j]-mean[j])/stdDev[j];
+    }else{
+        //Mean subtract the data
+        for(UINT j=0; j<numInputDimensions; j++)
+            msData[j] -= mean[j];
+    }
+    
+    //Projected Data
+    prjData.resize( numPrincipalComponents );
+    for(UINT i=0; i<numPrincipalComponents; i++){//For each PC
+        prjData[i]=0;
+        for(UINT j=0; j<N; j++)//For each feature
+            prjData[i] += msData[j] * eigenvectors[j][sortedEigenvalues[i].index];
+    }
+    
+    return true;
+}
+    
 bool PrincipalComponentAnalysis::print(string title) const{
     
     if( title != "" ){
