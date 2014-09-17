@@ -112,6 +112,7 @@ protected:
     bool firstSample;
     bool movementDetected;
     bool noMovementDetected;
+    Timer searchTimer;
     VectorDouble lastSample;
     
 public:

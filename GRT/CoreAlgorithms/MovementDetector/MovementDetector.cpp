@@ -32,33 +32,22 @@ bool MovementDetector::predict_( VectorDouble &input ){
     noMovementDetected = false;
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - AdaBoost Model Not Trained!" << endl;
+        errorLog << "predict_(VectorDouble &input) - AdaBoost Model Not Trained!" << endl;
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
+    if( input.size() != numInputDimensions ){
+        errorLog << "predict_(VectorDouble &input) - The size of the input vector (" << input.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
         return false;
-    }
-    
-    //Scale the data if needed
-    if( useScaling ){
-        if( ranges.size() != numInputDimensions ){
-            errorLog << "predict_(VectorDouble &inputVector) - The size of the ranges vector (" << ranges.size() << ") does not match the num features in the model (" << numInputDimensions << ". You need to set the ranges first before you can use scaling!" << endl;
-            return false;
-        }
-        for(UINT n=0; n<numInputDimensions; n++){
-            inputVector[n] = scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0, 1);
-        }
     }
     
     //Compute the movement index, unless we are in the first sample
-    double x = sqrDifference;
+    double x = 0;
     if( !firstSample ){
         for(UINT n=0; n<numInputDimensions; n++){
-            sqrDifference += SQR( input[n] - lastSample[n] );
+            x += SQR( input[n] - lastSample[n] );
         }
-        movementIndex = (movementIndex*gamma) + sqrt( sqrDifference );
+        movementIndex = (movementIndex*gamma) + sqrt( x );
     }
     
     //Flag that this is not the first sample and store the input for the next prediction
