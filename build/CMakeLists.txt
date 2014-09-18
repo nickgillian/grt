@@ -1,13 +1,24 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.6)
 
 project(GRT C CXX)
 
 # GRT library
 
+#set the options
+option(BUILD_EXAMPLES “build-examples” ON)
+
+#Add any custom OS definitions
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+if(APPLE)
+endif()
+
+if(LINUX)
+endif()
+
+#Set the main directory locations
 set(GRT_SRC_DIR
     ${PROJECT_SOURCE_DIR}/../GRT
 )
@@ -20,6 +31,7 @@ set(GRT_EXAMPLES_OUTPUT_DIR
     ${PROJECT_SOURCE_DIR}/examples
 )
 
+#Add all the project files
 file(GLOB GRT_CLASSIFICATION_MODULES
     "${GRT_SRC_DIR}/ClassificationModules/AdaBoost/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/AdaBoost/WeakClassifiers/*.cpp"
@@ -139,71 +151,72 @@ install(
 )
 
 # GRT examples
+if( BUILD_EXAMPLES )
+	function(grt_add_example _example_name _example_sub_directory)
+	    file(GLOB sources
+	        "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.cpp"
+	        "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.h"
+	    )
 
-function(grt_add_example _example_name _example_sub_directory)
-    file(GLOB sources
-        "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.cpp"
-        "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.h"
-    )
+	    if(sources)
+	        add_executable(${_example_name}
+	            ${sources}
+	        )
 
-    if(sources)
-        add_executable(${_example_name}
-            ${sources}
-        )
+	        target_link_libraries(${_example_name}
+	            grt
+	        )
 
-        target_link_libraries(${_example_name}
-            grt
-        )
+	        install(
+	            TARGETS ${_example_name}
+	            RUNTIME DESTINATION ${GRT_EXAMPLES_OUTPUT_DIR}
+	        )
 
-        install(
-            TARGETS ${_example_name}
-            RUNTIME DESTINATION ${GRT_EXAMPLES_OUTPUT_DIR}
-        )
+	        string(REPLACE
+	            "Example"           # match string
+	            "TrainingData"      # replace string
+	            TRAINING_DATA       # output
+	            ${_example_name}    # input
+	        )
 
-        string(REPLACE
-            "Example"           # match string
-            "TrainingData"      # replace string
-            TRAINING_DATA       # output
-            ${_example_name}    # input
-        )
+	        if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.txt")
+	            install(FILES
+	                "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.txt"
+	                DESTINATION ${GRT_EXAMPLES_OUTPUT_DIR}
+	            )
+	        endif()
+	    endif()
+	endfunction()
 
-        if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.txt")
-            install(FILES
-                "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.txt"
-                DESTINATION ${GRT_EXAMPLES_OUTPUT_DIR}
-            )
-        endif()
-    endif()
-endfunction()
+	macro(grt_get_sub_directory_list _result _source_directory)
+	    file(GLOB children
+	        RELATIVE "${_source_directory}"
+	        "${_source_directory}/*"
+	    )
 
-macro(grt_get_sub_directory_list _result _source_directory)
-    file(GLOB children
-        RELATIVE "${_source_directory}"
-        "${_source_directory}/*"
-    )
+	    set(${_result} "")
 
-    set(${_result} "")
+	    foreach(child ${children})
+	        if(IS_DIRECTORY "${_source_directory}/${child}")
+	            list(APPEND ${_result} ${child})
+	        endif()
+	    endforeach()
+	endmacro()
 
-    foreach(child ${children})
-        if(IS_DIRECTORY "${_source_directory}/${child}")
-            list(APPEND ${_result} ${child})
-        endif()
-    endforeach()
-endmacro()
+	grt_get_sub_directory_list(GRT_EXAMPLES_SUB_DIRECTORIES
+	    "${GRT_EXAMPLES_DIR}"
+	)
 
-grt_get_sub_directory_list(GRT_EXAMPLES_SUB_DIRECTORIES
-    "${GRT_EXAMPLES_DIR}"
-)
+	foreach(GRT_EXAMPLES_SUB_DIRECTORY ${GRT_EXAMPLES_SUB_DIRECTORIES})
+	    grt_get_sub_directory_list(GRT_EXAMPLES
+	        "${GRT_EXAMPLES_DIR}/${GRT_EXAMPLES_SUB_DIRECTORY}"
+	    )
 
-foreach(GRT_EXAMPLES_SUB_DIRECTORY ${GRT_EXAMPLES_SUB_DIRECTORIES})
-    grt_get_sub_directory_list(GRT_EXAMPLES
-        "${GRT_EXAMPLES_DIR}/${GRT_EXAMPLES_SUB_DIRECTORY}"
-    )
-
-    foreach(GRT_EXAMPLE ${GRT_EXAMPLES})
-        grt_add_example(
-            ${GRT_EXAMPLE}
-            ${GRT_EXAMPLES_SUB_DIRECTORY}
-        )
-    endforeach()
-endforeach()
+	    foreach(GRT_EXAMPLE ${GRT_EXAMPLES})
+	        grt_add_example(
+	            ${GRT_EXAMPLE}
+	            ${GRT_EXAMPLES_SUB_DIRECTORY}
+	        )
+	    endforeach()
+	endforeach()
+endif() #BUILD_EXAMPLES
