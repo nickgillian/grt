@@ -52,25 +52,26 @@ int main (int argc, const char * argv[])
     }
     
     //After recording your training data you can then save it to a file
-    if( !trainingData.saveDatasetToFile( "TrainingData.grt" ) ){
+    if( !trainingData.save( "TrainingData.grt" ) ){
 		cout << "ERROR: Failed to save dataset to file!\n";
 		return EXIT_FAILURE;
 	}
     
     //This can then be loaded later
-    if( !trainingData.loadDatasetFromFile( "TrainingData.grt" ) ){
+    if( !trainingData.load( "TrainingData.grt" ) ){
 		cout << "ERROR: Failed to load dataset from file!\n";
 		return EXIT_FAILURE;
 	}
     
     //You can also save and load the training data to a CSV file
     //Each row will contain a sample, with the first column containing the class label and the remaining columns containing the data
-    if( !trainingData.saveDatasetToCSVFile( "TrainingData.csv" ) ){
+    if( !trainingData.save( "TrainingData.csv" ) ){
 		cout << "ERROR: Failed to save dataset to csv file!\n";
 		return EXIT_FAILURE;
 	}
 	
-    if( !trainingData.loadDatasetFromCSVFile( "TrainingData.csv" ) ){
+    //The data structure will automatically detect the csv extension and parse the file accordingly
+    if( !trainingData.load( "TrainingData.csv" ) ){
 		cout << "ERROR: Failed to load dataset from csv file!\n";
 		return EXIT_FAILURE;
 	}
