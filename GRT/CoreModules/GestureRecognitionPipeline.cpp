@@ -1638,7 +1638,11 @@ bool GestureRecognitionPipeline::reset(){
     return true;
 }
     
-bool GestureRecognitionPipeline::savePipelineToFile(const string &filename){
+bool GestureRecognitionPipeline::save(const string &filename) const {
+    return savePipelineToFile( filename );
+}
+    
+bool GestureRecognitionPipeline::savePipelineToFile(const string &filename) const {
     
     if( !initialized ){
         errorLog << "Failed to write pipeline to file as the pipeline has not been initialized yet!" << endl;
@@ -1757,6 +1761,10 @@ bool GestureRecognitionPipeline::savePipelineToFile(const string &filename){
     return true;
 }
 
+bool GestureRecognitionPipeline::load(const string &filename){
+    return loadPipelineFromFile( filename );
+}
+    
 bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
     
     fstream file;

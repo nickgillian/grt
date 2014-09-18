@@ -225,12 +225,30 @@ public:
 
     /**
      This function will save the entire pipeline to a file.  This includes all the modules types, settings, and models.
+     This calls the older savePipelineToFile function.
+     
+     @param const string &filename: the name of the file you want to save the pipeline to
+     @return bool returns true if the pipeline was saved successful, false otherwise
+     */
+    bool save(const string &filename) const;
+    
+    /**
+     This function will save the entire pipeline to a file.  This includes all the modules types, settings, and models.
 
      @param const string &filename: the name of the file you want to save the pipeline to
      @return bool returns true if the pipeline was saved successful, false otherwise
 	*/
-    bool savePipelineToFile(const string &filename);
+    bool savePipelineToFile(const string &filename) const;
 
+    /**
+     This function will load an entire pipeline from a file.  This includes all the modules types, settings, and models.
+     This calls the older loadPipelineFromFile function
+     
+     @param const string &filename: the name of the file you want to load the pipeline from
+     @return bool returns true if the pipeline was loaded successful, false otherwise
+     */
+    bool load(const string &filename);
+    
     /**
      This function will load an entire pipeline from a file.  This includes all the modules types, settings, and models.
 

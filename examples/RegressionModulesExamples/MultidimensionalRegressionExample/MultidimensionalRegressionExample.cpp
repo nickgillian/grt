@@ -106,12 +106,12 @@ int main (int argc, const char * argv[])
     
     cout << "Model trained.\n";
     
-    if( !pipeline.savePipelineToFile( "Pipeline" ) ){
+    if( !pipeline.save( "Pipeline" ) ){
         cout << "ERROR: Failed to save pipeline!\n";
         return EXIT_FAILURE;
     }
     
-    if( !pipeline.loadPipelineFromFile( "Pipeline" ) ){
+    if( !pipeline.load( "Pipeline" ) ){
         cout << "ERROR: Failed to load pipeline!\n";
         return EXIT_FAILURE;
     }
