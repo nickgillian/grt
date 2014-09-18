@@ -428,6 +428,28 @@ vector<MinMax> TimeSeriesClassificationDataStream::getRanges() const {
     }
     return ranges;
 }
+    
+bool TimeSeriesClassificationDataStream::save(const string &filename) const{
+    
+    //Check if the file should be saved as a csv file
+    if( Util::stringEndsWith( filename, ".csv" )  ){
+        return saveDatasetToCSVFile( filename );
+    }
+    
+    //Otherwise save it as a custom GRT file
+    return saveDatasetToFile( filename );
+}
+
+bool TimeSeriesClassificationDataStream::load(const string &filename){
+    
+    //Check if the file should be loaded as a csv file
+    if( Util::stringEndsWith( filename, ".csv" )  ){
+        return loadDatasetFromCSVFile( filename );
+    }
+    
+    //Otherwise save it as a custom GRT file
+    return loadDatasetFromFile( filename );
+}
 
 bool TimeSeriesClassificationDataStream::saveDatasetToFile(const string filename) {
 

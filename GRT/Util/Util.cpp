@@ -138,6 +138,14 @@ bool Util::stringToBool(const std::string &value){
     return false;
 }
     
+bool Util::stringEndsWith(const std::string &str, const std::string &ending) {
+    if (str.length() >= ending.length()) {
+        return (0 == str.compare (str.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+    
 double Util::limit(const double value,const double minValue,const double maxValue){
     if( value <= minValue ) return minValue;
     if( value >= maxValue ) return maxValue;
