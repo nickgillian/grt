@@ -1,13 +1,24 @@
 ##Build
-This folder contains an example Makefile for building the GRT (as a static library) and also for building the GRT examples.
+This folder contains a CMakeLists.txt that can be used to generate a makefile for building the GRT (as a static library) and also for building the GRT examples.
 
 ##Supported Operating Systems
-This Makefile currently works on Linux/OSX.  There is currently limited Windows support, however this is a work in progress.
+This CMakeLists file has been tested on Windows, Linux (Ubuntu 14.04), and OSX (10.9).
 
 ##Build Instructions
-To build the GRT and examples, install make (http://www.gnu.org/software/make/) and then:
-- Open terminal and cd to the directory containing this file
-- type: **make**
-- make will now build the GRT library (libgrt.a) and also build the GRT examples (which will be placed in the local folder examples)
-- To run any of the examples, cd into the examples folder and then run: **./ExampleName.out**
-- If you just want to build the GRT as a library to use in your own projects, without building the examples, then type: **make grtlib**
+Note, you will need to install make (http://www.gnu.org/software/make/) and cmake (http://www.cmake.org/). 
+
+You can build the GRT as a static library and compile the examples examples by:
+- open terminal and cd to this build directory
+- create a temporary build folder: 
+    $ mkdir tmp
+- cd to the temporary build folder:
+    $ cd tmp
+- use cmake to generate the makefile for your machine:
+    $ cmake ..
+- compile the GRT library and examples (j controls the number of cores you want to use):
+    $ make -j 2
+- you can then install the GRT by running:
+    $ sudo make install
+- by default, this should install the GRT headers to: /usr/local/include/GRT
+- the GRT static library (libgrt.a) should be installed to: /usr/local/lib
+- the GRT examples will be: build/examples 
