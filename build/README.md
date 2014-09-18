@@ -31,3 +31,6 @@ You can build the GRT as a static library and compile the examples examples by:
 - by default, this should install the GRT headers to: /usr/local/include/GRT
 - the GRT static library (libgrt.a) should be installed to: /usr/local/lib
 - the GRT examples will be: build/examples 
+
+##Contributors
+Thanks to Romain Guillemot for creating the CMake file and for improving the support for Windows!
