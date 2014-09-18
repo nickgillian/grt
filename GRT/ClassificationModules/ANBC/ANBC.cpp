@@ -300,7 +300,7 @@ bool ANBC::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
 	{
-		errorLog <<"saveANBCModelToFile(fstream &file) - The file is not open!" << endl;
+		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
 		return false;
 	}
     

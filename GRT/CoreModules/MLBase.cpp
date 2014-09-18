@@ -127,6 +127,10 @@ bool MLBase::clear(){
 }
 
 bool MLBase::print() const { return true; }
+    
+bool MLBase::save(const string filename) const {
+    return saveModelToFile( filename );
+}
 
 bool MLBase::saveModelToFile(const string filename) const{
     
@@ -146,6 +150,10 @@ bool MLBase::saveModelToFile(const string filename) const{
 
 bool MLBase::saveModelToFile(fstream &file) const { return false; }
 
+bool MLBase::load(const string filename){
+    return loadModelFromFile(filename);
+}
+    
 bool MLBase::loadModelFromFile(const string filename){
     
     std::fstream file;

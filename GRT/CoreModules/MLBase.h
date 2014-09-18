@@ -267,6 +267,23 @@ public:
     virtual bool print() const;
     
     /**
+     This saves the model to a file, it calls the saveModelToFile(string filename) function unless it is overwritten by the derived class.
+     
+     @param const string filename: the name of the file to save the model to
+     @return returns true if the model was saved successfully, false otherwise
+     */
+    virtual bool save(const string filename) const;
+    
+    
+    /**
+     This saves the model to a file, it calls the loadModelFromFile(string filename) function unless it is overwritten by the derived class.
+     
+     @param const string filename: the name of the file to save the model to
+     @return returns true if the model was saved successfully, false otherwise
+     */
+    virtual bool load(const string filename);
+    
+    /**
      This saves the trained model to a file, it calls the saveModelToFile(fstream &file) function unless it is overwritten by the derived class.
      
      @param const string filename: the name of the file to save the model to

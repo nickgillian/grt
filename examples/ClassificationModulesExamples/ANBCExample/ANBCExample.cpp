@@ -75,7 +75,7 @@ int main (int argc, const char * argv[])
     }
     
     //Save the ANBC model to a file
-    bool saveSuccess = anbc.saveModelToFile("ANBCModel.txt");
+    bool saveSuccess = anbc.save("ANBCModel.txt");
     
     if( !saveSuccess ){
         cout << "Failed to save the classifier model!\n";
@@ -83,7 +83,7 @@ int main (int argc, const char * argv[])
     }
     
     //Load the ANBC model from a file
-    bool loadSuccess = anbc.loadModelFromFile("ANBCModel.txt");
+    bool loadSuccess = anbc.load("ANBCModel.txt");
     
     if( !loadSuccess ){
         cout << "Failed to load the classifier model!\n";
