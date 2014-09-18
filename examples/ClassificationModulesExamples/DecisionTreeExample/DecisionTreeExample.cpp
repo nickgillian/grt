@@ -66,7 +66,7 @@ int main(int argc, const char * argv[])
     //Load some training data to train the classifier
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("DecisionTreeTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("DecisionTreeTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -84,13 +84,13 @@ int main(int argc, const char * argv[])
     dTree.print();
     
     //Save the model to a file
-    if( !dTree.save("DecisionTreeModel.txt") ){
+    if( !dTree.save("DecisionTreeModel.grt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the model from a file
-    if( !dTree.load("DecisionTreeModel.txt") ){
+    if( !dTree.load("DecisionTreeModel.grt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

@@ -179,9 +179,9 @@ if( BUILD_EXAMPLES )
 	            ${_example_name}    # input
 	        )
 
-	        if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.txt")
+	        if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt")
 	            install(FILES
-	                "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.txt"
+	                "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt"
 	                DESTINATION ${GRT_EXAMPLES_OUTPUT_DIR}
 	            )
 	        endif()

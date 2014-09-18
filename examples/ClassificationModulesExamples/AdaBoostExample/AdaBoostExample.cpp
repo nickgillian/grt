@@ -63,7 +63,7 @@ int main (int argc, const char * argv[])
     //Load some training data to train the classifier
     ClassificationData trainingData;
 
-    if( !trainingData.loadDatasetFromFile("AdaBoostTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("AdaBoostTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -78,13 +78,13 @@ int main (int argc, const char * argv[])
     }
 
     //Save the model to a file
-    if( !adaBoost.save("AdaBoostModel.txt") ){
+    if( !adaBoost.save("AdaBoostModel.grt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
 
     //Load the model from a file
-    if( !adaBoost.load("AdaBoostModel.txt") ){
+    if( !adaBoost.load("AdaBoostModel.grt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

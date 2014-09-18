@@ -48,7 +48,7 @@ int main (int argc, const char * argv[])
 	//Load some training data to train the classifier - the DTW uses TimeSeriesClassificationData
 	TimeSeriesClassificationData trainingData;
     
-	if( !trainingData.loadDatasetFromFile("DTWTrainingData.txt") ){
+	if( !trainingData.loadDatasetFromFile("DTWTrainingData.grt") ){
 		cout << "Failed to load training data!\n";
 		return EXIT_FAILURE;
 	}
@@ -66,13 +66,13 @@ int main (int argc, const char * argv[])
 	}	
     
 	//Save the DTW model to a file
-	if( !dtw.save("DTWModel.txt") ){
+	if( !dtw.save("DTWModel.grt") ){
 		cout << "Failed to save the classifier model!\n";
 		return EXIT_FAILURE;
 	}
     
 	//Load the DTW model from a file
-	if( !dtw.load("DTWModel.txt") ){
+	if( !dtw.load("DTWModel.grt") ){
 		cout << "Failed to load the classifier model!\n";
 		return EXIT_FAILURE;
 	}

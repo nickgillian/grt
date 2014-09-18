@@ -51,7 +51,7 @@ int main (int argc, const char * argv[])
     //Train the classifier with some training data
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("SVMTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("SVMTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -68,13 +68,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the svm model to a file
-    if( !svm.save("SVMModel.txt") ){
+    if( !svm.save("SVMModel.grt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the knn model from a file
-    if( !svm.load("SVMModel.txt") ){
+    if( !svm.load("SVMModel.grt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

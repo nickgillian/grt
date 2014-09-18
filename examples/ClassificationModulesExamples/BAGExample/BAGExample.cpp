@@ -68,7 +68,7 @@ int main (int argc, const char * argv[])
     //Load some training data to train the classifier
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("BAGTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("BAGTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -83,13 +83,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the BAG model to a file
-    if( !bag.save("BAGModel.txt") ){
+    if( !bag.save("BAGModel.grt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the BAG model from a file
-    if( !bag.load("BAGModel.txt") ){
+    if( !bag.load("BAGModel.grt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }
