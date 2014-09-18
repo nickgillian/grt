@@ -17,7 +17,7 @@ set(GRT_EXAMPLES_DIR
 )
 
 set(GRT_EXAMPLES_OUTPUT_DIR
-    examples
+    ${PROJECT_SOURCE_DIR}/examples
 )
 
 file(GLOB GRT_CLASSIFICATION_MODULES
@@ -69,6 +69,7 @@ file(GLOB GRT_FEATURE_EXTRACTION_MODULES
 
 file(GLOB GRT_CORE_ALGORITHMS
     "${GRT_SRC_DIR}/CoreAlgorithms/BernoulliRBM/*.cpp"
+    “${GRT_SRC_DIR}/CoreAlgorithms/MovementDetector/*.cpp”
     "${GRT_SRC_DIR}/CoreAlgorithms/PrincipalComponentAnalysis/*.cpp"
     "${GRT_SRC_DIR}/CoreAlgorithms/Tree/*.cpp"
 )
@@ -133,7 +134,7 @@ install(
 
 install(
     DIRECTORY "${GRT_SRC_DIR}/"
-    DESTINATION include
+    DESTINATION include/GRT
     FILES_MATCHING PATTERN *.h
 )
 
