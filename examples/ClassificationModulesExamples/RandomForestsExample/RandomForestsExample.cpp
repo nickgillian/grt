@@ -80,13 +80,13 @@ int main(int argc, const char * argv[])
     forest.print();
     
     //Save the model to a file
-    if( !forest.saveModelToFile("RandomForestsModel.txt") ){
+    if( !forest.save("RandomForestsModel.txt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the model from a file
-    if( !forest.loadModelFromFile("RandomForestsModel.txt") ){
+    if( !forest.load("RandomForestsModel.txt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

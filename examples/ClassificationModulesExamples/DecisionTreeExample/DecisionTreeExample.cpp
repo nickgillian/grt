@@ -84,13 +84,13 @@ int main(int argc, const char * argv[])
     dTree.print();
     
     //Save the model to a file
-    if( !dTree.saveModelToFile("DecisionTreeModel.txt") ){
+    if( !dTree.save("DecisionTreeModel.txt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the model from a file
-    if( !dTree.loadModelFromFile("DecisionTreeModel.txt") ){
+    if( !dTree.load("DecisionTreeModel.txt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

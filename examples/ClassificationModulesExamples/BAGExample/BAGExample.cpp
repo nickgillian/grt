@@ -83,13 +83,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the BAG model to a file
-    if( !bag.saveModelToFile("BAGModel.txt") ){
+    if( !bag.save("BAGModel.txt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the BAG model from a file
-    if( !bag.loadModelFromFile("BAGModel.txt") ){
+    if( !bag.load("BAGModel.txt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

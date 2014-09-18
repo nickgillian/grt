@@ -63,13 +63,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the Softmax model to a file
-    if( !softmax.saveModelToFile("SoftmaxModel.txt") ){
+    if( !softmax.save("SoftmaxModel.txt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the Softmax model from a file
-    if( !softmax.loadModelFromFile("SoftmaxModel.txt") ){
+    if( !softmax.load("SoftmaxModel.txt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

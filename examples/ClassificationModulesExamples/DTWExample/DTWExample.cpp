@@ -66,13 +66,13 @@ int main (int argc, const char * argv[])
 	}	
     
 	//Save the DTW model to a file
-	if( !dtw.saveModelToFile("DTWModel.txt") ){
+	if( !dtw.save("DTWModel.txt") ){
 		cout << "Failed to save the classifier model!\n";
 		return EXIT_FAILURE;
 	}
     
 	//Load the DTW model from a file
-	if( !dtw.loadModelFromFile("DTWModel.txt") ){
+	if( !dtw.load("DTWModel.txt") ){
 		cout << "Failed to load the classifier model!\n";
 		return EXIT_FAILURE;
 	}

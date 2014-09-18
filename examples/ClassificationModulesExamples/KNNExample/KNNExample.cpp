@@ -67,17 +67,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the knn model to a file
-    bool saveSuccess = knn.saveModelToFile("KNNModel.txt");
-    
-    if( !saveSuccess ){
+    if( !knn.save("KNNModel.txt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the knn model from a file
-    bool loadSuccess = knn.loadModelFromFile("KNNModel.txt");
-    
-    if( !loadSuccess ){
+    if( !knn.load("KNNModel.txt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

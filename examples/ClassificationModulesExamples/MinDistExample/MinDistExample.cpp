@@ -67,13 +67,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the MinDist model to a file
-    if( !minDist.saveModelToFile("MinDistModel.txt") ){
+    if( !minDist.save("MinDistModel.txt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the MinDist model from a file
-    if( !minDist.loadModelFromFile("MinDistModel.txt") ){
+    if( !minDist.load("MinDistModel.txt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

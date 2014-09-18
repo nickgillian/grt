@@ -68,17 +68,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the svm model to a file
-    bool saveSuccess = svm.saveModelToFile("SVMModel.txt");
-    
-    if( !saveSuccess ){
+    if( !svm.save("SVMModel.txt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the knn model from a file
-    bool loadSuccess = svm.loadModelFromFile("SVMModel.txt");
-    
-    if( !loadSuccess ){
+    if( !svm.load("SVMModel.txt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

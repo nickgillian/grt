@@ -65,13 +65,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the GMM model to a file
-    if( !gmm.saveModelToFile("GMMModel.txt") ){
+    if( !gmm.save("GMMModel.txt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the GMM model from a file
-    if( !gmm.loadModelFromFile("GMMModel.txt") ){
+    if( !gmm.load("GMMModel.txt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }
