@@ -490,7 +490,7 @@ bool RegressionData::load(const string &filename){
     
     //Check if the file should be loaded as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
-        return loadDatasetFromCSVFile( filename );
+        return loadDatasetFromCSVFile( filename, numInputDimensions, numTargetDimensions );
     }
     
     //Otherwise save it as a custom GRT file

@@ -60,7 +60,7 @@ public:
     /**
      Default Destructor
      */
-	~TimeSeriesClassificationData();
+	virtual ~TimeSeriesClassificationData();
 
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance
@@ -258,6 +258,26 @@ public:
 	 @return true if the data was loaded successfully, false otherwise
      */
 	bool loadDatasetFromFile(const string filename);
+    
+    /**
+     Saves the data to a CSV file.
+     This will save the timeseries counter as the first column, the class label as the second column, and the sample data as the following N columns, where N is the number of dimensions in the data.  Each row will represent a sample.
+     
+     @param const string &filename: the name of the file the data will be saved to
+     @return true if the data was saved successfully, false otherwise
+     */
+    bool saveDatasetToCSVFile(const string &filename) const;
+	
+	/**
+     Loads the classification data from a CSV file.
+     This assumes the data is formatted with each row representing a sample.
+     The first column should represent the timeseries counter.
+     The class label should be the second column followed by the sample data as the following N columns, where N is the number of dimensions in the data.
+     
+     @param const string &filename: the name of the file the data will be loaded from
+     @return true if the data was loaded successfully, false otherwise
+     */
+	bool loadDatasetFromCSVFile(const string &filename);
     
     /**
      Prints the dataset info (such as its name and infoText) and the stats (such as the number of examples, number of dimensions, number of classes, etc.)

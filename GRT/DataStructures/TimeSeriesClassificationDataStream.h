@@ -61,7 +61,7 @@ public:
     /**
      Default Destructor
      */
-	~TimeSeriesClassificationDataStream();
+	virtual ~TimeSeriesClassificationDataStream();
 
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance
@@ -231,7 +231,7 @@ public:
      @param const string &filename: the name of the file the data will be saved to
      @return true if the data was saved successfully, false otherwise
      */
-    bool save(const string &filename) const;
+    bool save(const string &filename);
     
     /**
      Load the data from a file.
@@ -249,24 +249,24 @@ public:
 	 @param string filename: the name of the file the data will be saved to
 	 @return true if the data was saved successfully, false otherwise
      */
-	bool saveDatasetToFile(const string filename);
+	bool saveDatasetToFile(const string &filename);
     
     /**
-     Loads the labelled timeseries classification data from a custom file format.
+     Saves the data to a CSV file.
+     This will save the timeseries counter as the first column, the class label as the second column, and the sample data as the following N columns, where N is the number of dimensions in the data.  Each row will represent a sample.
+     
+     @param const string &filename: the name of the file the data will be saved to
+     @return true if the data was saved successfully, false otherwise
+     */
+    bool saveDatasetToCSVFile(const string &filename);
+    
+    /**
+     Loads the data from a custom file format.
      
 	 @param string filename: the name of the file the data will be loaded from
 	 @return true if the data was loaded successfully, false otherwise
      */
-	bool loadDatasetFromFile(const string filename);
-    
-    /**
-     Saves the labelled timeseries classification data to a CSV file.
-     This will save the class label as the first column and the sample data as the following N columns, where N is the number of dimensions in the data.  Each row will represent a sample.
-     
-	 @param string filename: the name of the file the data will be saved to
-	 @return true if the data was saved successfully, false otherwise
-     */
-    bool saveDatasetToCSVFile(const string filename) const;
+	bool loadDatasetFromFile(const string &filename);
     
     /**
      Loads the labelled timeseries classification data from a CSV file.
@@ -278,7 +278,7 @@ public:
      @param const UINT classLabelColumnIndex: the index of the column containing the class label. Default value = 0
 	 @return true if the data was loaded successfully, false otherwise
      */
-	bool loadDataSetFromCSVFile(const string filename,const UINT classLabelColumnIndex=0);
+	bool loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex=0);
     
     /**
      Prints the dataset info (such as its name and infoText) and the stats (such as the number of examples, number of dimensions, number of classes, etc.)

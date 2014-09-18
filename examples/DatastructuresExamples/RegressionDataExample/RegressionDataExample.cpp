@@ -77,7 +77,8 @@ int main (int argc, const char * argv[])
     }
     
     //You can also load data from a CSV file, you need to specify the number of input dimensions and number of target dimensions
-    if( !trainingData.load("RegressionData.csv",N,T) ){
+    trainingData.setInputAndTargetDimensions(N, T);
+    if( !trainingData.load("RegressionData.csv") ){
         cout << "Failed to save training data to CSV file!\n";
         return EXIT_FAILURE;
     }

@@ -429,7 +429,7 @@ vector<MinMax> TimeSeriesClassificationDataStream::getRanges() const {
     return ranges;
 }
     
-bool TimeSeriesClassificationDataStream::save(const string &filename) const{
+bool TimeSeriesClassificationDataStream::save(const string &filename){
     
     //Check if the file should be saved as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -451,13 +451,13 @@ bool TimeSeriesClassificationDataStream::load(const string &filename){
     return loadDatasetFromFile( filename );
 }
 
-bool TimeSeriesClassificationDataStream::saveDatasetToFile(const string filename) {
+bool TimeSeriesClassificationDataStream::saveDatasetToFile(const string &filename) {
 
 	std::fstream file; 
 	file.open(filename.c_str(), std::ios::out);
 
 	if( !file.is_open() ){
-        errorLog << "saveDatasetToFile(const string filename) - Failed to open file!" << endl;
+        errorLog << "saveDatasetToFile(const string &filename) - Failed to open file!" << endl;
 		return false;
 	}
 
@@ -505,7 +505,7 @@ bool TimeSeriesClassificationDataStream::saveDatasetToFile(const string filename
 	return true;
 }
 
-bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string filename){
+bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filename){
 
 	std::fstream file; 
 	file.open(filename.c_str(), std::ios::in);
@@ -668,7 +668,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string filena
 	return true;
 }
     
-bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const string filename) const {
+bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const string &filename) {
     std::fstream file; 
 	file.open(filename.c_str(), std::ios::out );
     
@@ -691,7 +691,7 @@ bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const string filen
     return true;
 }
 
-bool TimeSeriesClassificationDataStream::loadDataSetFromCSVFile(const string filename,const UINT classLabelColumnIndex){
+bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex){
 
     datasetName = "NOT_SET";
     infoText = "";

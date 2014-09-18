@@ -538,7 +538,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 		}
 
 		//Load the time series data
-		Matrix<double> trainingExample(timeSeriesLength,numDimensions);
+		MatrixDouble trainingExample(timeSeriesLength,numDimensions);
 		for(UINT i=0; i<timeSeriesLength; i++){
 			for(UINT j=0; j<numDimensions; j++){
 				file >> trainingExample[i][j];
@@ -550,6 +550,107 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 
 	file.close();
 	return true;
+}
+    
+bool TimeSeriesClassificationData::saveDatasetToCSVFile(const string &filename) const{
+    
+    std::fstream file;
+    file.open(filename.c_str(), std::ios::out );
+    
+    if( !file.is_open() ){
+        return false;
+    }
+    
+    //Write the data to the CSV file
+    for(UINT x=0; x<totalNumSamples; x++){
+        for(UINT i=0; i<data[x].getLength(); i++){
+            file << x+1 << ",";
+            file << data[x].getClassLabel() << ",";
+            for(UINT j=0; j<numDimensions; j++){
+                file << data[x][i][j];
+                if( j+1 < numDimensions ){
+                    file << ",";
+                }
+            }
+            file << endl;
+        }
+    }
+    
+    file.close();
+    
+    return true;
+}
+
+bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename){
+    
+    numDimensions = 0;
+    datasetName = "NOT_SET";
+    infoText = "";
+    
+    //Clear any previous data
+    clear();
+    
+    //Parse the CSV file
+    FileParser parser;
+    
+    if( !parser.parseCSVFile(filename,true) ){
+        errorLog << "loadDatasetFromCSVFile(const string &filename) - Failed to parse CSV file!" << endl;
+        return false;
+    }
+    
+    if( !parser.getConsistentColumnSize() ){
+        errorLog << "loadDatasetFromCSVFile(const string &filename) - The CSV file does not have a consistent number of columns!" << endl;
+        return false;
+    }
+    
+    if( parser.getColumnSize() <= 2 ){
+        errorLog << "loadDatasetFromCSVFile(const string &filename) - The CSV file does not have enough columns! It should contain at least three columns!" << endl;
+        return false;
+    }
+    
+    //Set the number of dimensions
+    numDimensions = parser.getColumnSize()-2;
+    
+    //Reserve the memory for the data
+    data.reserve( parser.getRowSize() );
+    
+    UINT sampleCounter = 0;
+    UINT lastSampleCounter = 0;
+    UINT classLabel = 0;
+    UINT j = 0;
+    UINT n = 0;
+    VectorDouble sample(numDimensions);
+    MatrixDouble timeseries;
+    for(UINT i=0; i<parser.getRowSize(); i++){
+        
+        sampleCounter = Util::stringToInt( parser[i][0] );
+        
+        //Check to see if a new timeseries has started, if so then add the previous time series as a sample and start recording the new time series
+        if( sampleCounter != lastSampleCounter && i != 0 ){
+            //Add the labelled sample to the dataset
+            if( !addSample(classLabel, timeseries) ){
+                warningLog << "loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex) - Could not add sample " << i << " to the dataset!" << endl;
+            }
+            timeseries.clear();
+        }
+        lastSampleCounter = sampleCounter;
+        
+        //Get the class label
+        classLabel = Util::stringToInt( parser[i][1] );
+        
+        //Get the sample data
+        j=0;
+        n=2;
+        while( j != numDimensions ){
+            sample[j++] = Util::stringToDouble( parser[i][n] );
+            n++;
+        }
+        
+        //Add the sample to the timeseries
+        timeseries.push_back( sample );
+    }
+    
+    return true;
 }
     
 bool TimeSeriesClassificationData::printStats() const {
