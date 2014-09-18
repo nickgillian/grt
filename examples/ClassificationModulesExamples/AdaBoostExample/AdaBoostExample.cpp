@@ -78,13 +78,13 @@ int main (int argc, const char * argv[])
     }
 
     //Save the model to a file
-    if( !adaBoost.saveModelToFile("AdaBoostModel.txt") ){
+    if( !adaBoost.save("AdaBoostModel.txt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
 
     //Load the model from a file
-    if( !adaBoost.loadModelFromFile("AdaBoostModel.txt") ){
+    if( !adaBoost.load("AdaBoostModel.txt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }
