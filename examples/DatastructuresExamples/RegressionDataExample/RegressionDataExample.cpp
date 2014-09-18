@@ -64,7 +64,7 @@ int main (int argc, const char * argv[])
     
     //Save the training data to a custom file
     cout << "Saving data to file\n";
-    if( !trainingData.saveDatasetToFile("RegressionData.txt") ){
+    if( !trainingData.saveDatasetToFile("RegressionData.grt") ){
         cout << "Failed to save training data to file!\n";
         return EXIT_FAILURE;
     }
@@ -84,7 +84,7 @@ int main (int argc, const char * argv[])
     
     //Load the data back from a custom file
     cout << "Loading data from file\n";
-    if( !trainingData.loadDatasetFromFile("RegressionData.txt") ){
+    if( !trainingData.loadDatasetFromFile("RegressionData.grt") ){
         cout << "Failed to load training data from file!\n";
         return EXIT_FAILURE;
     }

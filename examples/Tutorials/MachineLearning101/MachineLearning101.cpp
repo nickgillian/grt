@@ -42,7 +42,7 @@ int main (int argc, const char * argv[])
     ClassificationData trainingData;
     
     //Load the training dataset from a file, the file should be in the same directory as this program
-    if( !trainingData.loadDatasetFromFile("IrisData.txt") ){
+    if( !trainingData.loadDatasetFromFile("IrisData.grt") ){
         cout << "Failed to load Iris data from file!\n";
         return EXIT_FAILURE;
     }

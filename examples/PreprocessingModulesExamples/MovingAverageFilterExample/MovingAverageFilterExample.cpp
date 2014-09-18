@@ -58,10 +58,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the filter settings to a file
-    filter.saveModelToFile("MovingAverageFilterSettings.txt");
+    filter.saveModelToFile("MovingAverageFilterSettings.grt");
     
     //We can then load the settings later if needed
-    filter.loadModelFromFile("MovingAverageFilterSettings.txt");
+    filter.loadModelFromFile("MovingAverageFilterSettings.grt");
     
     return EXIT_SUCCESS;
 }

@@ -88,10 +88,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the HighPassFilter settings to a file
-    hpf.saveModelToFile("HighPassFilterSettings.txt");
+    hpf.saveModelToFile("HighPassFilterSettings.grt");
     
     //We can then load the settings later if needed
-    hpf.loadModelFromFile("HighPassFilterSettings.txt");
+    hpf.loadModelFromFile("HighPassFilterSettings.grt");
     
     return EXIT_SUCCESS;
 }

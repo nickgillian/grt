@@ -41,13 +41,13 @@ int main(int argc, const char * argv[])
 	}
 	
 	//Save the model and settings to a file
-	if( !quantizer.saveModelToFile("KMeansQuantizerSettings.txt") ){
+	if( !quantizer.saveModelToFile("KMeansQuantizerSettings.grt") ){
 		cout << "ERROR: Failed to save settings to file!\n";
 		return EXIT_FAILURE;
 	}
 	
 	//Load the model and settings from a file
-	if( !quantizer.loadModelFromFile("KMeansQuantizerSettings.txt") ){
+	if( !quantizer.loadModelFromFile("KMeansQuantizerSettings.grt") ){
 		cout << "ERROR: Failed to load settings from file!\n";
 		return EXIT_FAILURE;
 	}

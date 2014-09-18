@@ -66,13 +66,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the settings to a file
-    if( !fftFeatures.saveModelToFile( "FFTFeatures.txt" ) ){
+    if( !fftFeatures.saveModelToFile( "FFTFeatures.grt" ) ){
         cout << "Error: Failed to save fft features to settings file!" << endl;
         return EXIT_FAILURE;
     }
     
     //Load the setting back from a file again
-    if( !fftFeatures.loadModelFromFile( "FFTFeatures.txt" ) ){
+    if( !fftFeatures.loadModelFromFile( "FFTFeatures.grt" ) ){
         cout << "Error: Failed to load fft features from settings file!" << endl;
         return EXIT_FAILURE;
     }

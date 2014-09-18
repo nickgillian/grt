@@ -51,7 +51,7 @@ int main (int argc, const char * argv[])
     //Load the example data
     ClassificationData data;
     
-    if( !data.loadDatasetFromFile("WiiAccShakeData.txt") ){
+    if( !data.loadDatasetFromFile("WiiAccShakeData.grt") ){
         cout << "ERROR: Failed to load data from file!\n";
         return EXIT_FAILURE;
     }
@@ -90,10 +90,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the zero crossing counter settings to a file
-    zeroCrossingCounter.saveModelToFile("ZeroCrossingCounterSettings.txt");
+    zeroCrossingCounter.saveModelToFile("ZeroCrossingCounterSettings.grt");
     
     //You can then load the settings again if you need them
-    zeroCrossingCounter.loadModelFromFile("ZeroCrossingCounterSettings.txt");
+    zeroCrossingCounter.loadModelFromFile("ZeroCrossingCounterSettings.grt");
     
     return EXIT_SUCCESS;
 }

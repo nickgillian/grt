@@ -74,10 +74,10 @@ int main (int argc, const char * argv[])
     }
     
     //If we need to save the deadzone settings to a file then we can
-    deadZone.saveModelToFile("DeadZoneSettings.txt");
+    deadZone.saveModelToFile("DeadZoneSettings.grt");
     
     //We can then load the settings later if needed
-    deadZone.loadModelFromFile("DeadZoneSettings.txt");
+    deadZone.loadModelFromFile("DeadZoneSettings.grt");
     
     return EXIT_SUCCESS;
 }
