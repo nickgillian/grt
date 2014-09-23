@@ -301,6 +301,7 @@ protected:
     bool loadBaseSettingsFromFile(fstream &file);
 
     string classifierType;
+    bool supportsNullRejection;
     bool useNullRejection;
     UINT numClasses;
     UINT predictedClassLabel;
