@@ -552,27 +552,27 @@ double MatrixDouble::getTrace() const{
     }
     return t;
 }
-    
-bool MatrixDouble::saveToCSVFile(const string &filename) const{
+  
+bool MatrixDouble::save(const string &filename) const{
     
     std::fstream file;
-	file.open(filename.c_str(), std::ios::out);
+    file.open(filename.c_str(), std::ios::out);
     
-	if( !file.is_open() ){
-		return false;
-	}
+    if( !file.is_open() ){
+        return false;
+    }
     
-	for(UINT i=0; i<rows; i++){
-		for(UINT j=0; j<cols; j++){
-			file << dataPtr[i][j] << (j<cols-1 ? "," : "\n");
-		}
-	}
+    for(UINT i=0; i<rows; i++){
+        for(UINT j=0; j<cols; j++){
+            file << dataPtr[i][j] << (j<cols-1 ? "," : "\n");
+        }
+    }
     
-	file.close();
+    file.close();
     return true;
 }
     
-bool MatrixDouble::loadFromCSVFile(const string &filename,const char seperator){
+bool MatrixDouble::load(const string &filename,const char seperator){
     
     //Clear any previous data
     clear();
@@ -670,6 +670,14 @@ bool MatrixDouble::loadFromCSVFile(const string &filename,const char seperator){
     file.close();
     
     return true;
+}
+    
+bool MatrixDouble::saveToCSVFile(const string &filename) const{
+    return save( filename );
+}
+    
+bool MatrixDouble::loadFromCSVFile(const string &filename,const char seperator){
+    return load( filename, seperator );
 }
     
 }; //End of namespace GRT

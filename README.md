@@ -65,7 +65,7 @@ int main (int argc, const char * argv[])
     generateDataset( "data.csv", 1000, 5, 3 );
 
     cout << "Loading dataset..." << endl;
-    if( !trainingData.loadDatasetFromCSVFile( "data.csv" ) ){
+    if( !trainingData.load( "data.csv" ) ){
             cout << "ERROR: Failed to load training data from file\n";
             return EXIT_FAILURE;
     }
@@ -92,13 +92,13 @@ int main (int argc, const char * argv[])
     }
 
     //Save the pipeline to a file
-    if( !pipeline.savePipelineToFile( "HelloWorldPipeline" ) ){
+    if( !pipeline.save( "HelloWorldPipeline" ) ){
         cout << "ERROR: Failed to save the pipeline!\n";
         return EXIT_FAILURE;
     }
 
     //Load the pipeline from a file
-    if( !pipeline.loadPipelineFromFile( "HelloWorldPipeline" ) ){
+    if( !pipeline.load( "HelloWorldPipeline" ) ){
         cout << "ERROR: Failed to load the pipeline!\n";
         return EXIT_FAILURE;
     }
@@ -177,7 +177,7 @@ bool generateDataset( const string filename, const UINT numSamples, const UINT n
     }
 
     //Save the dataset to a CSV file
-    return data.saveDatasetToCSVFile( filename );
+    return data.save( filename );
 }
 ```
 ##Tutorials and Examples
