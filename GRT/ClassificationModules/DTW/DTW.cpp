@@ -37,6 +37,7 @@ DTW::DTW(bool useScaling,bool useNullRejection,double nullRejectionCoeff,UINT re
     this->useSmoothing = useSmoothing;
     this->smoothingFactor = smoothingFactor;
 
+    supportsNullRejection = true;
 	trained=false;
 	useZNormalisation=false;
 	constrainZNorm=false;

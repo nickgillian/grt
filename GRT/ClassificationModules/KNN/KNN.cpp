@@ -34,6 +34,7 @@ KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,double nullRejecti
     this->searchForBestKValue = searchForBestKValue;
     this->minKSearchValue = minKSearchValue;
     this->maxKSearchValue = maxKSearchValue;
+    supportsNullRejection = true;
     classType = "KNN";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;

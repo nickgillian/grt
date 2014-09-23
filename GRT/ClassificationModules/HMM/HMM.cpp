@@ -35,6 +35,7 @@ HMM::HMM(UINT numStates,UINT numSymbols,UINT modelType,UINT delta,UINT maxNumIte
 	this->minImprovement = minImprovement;
     this->useNullRejection = useNullRejection;
     
+    supportsNullRejection = true;
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
     classType = "HMM";
     classifierType = classType;

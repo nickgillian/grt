@@ -30,6 +30,7 @@ ANBC::ANBC(bool useScaling,bool useNullRejection,double nullRejectionCoeff)
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
+    supportsNullRejection = true;
     weightsDataSet = false;
     classType = "ANBC";
     classifierType = classType;

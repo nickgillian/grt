@@ -31,6 +31,7 @@ MinDist::MinDist(bool useScaling,bool useNullRejection,double nullRejectionCoeff
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
     this->numClusters = numClusters;
+    supportsNullRejection = true;
     classType = "MinDist";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;

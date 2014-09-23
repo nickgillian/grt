@@ -68,6 +68,7 @@ Classifier::Classifier(void){
     baseType = MLBase::CLASSIFIER;
     classifierMode = STANDARD_CLASSIFIER_MODE;
     classifierType = "NOT_SET";
+    supportsNullRejection = false;
     useNullRejection = false;
     numInputDimensions = 0;
     numOutputDimensions = 1;
@@ -99,6 +100,7 @@ bool Classifier::copyBaseVariables(const Classifier *classifier){
     
     this->classifierType = classifier->classifierType;
     this->classifierMode = classifier->classifierMode;
+    this->supportsNullRejection = classifier->supportsNullRejection;
     this->useNullRejection = classifier->useNullRejection;
     this->numClasses = classifier->numClasses;
     this->predictedClassLabel = classifier->predictedClassLabel;
@@ -150,6 +152,10 @@ bool Classifier::clear(){
 
 string Classifier::getClassifierType() const{
     return classifierType; 
+}
+    
+bool Classifier::getSupportsNullRejection() const{
+    return supportsNullRejection;
 }
     
 bool Classifier::getNullRejectionEnabled() const{ 
