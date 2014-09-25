@@ -109,7 +109,7 @@ bool MLBase::predict(MatrixDouble inputMatrix){ return predict_( inputMatrix ); 
     
 bool MLBase::predict_(MatrixDouble &inputMatrix){ return false; }
 
-bool MLBase::MLBase::map(VectorDouble inputVector){ return map_( inputVector ); }
+bool MLBase::map(VectorDouble inputVector){ return map_( inputVector ); }
 
 bool MLBase::map_(VectorDouble &inputVector){ return false; }
 
