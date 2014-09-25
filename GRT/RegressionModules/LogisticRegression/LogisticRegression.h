@@ -91,28 +91,10 @@ public:
      This saves the trained Logistic Regression model to a file.
      This overrides the saveModelToFile function in the ML base class.
      
-     @param string filename: the name of the file to save the Logistic Regression model to
-     @return returns true if the model was saved successfully, false otherwise
-    */
-    virtual bool saveModelToFile(string filename) const;
-    
-    /**
-     This saves the trained Logistic Regression model to a file.
-     This overrides the saveModelToFile function in the ML base class.
-     
      @param fstream &file: a reference to the file the Logistic Regression model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool saveModelToFile(fstream &file) const;
-    
-    /**
-     This loads a trained Logistic Regression model from a file.
-     This overrides the loadModelFromFile function in the ML base class.
-     
-     @param string filename: the name of the file to load the Logistic Regression model from
-     @return returns true if the model was loaded successfully, false otherwise
-    */
-    virtual bool loadModelFromFile(string filename);
     
     /**
      This loads a trained Logistic Regression model from a file.
@@ -138,6 +120,10 @@ public:
      @return returns true if the value was updated successfully, false otherwise
      */
     bool setMaxNumIterations(UINT maxNumIterations);
+    
+    //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
+    using MLBase::saveModelToFile;
+    using MLBase::loadModelFromFile;
 
 protected:
 	inline double sigmoid(const double x) const;

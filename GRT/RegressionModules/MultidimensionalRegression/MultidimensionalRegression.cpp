@@ -202,22 +202,6 @@ bool MultidimensionalRegression::predict_(VectorDouble &inputVector){
     return true;
 }
     
-bool MultidimensionalRegression::saveModelToFile(string filename) const {
-
-    if( !trained ) return false;
-    
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-
-	file.close();
-
-	return true;
-}
-    
 bool MultidimensionalRegression::saveModelToFile(fstream &file) const {
     
     if(!file.is_open())
@@ -256,21 +240,6 @@ bool MultidimensionalRegression::saveModelToFile(fstream &file) const {
     }
      
     return true;
-}
-
-bool MultidimensionalRegression::loadModelFromFile(string filename){
-
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-
-	return true;
-
 }
     
 bool MultidimensionalRegression::loadModelFromFile(fstream &file){

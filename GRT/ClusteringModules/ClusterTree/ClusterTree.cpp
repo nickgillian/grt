@@ -217,22 +217,6 @@ bool ClusterTree::print() const{
     return false;
 }
     
-bool ClusterTree::saveModelToFile(string filename) const{
-
-    	if( !trained ) return false;
-    
-        std::fstream file;
-        file.open(filename.c_str(), std::ios::out);
-    
-    	if( !saveModelToFile( file ) ){
-        	return false;
-    	}
-
-        file.close();
-
-        return true;
-}
-    
 bool ClusterTree::saveModelToFile(fstream &file) const{
     
         if( !file.is_open() )
@@ -267,20 +251,6 @@ bool ClusterTree::saveModelToFile(fstream &file) const{
     	}
     
     	return true;
-}
-
-bool ClusterTree::loadModelFromFile(string filename){
-
-        std::fstream file;
-        file.open(filename.c_str(), std::ios::in);
-        
-        if( !loadModelFromFile( file ) ){
-        	return false;
-        }
-        
-        file.close();
-
-        return true;
 }
     
 bool ClusterTree::loadModelFromFile(fstream &file){

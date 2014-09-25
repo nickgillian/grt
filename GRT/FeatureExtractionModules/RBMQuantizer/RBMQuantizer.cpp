@@ -111,7 +111,7 @@ bool RBMQuantizer::clear(){
     return true;
 }
     
-bool RBMQuantizer::saveModelToFile(const string filename) const{
+bool RBMQuantizer::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -125,7 +125,7 @@ bool RBMQuantizer::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool RBMQuantizer::loadModelFromFile(const string filename){
+bool RBMQuantizer::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
@@ -322,7 +322,7 @@ UINT RBMQuantizer::getNumClusters() const{
 }
 
 UINT RBMQuantizer::getQuantizedValue() const {
-    return (trained ? featureVector[0] : 0);
+    return (trained ? static_cast<UINT>(featureVector[0]) : 0);
 }
 
 VectorDouble RBMQuantizer::getQuantizationDistances() const{

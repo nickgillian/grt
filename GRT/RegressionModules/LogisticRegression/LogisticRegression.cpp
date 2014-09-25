@@ -20,6 +20,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "LogisticRegression.h"
 
+using namespace std;
+
 namespace GRT{
 
 //Register the LogisticRegression module with the Classifier base class
@@ -171,7 +173,7 @@ bool LogisticRegression::train_(RegressionData &trainingData){
             keepTraining = false;
         }
         
-        if( std::isinf( totalSquaredTrainingError ) || std::isnan( totalSquaredTrainingError ) ){
+        if( isinf( totalSquaredTrainingError ) || isnan( totalSquaredTrainingError ) ){
             errorLog << "train_(RegressionData &trainingData) - Training failed! Total squared error is NAN. If scaling is not enabled then you should try to scale your data and see if this solves the issue." << endl;
             return false;
         }
@@ -228,22 +230,6 @@ bool LogisticRegression::predict_(VectorDouble &inputVector){
     return true;
 }
     
-bool LogisticRegression::saveModelToFile(string filename) const{
-
-    if( !trained ) return false;
-    
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-
-	file.close();
-
-	return true;
-}
-    
 bool LogisticRegression::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
@@ -271,21 +257,6 @@ bool LogisticRegression::saveModelToFile(fstream &file) const{
     }
     
     return true;
-}
-
-bool LogisticRegression::loadModelFromFile(string filename){
-
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-
-	return true;
-
 }
     
 bool LogisticRegression::loadModelFromFile(fstream &file){

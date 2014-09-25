@@ -206,15 +206,6 @@ public:
      */
 	virtual bool train_(UnlabelledData &trainingData);
     
-	/**
-     This saves the trained HierarchicalClustering model to a file.
-     This overrides the saveModelToFile function in the base class.
-     
-     @param string filename: the name of the file to save the HierarchicalClustering model to
-     @return returns true if the model was saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(string filename) const;
-    
     /**
      This saves the trained HierarchicalClustering model to a file.
      This overrides the saveModelToFile function in the base class.
@@ -228,15 +219,6 @@ public:
      This loads a trained HierarchicalClustering model from a file.
      This overrides the loadModelFromFile function in the base class.
      
-     @param string filename: the name of the file to load the HierarchicalClustering model from
-     @return returns true if the model was loaded successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(string filename);
-    
-    /**
-     This loads a trained HierarchicalClustering model from a file.
-     This overrides the loadModelFromFile function in the base class.
-     
      @param fstream &file: a reference to the file the HierarchicalClustering model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
@@ -245,6 +227,10 @@ public:
     bool printModel();
     
     vector< ClusterLevel > getClusters(){ return clusters; }
+    
+    //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
+    using MLBase::saveModelToFile;
+    using MLBase::loadModelFromFile;
 
 private:
 	inline double SQR(const double &a) {return a*a;};

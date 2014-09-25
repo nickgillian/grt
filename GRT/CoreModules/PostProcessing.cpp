@@ -91,7 +91,7 @@ bool PostProcessing::init(){
     return true;
 }
     
-bool PostProcessing::saveModelToFile(const string filename) const{
+bool PostProcessing::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -105,7 +105,7 @@ bool PostProcessing::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool PostProcessing::loadModelFromFile(const string filename){
+bool PostProcessing::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

@@ -321,20 +321,6 @@ bool HMM::clear(){
     return true;
 }
 
-bool HMM::saveModelToFile( string fileName ) const{
-    
-    std::fstream file;
-    
-    file.open(fileName.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    return true;
-}
-
 bool HMM::saveModelToFile( fstream &file ) const{
 	
 	if(!file.is_open())
@@ -392,21 +378,6 @@ bool HMM::saveModelToFile( fstream &file ) const{
     }
 
 	return true;
-}
-
-bool HMM::loadModelFromFile( string fileName ){
-    
-    std::fstream file;
-    file.open(fileName.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
 }
 
 bool HMM::loadModelFromFile( fstream &file ){

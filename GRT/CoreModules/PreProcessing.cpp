@@ -106,7 +106,7 @@ bool PreProcessing::init(){
     return true;
 }
 
-bool PreProcessing::saveModelToFile(const string filename) const{
+bool PreProcessing::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -120,7 +120,7 @@ bool PreProcessing::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool PreProcessing::loadModelFromFile(const string filename){
+bool PreProcessing::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

@@ -61,7 +61,7 @@ public:
 	*/
 	TrainingDataRecordingTimer& operator= (const TrainingDataRecordingTimer &rhs);
     
-    bool startRecording(double prepTime,double recordTime);
+    bool startRecording(unsigned long prepTime,unsigned long recordTime);
     
     bool stopRecording();
     
@@ -77,8 +77,8 @@ public:
 
 protected:
     UINT recordingMode;
-    double prepTime;
-    double recordTime;
+    unsigned long prepTime;
+    unsigned long recordTime;
     Timer trainingTimer;
     
     

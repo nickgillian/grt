@@ -398,26 +398,6 @@ double KMeans::calculateTheta(const MatrixDouble &data){
 	return theta;
 
 }
-    
-bool KMeans::saveModelToFile(string filename) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !file.is_open() ){
-        errorLog << "saveModelToFile(string filename) - Failed to open file!" << endl;
-        return false;
-    }
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
 bool KMeans::saveModelToFile(fstream &file) const{
 
@@ -445,28 +425,6 @@ bool KMeans::saveModelToFile(fstream &file) const{
 
    return true;
 
-}
-    
-bool KMeans::loadModelFromFile(string fileName){
-    
-    std::fstream file;
-    string word;
-    file.open(fileName.c_str(), std::ios::in);
-    
-    if(!file.is_open()){
-        errorLog << "loadModelFromFile(string filename) - Failed to open file!" << endl;
-        return false;
-    }
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-    
 }
 
 bool KMeans::loadModelFromFile(fstream &file){

@@ -94,7 +94,7 @@ bool FFTFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
     return false;
 }
     
-bool FFTFeatures::saveModelToFile(const string filename) const{
+bool FFTFeatures::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -108,7 +108,7 @@ bool FFTFeatures::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool FFTFeatures::loadModelFromFile(const string filename){
+bool FFTFeatures::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

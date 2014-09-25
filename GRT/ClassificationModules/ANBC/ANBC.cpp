@@ -20,6 +20,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "ANBC.h"
 
+using namespace std;
+
 namespace GRT{
 
 //Register the ANBC module with the Classifier base class
@@ -231,7 +233,7 @@ bool ANBC::predict_(VectorDouble &inputVector){
         classLikelihoods[k] = classDistances[k];
         
         //If the distances are very far away then they could be -inf or nan so catch this so the sum still works
-        if( std::isinf(classLikelihoods[k]) || std::isnan(classLikelihoods[k]) ){
+        if( isinf(classLikelihoods[k]) || isnan(classLikelihoods[k]) ){
             classLikelihoods[k] = 0;
         }else{
             classLikelihoods[k] = exp( classLikelihoods[k] );

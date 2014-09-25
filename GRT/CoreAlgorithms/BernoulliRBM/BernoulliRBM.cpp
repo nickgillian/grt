@@ -168,7 +168,8 @@ bool BernoulliRBM::train_(MatrixDouble &data){
         }
     }
     
-    const UINT numBatches = (UINT)ceil( numTrainingSamples/double(batchSize) );
+
+    const UINT numBatches = static_cast<UINT>( ceil( double(numTrainingSamples)/batchSize ) );
     
     //Setup the batch indexs
     vector< BatchIndexs > batchIndexs( numBatches );
@@ -421,20 +422,6 @@ bool BernoulliRBM::clear(){
     return true;
 }
 
-bool BernoulliRBM::saveModelToFile(string filename) const{
-    
-	std::fstream file;
-	file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-	file.close();
-    
-    return true;
-}
-
 bool BernoulliRBM::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
@@ -490,21 +477,6 @@ bool BernoulliRBM::saveModelToFile(fstream &file) const{
         }
         file << endl;
     }
-    
-    return true;
-}
-    
-bool BernoulliRBM::loadModelFromFile(string filename){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
     
     return true;
 }

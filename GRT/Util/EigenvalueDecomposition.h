@@ -101,14 +101,17 @@ protected:
       Complex scalar division.
      */
     void cdiv(double xr, double xi, double yr, double yi);
-    
-    inline double findMax(const double &a,const double &b){
+
+    template< class T >
+    inline T findMax(const T &a,const T &b){
         return (a > b ? a : b);
     }
-    inline double findMin(const double &a,const double &b){
+    template< class T >
+    inline T findMin(const T &a,const T &b){
         return (a < b ? a : b);
     }
-    inline double hypot(const double &a,const double &b){
+    template< class T >
+    inline T hypot(const T &a,const T &b){
         return sqrt( (a*a)+(b*b) );
     }
     

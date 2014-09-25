@@ -103,7 +103,7 @@ bool TimeseriesBuffer::reset(){
     return false;
 }
     
-bool TimeseriesBuffer::saveModelToFile(const string filename) const{
+bool TimeseriesBuffer::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -117,7 +117,7 @@ bool TimeseriesBuffer::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool TimeseriesBuffer::loadModelFromFile(const string filename){
+bool TimeseriesBuffer::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

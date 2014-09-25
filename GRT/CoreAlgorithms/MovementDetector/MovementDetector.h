@@ -101,6 +101,10 @@ public:
     
     bool setSearchTimeout(const UINT searchTimeout);
     
+    //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
+    using MLBase::saveModelToFile;
+    using MLBase::loadModelFromFile;
+    
 protected:
 
     UINT state;
