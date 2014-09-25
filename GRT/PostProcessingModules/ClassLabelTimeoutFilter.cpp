@@ -126,17 +126,10 @@ bool ClassLabelTimeoutFilter::init(unsigned long timeoutDuration,UINT filterMode
 
     initialized = false;
     
-#ifdef GRT_SAFE_CHECKING
-    if( timeoutDuration < 0 ){
-        errorLog << "init(double timeoutDuration,UINT filterMode) - TimeoutDuration must be greater or equal to 0!" << endl;
-        return false;
-    }
-    
     if( filterMode != ALL_CLASS_LABELS && filterMode != INDEPENDENT_CLASS_LABELS ){
         errorLog << "init(double timeoutDuration,UINT filterMode) - Unkown filter mode!" << endl;
         return false;
     }
-#endif
     
     this->timeoutDuration = timeoutDuration;
     this->filterMode = filterMode;
@@ -339,7 +332,6 @@ bool ClassLabelTimeoutFilter::loadModelFromFile(fstream &file){
 }
     
 bool ClassLabelTimeoutFilter::setTimeoutDuration(unsigned long timeoutDuration){
-    if( timeoutDuration < 0 ) return false;
     this->timeoutDuration = timeoutDuration;
     if( initialized ){
         return reset();
