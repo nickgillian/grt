@@ -245,26 +245,6 @@ bool GaussianMixtureModels::train_(UnlabelledData &trainingData){
     return train_( data );
 }
     
-bool GaussianMixtureModels::saveModelToFile(string filename) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::fstream::out);
-    
-    if( !file.is_open() ){
-        errorLog << "saveModelToFile(string filename) - Failed to open file!" << endl;
-        return false;
-    }
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-    
 bool GaussianMixtureModels::saveModelToFile(fstream &file) const{
     
     if( !file.is_open() ){
@@ -313,28 +293,6 @@ bool GaussianMixtureModels::saveModelToFile(fstream &file) const{
             file << det[k] << endl;
         }
     }
-    
-    return true;
-    
-}
-
-bool GaussianMixtureModels::loadModelFromFile(string filename){
-    
-    std::fstream file;
-    string word;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if(!file.is_open()){
-        errorLog << "loadModelFromFile(string filename) - Failed to open file!" << endl;
-        return false;
-    }
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
     
     return true;
     

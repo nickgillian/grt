@@ -49,7 +49,7 @@ TrainingDataRecordingTimer& TrainingDataRecordingTimer::operator=(const Training
 	return *this;
 }
     
-bool TrainingDataRecordingTimer::startRecording(double prepTime,double recordTime){
+bool TrainingDataRecordingTimer::startRecording(unsigned long prepTime,unsigned long recordTime){
     this->prepTime = prepTime;
     this->recordTime = recordTime;
    

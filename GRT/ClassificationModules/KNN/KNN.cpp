@@ -20,6 +20,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "KNN.h"
 
+using namespace std;
+
 namespace GRT{
     
 //Register the DTW module with the Classifier base class
@@ -279,11 +281,11 @@ bool KNN::train_(const ClassificationData &trainingData,const UINT K){
             if( trainingSigma[j] == 0 ){
                 warningLog << "TrainingSigma[ " << j << " ] is zero for a K value of " << K << endl;
             }
-            if( std::isnan( trainingMu[j] ) ){
+            if( isnan( trainingMu[j] ) ){
                 errorLog << "TrainingMu[ " << j << " ] is NAN for a K value of " << K << endl;
                 errorFound = true;
             }
-            if( std::isnan( trainingSigma[j] ) ){
+            if( isnan( trainingSigma[j] ) ){
                 errorLog << "TrainingSigma[ " << j << " ] is NAN for a K value of " << K << endl;
                 errorFound = true;
             }
@@ -473,22 +475,6 @@ bool KNN::clear(){
     return true;
 }
 
-bool KNN::saveModelToFile(string filename) const{
-
-    if( !trained ) return false;
-
-	std::fstream file;
-	file.open(filename.c_str(), std::ios::out);
-
-	if( !saveModelToFile( file ) ){
-        return false;
-    }
-
-	file.close();
-
-    return true;
-}
-    
 bool KNN::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
@@ -539,23 +525,6 @@ bool KNN::saveModelToFile(fstream &file) const{
         }
     }
     
-    return true;
-}
-
-bool KNN::loadModelFromFile(string filename){
-
-    std::fstream file;
-	file.open(filename.c_str(), std::ios::in);
-
-    //Clear any previous models or data
-	clear();
-
-	if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-
     return true;
 }
     

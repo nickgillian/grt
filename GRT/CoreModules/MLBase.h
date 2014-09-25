@@ -274,7 +274,6 @@ public:
      */
     virtual bool save(const string filename) const;
     
-    
     /**
      This saves the model to a file, it calls the loadModelFromFile(string filename) function unless it is overwritten by the derived class.
      

@@ -115,7 +115,7 @@ bool SOMQuantizer::clear(){
     return true;
 }
     
-bool SOMQuantizer::saveModelToFile(const string filename) const{
+bool SOMQuantizer::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -129,7 +129,7 @@ bool SOMQuantizer::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool SOMQuantizer::loadModelFromFile(const string filename){
+bool SOMQuantizer::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
@@ -334,7 +334,7 @@ UINT SOMQuantizer::getNumClusters() const{
 }
 
 UINT SOMQuantizer::getQuantizedValue() const {
-    return (trained ? featureVector[0] : 0);
+    return (trained ? static_cast<UINT>(featureVector[0]) : 0);
 }
 
 VectorDouble SOMQuantizer::getQuantizationDistances() const{

@@ -89,7 +89,7 @@ inline double antilog(const double &x){ return exp( x ); }
 
 	//isnan is not defined on Visual Studio so define it here
 	#ifndef isnan
-		#define isnan(x) x != x
+		#define isnan(x) (x != x)
 	#endif
 
 	//isnan is not defined on Visual Studio so define it here

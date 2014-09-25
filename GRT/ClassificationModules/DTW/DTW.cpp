@@ -20,6 +20,8 @@
 
 #include "DTW.h"
 
+using namespace std;
+
 namespace GRT{
     
 //Register the DTW module with the Classifier base class
@@ -249,7 +251,7 @@ bool DTW::train_(TimeSeriesClassificationData &labelledTrainingData){
 
     //Flag that the models have been trained
 	trained = true;
-	averageTemplateLength = (UINT) averageTemplateLength/double(numTemplates);
+	averageTemplateLength = averageTemplateLength/numTemplates;
 
     //Recompute the null rejection thresholds
     recomputeNullRejectionThresholds();
@@ -610,7 +612,7 @@ double DTW::computeDistance(MatrixDouble &timeSeriesA,MatrixDouble &timeSeriesB,
     //Run the recursive search function to build the cost matrix
     double distance = sqrt( d(M-1,N-1,distanceMatrix,M,N) );
 
-    if( std::isinf(distance) || std::isnan(distance) ){
+    if( isinf(distance) || isnan(distance) ){
         warningLog << "DTW computeDistance(...) - Distance Matrix Values are INF!" << endl;
         return INFINITY;
     }
@@ -675,7 +677,7 @@ double DTW::d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N){
     //The following is based on Matlab code by Eamonn Keogh and Michael Pazzani
     
     //If this cell is NAN then it has already been flagged as unreachable
-    if( std::isnan( distanceMatrix[m][n] ) ){
+    if( isnan( distanceMatrix[m][n] ) ){
         return NAN;
     }
 
@@ -927,25 +929,6 @@ void DTW::smoothData(MatrixDouble &data,UINT smoothFactor,MatrixDouble &resultsD
 }
 
 ////////////////////////////// SAVE & LOAD FUNCTIONS ////////////////////////////////
-
-bool DTW::saveModelToFile( string fileName ) const{
-
-    std::fstream file;
-
-    if(!trained){
-       errorLog << "saveModelToFile( string fileName ) - Model not trained yet, can not save to file" << endl;
-     return false;
-    }
-
-    file.open(fileName.c_str(), std::ios::out);
-
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-
-    file.close();
-    return true;
-}
     
 bool DTW::saveModelToFile( fstream &file ) const{
     
@@ -1006,22 +989,6 @@ bool DTW::saveModelToFile( fstream &file ) const{
     }
     
     return true;
-}
-
-
-bool DTW::loadModelFromFile( string fileName ){
-
-   std::fstream file;
-   file.open(fileName.c_str(), std::ios::in);
-
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-	file.close();
-	
-
-    return trained;
 }
 
 bool DTW::loadModelFromFile( fstream &file ){

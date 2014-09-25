@@ -116,7 +116,7 @@ bool FeatureExtraction::clear(){
     return true;
 }
    
-bool FeatureExtraction::saveModelToFile(const string filename) const{
+bool FeatureExtraction::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -130,7 +130,7 @@ bool FeatureExtraction::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool FeatureExtraction::loadModelFromFile(const string filename){
+bool FeatureExtraction::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

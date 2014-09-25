@@ -123,28 +123,10 @@ public:
      This saves the trained KNN model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param string filename: the name of the file to save the KNN model to
-     @return returns true if the model was saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(string filename) const;
-    
-    /**
-     This saves the trained KNN model to a file.
-     This overrides the saveModelToFile function in the Classifier base class.
-     
      @param fstream &file: a reference to the file the KNN model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool saveModelToFile(fstream &file) const;
-    
-    /**
-     This loads a trained KNN model from a file.
-     This overrides the loadModelFromFile function in the Classifier base class.
-     
-     @param string filename: the name of the file to load the KNN model from
-     @return returns true if the model was loaded successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(string filename);
     
     /**
      This loads a trained KNN model from a file.

@@ -110,15 +110,6 @@ public:
      */
 	virtual bool train_(UnlabelledData &trainingData);
     
-	/**
-     This saves the trained GaussianMixtureModels model to a file.
-     This overrides the saveModelToFile function in the base class.
-     
-     @param string filename: the name of the file to save the GaussianMixtureModels model to
-     @return returns true if the model was saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(string filename) const;
-    
     /**
      This saves the trained GaussianMixtureModels model to a file.
      This overrides the saveModelToFile function in the base class.
@@ -127,15 +118,6 @@ public:
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool saveModelToFile(fstream &file) const;
-    
-    /**
-     This loads a trained GaussianMixtureModels model from a file.
-     This overrides the loadModelFromFile function in the base class.
-     
-     @param string filename: the name of the file to load the GaussianMixtureModels model from
-     @return returns true if the model was loaded successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(string filename);
     
     /**
      This loads a trained GaussianMixtureModels model from a file.
@@ -178,6 +160,10 @@ public:
         }
         return MatrixDouble();
     }
+    
+    //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
+    using MLBase::saveModelToFile;
+    using MLBase::loadModelFromFile;
 	
 protected:
     bool estep( const MatrixDouble &data, VectorDouble &u, VectorDouble &v, double &change );

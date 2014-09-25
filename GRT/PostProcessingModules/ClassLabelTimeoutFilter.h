@@ -45,13 +45,13 @@ public:
     ClassLabelAndTimer(){
         classLabel = 0;
     }
-    ClassLabelAndTimer(UINT classLabel,double timeoutDuration){
+    ClassLabelAndTimer(UINT classLabel,unsigned long timeoutDuration){
         this->classLabel = classLabel;
         timer.start(timeoutDuration);
     }
     
     //Setters
-    bool set(UINT classLabel,double timeoutDuration){
+    bool set(UINT classLabel,unsigned long timeoutDuration){
         if( classLabel > 0 && timeoutDuration > 0 ){
             this->classLabel = classLabel;
             timer.start(timeoutDuration);
@@ -63,7 +63,7 @@ public:
     //Getters
     UINT getClassLabel(){ return classLabel; }
     bool timerReached(){ return timer.timerReached(); }
-    double getRemainingTime(){ return timer.getMilliSeconds(); }
+    unsigned long getRemainingTime(){ return timer.getMilliSeconds(); }
     
 protected:
     UINT classLabel;
@@ -91,10 +91,10 @@ public:
      mode was activated with the class label of 1, and then class 2 was input into the class label filter, then the
      debounce mode would be reset to class 2, even if the timeoutDuration for class 1 had not expired.
      
-     @param double timeoutDuration: sets the timeoutDuration value (in milliseconds). Default value timeoutDuration=1000
+     @param unsigned long timeoutDuration: sets the timeoutDuration value (in milliseconds). Default value timeoutDuration=1000
      @param UINT filterMode: sets the filterMode parameter. Default value filterMode=ALL_CLASS_LABELS
      */
-    ClassLabelTimeoutFilter(double timeoutDuration = 1000,UINT filterMode = ALL_CLASS_LABELS);
+    ClassLabelTimeoutFilter(unsigned long timeoutDuration = 1000,UINT filterMode = ALL_CLASS_LABELS);
     
     /**
      Copy Constructor.
@@ -190,7 +190,7 @@ public:
      @param UINT filterMode: sets the filterMode parameter
      @return returns true if the ClassLabelTimeoutFilter was initialized, false otherwise
      */
-    bool init(double timeoutDuration,UINT filterMode = ALL_CLASS_LABELS); 
+    bool init(unsigned long timeoutDuration,UINT filterMode = ALL_CLASS_LABELS); 
     
     /**
      This is the main filter function which filters the input predictedClassLabel.
@@ -226,7 +226,7 @@ public:
      @param double timeoutDuration: the new timeoutDuration parameter
      @return returns true if the timeoutDuration parameter was updated, false otherwise
      */
-    bool setTimeoutDuration(double timeoutDuration);
+    bool setTimeoutDuration(unsigned long timeoutDuration);
     
     /**
      Sets the filterMode parameter, must be a value greater than 0.
@@ -254,7 +254,7 @@ public:
 protected:
     UINT filteredClassLabel;
     UINT filterMode;
-    double timeoutDuration;
+    unsigned long timeoutDuration;
     vector< ClassLabelAndTimer > classLabelTimers;
     
     static RegisterPostProcessingModule< ClassLabelTimeoutFilter > registerModule;

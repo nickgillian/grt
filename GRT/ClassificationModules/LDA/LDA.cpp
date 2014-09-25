@@ -251,23 +251,6 @@ bool LDA::predict(VectorDouble inputVector){
     return true;
 }
     
-bool LDA::saveModelToFile(string filename) const{
-    
-    if( !trained ) return false;
-    
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::out);
-	
-	if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-	file.close();
-
-	return true;
-}
-    
 bool LDA::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
@@ -303,22 +286,6 @@ bool LDA::saveModelToFile(fstream &file) const{
     }
     
     return true;
-}
-
-bool LDA::loadModelFromFile(string filename){
-
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-	
-    return true;
-
 }
     
 bool LDA::loadModelFromFile(fstream &file){

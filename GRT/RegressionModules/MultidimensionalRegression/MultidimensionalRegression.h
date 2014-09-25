@@ -98,28 +98,10 @@ public:
      This saves the trained Multidimensional Regression model to a file.
      This overrides the saveModelToFile function in the ML base class.
      
-     @param string filename: the name of the file to save the Multidimensional Regression model to
-     @return returns true if the model was saved successfully, false otherwise
-    */
-    virtual bool saveModelToFile(string filename) const;
-    
-    /**
-     This saves the trained Multidimensional Regression model to a file.
-     This overrides the saveModelToFile function in the ML base class.
-     
      @param fstream &file: a reference to the file the Multidimensional Regression model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool saveModelToFile(fstream &file) const;
-    
-    /**
-     This loads a trained Multidimensional Regression model from a file.
-     This overrides the loadModelFromFile function in the ML base class.
-     
-     @param string filename: the name of the file to load the Multidimensional Regression model from
-     @return returns true if the model was loaded successfully, false otherwise
-    */
-    virtual bool loadModelFromFile(string filename);
     
     /**
      This loads a trained Multidimensional Regression model from a file.
@@ -155,6 +137,10 @@ public:
      @return returns true if the regresion module was set successfully, false otherwise
      */
     bool setRegressionModule( const Regressifier &regressifier );
+    
+    //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
+    using MLBase::saveModelToFile;
+    using MLBase::loadModelFromFile;
 
 protected:
     bool deepCopyRegressionModules( vector< Regressifier* > &newModules ) const;

@@ -278,20 +278,6 @@ double GMM::computeMixtureLikelihood(const VectorDouble &x,const UINT k){
     return models[k].computeMixtureLikelihood(x);
 }
     
-bool GMM::saveModelToFile(string filename) const{
-    
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-	file.close();
-    
-	return true;
-}
-    
 bool GMM::saveModelToFile(fstream &file) const{
     
     if( !trained ){
@@ -358,21 +344,6 @@ bool GMM::saveModelToFile(fstream &file) const{
     }
     
     return true;
-}
-
-bool GMM::loadModelFromFile(string filename){
-    
-    std::fstream file; 
-	file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-    
 }
     
 bool GMM::loadModelFromFile(fstream &file){

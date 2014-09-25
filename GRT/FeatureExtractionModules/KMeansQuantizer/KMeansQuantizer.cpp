@@ -111,7 +111,7 @@ bool KMeansQuantizer::clear(){
     return true;
 }
     
-bool KMeansQuantizer::saveModelToFile(const string filename) const{
+bool KMeansQuantizer::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -125,7 +125,7 @@ bool KMeansQuantizer::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool KMeansQuantizer::loadModelFromFile(const string filename){
+bool KMeansQuantizer::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

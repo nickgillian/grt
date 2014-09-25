@@ -103,7 +103,7 @@ bool MovementIndex::reset(){
     return false;
 }
     
-bool MovementIndex::saveModelToFile(const string filename) const{
+bool MovementIndex::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -117,7 +117,7 @@ bool MovementIndex::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool MovementIndex::loadModelFromFile(const string filename){
+bool MovementIndex::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
