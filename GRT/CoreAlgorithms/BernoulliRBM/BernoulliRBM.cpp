@@ -168,7 +168,7 @@ bool BernoulliRBM::train_(MatrixDouble &data){
         }
     }
     
-    const UINT numBatches = (UINT)ceil( numTrainingSamples/batchSize );
+    const UINT numBatches = (UINT)ceil( numTrainingSamples/double(batchSize) );
     
     //Setup the batch indexs
     vector< BatchIndexs > batchIndexs( numBatches );
