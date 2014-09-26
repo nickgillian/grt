@@ -75,13 +75,13 @@ int main (int argc, const char * argv[])
     }
     
     //After recording your training data you can then save it to a file
-    if( !trainingData.saveDatasetToFile( "TrainingData.txt" ) ){
+    if( !trainingData.save( "TrainingData.grt" ) ){
 	    cout << "Failed to save dataset to file!\n";
 	    return EXIT_FAILURE;
 	}
     
     //This can then be loaded later
-    if( !trainingData.loadDatasetFromFile( "TrainingData.txt" ) ){
+    if( !trainingData.load( "TrainingData.grt" ) ){
 		cout << "Failed to load dataset from file!\n";
 		return EXIT_FAILURE;
 	}

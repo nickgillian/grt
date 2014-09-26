@@ -53,12 +53,12 @@ class PrincipalComponentAnalysis : public GRTBase{
     /**
      Default constructor.
      */
-	PrincipalComponentAnalysis();
+    PrincipalComponentAnalysis();
     
     /**
      Default destructor.
      */
-	virtual ~PrincipalComponentAnalysis();
+    virtual ~PrincipalComponentAnalysis();
 	
     /**
      Runs the principal component analysis algorithm on the input data and builds the resulting feature vector
@@ -73,7 +73,7 @@ class PrincipalComponentAnalysis : public GRTBase{
      @return returns true if the principal components of the input matrix could be computed, false otherwise
      value
      */
-	bool computeFeatureVector(const MatrixDouble &data,double maxVariance=0.95,bool normData=false);
+    bool computeFeatureVector(const MatrixDouble &data,double maxVariance=0.95,bool normData=false);
 
     /**
      Runs the principal component analysis algorithm on the input data and builds the resulting feature vector
@@ -97,7 +97,18 @@ class PrincipalComponentAnalysis : public GRTBase{
      @param MatrixDouble &prjData: A matrix into which the projected data will be stored. This matrix will be resized to [M K], where M is the number of rows in the data matrix and K is the numPrincipalComponents.
      @return returns true if the projection was successful, false otherwise
      */
-	bool project(const MatrixDouble &data,MatrixDouble &prjData);
+    bool project(const MatrixDouble &data,MatrixDouble &prjData);
+    
+    /**
+     Projects the input data vector onto the principal subspace. The new projected data will be stored in the prjData vector. 
+     The computeFeatureVector function should have been called at least once before this function is called.
+     The size of the data vector must match the numInputDimensions parameter.  The function will return true if the projection was successful, false otherwise.
+     
+     @param const VectorDouble &data: The data that should be projected onto the principal subspace. This should be an N-dimensional vector, where N must equal the numInputDimensions value.
+     @param VectorDouble &prjData: A vector into which the projected data will be stored. This vector will be resized to K, where K is the numPrincipalComponents.
+     @return returns true if the projection was successful, false otherwise
+     */
+    bool project(const VectorDouble &data,VectorDouble &prjData);
 	
     /**
      Returns true if the module was trained.

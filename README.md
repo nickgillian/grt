@@ -65,7 +65,7 @@ int main (int argc, const char * argv[])
     generateDataset( "data.csv", 1000, 5, 3 );
 
     cout << "Loading dataset..." << endl;
-    if( !trainingData.loadDatasetFromCSVFile( "data.csv" ) ){
+    if( !trainingData.load( "data.csv" ) ){
             cout << "ERROR: Failed to load training data from file\n";
             return EXIT_FAILURE;
     }
@@ -92,13 +92,13 @@ int main (int argc, const char * argv[])
     }
 
     //Save the pipeline to a file
-    if( !pipeline.savePipelineToFile( "HelloWorldPipeline" ) ){
+    if( !pipeline.save( "HelloWorldPipeline" ) ){
         cout << "ERROR: Failed to save the pipeline!\n";
         return EXIT_FAILURE;
     }
 
     //Load the pipeline from a file
-    if( !pipeline.loadPipelineFromFile( "HelloWorldPipeline" ) ){
+    if( !pipeline.load( "HelloWorldPipeline" ) ){
         cout << "ERROR: Failed to load the pipeline!\n";
         return EXIT_FAILURE;
     }
@@ -177,7 +177,7 @@ bool generateDataset( const string filename, const UINT numSamples, const UINT n
     }
 
     //Save the dataset to a CSV file
-    return data.saveDatasetToCSVFile( filename );
+    return data.save( filename );
 }
 ```
 ##Tutorials and Examples
@@ -193,11 +193,9 @@ You can find the main GRT forum at: [http://www.nickgillian.com/forum/](http://w
 
 ##Building the GRT
 
-You can find a makefile in the build folder that will compile the GRT as a static library (on Linux and OSX systems) and also
-compile all the example projects. See the README file in the build folder for more info.
+You can find a CMakeLists file in the build folder that you can use to autogenerate a makefile for your machine.
 
-If you want to directly include the source code in your own C++ projects, then you can do this without using the makefile. See
-Installing and using the GRT in your C++ projects section for more information on this.
+Read the readme file in the build folder to see how to build the GRT as a static library for Linux, OS X, or Windows.
 
 ##Installing and using the GRT in your C++ projects
 
@@ -223,7 +221,7 @@ simply write WhatEverClass.
 Note that, depending on your IDE, you may have to specify the physical path that 
 you placed the GRT folder in on your hard drive, for instance you might have to write something like:
 
-    #include "/Users/Nick/Documents/Dev/cpp/gesture-recognition-toolkit/GRT/GRT.h"
+    #include "/Users/Nick/Documents/gesture-recognition-toolkit/GRT/GRT.h"
 
 ##License
 

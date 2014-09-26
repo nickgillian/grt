@@ -84,11 +84,18 @@ public:
     virtual bool clear();
 
     /**
-     Returns the classifeir type as a string.
+     Returns the classifier type as a string.
      
      @return returns the classifier type as a string
      */
     string getClassifierType() const;
+    
+    /**
+     Returns true if the classifier instance supports null rejection, false otherwise.
+     
+     @return returns true if the classifier instance supports null rejection, false otherwise
+     */
+    bool getSupportsNullRejection() const;
     
     /**
      Returns true if nullRejection is enabled.
@@ -294,6 +301,7 @@ protected:
     bool loadBaseSettingsFromFile(fstream &file);
 
     string classifierType;
+    bool supportsNullRejection;
     bool useNullRejection;
     UINT numClasses;
     UINT predictedClassLabel;

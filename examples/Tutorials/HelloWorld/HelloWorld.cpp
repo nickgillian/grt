@@ -26,7 +26,7 @@ int main (int argc, const char * argv[])
     //Load some training data from a file
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("HelloWorldTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("HelloWorldTrainingData.grt") ){
         cout << "ERROR: Failed to load training data from file\n";
         return EXIT_FAILURE;
     }
@@ -51,13 +51,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the pipeline to a file
-	if( !pipeline.savePipelineToFile( "HelloWorldPipeline" ) ){
+	if( !pipeline.savePipelineToFile( "HelloWorldPipeline.grt" ) ){
         cout << "ERROR: Failed to save the pipeline!\n";
         return EXIT_FAILURE;
     }
     
 	//Load the pipeline from a file
-	if( !pipeline.loadPipelineFromFile( "HelloWorldPipeline" ) ){
+	if( !pipeline.loadPipelineFromFile( "HelloWorldPipeline.grt" ) ){
         cout << "ERROR: Failed to load the pipeline!\n";
         return EXIT_FAILURE;
     }

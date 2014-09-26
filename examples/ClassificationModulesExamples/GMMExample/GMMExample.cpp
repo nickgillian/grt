@@ -50,7 +50,7 @@ int main (int argc, const char * argv[])
     //Load some training data to train the classifier
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("GMMTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("GMMTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -65,13 +65,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the GMM model to a file
-    if( !gmm.saveModelToFile("GMMModel.txt") ){
+    if( !gmm.save("GMMModel.grt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the GMM model from a file
-    if( !gmm.loadModelFromFile("GMMModel.txt") ){
+    if( !gmm.load("GMMModel.grt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

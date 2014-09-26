@@ -62,12 +62,12 @@ int main (int argc, const char * argv[])
     ClassificationData trainingData;
     ClassificationData testData;
     
-    if( !trainingData.loadDatasetFromFile("ClassLabelTimeoutFilterTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("ClassLabelTimeoutFilterTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
     
-    if( !testData.loadDatasetFromFile("ClassLabelTimeoutFilterTestData.txt") ){
+    if( !testData.loadDatasetFromFile("ClassLabelTimeoutFilterTestData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }

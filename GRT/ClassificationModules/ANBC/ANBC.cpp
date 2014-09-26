@@ -20,6 +20,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "ANBC.h"
 
+using namespace std;
+
 namespace GRT{
 
 //Register the ANBC module with the Classifier base class
@@ -30,6 +32,7 @@ ANBC::ANBC(bool useScaling,bool useNullRejection,double nullRejectionCoeff)
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
+    supportsNullRejection = true;
     weightsDataSet = false;
     classType = "ANBC";
     classifierType = classType;
@@ -230,7 +233,7 @@ bool ANBC::predict_(VectorDouble &inputVector){
         classLikelihoods[k] = classDistances[k];
         
         //If the distances are very far away then they could be -inf or nan so catch this so the sum still works
-        if( std::isinf(classLikelihoods[k]) || std::isnan(classLikelihoods[k]) ){
+        if( isinf(classLikelihoods[k]) || isnan(classLikelihoods[k]) ){
             classLikelihoods[k] = 0;
         }else{
             classLikelihoods[k] = exp( classLikelihoods[k] );
@@ -300,7 +303,7 @@ bool ANBC::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
 	{
-		errorLog <<"saveANBCModelToFile(fstream &file) - The file is not open!" << endl;
+		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
 		return false;
 	}
     

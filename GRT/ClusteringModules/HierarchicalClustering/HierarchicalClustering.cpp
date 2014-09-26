@@ -372,26 +372,6 @@ double HierarchicalClustering::computeClusterVariance( const ClusterInfo &cluste
     }
     return variance/N;
 }
-    
-bool HierarchicalClustering::saveModelToFile(string filename) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::fstream::out);
-    
-    if( !file.is_open() ){
-        errorLog << "saveModelToFile(string filename) - Failed to open file!" << endl;
-        return false;
-    }
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
 bool HierarchicalClustering::saveModelToFile(fstream &file) const{
     
@@ -417,27 +397,6 @@ bool HierarchicalClustering::saveModelToFile(fstream &file) const{
             file << "NumClusters: " << clusters[i].getNumClusters() << endl;
         }
     }
-    
-    return true;
-    
-}
-
-bool HierarchicalClustering::loadModelFromFile(string filename){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if(!file.is_open()){
-        errorLog << "loadModelFromFile(string filename) - Failed to open file!" << endl;
-        return false;
-    }
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
     
     return true;
     

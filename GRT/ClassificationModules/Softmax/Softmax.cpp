@@ -270,22 +270,6 @@ bool Softmax::clear(){
     return true;
 }
     
-bool Softmax::saveModelToFile(string filename) const{
-
-    if( !trained ) return false;
-    
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-
-	file.close();
-
-	return true;
-}
-    
 bool Softmax::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
@@ -316,21 +300,6 @@ bool Softmax::saveModelToFile(fstream &file) const{
     }
     
     return true;
-}
-
-bool Softmax::loadModelFromFile(string filename){
-
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-
-	return true;
-
 }
     
 bool Softmax::loadModelFromFile(fstream &file){

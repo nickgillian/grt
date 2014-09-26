@@ -114,28 +114,10 @@ public:
      This saves the trained GMM model to a file.
      This overrides the saveModelToFile function in the GRT::Classifier base class.
      
-     @param string filename: the name of the file to save the GMM model to
-     @return returns true if the model was saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(string filename) const;
-    
-    /**
-     This saves the trained GMM model to a file.
-     This overrides the saveModelToFile function in the GRT::Classifier base class.
-     
      @param fstream &file: a reference to the file the GMM model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool saveModelToFile(fstream &file) const;
-    
-    /**
-     This loads a trained GMM model from a file.
-     This overrides the loadModelFromFile function in the GRT::Classifier base class.
-     
-     @param string filename: the name of the file to load the GMM model from
-     @return returns true if the model was loaded successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(string filename);
     
     /**
      This loads a trained GMM model from a file.
@@ -195,8 +177,11 @@ public:
      */
     bool setMaxIter(UINT maxIter);
     
-    using MLBase::train; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
-    using MLBase::predict; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
+    //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
+    using MLBase::saveModelToFile;
+    using MLBase::loadModelFromFile;
+    using MLBase::train;
+    using MLBase::predict;
     
 protected:
     double computeMixtureLikelihood(const VectorDouble &x,UINT k);

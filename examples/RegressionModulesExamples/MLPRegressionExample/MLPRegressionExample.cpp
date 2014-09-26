@@ -48,12 +48,12 @@ int main (int argc, const char * argv[])
     RegressionData trainingData;
     RegressionData testData;
     
-    if( !trainingData.loadDatasetFromFile("MLPRegressionTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("MLPRegressionTrainingData.grt") ){
         cout << "ERROR: Failed to load training data!\n";
         return EXIT_FAILURE;
     }
     
-    if( !testData.loadDatasetFromFile("MLPRegressionTestData.txt") ){
+    if( !testData.loadDatasetFromFile("MLPRegressionTestData.grt") ){
         cout << "ERROR: Failed to load test data!\n";
         return EXIT_FAILURE;
     }
@@ -126,7 +126,7 @@ int main (int argc, const char * argv[])
     
     //Run back over the test data again and output the results to a file 
     fstream file;
-    file.open("MLPResultsData.txt", fstream::out);
+    file.open("MLPResultsData.csv", fstream::out);
     
     for(UINT i=0; i<testData.getNumSamples(); i++){
         vector< double > inputVector = testData[i].getInputVector();

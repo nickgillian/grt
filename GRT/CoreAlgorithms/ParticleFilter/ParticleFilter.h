@@ -35,6 +35,8 @@
 #include "Particle.h"
 #include "../../Util/GRTCommon.h"
 
+using namespace std;
+
 namespace GRT{
 
 template<class PARTICLE,class SENSOR_DATA>
@@ -513,18 +515,18 @@ protected:
         for( iter = particles.begin(); iter != particles.end(); ++iter ){
             wNorm += iter->w;
             
-            if( std::isinf( iter->w ) ){
+            if( isinf( iter->w ) ){
                 numDeadParticles++;
             }
         }
         
-        if( std::isnan(wNorm) ){
+        if( isnan(wNorm) ){
             if( verbose )
                 warningLog << "WARNING: Weight norm is NAN!" << endl;
             return true;
         }
         
-        if( std::isinf(wNorm) ){
+        if( isinf(wNorm) ){
             if( verbose )
                 warningLog << "WARNING: Weight norm is INF!" << endl;
             return true;
@@ -564,7 +566,7 @@ protected:
                     for(unsigned int j=0; j<N; j++){
                         x[j] += iter->x[j];
                     }
-                    estimationLikelihood += std::isnan(iter->w) ? 0 : iter->w;
+                    estimationLikelihood += isnan(iter->w) ? 0 : iter->w;
                 }
                 
                 for(unsigned int j=0; j<N; j++){
@@ -584,7 +586,7 @@ protected:
                 }
                 
                 for( iter = particles.begin(); iter != particles.end(); ++iter ){
-                    estimationLikelihood += std::isnan(iter->w) ? 0 : iter->w;
+                    estimationLikelihood += isnan(iter->w) ? 0 : iter->w;
                 }
                 estimationLikelihood /= double(numParticles);
                 break;
@@ -609,7 +611,7 @@ protected:
                         for(unsigned int j=0; j<N; j++){
                             x[j] += iter->x[j] * iter->w;
                         }
-                        estimationLikelihood += std::isnan(iter->w) ? 0 : iter->w;
+                        estimationLikelihood += isnan(iter->w) ? 0 : iter->w;
                         sum += iter->w;
                         robustMeanParticleCounter++;
                     }
@@ -629,7 +631,7 @@ protected:
                     }
                 }
                 x = particles[bestIndex].x;
-                estimationLikelihood = std::isnan(particles[bestIndex].w) ? 0 : particles[bestIndex].w;
+                estimationLikelihood = isnan(particles[bestIndex].w) ? 0 : particles[bestIndex].w;
                 break;
             default:
                 errorLog << "ERROR: Unknown estimation mode!" << endl;

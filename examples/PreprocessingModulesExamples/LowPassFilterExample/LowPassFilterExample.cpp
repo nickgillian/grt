@@ -88,10 +88,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the LowPassFilter settings to a file
-    lpf.saveModelToFile("LowPassFilterSettings.txt");
+    lpf.saveModelToFile("LowPassFilterSettings.grt");
     
     //We can then load the settings later if needed
-    lpf.loadModelFromFile("LowPassFilterSettings.txt");
+    lpf.loadModelFromFile("LowPassFilterSettings.grt");
 
     return EXIT_SUCCESS;
 }

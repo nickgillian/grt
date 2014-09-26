@@ -112,6 +112,12 @@ int main (int argc, const char * argv[])
     }
     cout << endl;
     
+    //Save the matrix data to a csv file
+    matrix.save( "data.csv" );
+    
+    //load the matrix data from a csv file
+    matrix.load( "data.csv" );
+    
     return EXIT_SUCCESS;
 }
 

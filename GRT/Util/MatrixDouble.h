@@ -107,6 +107,25 @@ public:
     virtual bool resize(const unsigned int rows,const unsigned int cols);
     
     /**
+     Saves the matrix to a CSV file.  This replaces the deprecated saveToCSVFile function.
+     
+     @param const string &filename: the name of the CSV file
+     @return returns true or false, indicating if the data was saved successful
+     */
+    bool save(const string &filename) const;
+    
+    /**
+     Loads a matrix from a CSV file. This assumes that the data has been saved as rows and columns in the CSV file
+     and that there are an equal number of columns per row.
+     
+     This replaces the deprecated loadFromCSVFile function.
+     
+     @param const string &filename: the name of the CSV file
+     @return returns true or false, indicating if the data was loaded successful
+     */
+    bool load(const string &filename,const char seperator = ',');
+    
+    /**
      Saves the matrix to a CSV file.
      
      @param const string &filename: the name of the CSV file

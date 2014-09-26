@@ -31,6 +31,7 @@ MinDist::MinDist(bool useScaling,bool useNullRejection,double nullRejectionCoeff
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
     this->numClusters = numClusters;
+    supportsNullRejection = true;
     classType = "MinDist";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -249,22 +250,6 @@ bool MinDist::setNullRejectionCoeff(double nullRejectionCoeff){
     return false;
 }
     
-bool MinDist::saveModelToFile(string filename) const{
-
-    if( !trained ) return false;
-    
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-
-	file.close();
-
-	return true;
-}
-    
 bool MinDist::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
@@ -305,21 +290,6 @@ bool MinDist::saveModelToFile(fstream &file) const{
     }
     
     return true;
-}
-
-bool MinDist::loadModelFromFile(string filename){
-
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-
-	return true;
-
 }
     
 bool MinDist::loadModelFromFile(fstream &file){

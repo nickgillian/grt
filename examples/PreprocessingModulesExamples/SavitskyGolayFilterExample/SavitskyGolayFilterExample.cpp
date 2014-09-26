@@ -85,10 +85,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the filter settings to a file
-    sgf.saveModelToFile("SavitzkyGolayFilterSettings.txt");
+    sgf.saveModelToFile("SavitzkyGolayFilterSettings.grt");
     
     //We can then load the settings later if needed
-    sgf.loadModelFromFile("SavitzkyGolayFilterSettings.txt");
+    sgf.loadModelFromFile("SavitzkyGolayFilterSettings.grt");
     
     return EXIT_SUCCESS;
 }

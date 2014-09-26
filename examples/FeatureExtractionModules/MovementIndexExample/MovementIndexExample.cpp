@@ -50,7 +50,7 @@ int main (int argc, const char * argv[])
     //Load the example data
     ClassificationData data;
     
-    if( !data.loadDatasetFromFile("WiiAccShakeData.txt") ){
+    if( !data.loadDatasetFromFile("WiiAccShakeData.grt") ){
         cout << "ERROR: Failed to load data from file!\n";
         return EXIT_FAILURE;
     }
@@ -87,10 +87,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the MovementIndex settings to a file
-    movementIndex.saveModelToFile("MovementIndexSettings.txt");
+    movementIndex.saveModelToFile("MovementIndexSettings.grt");
     
     //You can then load the settings again if you need them
-    movementIndex.loadModelFromFile("MovementIndexSettings.txt");
+    movementIndex.loadModelFromFile("MovementIndexSettings.grt");
     
     return EXIT_SUCCESS;
 }

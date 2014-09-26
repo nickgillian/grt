@@ -124,7 +124,7 @@ bool KMeansFeatures::reset(){
     return true;
 }
     
-bool KMeansFeatures::saveModelToFile(const string filename) const{
+bool KMeansFeatures::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -138,7 +138,7 @@ bool KMeansFeatures::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool KMeansFeatures::loadModelFromFile(const string filename){
+bool KMeansFeatures::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
@@ -453,7 +453,7 @@ bool KMeansFeatures::projectDataThroughLayer( const VectorDouble &input, VectorD
     
     UINT i,j = 0;
     //double gamma = 2.0*SQR(alpha);
-    double gamma = 2.0*SQR( 1 );
+    //double gamma = 2.0*SQR( 1 );
     for(i=0; i<M; i++){
         output[i] = 0;
         for(j=0; j<N; j++){

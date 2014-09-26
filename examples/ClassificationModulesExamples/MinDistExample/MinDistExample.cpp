@@ -52,7 +52,7 @@ int main (int argc, const char * argv[])
     //Load some training data to train the classifier
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("MinDistTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("MinDistTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -67,13 +67,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the MinDist model to a file
-    if( !minDist.saveModelToFile("MinDistModel.txt") ){
+    if( !minDist.save("MinDistModel.grt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the MinDist model from a file
-    if( !minDist.loadModelFromFile("MinDistModel.txt") ){
+    if( !minDist.load("MinDistModel.grt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

@@ -192,6 +192,15 @@ public:
     static bool stringToBool(const std::string &s);
     
     /**
+     Checks if the string (str) ends with a specific ending (such as .csv).
+     
+     @param const std::string &str: the string you want to query
+     @param const std::string &ending: the ending you want to search for
+     @return bool: returns true if the input string ends with the ending, false otherwise
+     */
+    static bool stringEndsWith(const std::string &str, const std::string &ending);
+    
+    /**
      Limits the input value so it is between the range of minValue and maxValue.
      If the input value is below the minValue then the output of the function will be the minValue.
      If the input value is above the maxValue then the output of the function will be the maxValue.

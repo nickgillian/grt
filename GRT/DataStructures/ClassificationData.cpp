@@ -338,6 +338,28 @@ bool ClassificationData::scale(const vector<MinMax> &ranges,const double minTarg
 
     return true;
 }
+    
+bool ClassificationData::save(const string &filename) const{
+    
+    //Check if the file should be saved as a csv file
+    if( Util::stringEndsWith( filename, ".csv" )  ){
+        return saveDatasetToCSVFile( filename );
+    }
+    
+    //Otherwise save it as a custom GRT file
+    return saveDatasetToFile( filename );
+}
+
+bool ClassificationData::load(const string &filename){
+    
+    //Check if the file should be loaded as a csv file
+    if( Util::stringEndsWith( filename, ".csv" )  ){
+        return loadDatasetFromCSVFile( filename );
+    }
+    
+    //Otherwise save it as a custom GRT file
+    return loadDatasetFromFile( filename );
+}
 
 bool ClassificationData::saveDatasetToFile(const string &filename) const{
 

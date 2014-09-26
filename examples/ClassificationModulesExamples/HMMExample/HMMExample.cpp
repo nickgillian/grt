@@ -48,7 +48,7 @@ int main(int argc, const char * argv[]){
     //Load the training data
     TimeSeriesClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("HMMTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("HMMTrainingData.grt") ){
         cout << "ERROR: Failed to load training data!\n";
         return false;
     }
@@ -113,13 +113,13 @@ int main(int argc, const char * argv[]){
     }
     
     //Save the HMM model to a file
-    if( !hmm.saveModelToFile( "HMMModel.txt" ) ){
+    if( !hmm.save( "HMMModel.grt" ) ){
         cout << "ERROR: Failed to save the model to a file!\n";
         return false;
     }
     
     //Load the HMM model from a file
-    if( !hmm.loadModelFromFile( "HMMModel.txt" ) ){
+    if( !hmm.load( "HMMModel.grt" ) ){
         cout << "ERROR: Failed to load the model from a file!\n";
         return false;
     }

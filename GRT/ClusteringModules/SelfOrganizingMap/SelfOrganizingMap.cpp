@@ -20,6 +20,8 @@
 
 #include "SelfOrganizingMap.h"
 
+using namespace std;
+
 namespace GRT{
     
 //Register the SelfOrganizingMap class with the Clusterer base class
@@ -267,7 +269,7 @@ bool SelfOrganizingMap::train_( MatrixDouble &data ){
             keepTraining = false;
         }
         
-        if( std::isinf( error ) ){
+        if( isinf( error ) ){
             errorLog << "train_(MatrixDouble &data) - Training failed! Error is NAN!" << endl;
             return false;
         }
@@ -317,26 +319,6 @@ bool SelfOrganizingMap::map_( VectorDouble &x ){
     return true;
 }
     
-bool SelfOrganizingMap::saveModelToFile(string filename) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !file.is_open() ){
-        errorLog << "saveModelToFile(string filename) - Failed to open file!" << endl;
-        return false;
-    }
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
 bool SelfOrganizingMap::saveModelToFile(fstream &file) const{
     
     if( !trained ){
@@ -373,28 +355,6 @@ bool SelfOrganizingMap::saveModelToFile(fstream &file) const{
             }
         }
     }
-    
-    return true;
-    
-}
-
-bool SelfOrganizingMap::loadModelFromFile(string fileName){
-    
-    std::fstream file;
-    string word;
-    file.open(fileName.c_str(), std::ios::in);
-    
-    if(!file.is_open()){
-        errorLog << "loadModelFromFile(string filename) - Failed to open file!" << endl;
-        return false;
-    }
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
     
     return true;
     

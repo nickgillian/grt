@@ -474,6 +474,28 @@ UINT RegressionData::removeDuplicateSamples(){
 
     return numSamplesRemoved;
 }
+    
+bool RegressionData::save(const string &filename) const{
+    
+    //Check if the file should be saved as a csv file
+    if( Util::stringEndsWith( filename, ".csv" )  ){
+        return saveDatasetToCSVFile( filename );
+    }
+    
+    //Otherwise save it as a custom GRT file
+    return saveDatasetToFile( filename );
+}
+
+bool RegressionData::load(const string &filename){
+    
+    //Check if the file should be loaded as a csv file
+    if( Util::stringEndsWith( filename, ".csv" )  ){
+        return loadDatasetFromCSVFile( filename, numInputDimensions, numTargetDimensions );
+    }
+    
+    //Otherwise save it as a custom GRT file
+    return loadDatasetFromFile( filename );
+}
 
 bool RegressionData::saveDatasetToFile(const string &filename) const{
 

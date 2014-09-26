@@ -105,7 +105,7 @@ bool ZeroCrossingCounter::reset(){
     return false;
 }
     
-bool ZeroCrossingCounter::saveModelToFile(const string filename) const{
+bool ZeroCrossingCounter::saveModelToFile(string filename) const{
 
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -119,7 +119,7 @@ bool ZeroCrossingCounter::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool ZeroCrossingCounter::loadModelFromFile(const string filename){
+bool ZeroCrossingCounter::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

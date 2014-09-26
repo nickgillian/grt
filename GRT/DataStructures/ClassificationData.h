@@ -235,6 +235,26 @@ public:
     */
 	bool scale(const vector<MinMax> &ranges,const double minTarget,const double maxTarget);
 	
+    /**
+     Saves the classification data to a file.
+     If the file format ends in '.csv' then the data will be saved as comma-seperated-values, otherwise it will be saved
+     to a custom GRT file (which contains the csv data with an additional header).
+     
+     @param const string &filename: the name of the file the data will be saved to
+     @return true if the data was saved successfully, false otherwise
+     */
+    bool save(const string &filename) const;
+    
+    /**
+     Load the classification data from a file.
+     If the file format ends in '.csv' then the function will try and load the data from a csv format.  If this fails then it will
+     try and load the data as a custom GRT file.
+     
+     @param const string &filename: the name of the file the data will be loaded from
+     @return true if the data was loaded successfully, false otherwise
+     */
+    bool load(const string &filename);
+    
 	/**
      Saves the labelled classification data to a custom file format.
 

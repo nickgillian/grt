@@ -201,12 +201,12 @@ void testApp::keyPressed(int key){
             }else infoText = "WARNING: Failed to train pipeline";
             break;
         case 's':
-            if( trainingData.saveDatasetToFile("TrainingData.txt") ){
+            if( trainingData.saveDatasetToFile("TrainingData.grt") ){
                 infoText = "Training data saved to file";
             }else infoText = "WARNING: Failed to save training data to file";
             break;
         case 'l':
-            if( trainingData.loadDatasetFromFile("TrainingData.txt") ){
+            if( trainingData.loadDatasetFromFile("TrainingData.grt") ){
                 infoText = "Training data saved to file";
             }else infoText = "WARNING: Failed to load training data from file";
             break;

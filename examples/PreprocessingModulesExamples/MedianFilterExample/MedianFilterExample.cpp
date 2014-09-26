@@ -69,10 +69,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the filter settings to a file
-    filter.saveModelToFile("MedianFilterSettings.txt");
+    filter.saveModelToFile("MedianFilterSettings.grt");
     
     //We can then load the settings later if needed
-    filter.loadModelFromFile("MedianFilterSettings.txt");
+    filter.loadModelFromFile("MedianFilterSettings.grt");
     
     return EXIT_SUCCESS;
 }

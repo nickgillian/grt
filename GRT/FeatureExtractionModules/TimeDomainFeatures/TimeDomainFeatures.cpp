@@ -110,7 +110,7 @@ bool TimeDomainFeatures::reset(){
     return false;
 }
     
-bool TimeDomainFeatures::saveModelToFile(const string filename) const{
+bool TimeDomainFeatures::saveModelToFile(string filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -124,7 +124,7 @@ bool TimeDomainFeatures::saveModelToFile(const string filename) const{
     return true;
 }
 
-bool TimeDomainFeatures::loadModelFromFile(const string filename){
+bool TimeDomainFeatures::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

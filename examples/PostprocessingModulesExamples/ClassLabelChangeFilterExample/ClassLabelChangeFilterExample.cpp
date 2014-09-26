@@ -59,12 +59,12 @@ int main (int argc, const char * argv[])
     ClassificationData trainingData;
     ClassificationData testData;
     
-    if( !trainingData.loadDatasetFromFile("ClassLabelChangeFilterTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("ClassLabelChangeFilterTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
     
-    if( !testData.loadDatasetFromFile("ClassLabelChangeFilterTestData.txt") ){
+    if( !testData.loadDatasetFromFile("ClassLabelChangeFilterTestData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }

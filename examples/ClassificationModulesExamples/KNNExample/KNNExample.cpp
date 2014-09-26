@@ -50,7 +50,7 @@ int main (int argc, const char * argv[])
     //Train the classifier with some training data
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("KNNTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("KNNTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -67,17 +67,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the knn model to a file
-    bool saveSuccess = knn.saveModelToFile("KNNModel.txt");
-    
-    if( !saveSuccess ){
+    if( !knn.save("KNNModel.grt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the knn model from a file
-    bool loadSuccess = knn.loadModelFromFile("KNNModel.txt");
-    
-    if( !loadSuccess ){
+    if( !knn.load("KNNModel.grt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

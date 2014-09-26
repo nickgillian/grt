@@ -62,7 +62,7 @@ int main(int argc, const char * argv[])
     ClassificationData trainingData;
     
     cout << "Loading Training Data\n";
-    if( !trainingData.loadDatasetFromFile("RandomForestsTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("RandomForestsTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -80,13 +80,13 @@ int main(int argc, const char * argv[])
     forest.print();
     
     //Save the model to a file
-    if( !forest.saveModelToFile("RandomForestsModel.txt") ){
+    if( !forest.save("RandomForestsModel.grt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the model from a file
-    if( !forest.loadModelFromFile("RandomForestsModel.txt") ){
+    if( !forest.load("RandomForestsModel.grt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }

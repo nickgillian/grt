@@ -65,12 +65,12 @@ int main (int argc, const char * argv[])
     }
     
     //Save the derivative settings to a file
-    deriv1.saveModelToFile("Derivative1Settings.txt");
-    deriv2.saveModelToFile("Derivative2Settings.txt");
+    deriv1.saveModelToFile("Derivative1Settings.grt");
+    deriv2.saveModelToFile("Derivative2Settings.grt");
     
     //We can then load the settings later if needed
-    deriv1.loadModelFromFile("Derivative1Settings.txt");
-    deriv2.loadModelFromFile("Derivative2Settings.txt");
+    deriv1.loadModelFromFile("Derivative1Settings.grt");
+    deriv2.loadModelFromFile("Derivative2Settings.grt");
 
     return EXIT_SUCCESS;
 }

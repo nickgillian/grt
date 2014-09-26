@@ -59,12 +59,12 @@ int main (int argc, const char * argv[])
     RegressionData trainingData;
     RegressionData testData;
     
-    if( !trainingData.loadDatasetFromFile("MultidimensionalRegressionTrainingData.txt") ){
+    if( !trainingData.loadDatasetFromFile("MultidimensionalRegressionTrainingData.grt") ){
         cout << "ERROR: Failed to load training data!\n";
         return EXIT_FAILURE;
     }
     
-    if( !testData.loadDatasetFromFile("MultidimensionalRegressionTestData.txt") ){
+    if( !testData.loadDatasetFromFile("MultidimensionalRegressionTestData.grt") ){
         cout << "ERROR: Failed to load test data!\n";
         return EXIT_FAILURE;
     }
@@ -106,12 +106,12 @@ int main (int argc, const char * argv[])
     
     cout << "Model trained.\n";
     
-    if( !pipeline.savePipelineToFile( "Pipeline" ) ){
+    if( !pipeline.save( "Pipeline" ) ){
         cout << "ERROR: Failed to save pipeline!\n";
         return EXIT_FAILURE;
     }
     
-    if( !pipeline.loadPipelineFromFile( "Pipeline" ) ){
+    if( !pipeline.load( "Pipeline" ) ){
         cout << "ERROR: Failed to load pipeline!\n";
         return EXIT_FAILURE;
     }
@@ -127,7 +127,7 @@ int main (int argc, const char * argv[])
     
     //Run back over the test data again and output the results to a file
     fstream file;
-    file.open("MultidimensionalRegressionResultsData.txt", fstream::out);
+    file.open("MultidimensionalRegressionResultsData.csv", fstream::out);
     
     for(UINT i=0; i<testData.getNumSamples(); i++){
         vector< double > inputVector = testData[i].getInputVector();

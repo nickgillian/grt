@@ -55,12 +55,12 @@ int main (int argc, const char * argv[])
         return EXIT_FAILURE;
     }
     
-    if( !ctree.saveModelToFile("Model.txt") ){
+    if( !ctree.saveModelToFile("Model.grt") ){
         log << "Failed to train model!" << endl;
         return EXIT_FAILURE;
     }
 	
-    if( !ctree.loadModelFromFile("Model.txt") ){
+    if( !ctree.loadModelFromFile("Model.grt") ){
         log << "Failed to train model!" << endl;
         return EXIT_FAILURE;
     }

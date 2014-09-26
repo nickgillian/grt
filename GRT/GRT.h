@@ -72,11 +72,12 @@
 //Include the Core Alogirthms
 #include "CoreAlgorithms/BernoulliRBM/BernoulliRBM.h"
 #include "CoreAlgorithms/EvolutionaryAlgorithm/EvolutionaryAlgorithm.h"
-#include "CoreAlgorithms/MeanShift/MeanShift.h"
+#include "CoreAlgorithms/MovementDetector/MovementDetector.h"
 #include "CoreAlgorithms/ParticleFilter/ParticleFilter.h"
 #include "CoreAlgorithms/ParticleSwarmOptimization/ParticleSwarmOptimization.h"
 #include "CoreAlgorithms/PrincipalComponentAnalysis/PrincipalComponentAnalysis.h"
 #include "CoreAlgorithms/Tree/Tree.h"
+#include "CoreAlgorithms/MeanShift/MeanShift.h"
 
 //Include the PreProcessing Modules
 #include "PreProcessingModules/Derivative.h"

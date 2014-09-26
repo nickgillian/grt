@@ -262,23 +262,7 @@ bool RandomForests::print() const{
     
     return true;
 }
-    
-bool RandomForests::saveModelToFile(string filename) const{
 
-    if( !trained ) return false;
-    
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-
-	file.close();
-
-	return true;
-}
-    
 bool RandomForests::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
@@ -315,21 +299,6 @@ bool RandomForests::saveModelToFile(fstream &file) const{
     }
     
     return true;
-}
-
-bool RandomForests::loadModelFromFile(string filename){
-
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-
-	return true;
-
 }
     
 bool RandomForests::loadModelFromFile(fstream &file){
