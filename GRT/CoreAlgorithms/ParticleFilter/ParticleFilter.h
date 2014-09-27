@@ -34,6 +34,7 @@
 
 #include "Particle.h"
 #include "../../Util/GRTCommon.h"
+#include <math.h>
 
 using namespace std;
 
