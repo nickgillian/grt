@@ -43,8 +43,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "GRTVersionInfo.h"
 #include "GRTTypedefs.h"
 
-using namespace std;
-
 //Include the common GRT classes
 #include "MatrixDouble.h"
 #include "MinMax.h"
