@@ -612,7 +612,7 @@ double DTW::computeDistance(MatrixDouble &timeSeriesA,MatrixDouble &timeSeriesB,
     //Run the recursive search function to build the cost matrix
     double distance = sqrt( d(M-1,N-1,distanceMatrix,M,N) );
 
-    if( isinf(distance) || isnan(distance) ){
+    if( grt_isinf(distance) || grt_isnan(distance) ){
         warningLog << "DTW computeDistance(...) - Distance Matrix Values are INF!" << endl;
         return INFINITY;
     }

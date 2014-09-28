@@ -269,7 +269,7 @@ bool SelfOrganizingMap::train_( MatrixDouble &data ){
             keepTraining = false;
         }
         
-        if( isinf( error ) ){
+        if( grt_isinf( error ) ){
             errorLog << "train_(MatrixDouble &data) - Training failed! Error is NAN!" << endl;
             return false;
         }

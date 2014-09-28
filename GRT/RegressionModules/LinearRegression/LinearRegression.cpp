@@ -169,7 +169,7 @@ bool LinearRegression::train_(RegressionData &trainingData){
             keepTraining = false;
         }
         
-        if( isinf( totalSquaredTrainingError ) || isnan( totalSquaredTrainingError ) ){
+        if( grt_isinf( totalSquaredTrainingError ) || grt_isnan( totalSquaredTrainingError ) ){
             errorLog << "train_(RegressionData &trainingData) - Training failed! Total squared training error is NAN. If scaling is not enabled then you should try to scale your data and see if this solves the issue." << endl;
             return false;
         }

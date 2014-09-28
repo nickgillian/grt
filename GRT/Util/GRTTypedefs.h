@@ -25,14 +25,79 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <vector>
 
 namespace GRT {
-    
-    //Declare any common typedefs, some of these are already declared in windef.h so if we are using Windows then we don't need to declare them
-#ifndef __GRT_WINDOWS_BUILD__
-	typedef unsigned int UINT;
-	typedef signed int SINT;
-	typedef unsigned long ULONG;
+	
+//Declare any common definitions that are not OS specific
+#ifndef PI
+    #define PI 3.14159265358979323846264338327950288
 #endif
     
+#ifndef TWO_PI
+	#define TWO_PI 6.28318530718
+#endif
+    
+#ifndef SQRT_TWO_PI
+    #define SQRT_TWO_PI 2.506628274631
+#endif
+	
+template<class T> inline T SQR(const T &a) {return a*a;}
+template<class T> inline void SWAP(T &a,T &b) { T temp(a); a = b; b = temp; }
+
+inline double SIGN(const double &a, const double &b) {return (b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a));}
+
+inline double antilog(const double &x){ return exp( x ); }
+
+#ifndef MIN
+    #define	MIN(a,b) (((a)<(b))?(a):(b))
+#endif /* MIN */
+#ifndef MAX
+    #define	MAX(a,b) (((a)>(b))?(a):(b))
+#endif	/* MAX */
+
+#define GRT_DEFAULT_NULL_CLASS_LABEL 0
+#define GRT_SAFE_CHECKING true
+	
+	
+	
+#ifdef __GRT_WINDOWS_BUILD__
+#define grt_isnan(x) (x != x)
+#define grt_isinf(x) (!grt_isnan(x) && grt_isnan(x - x))
+
+//NAN is not defined on Visual Studio version of math.h so define it here
+#ifndef NAN
+    static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+    #define NAN (*(const float *) __nan)
+#endif
+
+#ifndef INFINITY
+	#define INFINITY (DBL_MAX+DBL_MAX)
+#endif
+
+//Remove the min and max macros as they cause lots of issues
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif 
+	
+#endif
+	
+#ifdef __GRT_OSX_BUILD__
+#define grt_isnan(x) (x != x)
+#define grt_isinf(x) (!grt_isnan(x) && grt_isnan(x - x))
+	
+typedef unsigned int UINT;
+typedef signed int SINT;
+typedef unsigned long ULONG;
+#endif
+	
+#ifdef __GRT_LINUX_BUILD__
+#define grt_isnan(x) (x != x)
+#define grt_isinf(x) (!grt_isnan(x) && grt_isnan(x - x))
+
+typedef unsigned int UINT;
+typedef signed int SINT;
+typedef unsigned long ULONG;
+#endif
+    
+//Define any common GRT OS independent typedefs
 typedef std::vector<double> VectorDouble;
     
 //Declare typedefs for the legacy data types
