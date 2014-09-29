@@ -229,7 +229,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
             
             trainingLog << "PositiveClass: " << classLabels[classIter] << " Boosting Iter: " << t << " Best Classifier Index: " << bestClassifierIndex << " MinError: " << minError << " Alpha: " << alpha << endl;
             
-            if( isinf(alpha) ){ keepBoosting = false; trainingLog << "Alpha is INF. Stopping boosting for current class" << endl; }
+            if( grt_isinf(alpha) ){ keepBoosting = false; trainingLog << "Alpha is INF. Stopping boosting for current class" << endl; }
             if( 0.5 - epsilon <= beta ){ keepBoosting = false; trainingLog << "Epsilon <= Beta. Stopping boosting for current class" << endl; }
             if( ++t >= numBoostingIterations ) keepBoosting = false;
 
@@ -265,7 +265,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
                 trainingLog << "Stopping boosting training at iteration : " << t-1 << " with an error of " << epsilon << endl;
                 if( t-1 == 0 ){
                     //Add the best weak classifier to the committee (we have to add it as this is the first iteration)
-                    if( isinf(alpha) ){ alpha = 1; } //If alpha is infinite then the first classifier got everything correct
+                    if( grt_isinf(alpha) ){ alpha = 1; } //If alpha is infinite then the first classifier got everything correct
                     models[ classIter ].addClassifierToCommitee( weakClassifiers[bestClassifierIndex], alpha );
                 }
             }

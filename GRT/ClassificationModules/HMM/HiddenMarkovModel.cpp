@@ -380,7 +380,7 @@ bool HiddenMarkovModel::forwardBackward(HMMTrainingObject &hmm,const vector<UINT
     for(t=0; t<T; t++) hmm.pk += log( hmm.c[t] );
     //hmm.pk = - hmm.pk; //We don't really need to minus here
     
-    if( isinf(hmm.pk) ){
+    if( grt_isinf(hmm.pk) ){
         return false;
     }
     

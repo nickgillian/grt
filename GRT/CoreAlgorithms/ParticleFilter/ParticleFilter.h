@@ -515,18 +515,18 @@ protected:
         for( iter = particles.begin(); iter != particles.end(); ++iter ){
             wNorm += iter->w;
             
-            if( isinf( iter->w ) ){
+            if( grt_isinf( iter->w ) ){
                 numDeadParticles++;
             }
         }
         
-        if( isnan(wNorm) ){
+        if( grt_isnan(wNorm) ){
             if( verbose )
                 warningLog << "WARNING: Weight norm is NAN!" << endl;
             return true;
         }
         
-        if( isinf(wNorm) ){
+        if( grt_isinf(wNorm) ){
             if( verbose )
                 warningLog << "WARNING: Weight norm is INF!" << endl;
             return true;

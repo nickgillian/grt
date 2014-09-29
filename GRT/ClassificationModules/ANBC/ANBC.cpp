@@ -233,7 +233,7 @@ bool ANBC::predict_(VectorDouble &inputVector){
         classLikelihoods[k] = classDistances[k];
         
         //If the distances are very far away then they could be -inf or nan so catch this so the sum still works
-        if( isinf(classLikelihoods[k]) || isnan(classLikelihoods[k]) ){
+        if( grt_isinf(classLikelihoods[k]) || grt_isnan(classLikelihoods[k]) ){
             classLikelihoods[k] = 0;
         }else{
             classLikelihoods[k] = exp( classLikelihoods[k] );
