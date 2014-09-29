@@ -677,7 +677,7 @@ double DTW::d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N){
     //The following is based on Matlab code by Eamonn Keogh and Michael Pazzani
     
     //If this cell is NAN then it has already been flagged as unreachable
-    if( isnan( distanceMatrix[m][n] ) ){
+    if( grt_isnan( distanceMatrix[m][n] ) ){
         return NAN;
     }
 
