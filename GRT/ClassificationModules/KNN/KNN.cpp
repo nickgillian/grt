@@ -281,11 +281,11 @@ bool KNN::train_(const ClassificationData &trainingData,const UINT K){
             if( trainingSigma[j] == 0 ){
                 warningLog << "TrainingSigma[ " << j << " ] is zero for a K value of " << K << endl;
             }
-            if( isnan( trainingMu[j] ) ){
+            if( grt_isnan( trainingMu[j] ) ){
                 errorLog << "TrainingMu[ " << j << " ] is NAN for a K value of " << K << endl;
                 errorFound = true;
             }
-            if( isnan( trainingSigma[j] ) ){
+            if( grt_isnan( trainingSigma[j] ) ){
                 errorLog << "TrainingSigma[ " << j << " ] is NAN for a K value of " << K << endl;
                 errorFound = true;
             }
