@@ -299,6 +299,14 @@ public:
 	@return double: the minimum value in the input vector, this will be INF if the input vector size is 0
 	*/
     static double getMin(const std::vector< double > &x);
+    
+    /**
+     Gets the index of the minimum value in the input vector.
+     
+     @param const std::vector<double> &x: the vector of values you want to find the minimum index value for
+     @return unsigned int: the index of the minimum value in the vector
+     */
+    static unsigned int getMinIndex(const std::vector< double > &x);
 
     /**
     Gets the maximum value in the input vector.
@@ -307,6 +315,14 @@ public:
 	@return double: the maximum value in the input vector, this will be INF if the input vector size is 0
 	*/
     static double getMax(const std::vector< double > &x);
+    
+    /**
+     Gets the index of the maximum value in the input vector.
+     
+     @param const std::vector<double> &x: the vector of values you want to find the maximum index value for
+     @return unsigned int: the index of the maximum value in the vector
+     */
+    static unsigned int getMaxIndex(const std::vector< double > &x);
 
     /**
     Gets the minimum value in the input vector.

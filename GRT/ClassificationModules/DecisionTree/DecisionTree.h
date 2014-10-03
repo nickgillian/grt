@@ -159,15 +159,18 @@ public:
     using MLBase::predict;
     
 protected:
-    bool loadLegacyModelFromFile( fstream &file );
+    bool loadLegacyModelFromFile_v1( fstream &file );
+    bool loadLegacyModelFromFile_v2( fstream &file );
     
-    DecisionTreeNode* buildTree( const ClassificationData &trainingData, DecisionTreeNode *parent, vector< UINT > features, const vector< UINT > &classLabels );
+    DecisionTreeNode* buildTree( const ClassificationData &trainingData, DecisionTreeNode *parent, vector< UINT > features, const vector< UINT > &classLabels, UINT nodeID );
     bool computeBestSpilt( const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
     bool computeBestSpiltBestIterativeSpilt( const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
     bool computeBestSpiltBestRandomSpilt( const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
     VectorDouble getClassProbabilities( const ClassificationData &trainingData, const vector< UINT > &classLabels );
+    double getNodeDistance( const VectorDouble &x, const UINT nodeID );
+    double getNodeDistance( const VectorDouble &x, const VectorDouble &y );
     
-    
+    std::map< UINT, VectorDouble > nodeClusters;
     static RegisterClassifierModule< DecisionTree > registerModule;
     
 };

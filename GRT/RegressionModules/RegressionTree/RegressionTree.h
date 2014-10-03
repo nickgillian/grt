@@ -173,7 +173,7 @@ public:
 protected:
     double minRMSErrorPerNode;
     
-    RegressionTreeNode* buildTree( const RegressionData &trainingData, RegressionTreeNode *parent, vector< UINT > features );
+    RegressionTreeNode* buildTree( const RegressionData &trainingData, RegressionTreeNode *parent, vector< UINT > features, UINT nodeID );
     bool computeBestSpilt( const RegressionData &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
     bool computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );
     //bool computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );

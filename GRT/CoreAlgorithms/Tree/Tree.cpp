@@ -88,6 +88,15 @@ UINT Tree::getMaxDepth()const{
     return maxDepth;
 }
     
+UINT Tree::getPredictedNodeID()const{
+    
+    if( tree == NULL ){
+        return 0;
+    }
+    
+    return tree->getPredictedNodeID();
+}
+    
 bool Tree::getRemoveFeaturesAtEachSpilt() const{
     return removeFeaturesAtEachSpilt;
 }

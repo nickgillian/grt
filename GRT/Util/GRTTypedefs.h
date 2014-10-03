@@ -48,14 +48,13 @@ inline double antilog(const double &x){ return exp( x ); }
 
 #ifndef MIN
     #define	MIN(a,b) (((a)<(b))?(a):(b))
-#endif /* MIN */
+#endif
 #ifndef MAX
     #define	MAX(a,b) (((a)>(b))?(a):(b))
-#endif	/* MAX */
+#endif
 
 #define GRT_DEFAULT_NULL_CLASS_LABEL 0
 #define GRT_SAFE_CHECKING true
-	
 	
 	
 #ifdef __GRT_WINDOWS_BUILD__

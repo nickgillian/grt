@@ -248,6 +248,19 @@ double Util::getMin(const std::vector< double > &x){
     }
     return min;
 }
+    
+unsigned int getMinIndex(const std::vector< double > &x){
+    unsigned int minIndex = 0;
+    double min = std::numeric_limits< double >::max();
+    unsigned int N = (unsigned int)x.size();
+    for(unsigned int i=0; i<N; i++){
+        if( x[i] < min ){
+            min = x[i];
+            minIndex = i;
+        }
+    }
+    return minIndex;
+}
 
 double Util::getMax(const std::vector< double > &x){
     double max = std::numeric_limits< double >::min();
@@ -258,6 +271,19 @@ double Util::getMax(const std::vector< double > &x){
         }
     }
     return max;
+}
+    
+unsigned int Util::getMaxIndex(const std::vector< double > &x){
+    unsigned int maxIndex = 0;
+    double max = std::numeric_limits< double >::min();
+    unsigned int N = (unsigned int)x.size();
+    for(unsigned int i=0; i<N; i++){
+        if( x[i] > max ){
+            max = x[i];
+            maxIndex = i;
+        }
+    }
+    return maxIndex;
 }
 
 unsigned int Util::getMin(const std::vector< unsigned int > &x){

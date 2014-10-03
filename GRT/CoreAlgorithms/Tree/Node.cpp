@@ -63,11 +63,11 @@ Node::~Node(){
     clear();
 }
 
-bool Node::predict(const VectorDouble &x) const{
+bool Node::predict(const VectorDouble &x){
     return false;
 }
 
-bool Node::predict(const VectorDouble &x,VectorDouble &y) const{
+bool Node::predict(const VectorDouble &x,VectorDouble &y){
     return false;
 }
 
@@ -95,6 +95,8 @@ bool Node::clear(){
     }
     
     depth = 0;
+    nodeID = 0;
+    predictedNodeID = 0;
     isLeafNode = false;
     
     return true;
@@ -105,7 +107,7 @@ bool Node::print() const{
     string tab = "";
     for(UINT i=0; i<depth; i++) tab += "\t";
     
-    cout << tab << "depth: " << depth << " isLeafNode: " << isLeafNode << endl;
+    cout << tab << "depth: " << depth << " isLeafNode: " << isLeafNode << " nodeID: " << nodeID << endl;
     
     if( leftChild != NULL ){
         cout << tab << "LeftChild: " << endl;
@@ -130,6 +132,7 @@ bool Node::saveToFile(fstream &file) const{
     
     file << "NodeType: " << nodeType << endl;
     file << "Depth: " << depth << endl;
+    file << "NodeID: " << nodeID << endl;
     file << "IsLeafNode: " << isLeafNode << endl;
     file << "HasLeftChild: " << getHasLeftChild() << endl;
     file << "HasRightChild: " << getHasRightChild() << endl;
@@ -189,6 +192,13 @@ bool Node::loadFromFile(fstream &file){
         return false;
     }
     file >> depth;
+    
+    file >> word;
+    if( word != "NodeID:" ){
+        errorLog << "loadFromFile(fstream &file) - Failed to find NodeID header!" << endl;
+        return false;
+    }
+    file >> nodeID;
     
     file >> word;
     if( word != "IsLeafNode:" ){
@@ -257,6 +267,7 @@ Node* Node::deepCopyNode() const{
     }
     
     //Copy this node into the node
+    node->setNodeID( nodeID );
     node->setDepth( depth );
     node->setIsLeafNode( isLeafNode );
     
@@ -283,6 +294,14 @@ UINT Node::getDepth() const{
     return depth;
 }
 
+UINT Node::getNodeID() const{
+    return nodeID;
+}
+
+UINT Node::getPredictedNodeID() const{
+    return predictedNodeID;
+}
+    
 bool Node::getIsLeafNode() const{
     return isLeafNode;
 }
@@ -299,9 +318,10 @@ bool Node::getHasRightChild() const {
     return (rightChild != NULL);
 }
 
-bool Node::initNode(Node *parent,const UINT depth,const bool isLeafNode){
+bool Node::initNode(Node *parent,const UINT depth,const UINT nodeID,const bool isLeafNode){
     this->parent = parent;
     this->depth = depth;
+    this->nodeID = nodeID;
     this->isLeafNode = isLeafNode;
     return true;
 }
@@ -326,6 +346,11 @@ bool Node::setDepth(const UINT depth){
     return true;
 }
 
+bool Node::setNodeID(const UINT nodeID){
+    this->nodeID = nodeID;
+    return true;
+}
+    
 bool Node::setIsLeafNode(const bool isLeafNode){
     this->isLeafNode = isLeafNode;
     return true;

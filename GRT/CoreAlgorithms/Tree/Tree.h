@@ -118,6 +118,13 @@ public:
     UINT getMaxDepth() const;
     
     /**
+     This function returns the predictedNodeID, this is ID of the leaf node that was reached during the last prediction call
+     
+     @return returns the predictedNodeID, this will be zero if the tree does not exist or predict has not been called
+     */
+    UINT getPredictedNodeID() const;
+    
+    /**
      Gets if a feature is removed at each spilt so it can not be used again.
      
      @return returns true if a feature is removed at each spilt so it can not be used again, false otherwise

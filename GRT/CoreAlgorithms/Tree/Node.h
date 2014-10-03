@@ -53,7 +53,7 @@ public:
      @param const VectorDouble &x: the input vector that will be used for the prediction
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x) const;
+    virtual bool predict(const VectorDouble &x);
     
     /**
      This function recursively predicts if the probability of the input vector.  
@@ -63,7 +63,7 @@ public:
      @param VectorDouble &y: a reference to a vector that will store the results
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &y) const;
+    virtual bool predict(const VectorDouble &x,VectorDouble &y);
     
     /**
      This functions cleans up any dynamic memory assigned by the node.
@@ -121,6 +121,20 @@ public:
     UINT getDepth() const;
     
     /**
+     This function returns the nodeID, this is a unique ID that represents this node within a Tree.
+     
+     @return returns the nodeID of this node
+     */
+    UINT getNodeID() const;
+    
+    /**
+     This function returns the predictedNodeID, this is ID of the leaf node that was reached during the last prediction call
+     
+     @return returns the predictedNodeID
+     */
+    UINT getPredictedNodeID() const;
+    
+    /**
      This function returns true if this node is a leaf node, false otherwise.
      
      @return returns true if this node is a leaf node, false otherwise
@@ -148,7 +162,7 @@ public:
      */
     bool getHasRightChild() const;
     
-    bool initNode(Node *parent,const UINT depth,const bool isLeafNode = false);
+    bool initNode(Node *parent,const UINT depth,const UINT nodeID,const bool isLeafNode = false);
     
     bool setParent(Node *parent);
     
@@ -157,6 +171,8 @@ public:
     bool setRightChild(Node *rightChild);
     
     bool setDepth(const UINT depth);
+    
+    bool setNodeID(const UINT nodeID);
     
     bool setIsLeafNode(const bool isLeafNode);
     
@@ -190,12 +206,8 @@ protected:
      @return returns true if the parameters were saved successfully, false otherwise
      */
     virtual bool saveParametersToFile(fstream &file) const{
-        
-        cout << "Node::saveParametersToFile()" << endl;
-        
-        warningLog << "saveParametersToFile(fstream &file) - If you are seeing this message then the inheriting class has not overwritten the custom saveParametersToFile function!" << endl;
-        
-        return false;
+
+        return true;
     }
     
     /**
@@ -207,13 +219,15 @@ protected:
      */
     virtual bool loadParametersFromFile(fstream &file){
         
-        warningLog << "loadParametersFromFile(fstream &file) - If you are seeing this message then the inheriting class has not overwritten the custom loadParametersFromFile function!" << endl;
+
         
-        return false;
+        return true;
     }
     
     string nodeType;
     UINT depth;
+    UINT nodeID;
+    UINT predictedNodeID;
     bool isLeafNode;
     Node *parent;
     Node *leftChild;

@@ -65,7 +65,7 @@ public:
      @param const VectorDouble &x: the input vector that will be used for the prediction
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x) const{
+    virtual bool predict(const VectorDouble &x){
         if( x[ featureIndex ] >= threshold ) return true;
         return false;
     }
@@ -83,10 +83,13 @@ public:
      @param VectorDouble &classLikelihoods: a reference to a vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &classLikelihoods) const{
+    virtual bool predict(const VectorDouble &x,VectorDouble &classLikelihoods){
+        
+        predictedNodeID = 0;
         
         if( isLeafNode ){
             classLikelihoods = classProbabilities;
+            predictedNodeID = nodeID;
             return true;
         }
         
@@ -94,11 +97,17 @@ public:
             return false;
         
         if( predict( x ) ){
-            if( rightChild )
-                return rightChild->predict( x, classLikelihoods );
+            if( rightChild ){
+                bool predictionOK = rightChild->predict( x, classLikelihoods );
+                predictedNodeID = rightChild->getPredictedNodeID();
+                return predictionOK;
+            }
         }else{
-            if( leftChild )
-                return leftChild->predict( x, classLikelihoods );
+            if( leftChild ){
+                bool predictionOK = leftChild->predict( x, classLikelihoods );
+                predictedNodeID = leftChild->getPredictedNodeID();
+                return predictionOK;
+            }
         }
         
         return false;
@@ -171,6 +180,8 @@ public:
         //Copy this node into the node
         node->depth = depth;
         node->isLeafNode = isLeafNode;
+        node->nodeID = nodeID;
+        node->predictedNodeID = predictedNodeID;
         node->nodeSize = nodeSize;
         node->featureIndex = featureIndex;
         node->threshold = threshold;
@@ -305,7 +316,7 @@ protected:
         
         if(!file.is_open())
         {
-            errorLog << "loadFromFile(fstream &file) - File is not open!" << endl;
+            errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << endl;
             return false;
         }
         

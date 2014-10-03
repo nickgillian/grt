@@ -147,7 +147,8 @@ bool RegressionTree::train_(RegressionData &trainingData){
     }
     
     //Build the tree
-    tree = buildTree( trainingData, NULL, features );
+    UINT nodeID = 0;
+    tree = buildTree( trainingData, NULL, features, nodeID );
     
     if( tree == NULL ){
         clear();
@@ -363,12 +364,14 @@ bool RegressionTree::setMinRMSErrorPerNode(const double minRMSErrorPerNode){
     return true;
 }
     
-RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData,RegressionTreeNode *parent,vector< UINT > features){
+RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData,RegressionTreeNode *parent,vector< UINT > features,UINT nodeID){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = trainingData.getNumInputDimensions();
     const UINT T = trainingData.getNumTargetDimensions();
     VectorDouble regressionData(T);
+    
+    //Update the nodeID
     
     //Get the depth
     UINT depth = 0;
@@ -387,7 +390,7 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
         return NULL;
     
     //Set the parent
-    node->initNode( parent, depth );
+    node->initNode( parent, depth, nodeID );
     
     //If there are no features left then create a leaf node and return
     if( features.size() == 0 || M < minNumSamplesPerNode || depth >= maxDepth ){
@@ -454,8 +457,8 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
     }
     
     //Run the recursive tree building on the children
-    node->setLeftChild( buildTree( lhs, node, features ) );
-    node->setRightChild( buildTree( rhs, node, features ) );
+    node->setLeftChild( buildTree( lhs, node, features, nodeID ) );
+    node->setRightChild( buildTree( rhs, node, features, nodeID ) );
     
     return node;
 }

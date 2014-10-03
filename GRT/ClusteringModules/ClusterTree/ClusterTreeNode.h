@@ -63,7 +63,7 @@ public:
      @param const VectorDouble &x: the input vector that will be used for the prediction
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x) const{
+    virtual bool predict(const VectorDouble &x){
         if( x[ featureIndex ] >= threshold ) return true;
         return false;
     }
@@ -81,7 +81,7 @@ public:
      @param VectorDouble &classLikelihoods: a reference to a vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &y) const{
+    virtual bool predict(const VectorDouble &x,VectorDouble &y){
         
         if( isLeafNode ){
             if( y.size() != 1 ) y.resize( 1 );

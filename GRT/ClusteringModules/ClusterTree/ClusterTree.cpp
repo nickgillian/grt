@@ -147,7 +147,8 @@ bool ClusterTree::train_(MatrixDouble &trainingData){
     
     //Build the tree
     UINT clusterLabel = 0;
-    tree = buildTree( trainingData, NULL, features, clusterLabel );
+    UINT nodeID = 0;
+    tree = buildTree( trainingData, NULL, features, clusterLabel, nodeID );
     numClusters = clusterLabel;
     
     if( tree == NULL ){
@@ -380,9 +381,11 @@ bool ClusterTree::setMinRMSErrorPerNode(const double minRMSErrorPerNode){
     return true;
 }
     
-ClusterTreeNode* ClusterTree::buildTree(const MatrixDouble &trainingData,ClusterTreeNode *parent,vector< UINT > features,UINT &clusterLabel){
+ClusterTreeNode* ClusterTree::buildTree(const MatrixDouble &trainingData,ClusterTreeNode *parent,vector< UINT > features,UINT &clusterLabel,UINT nodeID){
     
     const UINT M = trainingData.getNumRows();
+    
+    //Update the nodeID
 
     //Get the depth
     UINT depth = 0;
@@ -401,7 +404,7 @@ ClusterTreeNode* ClusterTree::buildTree(const MatrixDouble &trainingData,Cluster
         return NULL;
     
     //Set the parent
-    node->initNode( parent, depth );
+    node->initNode( parent, depth, nodeID );
     
     //If there are no features left then create a leaf node and return
     if( features.size() == 0 || M < minNumSamplesPerNode || depth >= maxDepth ){
@@ -471,8 +474,8 @@ ClusterTreeNode* ClusterTree::buildTree(const MatrixDouble &trainingData,Cluster
     }
     
     //Run the recursive tree building on the children
-    node->setLeftChild( buildTree( lhs, node, features, clusterLabel ) );
-    node->setRightChild( buildTree( rhs, node, features, clusterLabel ) );
+    node->setLeftChild( buildTree( lhs, node, features, clusterLabel, nodeID ) );
+    node->setRightChild( buildTree( rhs, node, features, clusterLabel, nodeID ) );
     
     return node;
 }

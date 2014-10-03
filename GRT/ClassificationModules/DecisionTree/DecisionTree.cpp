@@ -37,6 +37,7 @@ DecisionTree::DecisionTree(const UINT numSplittingSteps,const UINT minNumSamples
     this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
     this->trainingMode = trainingMode;
     this->useScaling = useScaling;
+    this->supportsNullRejection = true;
     Classifier::classType = "DecisionTree";
     classifierType = Classifier::classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -79,6 +80,7 @@ DecisionTree& DecisionTree::operator=(const DecisionTree &rhs){
         this->maxDepth = rhs.maxDepth;
         this->removeFeaturesAtEachSpilt = rhs.removeFeaturesAtEachSpilt;
         this->trainingMode = rhs.trainingMode;
+        this->nodeClusters = rhs.nodeClusters;
 
         //Copy the base classifier variables
         copyBaseVariables( (Classifier*)&rhs );
@@ -107,6 +109,7 @@ bool DecisionTree::deepCopyFrom(const Classifier *classifier){
         this->maxDepth = ptr->maxDepth;
         this->removeFeaturesAtEachSpilt = ptr->removeFeaturesAtEachSpilt;
         this->trainingMode = ptr->trainingMode;
+        this->nodeClusters = ptr->nodeClusters;
         
         //Copy the base classifier variables
         return copyBaseVariables( classifier );
@@ -146,12 +149,63 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     }
     
     //Build the tree
-    tree = buildTree( trainingData, NULL, features, classLabels );
+    UINT nodeID = 0;
+    tree = buildTree( trainingData, NULL, features, classLabels, nodeID );
     
     if( tree == NULL ){
         clear();
         Classifier::errorLog << "train_(ClassificationData &trainingData) - Failed to build tree!" << endl;
         return false;
+    }
+    
+    //Compute the null rejection thresholds if null rejection is enabled
+    if( useNullRejection ){
+        nullRejectionThresholds.clear();
+        nullRejectionThresholds.resize( numClasses, 0 );
+        
+        VectorDouble classLikelihoods( numClasses );
+        vector< UINT > predictions(M);
+        VectorDouble distances(M);
+        VectorDouble classCounter( numClasses, 0 );
+        
+        //Run over the training dataset and compute the distance between each training sample and the predicted node cluster
+        for(UINT i=0; i<M; i++){
+            //Run the prediction for this sample
+            if( !tree->predict( trainingData[i].getSample(), classLikelihoods ) ){
+                Classifier::errorLog << "predict_(VectorDouble &inputVector) - Failed to predict!" << endl;
+                return false;
+            }
+            
+            //Store the predicted class index and cluster distance
+            predictions[i] = Util::getMaxIndex( classLikelihoods );
+            distances[i] = getNodeDistance(trainingData[i].getSample(), tree->getPredictedNodeID() );
+            
+            classCounter[ predictions[i] ]++;
+        }
+        
+        //Compute the average distance for each class between the training data and the node clusters
+        VectorDouble classMean( numClasses, 0 );
+        for(UINT i=0; i<M; i++){
+            classMean[ predictions[i] ] += distances[ i ];
+        }
+        for(UINT k=0; k<numClasses; k++){
+            classMean[k] /= MAX( classCounter[k], 1 );
+        }
+        
+        //Compute the std deviation
+        VectorDouble classStdDev( numClasses, 0.01 ); //we start the std dev with a small value to ensure it is not zero
+        for(UINT i=0; i<M; i++){
+            classStdDev[ predictions[i] ] += MLBase::SQR( distances[ i ] - classMean[ predictions[i] ] );
+        }
+        for(UINT k=0; k<numClasses; k++){
+            classStdDev[k] = sqrt( classStdDev[k] / MAX( classCounter[k], 1 ) );
+        }
+        
+        //Compute the rejection threshold for each class using the mean and std dev
+        for(UINT k=0; k<numClasses; k++){
+            nullRejectionThresholds[k] = classMean[k] + (classStdDev[k]*nullRejectionCoeff);
+        }
+        
     }
     
     //Flag that the algorithm has been trained
@@ -163,7 +217,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
 bool DecisionTree::predict_(VectorDouble &inputVector){
     
     predictedClassLabel = 0;
-	maxLikelihood = -10000;
+	maxLikelihood = 0;
     
     //Validate the input is OK and the model is trained properly
     if( !trained ){
@@ -208,8 +262,26 @@ bool DecisionTree::predict_(VectorDouble &inputVector){
         }
     }
     
-    //Set the predicated class label
-    predictedClassLabel = classLabels[ maxIndex ];
+    //Run the null rejection
+    if( useNullRejection ){
+        
+        //Get the distance between the input and the leaf mean
+        double leafDistance = getNodeDistance( inputVector, tree->getPredictedNodeID() );
+        
+        if( grt_isnan(leafDistance) ){
+            Classifier::errorLog << "predict_(VectorDouble &inputVector) - Failed to match leaf node ID to compute node distance!" << endl;
+            return false;
+        }
+        
+        //Use the distance to check if the class label should be rejected or not
+        if( leafDistance <= nullRejectionThresholds[ maxIndex ] ){
+            predictedClassLabel = classLabels[ maxIndex ];
+        }else predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
+        
+    }else {
+        //Set the predicated class label
+        predictedClassLabel = classLabels[ maxIndex ];
+    }
     
     return true;
 }
@@ -218,6 +290,9 @@ bool DecisionTree::clear(){
     
     //Clear the Classifier variables
     Classifier::clear();
+    
+    //Clear the node clusters
+    nodeClusters.clear();
     
     //Delete the tree if it exists
     if( tree != NULL ){
@@ -244,7 +319,7 @@ bool DecisionTree::saveModelToFile(fstream &file) const{
 	}
     
 	//Write the header info
-	file << "GRT_DECISION_TREE_MODEL_FILE_V2.0\n";
+	file << "GRT_DECISION_TREE_MODEL_FILE_V3.0\n";
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
@@ -265,6 +340,26 @@ bool DecisionTree::saveModelToFile(fstream &file) const{
             Classifier::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << endl;
             return false;
         }
+        
+        file << "NumNodes: " << nodeClusters.size() << endl;
+        file << "NodeClusters:\n";
+        
+        std::map< UINT, VectorDouble >::const_iterator iter = nodeClusters.begin();
+        
+        while( iter != nodeClusters.end() ){
+            
+            //Write the nodeID
+            file << iter->first;
+            
+            //Write the node cluster
+            for(UINT j=0; j<numInputDimensions; j++){
+                file << " " << iter->second[j];
+            }
+            file << endl;
+            
+            iter++;
+        }
+
     }
     
     return true;
@@ -285,11 +380,15 @@ bool DecisionTree::loadModelFromFile(fstream &file){
     
     //Check to see if we should load a legacy file
     if( word == "GRT_DECISION_TREE_MODEL_FILE_V1.0" ){
-        return loadLegacyModelFromFile( file );
+        return loadLegacyModelFromFile_v1( file );
+    }
+    
+    if( word == "GRT_DECISION_TREE_MODEL_FILE_V2.0" ){
+        return loadLegacyModelFromFile_v2( file );
     }
     
     //Find the file type header
-    if(word != "GRT_DECISION_TREE_MODEL_FILE_V2.0"){
+    if(word != "GRT_DECISION_TREE_MODEL_FILE_V3.0"){
         Classifier::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
         return false;
     }
@@ -365,6 +464,36 @@ bool DecisionTree::loadModelFromFile(fstream &file){
             return false;
         }
         
+        UINT numNodes = 0;
+        
+        file >> word;
+        if(word != "NumNodes:"){
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumNodes header!" << endl;
+            return false;
+        }
+        file >> numNodes;
+        
+        file >> word;
+        if(word != "NodeClusters:"){
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NodeClusters header!" << endl;
+            return false;
+        }
+        
+        UINT nodeID = 0;
+        VectorDouble cluster( numInputDimensions );
+        for(UINT i=0; i<numNodes; i++){
+            
+            //load the nodeID
+            file >> nodeID;
+            
+            for(UINT j=0; j<numInputDimensions; j++){
+                file >> cluster[j];
+            }
+            
+            //Add the cluster to the cluster nodes map
+            nodeClusters[ nodeID ] = cluster;
+        }
+        
         //Recompute the null rejection thresholds
         recomputeNullRejectionThresholds();
         
@@ -391,10 +520,13 @@ const DecisionTreeNode* DecisionTree::getTree() const{
     return (DecisionTreeNode*)tree;
 }
     
-DecisionTreeNode* DecisionTree::buildTree(const ClassificationData &trainingData,DecisionTreeNode *parent,vector< UINT > features,const vector< UINT > &classLabels){
+DecisionTreeNode* DecisionTree::buildTree(const ClassificationData &trainingData,DecisionTreeNode *parent,vector< UINT > features,const vector< UINT > &classLabels, UINT nodeID){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = trainingData.getNumDimensions();
+    
+    //Update the nodeID
+    nodeID++;
     
     //Get the depth
     UINT depth = 0;
@@ -413,7 +545,7 @@ DecisionTreeNode* DecisionTree::buildTree(const ClassificationData &trainingData
         return NULL;
     
     //Set the parent
-    node->initNode( parent, depth );
+    node->initNode( parent, depth, nodeID );
     
     //If all the training data belongs to the same class or there are no features left then create a leaf node and return
     if( trainingData.getNumClasses() == 1 || features.size() == 0 || M < minNumSamplesPerNode || depth >= maxDepth ){
@@ -423,6 +555,11 @@ DecisionTreeNode* DecisionTree::buildTree(const ClassificationData &trainingData
         
         //Set the node
         node->set( trainingData.getNumSamples(), 0, 0, getClassProbabilities( trainingData, classLabels ) );
+        
+        //Build the null cluster if null rejection is enabled
+        if( useNullRejection ){
+            nodeClusters[ nodeID ] = trainingData.getMean();
+        }
         
         Classifier::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << trainingData.getNumSamples() << endl;
         
@@ -463,9 +600,19 @@ DecisionTreeNode* DecisionTree::buildTree(const ClassificationData &trainingData
         }else lhs.addSample(trainingData[i].getClassLabel(), trainingData[i].getSample());
     }
     
+    //Get the new node IDs for the children
+    UINT leftNodeID = ++nodeID;
+    UINT rightNodeID = ++nodeID;
+    
     //Run the recursive tree building on the children
-    node->setLeftChild( buildTree( lhs, node, features, classLabels ) );
-    node->setRightChild( buildTree( rhs, node, features, classLabels ) );
+    node->setLeftChild( buildTree( lhs, node, features, classLabels, leftNodeID ) );
+    node->setRightChild( buildTree( rhs, node, features, classLabels, rightNodeID ) );
+    
+    //Build the null clusters for the rhs and lhs nodes if null rejection is enabled
+    if( useNullRejection ){
+        nodeClusters[ leftNodeID ] = lhs.getMean();
+        nodeClusters[ rightNodeID ] = rhs.getMean();
+    }
     
     return node;
 }
@@ -635,7 +782,7 @@ bool DecisionTree::computeBestSpiltBestRandomSpilt( const ClassificationData &tr
     
     return true;
 }
-    
+
 VectorDouble DecisionTree::getClassProbabilities( const ClassificationData &trainingData, const vector< UINT > &classLabels ){
     const UINT K = (UINT)classLabels.size();
     const UINT N = (UINT)trainingData.getNumClasses();
@@ -652,7 +799,31 @@ VectorDouble DecisionTree::getClassProbabilities( const ClassificationData &trai
     return x;
 }
     
-bool DecisionTree::loadLegacyModelFromFile( fstream &file ){
+double DecisionTree::getNodeDistance( const VectorDouble &x, const UINT nodeID ){
+    
+    //Use the node ID to find the node cluster
+    std::map< UINT,VectorDouble >::iterator iter = nodeClusters.find( nodeID );
+    
+    //If we failed to find a match, return NAN
+    if( iter == nodeClusters.end() ) return NAN;
+    
+    //Compute the distance between the input and the node cluster
+    return getNodeDistance( x, iter->second );
+}
+    
+double DecisionTree::getNodeDistance( const VectorDouble &x, const VectorDouble &y ){
+    
+    double distance = 0;
+    const size_t N = x.size();
+    
+    for(size_t i=0; i<N; i++){
+        distance += MLBase::SQR( x[i] - y[i] );
+    }
+    
+    return sqrt( distance );
+}
+    
+bool DecisionTree::loadLegacyModelFromFile_v1( fstream &file ){
     
     string word;
     
@@ -768,6 +939,94 @@ bool DecisionTree::loadLegacyModelFromFile( fstream &file ){
     
     return true;
 }
+    
+    bool DecisionTree::loadLegacyModelFromFile_v2( fstream &file ){
+        
+        string word;
+        
+        //Load the base settings from the file
+        if( !Classifier::loadBaseSettingsFromFile(file) ){
+            Classifier::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+            return false;
+        }
+        
+        file >> word;
+        if(word != "NumSplittingSteps:"){
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
+            return false;
+        }
+        file >> numSplittingSteps;
+        
+        file >> word;
+        if(word != "MinNumSamplesPerNode:"){
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
+            return false;
+        }
+        file >> minNumSamplesPerNode;
+        
+        file >> word;
+        if(word != "MaxDepth:"){
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
+            return false;
+        }
+        file >> maxDepth;
+        
+        file >> word;
+        if(word != "RemoveFeaturesAtEachSpilt:"){
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
+            return false;
+        }
+        file >> removeFeaturesAtEachSpilt;
+        
+        file >> word;
+        if(word != "TrainingMode:"){
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
+            return false;
+        }
+        file >> trainingMode;
+        
+        file >> word;
+        if(word != "TreeBuilt:"){
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << endl;
+            return false;
+        }
+        file >> trained;
+        
+        if( trained ){
+            file >> word;
+            if(word != "Tree:"){
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << endl;
+                return false;
+            }
+            
+            //Create a new DTree
+            tree = new DecisionTreeNode;
+            
+            if( tree == NULL ){
+                clear();
+                Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new DecisionTreeNode!" << endl;
+                return false;
+            }
+            
+            tree->setParent( NULL );
+            if( !tree->loadFromFile( file ) ){
+                clear();
+                Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
+                return false;
+            }
+            
+            //Recompute the null rejection thresholds
+            recomputeNullRejectionThresholds();
+            
+            //Resize the prediction results to make sure it is setup for realtime prediction
+            maxLikelihood = DEFAULT_NULL_LIKELIHOOD_VALUE;
+            bestDistance = DEFAULT_NULL_DISTANCE_VALUE;
+            classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
+            classDistances.resize(numClasses,DEFAULT_NULL_DISTANCE_VALUE);
+        }
+        
+        return true;
+    }
 
 } //End of namespace GRT
 
