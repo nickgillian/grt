@@ -566,7 +566,7 @@ protected:
                     for(unsigned int j=0; j<N; j++){
                         x[j] += iter->x[j];
                     }
-                    estimationLikelihood += isnan(iter->w) ? 0 : iter->w;
+                    estimationLikelihood += grt_isnan(iter->w) ? 0 : iter->w;
                 }
                 
                 for(unsigned int j=0; j<N; j++){
@@ -586,7 +586,7 @@ protected:
                 }
                 
                 for( iter = particles.begin(); iter != particles.end(); ++iter ){
-                    estimationLikelihood += isnan(iter->w) ? 0 : iter->w;
+                    estimationLikelihood += grt_isnan(iter->w) ? 0 : iter->w;
                 }
                 estimationLikelihood /= double(numParticles);
                 break;
@@ -611,7 +611,7 @@ protected:
                         for(unsigned int j=0; j<N; j++){
                             x[j] += iter->x[j] * iter->w;
                         }
-                        estimationLikelihood += isnan(iter->w) ? 0 : iter->w;
+                        estimationLikelihood += grt_isnan(iter->w) ? 0 : iter->w;
                         sum += iter->w;
                         robustMeanParticleCounter++;
                     }
@@ -631,7 +631,7 @@ protected:
                     }
                 }
                 x = particles[bestIndex].x;
-                estimationLikelihood = isnan(particles[bestIndex].w) ? 0 : particles[bestIndex].w;
+                estimationLikelihood = grt_isnan(particles[bestIndex].w) ? 0 : particles[bestIndex].w;
                 break;
             default:
                 errorLog << "ERROR: Unknown estimation mode!" << endl;
