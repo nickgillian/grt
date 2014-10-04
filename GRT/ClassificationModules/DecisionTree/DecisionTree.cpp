@@ -158,11 +158,11 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         return false;
     }
     
+    //Flag that the algorithm has been trained
+    trained = true;
+    
     //Compute the null rejection thresholds if null rejection is enabled
     if( useNullRejection ){
-        nullRejectionThresholds.clear();
-        nullRejectionThresholds.resize( numClasses, 0 );
-        
         VectorDouble classLikelihoods( numClasses );
         vector< UINT > predictions(M);
         VectorDouble distances(M);
@@ -184,32 +184,30 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         }
         
         //Compute the average distance for each class between the training data and the node clusters
-        VectorDouble classMean( numClasses, 0 );
+        classClusterMean.clear();
+        classClusterStdDev.clear();
+        classClusterMean.resize( numClasses, 0 );
+        classClusterStdDev.resize( numClasses, 0.01 ); //we start the std dev with a small value to ensure it is not zero
+        
         for(UINT i=0; i<M; i++){
-            classMean[ predictions[i] ] += distances[ i ];
+            classClusterMean[ predictions[i] ] += distances[ i ];
         }
         for(UINT k=0; k<numClasses; k++){
-            classMean[k] /= MAX( classCounter[k], 1 );
+            classClusterMean[k] /= MAX( classCounter[k], 1 );
         }
         
         //Compute the std deviation
-        VectorDouble classStdDev( numClasses, 0.01 ); //we start the std dev with a small value to ensure it is not zero
         for(UINT i=0; i<M; i++){
-            classStdDev[ predictions[i] ] += MLBase::SQR( distances[ i ] - classMean[ predictions[i] ] );
+            classClusterStdDev[ predictions[i] ] += MLBase::SQR( distances[ i ] - classClusterMean[ predictions[i] ] );
         }
         for(UINT k=0; k<numClasses; k++){
-            classStdDev[k] = sqrt( classStdDev[k] / MAX( classCounter[k], 1 ) );
+            classClusterStdDev[k] = sqrt( classClusterStdDev[k] / MAX( classCounter[k], 1 ) );
         }
         
-        //Compute the rejection threshold for each class using the mean and std dev
-        for(UINT k=0; k<numClasses; k++){
-            nullRejectionThresholds[k] = classMean[k] + (classStdDev[k]*nullRejectionCoeff);
-        }
+        //Compute the null rejection thresholds using the class mean and std dev
+        recomputeNullRejectionThresholds();
         
     }
-    
-    //Flag that the algorithm has been trained
-    trained = true;
 
     return true;
 }
@@ -303,6 +301,28 @@ bool DecisionTree::clear(){
     
     return true;
 }
+    
+bool DecisionTree::recomputeNullRejectionThresholds(){
+    
+    if( !trained ){
+        Classifier::warningLog << "recomputeNullRejectionThresholds() - Failed to recompute null rejection thresholds, the model has not been trained!" << endl;
+        return false;
+    }
+
+    if( !useNullRejection ){
+        Classifier::warningLog << "recomputeNullRejectionThresholds() - Failed to recompute null rejection thresholds, null rejection is not enabled!" << endl;
+        return false;
+    }
+    
+    nullRejectionThresholds.resize( numClasses );
+    
+    //Compute the rejection threshold for each class using the mean and std dev
+    for(UINT k=0; k<numClasses; k++){
+        nullRejectionThresholds[k] = classClusterMean[k] + (classClusterStdDev[k]*nullRejectionCoeff);
+    }
+ 
+    return true;
+}
 
 bool DecisionTree::print() const{
     if( tree != NULL )
@@ -341,23 +361,39 @@ bool DecisionTree::saveModelToFile(fstream &file) const{
             return false;
         }
         
-        file << "NumNodes: " << nodeClusters.size() << endl;
-        file << "NodeClusters:\n";
-        
-        std::map< UINT, VectorDouble >::const_iterator iter = nodeClusters.begin();
-        
-        while( iter != nodeClusters.end() ){
+        //Save the null rejection data if needed
+        if( useNullRejection ){
             
-            //Write the nodeID
-            file << iter->first;
-            
-            //Write the node cluster
-            for(UINT j=0; j<numInputDimensions; j++){
-                file << " " << iter->second[j];
+            file << "ClassClusterMean:";
+            for(UINT k=0; k<numClasses; k++){
+                file << " " << classClusterMean[k];
             }
             file << endl;
             
-            iter++;
+            file << "ClassClusterStdDev:";
+            for(UINT k=0; k<numClasses; k++){
+                file << " " << classClusterStdDev[k];
+            }
+            file << endl;
+            
+            file << "NumNodes: " << nodeClusters.size() << endl;
+            file << "NodeClusters:\n";
+            
+            std::map< UINT, VectorDouble >::const_iterator iter = nodeClusters.begin();
+            
+            while( iter != nodeClusters.end() ){
+                
+                //Write the nodeID
+                file << iter->first;
+                
+                //Write the node cluster
+                for(UINT j=0; j<numInputDimensions; j++){
+                    file << " " << iter->second[j];
+                }
+                file << endl;
+                
+                iter++;
+            }
         }
 
     }
@@ -464,38 +500,62 @@ bool DecisionTree::loadModelFromFile(fstream &file){
             return false;
         }
         
-        UINT numNodes = 0;
+        //Load the null rejection data if needed
+        if( useNullRejection ){
         
-        file >> word;
-        if(word != "NumNodes:"){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumNodes header!" << endl;
-            return false;
-        }
-        file >> numNodes;
-        
-        file >> word;
-        if(word != "NodeClusters:"){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NodeClusters header!" << endl;
-            return false;
-        }
-        
-        UINT nodeID = 0;
-        VectorDouble cluster( numInputDimensions );
-        for(UINT i=0; i<numNodes; i++){
+            UINT numNodes = 0;
+            classClusterMean.resize( numClasses );
+            classClusterStdDev.resize( numClasses );
             
-            //load the nodeID
-            file >> nodeID;
-            
-            for(UINT j=0; j<numInputDimensions; j++){
-                file >> cluster[j];
+            file >> word;
+            if(word != "ClassClusterMean:"){
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterMean header!" << endl;
+                return false;
+            }
+            for(UINT k=0; k<numClasses; k++){
+                file >> classClusterMean[k];
             }
             
-            //Add the cluster to the cluster nodes map
-            nodeClusters[ nodeID ] = cluster;
+            file >> word;
+            if(word != "ClassClusterStdDev:"){
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterStdDev header!" << endl;
+                return false;
+            }
+            for(UINT k=0; k<numClasses; k++){
+                file >> classClusterStdDev[k];
+            }
+            
+            file >> word;
+            if(word != "NumNodes:"){
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumNodes header!" << endl;
+                return false;
+            }
+            file >> numNodes;
+            
+            file >> word;
+            if(word != "NodeClusters:"){
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NodeClusters header!" << endl;
+                return false;
+            }
+            
+            UINT nodeID = 0;
+            VectorDouble cluster( numInputDimensions );
+            for(UINT i=0; i<numNodes; i++){
+                
+                //load the nodeID
+                file >> nodeID;
+                
+                for(UINT j=0; j<numInputDimensions; j++){
+                    file >> cluster[j];
+                }
+                
+                //Add the cluster to the cluster nodes map
+                nodeClusters[ nodeID ] = cluster;
+            }
+            
+            //Recompute the null rejection thresholds
+            recomputeNullRejectionThresholds();
         }
-        
-        //Recompute the null rejection thresholds
-        recomputeNullRejectionThresholds();
         
         //Resize the prediction results to make sure it is setup for realtime prediction
         maxLikelihood = DEFAULT_NULL_LIKELIHOOD_VALUE;

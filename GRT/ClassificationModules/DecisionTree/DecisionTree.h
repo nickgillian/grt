@@ -118,6 +118,8 @@ public:
      */
     virtual bool print() const;
     
+    virtual bool recomputeNullRejectionThresholds();
+    
     /**
      This saves the trained DecisionTree model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
@@ -171,6 +173,8 @@ protected:
     double getNodeDistance( const VectorDouble &x, const VectorDouble &y );
     
     std::map< UINT, VectorDouble > nodeClusters;
+    VectorDouble classClusterMean;
+    VectorDouble classClusterStdDev;
     static RegisterClassifierModule< DecisionTree > registerModule;
     
 };
