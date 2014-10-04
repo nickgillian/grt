@@ -53,6 +53,7 @@ You can find this source code and a large number of other examples and tutorials
 #include "GRT.h"
 using namespace GRT;
 
+//A helper function to generate a dummy dataset
 bool generateDataset( const string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions  );
 
 int main (int argc, const char * argv[])
@@ -142,6 +143,7 @@ int main (int argc, const char * argv[])
     return EXIT_SUCCESS;
 }
 
+//This function generates a dummy dataset and saves it to a CSV file
 bool generateDataset( const string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions ){
 
     Random random;

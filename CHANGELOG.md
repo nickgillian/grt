@@ -2,6 +2,16 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 4th October 2014 
+- **added null rejection support to Decision Tree**. The GRT Decision Tree algorithm now has full support for null rejection, like all the GRT Classifiers, you can enable this functionality in a Decision Tree instance via: 
+
+```C++
+    DecisionTree dtree;
+    dtree.enableNullRejection( true );
+```
+
+  the Decision Tree algorithm will then reject the predicted class labels of unlikely predictions, setting the predicted class label to the default null rejection label of zero.
+
 ## 23rd September 2014 
 - **added getSupportsNullRejection() to classifiers**. You can now query each classifier to see if it fully supports null rejection, if so then the classifier will return true when queried.
 
