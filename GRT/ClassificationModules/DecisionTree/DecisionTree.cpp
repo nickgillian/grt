@@ -880,7 +880,8 @@ double DecisionTree::getNodeDistance( const VectorDouble &x, const VectorDouble 
         distance += MLBase::SQR( x[i] - y[i] );
     }
     
-    return sqrt( distance );
+    //Return the squared Euclidean distance instead of actual Euclidean distance as this is faster and just as useful
+    return distance;
 }
     
 bool DecisionTree::loadLegacyModelFromFile_v1( fstream &file ){
