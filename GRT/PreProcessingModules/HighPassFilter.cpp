@@ -27,8 +27,8 @@ RegisterPreProcessingModule< HighPassFilter > HighPassFilter::registerModule("Hi
     
 HighPassFilter::HighPassFilter(double filterFactor,double gain,UINT numDimensions,double cutoffFrequency,double delta){
     
+    classType = "HighPassFilter";
     preProcessingType = classType;
-    preProcessingType = "HighPassFilter";
     debugLog.setProceedingText("[DEBUG HighPassFilter]");
     errorLog.setProceedingText("[ERROR HighPassFilter]");
     warningLog.setProceedingText("[WARNING HighPassFilter]");
