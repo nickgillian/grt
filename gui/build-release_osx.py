@@ -1,17 +1,27 @@
 ## BuildRelease_OSX.py
 # This python script builds the release version of the GRT GUI. It also runs the QT macdeploy tool which wraps up any libraries or external dependices needed for the
-# GUI within the application itself so the app can run on other OS X machines without having to install QT.
+# GUI within the application itself so the app can run on other OS X machines without having to install QT or boost.
 # Before you run this script, you should open the GRT QT project file with QT creator and build the release application (this will generate a make file for your machine)
 # You can then use this script to build the deployment version which can be used on other machines
 # To use this script you should change the QT lib and bin paths to the locaction on your local machine
-# You can then build the release version by running this file from the terminal via: python BuildRelease_OSX.py
+# You can then build the release version by running this file from the terminal
+#You should run this script by passing in the qt bin directory as the first argument, for example:
+#python build-release_osx.py /Users/n.gillian/Qt/5.2.1/clang_64/bin/
 
 import os
 import re
 import subprocess
+from optparse import OptionParser
 
-#NOTE: You should set the directories for QT here
-macDeployDir = "/Users/n.gillian/Qt/5.2.1/clang_64/bin/"
+#Parse the command line options, the first option should be the qt bin directory
+parser = OptionParser()
+(options, args) = parser.parse_args()
+
+if( len( args ) != 1 ):
+    raise NameError( "Missing Argument: You need to specify the qt compiler bin directory on your system as the first argument, check this file for more info" ) 
+
+#NOTE: on my machine, the qt bin directory is: "/Users/n.gillian/Qt/5.2.1/clang_64/bin/"
+macDeployDir = args[0]
 
 #Set the main directory
 mainDir = "build-release/"

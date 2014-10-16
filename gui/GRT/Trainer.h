@@ -2,7 +2,7 @@
 #define GRT_TRAINER_H
 
 #include <QObject>
-#include "../../GRT/GRT.h"
+#include <GRT/GRT.h>
 //Include the OSC server to get the boost headers and QDebug headers
 #include "OSC/OSCServer.h"
 

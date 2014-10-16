@@ -5,7 +5,7 @@
 
 #include <QObject>
 #include "OSC/OSCServer.h"
-#include "../../GRT/GRT.h"
+#include <GRT/GRT.h>
 #include "TrainingThread.h"
 
 #define DEFAULT_CORE_THREAD_SLEEP_TIME 10

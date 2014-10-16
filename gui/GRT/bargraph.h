@@ -2,7 +2,7 @@
 #define BARGRAPH_H
 
 #include <QWidget>
-#include "../../GRT/GRT.h"
+#include <GRT/GRT.h>
 
 namespace Ui {
 class BarGraph;

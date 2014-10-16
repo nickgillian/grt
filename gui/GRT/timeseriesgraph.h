@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "qcustomplot.h"
-#include "../../GRT/GRT.h"
+#include <GRT/GRT.h>
 
 namespace Ui {
 class TimeseriesGraph;
