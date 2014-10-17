@@ -163,6 +163,8 @@ bool MainWindow::initDataIOView(){
     ui->dataIO_enableOSCCommandsButton->setChecked( true );
     ui->dataIO_enableOSCInputButton->setCheckable( true );
     ui->dataIO_enableOSCInputButton->setChecked( true );
+    ui->dataIO_enableMouseInputButton->setCheckable( true );
+    ui->dataIO_enableMouseInputButton->setChecked( false );
     ui->dataIO_oscIncomingPortSpinBox->setRange(1,50000);
     ui->dataIO_numInputDimensionsField->setText( QString::number( 1 )  );
     ui->dataIO_targetVectorSizeField->setText( QString::number( 1 )  );
@@ -448,6 +450,7 @@ bool MainWindow::initSignalsAndSlots(){
 
     connect(ui->dataIO_infoButton, SIGNAL(clicked()), this, SLOT(showDataIOInfo()));
     connect(ui->dataIO_enableOSCInputButton, SIGNAL(clicked()), this, SLOT(updateOSCInput()));
+    connect(ui->dataIO_enableMouseInputButton, SIGNAL(clicked()), this, SLOT(updateMouseInput()));
     connect(ui->dataIO_enableOSCCommandsButton, SIGNAL(clicked()), this, SLOT(updateOSCControlCommands()));
     connect(ui->dataIO_mainDataAddressTextField, SIGNAL(editingFinished()), this, SLOT(updateDataAddress()));
     connect(ui->dataIO_oscIncomingPortSpinBox, SIGNAL(valueChanged(int)), &core, SLOT(resetOSCServer(int)));
@@ -515,6 +518,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->logView_warningLogButton, SIGNAL(clicked()), this, SLOT(showWarningLog()));
     connect(ui->logView_errorLogButton, SIGNAL(clicked()), this, SLOT(showErrorLog()));
 
+    connect(&core, SIGNAL(tick()), this, SLOT(coreTick()));
     connect(&core, SIGNAL(newInfoMessage(std::string)), this, SLOT(updateInfoText(std::string)));
     connect(&core, SIGNAL(newWarningMessage(std::string)), this, SLOT(updateWarningText(std::string)));
     connect(&core, SIGNAL(newErrorMessage(std::string)), this, SLOT(updateErrorText(std::string)));
@@ -545,6 +549,16 @@ bool MainWindow::initSignalsAndSlots(){
     connect(&core, SIGNAL(pipelineTrainingFinished(bool)), this, SLOT(pipelineTrainingFinished(bool)));
     connect(&core, SIGNAL(pipelineTestingFinished(bool)), this, SLOT(pipelineTestingFinished(bool)));
     connect(&core, SIGNAL(setClassifierMessageReceived(unsigned int,bool,bool,double,double)), this, SLOT(updateClassifier(unsigned int,bool,bool,double,double)));
+
+    //Setup the keyboard shortcuts
+    QShortcut *ctrlRShortcut = new QShortcut( QKeySequence( QString::fromStdString("Ctrl+R") ), this);
+    QObject::connect(ctrlRShortcut, SIGNAL(activated()), this, SLOT(ctrlRShortcut()));
+
+    QShortcut *ctrlSShortcut = new QShortcut( QKeySequence( QString::fromStdString("Ctrl+S") ), this);
+    QObject::connect(ctrlSShortcut, SIGNAL(activated()), this, SLOT(ctrlSShortcut()));
+
+    QShortcut *ctrlLShortcut = new QShortcut( QKeySequence( QString::fromStdString("Ctrl+L") ), this);
+    QObject::connect(ctrlLShortcut, SIGNAL(activated()), this, SLOT(ctrlLShortcut()));
 
     return true;
 }
@@ -888,6 +902,19 @@ void MainWindow::showDataIOInfo(){
 void MainWindow::updateOSCInput(){
     bool state = ui->dataIO_enableOSCInputButton->isChecked();
     core.setEnableOSCInput( state );
+}
+
+void MainWindow::updateMouseInput(){
+
+    bool state = ui->dataIO_enableMouseInputButton->isChecked();
+
+    if( state ){
+        //Set the number of inputs to 2 (for the [x y] values of the mouse)
+        setNumInputs( 2 );
+    }else{
+
+    }
+
 }
 
 void MainWindow::updateOSCControlCommands(){
@@ -1243,6 +1270,14 @@ void MainWindow::updatePCAProjectionGraph(){
     GRT::ClassificationData trainingData = core.getClassificationTrainingData();
     GRT::MatrixDouble data = trainingData.getDataAsMatrixDouble();
 
+    if( trainingData.getNumSamples() == 0 ){
+
+        //Clear any previous graphs
+        plot->clearPlottables();
+
+        return;
+    }
+
     //Setup the PCA
     GRT::PrincipalComponentAnalysis pca;
     const unsigned int maxNumPCs = 2;
@@ -1273,10 +1308,6 @@ void MainWindow::updatePCAProjectionGraph(){
     for(unsigned int k=3; k<K; k++){
         classColors[k] = QColor(random.getRandomNumberInt(0,255), random.getRandomNumberInt(0,255), random.getRandomNumberInt(0,255), 200);
     }
-
-
-    //Clear any previous graphs
-    plot->clearPlottables();
 
     //Add a new bar graph for each class
     for(unsigned int k=0; k<K; k++){
@@ -1393,6 +1424,39 @@ void MainWindow::updateTimeseriesGraph(){
     plot->xAxis->setRange(0, graphWidth);
     plot->yAxis->setRange(0, maxLabel);
     plot->replot();
+}
+
+void MainWindow::ctrlRShortcut(){
+
+    switch( core.getPipelineMode() ){
+        case Core::CLASSIFICATION_MODE:
+            ui->dataLabellingTool_classificationModeRecordButton->click();
+        break;
+        case Core::REGRESSION_MODE:
+            ui->dataLabellingTool_regressionModeRecordButton->click();
+        break;
+        case Core::TIMESERIES_CLASSIFICATION_MODE:
+        break;
+        default:
+            return;
+        break;
+    }
+
+    return;
+}
+
+void MainWindow::ctrlSShortcut(){
+
+    ui->dataLabellingTool_saveButton->click();
+
+    return;
+}
+
+void MainWindow::ctrlLShortcut(){
+
+    ui->dataLabellingTool_loadButton->click();
+
+    return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -2392,6 +2456,28 @@ void MainWindow::updateLogView(unsigned int viewID){
 ///////////////////////////////     CORE DATA FUNCTIONS   ///////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
+void MainWindow::coreTick(){
+    //qDebug() << "core tick" << endl;
+
+    if( ui->dataIO_enableMouseInputButton->isChecked() ){
+
+        //Generate a dummy OSC data message for the mouse
+        GRT::VectorDouble mouseData(2);
+        mouseData[0] = this->mapFromGlobal(QCursor::pos()).x();
+        mouseData[1] = this->mapFromGlobal(QCursor::pos()).y();
+
+        OSCMessagePtr msg( new OSCMessage );
+
+        msg->setSenderAddress( "localhost" );
+        msg->setAddressPattern( core.getIncomingDataAddress() );
+        msg->addArg( mouseData[0] );
+        msg->addArg( mouseData[1] );
+
+        //Add the message to the OSC server, this will make it appear like an external message
+        core.addMessaage( msg );
+    }
+}
+
 void MainWindow::updateData(GRT::VectorDouble data){
     QString text = "";
     for(size_t i=0; i<data.size(); i++){
@@ -2437,4 +2523,3 @@ void MainWindow::notify(const GRT::InfoLogMessage &log){
     std::string message = log.getProceedingText() + " " + log.getMessage();
     updateInfoText( message );
 }
-

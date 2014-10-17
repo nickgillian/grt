@@ -46,6 +46,7 @@ protected:
     bool threadRunning;
     bool stopMainThread;
     bool verbose;
+    bool debug;
     bool trainingInProcess;
     bool startTraining;
 

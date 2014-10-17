@@ -61,6 +61,12 @@ bool OSCServer::stop(){
     return true;
 }
 
+bool OSCServer::addMessaage( const OSCMessagePtr msg ){
+    boost::mutex::scoped_lock lock( mutex );
+    messages.push( msg );
+    return true;
+}
+
 bool OSCServer::getServerRunning(){
     boost::mutex::scoped_lock lock( mutex );
     return serverRunning;
@@ -76,9 +82,9 @@ unsigned int OSCServer::getNumMessages(){
     return (unsigned int)messages.size();
 }
 
-OSCMessage OSCServer::getNextMessage(){
+OSCMessagePtr OSCServer::getNextMessage(){
     boost::mutex::scoped_lock lock( mutex );
-    OSCMessage m;
+    OSCMessagePtr m;
     if( messages.size() > 0 ){
         m = messages.front();
         messages.pop();
@@ -145,11 +151,11 @@ void OSCServer::ProcessMessage(const osc::ReceivedMessage &m, const IpEndpointNa
         qDebug() << info;
     }
 
-    OSCMessage newMessage( hostAddress, m );
+    OSCMessagePtr msg( new OSCMessage(hostAddress, m) );
 
     boost::mutex::scoped_lock lock( mutex );
 
-    messages.push( newMessage );
+    messages.push( msg );
 }
 
 bool OSCServer::clearMessages(){

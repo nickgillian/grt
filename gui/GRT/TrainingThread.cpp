@@ -5,6 +5,7 @@ TrainingThread::TrainingThread(QObject *parent) : QObject(parent)
     threadRunning = false;
     stopMainThread = false;
     verbose = true;
+    debug = false;
     trainingInProcess = false;
     startTraining = false;
 }
@@ -18,15 +19,19 @@ TrainingThread::~TrainingThread(){
 bool TrainingThread::start(){
 
     if( getThreadRunning() ){
-        if( verbose ){
+        if( debug ){
             qDebug() << "WARNING: TrainingThread::start() - The thread is already running!" << endl;
+        }
+
+        if( verbose ){
             emit newInfoMessage( "WARNING: Failed to start training thread, it is already running!" );
         }
         return false;
     }
 
-    if( verbose )
+    if( debug ){
         qDebug() << STRING_TO_QSTRING("TrainingThread::start() - Starting training thread...");
+    }
 
     try{
         mainThread.reset( new boost::thread( boost::bind( &TrainingThread::mainThreadFunction, this) ) );
@@ -44,15 +49,19 @@ bool TrainingThread::start(){
 bool TrainingThread::stop(){
 
     if( !getThreadRunning() ){
-        if( verbose ){
+        if( debug ){
             qDebug() << "WARNING: TrainingThread::stop() - The thread is not running!" << endl;
+        }
+
+        if( verbose ){
             emit newInfoMessage( "WARNING: Failed to stop thread, it is not running!" );
         }
         return false;
     }
 
-    if( verbose )
+    if( debug ){
         qDebug() << STRING_TO_QSTRING("TrainingThread::stop() - Stopping training thread...");
+    }
 
     //Flag that the core should stop
     {

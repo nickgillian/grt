@@ -5,6 +5,7 @@
 #include "oscpack/include/osc/OscReceivedElements.h"
 #include "oscpack/include/osc/OscPacketListener.h"
 #include "oscpack/include/osc/OscHostEndianness.h"
+#include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -307,8 +308,48 @@ public:
     std::string getAddressPattern() const{ return addressPattern; }
     unsigned int getNumArgs() const { return (unsigned int)messageArguments.size(); }
 
+    bool setSenderAddress(const std::string &senderAddress){
+        this->senderAddress = senderAddress;
+        return true;
+    }
+
+    bool setAddressPattern(const std::string &addressPattern){
+        this->addressPattern = addressPattern;
+        return true;
+    }
+
+    bool addArg(const OSCArgument &arg){
+        this->messageArguments.push_back( arg );
+        return true;
+    }
+
+    bool addArg(const int &value){
+        this->messageArguments.push_back( OSCArgument() );
+        this->messageArguments.back().setInt( value );
+        return true;
+    }
+
+    bool addArg(const float &value){
+        this->messageArguments.push_back( OSCArgument() );
+        this->messageArguments.back().setFloat( value );
+        return true;
+    }
+
+    bool addArg(const double &value){
+        this->messageArguments.push_back( OSCArgument() );
+        this->messageArguments.back().setDouble( value );
+        return true;
+    }
+
+    bool addArg(const std::string &value){
+        this->messageArguments.push_back( OSCArgument() );
+        this->messageArguments.back().setString( value );
+        return true;
+    }
+
 protected:
     std::string senderAddress;
     std::string addressPattern;
     std::vector< OSCArgument > messageArguments;
 };
+typedef boost::shared_ptr< OSCMessage > OSCMessagePtr;

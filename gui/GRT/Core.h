@@ -1,7 +1,7 @@
 #ifndef GRT_CORE_H
 #define GRT_CORE_H
 
-#define GRT_GUI_VERSION "0.1_12"
+#define GRT_GUI_VERSION "0.1_13"
 
 #include <QObject>
 #include "OSC/OSCServer.h"
@@ -20,6 +20,7 @@ public:
 
     bool start();
     bool stop();
+    bool addMessaage( const OSCMessagePtr msg );
     bool getCoreRunning();
 
     bool getRecordStatus();
@@ -44,10 +45,12 @@ public:
     vector< GRT::TestResult > getCrossValidationResults();
     std::string getInfoMessage();
     std::string getVersion();
+    std::string getIncomingDataAddress();
 
 signals:
     void coreStarted();
     void coreStopped();
+    void tick();
     void newInfoMessage(std::string msg);
     void newWarningMessage(std::string msg);
     void newErrorMessage(std::string msg);
@@ -124,7 +127,7 @@ protected:
     virtual void notify( const GRT::TrainingResult &data );
     virtual void notify( const GRT::TestInstanceResult &data );
     void mainThreadFunction();
-    bool processOSCMessage( const OSCMessage &m );
+    bool processOSCMessage( const OSCMessagePtr m );
     bool processNewData();
     void sendPreProcessedData( const GRT::VectorDouble &preProcessedData );
     void sendFeatureExtractionData( const GRT::VectorDouble &featureData );
@@ -141,6 +144,7 @@ protected:
     bool coreRunning;
     bool stopMainThread;
     bool verbose;
+    bool debug;
     bool enableOSCInput;
     bool enableOSCControlCommands;
 

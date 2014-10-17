@@ -514,7 +514,7 @@
       <widget class="QPushButton" name="dataIO_enableOSCInputButton">
        <property name="geometry">
         <rect>
-         <x>340</x>
+         <x>335</x>
          <y>0</y>
          <width>231</width>
          <height>32</height>
@@ -522,6 +522,19 @@
        </property>
        <property name="text">
         <string>Enable OSC Input</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="dataIO_enableMouseInputButton">
+       <property name="geometry">
+        <rect>
+         <x>105</x>
+         <y>0</y>
+         <width>231</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable Mouse Input</string>
        </property>
       </widget>
      </widget>

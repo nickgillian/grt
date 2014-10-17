@@ -23,13 +23,15 @@ public:
 
     bool stop();
 
+    bool addMessaage( const OSCMessagePtr msg );
+
     bool getServerRunning();
 
     bool getNewMessagesReceived();
 
     unsigned int getNumMessages();
 
-    OSCMessage getNextMessage();
+    OSCMessagePtr getNextMessage();
 
     bool setVerbose(bool verbose);
     bool setIncomingDataPort(unsigned int listenerPort);
@@ -45,7 +47,7 @@ protected:
     boost::mutex mutex;
     boost::thread *serverThread;
     UdpListeningReceiveSocket *oscSocket;
-    std::queue< OSCMessage > messages;
+    std::queue< OSCMessagePtr > messages;
 
 };
 

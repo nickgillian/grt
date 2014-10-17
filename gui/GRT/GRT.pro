@@ -7,7 +7,6 @@
 #NOTE: Have a look at the GRT GUI README before attempting to build this project
 
 QT  += core gui
-QT  += declarative
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -21,6 +20,7 @@ unix:!macx {
  QMAKE_CXXFLAGS = -std=c++0x
 }
 
+#Add c++ 11 support
 CONFIG +=c++11
 
 CONFIG += static

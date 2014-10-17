@@ -17,11 +17,18 @@ from optparse import OptionParser
 parser = OptionParser()
 (options, args) = parser.parse_args()
 
-if( len( args ) != 1 ):
+if( len( args ) < 1 ):
     raise NameError( "Missing Argument: You need to specify the qt compiler bin directory on your system as the first argument, check this file for more info" ) 
 
 #NOTE: on my machine, the qt bin directory is: "/Users/n.gillian/Qt/5.2.1/clang_64/bin/"
 macDeployDir = args[0]
+
+#Set the default boost lib directory
+boostLibDir = "/usr/local/lib/"
+
+#The user can set the second option to customize the boost lib directory
+if( len( args ) == 2 ):
+    boostLibDir = args[1]
 
 #Set the main directory
 mainDir = "build-release/"
@@ -53,6 +60,12 @@ os.system( "make -C " + mainDir )
 #Run the mac deploy tool so the application can be run on other machines
 print "Running mac deployment..."
 os.system( macDeployDir + "macdeployqt" + " " + mainDir + "GRT.app" + " -verbose=1" )
+
+#Copy the extra libraries
+os.system( "cp -fv " + boostLibDir + "libboost_thread.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
+os.system( "cp -fv " + boostLibDir + "libboost_date_time.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
+os.system( "cp -fv " + boostLibDir + "libboost_system.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
+os.system( "cp -fv " + boostLibDir + "libboost_chrono.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
 
 #Run the otool to make sure the libraries are now pointing to local copies
 os.system( "otool -L " + mainDir + "GRT.app/Contents/MacOS/GRT" )

@@ -5,6 +5,7 @@ Core::Core(QObject *parent) : QObject(parent)
     coreRunning = false;
     stopMainThread = false;
     verbose = true;
+    debug = false;
     enableOSCInput = true;
     enableOSCControlCommands = true;
     infoMessage = "";
@@ -47,14 +48,16 @@ Core::~Core(){
 bool Core::start(){
 
     if( getCoreRunning() ){
-        if( verbose ){
+        if( debug )
             qDebug() << "WARNING: Core::start() - The core is already running!" << endl;
+
+        if( verbose ){
             emit newInfoMessage( "WARNING: Failed to start core, it is already running!" );
         }
         return false;
     }
 
-    if( verbose )
+    if( debug )
         qDebug() << STRING_TO_QSTRING("Core::start() - Starting main thread...");
 
     try{
@@ -73,14 +76,17 @@ bool Core::start(){
 bool Core::stop(){
 
     if( !getCoreRunning() ){
-        if( verbose ){
+        if( debug )
             qDebug() << "WARNING: Core::stop() - The core is not running!" << endl;
+
+
+        if( verbose ){
             emit newInfoMessage( "WARNING: Failed to stop core, it is not running!" );
         }
         return false;
     }
 
-    if( verbose )
+    if( debug )
         qDebug() << STRING_TO_QSTRING("Core::stop() - Stopping main thread...");
 
     //Flag that the core should stop
@@ -139,6 +145,12 @@ bool Core::resetOSCServer(int incomingOSCDataPort){
     return true;
 }
 
+bool Core::addMessaage( const OSCMessagePtr msg ){
+    boost::mutex::scoped_lock lock( mutex );
+    oscServer.addMessaage( msg );
+    return true;
+}
+
 bool Core::setVersion(std::string version){
     boost::mutex::scoped_lock lock( mutex );
     this->version = version;
@@ -177,28 +189,18 @@ bool Core::setRecordingState(bool state){
 
 bool Core::saveTrainingDatasetToFile(std::string filename){
     bool result = false;
-
-    //Check to see if we should load the data to the default GRT fileformat or as a CSV file
-    bool saveToCSV = false;
-    std::size_t found = filename.find( ".csv" );
-    if ( found!=std::string::npos )
-        saveToCSV = true;
-
     {
         boost::mutex::scoped_lock lock( mutex );
 
         switch( pipelineMode ){
             case CLASSIFICATION_MODE:
-                if( !saveToCSV ) result = classificationTrainingData.saveDatasetToFile(filename);
-                else result = classificationTrainingData.saveDatasetToCSVFile(filename);
+                classificationTrainingData.save(filename);
             break;
             case REGRESSION_MODE:
-                if( !saveToCSV ) result = regressionTrainingData.saveDatasetToFile(filename);
-                else result = regressionTrainingData.saveDatasetToCSVFile(filename);
+                regressionTrainingData.save(filename);
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
-                if( !saveToCSV ) result = timeseriesClassificationTrainingData.saveDatasetToFile(filename);
-                //else result = timeseriesClassificationTrainingData.saveDatasetToCSVFile(filename);
+                timeseriesClassificationTrainingData.save(filename);
             break;
             default:
                 qDebug() << "ERROR: Unknown pipeline mode!";
@@ -206,11 +208,9 @@ bool Core::saveTrainingDatasetToFile(std::string filename){
         }
     }
     if( result ){
-        if( !saveToCSV ){ emit newInfoMessage( "Training data saved to file" ); }
-        else{ emit newInfoMessage( "Training data saved to CSV file" ); }
+        emit newInfoMessage( "Training data saved to file" );
     }else{
-        if( !saveToCSV ){ emit newInfoMessage( "WARNING: Failed to save training data saved to file" ); }
-        else{ emit newInfoMessage( "WARNING: Failed to save training data saved to CSV file" ); }
+        emit newInfoMessage( "WARNING: Failed to save training data saved to file" );
     }
     emit saveTrainingDataToFileResult( result );
     return result;
@@ -239,8 +239,7 @@ bool Core::loadTrainingDatasetFromFile(std::string filename){
          tempPipelineMode = pipelineMode;
          switch( pipelineMode ){
              case CLASSIFICATION_MODE:
-                if( !loadFromCSV ) result = classificationTrainingData.loadDatasetFromFile( filename );
-                else result = classificationTrainingData.loadDatasetFromCSVFile( filename );
+                result = classificationTrainingData.load( filename );
 
                  if( classificationTrainingData.getNumDimensions() == numInputDimensions ){
                      numTrainingSamples = classificationTrainingData.getNumSamples();
@@ -263,8 +262,7 @@ bool Core::loadTrainingDatasetFromFile(std::string filename){
                  trainingDataSize = regressionTrainingData.getNumInputDimensions();
              break;
              case TIMESERIES_CLASSIFICATION_MODE:
-                 if( !loadFromCSV ) result = timeseriesClassificationTrainingData.loadDatasetFromFile( filename );
-                 //else result = timeseriesClassificationTrainingData.loadDatasetFromCSVFile( filename );
+                 timeseriesClassificationTrainingData.load( filename );
 
                  numTrainingSamples = timeseriesClassificationTrainingData.getNumSamples();
                  tempTimeSeriesData = timeseriesClassificationTrainingData;
@@ -904,6 +902,11 @@ std::string Core::getVersion(){
     return version;
 }
 
+std::string Core::getIncomingDataAddress(){
+    boost::mutex::scoped_lock lock( mutex );
+    return incomingDataAddress;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //////////////////////////// PROTECTED METHODS ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -948,6 +951,8 @@ void Core::mainThreadFunction(){
     while( keepRunning ){
 
         //qDebug() << "tick\n";
+
+        tick();
 
         //Process any new OSC messages
         while( oscServer.getNumMessages() > 0 ){
@@ -1000,11 +1005,12 @@ void Core::mainThreadFunction(){
     emit coreStopped();
 }
 
-bool Core::processOSCMessage( const OSCMessage &m ){
+bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
 
     bool allowOSCInput = true;
     bool allowOSCControlCommands = true;
     string dataAddress = "";
+    const OSCMessage &m = *oscMessage;
 
     {
         boost::mutex::scoped_lock lock( mutex );

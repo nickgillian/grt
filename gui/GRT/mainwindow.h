@@ -10,6 +10,8 @@
 #include <QStandardItem>
 #include <QComboBox>
 #include <QListView>
+#include <QMouseEvent>
+#include <QShortcut>
 #include "Core.h"
 #include "timeseriesgraph.h"
 #include "bargraph.h"
@@ -109,6 +111,7 @@ private slots:
     ////////////////////////////////// DATA IO TOOL FUNCTIONS ////////////////////////////////
     void showDataIOInfo();
     void updateOSCInput();
+    void updateMouseInput();
     void updateOSCControlCommands();
     void resetOSCServer( int port );
     void resetOSCClient();
@@ -137,6 +140,9 @@ private slots:
     void updateClassStatsGraph();
     void updatePCAProjectionGraph();
     void updateTimeseriesGraph();
+    void ctrlRShortcut();
+    void ctrlSShortcut();
+    void ctrlLShortcut();
 
     //////////////////////////////// PIPELINE TOOl FUNCTIONS ////////////////////////////////
     void showPipelineToolInfo();
@@ -189,6 +195,7 @@ private slots:
     void updateLogView(unsigned int viewID);
 
     /////////////////////////////////// CORE DATA FUNCTIONS /////////////////////////////////
+    void coreTick();
     void updateData(GRT::VectorDouble data);
     void updateTargetVector(GRT::VectorDouble targetVector);
 
