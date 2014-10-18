@@ -10,10 +10,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     //Register the log callbacks
     GRT::TrainingLog::registerObserver( *this );
-    //GRT::WarningLog::registerObserver( *this );
+    GRT::WarningLog::registerObserver( *this );
     //GRT::ErrorLog::registerObserver( *this );
 
     //Register the custom data types
+    qRegisterMetaType< QTextCursor >("QTextCursor");
     qRegisterMetaType< std::string >("std::string");
     qRegisterMetaType< GRT::VectorDouble >("GRT::VectorDouble");
     qRegisterMetaType< std::vector<GRT::UINT> >("std::vector<GRT::UINT>");
@@ -1266,17 +1267,22 @@ void MainWindow::updatePCAProjectionGraph(){
 
     QCustomPlot *plot = ui->dataLabelingTool_pcaProjectionPlot;
 
+    //Clear any previous graphs
+    plot->clearPlottables();
+
     //Get the training data
     GRT::ClassificationData trainingData = core.getClassificationTrainingData();
     GRT::MatrixDouble data = trainingData.getDataAsMatrixDouble();
 
     if( trainingData.getNumSamples() == 0 ){
-
-        //Clear any previous graphs
-        plot->clearPlottables();
-
         return;
     }
+
+    if( trainingData.getNumDimensions() == 1 ){
+        return;
+    }
+
+    qDebug() << "num samples: " << trainingData.getNumSamples();
 
     //Setup the PCA
     GRT::PrincipalComponentAnalysis pca;
@@ -1320,7 +1326,7 @@ void MainWindow::updatePCAProjectionGraph(){
         plot->graph(k)->setScatterStyle(QCP::ScatterStyle::ssCross);
 
         unsigned int index = 0;
-        for(unsigned int i=0; i<M; ++i)
+        for(unsigned int i=0; i<M; i++)
         {
             if( trainingData[i].getClassLabel() == classLabels[k] ){
                 x[index] = prjData[i][0];
