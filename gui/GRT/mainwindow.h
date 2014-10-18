@@ -177,6 +177,12 @@ private slots:
     void pipelineTestingFinished(bool result);
     void updateTrainingResults(const GRT::TrainingResult &trainingResult);
     void updateTestResults(const GRT::TestInstanceResult&);
+    void updatePrecisionGraph(const GRT::VectorDouble &precision,const vector< unsigned int > &classLabels);
+    void updateRecallGraph(const GRT::VectorDouble &recall,const vector< unsigned int > &classLabels);
+    void updateFmeasureGraph(const GRT::VectorDouble &fmeasure,const vector< unsigned int > &classLabels);
+    void clearPrecisionGraph();
+    void clearRecallGraph();
+    void clearFmeasureGraph();
 
     /////////////////////////////// PREDICTION VIEW FUNCTIONS ///////////////////////////////
     void showPredictionToolInfo();

@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="page_26">
      <widget class="QGroupBox" name="groupBox_16">
@@ -1585,7 +1585,7 @@
            <rect>
             <x>10</x>
             <y>0</y>
-            <width>251</width>
+            <width>316</width>
             <height>21</height>
            </rect>
           </property>
@@ -2165,7 +2165,7 @@
            <rect>
             <x>10</x>
             <y>50</y>
-            <width>121</width>
+            <width>271</width>
             <height>20</height>
            </rect>
           </property>
@@ -2178,7 +2178,7 @@
            <rect>
             <x>10</x>
             <y>70</y>
-            <width>161</width>
+            <width>266</width>
             <height>20</height>
            </rect>
           </property>
@@ -2985,15 +2985,78 @@
        <property name="title">
         <string>Results:</string>
        </property>
-       <widget class="QTextBrowser" name="trainingTool_results">
+       <widget class="QTabWidget" name="trainingTool_resultsTab">
         <property name="geometry">
          <rect>
           <x>5</x>
-          <y>25</y>
-          <width>816</width>
-          <height>366</height>
+          <y>30</y>
+          <width>821</width>
+          <height>371</height>
          </rect>
         </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_6">
+         <attribute name="title">
+          <string>Tab 1</string>
+         </attribute>
+         <widget class="QTextBrowser" name="trainingTool_results">
+          <property name="geometry">
+           <rect>
+            <x>5</x>
+            <y>5</y>
+            <width>816</width>
+            <height>366</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_7">
+         <attribute name="title">
+          <string>Tab 2</string>
+         </attribute>
+         <widget class="QCustomPlot" name="trainingTool_precisionGraph" native="true">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>45</y>
+            <width>796</width>
+            <height>256</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_8">
+         <attribute name="title">
+          <string>Page</string>
+         </attribute>
+         <widget class="QCustomPlot" name="trainingTool_recallGraph" native="true">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>45</y>
+            <width>796</width>
+            <height>256</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_9">
+         <attribute name="title">
+          <string>Page</string>
+         </attribute>
+         <widget class="QCustomPlot" name="trainingTool_fmeasureGraph" native="true">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>40</y>
+            <width>796</width>
+            <height>256</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
        </widget>
       </widget>
       <widget class="QPushButton" name="trainingTool_infoButton">
@@ -4040,7 +4103,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuInfo">

@@ -270,6 +270,10 @@ bool DecisionTree::predict_(VectorDouble &inputVector){
             Classifier::errorLog << "predict_(VectorDouble &inputVector) - Failed to match leaf node ID to compute node distance!" << endl;
             return false;
         }
+
+	//Set the predicted class distance as the leaf distance, all other classes will have a distance of zero
+        std::fill(classDistances.begin(),classDistances.end(),0);
+	classDistances[ maxIndex ] = leafDistance;
         
         //Use the distance to check if the class label should be rejected or not
         if( leafDistance <= nullRejectionThresholds[ maxIndex ] ){

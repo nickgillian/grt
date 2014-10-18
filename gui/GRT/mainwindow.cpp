@@ -225,6 +225,12 @@ bool MainWindow::initTrainingToolView(){
     ui->trainingTool_numTestSamples->setReadOnly( true );
     ui->trainingTool_randomTestPercentageBox->setReadOnly( true );
 
+    ui->trainingTool_resultsTab->setCurrentIndex( 0 );
+    ui->trainingTool_resultsTab->setTabText(0,"Results");
+    ui->trainingTool_resultsTab->setTabText(1,"Precision");
+    ui->trainingTool_resultsTab->setTabText(2,"Recall");
+    ui->trainingTool_resultsTab->setTabText(3,"F-Measure");
+
     resetTrainingToolView( 0 );
 
     return true;
@@ -1524,7 +1530,10 @@ void MainWindow::resetTrainingToolView( int trainingMode ){
         }
     }
 
-    //ui->trainingTool_results->setText( "" );
+    //Clear the graphs
+    clearPrecisionGraph();
+    clearRecallGraph();
+    clearFmeasureGraph();
 
 }
 
@@ -1584,12 +1593,18 @@ void MainWindow::showTrainingToolInfo(){
 
 void MainWindow::pipelineTrainingStarted(){
 
+    clearPrecisionGraph();
+    clearRecallGraph();
+    clearFmeasureGraph();
+
     QString infoText;
     infoText += "---------------------------------------------------------------\n";
     infoText += "Training Started\n";
     infoText += "---------------------------------------------------------------";
     ui->trainingTool_results->setText( infoText );
     ui->trainingTool_results->setEnabled( true );
+
+
 
 }
 
@@ -1696,6 +1711,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
                     }
                     infoText += "\n";
                 }
+                updatePrecisionGraph( testResult.precision, classLabels );
 
                 if( testResult.recall.size() == K ){
                     infoText += "- Recall:          ";
@@ -1704,6 +1720,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
                     }
                     infoText += "\n";
                 }
+                updateRecallGraph( testResult.recall, classLabels );
 
                 if( testResult.fMeasure.size() == K ){
                     infoText += "- F-Measure:  ";
@@ -1712,6 +1729,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
                     }
                     infoText += "\n";
                 }
+                updateFmeasureGraph( testResult.fMeasure, classLabels );
 
                 infoText += "- Confusion Matrix: \n";
                 for(GRT::UINT i=0; i<testResult.confusionMatrix.getNumRows(); i++){
@@ -1840,6 +1858,141 @@ void MainWindow::updateTestResults(const GRT::TestInstanceResult &testResult){
 
     ui->trainingTool_results->append( infoText );
 
+}
+
+void MainWindow::updatePrecisionGraph(const GRT::VectorDouble &precision,const vector< unsigned int > &classLabels){
+
+    QCustomPlot *plot = ui->trainingTool_precisionGraph;
+    unsigned int K = (unsigned int)classLabels.size();
+
+    QVector<double> keyData;
+    QVector<double> valueData;
+    QVector<double> tickVector;
+    QVector<QString> tickLabels;
+
+    //Clear any previous graphs
+    plot->clearPlottables();
+
+    //Add a new bar graph
+    QCPBars *bar = new QCPBars(plot->xAxis, plot->yAxis);
+    plot->addPlottable( bar );
+
+    //Add the data to the graph
+    for(unsigned int k=0; k<K; k++){
+        keyData << classLabels[k];
+        valueData << precision[k];
+    }
+    bar->setData(keyData, valueData);
+
+    //Add the tick labels
+    for(unsigned int k=0; k<K; k++){
+        tickVector << double(k+1);
+        tickLabels << QString::fromStdString( GRT::Util::intToString( classLabels[k]) );
+    }
+    plot->xAxis->setAutoTicks(false);
+    plot->xAxis->setAutoTickLabels(false);
+    plot->xAxis->setTickVector( tickVector );
+    plot->xAxis->setTickVectorLabels( tickLabels );
+    plot->xAxis->setLabel("Class Labels");
+
+    plot->setTitle("Precision results for each class");
+    plot->rescaleAxes();
+    plot->replot();
+}
+
+void MainWindow::updateRecallGraph(const GRT::VectorDouble &recall,const vector< unsigned int > &classLabels){
+
+    QCustomPlot *plot = ui->trainingTool_recallGraph;
+    unsigned int K = (unsigned int)classLabels.size();
+
+    QVector<double> keyData;
+    QVector<double> valueData;
+    QVector<double> tickVector;
+    QVector<QString> tickLabels;
+
+    //Clear any previous graphs
+    plot->clearPlottables();
+
+    //Add a new bar graph
+    QCPBars *bar = new QCPBars(plot->xAxis, plot->yAxis);
+    plot->addPlottable( bar );
+
+    //Add the data to the graph
+    for(unsigned int k=0; k<K; k++){
+        keyData << classLabels[k];
+        valueData << recall[k];
+    }
+    bar->setData(keyData, valueData);
+
+    //Add the tick labels
+    for(unsigned int k=0; k<K; k++){
+        tickVector << double(k+1);
+        tickLabels << QString::fromStdString( GRT::Util::intToString( classLabels[k]) );
+    }
+    plot->xAxis->setAutoTicks(false);
+    plot->xAxis->setAutoTickLabels(false);
+    plot->xAxis->setTickVector( tickVector );
+    plot->xAxis->setTickVectorLabels( tickLabels );
+    plot->xAxis->setLabel("Class Labels");
+
+    plot->setTitle("Recall results for each class");
+    plot->rescaleAxes();
+    plot->replot();
+}
+
+void MainWindow::updateFmeasureGraph(const GRT::VectorDouble &fmeasure,const vector< unsigned int > &classLabels){
+
+    QCustomPlot *plot = ui->trainingTool_fmeasureGraph;
+    unsigned int K = (unsigned int)classLabels.size();
+
+    QVector<double> keyData;
+    QVector<double> valueData;
+    QVector<double> tickVector;
+    QVector<QString> tickLabels;
+
+    //Clear any previous graphs
+    plot->clearPlottables();
+
+    //Add a new bar graph
+    QCPBars *bar = new QCPBars(plot->xAxis, plot->yAxis);
+    plot->addPlottable( bar );
+
+    //Add the data to the graph
+    for(unsigned int k=0; k<K; k++){
+        keyData << classLabels[k];
+        valueData << fmeasure[k];
+    }
+    bar->setData(keyData, valueData);
+
+    //Add the tick labels
+    for(unsigned int k=0; k<K; k++){
+        tickVector << double(k+1);
+        tickLabels << QString::fromStdString( GRT::Util::intToString( classLabels[k]) );
+    }
+    plot->xAxis->setAutoTicks(false);
+    plot->xAxis->setAutoTickLabels(false);
+    plot->xAxis->setTickVector( tickVector );
+    plot->xAxis->setTickVectorLabels( tickLabels );
+    plot->xAxis->setLabel("Class Labels");
+
+    plot->setTitle("F-Measure results for each class");
+    plot->rescaleAxes();
+    plot->replot();
+}
+
+void MainWindow::clearPrecisionGraph(){
+    QCustomPlot *plot = ui->trainingTool_precisionGraph;
+    plot->clearPlottables();
+}
+
+void MainWindow::clearRecallGraph(){
+    QCustomPlot *plot = ui->trainingTool_recallGraph;
+    plot->clearPlottables();
+}
+
+void MainWindow::clearFmeasureGraph(){
+    QCustomPlot *plot = ui->trainingTool_fmeasureGraph;
+    plot->clearPlottables();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
