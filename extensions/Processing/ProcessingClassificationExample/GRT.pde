@@ -491,6 +491,8 @@ class GRT{
         case  TIMESERIES_MODE:
         break;
       }
+      y += spacer;
+      text("NumTrainingSamples: " + grtNumTrainingSamples, x, y);
       
       //Draw the prediction info
       y += spacer*2;

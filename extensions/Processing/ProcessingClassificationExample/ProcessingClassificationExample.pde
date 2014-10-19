@@ -18,8 +18,12 @@ final int pipelineMode = GRT.CLASSIFICATION_MODE;
 final int numInputs = 2;
 final int numOutputs = 1;
 
+//Set the OSC ports used for the GRT GUI and for Processing
+final int guiPort = 5000;
+final int processingPort = 5001;
+
 //Create a new GRT instance, this will initialize everything for us and send the setup message to the GRT GUI
-GRT grt = new GRT( pipelineMode, numInputs, numOutputs, "127.0.0.1", 5000, 5001, true );
+GRT grt = new GRT( pipelineMode, numInputs, numOutputs, "127.0.0.1", guiPort, processingPort, true );
 
 //Create some global variables to hold our data
 float[] data = new float[ numInputs ];
@@ -57,7 +61,7 @@ void keyPressed(){
   
   switch( key ){
     case 'i':
-      grt.init( pipelineMode, numInputs, numOutputs, "127.0.0.1", 5000, 5001, true );
+      grt.init( pipelineMode, numInputs, numOutputs, "127.0.0.1", guiPort, processingPort, true );
       break;
     case '[':
       grt.decrementTrainingClassLabel();
