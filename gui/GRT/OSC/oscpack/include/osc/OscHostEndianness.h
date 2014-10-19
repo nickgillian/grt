@@ -42,6 +42,7 @@
 // you can define one of the above symbols from the command line
 // then you don't have to edit this file.
 
+/*
 #elif defined(__WIN32__) || defined(WIN32)
 
 // assume that __WIN32__ is only defined on little endian systems
@@ -65,6 +66,7 @@
         #define OSC_HOST_BIG_ENDIAN 1
         #undef OSC_HOST_LITTLE_ENDIAN
     #endif
+*/
 #else
 
 #error please edit OSCHostEndianness.h to configure endianness

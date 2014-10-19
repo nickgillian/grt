@@ -1288,8 +1288,6 @@ void MainWindow::updatePCAProjectionGraph(){
         return;
     }
 
-    qDebug() << "num samples: " << trainingData.getNumSamples();
-
     //Setup the PCA
     GRT::PrincipalComponentAnalysis pca;
     const unsigned int maxNumPCs = 2;
@@ -1324,19 +1322,29 @@ void MainWindow::updatePCAProjectionGraph(){
     //Add a new bar graph for each class
     for(unsigned int k=0; k<K; k++){
         const unsigned int numSamplesInClass = classTracker[k].counter;
-        QVector<double> x(numSamplesInClass), y(numSamplesInClass);
+
+        //cout << "NumSamples: " << numSamplesInClass << endl;
+
+        if( numSamplesInClass == 0 ){
+            plot->clearPlottables();
+            errorLog << "Failed to plot data! Class " << classLabels[k] << " has no samples!" << std::endl;
+            return;
+        }
+
+        QVector< double > x( numSamplesInClass );
+        QVector< double > y( numSamplesInClass );
         plot->addGraph();
         plot->graph(k)->setPen( QPen( classColors[k] ) );
         plot->graph(k)->setBrush( QBrush( classColors[k] ) );
-        plot->graph(k)->setLineStyle(QCPGraph::lsNone);
-        plot->graph(k)->setScatterStyle(QCP::ScatterStyle::ssCross);
+        plot->graph(k)->setLineStyle( QCPGraph::lsNone );
+        plot->graph(k)->setScatterStyle( QCP::ScatterStyle::ssCross );
 
         unsigned int index = 0;
         for(unsigned int i=0; i<M; i++)
         {
             if( trainingData[i].getClassLabel() == classLabels[k] ){
-                x[index] = prjData[i][0];
-                y[index] = prjData[i][1];
+                x[ index ] = prjData[i][0];
+                y[ index ] = prjData[i][1];
                 index++;
             }
         }

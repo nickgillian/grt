@@ -194,13 +194,13 @@ bool Core::saveTrainingDatasetToFile(std::string filename){
 
         switch( pipelineMode ){
             case CLASSIFICATION_MODE:
-                classificationTrainingData.save(filename);
+                result = classificationTrainingData.save(filename);
             break;
             case REGRESSION_MODE:
-                regressionTrainingData.save(filename);
+                result = regressionTrainingData.save(filename);
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
-                timeseriesClassificationTrainingData.save(filename);
+                result = timeseriesClassificationTrainingData.save(filename);
             break;
             default:
                 qDebug() << "ERROR: Unknown pipeline mode!";
@@ -1049,9 +1049,11 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
             unsigned int tempPipelineMode = m[0].getInt();
             unsigned int tempNumInputDimensions = m[1].getInt();
             unsigned int tempTargetVectorSize = m[2].getInt();
-            setPipelineMode( tempPipelineMode );
-            setNumInputDimensions( tempNumInputDimensions );
-            setTargetVectorSize( tempTargetVectorSize );
+            if( setPipelineMode( tempPipelineMode ) ){
+                setNumInputDimensions( tempNumInputDimensions );
+                setTargetVectorSize( tempTargetVectorSize );
+            }else newErrorMessage( "Failed to set pipeline mode - invalid OSC /Setup message!" );
+
             return true;
         }else return false;
     }

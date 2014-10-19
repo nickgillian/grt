@@ -12,16 +12,17 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 #OSX flags
 macx {
- QMAKE_CXXFLAGS = -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++
+ QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++
 }
 
 #Linux flags
 unix:!macx {
- QMAKE_CXXFLAGS = -std=c++0x
+ QMAKE_CXXFLAGS += -std=c++0x
+ QMAKE_CXXFLAGS += -DOSC_HOST_LITTLE_ENDIAN
 }
 
 #Add c++ 11 support
-CONFIG +=c++11
+CONFIG += c++11
 
 CONFIG += static
 TARGET = GRT
@@ -32,16 +33,13 @@ macx: TEMPLATE = app
 macx{
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
- #LIBS += -L../GRT/Resources/OSX/Libs
  ICON = Resources/OSX/GRT.icns
 }
 
 #Linux Include
 unix:!macx{
- INCLUDEPATH += /usr/local/include/boost
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
- #LIBS += -L../GRT/Resources/Linux/Libs
 }
 
 #Windows Include
