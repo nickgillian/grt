@@ -20,6 +20,7 @@ public:
     bool init(const unsigned int numDimensions,const unsigned int graphWidth);
     bool update(const GRT::VectorDouble &sample );
     bool setYAxisRanges(const double minRange,const double maxRange,const bool lockRanges=false);
+    void resizeEvent (QResizeEvent *event);
     
 private:
     bool initialized;

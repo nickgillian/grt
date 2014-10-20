@@ -108,3 +108,8 @@ bool TimeseriesGraph::setYAxisRanges(const double minRange,const double maxRange
     this->lockRanges = lockRanges;
     return true;
 }
+
+//resize graph on window resize
+void TimeseriesGraph::resizeEvent (QResizeEvent *event){
+    ui->graph->resize(ui->graph->parentWidget()->width()-20,ui->graph->parentWidget()->height()-20);
+}
