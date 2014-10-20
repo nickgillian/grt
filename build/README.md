@@ -8,10 +8,13 @@ This CMakeLists file has been tested on Windows, Linux (Ubuntu 14.04), and OSX (
 Note, you will need to install make (http://www.gnu.org/software/make/) and cmake (http://www.cmake.org/). 
 
 You can build the GRT as a static library and compile the examples examples by:
+
 - open terminal and cd to this build directory
+
 - create a temporary build folder: 
 
     $ mkdir tmp
+	
 - cd to the temporary build folder:
 
     $ cd tmp
