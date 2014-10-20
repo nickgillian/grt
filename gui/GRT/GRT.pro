@@ -37,10 +37,10 @@ macx{
  ICON = Resources/OSX/GRT.icns
 }
 
-#Linux Include
+#Linux pkgconfig
 unix:!macx{
- INCLUDEPATH += /usr/local/include
- LIBS += -L/usr/local/lib
+ CONFIG += link_pkgconfig
+ PKGCONFIG += grt
 }
 
 #Windows Include
