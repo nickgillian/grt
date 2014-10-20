@@ -15,7 +15,12 @@ endif()
 if(APPLE)
 endif()
 
-if(LINUX)
+if(UNIX)
+    message(STATUS "Build for UNIX/Linux ;)")
+    configure_file(grt.pc.in                     
+        ${CMAKE_CURRENT_BINARY_DIR}/grt.pc                                     
+        @ONLY                                                                         
+    )
 endif()
 
 #Set the main directory locations
@@ -220,3 +225,10 @@ if( BUILD_EXAMPLES )
 	    endforeach()
 	endforeach()
 endif() #BUILD_EXAMPLES
+
+if(UNIX)
+    set(CMAKE_INSTALL_LIBDIR "lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Output directory for libraries")
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/grt.pc                         
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig                               
+    )
+endif()
