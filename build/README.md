@@ -55,8 +55,36 @@ You can build the GRT as a static library and compile the examples examples by:
 	
 - the GRT examples will be: build/examples 
 
+##Linking Instructions
+After installing the GRT, you can build and link against it by:
+
+```
+    $ g++ -c main.cpp -I/usr/local/include
+	$ g++ main.o -o main -I/usr/local/include -L/usr/local/lib -lgrt
+	
+	//Run the application
+	$ ./main
+```
+
+where main.cpp is:
+
+```C++
+#include <GRT/GRT.h>
+using namespace GRT;
+
+int main (int argc, const char * argv[])
+{
+    //Print the GRT version
+    cout << "GRT Version: " << GRTBase::getGRTVersion() << endl;
+
+    return EXIT_SUCCESS;
+}
+```
+
+
+
 ##Contributors
 Thanks to:
 
-- Romain Guillemot for creating the CMake file and for improving the support for Windows!
+- Romain Guillemot for creating the original CMake file and for improving the support for Windows!
 - Leslie Zhai for improving the build for Linux users!
