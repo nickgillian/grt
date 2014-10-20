@@ -6,21 +6,36 @@ project(GRT C CXX)
 
 #set the options
 option(BUILD_EXAMPLES “build-examples” ON)
+option(BUILD_STATIC_LIB "build-static-lib" ON)
+
+#Setup if the library should be built as static or shared
+if(BUILD_STATIC_LIB)
+	set(LIB_BUILD_TYPE "static")
+	set(BUILD_SHARED_LIB OFF)
+else()
+	set(LIB_BUILD_TYPE "shared")
+	set(BUILD_SHARED_LIB ON)
+endif()
+
 
 #Add any custom OS definitions
 if(MSVC)
+	message(STATUS "Building " ${LIB_BUILD_TYPE} " library for Windows")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+#Add any custom OSX definitions
 if(APPLE)
+	message(STATUS "Building " ${LIB_BUILD_TYPE} " library for OSX")
+    configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+else()
+	
+#Add any custom Linux definitions
+if(UNIX) 
+    message(STATUS "Building " ${LIB_BUILD_TYPE}  " library for UNIX/Linux ;)")
+    configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
 endif()
 
-if(UNIX)
-    message(STATUS "Build for UNIX/Linux ;)")
-    configure_file(grt.pc.in                     
-        ${CMAKE_CURRENT_BINARY_DIR}/grt.pc                                     
-        @ONLY                                                                         
-    )
 endif()
 
 #Set the main directory locations
@@ -137,10 +152,21 @@ include_directories(
     "${GRT_SRC_DIR}"
 )
 
+if(BUILD_STATIC_LIB)
 add_library(grt STATIC
     ${GRT_SRC}
     ${GRT_HEADERS}
 )
+endif()
+
+if(BUILD_SHARED_LIB)
+add_library(grt SHARED
+    ${GRT_SRC}
+    ${GRT_HEADERS}
+)
+endif()
+
+
 
 install(
     TARGETS grt
