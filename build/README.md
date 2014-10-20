@@ -13,31 +13,45 @@ You can build the GRT as a static library and compile the examples examples by:
 
 - create a temporary build folder: 
 
+```
     $ mkdir tmp
+```
 	
 - cd to the temporary build folder:
 
+```
     $ cd tmp
+```
 	
 - use cmake to generate the makefile for your machine:
 
+```
     $ cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+```
 	
 - if you want to build the library as a shared library (instead of static), add the following option:
 
+```
     $ cmake .. -DBUILD_STATIC_LIB=OFF
+```
 
 - compile the GRT library and examples (j controls the number of cores you want to use):
 
+```
     $ make -j 2
+```
 	
 - you can then install the GRT by running:
 
+```
     $ sudo make install
+```
 
 - pkgconfig
 
+```
     $ pkg-config --cflags --libs grt
+```
 	
 - the GRT examples will be: build/examples 
 
