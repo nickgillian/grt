@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 project(GRT C CXX)
 
@@ -152,26 +152,24 @@ include_directories(
     "${GRT_SRC_DIR}"
 )
 
-if(BUILD_STATIC_LIB)
+if( BUILD_STATIC_LIB )
 add_library(grt STATIC
     ${GRT_SRC}
     ${GRT_HEADERS}
 )
 endif()
 
-if(BUILD_SHARED_LIB)
+if( BUILD_SHARED_LIB )
 add_library(grt SHARED
     ${GRT_SRC}
     ${GRT_HEADERS}
 )
 endif()
 
-
-
 install(
     TARGETS grt
     RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin
+    LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
 )
 
