@@ -26,6 +26,26 @@
     </rect>
    </property>
   </widget>
+  <widget class="QPushButton" name="snapShotButton">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>0</y>
+     <width>22</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>take a snapShot</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="Resources/resource.qrc">
+     <normaloff>:/snapShot.png</normaloff>:/snapShot.png</iconset>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
@@ -35,6 +55,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="Resources/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
