@@ -20,7 +20,7 @@ Core::Core(QObject *parent) : QObject(parent)
     numInputDimensions = 1;
     targetVectorSize = 1;
     inputData.resize( numInputDimensions );
-    targetVector.resize( targetVectorSize );
+    targetVector.resize( targetVectorSize, 0 );
     trainingClassLabel = 1;
     recordTrainingData = false;
     newDataReceived = false;
@@ -450,6 +450,11 @@ bool Core::getRecordStatus(){
     return recordTrainingData;
 }
 
+unsigned int Core::getNumInputDimensions(){
+    boost::mutex::scoped_lock lock( mutex );
+    return numInputDimensions;
+}
+
 unsigned int Core::getPipelineMode(){
     boost::mutex::scoped_lock lock( mutex );
     return pipelineMode;
@@ -526,6 +531,11 @@ unsigned int Core::getNumClassesInTrainingData(){
 vector<unsigned int> Core::getClassLabels(){
     boost::mutex::scoped_lock lock( mutex );
     return pipeline.getClassLabels();
+}
+
+GRT::VectorDouble Core::getTargetVector(){
+    boost::mutex::scoped_lock lock( mutex );
+    return targetVector;
 }
 
 GRT::ClassificationData Core::getClassificationTrainingData(){
@@ -607,6 +617,8 @@ bool Core::setNumInputDimensions(int numInputDimensions){
                 tempClassificationData = classificationTrainingData;
             break;
             case REGRESSION_MODE:
+                targetVector.clear();
+                targetVector.resize( targetVectorSize, 0 );
                 regressionTrainingData.clear();
                 regressionTrainingData.setInputAndTargetDimensions( numInputDimensions, targetVectorSize );
                 tempRegressionData = regressionTrainingData;
@@ -634,6 +646,7 @@ bool Core::setNumInputDimensions(int numInputDimensions){
             break;
             case REGRESSION_MODE:
                 emit trainingDataReset( tempRegressionData );
+                emit targetDataChanged( getTargetVector() );
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
                 //TODO
@@ -648,16 +661,16 @@ bool Core::setNumInputDimensions(int numInputDimensions){
     return result;
 }
 
-bool Core::setTargetVectorSize(int targetVectorSize){
+bool Core::setTargetVectorSize(int targetVectorSize_tmp ){
 
     bool result = false;
     GRT::LabelledRegressionData tempRegressionData;
 
     {
         boost::mutex::scoped_lock lock( mutex );
-        this->targetVectorSize = (unsigned int)targetVectorSize;
+        targetVectorSize = (unsigned int)targetVectorSize_tmp;
         targetVector.clear();
-        targetVector.resize( targetVectorSize );
+        targetVector.resize( targetVectorSize, 0 );
         regressionTrainingData.clear();
         regressionTrainingData.setInputAndTargetDimensions( numInputDimensions, targetVectorSize );
         tempRegressionData = regressionTrainingData;
@@ -665,7 +678,7 @@ bool Core::setTargetVectorSize(int targetVectorSize){
     }
 
     if( result ){
-        emit numTargetDimensionsChanged( targetVectorSize );
+        emit numTargetDimensionsChanged( targetVectorSize_tmp );
         emit trainingDataReset( tempRegressionData );
     }
 
@@ -678,11 +691,11 @@ bool Core::setMainDataAddress(std::string address){
         boost::mutex::scoped_lock lock( mutex );
         if( this->incomingDataAddress != address ){
             this->incomingDataAddress = address;
-
+            addressUpdated = true;
         }
     }
     if( addressUpdated ){
-        emit newInfoMessage( "Data address updated" );
+        emit newInfoMessage( "Data address updated to: " + address );
     }
     return true;
 }
@@ -853,6 +866,25 @@ bool Core::setPipeline( const GRT::GestureRecognitionPipeline &pipeline ){
     return true;
 }
 
+bool Core::setTargetVector( const GRT::VectorDouble &targetVector_ ){
+
+    bool emitTargetDataChanged = false;
+    {
+        boost::mutex::scoped_lock lock( mutex );
+        if( targetVector_.size() == targetVectorSize ){
+            targetVector = targetVector_;
+            emitTargetDataChanged = true;
+            qDebug() << "updated target vector!" << endl;
+        }
+    }
+
+    if( emitTargetDataChanged ){
+        emit targetDataChanged( targetVector_ );
+        return true;
+    }
+    return false;
+}
+
 bool Core::savePipelineToFile(std::string filename){
 
     bool result = false;
@@ -1012,6 +1044,7 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
     string dataAddress = "";
     const OSCMessage &m = *oscMessage;
 
+    //Safetly get a copy of the varibles we need to check
     {
         boost::mutex::scoped_lock lock( mutex );
         allowOSCInput = enableOSCInput;
@@ -1046,12 +1079,12 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
     if( m.getAddressPattern() == "/Setup" && allowOSCControlCommands ){
         if( m.getNumArgs() == 3 ){
             emit newInfoMessage( "Got OSC Setup Message" );
-            unsigned int tempPipelineMode = m[0].getInt();
-            unsigned int tempNumInputDimensions = m[1].getInt();
-            unsigned int tempTargetVectorSize = m[2].getInt();
-            if( setPipelineMode( tempPipelineMode ) ){
-                setNumInputDimensions( tempNumInputDimensions );
-                setTargetVectorSize( tempTargetVectorSize );
+            unsigned int pipelineMode_ = m[0].getInt();
+            unsigned int numInputDimensions_ = m[1].getInt();
+            unsigned int targetVectorSize_ = m[2].getInt();
+            if( setPipelineMode( pipelineMode_ ) ){
+                setNumInputDimensions( numInputDimensions_ );
+                setTargetVectorSize( targetVectorSize_ );
             }else newErrorMessage( "Failed to set pipeline mode - invalid OSC /Setup message!" );
 
             return true;
@@ -1059,19 +1092,41 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
     }
 
     if( m.getAddressPattern() == dataAddress ){
-        boost::mutex::scoped_lock lock( mutex );
-        if( m.getNumArgs() == numInputDimensions ){
+        bool emitInputDataChanged = false;
+        bool emitInputDataSizeWarning = false;
+        GRT::VectorDouble newInputData_;
 
-            newDataReceived = true;
-            for(unsigned int i=0; i<numInputDimensions; i++){
-                if( m[i].getIsFloat() ){ inputData[i] = m[i].getFloat(); }
-                else if( m[i].getIsDouble() ){ inputData[i] = m[i].getDouble(); }
-                else if( m[i].getIsInt() ){ inputData[i] = m[i].getInt(); }
+        {
+            boost::mutex::scoped_lock lock( mutex );
+            if( m.getNumArgs() == numInputDimensions ){
+
+                newDataReceived = true;
+                emitInputDataChanged = true;
+                newInputData_.resize( numInputDimensions );
+                for(unsigned int i=0; i<numInputDimensions; i++){
+                    if( m[i].getIsFloat() ){ inputData[i] = m[i].getFloat(); }
+                    else if( m[i].getIsDouble() ){ inputData[i] = m[i].getDouble(); }
+                    else if( m[i].getIsInt() ){ inputData[i] = m[i].getInt(); }
+                    newInputData_[i] = inputData[i];
+                }
+
+
+            }else{
+                emitInputDataSizeWarning = true;
             }
+        }
 
-            emit dataChanged( inputData );
-        }else{
-            //emit newWarningMessage( "WARNING: The data vector size does not match!" );
+        if( emitInputDataChanged ){
+            emit dataChanged( newInputData_ );
+            return true;
+        }
+
+        if( emitInputDataSizeWarning ){
+            string warningMessage = "WARNING: The OSC input data vector size (";
+            warningMessage += GRT::Util::toString( m.getNumArgs() );
+            warningMessage += ") does not match the expected input vector size (";
+            warningMessage += GRT::Util::toString( getNumInputDimensions() ) + ")!";
+            emit newWarningMessage( warningMessage );
             return false;
         }
     }
@@ -1082,7 +1137,8 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
                 boost::mutex::scoped_lock lock( mutex );
                 trainingClassLabel = m[0].getInt();
             }
-            emit trainingClassLabelChanged( trainingClassLabel );
+            emit trainingClassLabelChanged( m[0].getInt() );
+            return true;
         }else return false;
     }
 
@@ -1096,7 +1152,7 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
                     else if( m[i].getIsInt() ){ targetVector[i] = m[i].getInt(); }
                 }
             }
-            emit targetDataChanged( targetVector );
+            emit targetDataChanged( getTargetVector() );
         }else{
             emit newWarningMessage( "WARNING: The target vector size does not match!" );
             return false;
@@ -1105,11 +1161,13 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
 
     if( m.getAddressPattern() == "/Record" && allowOSCControlCommands ){
         if( m.getNumArgs() == 1 ){
+            bool recordTrainingData_ = false;
             {
                 boost::mutex::scoped_lock lock( mutex );
                 recordTrainingData = (m[0].getInt() == 1 ? true : false);
+                recordTrainingData_ = recordTrainingData;
             }
-            emit recordStatusChanged( recordTrainingData );
+            emit recordStatusChanged( recordTrainingData_ );
         }else return false;
     }
 

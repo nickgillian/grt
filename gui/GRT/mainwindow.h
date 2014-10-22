@@ -126,6 +126,7 @@ private slots:
     void saveTrainingDatasetToFile();
     void loadTrainingDatasetFromFile();
     void updateTrainingClassLabel(unsigned int trainingClassLabel);
+    void updateTargetVectorValue(double value);
     void updateRecordStatus(bool recordStatus);
     void updateNumTrainingSamples(unsigned int numTrainingSamples);
     void addNewTrainingSample(unsigned int numTrainingSamples,GRT::ClassificationSample trainingSample);
@@ -226,7 +227,8 @@ private:
     Core core;
     static unsigned int numInstances;
     unsigned int currentView;
-    vector< QWidget* > tabHistory;
+    vector< QWidget* > dataLabelingToolTabHistory;
+    vector< QWidget* > trainingToolTabHistory;
     TimeseriesGraph *inputDataGraph;
     TimeseriesGraph *preProcessedDataGraph;
     TimeseriesGraph *classPredictionsGraph;

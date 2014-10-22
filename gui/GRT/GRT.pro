@@ -45,8 +45,8 @@ unix:!macx{
 
 #Windows Include
 win32{
- INCLUDEPATH += "C:\SDK\EyesWeb XMI SDK\5.3.0\Include\boost"
- LIBS += "C:\SDK\EyesWeb XMI SDK\5.3.0\lib"
+ INCLUDEPATH += "INSERT_PATH_TO_BOOST_HEADERS_HERE"
+ LIBS += "INSERT_PATH_TO_BOOST_LIBS_HERE"
 }
 
 #Regardless of the OS we need to include the boost libraries

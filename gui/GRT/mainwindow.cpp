@@ -45,7 +45,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     //Store the tabs in the tab view so we can use them later
     for(int i=0; i<ui->dataLabelingTool_trainingDataTab->count(); i++){
-        tabHistory.push_back( ui->dataLabelingTool_trainingDataTab->widget(i) );
+        dataLabelingToolTabHistory.push_back( ui->dataLabelingTool_trainingDataTab->widget(i) );
+    }
+
+    for(int i=0; i<ui->trainingTool_resultsTab->count(); i++){
+        trainingToolTabHistory.push_back( ui->trainingTool_resultsTab->widget(i) );
     }
 
     //Setup the default graph colors
@@ -230,6 +234,7 @@ bool MainWindow::initTrainingToolView(){
     ui->trainingTool_resultsTab->setTabText(1,"Precision");
     ui->trainingTool_resultsTab->setTabText(2,"Recall");
     ui->trainingTool_resultsTab->setTabText(3,"F-Measure");
+    ui->trainingTool_resultsTab->setTabText(4,"RMS");
 
     resetTrainingToolView( 0 );
 
@@ -471,6 +476,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->dataLabellingTool_loadButton, SIGNAL(clicked()),this, SLOT(loadTrainingDatasetFromFile()));
     connect(ui->dataLabellingTool_clearButton, SIGNAL(clicked()), &core, SLOT(clearTrainingData()));
     connect(ui->dataLabellingTool_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(int)));
+    connect(ui->dataLabellingTool_targetVectorValueSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateTargetVectorValue(double)));
     connect(ui->dataLabellingTool_classificationDatasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
     connect(ui->dataLabellingTool_regressionDatasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
     connect(ui->dataLabellingTool_classificationDataInfoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
@@ -796,8 +802,13 @@ void MainWindow::setPipelineModeAsTimeseriesMode(){
 void MainWindow::updatePipelineMode(unsigned int pipelineMode){
 
     //Remove all the tabs from the dataLabellingTool
-    for(int i=0; i<ui->dataLabelingTool_trainingDataTab->count(); i++){
-        ui->dataLabelingTool_trainingDataTab->removeTab(i);
+    while( ui->dataLabelingTool_trainingDataTab->count() > 0 ){
+        ui->dataLabelingTool_trainingDataTab->removeTab(0);
+    }
+
+    //Remove all the tabs from the trainingTool
+    while( ui->trainingTool_resultsTab->count() > 0 ){
+        ui->trainingTool_resultsTab->removeTab(0);
     }
 
     switch( pipelineMode ){
@@ -820,12 +831,19 @@ void MainWindow::updatePipelineMode(unsigned int pipelineMode){
             ui->pipelineTool_postProcessingType->setCurrentIndex( 0 );
 
             //Add the tabs for classification
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, tabHistory[0], "Table View" );
-            ui->dataLabelingTool_trainingDataTab->insertTab( 1, tabHistory[1], "Dataset Stats" );
-            ui->dataLabelingTool_trainingDataTab->insertTab( 2, tabHistory[2], "Class Counter" );
-            ui->dataLabelingTool_trainingDataTab->insertTab( 3, tabHistory[3], "PCA Projection" );
-            ui->dataLabelingTool_trainingDataTab->insertTab( 4, tabHistory[4], "Timeseries Graph" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[0], "Table View" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 2, dataLabelingToolTabHistory[2], "Class Counter" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 3, dataLabelingToolTabHistory[3], "PCA Projection" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 4, dataLabelingToolTabHistory[4], "Timeseries Graph" );
             ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
+
+            //Add the tabs for classification
+            ui->trainingTool_resultsTab->insertTab( 0, trainingToolTabHistory[0], "Results" );
+            ui->trainingTool_resultsTab->insertTab( 1, trainingToolTabHistory[1], "Precision" );
+            ui->trainingTool_resultsTab->insertTab( 2, trainingToolTabHistory[2], "Recall" );
+            ui->trainingTool_resultsTab->insertTab( 3, trainingToolTabHistory[3], "F-Measure" );
+            ui->trainingTool_resultsTab->setCurrentIndex( 0 );
         break;
         case Core::REGRESSION_MODE:
             setupDefaultRegressifier();
@@ -844,10 +862,16 @@ void MainWindow::updatePipelineMode(unsigned int pipelineMode){
             ui->pipelineTool_postProcessingStackedWidget->setCurrentIndex( 1 );
             ui->pipelineTool_postProcessingType_2->setCurrentIndex( 0 );
 
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, tabHistory[0], "Table View" );
-            ui->dataLabelingTool_trainingDataTab->insertTab( 1, tabHistory[1], "Dataset Stats" );
-            ui->dataLabelingTool_trainingDataTab->insertTab( 2, tabHistory[3], "PCA Projection" );
+            //Add the tabs for regression
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[0], "Table View" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 2, dataLabelingToolTabHistory[3], "PCA Projection" );
             ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
+
+            //Add the tabs for regression
+            ui->trainingTool_resultsTab->insertTab( 0, trainingToolTabHistory[0], "Results" );
+            //ui->trainingTool_resultsTab->insertTab( 1, trainingToolTabHistory[4], "RMS" );
+            ui->trainingTool_resultsTab->setCurrentIndex( 0 );
         break;
         case Core::TIMESERIES_CLASSIFICATION_MODE:
             setPipelineModeAsTimeseriesMode();
@@ -959,9 +983,22 @@ void MainWindow::updateNumInputDimensions(int numInputDimensions){
 }
 
 void MainWindow::updateNumTargetDimensions(int numTargetDimensions){
+
+    //Reset the setupview
     ui->setupView_numOutputsSpinBox->setValue ( numTargetDimensions );
+
+    //Reset the dataIO view
     ui->dataIO_targetVectorSizeField->setText( QString::number( numTargetDimensions ) );
 
+    //Reset the labelling tool
+    ui->dataLabellingTool_targetVectorDimensionSpinBox->setMinimum(0);
+    ui->dataLabellingTool_targetVectorDimensionSpinBox->setMaximum(numTargetDimensions-1);
+    ui->dataLabellingTool_targetVectorDimensionSpinBox->setValue(0);
+    ui->dataLabellingTool_targetVectorValueSpinBox->setValue( 0 );
+    ui->dataLabellingTool_targetVectorValueSpinBox->setMinimum( - numeric_limits<double>::max() );
+    ui->dataLabellingTool_targetVectorValueSpinBox->setMaximum( numeric_limits<double>::max() );
+
+    //Reset the pipeline tool
     int numHiddenNeurons = (int)max((ui->setupView_numInputsSpinBox->value() + numTargetDimensions) / 2,2);
     ui->pipelineTool_mlpNumHiddenNeurons->setValue( numHiddenNeurons );
 
@@ -996,6 +1033,19 @@ void MainWindow::loadTrainingDatasetFromFile(){
 
 void MainWindow::updateTrainingClassLabel(unsigned int trainingClassLabel){
     ui->dataLabellingTool_classLabel->setValue( trainingClassLabel );
+}
+
+void MainWindow::updateTargetVectorValue(double value){
+
+    //Get the current target vector from the core
+    GRT::VectorDouble targetVector = core.getTargetVector();
+
+    //Update the target vector with the new value
+    int index = ui->dataLabellingTool_targetVectorDimensionSpinBox->value();
+    targetVector[ index ] = value;
+
+    //Update the core
+    core.setTargetVector( targetVector );
 }
 
 void MainWindow::updateRecordStatus(bool recordStatus){
@@ -1118,11 +1168,11 @@ void MainWindow::resetTrainingData(GRT::RegressionData trainingData){
 }
 
 void MainWindow::handleDatasetClicked(const QModelIndex &index){
-    qDebug() << "handleDatasetClicked: " << index;
-    QStandardItem *item = model->itemFromIndex(index);
 
-    QVariant v = item->data();
-    qDebug() << "v: " << v;
+    //QStandardItem *item = model->itemFromIndex(index);
+
+    //QVariant v = item->data();
+    //qDebug() << "v: " << v;
 }
 
 void MainWindow::resetTestData(GRT::ClassificationData testData){
@@ -1758,6 +1808,8 @@ void MainWindow::pipelineTrainingFinished(bool result){
                 infoText += "- SSE Error: \t";
                 infoText += QString::number( testResult.totalSquaredError );
                 infoText += "\n";
+
+
             }
         break;
         case 3://Cross Validation
