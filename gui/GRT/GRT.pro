@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 #OSX flags
 macx {
- QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++
+ QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++ -g -Wall
  QMAKE_CXXFLAGS += -DOSC_HOST_LITTLE_ENDIAN
 }
 

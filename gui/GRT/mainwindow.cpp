@@ -1668,6 +1668,10 @@ void MainWindow::pipelineTrainingStarted(){
 
 void MainWindow::pipelineTrainingFinished(bool result){
 
+    qDebug() << "pipelineTrainingFinished(bool result)";
+
+    boost::mutex::scoped_lock lock( mutex );
+
     if( !result ){
         QString infoText;
         infoText += "Training Failed!";
@@ -2262,7 +2266,7 @@ void MainWindow::updateRegressifierView(int viewIndex){
     }else useMDRegression = false;
 
     //If we are using a MLP then the user can switch the MD regression on/off
-    if( viewIndex == 2 ){
+    if( viewIndex == REGRESSIFIER_MLP ){
         useMDRegression = ui->pipelineTool_mlpUseMDRegression->isChecked();
         if( useMDRegression ) numOutputNeurons = 1;
         else numOutputNeurons = numOutputs;
@@ -2289,8 +2293,6 @@ void MainWindow::updateRegressifierView(int viewIndex){
             //Set the activation functions
             hiddenLayerActiviationFunction = ui->pipelineTool_mlpHiddenLayerType->currentIndex();
             outputLayerActivationFunction = ui->pipelineTool_mlpOutputLayerType->currentIndex();
-
-            numOutputNeurons = useMDRegression ? 1 : ui->setupView_numOutputsSpinBox->value();
 
             //Init the mlp
             mlp.init( numInputs,
@@ -2709,6 +2711,7 @@ void MainWindow::updateData(GRT::VectorDouble data){
 }
 
 void MainWindow::updateTargetVector(GRT::VectorDouble targetVector){
+
     QString text = "";
     for(size_t i=0; i<targetVector.size(); i++){
         text += "[" + QString::number( i ) + "]: ";
@@ -2719,11 +2722,13 @@ void MainWindow::updateTargetVector(GRT::VectorDouble targetVector){
 }
 
 void MainWindow::notify(const GRT::TrainingLogMessage &log){
+    boost::mutex::scoped_lock lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
-    ui->trainingTool_results->append( QString::fromStdString( message ) );
+    //ui->trainingTool_results->append( QString::fromStdString( message ) );
 }
 
 void MainWindow::notify(const GRT::TestingLogMessage &log){
+    boost::mutex::scoped_lock lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
     ui->trainingTool_results->append( QString::fromStdString( message ) );
 }

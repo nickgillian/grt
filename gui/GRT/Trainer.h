@@ -11,7 +11,8 @@ namespace GRT{
 class Trainer : public GRT::GRTBase{
 public:
     Trainer(){ initialized = false; }
-    ~Trainer(){}
+
+    virtual ~Trainer(){}
 
     bool setupNoValidationTraining( const GRT::GestureRecognitionPipeline &pipeline, const GRT::ClassificationData &trainingData ){
 
@@ -168,7 +169,9 @@ protected:
                 result = pipeline.train( classificationTrainingData );
             break;
             case REGRESSION_MODE:
+                debugLog << "starting regresion training..." << endl;
                 result = pipeline.train( regressionTrainingData );
+                debugLog << "regresion training finished with result: " << result << endl;
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
             break;

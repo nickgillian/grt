@@ -874,7 +874,6 @@ bool Core::setTargetVector( const GRT::VectorDouble &targetVector_ ){
         if( targetVector_.size() == targetVectorSize ){
             targetVector = targetVector_;
             emitTargetDataChanged = true;
-            qDebug() << "updated target vector!" << endl;
         }
     }
 
@@ -1054,6 +1053,12 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
 
     //If we are not allowing any OSC input then there is nothing todo
     if( !allowOSCInput ){
+        return true;
+    }
+
+    //Check if the training thread is computing a new model
+    bool trainingInProcess = trainingThread.getTrainingInProcess();
+    if( trainingInProcess ){
         return true;
     }
 
@@ -1367,6 +1372,8 @@ bool Core::train(){
         return false;
     }
 
+    boost::mutex::scoped_lock lock( mutex );
+
     //Launch a new training phase
     bool result = false;
     GRT::Trainer trainer;
@@ -1391,6 +1398,14 @@ bool Core::train(){
 }
 
 bool Core::trainAndTestOnRandomSubset(unsigned int randomTestSubsetPercentage){
+
+    //Check to make sure we are not already training something
+    if( trainingThread.getTrainingInProcess() ){
+        emit newInfoMessage( "Can't start training, training already in process" );
+        return false;
+    }
+
+    boost::mutex::scoped_lock lock( mutex );
 
     bool result = false;
     GRT::Trainer trainer;
@@ -1420,12 +1435,23 @@ bool Core::trainAndTestOnRandomSubset(unsigned int randomTestSubsetPercentage){
         break;
     }
 
+    qDebug() << "end of trainAndTestOnRandomSubset()";
+
     return result;
 }
 
 bool Core::trainAndTestOnTestDataset(){
 
+    //Check to make sure we are not already training something
+    if( trainingThread.getTrainingInProcess() ){
+        emit newInfoMessage( "Can't start training, training already in process" );
+        return false;
+    }
+
     if( getNumTestSamples() > 0 ){
+
+        boost::mutex::scoped_lock lock( mutex );
+
         GRT::Trainer trainer;
 
         switch( pipelineMode ){
@@ -1450,6 +1476,14 @@ bool Core::trainAndTestOnTestDataset(){
 }
 
 bool Core::trainWithCrossValidation(unsigned int numFolds){
+
+    //Check to make sure we are not already training something
+    if( trainingThread.getTrainingInProcess() ){
+        emit newInfoMessage( "Can't start training, training already in process" );
+        return false;
+    }
+
+    boost::mutex::scoped_lock lock( mutex );
 
     bool result = false;
     GRT::Trainer trainer;
