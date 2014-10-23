@@ -2,6 +2,9 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 23rd October 2014 
+- **updated GUI to version 0.1.15**.
+
 ## 4th October 2014 
 - **added null rejection support to Decision Tree**. The GRT Decision Tree algorithm now has full support for null rejection, like all the GRT Classifiers, you can enable this functionality in a Decision Tree instance via: 
 
