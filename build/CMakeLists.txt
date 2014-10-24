@@ -37,7 +37,11 @@ if(UNIX)
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
 endif()
 
-endif()
+endif() #end of else(APPLE)
+
+#Add any custom build flags
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
 
 #Set the main directory locations
 set(GRT_SRC_DIR

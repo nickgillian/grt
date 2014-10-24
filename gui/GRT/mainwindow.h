@@ -37,6 +37,10 @@
 #define CLASSIFIER_SOFTMAX 7
 #define CLASSIFIER_SVM 8
 
+#define REGRESSIFIER_LINEAR 0
+#define REGRESSIFIER_LOGISTIC 1
+#define REGRESSIFIER_MLP 2
+
 #define NO_POST_POST_PROCESSING 0
 #define CLASS_LABEL_FILTER_POST_PROCESSING 1
 #define CLASS_LABEL_CHANGE_FILTER_POST_PROCESSING 2
@@ -126,6 +130,7 @@ private slots:
     void saveTrainingDatasetToFile();
     void loadTrainingDatasetFromFile();
     void updateTrainingClassLabel(unsigned int trainingClassLabel);
+    void updateTargetVectorValue(double value);
     void updateRecordStatus(bool recordStatus);
     void updateNumTrainingSamples(unsigned int numTrainingSamples);
     void addNewTrainingSample(unsigned int numTrainingSamples,GRT::ClassificationSample trainingSample);
@@ -221,12 +226,14 @@ private:
     virtual void notify(const GRT::ErrorLogMessage &log);
     virtual void notify(const GRT::InfoLogMessage &log);
 
+    boost::mutex mutex;
     Ui::MainWindow *ui;
     QStandardItemModel *model;
     Core core;
     static unsigned int numInstances;
     unsigned int currentView;
-    vector< QWidget* > tabHistory;
+    vector< QWidget* > dataLabelingToolTabHistory;
+    vector< QWidget* > trainingToolTabHistory;
     TimeseriesGraph *inputDataGraph;
     TimeseriesGraph *preProcessedDataGraph;
     TimeseriesGraph *classPredictionsGraph;

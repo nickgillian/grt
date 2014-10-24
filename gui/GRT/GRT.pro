@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 #OSX flags
 macx {
- QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++
+ QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++ -g -Wall
  QMAKE_CXXFLAGS += -DOSC_HOST_LITTLE_ENDIAN
 }
 
@@ -45,8 +45,8 @@ unix:!macx{
 
 #Windows Include
 win32{
- INCLUDEPATH += "C:\SDK\EyesWeb XMI SDK\5.3.0\Include\boost"
- LIBS += "C:\SDK\EyesWeb XMI SDK\5.3.0\lib"
+ INCLUDEPATH += "INSERT_PATH_TO_BOOST_HEADERS_HERE"
+ LIBS += "INSERT_PATH_TO_BOOST_LIBS_HERE"
 }
 
 #Regardless of the OS we need to include the boost libraries
