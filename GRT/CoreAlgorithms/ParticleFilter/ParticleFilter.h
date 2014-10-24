@@ -216,6 +216,11 @@ public:
             errorLog << "ERROR: The particle filter has not been initialized!" << endl;
             return false;
         }
+
+	if( !preFilterUpdate( data ) ){
+            errorLog << "ERROR: Failed to complete preFilterUpdate!" << endl;
+            return false;
+        }
         
         unsigned int i = 0;
         typename vector< PARTICLE >::iterator iter;
@@ -258,6 +263,11 @@ public:
                 errorLog << "ERROR: Failed to resample particles!" << endl;
                 return false;
             }
+        }
+
+	if( !postFilterUpdate( data ) ){
+            errorLog << "ERROR: Failed to complete postFilterUpdate!" << endl;
+            return false;
         }
         
         return true;
@@ -719,6 +729,24 @@ protected:
         else particles = particleDistributionA;
         
         return true;
+    }
+
+    /**
+      	This function lets you define a custom pre filter update if needed.
+	@param SENSOR_DATA &data: a reference to the sensor data input to the main filter function.
+	@return returns true if the update was completed successfully, false otherwise
+     */
+    virtual bool preFilterUpdate( SENSOR_DATA &data ){
+	return true;
+    }
+
+    /**
+      	This function lets you define a custom post filter update if needed.
+	@param SENSOR_DATA &data: a reference to the sensor data input to the main filter function.
+	@return returns true if the update was completed successfully, false otherwise
+     */
+    virtual bool postFilterUpdate( SENSOR_DATA &data ){
+	return true;
     }
     
     /**
