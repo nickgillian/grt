@@ -35,28 +35,173 @@ macx{
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
  ICON = Resources/OSX/GRT.icns
+ USE_GRT_LIB = "true"
 }
 
 #Linux pkgconfig
 unix:!macx{
  CONFIG += link_pkgconfig
  PKGCONFIG += grt
+ DEFINES += USE_LIB_GRT
+ USE_GRT_LIB = "true"
 }
 
 #Windows Include
 win32{
  INCLUDEPATH += "INSERT_PATH_TO_BOOST_HEADERS_HERE"
  LIBS += "INSERT_PATH_TO_BOOST_LIBS_HERE"
+ USE_GRT_SOURCE_CODE = "true"
 }
+
+#If USE_GRT_LIB is defined, then we add the prebuilt GRT lib
+defined(USE_GRT_LIB,var){
+ #Add the main GRT library, you should have already compiled and install this (using the main GRT cmake file)
+ LIBS += -lgrt
+}
+
+#If USE_GRT_SOURCE_CODE is defined, then we add the GRT source code to the project
+defined(USE_GRT_SOURCE_CODE,var){
+ #Include the main GRT header
+ HEADERS += ../../GRT/GRT.h
+
+ #Add the GRT Classification module headers
+ HEADERS += ../../GRT/ClassificationModules/AdaBoost/*.h \
+           ../../GRT/ClassificationModules/AdaBoost/WeakClassifiers/*.h \
+           ../../GRT/ClassificationModules/ANBC/*.h \
+           ../../GRT/ClassificationModules/BAG/*.h \
+           ../../GRT/ClassificationModules/DecisionTree/*.h \
+           ../../GRT/ClassificationModules/DTW/*.h \
+           ../../GRT/ClassificationModules/GMM/*.h \
+           ../../GRT/ClassificationModules/HMM/*.h \
+           ../../GRT/ClassificationModules/KNN/*.h \
+           ../../GRT/ClassificationModules/LDA/*.h \
+           ../../GRT/ClassificationModules/MinDist/*.h \
+           ../../GRT/ClassificationModules/RandomForests/*.h \
+           ../../GRT/ClassificationModules/Softmax/*.h \
+           ../../GRT/ClassificationModules/SVM/*.h \
+           ../../GRT/ClassificationModules/SVM/LIBSVM/*.h
+
+ #Add the GRT Clustering module headers
+ HEADERS += ../../GRT/ClusteringModules/GaussianMixtureModels/*.h \
+           ../../GRT/ClusteringModules/HierarchicalClustering/*.h \
+           ../../GRT/ClusteringModules/KMeans/*.h \
+           ../../GRT/ClusteringModules/SelfOrganizingMap/*.h
+
+ #Add the GRT Context module headers
+ HEADERS += ../../GRT/ContextModules/*.h
+
+ #Add the Core Alogrithm headers
+ HEADERS += ../../GRT/CoreAlgorithms/BernoulliRBM/*.h \
+           ../../GRT/CoreAlgorithms/EvolutionaryAlgorithm/*.h \
+           ../../GRT/CoreAlgorithms/ParticleFilter/*.h \
+           ../../GRT/CoreAlgorithms/ParticleSwarmOptimization/*.h \
+           ../../GRT/CoreAlgorithms/PrincipalComponentAnalysis/*.h  \
+           ../../GRT/CoreAlgorithms/Tree/*.h
+
+ #Add the GRT Pipeline and Core Modules headers
+ HEADERS += ../../GRT/CoreModules/*.h
+
+ #Add the GRT Data Structures headers
+ HEADERS += ../../GRT/DataStructures/*.h
+
+ #Add the GRT Feature Extraction module headers
+ HEADERS += ../../GRT/FeatureExtractionModules/FFT/*.h \
+           ../../GRT/FeatureExtractionModules/KMeansFeatures/*.h \
+           ../../GRT/FeatureExtractionModules/KMeansQuantizer/*.h \
+           ../../GRT/FeatureExtractionModules/MovementIndex/*.h \
+           ../../GRT/FeatureExtractionModules/MovementTrajectoryFeatures/*.h \
+           ../../GRT/FeatureExtractionModules/RBMQuantizer/*.h \
+           ../../GRT/FeatureExtractionModules/SOMQuantizer/*.h \
+           ../../GRT/FeatureExtractionModules/TimeDomainFeatures/*.h \
+           ../../GRT/FeatureExtractionModules/TimeseriesBuffer/*.h \
+           ../../GRT/FeatureExtractionModules/ZeroCrossingCounter/*.h
+
+ #Add the GRT PostProcessing module headers
+ HEADERS +=  ../../GRT/PostProcessingModules/*.h
+
+ #Add the GRT PreProcessing module headers
+ HEADERS += ../../GRT/PreProcessingModules/*.h
+
+ #Add the GRT Regression module headers
+ HEADERS += ../../GRT/RegressionModules/ArtificialNeuralNetworks/MLP/*.h \
+           ../../GRT/RegressionModules/LinearRegression/*.h \
+           ../../GRT/RegressionModules/LogisticRegression/*.h \
+           ../../GRT/RegressionModules/MultidimensionalRegression/*.h
+
+ #Add the GRT Util module headers
+ HEADERS += ../../GRT/Util/*.h
+
+ #Add the GRT Classification modules to the source
+ SOURCES += ../../GRT/ClassificationModules/AdaBoost/*.cpp \
+           ../../GRT/ClassificationModules/AdaBoost/WeakClassifiers/*.cpp \
+           ../../GRT/ClassificationModules/ANBC/*.cpp \
+           ../../GRT/ClassificationModules/BAG/*.cpp \
+           ../../GRT/ClassificationModules/DecisionTree/*.cpp \
+           ../../GRT/ClassificationModules/DTW/*.cpp \
+           ../../GRT/ClassificationModules/GMM/*.cpp \
+           ../../GRT/ClassificationModules/HMM/*.cpp \
+           ../../GRT/ClassificationModules/KNN/*.cpp \
+           ../../GRT/ClassificationModules/LDA/*.cpp \
+           ../../GRT/ClassificationModules/MinDist/*.cpp \
+           ../../GRT/ClassificationModules/RandomForests/*.cpp \
+           ../../GRT/ClassificationModules/Softmax/*.cpp \
+           ../../GRT/ClassificationModules/SVM/*.cpp \
+           ../../GRT/ClassificationModules/SVM/LIBSVM/*.cpp
+
+ #Add the GRT Clustering modules to the source
+ SOURCES += ../../GRT/ClusteringModules/GaussianMixtureModels/*.cpp \
+           ../../GRT/ClusteringModules/HierarchicalClustering/*.cpp \
+           ../../GRT/ClusteringModules/KMeans/*.cpp \
+           ../../GRT/ClusteringModules/SelfOrganizingMap/*.cpp
+
+ #Add the GRT Context modules to the source
+ SOURCES += ../../GRT/ContextModules/*.cpp
+
+ #Add the Core Alogrithm source
+ SOURCES += ../../GRT/CoreAlgorithms/BernoulliRBM/*.cpp \
+           ../../GRT/CoreAlgorithms/PrincipalComponentAnalysis/*.cpp    \
+           ../../GRT/CoreAlgorithms/Tree/*.cpp
+
+ #Add the GRT Pipeline and Core Modules source
+ SOURCES += ../../GRT/CoreModules/*.cpp
+
+ #Add the GRT Data Structures to the source
+ SOURCES += ../../GRT/DataStructures/*.cpp
+
+ #Add the GRT Feature Extraction modules to the source
+ SOURCES += ../../GRT/FeatureExtractionModules/FFT/*.cpp \
+           ../../GRT/FeatureExtractionModules/KMeansFeatures/*.cpp \
+           ../../GRT/FeatureExtractionModules/KMeansQuantizer/*.cpp \
+           ../../GRT/FeatureExtractionModules/MovementIndex/*.cpp \
+           ../../GRT/FeatureExtractionModules/MovementTrajectoryFeatures/*.cpp \
+           ../../GRT/FeatureExtractionModules/RBMQuantizer/*.cpp \
+           ../../GRT/FeatureExtractionModules/SOMQuantizer/*.cpp \
+           ../../GRT/FeatureExtractionModules/TimeDomainFeatures/*.cpp \
+           ../../GRT/FeatureExtractionModules/TimeseriesBuffer/*.cpp \
+           ../../GRT/FeatureExtractionModules/ZeroCrossingCounter/*.cpp
+
+ #Add the GRT PostProcessing modules to the source
+ SOURCES +=  ../../GRT/PostProcessingModules/*.cpp
+
+ #Add the GRT PreProcessing modules to the source
+ SOURCES += ../../GRT/PreProcessingModules/*.cpp
+
+ #Add the GRT Regression modules to the source
+ SOURCES += ../../GRT/RegressionModules/ArtificialNeuralNetworks/MLP/*.cpp \
+           ../../GRT/RegressionModules/LinearRegression/*.cpp \
+           ../../GRT/RegressionModules/LogisticRegression/*.cpp \
+           ../../GRT/RegressionModules/MultidimensionalRegression/*.cpp
+
+ #Add the GRT Util modules to the source
+ SOURCES += ../../GRT/Util/*.cpp
+
+} #end of USE_GRT_SOURCE_CODE
 
 #Regardless of the OS we need to include the boost libraries
 LIBS += -lboost_thread
 LIBS += -lboost_date_time
 LIBS += -lboost_system
 LIBS += -lboost_chrono
-
-#Add the main GRT library, you should compile and install this (using the main GRT cmake file before you try and build the GUI)
-LIBS += -lgrt
 
 SOURCES += main.cpp\
         mainwindow.cpp \
