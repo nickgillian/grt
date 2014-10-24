@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     //Register the log callbacks
     GRT::TrainingLog::registerObserver( *this );
-    GRT::WarningLog::registerObserver( *this );
+    //GRT::WarningLog::registerObserver( *this );
     //GRT::ErrorLog::registerObserver( *this );
 
     //Register the custom data types
@@ -2624,7 +2624,6 @@ void MainWindow::updateLogView(unsigned int viewID){
 /////////////////////////////////////////////////////////////////////////////////////////
 
 void MainWindow::coreTick(){
-    //qDebug() << "core tick" << endl;
 
     if( ui->dataIO_enableMouseInputButton->isChecked() ){
 
@@ -2668,6 +2667,7 @@ void MainWindow::updateTargetVector(GRT::VectorDouble targetVector){
 
 void MainWindow::notify(const GRT::TrainingLogMessage &log){
     std::string message = log.getProceedingText() + " " + log.getMessage();
+    qDebug() << " MainWindow::notify(const GRT::TrainingLogMessage &log): " << QString::fromStdString( message );
     ui->trainingTool_results->append( QString::fromStdString( message ) );
 }
 
