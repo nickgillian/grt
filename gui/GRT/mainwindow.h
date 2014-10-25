@@ -62,7 +62,7 @@ namespace Ui {
 
 Q_DECLARE_METATYPE(std::string);
 Q_DECLARE_METATYPE(GRT::VectorDouble);
-Q_DECLARE_METATYPE(std::vector<GRT::UINT>);
+Q_DECLARE_METATYPE(std::vector<unsigned int>);
 Q_DECLARE_METATYPE(GRT::ClassificationData);
 Q_DECLARE_METATYPE(GRT::ClassificationSample);
 Q_DECLARE_METATYPE(GRT::RegressionData);
@@ -193,7 +193,7 @@ private slots:
     void showPredictionToolInfo();
     void updatePreProcessingData(const GRT::VectorDouble &preProcessedData);
     void updateFeatureExtractionData(const GRT::VectorDouble &featureExtractionData);
-    void updatePredictionResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<GRT::UINT> classLabels);
+    void updatePredictionResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
     void updateRegressionResults(GRT::VectorDouble regressionData);
     void resetPredictionViewGraphs();
 

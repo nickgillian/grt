@@ -1236,7 +1236,7 @@ bool Core::processNewData(){
     GRT::VectorDouble classLikelihoods;
     GRT::VectorDouble classDistances;
     GRT::VectorDouble regressionData;
-    GRT::vector<GRT::UINT> classLabels;
+    GRT::vector<unsigned int> classLabels;
     GRT::ClassificationSample newSample;
     GRT::RegressionSample newRegressionSample;
 

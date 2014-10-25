@@ -22,35 +22,83 @@ unix:!macx {
  QMAKE_CXXFLAGS += -DOSC_HOST_LITTLE_ENDIAN
 }
 
+#Windows flags
+unix:!macx {
+ QMAKE_CXXFLAGS += -DOSC_HOST_LITTLE_ENDIAN
+}
+
 #Add c++ 11 support
 CONFIG += c++11
-
 CONFIG += static
+
+#Set the build target
 TARGET = GRT
 macx: TEMPLATE = app
 
-#Include the boost libraries, the headers and static library files might be in a different location on your machine
-#OSX Include
+#Include the custom and library and header paths
+#Note that these paths might be different for your specific machine
+
+#OSX Include/Link
 macx{
+ #Add the defauly include and lib directories (we assume boost and GRT are installed here)
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
+
+ #Add the base oscpack directory
+ INCLUDEPATH += OSC/oscpack/include
+
+ #Add the custom resources file
  ICON = Resources/OSX/GRT.icns
+
+ #Flag that we want to use the GRT library
  USE_GRT_LIB = "true"
+
+ #Link against the main boost libraries
+ LIBS += -lboost_thread
+ LIBS += -lboost_date_time
+ LIBS += -lboost_system
+ LIBS += -lboost_chrono
 }
 
 #Linux pkgconfig
 unix:!macx{
+ #Add the defauly include and lib directories (we assume boost and GRT are installed here)
+ INCLUDEPATH += /usr/local/include
+ LIBS += -L/usr/local/lib
+
+ #Add the custom grt pkgconfig
  CONFIG += link_pkgconfig
  PKGCONFIG += grt
- DEFINES += USE_LIB_GRT
+
+ #Flag that we want to use the GRT library
  USE_GRT_LIB = "true"
+
+ #Link against the main boost libraries
+ LIBS += -lboost_thread
+ LIBS += -lboost_date_time
+ LIBS += -lboost_system
+ LIBS += -lboost_chrono
 }
 
 #Windows Include
 win32{
- INCLUDEPATH += "INSERT_PATH_TO_BOOST_HEADERS_HERE"
- LIBS += "INSERT_PATH_TO_BOOST_LIBS_HERE"
+ #Add the custom GRT and boost paths
+ INCLUDEPATH += C:\grt
+ INCLUDEPATH += C:\boost\boost_1_54_0
+ LIBS += -LC:\boost\boost_1_54_0\stage\lib
+
+ #Flag that we want to use the GRT source (instead of the GRT precomplied library - this is much easier on Windows!)
  USE_GRT_SOURCE_CODE = "true"
+
+ #Link against the windows libraries needed for OSC networking
+ LIBS += -lws2_32
+ LIBS += -lwinmm
+
+ #Include the boost libraries (if you are using a different version of boost, then you will need to edit these)
+ LIBS += -lboost_thread-mgw48-mt-1_54
+ LIBS += -lboost_date_time-mgw48-mt-1_54
+ LIBS += -lboost_system-mgw48-mt-1_54
+ LIBS += -lboost_chrono-mgw48-mt-1_54
 }
 
 #If USE_GRT_LIB is defined, then we add the prebuilt GRT lib
@@ -197,12 +245,17 @@ defined(USE_GRT_SOURCE_CODE,var){
 
 } #end of USE_GRT_SOURCE_CODE
 
-#Regardless of the OS we need to include the boost libraries
-LIBS += -lboost_thread
-LIBS += -lboost_date_time
-LIBS += -lboost_system
-LIBS += -lboost_chrono
+#Add the custom networking code, based on the OS
+unix{
+ SOURCES += OSC/oscpack/include/ip/posix/UdpSocket.cpp
+ SOURCES += OSC/oscpack/include/ip/posix/NetworkingUtils.cpp
+}
+win32{
+ SOURCES += OSC/oscpack/include/ip/win32/UdpSocket.cpp
+ SOURCES += OSC/oscpack/include/ip/win32/NetworkingUtils.cpp
+}
 
+#Add the common project source code
 SOURCES += main.cpp\
         mainwindow.cpp \
         OSC/oscpack/include/osc/OscTypes.cpp \
@@ -210,8 +263,6 @@ SOURCES += main.cpp\
         OSC/oscpack/include/osc/OscPrintReceivedElements.cpp \
         OSC/oscpack/include/osc/OscOutboundPacketStream.cpp \
         OSC/oscpack/include/ip/IpEndpointName.cpp \
-        OSC/oscpack/include/ip/posix/UdpSocket.cpp \
-        OSC/oscpack/include/ip/posix/NetworkingUtils.cpp \
         OSC/OSCServer.cpp \
         Core.cpp \
         qcustomplot.cpp \

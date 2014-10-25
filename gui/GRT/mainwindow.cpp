@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     qRegisterMetaType< QTextCursor >("QTextCursor");
     qRegisterMetaType< std::string >("std::string");
     qRegisterMetaType< GRT::VectorDouble >("GRT::VectorDouble");
-    qRegisterMetaType< std::vector<GRT::UINT> >("std::vector<GRT::UINT>");
+    qRegisterMetaType< std::vector<unsigned int> >("std::vector<unsigned int>");
     qRegisterMetaType< GRT::ClassificationData >("GRT::ClassificationData");
     qRegisterMetaType< GRT::ClassificationSample >("GRT::ClassificationSample");
     qRegisterMetaType< GRT::RegressionData >("GRT::RegressionData");
@@ -556,7 +556,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(&core, SIGNAL(testDataReset(GRT::ClassificationData)), this, SLOT(resetTestData(GRT::ClassificationData)));
     connect(&core, SIGNAL(preProcessingDataChanged(GRT::VectorDouble)), this, SLOT(updatePreProcessingData(GRT::VectorDouble)));
     connect(&core, SIGNAL(featureExtractionDataChanged(GRT::VectorDouble)), this, SLOT(updateFeatureExtractionData(GRT::VectorDouble)));
-    connect(&core, SIGNAL(predictionResultsChanged(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<GRT::UINT>)), this, SLOT(updatePredictionResults(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<GRT::UINT>)));
+    connect(&core, SIGNAL(predictionResultsChanged(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)), this, SLOT(updatePredictionResults(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)));
     connect(&core, SIGNAL(regressionResultsChanged(GRT::VectorDouble)), this, SLOT(updateRegressionResults(GRT::VectorDouble)));
     connect(&core, SIGNAL(pipelineTrainingStarted()), this, SLOT(pipelineTrainingStarted()));
     connect(&core, SIGNAL(pipelineTrainingFinished(bool)), this, SLOT(pipelineTrainingFinished(bool)));
@@ -1680,8 +1680,8 @@ void MainWindow::pipelineTrainingFinished(bool result){
     }
 
     QString infoText;
-    vector< GRT::UINT > classLabels;
-    GRT::UINT K;
+    vector< unsigned int > classLabels;
+    unsigned int K;
     GRT::TestResult testResult;
     vector< GRT::TestResult > crossValidationResults;
 
@@ -1760,7 +1760,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
 
             if( pipelineMode == Core::CLASSIFICATION_MODE || pipelineMode == Core::TIMESERIES_CLASSIFICATION_MODE ){
                 classLabels = core.getClassLabels();
-                K = (GRT::UINT)classLabels.size();
+                K = (unsigned int)classLabels.size();
 
                 infoText += "- Accuracy:     ";
                 infoText += QString::number( testResult.accuracy );
@@ -1768,7 +1768,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
 
                 if( testResult.precision.size() == K ){
                     infoText += "- Precision:     ";
-                    for(GRT::UINT i=0; i<K; i++){
+                    for(unsigned int i=0; i<K; i++){
                         infoText += "[" +  QString::number( classLabels[i] )  + "]: " + QString::number( testResult.precision[i] ) + "\t";
                     }
                     infoText += "\n";
@@ -1777,7 +1777,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
 
                 if( testResult.recall.size() == K ){
                     infoText += "- Recall:          ";
-                    for(GRT::UINT i=0; i<K; i++){
+                    for(unsigned int i=0; i<K; i++){
                         infoText += "[" +  QString::number( classLabels[i] )  + "]: " + QString::number( testResult.recall[i] ) + "\t";
                     }
                     infoText += "\n";
@@ -1786,7 +1786,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
 
                 if( testResult.fMeasure.size() == K ){
                     infoText += "- F-Measure:  ";
-                    for(GRT::UINT i=0; i<K; i++){
+                    for(unsigned int i=0; i<K; i++){
                         infoText += "[" +  QString::number( classLabels[i] )  + "]: " + QString::number( testResult.fMeasure[i] ) + "\t";
                     }
                     infoText += "\n";
@@ -1794,8 +1794,8 @@ void MainWindow::pipelineTrainingFinished(bool result){
                 updateFmeasureGraph( testResult.fMeasure, classLabels );
 
                 infoText += "- Confusion Matrix: \n";
-                for(GRT::UINT i=0; i<testResult.confusionMatrix.getNumRows(); i++){
-                    for(GRT::UINT j=0; j<testResult.confusionMatrix.getNumCols(); j++){
+                for(unsigned int i=0; i<testResult.confusionMatrix.getNumRows(); i++){
+                    for(unsigned int j=0; j<testResult.confusionMatrix.getNumCols(); j++){
                         infoText += QString::number( testResult.confusionMatrix[i][j] ) + "\t";
                     }
                     infoText += "\n";
@@ -1824,10 +1824,10 @@ void MainWindow::pipelineTrainingFinished(bool result){
 
             if( pipelineMode == Core::CLASSIFICATION_MODE || pipelineMode == Core::TIMESERIES_CLASSIFICATION_MODE ){
                 classLabels = core.getClassLabels();
-                K = (GRT::UINT)classLabels.size();
+                K = (unsigned int)classLabels.size();
 
                 cout << "K: " << crossValidationResults.size() << endl;
-                for(GRT::UINT k=0; k<crossValidationResults.size(); k++){
+                for(unsigned int k=0; k<crossValidationResults.size(); k++){
                     infoText += "- Fold: " + QString::number( k+1 );
                     infoText += " Accuracy: \t";
                     infoText += QString::number( testResult.accuracy );
@@ -1840,7 +1840,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
             }
 
             if( pipelineMode == Core::REGRESSION_MODE ){
-                for(GRT::UINT k=0; k<crossValidationResults.size(); k++){
+                for(unsigned int k=0; k<crossValidationResults.size(); k++){
                     infoText += "- Fold: " + QString::number( k+1 );
                     infoText += "    RMS Error: \t";
                     infoText += QString::number( crossValidationResults[k].rmsError );
@@ -2252,13 +2252,13 @@ void MainWindow::updateRegressifierView(int viewIndex){
     bool enableScaling = ui->pipelineTool_regressionView_enableScaling->isChecked();
     bool useMDRegression = false;
     double minChange = ui->pipelineTool_regressionView_minChangeSpinBox->value();
-    GRT::UINT maxNumEpochs = ui->pipelineTool_regressionView_maxNumEpochsSpinBox->value();
-    GRT::UINT numInputs = ui->setupView_numInputsSpinBox->value();
-    GRT::UINT numOutputs = ui->setupView_numOutputsSpinBox->value();
-    GRT::UINT numOutputNeurons = 0;
-    GRT::UINT inputLayerActivationFunction = GRT::Neuron::LINEAR;
-    GRT::UINT hiddenLayerActiviationFunction = GRT::Neuron::LINEAR;
-    GRT::UINT outputLayerActivationFunction = GRT::Neuron::LINEAR;
+    unsigned int maxNumEpochs = ui->pipelineTool_regressionView_maxNumEpochsSpinBox->value();
+    unsigned int numInputs = ui->setupView_numInputsSpinBox->value();
+    unsigned int numOutputs = ui->setupView_numOutputsSpinBox->value();
+    unsigned int numOutputNeurons = 0;
+    unsigned int inputLayerActivationFunction = GRT::Neuron::LINEAR;
+    unsigned int hiddenLayerActiviationFunction = GRT::Neuron::LINEAR;
+    unsigned int outputLayerActivationFunction = GRT::Neuron::LINEAR;
 
     //Check to see if we should automatically use multidimensional regression
     if( numOutputs > 1 ){
@@ -2376,8 +2376,8 @@ void MainWindow::updatePipelineConfiguration(){
         ui->predictionWindow_plotClassDistancesDataButton->setEnabled( true );
         ui->predictionWindow_plotRegressionDataButton->setEnabled( true );
 
-        GRT::UINT K = 0;
-        GRT::UINT maxClassLabel = 0;
+        unsigned int K = 0;
+        unsigned int maxClassLabel = 0;
 
         switch( core.getPipelineMode() ){
             case Core::CLASSIFICATION_MODE:
@@ -2506,7 +2506,7 @@ void MainWindow::updateFeatureExtractionData(const GRT::VectorDouble &featureExt
     featureExtractionDataGraph->update( featureExtractionData );
 }
 
-void MainWindow::updatePredictionResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<GRT::UINT> classLabels){
+void MainWindow::updatePredictionResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels){
 
     classPredictionsGraph->update( GRT::VectorDouble(1,predictedClassLabel) );
     classLikelihoodsGraph->update( classLikelihoods );
