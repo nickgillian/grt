@@ -16,7 +16,7 @@
     python build-release_OSNAME.py
 	
 	
-####Building the Windows
+####Building on Windows
 
 1. Download and install QTCreator: http://qt-project.org/ (ensure you include the MinGW compiler)
 2. Open Qt and try and build and run one of the examples to ensure it is installed correctly)
