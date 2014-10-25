@@ -17,6 +17,16 @@
 #include "bargraph.h"
 #include "versioninfo.h"
 
+enum Views{
+    SETUP_VIEW=0,
+    DATA_IO_VIEW,
+    DATA_MANAGER_VIEW,
+    PIPELINE_VIEW,
+    TRAINING_VIEW,
+    PREDICTION_VIEW,
+    LOG_VIEW
+};
+
 #define NO_PRE_PROCESSING_SELECTED 0
 #define MOVING_AVERAGE_FILTER_PRE_PROCESSING 1
 #define DOUBLE_MOVING_AVERAGE_FILTER_PRE_PROCESSING 2
@@ -85,10 +95,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    unsigned int getCurrentView() const{ return currentView; }
+    unsigned int getCurrentView() const;
 
 private slots:
     ////////////////////////////////// MAIN VIEW FUNCTIONS ////////////////////////////////
+    void updateMainView(int tabIndex);
     void showVersionInfo();
     void showSetupView();
     void showDataIOView();
@@ -231,7 +242,6 @@ private:
     QStandardItemModel *model;
     Core core;
     static unsigned int numInstances;
-    unsigned int currentView;
     vector< QWidget* > dataLabelingToolTabHistory;
     vector< QWidget* > trainingToolTabHistory;
     TimeseriesGraph *inputDataGraph;
@@ -244,8 +254,7 @@ private:
     GRT::ErrorLog errorLog;
     GRT::WarningLog warningLog;
     vector< Qt::GlobalColor > defaultGraphColors;
-
-    enum Views{SETUP_VIEW=0,DATA_IO_VIEW,DATA_LABELING_VIEW,PIPELINE_VIEW,TRAINING_TOOL_VIEW,PREDICTION_VIEW,LOG_VIEW};
+    GRT::Timer lastGuiUpdateTimer;
 
 };
 
