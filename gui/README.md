@@ -1,4 +1,4 @@
-###Gesture Recognition Toolkit (GRT) GUI
+###Gesture Recognition Toolkit GUI
 
 ####Building the GUI on OSX and Linux
 
