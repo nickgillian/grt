@@ -66,6 +66,9 @@ unix:!macx{
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
 
+ #Add the base oscpack directory
+ INCLUDEPATH += OSC/oscpack/include
+
  #Add the custom grt pkgconfig
  CONFIG += link_pkgconfig
  PKGCONFIG += grt
@@ -86,6 +89,9 @@ win32{
  INCLUDEPATH += C:\grt
  INCLUDEPATH += C:\boost\boost_1_54_0
  LIBS += -LC:\boost\boost_1_54_0\stage\lib
+
+ #Add the base oscpack directory
+ INCLUDEPATH += OSC/oscpack/include
 
  #Flag that we want to use the GRT source (instead of the GRT precomplied library - this is much easier on Windows!)
  USE_GRT_SOURCE_CODE = "true"
