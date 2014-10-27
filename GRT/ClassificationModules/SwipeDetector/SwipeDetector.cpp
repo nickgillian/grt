@@ -454,8 +454,8 @@ double SwipeDetector::getSwipeIntegrationCoeff() const{
     return swipeIntegrationCoeff;
 }
     
-bool SwipeDetector::setContextInput(const bool contextInput){
-    this->contextInput = contextInput;
+bool SwipeDetector::setContext(const bool context){
+    this->contextInput = context;
     return true;
 }
 

@@ -138,14 +138,13 @@ public:
     double getMovementThreshold() const;
     double getContextValue() const;
     double getSwipeIntegrationCoeff() const;
-    bool setContextInput(const bool contextInput);
+    bool setContext(const bool context);
     bool setSwipeIndex(const unsigned int swipeIndex);
     bool setSwipeDirection(const unsigned int swipeDirection);
     bool setSwipeThreshold(const double swipeThreshold);
     bool setHysteresisThreshold(const double hysteresisThreshold);
     bool setMovementThreshold(const double movementThreshold);
     bool setSwipeIntegrationCoeff(const double swipeIntegrationCoeff);
-
 
 protected:
     
