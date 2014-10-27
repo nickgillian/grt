@@ -802,10 +802,12 @@ void MainWindow::setPipelineModeAsRegressionMode(){
 
 void MainWindow::setPipelineModeAsTimeseriesMode(){
     //core.setPipelineMode( Core::TIMESERIES_CLASSIFICATION_MODE );
-    //core.setPipelineMode( Core::CLASSIFICATION_MODE );
+
     QString infoText;
     infoText += "Sorry, the timeseries mode is not supported yet. This will be added soon!\n";
     QMessageBox::information(0, "Information", infoText);
+
+    //core.setPipelineMode( Core::CLASSIFICATION_MODE );
 }
 
 void MainWindow::updatePipelineMode(unsigned int pipelineMode){
@@ -1232,6 +1234,8 @@ void MainWindow::updateDatasetInfoText(){
 
 void MainWindow::updateTrainingTabView(int tabIndex){
 
+    QString infoText;
+
     switch( core.getPipelineMode() ){
         case Core::CLASSIFICATION_MODE:
             if( tabIndex == 0 ){
@@ -1244,7 +1248,9 @@ void MainWindow::updateTrainingTabView(int tabIndex){
                 updateClassStatsGraph();
             }
             if( tabIndex == 3 ){
-                updatePCAProjectionGraph();
+                infoText += "Sorry, the PCA plot is currently disabled due to a plotting bug, this will fixed in a future release!\n";
+                QMessageBox::information(0, "Information", infoText);
+                //updatePCAProjectionGraph();
             }
             if( tabIndex == 4 ){
                 updateTimeseriesGraph();
