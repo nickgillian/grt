@@ -133,7 +133,8 @@ defined(USE_GRT_SOURCE_CODE,var){
            ../../GRT/ClassificationModules/RandomForests/*.h \
            ../../GRT/ClassificationModules/Softmax/*.h \
            ../../GRT/ClassificationModules/SVM/*.h \
-           ../../GRT/ClassificationModules/SVM/LIBSVM/*.h
+           ../../GRT/ClassificationModules/SVM/LIBSVM/*.h \
+           ../../GRT/ClassificationModules/SwipeDetector/*.h
 
  #Add the GRT Clustering module headers
  HEADERS += ../../GRT/ClusteringModules/GaussianMixtureModels/*.h \
@@ -200,7 +201,8 @@ defined(USE_GRT_SOURCE_CODE,var){
            ../../GRT/ClassificationModules/RandomForests/*.cpp \
            ../../GRT/ClassificationModules/Softmax/*.cpp \
            ../../GRT/ClassificationModules/SVM/*.cpp \
-           ../../GRT/ClassificationModules/SVM/LIBSVM/*.cpp
+           ../../GRT/ClassificationModules/SVM/LIBSVM/*.cpp \
+           ../../GRT/ClassificationModules/SwipeDetector/*.cpp
 
  #Add the GRT Clustering modules to the source
  SOURCES += ../../GRT/ClusteringModules/GaussianMixtureModels/*.cpp \
