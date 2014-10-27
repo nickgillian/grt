@@ -198,7 +198,7 @@ bool SwipeDetector::predict_(VectorDouble &inputVector){
     }
     
 	if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
+        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << ")" << endl;
 		return false;
 	}
     
@@ -250,6 +250,8 @@ bool SwipeDetector::clear(){
     
     //Clear the Classifier variables
     Classifier::clear();
+    
+    reset();
     
     return true;
 }
@@ -418,12 +420,8 @@ bool SwipeDetector::loadModelFromFile(fstream &file){
 }
     
     
-bool SwipeDetector::getSwipeDetected(){
-    if( swipeDetected ){
-        swipeDetected = false;
-        return true;
-    }
-    return false;
+bool SwipeDetector::getSwipeDetected() const {
+    return swipeDetected;
 }
 
 double SwipeDetector::getSwipeValue() const {

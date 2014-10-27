@@ -130,20 +130,101 @@ public:
      */
     virtual bool loadModelFromFile(fstream &file);
     
-    bool getSwipeDetected();
+    /**
+     @return returns true if a swipe was detected, false otherwise
+     */
+    bool getSwipeDetected() const;
+    
+    /**
+     @return returns the swipe analysis value, this is the value that the swipe threshold is matched against
+     */
     double getSwipeValue() const;
+    
+    /**
+     @return returns the swipe threshold, this is the value that the swipe analysis value must cross for a swipe to be trigger
+     */
     double getSwipeThreshold() const ;
+    
+    /**
+     @return returns the hysteresis threshold, this is the value that the swipe analysis value must cross (after a valid swipe detection), before the next swipe will be detected
+     */
     double getHysteresisThreshold() const;
+    
+    /**
+     This function returns the movement velocity.  This is the integrated difference between each of the additional inputs (that are not the swipe index) that is used to detected a valid swipe.
+     The movement velocity must be below the movement threshold for a valid swipe to be detected.
+     @return returns the movement velocity
+     */
     double getMovementVelocity() const;
+    
+    /**
+     @return returns the movement threshold, the movement velocity must be below this value for a valid swipe to be detected
+     */
     double getMovementThreshold() const;
+    
+    /**
+     @return returns the context value, this is the latest output of the context filter
+     */
     double getContextValue() const;
+    
+    /**
+     @return returns the swipe integration coeff
+     */
     double getSwipeIntegrationCoeff() const;
+    
+    /**
+     This function lets you set the current context input.  This should be called before you call the predict function.
+     @return returns true if the context value was updated, false otherwise
+     */
     bool setContext(const bool context);
+    
+    /**
+     This function lets you set the swipe index, this is the index in the input vector that contains the main axis you want to use for the swipe detection.
+     The other elements in the input vector will be combined to compute the movement index.
+     The swipeIndex should be a valid index in your input vector.
+     @param const unsigned int swipeIndex: the index in the input vector you want to use for the swipe detection
+     @return returns true if the parameter was updated, false otherwise
+     */
     bool setSwipeIndex(const unsigned int swipeIndex);
+    
+    /**
+     This function lets you set the swipe direction, this should be one of the SwipeDirections enums.
+     @param const unsigned int swipeDirection: the direction you want to search for a swipe in
+     @return returns true if the parameter was updated, false otherwise
+     */
     bool setSwipeDirection(const unsigned int swipeDirection);
+    
+    /**
+     This function lets you set the swipe threshold, this is the threshold that the swipe analysis value must pass for a swipe to be detected.
+     
+     @param const double swipeThreshold: the new swipe threshold
+     @return returns true if the parameter was updated, false otherwise
+     */
     bool setSwipeThreshold(const double swipeThreshold);
+    
+    /**
+     This function lets you set the swipe hysteresisThreshold, this is the threshold that the swipe analysis value must pass after a valid swipe before a new swipe can be detected.
+     
+     @param const double hysteresisThreshold: the new hysteresis threshold
+     @return returns true if the parameter was updated, false otherwise
+     */
     bool setHysteresisThreshold(const double hysteresisThreshold);
+    
+    /**
+     This function lets you set the swipe movementThreshold.  The movement index must be below the movementThreshold for 
+     a valid swipe to be detected.
+     
+     @param const double movementThreshold: the new movement threshold
+     @return returns true if the parameter was updated, false otherwise
+     */
     bool setMovementThreshold(const double movementThreshold);
+    
+    /**
+     This function lets you set the swipe integration coeff.  This controls how much 'memory' is used to when integrating the input data.
+     
+     @param const double swipeIntegrationCoeff: the new integration coefficient
+     @return returns true if the parameter was updated, false otherwise
+     */
     bool setSwipeIntegrationCoeff(const double swipeIntegrationCoeff);
 
 protected:
