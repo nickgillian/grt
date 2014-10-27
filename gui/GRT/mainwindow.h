@@ -27,6 +27,19 @@ enum Views{
     LOG_VIEW
 };
 
+enum Classifiers{
+    CLASSIFIER_ANBC=0,
+    CLASSIFIER_ADABOOST,
+    CLASSIFIER_DECISION_TREE,
+    CLASSIFIER_GMM,
+    CLASSIFIER_KNN,
+    CLASSIFIER_MINDIST,
+    CLASSIFIER_RANDOM_FORESTS,
+    CLASSIFIER_SOFTMAX,
+    CLASSIFIER_SVM,
+    CLASSIFIER_SWIPE_DETECTOR
+};
+
 #define NO_PRE_PROCESSING_SELECTED 0
 #define MOVING_AVERAGE_FILTER_PRE_PROCESSING 1
 #define DOUBLE_MOVING_AVERAGE_FILTER_PRE_PROCESSING 2
@@ -36,16 +49,6 @@ enum Views{
 #define DEAD_ZONE_PRE_PROCESSING 6
 
 #define NO_FEATURE_EXTRACTION_SELECTED 0
-
-#define CLASSIFIER_ANBC 0
-#define CLASSIFIER_ADABOOST 1
-#define CLASSIFIER_DECISION_TREE 2
-#define CLASSIFIER_GMM 3
-#define CLASSIFIER_KNN 4
-#define CLASSIFIER_MINDIST 5
-#define CLASSIFIER_RANDOM_FORESTS 6
-#define CLASSIFIER_SOFTMAX 7
-#define CLASSIFIER_SVM 8
 
 #define REGRESSIFIER_LINEAR 0
 #define REGRESSIFIER_LOGISTIC 1
@@ -172,6 +175,7 @@ private slots:
     void updatePostProcessingView(int viewIndex);
     void refreshPipelineSetup();
     void updatePreProcessingSettings();
+    void updateClassifierSettings();
     void clearPipelineConfiguration();
     void updatePipelineConfiguration();
     void resetPipelineConfiguration();
@@ -251,10 +255,13 @@ private:
     TimeseriesGraph *classLikelihoodsGraph;
     TimeseriesGraph *classDistancesGraph;
     TimeseriesGraph *regressionGraph;
+    TimeseriesGraph *swipeDetectorGraph;
     GRT::ErrorLog errorLog;
     GRT::WarningLog warningLog;
     vector< Qt::GlobalColor > defaultGraphColors;
     GRT::Timer lastGuiUpdateTimer;
+
+    GRT::SwipeDetector swipeDetector;
 
 };
 

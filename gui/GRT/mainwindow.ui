@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -1259,6 +1259,11 @@
            <string>Support Vector Machine</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Swipe Detector</string>
+          </property>
+         </item>
         </widget>
         <widget class="QStackedWidget" name="pipelineTool_classifierOptionsView">
          <property name="geometry">
@@ -1270,7 +1275,7 @@
           </rect>
          </property>
          <property name="currentIndex">
-          <number>5</number>
+          <number>9</number>
          </property>
          <widget class="QWidget" name="page_7">
           <widget class="QLabel" name="label_26">
@@ -1713,6 +1718,182 @@
              <width>101</width>
              <height>24</height>
             </rect>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page">
+          <widget class="QLabel" name="label_70">
+           <property name="geometry">
+            <rect>
+             <x>5</x>
+             <y>5</y>
+             <width>251</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Swipe Detector Settings</string>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="pipelineTool_swipeDetector_swipeDirection">
+           <property name="geometry">
+            <rect>
+             <x>160</x>
+             <y>40</y>
+             <width>146</width>
+             <height>26</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Positive</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Negative</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QLabel" name="label_115">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>40</y>
+             <width>121</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Swipe Direction:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_118">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>70</y>
+             <width>121</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Swipe Index:</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_swipeDetector_swipeIndex">
+           <property name="geometry">
+            <rect>
+             <x>165</x>
+             <y>70</y>
+             <width>136</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_swipeDetector_swipeThreshold">
+           <property name="geometry">
+            <rect>
+             <x>165</x>
+             <y>100</y>
+             <width>136</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_121">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>100</y>
+             <width>121</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Swipe Threshold:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_122">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>130</y>
+             <width>151</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Hysteresis Threshold:</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_swipeDetector_hysteresisThreshold">
+           <property name="geometry">
+            <rect>
+             <x>165</x>
+             <y>130</y>
+             <width>136</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_swipeDetector_swipeIntegrationCoeff">
+           <property name="geometry">
+            <rect>
+             <x>530</x>
+             <y>75</y>
+             <width>136</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_123">
+           <property name="geometry">
+            <rect>
+             <x>340</x>
+             <y>75</y>
+             <width>171</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Swipe Integration Coeff:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_124">
+           <property name="geometry">
+            <rect>
+             <x>340</x>
+             <y>45</y>
+             <width>171</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Movement Threshold:</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_swipeDetector_movementThreshold">
+           <property name="geometry">
+            <rect>
+             <x>530</x>
+             <y>45</y>
+             <width>136</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pipelineTool_swipeDetector_plot">
+           <property name="geometry">
+            <rect>
+             <x>615</x>
+             <y>120</y>
+             <width>56</width>
+             <height>32</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Plot</string>
            </property>
           </widget>
          </widget>
@@ -2559,8 +2740,6 @@
           <string>No Pre Processing Module Selected</string>
          </property>
         </widget>
-        <zorder>label_37</zorder>
-        <zorder>groupBox_9</zorder>
        </widget>
        <widget class="QWidget" name="page_12">
         <widget class="QLabel" name="label_41">
@@ -2973,22 +3152,7 @@
        </widget>
        <widget class="QWidget" name="page_14"/>
       </widget>
-      <zorder>pipelineTool_featureExtractionType</zorder>
-      <zorder>stackedWidget_3</zorder>
-      <zorder>groupBox_9</zorder>
-      <zorder>groupBox_9</zorder>
      </widget>
-     <zorder>pipelineTool_infoButton</zorder>
-     <zorder>pipelineTool_savePipelineButton</zorder>
-     <zorder>pipelineTool_clearPipelineButton</zorder>
-     <zorder>pipelineTool_loadPipelineButton</zorder>
-     <zorder>groupBox_24</zorder>
-     <zorder>groupBox_24</zorder>
-     <zorder>pipelineTool_classifierRegressifierView</zorder>
-     <zorder>pipelineTool_postProcessingStackedWidget</zorder>
-     <zorder>groupBox_12</zorder>
-     <zorder>groupBox_14</zorder>
-     <zorder>groupBox_13</zorder>
     </widget>
     <widget class="QWidget" name="tab_15">
      <attribute name="title">
@@ -3305,10 +3469,6 @@
        </widget>
       </widget>
      </widget>
-     <zorder>trainingTool_infoButton</zorder>
-     <zorder>groupBox_18</zorder>
-     <zorder>trainingTool_resultsTab</zorder>
-     <zorder>groupBox_10</zorder>
     </widget>
     <widget class="QWidget" name="tab_16">
      <attribute name="title">

@@ -356,6 +356,24 @@ bool MainWindow::initPipelineToolView(){
     ui->pipelineTool_svmGamma->setValue( 0.1 );
     ui->pipelineTool_svmGamma->setDecimals( 5 );
 
+    //Swipe Detector Options
+    ui->pipelineTool_swipeDetector_plot->setCheckable( true );
+    ui->pipelineTool_swipeDetector_swipeIndex->setMinimum( 0 );
+    ui->pipelineTool_swipeDetector_swipeIndex->setMaximum( core.getNumInputDimensions() );
+    ui->pipelineTool_swipeDetector_swipeDirection->setCurrentIndex( 0 );
+    ui->pipelineTool_swipeDetector_swipeThreshold->setMinimum( - numeric_limits<double>::max() );
+    ui->pipelineTool_swipeDetector_swipeThreshold->setMaximum( numeric_limits<double>::max() );
+    ui->pipelineTool_swipeDetector_swipeThreshold->setValue( 1 );
+    ui->pipelineTool_swipeDetector_hysteresisThreshold->setMinimum( - numeric_limits<double>::max() );
+    ui->pipelineTool_swipeDetector_hysteresisThreshold->setMaximum( numeric_limits<double>::max() );
+    ui->pipelineTool_swipeDetector_hysteresisThreshold->setValue( 0.5 );
+    ui->pipelineTool_swipeDetector_movementThreshold->setMinimum( 0 );
+    ui->pipelineTool_swipeDetector_movementThreshold->setMaximum( numeric_limits<double>::max() );
+    ui->pipelineTool_swipeDetector_movementThreshold->setValue( 10000 );
+    ui->pipelineTool_swipeDetector_swipeIntegrationCoeff->setMinimum( 0 );
+    ui->pipelineTool_swipeDetector_swipeIntegrationCoeff->setMaximum( 1 );
+    ui->pipelineTool_swipeDetector_swipeIntegrationCoeff->setValue( 0.92 );
+
     ////////////////////////////////////// Regression //////////////////////////////////////
     ui->pipelineTool_regressionView_enableScaling->setChecked( true );
     ui->pipelineTool_regressionView_minChangeSpinBox->setRange( 0.0, 1.0 );
@@ -436,6 +454,7 @@ bool MainWindow::initPreditionView(){
     classLikelihoodsGraph = new TimeseriesGraph();
     classDistancesGraph = new TimeseriesGraph();
     regressionGraph = new TimeseriesGraph();
+    swipeDetectorGraph = new TimeseriesGraph();
 
     inputDataGraph->setWindowTitle( "Input Data" );
     preProcessedDataGraph->setWindowTitle( "Pre Processed Data" );
@@ -444,6 +463,7 @@ bool MainWindow::initPreditionView(){
     classLikelihoodsGraph->setWindowTitle( "Class Likelihoods" );
     classDistancesGraph->setWindowTitle( "Class Distances" );
     regressionGraph->setWindowTitle( "Regression Data" );
+    swipeDetectorGraph->setWindowTitle( "Swipe Detector" );
 
     return true;
 }
@@ -519,6 +539,15 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->pipelineTool_deadZoneUpperLimitSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
     connect(ui->pipelineTool_classLabelFilterMinCountSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
     connect(ui->pipelineTool_classLabelFilterBufferSizeSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
+    connect(ui->pipelineTool_classifierType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateClassifierView(int)));
+
+    connect(ui->pipelineTool_swipeDetector_plot, SIGNAL(clicked(bool)), swipeDetectorGraph, SLOT(setVisible(bool)));
+    connect(ui->pipelineTool_swipeDetector_swipeIndex, SIGNAL(editingFinished()), this, SLOT(updateClassifierSettings()));
+    connect(ui->pipelineTool_swipeDetector_swipeDirection, SIGNAL(currentIndexChanged(int)), this, SLOT(updateClassifierSettings()));
+    connect(ui->pipelineTool_swipeDetector_hysteresisThreshold, SIGNAL(editingFinished()), this, SLOT(updateClassifierSettings()));
+    connect(ui->pipelineTool_swipeDetector_movementThreshold, SIGNAL(editingFinished()), this, SLOT(updateClassifierSettings()));
+    connect(ui->pipelineTool_swipeDetector_swipeIntegrationCoeff, SIGNAL(editingFinished()), this, SLOT(updateClassifierSettings()));
+
     connect(ui->predictionTool_infoButton, SIGNAL(clicked()), this, SLOT(showPredictionToolInfo()));
     connect(ui->pipelineTool_postProcessingType, SIGNAL(currentIndexChanged(int)), this, SLOT(updatePostProcessingView(int)));
     connect(ui->pipelineTool_classLabelTimeoutFilterTimeoutDurationSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
@@ -956,6 +985,8 @@ void MainWindow::updateNumInputDimensions(int numInputDimensions){
 
     int numHiddenNeurons = (int)max((numInputDimensions + ui->setupView_numOutputsSpinBox->value()) / 2,2) ;
     ui->pipelineTool_mlpNumHiddenNeurons->setValue( numHiddenNeurons );
+
+    ui->pipelineTool_swipeDetector_swipeIndex->setMaximum( numInputDimensions-1 );
 
     inputDataGraph->init(numInputDimensions,DEFAULT_GRAPH_WIDTH);
 
@@ -2249,6 +2280,22 @@ void MainWindow::updateClassifierView(int viewIndex){
             svm.setNullRejectionCoeff( ui->pipelineTool_nullRejectionCoeff->value() );
             core.setClassifier( svm );
             break;
+        case CLASSIFIER_SWIPE_DETECTOR:
+
+            //Reset the graph
+            swipeDetectorGraph->init(3, DEFAULT_GRAPH_WIDTH);
+
+            swipeDetector.init( core.getNumInputDimensions() );
+            swipeDetector.setSwipeIndex( ui->pipelineTool_swipeDetector_swipeIndex->value() );
+            swipeDetector.setSwipeDirection( ui->pipelineTool_swipeDetector_swipeDirection->currentIndex() );
+            swipeDetector.setSwipeThreshold( ui->pipelineTool_swipeDetector_swipeThreshold->value() );
+            swipeDetector.setHysteresisThreshold( ui->pipelineTool_swipeDetector_hysteresisThreshold->value() );
+            swipeDetector.setMovementThreshold( ui->pipelineTool_swipeDetector_movementThreshold->value() );
+            swipeDetector.setSwipeIntegrationCoeff( ui->pipelineTool_swipeDetector_swipeIntegrationCoeff->value() );
+            swipeDetector.reset();
+
+            core.setClassifier( swipeDetector );
+            break;
     }
 }
 
@@ -2364,6 +2411,10 @@ void MainWindow::refreshPipelineSetup(){
 
 void MainWindow::updatePreProcessingSettings(){
     updatePreProcessingView( ui->pipelineTool_preProcessingOptionsView->currentIndex() );
+}
+
+void MainWindow::updateClassifierSettings(){
+    updateClassifierView( ui->pipelineTool_classifierType->currentIndex() );
 }
 
 void MainWindow::clearPipelineConfiguration(){
@@ -2718,6 +2769,24 @@ void MainWindow::updateData(GRT::VectorDouble data){
     }
     ui->predictionWindow_data->setText( text );
     inputDataGraph->update( data );
+
+
+    //TODO - THis is a quick hack
+
+    //Check to see if we are using the swipe detector
+    if( ui->pipelineTool_classifierType->currentIndex() == CLASSIFIER_SWIPE_DETECTOR ){
+
+        if( swipeDetector.getTrained() ){
+            swipeDetector.predict( data );
+            GRT::VectorDouble swipeDetectionData( 3 );
+            swipeDetectionData[0] = swipeDetector.getSwipeValue();
+            swipeDetectionData[1] = swipeDetector.getSwipeThreshold();
+            swipeDetectionData[2] = swipeDetector.getHysteresisThreshold();
+
+            swipeDetectorGraph->update( swipeDetectionData );
+        }
+
+    }
 }
 
 void MainWindow::updateTargetVector(GRT::VectorDouble targetVector){

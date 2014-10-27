@@ -73,6 +73,7 @@ file(GLOB GRT_CLASSIFICATION_MODULES
     "${GRT_SRC_DIR}/ClassificationModules/SVM/LIBSVM/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/HMM/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/MinDist/*.cpp"
+    "${GRT_SRC_DIR}/ClassificationModules/SwipeDetector/*.cpp"
 )
 
 file(GLOB GRT_CLUSTERING_MODULES
@@ -106,7 +107,7 @@ file(GLOB GRT_FEATURE_EXTRACTION_MODULES
 
 file(GLOB GRT_CORE_ALGORITHMS
     "${GRT_SRC_DIR}/CoreAlgorithms/BernoulliRBM/*.cpp"
-    “${GRT_SRC_DIR}/CoreAlgorithms/MovementDetector/*.cpp”
+    "${GRT_SRC_DIR}/CoreAlgorithms/MovementDetector/*.cpp"
     "${GRT_SRC_DIR}/CoreAlgorithms/PrincipalComponentAnalysis/*.cpp"
     "${GRT_SRC_DIR}/CoreAlgorithms/Tree/*.cpp"
 )
