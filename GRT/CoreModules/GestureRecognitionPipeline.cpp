@@ -2500,10 +2500,14 @@ bool GestureRecognitionPipeline::setClassifier(const Classifier &classifier){
     
     //Flag that the key part of the pipeline has now been initialized
     initialized = true;
-
-    //The pipeline has been changed, so flag that the pipeline is no longer trained
-    trained = false;
     
+    //If there is no preprocessing / feature extraction and the classifier is trained, then flag the pipeline is trained
+    //Otherwise the user needs to train the pipeline
+    if( !getIsPreProcessingSet() && !getIsFeatureExtractionSet() && classifier.getTrained() ){
+        inputVectorDimensions = classifier.getNumInputDimensions();
+        trained = true;
+    }else trained = false;
+
     return true;
 }
 
@@ -2530,8 +2534,11 @@ bool GestureRecognitionPipeline::setRegressifier(const Regressifier &regressifie
     //Flag that the key part of the pipeline has now been initialized
     initialized = true;
 
-    //The pipeline has been changed, so flag that the pipeline is no longer trained
-    trained = false;
+    //If there is no preprocessing / feature extraction and the regressifier is trained, then flag the pipeline is trained
+    //Otherwise the user needs to train the pipeline
+    if( !getIsPreProcessingSet() && !getIsFeatureExtractionSet() ){
+        trained = regressifier.getTrained();
+    }else trained = false;
     
     return true;
 }

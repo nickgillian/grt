@@ -191,6 +191,7 @@ bool SwipeDetector::predict_(VectorDouble &inputVector){
     
     predictedClassLabel = 0;
 	maxLikelihood = 0;
+    swipeDetected = false;
     
     if( !trained ){
         errorLog << "predict_(VectorDouble &inputVector) - SwipeDetector Model Not Trained!" << endl;
@@ -210,8 +211,6 @@ bool SwipeDetector::predict_(VectorDouble &inputVector){
     
     if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
-    
-    swipeDetected = false;
     
     //Compute the integrated movement velocity for the none-swipe dimensions
     if( !firstSample ){
