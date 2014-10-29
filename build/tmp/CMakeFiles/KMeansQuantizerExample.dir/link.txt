@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/KMeansQuantizerExample.dir/home/lukas/Dokumente/BA/GRT/examples/FeatureExtractionModules/KMeansQuantizerExample/KMeansQuantizerExample.cpp.o  -o KMeansQuantizerExample -rdynamic libgrt.a 

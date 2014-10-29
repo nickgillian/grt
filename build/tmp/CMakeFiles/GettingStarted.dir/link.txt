@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/GettingStarted.dir/home/lukas/Dokumente/BA/GRT/examples/Tutorials/GettingStarted/GettingStarted.cpp.o  -o GettingStarted -rdynamic libgrt.a 

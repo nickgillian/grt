@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/SavitskyGolayFilterExample.dir/home/lukas/Dokumente/BA/GRT/examples/PreprocessingModulesExamples/SavitskyGolayFilterExample/SavitskyGolayFilterExample.cpp.o  -o SavitskyGolayFilterExample -rdynamic libgrt.a 
