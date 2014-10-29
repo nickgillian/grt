@@ -50,22 +50,26 @@ if( os.path.exists( appDir + "Contents/Resources/qt.conf" ) == True ):
 	os.system( "rm " + appDir + "Contents/Resources/qt.conf" )
 	
 #Run qmake
-os.system( "qmake GRT/GRT.pro -r -spec macx-clang CONFIG+=x86_64" )
+os.system( "qmake GRT/GRT.pro -config release -r -spec macx-clang CONFIG+=x86_64" )
 	
 #Build the application
 print "Building application..."
 os.system( "make -C " + mainDir + " clean " )
 os.system( "make -C " + mainDir )
 
+#Hack to fix macdeployqt looking for boost libs in /usr/lib
+os.system( "cp -fv " + boostLibDir + "libboost_thread.dylib " + "/usr/lib/" )
+os.system( "cp -fv " + boostLibDir + "libboost_date_time.dylib " + "/usr/lib/" )
+os.system( "cp -fv " + boostLibDir + "libboost_system.dylib " + "/usr/lib/" )
+os.system( "cp -fv " + boostLibDir + "libboost_chrono.dylib " + "/usr/lib/" )
+os.system( "cp -fv " + "/usr/local/lib/" + "libgrt.dylib " + "/usr/lib/" )
+
 #Run the mac deploy tool so the application can be run on other machines
 print "Running mac deployment..."
 os.system( macDeployDir + "macdeployqt" + " " + mainDir + "GRT.app" + " -verbose=1" )
 
 #Copy the extra libraries
-os.system( "cp -fv " + boostLibDir + "libboost_thread.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
-os.system( "cp -fv " + boostLibDir + "libboost_date_time.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
-os.system( "cp -fv " + boostLibDir + "libboost_system.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
-os.system( "cp -fv " + boostLibDir + "libboost_chrono.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
+#os.system( "cp -fv /usr/local/lib/libgrt.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
 
 #Run the otool to make sure the libraries are now pointing to local copies
 os.system( "otool -L " + mainDir + "GRT.app/Contents/MacOS/GRT" )

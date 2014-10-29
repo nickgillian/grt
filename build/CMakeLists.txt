@@ -1,27 +1,47 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 project(GRT C CXX)
 
 # GRT library
 
-#set the options
+#set the main options
 option(BUILD_EXAMPLES “build-examples” ON)
+option(BUILD_STATIC_LIB "build-static-lib" ON)
+
+#Setup if the library should be built as static or shared
+if(BUILD_STATIC_LIB)
+	set(LIB_BUILD_TYPE STATIC)
+	set(LIB_BUILD_TYPE_INFO "static")
+	set(BUILD_SHARED_LIB OFF)
+else()
+	set(LIB_BUILD_TYPE SHARED)
+	set(LIB_BUILD_TYPE_INFO "shared")
+	set(BUILD_SHARED_LIB ON)
+endif()
 
 #Add any custom OS definitions
 if(MSVC)
+	message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for Windows")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+#Add any custom OSX definitions
 if(APPLE)
+	message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for OSX")
+    configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+else()
+	
+#Add any custom Linux definitions
+if(UNIX) 
+    message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for UNIX/Linux ;)")
+    configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
 endif()
 
-if(UNIX)
-    message(STATUS "Build for UNIX/Linux ;)")
-    configure_file(grt.pc.in                     
-        ${CMAKE_CURRENT_BINARY_DIR}/grt.pc                                     
-        @ONLY                                                                         
-    )
-endif()
+endif() #end of else(APPLE)
+
+#Add any custom build flags
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
 
 #Set the main directory locations
 set(GRT_SRC_DIR
@@ -53,6 +73,7 @@ file(GLOB GRT_CLASSIFICATION_MODULES
     "${GRT_SRC_DIR}/ClassificationModules/SVM/LIBSVM/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/HMM/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/MinDist/*.cpp"
+    "${GRT_SRC_DIR}/ClassificationModules/SwipeDetector/*.cpp"
 )
 
 file(GLOB GRT_CLUSTERING_MODULES
@@ -86,7 +107,7 @@ file(GLOB GRT_FEATURE_EXTRACTION_MODULES
 
 file(GLOB GRT_CORE_ALGORITHMS
     "${GRT_SRC_DIR}/CoreAlgorithms/BernoulliRBM/*.cpp"
-    “${GRT_SRC_DIR}/CoreAlgorithms/MovementDetector/*.cpp”
+    "${GRT_SRC_DIR}/CoreAlgorithms/MovementDetector/*.cpp"
     "${GRT_SRC_DIR}/CoreAlgorithms/PrincipalComponentAnalysis/*.cpp"
     "${GRT_SRC_DIR}/CoreAlgorithms/Tree/*.cpp"
 )
@@ -137,7 +158,7 @@ include_directories(
     "${GRT_SRC_DIR}"
 )
 
-add_library(grt STATIC
+add_library(grt ${LIB_BUILD_TYPE}
     ${GRT_SRC}
     ${GRT_HEADERS}
 )
@@ -145,7 +166,7 @@ add_library(grt STATIC
 install(
     TARGETS grt
     RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin
+    LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
 )
 

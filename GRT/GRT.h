@@ -123,6 +123,7 @@
 #include "ClassificationModules/RandomForests/RandomForests.h"
 #include "ClassificationModules/Softmax/Softmax.h"
 #include "ClassificationModules/SVM/SVM.h"
+#include "ClassificationModules/SwipeDetector/SwipeDetector.h"
 
 //Include the Regression Modules
 #include "RegressionModules/ArtificialNeuralNetworks/MLP/MLP.h"

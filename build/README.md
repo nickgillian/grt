@@ -8,31 +8,83 @@ This CMakeLists file has been tested on Windows, Linux (Ubuntu 14.04), and OSX (
 Note, you will need to install make (http://www.gnu.org/software/make/) and cmake (http://www.cmake.org/). 
 
 You can build the GRT as a static library and compile the examples examples by:
+
 - open terminal and cd to this build directory
+
 - create a temporary build folder: 
 
-    $ mkdir tmp
+```
+$ mkdir tmp
+```
+	
 - cd to the temporary build folder:
 
-    $ cd tmp
+```
+$ cd tmp
+```
 	
 - use cmake to generate the makefile for your machine:
 
-    $ cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+```
+$ cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+```
+	
+- if you want to build the library as a shared library (instead of static), add the following option:
+
+```
+$ cmake .. -DBUILD_STATIC_LIB=OFF
+```
 
 - compile the GRT library and examples (j controls the number of cores you want to use):
 
-    $ make -j 2
+```
+$ make -j 2
+```
 	
 - you can then install the GRT by running:
 
-    $ sudo make install
+```
+$ sudo make install
+```
 
 - pkgconfig
 
-    $ pkg-config --cflags --libs grt
+```
+$ pkg-config --cflags --libs grt
+```
 	
 - the GRT examples will be: build/examples 
 
+##Linking Instructions
+After installing the GRT, you can build a new project and link against it by:
+
+```
+$ g++ -c main.cpp -I/usr/local/include
+$ g++ main.o -o main -I/usr/local/include -L/usr/local/lib -lgrt
+	
+//Run the application
+$ ./main
+```
+
+where main.cpp is:
+
+```C++
+#include <GRT/GRT.h>
+using namespace GRT;
+
+int main (int argc, const char * argv[])
+{
+    //Print the GRT version
+    cout << "GRT Version: " << GRTBase::getGRTVersion() << endl;
+
+    return EXIT_SUCCESS;
+}
+```
+
+
+
 ##Contributors
-Thanks to Romain Guillemot for creating the CMake file and for improving the support for Windows!
+Thanks to:
+
+- Romain Guillemot for creating the original CMake file and for improving the support for Windows!
+- Leslie Zhai for improving the build for Linux users!

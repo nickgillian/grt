@@ -155,7 +155,7 @@ public:
 	    
         //Get a pointer to the raw blob data and the size of the raw data
         const void *rawData = NULL;
-        unsigned long rawDataSize = 0;
+        osc::osc_bundle_element_size_t rawDataSize = 0;
         arg->AsBlobUnchecked( rawData, rawDataSize );
 
         if( rawData == NULL ){

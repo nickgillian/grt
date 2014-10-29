@@ -25,6 +25,7 @@ public:
 
     bool getRecordStatus();
     bool getTrained();
+    unsigned int getNumInputDimensions();
     unsigned int getPipelineMode();
     unsigned int getTrainingClassLabel();
     unsigned int getNumTrainingSamples();
@@ -32,6 +33,7 @@ public:
     unsigned int getNumClasses();
     unsigned int getNumClassesInTrainingData();
     vector<unsigned int> getClassLabels();
+    GRT::VectorDouble getTargetVector();
     GRT::ClassificationData getClassificationTrainingData();
     GRT::ClassificationData getClassificationTestData();
     GRT::RegressionData getRegressionTrainingData();
@@ -80,7 +82,7 @@ signals:
     void loadTestDataFromFileResult(bool result);
     void preProcessingDataChanged(const GRT::VectorDouble &preProcessedData);
     void featureExtractionDataChanged(const GRT::VectorDouble &featureExtractionData);
-    void predictionResultsChanged(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<GRT::UINT> classLabels);
+    void predictionResultsChanged(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
     void regressionResultsChanged(GRT::VectorDouble regressionData);
     void pipelineTrainingStarted();
     void pipelineTrainingFinished(bool result);
@@ -117,6 +119,7 @@ public slots:
     bool setRegressifier( const GRT::Regressifier &regressifier );
     bool setPostProcessing( const GRT::PostProcessing &postProcessing );
     bool setPipeline( const GRT::GestureRecognitionPipeline &pipeline );
+    bool setTargetVector( const GRT::VectorDouble &targetVector );
     bool removeAllPreProcessingModules();
     bool removeAllPostProcessingModules();
     bool savePipelineToFile(std::string filename);

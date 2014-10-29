@@ -17,6 +17,29 @@
 #include "bargraph.h"
 #include "versioninfo.h"
 
+enum Views{
+    SETUP_VIEW=0,
+    DATA_IO_VIEW,
+    DATA_MANAGER_VIEW,
+    PIPELINE_VIEW,
+    TRAINING_VIEW,
+    PREDICTION_VIEW,
+    LOG_VIEW
+};
+
+enum Classifiers{
+    CLASSIFIER_ANBC=0,
+    CLASSIFIER_ADABOOST,
+    CLASSIFIER_DECISION_TREE,
+    CLASSIFIER_GMM,
+    CLASSIFIER_KNN,
+    CLASSIFIER_MINDIST,
+    CLASSIFIER_RANDOM_FORESTS,
+    CLASSIFIER_SOFTMAX,
+    CLASSIFIER_SVM,
+    CLASSIFIER_SWIPE_DETECTOR
+};
+
 #define NO_PRE_PROCESSING_SELECTED 0
 #define MOVING_AVERAGE_FILTER_PRE_PROCESSING 1
 #define DOUBLE_MOVING_AVERAGE_FILTER_PRE_PROCESSING 2
@@ -27,15 +50,9 @@
 
 #define NO_FEATURE_EXTRACTION_SELECTED 0
 
-#define CLASSIFIER_ANBC 0
-#define CLASSIFIER_ADABOOST 1
-#define CLASSIFIER_DECISION_TREE 2
-#define CLASSIFIER_GMM 3
-#define CLASSIFIER_KNN 4
-#define CLASSIFIER_MINDIST 5
-#define CLASSIFIER_RANDOM_FORESTS 6
-#define CLASSIFIER_SOFTMAX 7
-#define CLASSIFIER_SVM 8
+#define REGRESSIFIER_LINEAR 0
+#define REGRESSIFIER_LOGISTIC 1
+#define REGRESSIFIER_MLP 2
 
 #define NO_POST_POST_PROCESSING 0
 #define CLASS_LABEL_FILTER_POST_PROCESSING 1
@@ -58,7 +75,7 @@ namespace Ui {
 
 Q_DECLARE_METATYPE(std::string);
 Q_DECLARE_METATYPE(GRT::VectorDouble);
-Q_DECLARE_METATYPE(std::vector<GRT::UINT>);
+Q_DECLARE_METATYPE(std::vector<unsigned int>);
 Q_DECLARE_METATYPE(GRT::ClassificationData);
 Q_DECLARE_METATYPE(GRT::ClassificationSample);
 Q_DECLARE_METATYPE(GRT::RegressionData);
@@ -81,10 +98,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    unsigned int getCurrentView() const{ return currentView; }
+    unsigned int getCurrentView() const;
 
 private slots:
     ////////////////////////////////// MAIN VIEW FUNCTIONS ////////////////////////////////
+    void updateMainView(int tabIndex);
     void showVersionInfo();
     void showSetupView();
     void showDataIOView();
@@ -126,6 +144,7 @@ private slots:
     void saveTrainingDatasetToFile();
     void loadTrainingDatasetFromFile();
     void updateTrainingClassLabel(unsigned int trainingClassLabel);
+    void updateTargetVectorValue(double value);
     void updateRecordStatus(bool recordStatus);
     void updateNumTrainingSamples(unsigned int numTrainingSamples);
     void addNewTrainingSample(unsigned int numTrainingSamples,GRT::ClassificationSample trainingSample);
@@ -156,6 +175,7 @@ private slots:
     void updatePostProcessingView(int viewIndex);
     void refreshPipelineSetup();
     void updatePreProcessingSettings();
+    void updateClassifierSettings();
     void clearPipelineConfiguration();
     void updatePipelineConfiguration();
     void resetPipelineConfiguration();
@@ -188,7 +208,7 @@ private slots:
     void showPredictionToolInfo();
     void updatePreProcessingData(const GRT::VectorDouble &preProcessedData);
     void updateFeatureExtractionData(const GRT::VectorDouble &featureExtractionData);
-    void updatePredictionResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<GRT::UINT> classLabels);
+    void updatePredictionResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
     void updateRegressionResults(GRT::VectorDouble regressionData);
     void resetPredictionViewGraphs();
 
@@ -221,12 +241,13 @@ private:
     virtual void notify(const GRT::ErrorLogMessage &log);
     virtual void notify(const GRT::InfoLogMessage &log);
 
+    boost::mutex mutex;
     Ui::MainWindow *ui;
     QStandardItemModel *model;
     Core core;
     static unsigned int numInstances;
-    unsigned int currentView;
-    vector< QWidget* > tabHistory;
+    vector< QWidget* > dataLabelingToolTabHistory;
+    vector< QWidget* > trainingToolTabHistory;
     TimeseriesGraph *inputDataGraph;
     TimeseriesGraph *preProcessedDataGraph;
     TimeseriesGraph *classPredictionsGraph;
@@ -234,11 +255,13 @@ private:
     TimeseriesGraph *classLikelihoodsGraph;
     TimeseriesGraph *classDistancesGraph;
     TimeseriesGraph *regressionGraph;
+    TimeseriesGraph *swipeDetectorGraph;
     GRT::ErrorLog errorLog;
     GRT::WarningLog warningLog;
     vector< Qt::GlobalColor > defaultGraphColors;
+    GRT::Timer lastGuiUpdateTimer;
 
-    enum Views{SETUP_VIEW=0,DATA_IO_VIEW,DATA_LABELING_VIEW,PIPELINE_VIEW,TRAINING_TOOL_VIEW,PREDICTION_VIEW,LOG_VIEW};
+    GRT::SwipeDetector swipeDetector;
 
 };
 
