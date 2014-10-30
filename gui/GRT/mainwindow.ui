@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -2695,6 +2695,11 @@
        </item>
        <item>
         <property name="text">
+         <string>Leaky Integrator</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>Low Pass Filter</string>
         </property>
        </item>
@@ -2724,7 +2729,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="page_11">
         <widget class="QLabel" name="label_37">
@@ -2812,6 +2817,44 @@
            <x>80</x>
            <y>30</y>
            <width>101</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="page_2">
+        <widget class="QLabel" name="label_125">
+         <property name="geometry">
+          <rect>
+           <x>5</x>
+           <y>0</y>
+           <width>251</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Leaky Integrator Settings</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_126">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>35</y>
+           <width>91</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Leak Rate:</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="pipelineTool_leakyIntegrator_leakRateSpinBox">
+         <property name="geometry">
+          <rect>
+           <x>85</x>
+           <y>35</y>
+           <width>96</width>
            <height>24</height>
           </rect>
          </property>

@@ -276,6 +276,10 @@ bool MainWindow::initPipelineToolView(){
     ui->pipelineTool_doubleMovingAverageFilterSizeSpinBox->setRange(1,10000);
     ui->pipelineTool_doubleMovingAverageFilterSizeSpinBox->setValue( 5 );
 
+    //Leaky Integrator
+    ui->pipelineTool_leakyIntegrator_leakRateSpinBox->setRange(0,1);
+    ui->pipelineTool_leakyIntegrator_leakRateSpinBox->setValue(0.99);
+
     //Low Pass Filter
     ui->pipelineTool_lowPassFilterCutoffFrequencySpinBox->setValue( 10.0 );
     ui->pipelineTool_lowPassFilterCutoffFrequencySpinBox->setRange(0.0,10000.0);
@@ -528,6 +532,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->pipelineTool_regressifierType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRegressifierView(int)));
     connect(ui->pipelineTool_movingAverageFilterSizeSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
     connect(ui->pipelineTool_doubleMovingAverageFilterSizeSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
+    connect(ui->pipelineTool_leakyIntegrator_leakRateSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
     connect(ui->pipelineTool_lowPassFilterCutoffFrequencySpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
     connect(ui->pipelineTool_lowPassFilterGainSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
     connect(ui->pipelineTool_lowPassFilterSampleRateSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
@@ -2179,6 +2184,9 @@ void MainWindow::updatePreProcessingView(int viewIndex){
             hpf.init( 1, ui->pipelineTool_highPassFilterGainSpinBox->value(), numDimensions );
             hpf.setCutoffFrequency( ui->pipelineTool_highPassFilterCutoffFrequencySpinBox->value(), 1.0 / ui->pipelineTool_highPassFilterSampleRateSpinBox->value() );
             core.setPreProcessing( hpf );
+        break;
+        case LEAKY_INTEGRATOR_PRE_PROCESSING:
+            core.setPreProcessing( GRT::LeakyIntegrator(ui->pipelineTool_leakyIntegrator_leakRateSpinBox->value(),numDimensions) );
         break;
         case DERIVATIVE_PRE_PROCESSING:
             if( ui->pipelineTool_derivativeOrderList->currentIndex() == 0 ) core.setPreProcessing( GRT::Derivative( GRT::Derivative::FIRST_DERIVATIVE, 1.0, numDimensions) );

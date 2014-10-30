@@ -81,6 +81,7 @@
 
 //Include the PreProcessing Modules
 #include "PreProcessingModules/Derivative.h"
+#include "PreProcessingModules/LeakyIntegrator.h"
 #include "PreProcessingModules/LowPassFilter.h"
 #include "PreProcessingModules/FIRFilter.h"
 #include "PreProcessingModules/HighPassFilter.h"
