@@ -142,7 +142,10 @@ bool PreProcessing::savePreProcessingSettingsToFile(fstream &file) const{
         return false;
     }
     
-    if( !MLBase::saveBaseSettingsToFile( file ) ) return false;
+    if( !MLBase::saveBaseSettingsToFile( file ) ){
+        errorLog << "savePreProcessingSettingsToFile(fstream &file) - Failed to save base settings to file!" << endl;
+        return false;
+    }
     
     file << "Initialized: " << initialized << endl;
     
@@ -158,6 +161,7 @@ bool PreProcessing::loadPreProcessingSettingsFromFile(fstream &file){
     
     //Try and load the base settings from the file
     if( !MLBase::loadBaseSettingsFromFile( file ) ){
+        errorLog << "loadPreProcessingSettingsFromFile(fstream &file) - Failed to load base settings from file!" << endl;
         return false;
     }
     

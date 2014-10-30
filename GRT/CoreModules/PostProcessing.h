@@ -223,8 +223,6 @@ protected:
 
     string postProcessingType;
     bool initialized;
-    UINT numInputDimensions;
-    UINT numOutputDimensions;
     UINT postProcessingInputMode;
     UINT postProcessingOutputMode;
     VectorDouble processedData;
