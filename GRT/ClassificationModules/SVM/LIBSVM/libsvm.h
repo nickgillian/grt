@@ -62,6 +62,10 @@
 namespace LIBSVM {
 
 #define LIBSVM_VERSION 312
+    
+//Define the following to stop issues with visual studio
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NONSTDC_NO_DEPRECATE
 
 #ifdef __cplusplus
 extern "C" {
