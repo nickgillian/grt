@@ -110,6 +110,15 @@ public:
 	 @return true if the data was processed, false otherwise
      */
     virtual bool computeFeatures(const VectorDouble &inputVector);
+
+    /**
+     Sets the FeatureExtraction clear function, overwriting the base FeatureExtraction function.
+     This function is called by the GestureRecognitionPipeline when the pipelines main clear() function is called.
+     This function completely clears the FFT setup, you will need to initialize the instance again before you can use it.
+
+     @return true if the FFT was reset, false otherwise
+     */
+    virtual bool clear();
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -119,22 +128,6 @@ public:
 	 @return true if the FFT was reset, false otherwise
      */    
     virtual bool reset();
-    
-    /**
-     This saves the feature extraction settings to a file.
-     
-     @param const string filename: the filename to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(string filename) const;
-    
-    /**
-     This saves the feature extraction settings to a file.
-     
-     @param fstream &file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(string filename);
     
     /**
      This saves the feature extraction settings to a file.
@@ -300,6 +293,9 @@ public:
 	 @return returns true if the computePhase parameter was successfully updated, false otherwise
      */
     bool setComputePhase(bool computePhase);
+    
+    using FeatureExtraction::saveModelToFile;
+    using FeatureExtraction::loadModelFromFile;
     
 protected:
     bool isPowerOfTwo(UINT x);                                   ///< A helper function to compute if the input is a power of two

@@ -57,7 +57,7 @@ FFT::~FFT(void){
 }
     
 FFT& FFT::operator=(const FFT &rhs){
-    
+
     if( this != &rhs ){
         this->hopSize = rhs.hopSize;
         this->dataBufferSize = rhs.dataBufferSize;
@@ -72,6 +72,10 @@ FFT& FFT::operator=(const FFT &rhs){
         this->windowSizeMap = rhs.windowSizeMap;
         
         copyBaseVariables( (FeatureExtraction*)&rhs );
+
+        for(UINT i=0; i<dataBufferSize; i++){
+            dataBuffer[i].resize( numInputDimensions, 0 );
+        }
     }
     return *this;
 }
@@ -92,35 +96,6 @@ bool FFT::deepCopyFrom(const FeatureExtraction *featureExtraction){
     errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << endl;
     
     return false;
-}
-    
-bool FFT::saveModelToFile(string filename) const{
-
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool FFT::loadModelFromFile(string filename){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
 }
 
 bool FFT::saveModelToFile(fstream &file) const{
@@ -212,7 +187,8 @@ bool FFT::loadModelFromFile(fstream &file){
 
 bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase){
     
-    initialized = false;
+    //Clear any previous setup
+    clear();
     
     if( !isPowerOfTwo(fftWindowSize) ){
         errorLog << "init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase) - fftWindowSize is not a power of two!" << endl;
@@ -236,23 +212,29 @@ bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindow
     
     //Set the output size, the fftWindowSize is divided by 2 because the FFT is symmetrical so only half the actual FFT is returned
     numOutputDimensions = 0;
-    if( computePhase ) numOutputDimensions += fftWindowSize/2 * numDimensions;
-    if( computeMagnitude ) numOutputDimensions += fftWindowSize/2 * numDimensions;
+    if( computePhase ) numOutputDimensions += fftWindowSize/2 * numInputDimensions;
+    if( computeMagnitude ) numOutputDimensions += fftWindowSize/2 * numInputDimensions;
     
     //Resize the output feature vector
-    featureVector.clear();
     featureVector.resize( numOutputDimensions, 0);
-    
-    dataBuffer.clear();
-    dataBuffer.resize(dataBufferSize,VectorDouble(numDimensions,0));
-    tempBuffer.clear();
+
+    dataBuffer.resize( dataBufferSize );
     tempBuffer.resize( dataBufferSize );
-    fft.clear();
-    fft.resize(numDimensions);
-    
-    for(unsigned int i=0; i<numDimensions; i++){
+
+    for(UINT i=0; i<dataBufferSize; i++){
+        dataBuffer[i].resize( numInputDimensions, 0 );
+    }
+
+    for(UINT i=0; i<dataBufferSize; i++){
+        dataBuffer[i].resize( numInputDimensions, 0 );
+    }
+
+    //Setup the fft for each dimension
+    fft.resize(numInputDimensions);
+    for(unsigned int i=0; i<numInputDimensions; i++){
         if( !fft[i].init(fftWindowSize,fftWindowFunction,computeMagnitude,computePhase) ){
             errorLog << "init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase) - Failed to initialize fft!" << endl;
+            clear();
             return false;
         }
     }
@@ -350,6 +332,19 @@ bool FFT::update(const VectorDouble &x){
     return true;
 }
     
+bool FFT::clear(){
+
+    //Clear the base class
+    FeatureExtraction::clear();
+
+    //Clear the buffers
+    tempBuffer.clear();
+    dataBuffer.clear();
+    fft.clear();
+
+    return true;
+}
+
 bool FFT::reset(){ 
     if( initialized ) return init(fftWindowSize,hopSize,numInputDimensions,fftWindowFunction,computeMagnitude,computePhase);
     return false;
