@@ -70,11 +70,12 @@ class CircularBuffer{
         this->bufferInit = false;
             
         if( rhs.bufferInit ){
-            this->resize( rhs.bufferSize );
-            this->readPtr = 0;
-            this->writePtr = 0;
-            for(unsigned int i=0; i<rhs.numValuesInBuffer; i++){
-                this->push_back( rhs.buffer[ i ] );
+            this->bufferInit = rhs.bufferInit;
+            this->bufferSize = rhs.bufferSize;
+            this->numValuesInBuffer = rhs.numValuesInBuffer;
+            this->buffer.resize( rhs.bufferSize );
+            for(unsigned int i=0; i<rhs.bufferSize; i++){
+                this->buffer[i] = rhs.buffer[ i ];
             }
             this->readPtr = rhs.readPtr;
             this->writePtr = rhs.writePtr;
@@ -95,7 +96,8 @@ class CircularBuffer{
     /**
      Default Destructor. Cleans up any memory assigned by the buffer.
      */
-    ~CircularBuffer(){
+    virtual ~CircularBuffer(){
+        cout << "~CircularBuffer()"<< endl;
         if( bufferInit ){
             clear();
         }
@@ -108,15 +110,16 @@ class CircularBuffer{
      @return returns a reference to this instance
      */
     CircularBuffer& operator=(const CircularBuffer &rhs){
-        if(this!=&rhs){
+        if( this != &rhs ){
             this->clear();
-            
+
             if( rhs.bufferInit ){
-                this->resize( rhs.bufferSize );
-                this->readPtr = 0;
-                this->writePtr = 0;
-                for(unsigned int i=0; i<rhs.numValuesInBuffer; i++){
-                    this->push_back( rhs.buffer[ i ] );
+                this->bufferInit = rhs.bufferInit;
+                this->bufferSize = rhs.bufferSize;
+                this->numValuesInBuffer = rhs.numValuesInBuffer;
+                this->buffer.resize( rhs.bufferSize );
+                for(unsigned int i=0; i<rhs.bufferSize; i++){
+                    this->buffer[i] = rhs.buffer[ i ];
                 }
                 this->readPtr = rhs.readPtr;
                 this->writePtr = rhs.writePtr;
@@ -347,7 +350,6 @@ protected:
     
     ErrorLog errorLog;
 };
-
 
 }//End of namespace GRT
 
