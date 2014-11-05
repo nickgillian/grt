@@ -57,6 +57,7 @@ KMeansQuantizer& KMeansQuantizer::operator=(const KMeansQuantizer &rhs){
         //Copy any class variables from the rhs instance to this instance
         this->numClusters = rhs.numClusters;
         this->clusters = rhs.clusters;
+        this->quantizationDistances = rhs.quantizationDistances;
         
         //Copy the base variables
         copyBaseVariables( (FeatureExtraction*)&rhs );
@@ -107,35 +108,7 @@ bool KMeansQuantizer::clear(){
     
     clusters.clear();
     quantizationDistances.clear();
-    
-    return true;
-}
-    
-bool KMeansQuantizer::saveModelToFile(string filename) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool KMeansQuantizer::loadModelFromFile(string filename){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
+    quantizationDistances.clear();
     
     return true;
 }
@@ -147,15 +120,16 @@ bool KMeansQuantizer::saveModelToFile(fstream &file) const{
         return false;
     }
     
-    //First, you should add a header (with no spaces) e.g.
+    //Save the header
     file << "KMEANS_QUANTIZER_FILE_V1.0" << endl;
 	
-    //Second, you should save the base feature extraction settings to the file
+    //Save the feature extraction base class settings
     if( !saveFeatureExtractionSettingsToFile( file ) ){
-        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
         return false;
     }
     
+    //Save the KMeansQuantizer settings
     file << "QuantizerTrained: " << trained << endl;
     file << "NumClusters: " << numClusters << endl;
     
@@ -175,10 +149,8 @@ bool KMeansQuantizer::saveModelToFile(fstream &file) const{
 
 bool KMeansQuantizer::loadModelFromFile(fstream &file){
     
-    initialized = false;
-    numClusters = 0;
-    clusters.clear();
-    quantizationDistances.clear();
+    //Clear any previouly built model and settings
+    clear();
     
     if( !file.is_open() ){
         errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;

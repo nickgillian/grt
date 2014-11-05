@@ -83,9 +83,6 @@ bool FeatureExtraction::copyBaseVariables(const FeatureExtraction *featureExtrac
     
 bool FeatureExtraction::init(){
     
-    //Clear any previous feature vector
-    clear();
-    
     if( numOutputDimensions == 0 ){
         errorLog << "init() - Failed to init module, the number of output dimensions is zero!" << endl;
         initialized = false;
@@ -112,35 +109,6 @@ bool FeatureExtraction::clear(){
     initialized = false;
     featureDataReady = false;
     featureVector.clear();
-    
-    return true;
-}
-   
-bool FeatureExtraction::saveModelToFile(string filename) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool FeatureExtraction::loadModelFromFile(string filename){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
     
     return true;
 }

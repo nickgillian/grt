@@ -92,24 +92,6 @@ public:
      This saves the feature extraction settings to a file.
      This function should be overwritten by the derived class.
      
-     @param const string filename: the filename to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(string filename) const;
-    
-    /**
-     This saves the feature extraction settings to a file.
-     This function should be overwritten by the derived class.
-     
-     @param fstream &file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(string filename);
-    
-    /**
-     This saves the feature extraction settings to a file.
-     This function should be overwritten by the derived class.
-     
      @param fstream &file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise (the base class always returns false)
      */
@@ -186,6 +168,9 @@ public:
      */
     FeatureExtraction* createNewInstance() const;
     
+    using MLBase::saveModelToFile;
+    using MLBase::loadModelFromFile;
+    
 protected:
     /**
      Initializes the base feature extraction module, this will resize the feature vector and get the instance ready for processing new data.
@@ -208,11 +193,11 @@ protected:
      */
     bool loadFeatureExtractionSettingsFromFile(fstream &file);
 
-    
     string featureExtractionType;
     bool initialized;
     bool featureDataReady;
     VectorDouble featureVector;
+    
     static StringFeatureExtractionMap *getMap() {
         if( !stringFeatureExtractionMap ){ stringFeatureExtractionMap = new StringFeatureExtractionMap; } 
         return stringFeatureExtractionMap; 

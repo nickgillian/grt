@@ -111,22 +111,6 @@ public:
     
     /**
      This saves the feature extraction settings to a file.
-     
-     @param const string filename: the filename to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(string filename) const;
-    
-    /**
-     This saves the feature extraction settings to a file.
-     
-     @param fstream &file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(string filename);
-    
-    /**
-     This saves the feature extraction settings to a file.
      This overrides the saveSettingsToFile function in the FeatureExtraction base class.
      You should add your own custom code to this function to define how your feature extraction module is saved to a file.
      
@@ -247,7 +231,9 @@ public:
      */
     bool setNumClusters(const UINT numClusters);
     
-    //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
+    //Tell the compiler we are using the following functions from the FeatureExtractiona and MLBase class to stop hidden virtual function warnings
+    using FeatureExtraction::saveModelToFile;
+    using FeatureExtraction::loadModelFromFile;
     using MLBase::train;
     using MLBase::train_;
     using MLBase::predict;

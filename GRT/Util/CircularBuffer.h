@@ -97,7 +97,6 @@ class CircularBuffer{
      Default Destructor. Cleans up any memory assigned by the buffer.
      */
     virtual ~CircularBuffer(){
-        cout << "~CircularBuffer()"<< endl;
         if( bufferInit ){
             clear();
         }
