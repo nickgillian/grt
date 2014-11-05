@@ -114,7 +114,7 @@ bool LeakyIntegrator::saveModelToFile(fstream &file) const{
     
     file << "GRT_LEAKY_INTEGRATOR_FILE_V1.0" << endl;
     
-    if( !savePreProcessingSettingsToFile( file ) ){
+    if( !PreProcessing::savePreProcessingSettingsToFile( file ) ){
         errorLog << "savePreProcessingSettingsToFile(fstream &file) - Failed to save preprocessing settings to file!" << endl;
         return false;
     }
@@ -141,7 +141,7 @@ bool LeakyIntegrator::loadModelFromFile(fstream &file){
         return false;     
     }
     
-    if( !loadPreProcessingSettingsFromFile( file ) ){
+    if( !PreProcessing::loadPreProcessingSettingsFromFile( file ) ){
         errorLog << "loadPreProcessingSettingsFromFile(fstream &file) - Failed to load preprocessing settings from file!" << endl;
         return false;
     }

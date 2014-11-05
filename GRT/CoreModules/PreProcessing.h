@@ -197,8 +197,6 @@ protected:
 
     string preProcessingType;
     bool initialized;
-    UINT numInputDimensions;
-    UINT numOutputDimensions;
     VectorDouble processedData;
 
 	static StringPreProcessingMap *getMap() {
