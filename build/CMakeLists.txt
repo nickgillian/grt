@@ -21,27 +21,33 @@ endif()
 
 #Add any custom OS definitions
 if(MSVC)
-	message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for Windows")
+    message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for Windows")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    set(GRT_DEBUG_FLAGS "")
+    set(GRT_RELEASE_FLAGS "")
 endif()
 
 #Add any custom OSX definitions
 if(APPLE)
-	message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for OSX")
+    message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for OSX")
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+    set(GRT_DEBUG_FLAGS "-Wall")
+    set(GRT_RELEASE_FLAGS "-Wall")
 else()
 	
 #Add any custom Linux definitions
 if(UNIX) 
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for UNIX/Linux ;)")
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+    set(GRT_DEBUG_FLAGS "-Wall")
+    set(GRT_RELEASE_FLAGS "-Wall")
 endif()
 
 endif() #end of else(APPLE)
 
 #Add any custom build flags
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} " ${GRT_DEBUG_FLAGS})
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} " ${GRT_RELEASE_FLAGS})
 
 #Set the main directory locations
 set(GRT_SRC_DIR
