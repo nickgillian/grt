@@ -126,7 +126,21 @@ public:
             std::cout << val;
             *lastMessagePtr += Util::toString(val);
         }
-        return *this;    }
+        return *this;    
+    }
+
+    const Log& operator<< (const unsigned long long val ) const{
+        if( *loggingEnabledPtr ){
+            if( *writeProceedingTextPtr ){
+                *writeProceedingTextPtr = false;
+                *lastMessagePtr = "";
+                std::cout << proceedingText.c_str();
+            }
+            std::cout << val;
+            *lastMessagePtr += Util::toString(val);
+        }
+        return *this;    
+    }
 
     const Log& operator<< (const float val ) const{
         if( *loggingEnabledPtr ){
