@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/HelloWorld.dir/home/lukas/Dokumente/BA/GRT/examples/Tutorials/HelloWorld/HelloWorld.cpp.o  -o HelloWorld -rdynamic libgrt.a 

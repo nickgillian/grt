@@ -1,7 +1,8 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-	<file alias="ClassificationModeImage.png">Images/ClassificationModeImage.png</file>
-	<file alias="RegressionModeImage.png">Images/RegressionModeImage.png</file>
-	<file alias="TimeseriesModeImage.png">Images/TimeseriesModeImage.png</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file alias="ClassificationModeImage.png">Images/ClassificationModeImage.png</file>
+        <file alias="RegressionModeImage.png">Images/RegressionModeImage.png</file>
+        <file alias="TimeseriesModeImage.png">Images/TimeseriesModeImage.png</file>
+        <file alias="snapShot.png">Images/snapShot.png</file>
+    </qresource>
 </RCC>

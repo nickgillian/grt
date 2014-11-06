@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/TimeSeriesClassificationDataExample.dir/home/lukas/Dokumente/BA/GRT/examples/DatastructuresExamples/TimeSeriesClassificationDataExample/TimeSeriesClassificationDataExample.cpp.o  -o TimeSeriesClassificationDataExample -rdynamic libgrt.a 

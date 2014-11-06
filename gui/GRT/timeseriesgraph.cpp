@@ -32,6 +32,7 @@ TimeseriesGraph::~TimeseriesGraph()
 }
 
 bool TimeseriesGraph::init(const unsigned int numDimensions,const unsigned int graphWidth){
+    connect(ui->snapShotButton, SIGNAL(clicked()), this, SLOT(photo()));
 
     initialized = true;
     this->numDimensions = numDimensions;
@@ -43,6 +44,18 @@ bool TimeseriesGraph::init(const unsigned int numDimensions,const unsigned int g
         maxRange = -minRange;
     }
     return true;
+}
+
+/* captures a graph snapshot */
+void TimeseriesGraph::photo(){
+    QString outputDir = QApplication::applicationDirPath();;
+    QDateTime local = QDateTime::currentDateTime();
+    QString fileName = QString::number(local.toTime_t()) + ".jpg";
+    QFile file(outputDir+"/"+fileName);
+    if (!file.open(QIODevice::WriteOnly|QFile::WriteOnly)){
+        //write some log message?
+    }
+    ui->graph->saveJpg( outputDir+"/"+fileName,  0, 0, 1.0, -1  );
 }
 
 bool TimeseriesGraph::update(const GRT::VectorDouble &sample ){
@@ -111,5 +124,6 @@ bool TimeseriesGraph::setYAxisRanges(const double minRange,const double maxRange
 
 //resize graph on window resize
 void TimeseriesGraph::resizeEvent (QResizeEvent *event){
+    ui->snapShotButton->setGeometry(ui->graph->parentWidget()->width()-30,10,22,22);
     ui->graph->resize(ui->graph->parentWidget()->width()-20,ui->graph->parentWidget()->height()-20);
 }

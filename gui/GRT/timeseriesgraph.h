@@ -21,6 +21,9 @@ public:
     bool update(const GRT::VectorDouble &sample );
     bool setYAxisRanges(const double minRange,const double maxRange,const bool lockRanges=false);
     void resizeEvent (QResizeEvent *event);
+
+public slots:
+    void photo();
     
 private:
     bool initialized;

@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/KMeansExample.dir/home/lukas/Dokumente/BA/GRT/examples/ClusteringModulesExamples/KMeansExample/KMeansExample.cpp.o  -o KMeansExample -rdynamic libgrt.a 

@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/
+includedir=${prefix}/include
+
+Name: grt
+Description: grt is cross-platform, open-source, C++ machine learning library designed for real-time gesture recognition.
+Version: 
+Libs: -L${libdir} -lgrt
+Cflags: -I${includedir}/GRT

@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/CustomMakefile.dir/home/lukas/Dokumente/BA/GRT/examples/Tutorials/CustomMakefile/main.cpp.o  -o CustomMakefile -rdynamic libgrt.a 
