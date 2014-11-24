@@ -35,7 +35,7 @@ public:
         this->w = rhs.w;
         this->x = rhs.x;
     }
-    ~Particle(){
+    virtual ~Particle(){
         
     }
     

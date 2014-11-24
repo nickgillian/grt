@@ -168,37 +168,24 @@ public:
      
      @return returns true if the state estimation was correctly computed, false otherwise
      */
-    virtual bool initParticles( UINT numParticles ){
+    virtual bool initParticles( const UINT numParticles ){
         
         if( !initialized ) return false;
         
-        if( this->numParticles != numParticles ){
-            unsigned int numDimensions = x.size();
-            this->numParticles = numParticles;
-            particleDistributionA.resize( numParticles, PARTICLE(numDimensions) );
-            particleDistributionB.resize( numParticles, PARTICLE(numDimensions) );
-            particles = particleDistributionA;
-            cumsum.resize( numParticles,0 );
+        if( stateVectorSize != x.size() ){
+            return false;
         }
         
-        const unsigned int N = x.size();
-        for(unsigned int i=0; i<numParticles; i++){
-            for(unsigned int j=0; j<N; j++){
-                switch( initMode ){
-                    case INIT_MODE_UNIFORM:
-                        particles[i].x[j] = rand.getRandomNumberUniform(initModel[j][0],initModel[j][1]);
-                        break;
-                    case INIT_MODE_GAUSSIAN:
-                        particles[i].x[j] = initModel[j][0] + rand.getRandomNumberGauss(0,initModel[j][1]);
-                        break;
-                    default:
-                        errorLog << "ERROR: Unknown initMode!" << endl;
-                        return false;
-                        break;
-                }
-                
-            }
-        }
+        this->numParticles = numParticles;
+        particleDistributionA.clear();
+        particleDistributionB.clear();
+        cumsum.clear();
+        particleDistributionA.resize( numParticles, PARTICLE(stateVectorSize) );
+        particleDistributionB.resize( numParticles, PARTICLE(stateVectorSize) );
+        particles = particleDistributionA;
+        cumsum.resize( numParticles,0 );
+        
+        reset();
         
         return true;
     }
@@ -217,7 +204,7 @@ public:
             return false;
         }
 
-	if( !preFilterUpdate( data ) ){
+        if( !preFilterUpdate( data ) ){
             errorLog << "ERROR: Failed to complete preFilterUpdate!" << endl;
             return false;
         }
@@ -265,7 +252,7 @@ public:
             }
         }
 
-	if( !postFilterUpdate( data ) ){
+        if( !postFilterUpdate( data ) ){
             errorLog << "ERROR: Failed to complete postFilterUpdate!" << endl;
             return false;
         }
@@ -291,6 +278,33 @@ public:
         particleDistributionA.clear();
         particleDistributionB.clear();
         cumsum.clear();
+        return true;
+    }
+    
+    virtual bool reset(){
+        
+        if( !initialized ){
+            return false;
+        }
+        
+        for(unsigned int i=0; i<numParticles; i++){
+            for(unsigned int j=0; j<stateVectorSize; j++){
+                switch( initMode ){
+                    case INIT_MODE_UNIFORM:
+                        particles[i].x[j] = rand.getRandomNumberUniform(initModel[j][0],initModel[j][1]);
+                        break;
+                    case INIT_MODE_GAUSSIAN:
+                        particles[i].x[j] = initModel[j][0] + rand.getRandomNumberGauss(0,initModel[j][1]);
+                        break;
+                    default:
+                        errorLog << "ERROR: Unknown initMode!" << endl;
+                        return false;
+                        break;
+                }
+                
+            }
+        }
+        
         return true;
     }
     
