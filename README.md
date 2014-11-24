@@ -7,13 +7,13 @@ You can find the official git repository for the GRT here: [https://github.com/n
 It is also mirrored on googlecode: [https://code.google.com/p/gesture-recognition-toolkit/](https://code.google.com/p/gesture-recognition-toolkit/) 
 
 Key things to know about the GRT:
-* The toolkit consists of two parts: a comprehensive C++ API and a front-end graphical user interface (GUI). You can the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded here: [http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download](GRT GUI)
+* The toolkit consists of two parts: a comprehensive C++ API and a front-end graphical user interface (GUI). You can the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded here: [download](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * Both the C++ API and GUI are designed to work with real-time sensor data, but they can also be used for more conventional offline machine-learning tasks 
 * The input to the GRT can be any *N*-dimensional floating-point vector
 * The toolkit reserves the class label value of zero as a special **null gesture** class label
 * Training data and models are saved as custom **.grt** files.  These consist of a simple header followed by the main dataset.  In addition to the grt files, you can also import/export data via CSV files by using the *.csv* file extension when saving/loading files
 
-You can find out more about the GRT in our Journal of Machine Learning Research paper:  [http://jmlr.csail.mit.edu/papers/volume15/gillian14a/gillian14a.pdf](grt.pdf)
+You can find out more about the GRT in our Journal of Machine Learning Research paper:  [grt.pdf](http://jmlr.csail.mit.edu/papers/volume15/gillian14a/gillian14a.pdf)
 
 ##GRT Architecture
 To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set 
