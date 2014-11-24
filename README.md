@@ -7,7 +7,7 @@ You can find the official git repository for the GRT here: [https://github.com/n
 It is also mirrored on googlecode: [https://code.google.com/p/gesture-recognition-toolkit/](https://code.google.com/p/gesture-recognition-toolkit/) 
 
 Key things to know about the GRT:
-* The toolkit consists of two parts: a comprehensive C++ API and a front-end graphical user interface (GUI). You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded here: [download](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
+* The toolkit consists of two parts: a comprehensive **C++ API** and a front-end **graphical user interface (GUI)**. You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded here: [download GUI](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * Both the C++ API and GUI are designed to work with real-time sensor data, but they can also be used for more conventional offline machine-learning tasks 
 * The input to the GRT can be any *N*-dimensional floating-point vector
 * The toolkit reserves the class label value of zero as a special **null gesture** class label
