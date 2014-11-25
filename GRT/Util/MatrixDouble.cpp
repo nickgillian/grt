@@ -43,16 +43,8 @@ MatrixDouble::MatrixDouble(const MatrixDouble &rhs){
     warningLog.setProceedingText("[WARNING MatrixDouble]");
     errorLog.setProceedingText("[ERROR MatrixDouble]");
     this->dataPtr = NULL;
-    this->rows = rhs.rows;
-    this->cols = rhs.cols;
-    if( rhs.dataPtr != NULL ){
-        this->dataPtr = new double*[rows];
-        for(unsigned int i=0; i<rows; i++){
-            dataPtr[i] = new double[cols];
-            for(unsigned int j=0; j<cols; j++)
-                this->dataPtr[i][j] = rhs.dataPtr[i][j];
-        }
-    }
+    this->rowPtr = NULL;
+    this->copy( rhs );
     
 }
     
@@ -60,16 +52,8 @@ MatrixDouble::MatrixDouble(const Matrix<double> &rhs){
     warningLog.setProceedingText("[WARNING MatrixDouble]");
     errorLog.setProceedingText("[ERROR MatrixDouble]");
     this->dataPtr = NULL;
-    this->rows = rhs.getNumRows();
-    this->cols = rhs.getNumCols();
-    if( this->rows > 0 && this->cols > 0 ){
-        this->dataPtr = new double*[rows];
-        for(unsigned int i=0; i<rows; i++){
-            dataPtr[i] = new double[cols];
-            for(unsigned int j=0; j<cols; j++)
-                this->dataPtr[i][j] = rhs[i][j];
-        }
-    }
+    this->rowPtr = NULL;
+    this->copy( rhs );
 }
 
 MatrixDouble::~MatrixDouble(){
@@ -79,14 +63,7 @@ MatrixDouble::~MatrixDouble(){
 MatrixDouble& MatrixDouble::operator=(const MatrixDouble &rhs){
     if( this != &rhs ){
         this->clear();
-        this->rows = rhs.rows;
-        this->cols = rhs.cols;
-        dataPtr = new double*[rows];
-        for(unsigned int i=0; i<rows; i++){
-            dataPtr[i] = new double[cols];
-            for(unsigned int j=0; j<cols; j++)
-                this->dataPtr[i][j] = rhs.dataPtr[i][j];
-        }
+        this->copy( rhs );
     }
     return *this;
 }
@@ -94,14 +71,7 @@ MatrixDouble& MatrixDouble::operator=(const MatrixDouble &rhs){
 MatrixDouble& MatrixDouble::operator=(const Matrix<double> &rhs){
     if( this != &rhs ){
         this->clear();
-        this->rows = rhs.getNumRows();
-        this->cols = rhs.getNumCols();
-        dataPtr = new double*[rows];
-        for(unsigned int i=0; i<rows; i++){
-            dataPtr[i] = new double[cols];
-            for(unsigned int j=0; j<cols; j++)
-                this->dataPtr[i][j] = rhs[i][j];
-        }
+        this->copy( rhs );
     }
     return *this;
 }
@@ -122,7 +92,7 @@ MatrixDouble& MatrixDouble::operator=(const vector< VectorDouble> &rhs){
             return *this;
         }
         for(unsigned int j=0; j<N; j++){
-            dataPtr[i][j] = rhs[i][j];
+            dataPtr[i*cols+j] = rhs[i][j];
         }
     }
     
@@ -142,7 +112,7 @@ bool MatrixDouble::print(const string title) const {
     }
     for(unsigned int i=0; i<rows; i++){
         for(unsigned int j=0; j<cols; j++){
-            std::cout << dataPtr[i][j] << "\t";
+            std::cout << dataPtr[i*cols+j] << "\t";
         }
         std::cout << std::endl;
     }
@@ -157,7 +127,7 @@ bool MatrixDouble::transpose(){
     MatrixDouble temp(cols,rows);
     for(unsigned int i=0; i<rows; i++){
         for(unsigned int j=0; j<cols; j++){
-            temp[j][i] = dataPtr[i][j];
+            temp[j][i] = dataPtr[i*cols+j];
         }
     }
     
@@ -182,9 +152,10 @@ bool MatrixDouble::scale(const vector< MinMax > &ranges,const double minTarget,c
         return false;
     }
     
-    for(UINT i=0; i<rows; i++){
-        for(UINT j=0; j<cols; j++){
-            dataPtr[i][j] = Util::scale(dataPtr[i][j],ranges[j].minValue,ranges[j].maxValue,minTarget,maxTarget);
+    unsigned int i,j = 0;
+    for(i=0; i<rows; i++){
+        for(j=0; j<cols; j++){
+            dataPtr[i*cols+j] = Util::scale(dataPtr[i*cols+j],ranges[j].minValue,ranges[j].maxValue,minTarget,maxTarget);
         }
     }
     return true;
@@ -201,20 +172,20 @@ bool MatrixDouble::znorm(const double alpha){
         
         //Compute the mean
         for(j=0; j<cols; j++){
-            mean += dataPtr[i][j];
+            mean += dataPtr[i*cols+j];
         }
         mean /= cols;
         
         //Compute the std dev
         for(j=0; j<cols; j++){
-            std += (dataPtr[i][j]-mean)*(dataPtr[i][j]-mean);
+            std += (dataPtr[i*cols+j]-mean)*(dataPtr[i*cols+j]-mean);
         }
         std /= cols;
         std = sqrt( std + alpha );
         
         //Normalize the row
         for(j=0; j<cols; j++){
-            dataPtr[i][j] = (dataPtr[i][j]-mean) / std;
+            dataPtr[i*cols+j] = (dataPtr[i*cols+j]-mean) / std;
         }
     }
     
@@ -226,12 +197,11 @@ MatrixDouble MatrixDouble::multiple(const double value) const{
     if( dataPtr == NULL ) return MatrixDouble();
     
     MatrixDouble d(rows,cols);
+    double *d_p = &(d[0][0]);
     
-    unsigned int i,j = 0;
-    for( i=0; i<rows; i++){
-        for(j=0; j<cols; j++){
-            d[i][j] = dataPtr[i][j] * value;
-        }
+    unsigned int i = 0;
+    for(i=0; i<rows*cols; i++){
+        d_p[i] = dataPtr[i] * value;
     }
     
     return d;
@@ -256,7 +226,7 @@ VectorDouble MatrixDouble::multiple(const VectorDouble &b) const{
     for(i=0; i<rows; i++){
         pc[i] = 0;
         for(j=0; j<cols; j++){
-            pc[i] += dataPtr[i][j]*pb[j];
+            pc[i] += dataPtr[i*cols+j]*pb[j];
         }
     }
     
@@ -284,7 +254,7 @@ MatrixDouble MatrixDouble::multiple(const MatrixDouble &b) const{
         for(j=0; j<L; j++){
             pc[i][j] = 0;
             for(k=0; k<K; k++){
-                pc[i][j] += dataPtr[i][k] * pb[k][j];
+                pc[i][j] += dataPtr[i*cols+k] * pb[k][j];
             }
         }
     }
@@ -319,9 +289,9 @@ bool MatrixDouble::multiple(const MatrixDouble &a,const MatrixDouble &b,const bo
         
         for(j=0; j<L; j++){
             for(i=0; i<M; i++){
-                dataPtr[i][j] = 0;
+                dataPtr[i*cols+j] = 0;
                 for(k=0; k<K; k++){
-                    dataPtr[i][j] += pa[k][i] * pb[k][j];
+                    dataPtr[i*cols+j] += pa[k][i] * pb[k][j];
                 }
             }
         }
@@ -330,9 +300,9 @@ bool MatrixDouble::multiple(const MatrixDouble &a,const MatrixDouble &b,const bo
         
         for(j=0; j<L; j++){
             for(i=0; i<M; i++){
-                dataPtr[i][j] = 0;
+                dataPtr[i*cols+j] = 0;
                 for(k=0; k<K; k++){
-                    dataPtr[i][j] += pa[i][k] * pb[k][j];
+                    dataPtr[i*cols+j] += pa[i][k] * pb[k][j];
                 }
             }
         }
@@ -354,15 +324,13 @@ bool MatrixDouble::add(const MatrixDouble &b){
         return false;
     }
     
-    unsigned int i,j;
+    unsigned int i = 0;
     
     //Using direct pointers really helps speed up the computation time
-    double **pb = b.getDataPointer();
+    const double *p_b = &(b[0][0]);
     
-    for(i=0; i<rows; i++){
-        for(j=0; j<cols; j++){
-            dataPtr[i][j] += pb[i][j];
-        }
+    for(i=0; i<rows*cols; i++){
+        dataPtr[i] += p_b[i];
     }
     
     return true;
@@ -395,7 +363,7 @@ bool MatrixDouble::add(const MatrixDouble &a,const MatrixDouble &b){
     
     for(i=0; i<M; i++){
         for(j=0; j<N; j++){
-            dataPtr[i][j] = pa[i][j] + pb[i][j];
+            dataPtr[i*cols+j] = pa[i][j] + pb[i][j];
         }
     }
     
@@ -423,7 +391,7 @@ bool MatrixDouble::subtract(const MatrixDouble &b){
     
     for(i=0; i<rows; i++){
         for(j=0; j<cols; j++){
-            dataPtr[i][j] -= pb[i][j];
+            dataPtr[i*cols+j] -= pb[i][j];
         }
     }
     
@@ -457,7 +425,7 @@ bool MatrixDouble::subtract(const MatrixDouble &a,const MatrixDouble &b){
     
     for(i=0; i<M; i++){
         for(j=0; j<N; j++){
-            dataPtr[i][j] = pa[i][j] - pb[i][j];
+            dataPtr[i*cols+j] = pa[i][j] - pb[i][j];
         }
     }
     
@@ -466,20 +434,16 @@ bool MatrixDouble::subtract(const MatrixDouble &a,const MatrixDouble &b){
     
 double MatrixDouble::getMinValue() const{
     double minValue = 99e+99;
-    for(unsigned int i=0; i<rows; i++){
-        for(unsigned int j=0; j<cols; j++){
-            if( dataPtr[i][j] < minValue ) minValue = dataPtr[i][j];
-        }
+    for(unsigned int i=0; i<rows*cols; i++){
+        if( dataPtr[i] < minValue ) minValue = dataPtr[i];
     }
     return minValue;
 }
 
 double MatrixDouble::getMaxValue() const{
     double maxValue = 99e-99;
-    for(unsigned int i=0; i<rows; i++){
-        for(unsigned int j=0; j<cols; j++){
-            if( dataPtr[i][j] > maxValue ) maxValue = dataPtr[i][j];
-        }
+    for(unsigned int i=0; i<rows*cols; i++){
+        if( dataPtr[i] > maxValue ) maxValue = dataPtr[i];
     }
     return maxValue;
 }
@@ -491,7 +455,7 @@ VectorDouble MatrixDouble::getMean() const{
     for(unsigned int c=0; c<cols; c++){
         mean[c] = 0;
         for(unsigned int r=0; r<rows; r++){
-            mean[c] += dataPtr[r][c];
+            mean[c] += dataPtr[r*cols+c];
         }
         mean[c] /= double( rows );
     }
@@ -506,7 +470,7 @@ VectorDouble MatrixDouble::getStdDev() const{
 	
 	for(unsigned int j=0; j<cols; j++){
 		for(unsigned int i=0; i<rows; i++){
-			stdDev[j] += (dataPtr[i][j]-mean[j])*(dataPtr[i][j]-mean[j]);
+			stdDev[j] += (dataPtr[i*cols+j]-mean[j])*(dataPtr[i*cols+j]-mean[j]);
 		}
 		stdDev[j] = sqrt( stdDev[j] / double(rows-1) );
 	}
@@ -522,7 +486,7 @@ MatrixDouble MatrixDouble::getCovarianceMatrix() const{
         for(unsigned int k=0; k<cols; k++){
             covMatrix[j][k] = 0;
             for(unsigned int i=0; i<rows; i++){
-                covMatrix[j][k] += (dataPtr[i][j]-mean[j]) * (dataPtr[i][k]-mean[k]);
+                covMatrix[j][k] += (dataPtr[i*cols+j]-mean[j]) * (dataPtr[i*cols+k]-mean[k]);
             }
             covMatrix[j][k] /= double(rows-1);
         }
@@ -538,7 +502,7 @@ std::vector< MinMax > MatrixDouble::getRanges() const{
     vector< MinMax > ranges(cols);
     for(unsigned int i=0; i<rows; i++){
         for(unsigned int j=0; j<cols; j++){
-            ranges[j].updateMinMax( dataPtr[i][j] );
+            ranges[j].updateMinMax( dataPtr[i*cols+j] );
         }
     }
     return ranges;
@@ -548,7 +512,7 @@ double MatrixDouble::getTrace() const{
     double t = 0;
     unsigned int K = (rows < cols ? rows : cols);
     for(unsigned int i=0; i < K; i++) {
-        t += dataPtr[i][i];
+        t += dataPtr[i*cols+i];
     }
     return t;
 }
@@ -564,7 +528,7 @@ bool MatrixDouble::save(const string &filename) const{
     
     for(UINT i=0; i<rows; i++){
         for(UINT j=0; j<cols; j++){
-            file << dataPtr[i][j] << (j<cols-1 ? "," : "\n");
+            file << dataPtr[i*cols+j] << (j<cols-1 ? "," : "\n");
         }
     }
     
@@ -661,7 +625,7 @@ bool MatrixDouble::load(const string &filename,const char seperator){
         
         //Convert the string column values to double values
         for(unsigned int j=0; j<columnCounter; j++){
-            dataPtr[rowCounter][j] = stringToDouble(vec[j]);
+            dataPtr[rowCounter*cols+j] = stringToDouble(vec[j]);
         }
         rowCounter++;
     }

@@ -71,15 +71,34 @@ public:
         this->capacity = 0;
         
 		if(this!=&rhs){
-			 this->rows = rhs.rows;
-			 this->cols = rhs.cols;
-			 this->capacity = rhs.rows;
-			 dataPtr = new T*[rows];
-			 for(unsigned int i=0; i<rows; i++){
-				 dataPtr[i] = new T[cols];
-				 for(unsigned int j=0; j<cols; j++)
-					 this->dataPtr[i][j] = rhs.dataPtr[i][j];
-			 }
+            this->rows = rhs.rows;
+            this->cols = rhs.cols;
+            this->capacity = rhs.rows;
+            dataPtr = new T[rows*cols];
+            rowPtr = new T*[rows];
+            
+            if( dataPtr == NULL ){
+                errorLog << "Failed to allocate memory!" << std::endl;
+                return;
+            }
+            
+            if( rowPtr == NULL ){
+                errorLog << "Failed to allocate memory!" << std::endl;
+                return;
+            }
+            
+            //Setup the row pointers
+            unsigned int i,j=0;
+            T *p = &(dataPtr[0]);
+            for(i=0; i<rows; i++){
+                rowPtr[i] = p;
+                p += cols;
+            }
+            
+            //Copy the data
+            for(i=0; i<rows*cols; i++){
+                this->dataPtr[i] = rhs.dataPtr[i];
+            }
 		}
 	}
     
@@ -140,16 +159,36 @@ public:
     */
 	Matrix& operator=(const Matrix &rhs){
 		if(this!=&rhs){
-			 this->clear();
-			 this->rows = rhs.rows;
-			 this->cols = rhs.cols;
-			 this->capacity = rhs.rows;
-			 dataPtr = new T*[rows];
-			 for(unsigned int i=0; i<rows; i++){
-				 dataPtr[i] = new T[cols];
-				 for(unsigned int j=0; j<cols; j++)
-					 this->dataPtr[i][j] = rhs.dataPtr[i][j];
-			 }
+            this->clear();
+            this->rows = rhs.rows;
+            this->cols = rhs.cols;
+            this->capacity = rhs.rows;
+			 
+            dataPtr = new T[rows*cols];
+            rowPtr = new T*[rows];
+            
+            if( dataPtr == NULL ){
+                errorLog << "Failed to allocate memory!" << std::endl;
+                return *this;
+            }
+                
+            if( rowPtr == NULL ){
+                errorLog << "Failed to allocate memory!" << std::endl;
+                return *this;
+            }
+                
+            //Setup the row pointers
+            unsigned int i,j=0;
+            T *p = &(dataPtr[0]);
+            for(i=0; i<rows; i++){
+                rowPtr[i] = p;
+                p += cols;
+            }
+                
+            //Copy the data
+            for(i=0; i<rows; i++){
+                this->dataPtr[i] = rhs.dataPtr[i];
+            }
 		}
 		return *this;
 	}
@@ -161,7 +200,7 @@ public:
      @return a pointer to the data at row r
     */
 	inline T* operator[](const unsigned int r){
-		return dataPtr[r];
+		return rowPtr[r];
 	}
     
     /**
@@ -171,7 +210,7 @@ public:
      @return a const pointer to the data at row r
      */
 	inline const T* operator[](const unsigned int r) const{
-		return dataPtr[r];
+		return rowPtr[r];
 	}
 
     /**
@@ -183,7 +222,7 @@ public:
 	std::vector<T> getRowVector(const unsigned int r) const{
 		std::vector<T> rowVector(cols);
 		for(unsigned int c=0; c<cols; c++)
-			rowVector[c] = dataPtr[r][c];
+			rowVector[c] = dataPtr[r*cols+c];
 		return rowVector;
 	}
 
@@ -196,7 +235,7 @@ public:
 	std::vector<T> getColVector(const unsigned int c) const{
 		std::vector<T> columnVector(rows);
 		for(unsigned int r=0; r<rows; r++)
-			columnVector[r] = dataPtr[r][c];
+			columnVector[r] = dataPtr[r*cols+c];
 		return columnVector;
 	}
     
@@ -215,16 +254,18 @@ public:
         
 		std::vector<T> vectorData(rows*cols);
         
+        unsigned int i,j =0;
+        
 		if( concatByRow ){
-			for(unsigned int i=0; i<rows; i++){
-				for(unsigned int j=0; j<cols; j++){
-					vectorData[ (i*cols)+j ] = dataPtr[i][j];
+			for( i=0; i<rows; i++){
+				for(j=0; j<cols; j++){
+					vectorData[ (i*cols)+j ] = dataPtr[i*cols+j];
 				}
 			}
 		}else{
-			for(unsigned int j=0; j<cols; j++){
-				for(unsigned int i=0; i<rows; i++){
-					vectorData[ (i*cols)+j ] = dataPtr[i][j];
+			for(j=0; j<cols; j++){
+				for(i=0; i<rows; i++){
+					vectorData[ (i*cols)+j ] = dataPtr[i*cols+j];
 				}
 			}
 		}
@@ -254,18 +295,34 @@ public:
                 rows = r;
                 cols = c;
                 capacity = r;
-                dataPtr = new T*[rows];
                 
-                //Check to see if the memory was created correctly
+                dataPtr = new T[rows*cols];
+                rowPtr = new T*[rows];
+                
                 if( dataPtr == NULL ){
                     rows = 0;
                     cols = 0;
                     capacity = 0;
+                    errorLog << "Failed to allocate memory!" << std::endl;
                     return false;
                 }
-                for(unsigned int i=0; i<rows; i++){
-                    dataPtr[i] = new T[cols];
+                
+                if( rowPtr == NULL ){
+                    rows = 0;
+                    cols = 0;
+                    capacity = 0;
+                    errorLog << "Failed to allocate memory!" << std::endl;
+                    return false;
                 }
+                
+                //Setup the row pointers
+                unsigned int i,j=0;
+                T *p = &(dataPtr[0]);
+                for(i=0; i<rows; i++){
+                    rowPtr[i] = p;
+                    p += cols;
+                }
+                
                 return true;
                 
             }catch( std::exception& e ){
@@ -280,6 +337,49 @@ public:
 		}
 		return false;
 	}
+              
+    /**
+     Copies the data from the rhs matrix to this matrix.
+     
+     @param const Matrix<T> &rhs: the matrix you want to copy into this matrix
+     @return returns true or false, indicating if the copy was successful
+     */
+    bool copy( const Matrix<T> &rhs ){
+        
+        if( this !=& rhs ){
+            this->clear();
+            this->rows = rhs.rows;
+            this->cols = rhs.cols;
+            this->capacity = rhs.rows;
+            
+            dataPtr = new T[rows*cols];
+            rowPtr = new T*[rows];
+            
+            if( dataPtr == NULL ){
+                errorLog << "Failed to allocate memory!" << std::endl;
+                return false;
+            }
+            
+            if( rowPtr == NULL ){
+                errorLog << "Failed to allocate memory!" << std::endl;
+                return false;
+            }
+            
+            //Setup the row pointers
+            unsigned int i,j=0;
+            T *p = &(dataPtr[0]);
+            for(i=0; i<rows; i++){
+                rowPtr[i] = p;
+                p += cols;
+            }
+            
+            //Copy the data
+            for(i=0; i<rows*cols; i++){
+                this->dataPtr[i] = rhs.dataPtr[i];
+            }
+        }
+        return true;
+    }
 
     /**
      Sets all the values in the Matrix to the input value
@@ -289,9 +389,10 @@ public:
     */
 	bool setAllValues(const T &value){
 		if(dataPtr!=NULL){
-			for(unsigned int i=0; i<rows; i++)
-				for(unsigned int j=0; j<cols; j++)
-					dataPtr[i][j] = value;
+            unsigned int i,j =0;
+			for( i=0; i<rows; i++)
+				for(j=0; j<cols; j++)
+					dataPtr[i*cols+j] = value;
             return true;
 		}
         return false;
@@ -311,7 +412,7 @@ public:
 		if( rowIndex >= rows ) return false;
 
 		for(unsigned int j=0; j<cols; j++)
-			dataPtr[ rowIndex ][ j ] = row[ j ];
+			dataPtr[ rowIndex * cols + j ] = row[ j ];
         return true;
 	}
 	
@@ -329,7 +430,7 @@ public:
 		if( colIndex >= cols ) return false;
 
 		for(unsigned int i=0; i<rows; i++)
-			dataPtr[ i ][ colIndex ] = column[ i ];
+			dataPtr[ i * cols + colIndex ] = column[ i ];
         return true;
 	}
 
@@ -350,7 +451,7 @@ public:
                 return false;
             }
 			for(unsigned int j=0; j<cols; j++)
-				dataPtr[0][j] = sample[j];
+				dataPtr[ j ] = sample[j];
 			return true;
 		}
 
@@ -363,34 +464,39 @@ public:
 		if( rows < capacity ){
 			//Add the new sample at the end
 			for(unsigned int j=0; j<cols; j++)
-				dataPtr[rows][j] = sample[j];
+				dataPtr[rows * cols + j] = sample[j];
 				
 		}else{ //Otherwise we copy the existing data from the data ptr into a new buffer of size (rows+1) and add the sample at the end
-			T** tempDataPtr = NULL;
-			tempDataPtr = new T*[ rows+1 ];
-			if( tempDataPtr == NULL ){//If NULL then we have run out of memory
+            
+            const unsigned int tmpRows = rows + 1;
+            unsigned int i,j = 0;
+            T* tmpDataPtr = new T[tmpRows*cols];
+            T** tmpRowPtr = new T*[tmpRows];
+            
+			if( tmpDataPtr == NULL || tmpRowPtr == NULL ){//If NULL then we have run out of memory
 				return false;
 			}
-			for(unsigned int i=0; i<rows+1; i++){
-				tempDataPtr[i] = new T[cols];
-			}
+			
+            //Setup the row pointers
+            T *p = &(tmpDataPtr[0]);
+            for(i=0; i<tmpRows; i++){
+                tmpRowPtr[i] = p;
+                p += cols;
+            }
+            
+			//Copy the original data into the tmp buffer
+			for(i=0; i<rows*cols; i++)
+					tmpDataPtr[i] = dataPtr[i];
 
-			//Copy the original data
-			for(unsigned int i=0; i<rows; i++)
-				for(unsigned int j=0; j<cols; j++)
-					tempDataPtr[i][j] = dataPtr[i][j];
-
-			//Add the new sample at the end
-			for(unsigned int j=0; j<cols; j++)
-				tempDataPtr[rows][j] = sample[j];
+			//Add the new sample at the end of the tmp buffer
+			for(j=0; j<cols; j++)
+				tmpDataPtr[rows*cols+j] = sample[j];
 
 			//Delete the original data and copy the pointer
-			for(unsigned int i=0; i<rows; i++){
-				delete[] dataPtr[i];
-				dataPtr[i] = NULL;
-			}
 			delete[] dataPtr;
-			dataPtr = tempDataPtr;
+            delete[] rowPtr;
+			dataPtr = tmpDataPtr;
+            rowPtr = tmpRowPtr;
 			
 			//Increment the capacity so it matches the number of rows
 			capacity++;
@@ -416,27 +522,29 @@ public:
 		if( cols == 0 ) return false;
 		
 		//Reserve the data and copy and existing data
-		T** tempDataPtr = NULL;
-		tempDataPtr = new T*[ capacity ];
-		if( tempDataPtr == NULL ){//If NULL then we have run out of memory
+        unsigned int i,j =0;
+		T* tmpDataPtr = new T[ capacity * cols ];
+        T** tmpRowPtr = new T*[ capacity ];
+		if( tmpDataPtr == NULL || tmpRowPtr == NULL ){//If NULL then we have run out of memory
 			return false;
 		}
-		for(unsigned int i=0; i<capacity; i++){
-			tempDataPtr[i] = new T[cols];
-		}
+		
+        //Setup the row pointers
+        T *p = &(tmpDataPtr[0]);
+        for(i=0; i<capacity; i++){
+            tmpRowPtr[i] = p;
+            p += cols;
+        }
 
 		//Copy the existing data into the new memory
-		for(unsigned int i=0; i<rows; i++)
-			for(unsigned int j=0; j<cols; j++)
-				tempDataPtr[i][j] = dataPtr[i][j];
+		for(i=0; i<rows*cols; i++)
+				tmpDataPtr[i] = dataPtr[i];
 
 		//Delete the original data and copy the pointer
-		for(unsigned int i=0; i<rows; i++){
-			delete[] dataPtr[i];
-			dataPtr[i] = NULL;
-		}
 		delete[] dataPtr;
-		dataPtr = tempDataPtr;
+        delete[] rowPtr;
+		dataPtr = tmpDataPtr;
+        rowPtr = tmpRowPtr;
 		
 		//Store the new capacity
 		this->capacity = capacity;
@@ -449,12 +557,12 @@ public:
     */
 	void clear(){
 		if( dataPtr != NULL ){
-			for(unsigned int i=0; i<rows; i++){
-                delete[] dataPtr[i];
-                dataPtr[i] = NULL;
-			}
 			delete[] dataPtr;
 			dataPtr = NULL;
+		}
+        if( rowPtr != NULL ){
+			delete[] rowPtr;
+			rowPtr = NULL;
 		}
 		rows = 0;
 		cols = 0;
@@ -484,7 +592,7 @@ public:
 	inline unsigned int getCapacity() const{ return capacity; }
     
     T** getDataPointer() const{
-        return dataPtr;
+        return &(rowPtr[0]);
     }
 
 protected:
@@ -492,7 +600,8 @@ protected:
 	unsigned int rows;      ///< The number of rows in the Matrix
 	unsigned int cols;      ///< The number of columns in the Matrix
 	unsigned int capacity;  ///< The actual capacity of the Matrix, this will be the number of rows, not the actual memory size
-	T **dataPtr;            ///< A pointer to the data
+    T *dataPtr;             ///< A pointer to the data
+    T **rowPtr;              ///< A pointer to each row in the data
     ErrorLog errorLog;
 
 };
