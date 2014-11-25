@@ -599,9 +599,9 @@ protected:
     
 	unsigned int rows;      ///< The number of rows in the Matrix
 	unsigned int cols;      ///< The number of columns in the Matrix
-	unsigned int capacity;  ///< The actual capacity of the Matrix, this will be the number of rows, not the actual memory size
-    T *dataPtr;             ///< A pointer to the data
-    T **rowPtr;              ///< A pointer to each row in the data
+	unsigned int capacity;  ///< The capacity of the Matrix, this will be the number of rows, not the actual memory size
+    T *dataPtr;             ///< A pointer to the raw data
+    T **rowPtr;             ///< A pointer to each row in the data
     ErrorLog errorLog;
 
 };
