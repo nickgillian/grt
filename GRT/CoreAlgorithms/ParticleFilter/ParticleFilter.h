@@ -86,12 +86,32 @@ public:
     }
     
     /**
+     Provides direct constant access to the i'th particle. It is the user's responsibility to ensure i is within bounds.
+     
+     @param const unsigned int &i: the index of the particle you want
+     @return returns a reference to the i'th particle (if i is valid)
+     */
+    const PARTICLE& operator[](const unsigned int &i) const {
+        return particles[i];
+    }
+    
+    /**
      Provides direct access to the i'th particle before it was resampled. It is the user's responsibility to ensure i is within bounds.
      
      @param const unsigned int &i: the index of the particle you want
      @return returns a reference to the i'th particle (if i is valid)
      */
     PARTICLE& operator()(const unsigned int &i){
+        return (&particles == &particleDistributionA ? particleDistributionB[i] : particleDistributionA[i]);
+    }
+    
+    /**
+     Provides direct constant access to the i'th particle before it was resampled. It is the user's responsibility to ensure i is within bounds.
+     
+     @param const unsigned int &i: the index of the particle you want
+     @return returns a reference to the i'th particle (if i is valid)
+     */
+    const PARTICLE& operator()(const unsigned int &i) const {
         return (&particles == &particleDistributionA ? particleDistributionB[i] : particleDistributionA[i]);
     }
     
