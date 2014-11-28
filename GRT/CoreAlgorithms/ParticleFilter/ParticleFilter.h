@@ -35,8 +35,6 @@
 #include "Particle.h"
 #include "../../Util/GRTCommon.h"
 
-using namespace std;
-
 namespace GRT{
 
 template<class PARTICLE,class SENSOR_DATA>
@@ -326,6 +324,13 @@ public:
         }
         
         return true;
+    }
+    
+    /**
+     @return returns if the particle filter has been initialized, false otherwise
+     */
+    bool getInitialized() const {
+        return initialized;
     }
     
     /**
@@ -837,27 +842,27 @@ protected:
      @return returns the square of the input
      */
     double SQR(const double x){ return x*x; }
-    
-    bool initialized;                           ///<A flag that indicates if the filter has been initialized
-    bool verbose;                               ///<A flag that indicates if warning and info messages should be printed
-    bool normWeights;                           ///<A flag that indicates if the weights should be normalized at each filter iteration
-    unsigned int numParticles;                  ///<The number of particles in the filter
-    unsigned int stateVectorSize;               ///<The size of the state vector (x)
-    unsigned int initMode;                      ///<The mode used to initialize the particles, this should be one of the InitModes enums.
-    unsigned int estimationMode;                ///<The estimation mode (used to compute the state estimation)
+
+    bool initialized;                               ///<A flag that indicates if the filter has been initialized
+    bool verbose;                                   ///<A flag that indicates if warning and info messages should be printed
+    bool normWeights;                               ///<A flag that indicates if the weights should be normalized at each filter iteration
+    unsigned int numParticles;                      ///<The number of particles in the filter
+    unsigned int stateVectorSize;                   ///<The size of the state vector (x)
+    unsigned int initMode;                          ///<The mode used to initialize the particles, this should be one of the InitModes enums.
+    unsigned int estimationMode;                    ///<The estimation mode (used to compute the state estimation)
     unsigned int numDeadParticles;
-    double minimumWeightThreshold;              ///<Any weight below this value will not be resampled
-    double robustMeanWeightDistance;            ///<The distance parameter used in the ROBUST_MEAN estimation mode
-    double estimationLikelihood;                ///<The likelihood of the estimated state
-    VectorDouble x;                             ///<The state estimation
-    vector< VectorDouble > initModel;           ///<The noise model for the initial starting guess
-    VectorDouble processNoise;                  ///<The noise covariance in the system
-    VectorDouble measurementNoise;              ///<The noise covariance in the measurement
-    vector< PARTICLE > &particles;              ///<A reference to the current active particle vector
-    vector< PARTICLE > particleDistributionA;   ///<A vector of particles, this will either hold the particles before or after a resample
-    vector< PARTICLE > particleDistributionB;   ///<A vector of particles, this will either hold the particles before or after a resample
-    VectorDouble cumsum;                        ///<The cumulative sum vector used for resampling the particles
-    Random rand;                                ///<A random number generator
+    double minimumWeightThreshold;                  ///<Any weight below this value will not be resampled
+    double robustMeanWeightDistance;                ///<The distance parameter used in the ROBUST_MEAN estimation mode
+    double estimationLikelihood;                    ///<The likelihood of the estimated state
+    VectorDouble x;                                 ///<The state estimation
+    std::vector< VectorDouble > initModel;           ///<The noise model for the initial starting guess
+    VectorDouble processNoise;                      ///<The noise covariance in the system
+    VectorDouble measurementNoise;                  ///<The noise covariance in the measurement
+    std::vector< PARTICLE > &particles;              ///<A reference to the current active particle vector
+    std::vector< PARTICLE > particleDistributionA;   ///<A vector of particles, this will either hold the particles before or after a resample
+    std::vector< PARTICLE > particleDistributionB;   ///<A vector of particles, this will either hold the particles before or after a resample
+    VectorDouble cumsum;                            ///<The cumulative sum vector used for resampling the particles
+    Random rand;                                    ///<A random number generator
     WarningLog warningLog;
     ErrorLog errorLog;
     
