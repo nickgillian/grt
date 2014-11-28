@@ -44,6 +44,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "GRTTypedefs.h"
 
 //Include the common GRT classes
+#include "GRTException.h"
 #include "MatrixDouble.h"
 #include "MinMax.h"
 #include "ClassTracker.h"

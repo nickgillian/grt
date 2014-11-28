@@ -30,8 +30,10 @@
 #define GRT_MATRIX_HEADER
 
 #include <iostream>
+#include <iterator>     // std::front_inserter
+#include <algorithm>    // std::copy
 #include <vector>
-#include <exception>
+#include "GRTException.h"
 #include "ErrorLog.h"
 
 namespace GRT{
@@ -44,8 +46,10 @@ public:
 	Matrix():errorLog("[ERROR Matrix]"){
         rows = 0;
         cols = 0;
+        size = 0;
         capacity = 0;
         dataPtr = NULL;
+        rowPtr = NULL;
 	}
     
     /**
@@ -56,6 +60,7 @@ public:
     */
 	Matrix(const unsigned int rows,const unsigned int cols):errorLog("[ERROR Matrix]"){
         dataPtr = NULL;
+        rowPtr = NULL;
         resize(rows,cols);
 	}
     
@@ -66,24 +71,27 @@ public:
     */
 	Matrix(const Matrix &rhs):errorLog("[ERROR Matrix]"){
         this->dataPtr = NULL;
+        this->rowPtr = NULL;
         this->rows = 0;
         this->cols = 0;
+        this->size = 0;
         this->capacity = 0;
         
 		if(this!=&rhs){
             this->rows = rhs.rows;
             this->cols = rhs.cols;
+            this->size = rows*cols;
             this->capacity = rhs.rows;
             dataPtr = new T[rows*cols];
             rowPtr = new T*[rows];
             
             if( dataPtr == NULL ){
-                errorLog << "Failed to allocate memory!" << std::endl;
+                throw Exception("Matrix(const Matrix &rhs) - Failed to allocate memory!");
                 return;
             }
             
             if( rowPtr == NULL ){
-                errorLog << "Failed to allocate memory!" << std::endl;
+                throw Exception("Matrix(const Matrix &rhs) - Failed to allocate memory!");
                 return;
             }
             
@@ -96,7 +104,7 @@ public:
             }
             
             //Copy the data
-            for(i=0; i<rows*cols; i++){
+            for(i=0; i<size; i++){
                 this->dataPtr[i] = rhs.dataPtr[i];
             }
 		}
@@ -111,8 +119,10 @@ public:
      */
 	Matrix(const std::vector< std::vector< T > > &data):errorLog("[ERROR Matrix]"){
 		this->dataPtr = NULL;
+        this->rowPtr = NULL;
 		this->rows = 0;
 		this->cols = 0;
+        this->size = 0;
 		this->capacity = 0;
         
 		unsigned int tempRows = (unsigned int)data.size();
@@ -160,35 +170,7 @@ public:
 	Matrix& operator=(const Matrix &rhs){
 		if(this!=&rhs){
             this->clear();
-            this->rows = rhs.rows;
-            this->cols = rhs.cols;
-            this->capacity = rhs.rows;
-			 
-            dataPtr = new T[rows*cols];
-            rowPtr = new T*[rows];
-            
-            if( dataPtr == NULL ){
-                errorLog << "Failed to allocate memory!" << std::endl;
-                return *this;
-            }
-                
-            if( rowPtr == NULL ){
-                errorLog << "Failed to allocate memory!" << std::endl;
-                return *this;
-            }
-                
-            //Setup the row pointers
-            unsigned int i,j=0;
-            T *p = &(dataPtr[0]);
-            for(i=0; i<rows; i++){
-                rowPtr[i] = p;
-                p += cols;
-            }
-                
-            //Copy the data
-            for(i=0; i<rows; i++){
-                this->dataPtr[i] = rhs.dataPtr[i];
-            }
+            this->copy( rhs );
 		}
 		return *this;
 	}
@@ -294,6 +276,7 @@ public:
             try{
                 rows = r;
                 cols = c;
+                size = r * c;
                 capacity = r;
                 
                 dataPtr = new T[rows*cols];
@@ -302,21 +285,23 @@ public:
                 if( dataPtr == NULL ){
                     rows = 0;
                     cols = 0;
+                    size = 0;
                     capacity = 0;
-                    errorLog << "Failed to allocate memory!" << std::endl;
+                    throw Exception("Matrix::resize(const unsigned int r,const unsigned int c) - Failed to allocate memory!");
                     return false;
                 }
                 
                 if( rowPtr == NULL ){
                     rows = 0;
                     cols = 0;
+                    size = 0;
                     capacity = 0;
-                    errorLog << "Failed to allocate memory!" << std::endl;
+                    throw Exception("Matrix::resize(const unsigned int r,const unsigned int c) - Failed to allocate memory!");
                     return false;
                 }
                 
                 //Setup the row pointers
-                unsigned int i,j=0;
+                unsigned int i=0;
                 T *p = &(dataPtr[0]);
                 for(i=0; i<rows; i++){
                     rowPtr[i] = p;
@@ -347,34 +332,17 @@ public:
     bool copy( const Matrix<T> &rhs ){
         
         if( this !=& rhs ){
-            this->clear();
-            this->rows = rhs.rows;
-            this->cols = rhs.cols;
-            this->capacity = rhs.rows;
             
-            dataPtr = new T[rows*cols];
-            rowPtr = new T*[rows];
-            
-            if( dataPtr == NULL ){
-                errorLog << "Failed to allocate memory!" << std::endl;
-                return false;
-            }
-            
-            if( rowPtr == NULL ){
-                errorLog << "Failed to allocate memory!" << std::endl;
-                return false;
-            }
-            
-            //Setup the row pointers
-            unsigned int i,j=0;
-            T *p = &(dataPtr[0]);
-            for(i=0; i<rows; i++){
-                rowPtr[i] = p;
-                p += cols;
+            if( this->size != rhs.size ){
+                if( !this->resize( rhs.rows, rhs.cols ) ){
+                    throw Exception("Matrix::copy( const Matrix<T> &rhs ) - Failed to allocate resize matrix!");
+                    return false;
+                }
             }
             
             //Copy the data
-            for(i=0; i<rows*cols; i++){
+            unsigned int i = 0;
+            for(i=0; i<size; i++){
                 this->dataPtr[i] = rhs.dataPtr[i];
             }
         }
@@ -389,10 +357,9 @@ public:
     */
 	bool setAllValues(const T &value){
 		if(dataPtr!=NULL){
-            unsigned int i,j =0;
-			for( i=0; i<rows; i++)
-				for(j=0; j<cols; j++)
-					dataPtr[i*cols+j] = value;
+            unsigned int i =0;
+			for(i=0; i<size; i++)
+                dataPtr[i] = value;
             return true;
 		}
         return false;
@@ -411,7 +378,8 @@ public:
 		if( row.size() != cols ) return false;
 		if( rowIndex >= rows ) return false;
 
-		for(unsigned int j=0; j<cols; j++)
+        unsigned int j = 0;
+		for(j=0; j<cols; j++)
 			dataPtr[ rowIndex * cols + j ] = row[ j ];
         return true;
 	}
@@ -443,6 +411,9 @@ public:
      @return returns true or false, indicating if the push was successful 
     */
 	bool push_back(const std::vector<T> &sample){
+        
+        unsigned int i,j = 0;
+        
 		//If there is no data, but we know how many cols are in a sample then we simply create a new buffer of size 1 and add the sample
 		if(dataPtr==NULL){
 			cols = (unsigned int)sample.size();
@@ -450,7 +421,7 @@ public:
                 clear();
                 return false;
             }
-			for(unsigned int j=0; j<cols; j++)
+			for(j=0; j<cols; j++)
 				dataPtr[ j ] = sample[j];
 			return true;
 		}
@@ -460,16 +431,15 @@ public:
 			return false;
 		}
 
-		//Check to see if we have reached the capacity, if not then simply add the new data
+		//Check to see if we have reached the capacity, if not then simply add the new data as there are unused rows
 		if( rows < capacity ){
 			//Add the new sample at the end
-			for(unsigned int j=0; j<cols; j++)
+			for(j=0; j<cols; j++)
 				dataPtr[rows * cols + j] = sample[j];
 				
 		}else{ //Otherwise we copy the existing data from the data ptr into a new buffer of size (rows+1) and add the sample at the end
             
             const unsigned int tmpRows = rows + 1;
-            unsigned int i,j = 0;
             T* tmpDataPtr = new T[tmpRows*cols];
             T** tmpRowPtr = new T*[tmpRows];
             
@@ -504,6 +474,9 @@ public:
 		
         //Increment the number of rows
 		rows++;
+        
+        //Update the size
+        size = rows * cols;
 
 		//Finally return true to signal that the data was added correctly
 		return true;
@@ -537,7 +510,7 @@ public:
         }
 
 		//Copy the existing data into the new memory
-		for(i=0; i<rows*cols; i++)
+		for(i=0; i<size; i++)
 				tmpDataPtr[i] = dataPtr[i];
 
 		//Delete the original data and copy the pointer
@@ -548,6 +521,9 @@ public:
 		
 		//Store the new capacity
 		this->capacity = capacity;
+        
+        //Store the size
+        size = rows * cols;
 		
 		return true;
 	}
@@ -566,6 +542,7 @@ public:
 		}
 		rows = 0;
 		cols = 0;
+        size = 0;
 		capacity = 0;
 	}
 
@@ -590,8 +567,23 @@ public:
      @return returns the number of columns in the Matrix
     */
 	inline unsigned int getCapacity() const{ return capacity; }
+                
+    /**
+     Gets the size of the Matrix. This is rows * size.
+     
+     @return returns the number of columns in the Matrix
+     */
+    inline unsigned int getSize() const{ return size; }
     
+    /**
+     Gets a pointer to the
+     
+     @return returns the number of columns in the Matrix
+     */
     T** getDataPointer() const{
+        if( rowPtr == NULL ){
+            throw Exception("Matrix::getDataPointer() - Matrix has not been initialized!");
+        }
         return &(rowPtr[0]);
     }
 
@@ -599,6 +591,7 @@ protected:
     
 	unsigned int rows;      ///< The number of rows in the Matrix
 	unsigned int cols;      ///< The number of columns in the Matrix
+    unsigned int size;      ///< Stores rows * cols
 	unsigned int capacity;  ///< The capacity of the Matrix, this will be the number of rows, not the actual memory size
     T *dataPtr;             ///< A pointer to the raw data
     T **rowPtr;             ///< A pointer to each row in the data
