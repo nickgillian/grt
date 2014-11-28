@@ -6,13 +6,14 @@
 
 #NOTE: Have a look at the GRT GUI README before attempting to build this project
 
-QT  += core gui
+QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 #OSX flags
 macx {
- QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++ -g -Wall
+ #-std=gnu0x
+ QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++ -g -Wall
  QMAKE_CXXFLAGS += -DOSC_HOST_LITTLE_ENDIAN
 }
 
@@ -28,8 +29,8 @@ unix:!macx {
 }
 
 #Add c++ 11 support
-CONFIG += c++11
 CONFIG += static
+#CONFIG += c++11
 
 #Set the build target
 TARGET = GRT
@@ -40,7 +41,7 @@ macx: TEMPLATE = app
 
 #OSX Include/Link
 macx{
- #Add the defauly include and lib directories (we assume boost and GRT are installed here)
+ #Add the default include and lib directories (we assume boost and GRT are installed here)
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
 
@@ -51,8 +52,8 @@ macx{
  ICON = Resources/OSX/GRT.icns
 
  #Flag that we want to use the GRT library
- #USE_GRT_LIB = "true"
- USE_GRT_SOURCE = "true"
+ USE_GRT_LIB = "true"
+ #USE_GRT_SOURCE = "true"
 
  #Link against the main boost libraries
  LIBS += -lboost_thread
