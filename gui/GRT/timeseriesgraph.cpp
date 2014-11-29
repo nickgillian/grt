@@ -10,6 +10,7 @@ TimeseriesGraph::TimeseriesGraph(QWidget *parent) :
     lockRanges = false;
     numDimensions = 0;
     graphWidth = 0;
+    plotTimestamp = 0;
     colors.push_back( Qt::red );
     colors.push_back( Qt::green );
     colors.push_back( Qt::blue );
@@ -36,6 +37,7 @@ bool TimeseriesGraph::init(const unsigned int numDimensions,const unsigned int g
     initialized = true;
     this->numDimensions = numDimensions;
     this->graphWidth = graphWidth;
+    plotTimestamp = 0;
     data.resize( graphWidth, GRT::VectorDouble(numDimensions,0) );
 
     if( !lockRanges ){
@@ -97,7 +99,12 @@ bool TimeseriesGraph::update(const GRT::VectorDouble &sample ){
     // set axes ranges, so we see all data:
     plot->xAxis->setRange(0, graphWidth);
     plot->yAxis->setRange(minRange, maxRange);
-    plot->replot();
+
+    double timestamp = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+    if( timestamp - plotTimestamp > 0.2 ){
+        plotTimestamp = timestamp;
+        plot->replot();
+    }
 
     return true;
 }

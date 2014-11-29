@@ -27,6 +27,7 @@ private:
     bool lockRanges;
     unsigned int numDimensions;
     unsigned int graphWidth;
+    double plotTimestamp;
     Ui::TimeseriesGraph *ui;
     GRT::CircularBuffer< GRT::VectorDouble > data;
     double minRange;

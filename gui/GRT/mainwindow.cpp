@@ -1749,8 +1749,6 @@ void MainWindow::pipelineTrainingStarted(){
     ui->trainingTool_results->setText( infoText );
     ui->trainingTool_results->setEnabled( true );
 
-
-
 }
 
 void MainWindow::pipelineTrainingFinished(bool result){
