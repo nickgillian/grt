@@ -15,6 +15,7 @@
 #include "Core.h"
 #include "timeseriesgraph.h"
 #include "bargraph.h"
+#include "featureplot.h"
 #include "versioninfo.h"
 
 enum Views{
@@ -66,6 +67,8 @@ enum ClassifierOptions{
 #define REGRESSION_VIEW 1
 
 #define DEFAULT_GRAPH_WIDTH 100
+#define FEATURE_PLOT_DEFAULT_WIDTH 600
+#define FEATURE_PLOT_DEFAULT_HEIGHT 600
 
 #define ALL_LOGS_VIEW 0
 #define INFO_LOG_VIEW 1
@@ -162,6 +165,7 @@ private slots:
     void updateClassStatsGraph();
     void updatePCAProjectionGraph();
     void updateTimeseriesGraph();
+    void generateFeaturePlot();
     void ctrlRShortcut();
     void ctrlSShortcut();
     void ctrlLShortcut();
@@ -259,6 +263,8 @@ private:
     TimeseriesGraph *classDistancesGraph;
     TimeseriesGraph *regressionGraph;
     TimeseriesGraph *swipeDetectorGraph;
+    FeaturePlot *pcaGraph;
+    vector< FeaturePlot* > featurePlots;
     GRT::ErrorLog errorLog;
     GRT::WarningLog warningLog;
     vector< Qt::GlobalColor > defaultGraphColors;

@@ -30,7 +30,7 @@ unix:!macx {
 
 #Add c++ 11 support
 CONFIG += static
-#CONFIG += c++11
+CONFIG += c++11
 
 #Set the build target
 TARGET = GRT
@@ -279,7 +279,8 @@ SOURCES += main.cpp\
         TrainingThread.cpp \
         timeseriesgraph.cpp \
         bargraph.cpp \
-        versioninfo.cpp
+        versioninfo.cpp \
+    featureplot.cpp
 
 HEADERS  += mainwindow.h \
         OSC/OSCMessage.h \
@@ -303,12 +304,14 @@ HEADERS  += mainwindow.h \
         Trainer.h \
         timeseriesgraph.h \
         bargraph.h \
-        versioninfo.h
+        versioninfo.h \
+    featureplot.h
 
 FORMS += mainwindow.ui \
     timeseriesgraph.ui \
     bargraph.ui \
-    versioninfo.ui
+    versioninfo.ui \
+    featureplot.ui
 
 OTHER_FILES += Resources/Images/Button1.png \
                Resources/Images/ClassificationModeImage.png \

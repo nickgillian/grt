@@ -3,7 +3,7 @@
 
 unsigned int MainWindow::numInstances = 0;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), model(NULL)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), model(NULL), pcaGraph(NULL)
 {
     numInstances++;
     //qDebug() << "NumInstances: " + QString::number( numInstances );
@@ -215,6 +215,8 @@ bool MainWindow::initDataLabellingToolView(){
     plot = ui->dataLabelingTool_classStatsGraph;
     plot->plotLayout()->insertRow(0);
     plot->plotLayout()->addElement(0, 0, new QCPPlotTitle(plot, "Number of samples per class"));
+
+    featurePlots.clear();
 
     return true;
 }
@@ -522,6 +524,8 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->dataLabellingTool_regressionDataInfoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
     connect(ui->dataLabelingTool_trainingDataTab, SIGNAL(currentChanged(int)), this, SLOT(updateTrainingTabView(int)));
     connect(ui->dataLabellingTool_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(handleDatasetClicked(QModelIndex)));
+    connect(ui->dataLabellingTool_featurePlotButton, SIGNAL(clicked()), this, SLOT(generateFeaturePlot()));
+
 
     connect(ui->pipelineTool_infoButton, SIGNAL(clicked()), this, SLOT(showPipelineToolInfo()));
     connect(ui->pipelineTool_savePipelineButton, SIGNAL(clicked()), this, SLOT(savePipelineToFile()));
@@ -852,6 +856,7 @@ void MainWindow::updatePipelineMode(unsigned int pipelineMode){
             ui->dataLabelingTool_trainingDataTab->insertTab( 2, dataLabelingToolTabHistory[2], "Class Counter" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 3, dataLabelingToolTabHistory[3], "PCA Projection" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 4, dataLabelingToolTabHistory[4], "Timeseries Graph" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 5, dataLabelingToolTabHistory[5], "Feature Plot" );
             ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
 
             //Add the tabs for classification
@@ -989,6 +994,12 @@ void MainWindow::updateNumInputDimensions(int numInputDimensions){
     ui->dataIO_numInputDimensionsField->setText( QString::number( numInputDimensions ) );
     ui->dataLabellingTool_numInputDimensionsField->setText( QString::number( numInputDimensions ) );
     ui->dataLabellingTool_numInputDimensionsField_2->setText( QString::number( numInputDimensions ) );
+    ui->dataLabellingTool_featurePlotAxisASpinBox->setMinimum(0);
+    ui->dataLabellingTool_featurePlotAxisASpinBox->setMaximum(numInputDimensions-1);
+    ui->dataLabellingTool_featurePlotAxisASpinBox->setValue(0);
+    ui->dataLabellingTool_featurePlotAxisBSpinBox->setMinimum(0);
+    ui->dataLabellingTool_featurePlotAxisBSpinBox->setMaximum(numInputDimensions-1);
+    ui->dataLabellingTool_featurePlotAxisBSpinBox->setValue(0);
 
     int numHiddenNeurons = (int)max((numInputDimensions + ui->setupView_numOutputsSpinBox->value()) / 2,2) ;
     ui->pipelineTool_mlpNumHiddenNeurons->setValue( numHiddenNeurons );
@@ -1253,9 +1264,7 @@ void MainWindow::updateTrainingTabView(int tabIndex){
                 updateClassStatsGraph();
             }
             if( tabIndex == 3 ){
-                infoText += "Sorry, the PCA plot is currently disabled due to a plotting bug, this will fixed in a future release!\n";
-                QMessageBox::information(0, "Information", infoText);
-                //updatePCAProjectionGraph();
+                updatePCAProjectionGraph();
             }
             if( tabIndex == 4 ){
                 updateTimeseriesGraph();
@@ -1343,12 +1352,15 @@ void MainWindow::updateClassStatsGraph(){
 
 void MainWindow::updatePCAProjectionGraph(){
 
+    if( pcaGraph != NULL ){
+        delete pcaGraph;
+        pcaGraph = NULL;
+    }
+
     QCustomPlot *plot = ui->dataLabelingTool_pcaProjectionPlot;
 
     //Clear any previous graphs
     plot->clearGraphs();
-
-    return;
 
     //Get the training data
     GRT::ClassificationData trainingData = core.getClassificationTrainingData();
@@ -1387,6 +1399,28 @@ void MainWindow::updatePCAProjectionGraph(){
         return;
     }
 
+    //Generate the new projected dataset
+    const unsigned int M = trainingData.getNumSamples();
+    const unsigned int N = 2;
+    GRT::ClassificationData projectedTrainingData;
+    GRT::VectorDouble projectedSample( N );
+    projectedTrainingData.setNumDimensions( N );
+
+    for(unsigned int i=0; i<M; i++){
+        for(unsigned int j=0; j<N; j++){
+            projectedSample[j] = prjData[i][j];
+        }
+        projectedTrainingData.addSample( trainingData[i].getClassLabel(), projectedSample );
+    }
+
+    //Create the new pca plot
+    pcaGraph = new FeaturePlot;
+    pcaGraph->init( 0, 1, projectedTrainingData, defaultGraphColors );
+    pcaGraph->setWindowTitle( QString::fromStdString("PCA Projection (Top 2 Dimensions)") );
+    pcaGraph->resize( FEATURE_PLOT_DEFAULT_WIDTH-20, FEATURE_PLOT_DEFAULT_HEIGHT-20 );
+    pcaGraph->show();
+
+/*
     const unsigned int M = data.getNumRows();
     const unsigned int K = trainingData.getNumClasses();
     vector< GRT::MinMax > ranges = prjData.getRanges();
@@ -1406,8 +1440,6 @@ void MainWindow::updatePCAProjectionGraph(){
     for(unsigned int k=0; k<K; k++){
         const unsigned int numSamplesInClass = classTracker[k].counter;
 
-        cout << "NumSamples: " << numSamplesInClass << endl;
-
         if( numSamplesInClass == 0 ){
             plot->clearGraphs();
             errorLog << "Failed to plot data! Class " << classLabels[k] << " has no samples!" << std::endl;
@@ -1418,7 +1450,6 @@ void MainWindow::updatePCAProjectionGraph(){
         QVector< double > y( numSamplesInClass );
         plot->addGraph();
         plot->graph(k)->setPen( QPen( classColors[k] ) );
-        plot->graph(k)->setBrush( QBrush( classColors[k] ) );
         plot->graph(k)->setLineStyle( QCPGraph::lsNone );
         plot->graph(k)->setScatterStyle( QCPScatterStyle::ssCross );
 
@@ -1444,6 +1475,7 @@ void MainWindow::updatePCAProjectionGraph(){
     //plot->setTitle("PCA Projection");
     plot->rescaleAxes();
     plot->replot();
+    */
 }
 
 void MainWindow::updateTimeseriesGraph(){
@@ -1533,6 +1565,22 @@ void MainWindow::updateTimeseriesGraph(){
     plot->xAxis->setRange(0, graphWidth);
     plot->yAxis->setRange(minLabel, maxLabel);
     plot->replot();
+}
+
+void MainWindow::generateFeaturePlot(){
+
+    GRT::ClassificationData classificationData = core.getClassificationTrainingData();
+    const unsigned int axisA = ui->dataLabellingTool_featurePlotAxisASpinBox->value();
+    const unsigned int axisB = ui->dataLabellingTool_featurePlotAxisBSpinBox->value();
+
+    FeaturePlot *plot = new FeaturePlot;
+
+    plot->init( axisA, axisB, classificationData, defaultGraphColors );
+    plot->setWindowTitle( QString::fromStdString("Feature Plot [" + GRT::Util::toString(axisA) + " " + GRT::Util::toString(axisB) + "]") );
+    plot->resize( FEATURE_PLOT_DEFAULT_WIDTH-20, FEATURE_PLOT_DEFAULT_HEIGHT-20 );
+    plot->show();
+
+    featurePlots.push_back( plot );
 }
 
 void MainWindow::ctrlRShortcut(){

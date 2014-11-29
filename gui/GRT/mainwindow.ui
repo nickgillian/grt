@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -1021,7 +1021,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>5</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -1118,6 +1118,70 @@
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="tab_18">
+        <attribute name="title">
+         <string>Page</string>
+        </attribute>
+        <widget class="QSpinBox" name="dataLabellingTool_featurePlotAxisASpinBox">
+         <property name="geometry">
+          <rect>
+           <x>75</x>
+           <y>45</y>
+           <width>101</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="dataLabellingTool_featurePlotAxisBSpinBox">
+         <property name="geometry">
+          <rect>
+           <x>75</x>
+           <y>80</y>
+           <width>101</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="dataLabellingTool_featurePlotButton">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>115</y>
+           <width>114</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plot</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_7">
+         <property name="geometry">
+          <rect>
+           <x>15</x>
+           <y>45</y>
+           <width>81</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Axis A:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_8">
+         <property name="geometry">
+          <rect>
+           <x>15</x>
+           <y>85</y>
+           <width>81</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Axis B:</string>
          </property>
         </widget>
        </widget>
