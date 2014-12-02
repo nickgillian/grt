@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -1128,7 +1128,7 @@
         <widget class="QSpinBox" name="dataLabellingTool_featurePlotAxisASpinBox">
          <property name="geometry">
           <rect>
-           <x>75</x>
+           <x>115</x>
            <y>45</y>
            <width>101</width>
            <height>24</height>
@@ -1138,7 +1138,7 @@
         <widget class="QSpinBox" name="dataLabellingTool_featurePlotAxisBSpinBox">
          <property name="geometry">
           <rect>
-           <x>75</x>
+           <x>115</x>
            <y>80</y>
            <width>101</width>
            <height>24</height>
@@ -1148,7 +1148,7 @@
         <widget class="QPushButton" name="dataLabellingTool_featurePlotButton">
          <property name="geometry">
           <rect>
-           <x>70</x>
+           <x>110</x>
            <y>115</y>
            <width>114</width>
            <height>32</height>
@@ -1168,7 +1168,7 @@
           </rect>
          </property>
          <property name="text">
-          <string>Axis A:</string>
+          <string>X Axis Index:</string>
          </property>
         </widget>
         <widget class="QLabel" name="label_8">
@@ -1181,7 +1181,7 @@
           </rect>
          </property>
          <property name="text">
-          <string>Axis B:</string>
+          <string>Y Axis Index:</string>
          </property>
         </widget>
        </widget>
@@ -3507,7 +3507,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>5</number>
        </property>
        <widget class="QWidget" name="tab_6">
         <attribute name="title">
@@ -3573,6 +3573,21 @@
         <attribute name="title">
          <string>Page</string>
         </attribute>
+       </widget>
+       <widget class="QWidget" name="tab_19">
+        <attribute name="title">
+         <string>Page</string>
+        </attribute>
+        <widget class="QCustomPlot" name="trainingTool_confusionMatrixGraph" native="true">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>5</y>
+           <width>966</width>
+           <height>346</height>
+          </rect>
+         </property>
+        </widget>
        </widget>
       </widget>
      </widget>

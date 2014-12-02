@@ -2,6 +2,9 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 2nd December 2014 
+- **updated GUI to version 0.1.16**. Added new graphs and fixed PCA plot bug.
+
 ## 23rd October 2014 
 - **updated GUI to version 0.1.15**.
 

@@ -207,9 +207,11 @@ private slots:
     void updatePrecisionGraph(const GRT::VectorDouble &precision,const vector< unsigned int > &classLabels);
     void updateRecallGraph(const GRT::VectorDouble &recall,const vector< unsigned int > &classLabels);
     void updateFmeasureGraph(const GRT::VectorDouble &fmeasure,const vector< unsigned int > &classLabels);
+    void updateConfusionMatrixGraph(const GRT::MatrixDouble &confusionMatrix,const vector< unsigned int > &classLabels);
     void clearPrecisionGraph();
     void clearRecallGraph();
     void clearFmeasureGraph();
+    void clearConfusionMatrixGraph();
 
     /////////////////////////////// PREDICTION VIEW FUNCTIONS ///////////////////////////////
     void showPredictionToolInfo();

@@ -189,9 +189,10 @@ public:
      If the class tracker already contains the classLabel then the function will return false.
      
      @param const UINT classLabel: the class label you want to add to the classTracker
+     @param const std::string className: the name associated with the new class
      @return returns true if the classLabel was added, false otherwise
      */
-    bool addClass(const UINT classLabel);
+    bool addClass(const UINT classLabel,const std::string className = "NOT_SET");
     
     /**
      Relabels all the samples with the class label A with the new class label B.

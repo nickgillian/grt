@@ -17,16 +17,19 @@ public:
     explicit FeaturePlot(QWidget *parent = 0);
     ~FeaturePlot();
 
-    bool init(const unsigned int axisIndexA,const unsigned int axisIndexB,const GRT::ClassificationData &data,const vector< Qt::GlobalColor > &classColors);
+    bool init(const unsigned int axisIndexX,const unsigned int axisIndexY,const GRT::ClassificationData &data,const vector< Qt::GlobalColor > &classColors);
     bool plot();
 
     void resizeEvent (QResizeEvent *event);
 
+private slots:
+    bool ctrlSShortcut();
+
 private:
     Ui::FeaturePlot *ui;
     bool initialized;
-    unsigned int axisIndexA;
-    unsigned int axisIndexB;
+    unsigned int axisIndexX;
+    unsigned int axisIndexY;
     GRT::ClassificationData data;
     vector< Qt::GlobalColor > classColors;
 

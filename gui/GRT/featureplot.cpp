@@ -8,6 +8,9 @@ FeaturePlot::FeaturePlot(QWidget *parent) :
     ui->setupUi(this);
     setStyleSheet("background-color:white;");
     initialized = false;
+
+    QShortcut *ctrlSShortcut = new QShortcut( QKeySequence( QString::fromStdString("Ctrl+S") ), this);
+    QObject::connect(ctrlSShortcut, SIGNAL(activated()), this, SLOT(ctrlSShortcut()));
 }
 
 FeaturePlot::~FeaturePlot()
@@ -15,11 +18,11 @@ FeaturePlot::~FeaturePlot()
     delete ui;
 }
 
-bool FeaturePlot::init(const unsigned int axisIndexA,const unsigned int axisIndexB,const GRT::ClassificationData &data,const vector< Qt::GlobalColor > &classColors){
+bool FeaturePlot::init(const unsigned int axisIndexX,const unsigned int axisIndexY,const GRT::ClassificationData &data,const vector< Qt::GlobalColor > &classColors){
 
     this->initialized = true;
-    this->axisIndexA = axisIndexA;
-    this->axisIndexB = axisIndexB;
+    this->axisIndexX = axisIndexX;
+    this->axisIndexY = axisIndexY;
     this->data = data;
     this->classColors = classColors;
 
@@ -56,14 +59,14 @@ bool FeaturePlot::plot(){
             plot->addGraph();
             plot->graph(k)->setPen( QPen( classColors[ k % classColors.size() ] ) );
             plot->graph(k)->setLineStyle( QCPGraph::lsNone );
-            plot->graph(k)->setScatterStyle( QCPScatterStyle(QCPScatterStyle::ssPlus, 4) );
+            plot->graph(k)->setScatterStyle( QCPScatterStyle(QCPScatterStyle::ssCross, 4) );
 
             unsigned int index = 0;
             for(unsigned int i=0; i<M; i++)
             {
                 if( data[i].getClassLabel() == classTracker[k].classLabel ){
-                    x[ index ] = data[i][ axisIndexA ];
-                    y[ index ] = data[i][ axisIndexB ];
+                    x[ index ] = data[i][ axisIndexX ];
+                    y[ index ] = data[i][ axisIndexY ];
                     index++;
 
                     for(unsigned int j=0; j<N; j++){
@@ -81,19 +84,27 @@ bool FeaturePlot::plot(){
         }
     }
 
-    //Add 10% to the min and max range
-    minRange += minRange * 0.1;
-    maxRange += maxRange * 0.1;
+    cout << "min range: " << minRange << endl;
+    cout << "max range: " << maxRange << endl;
+
+    //Add 20% to the min and max range
+    minRange += minRange * 0.2;
+    maxRange += maxRange * 0.2;
+
+    cout << "min range: " << minRange << endl;
+    cout << "max range: " << maxRange << endl;
 
     plot->xAxis->setVisible( true );
     plot->xAxis->setTickLabels( true );
     plot->yAxis->setVisible( true );
     plot->yAxis->setTickLabels( true );
-    plot->xAxis->setLabel( QString::fromStdString("Axis Index: "  + GRT::Util::toString(axisIndexA)) );
-    plot->yAxis->setLabel( QString::fromStdString("Axis Index: "  + GRT::Util::toString(axisIndexB)) );
+    plot->xAxis->setLabel( QString::fromStdString("X Axis Index: "  + GRT::Util::toString(axisIndexX)) );
+    plot->yAxis->setLabel( QString::fromStdString("Y Axis Index: "  + GRT::Util::toString(axisIndexY)) );
     plot->xAxis->setRange(minRange, maxRange);
     plot->yAxis->setRange(minRange, maxRange);
     plot->replot();
+
+    plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 
     return true;
 }
@@ -101,4 +112,32 @@ bool FeaturePlot::plot(){
 //resize graph on window resize
 void FeaturePlot::resizeEvent (QResizeEvent *event){
     ui->plot->resize(ui->plot->parentWidget()->width()-20,ui->plot->parentWidget()->height()-20);
+}
+
+bool FeaturePlot::ctrlSShortcut(){
+
+    if( !initialized ) return false;
+
+    QCustomPlot *plot = ui->plot;
+
+    QString filename = QFileDialog::getSaveFileName();
+
+    if( filename == "" ){
+        return false;
+    }
+    if( filename.endsWith(".png") ){
+        return plot->savePng( filename, plot->width(), plot->height() );
+    }
+    if( filename.endsWith(".jpg") ){
+        return plot->saveJpg( filename, plot->width(), plot->height() );
+    }
+    if( filename.endsWith(".jpeg") ){
+        return plot->saveJpg( filename, plot->width(), plot->height() );
+    }
+    if( filename.endsWith(".pdf") ){
+        return plot->savePdf( filename, plot->width(), plot->height() );
+    }
+
+    //If we get this far then save as a png
+    return plot->savePng( filename, plot->width(), plot->height() );
 }

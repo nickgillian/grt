@@ -165,6 +165,10 @@ bool ClassificationData::addSample(const UINT classLabel,const VectorDouble &sam
 			classTracker.push_back(tracker);
 		}
 	}
+
+    //Update the class labels
+    sortClassLabels();
+
 	return true;
 }
 
@@ -240,7 +244,7 @@ UINT ClassificationData::eraseAllSamplesWithClassLabel(const UINT classLabel){
 	return numExamplesRemoved;
 }
     
-bool ClassificationData::addClass(const UINT classLabel){
+bool ClassificationData::addClass(const UINT classLabel,const std::string className){
     
     //Check to make sure the class label does not exist
     for(UINT i=0; i<classTracker.size(); i++){
@@ -250,7 +254,7 @@ bool ClassificationData::addClass(const UINT classLabel){
     }
     
     //Add the class label to the class tracker
-    classTracker.push_back( ClassTracker(classLabel,0) );
+    classTracker.push_back( ClassTracker(classLabel,0,className) );
     
     //Sort the class labels
     sortClassLabels();
@@ -299,6 +303,9 @@ bool ClassificationData::relabelAllSamplesWithClassLabel(const UINT oldClassLabe
         //Create a new class tracker
         classTracker.push_back( ClassTracker(newClassLabel,classTracker[ indexOfOldClassLabel ].counter,classTracker[ indexOfOldClassLabel ].className) );
     }
+
+    //Sort the class labels
+    sortClassLabels();
 
     return true;
 }
@@ -535,7 +542,8 @@ bool ClassificationData::loadDatasetFromFile(const string &filename){
 
 	file.close();
 	
-	sortClassLabels();
+    //Sort the class labels
+    sortClassLabels();
 	
 	return true;
 }
@@ -620,7 +628,8 @@ bool ClassificationData::loadDatasetFromCSVFile(const string &filename,const UIN
         }
     }
 
-	sortClassLabels();
+    //Sort the class labels
+    sortClassLabels();
     
     return true;
 }
@@ -635,7 +644,7 @@ bool ClassificationData::printStats() const{
 bool ClassificationData::sortClassLabels(){
 	
 	sort(classTracker.begin(),classTracker.end(),ClassTracker::sortByClassLabelAscending);
-	
+
 	return true;
 }
 
@@ -738,7 +747,10 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
     //Overwrite the training data in this instance with the training data of the trainingSet
     *this = trainingSet;
 
-	sortClassLabels();
+    //Sort the class labels in this dataset
+    sortClassLabels();
+
+    //Sort the class labels of the test dataset
     testSet.sortClassLabels();
 
 	return testSet;
@@ -769,7 +781,8 @@ bool ClassificationData::merge(const ClassificationData &labelledData){
         setClassNameForCorrespondingClassLabel(classTracker[i].className, classTracker[i].classLabel);
     }
 
-	sortClassLabels();
+    //Sort the class labels
+    sortClassLabels();
 
     return true;
 }
@@ -892,6 +905,11 @@ ClassificationData ClassificationData::getTrainingFoldData(const UINT foldIndex)
 
     if( foldIndex >= kFoldValue ) return trainingData;
 
+    //Add the class labels to make sure they all exist
+    for(UINT k=0; k<getNumSamples(); k++){
+        trainingData.addClass( classTracker[k].classLabel, classTracker[k].className );
+    }
+
     //Add the data to the training set, this will consist of all the data that is NOT in the foldIndex
     UINT index = 0;
     for(UINT k=0; k<kFoldValue; k++){
@@ -904,7 +922,8 @@ ClassificationData ClassificationData::getTrainingFoldData(const UINT foldIndex)
         }
     }
 
-	trainingData.sortClassLabels();
+    //Sort the class labels
+    trainingData.sortClassLabels();
 
     return trainingData;
 }
@@ -918,6 +937,11 @@ ClassificationData ClassificationData::getTestFoldData(const UINT foldIndex) con
     if( !crossValidationSetup ) return testData;
 
     if( foldIndex >= kFoldValue ) return testData;
+
+    //Add the class labels to make sure they all exist
+    for(UINT k=0; k<getNumSamples(); k++){
+        testData.addClass( classTracker[k].classLabel, classTracker[k].className );
+    }
     
     testData.reserve( (UINT)crossValidationIndexs[ foldIndex ].size() );
 
@@ -929,6 +953,7 @@ ClassificationData ClassificationData::getTestFoldData(const UINT foldIndex) con
 		testData.addSample( data[ index ].getClassLabel(), data[ index ].getSample() );
 	}
 	
+    //Sort the class labels
 	testData.sortClassLabels();
 
     return testData;

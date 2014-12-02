@@ -57,7 +57,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     defaultGraphColors.push_back( Qt::green );
     defaultGraphColors.push_back( Qt::blue );
     defaultGraphColors.push_back( Qt::magenta );
-    defaultGraphColors.push_back( Qt::yellow );
     defaultGraphColors.push_back( Qt::cyan );
     defaultGraphColors.push_back( Qt::gray );
     defaultGraphColors.push_back( Qt::darkRed );
@@ -864,6 +863,7 @@ void MainWindow::updatePipelineMode(unsigned int pipelineMode){
             ui->trainingTool_resultsTab->insertTab( 1, trainingToolTabHistory[1], "Precision" );
             ui->trainingTool_resultsTab->insertTab( 2, trainingToolTabHistory[2], "Recall" );
             ui->trainingTool_resultsTab->insertTab( 3, trainingToolTabHistory[3], "F-Measure" );
+            ui->trainingTool_resultsTab->insertTab( 4, trainingToolTabHistory[5], "Confusion Matrix" );
             ui->trainingTool_resultsTab->setCurrentIndex( 0 );
         break;
         case Core::REGRESSION_MODE:
@@ -1414,68 +1414,13 @@ void MainWindow::updatePCAProjectionGraph(){
     }
 
     //Create the new pca plot
+    const unsigned int axisX = 0; //First principal component
+    const unsigned int axisY = 1; //Second principal component
     pcaGraph = new FeaturePlot;
-    pcaGraph->init( 0, 1, projectedTrainingData, defaultGraphColors );
+    pcaGraph->init( axisX, axisY, projectedTrainingData, defaultGraphColors );
     pcaGraph->setWindowTitle( QString::fromStdString("PCA Projection (Top 2 Dimensions)") );
     pcaGraph->resize( FEATURE_PLOT_DEFAULT_WIDTH-20, FEATURE_PLOT_DEFAULT_HEIGHT-20 );
     pcaGraph->show();
-
-/*
-    const unsigned int M = data.getNumRows();
-    const unsigned int K = trainingData.getNumClasses();
-    vector< GRT::MinMax > ranges = prjData.getRanges();
-    vector< unsigned int > classLabels = trainingData.getClassLabels();
-    vector< GRT::ClassTracker > classTracker = trainingData.getClassTracker();
-    GRT::Random random;
-
-    vector< QColor > classColors(K);
-    if( K >=1 ) classColors[0] = QColor(255, 0, 0, 200);
-    if( K >=2 ) classColors[1] = QColor(0, 255, 0, 200);
-    if( K >=3 ) classColors[2] = QColor(0, 0, 255, 200);
-    for(unsigned int k=3; k<K; k++){
-        classColors[k] = QColor(random.getRandomNumberInt(0,255), random.getRandomNumberInt(0,255), random.getRandomNumberInt(0,255), 200);
-    }
-
-    //Add a new bar graph for each class
-    for(unsigned int k=0; k<K; k++){
-        const unsigned int numSamplesInClass = classTracker[k].counter;
-
-        if( numSamplesInClass == 0 ){
-            plot->clearGraphs();
-            errorLog << "Failed to plot data! Class " << classLabels[k] << " has no samples!" << std::endl;
-            return;
-        }
-
-        QVector< double > x( numSamplesInClass );
-        QVector< double > y( numSamplesInClass );
-        plot->addGraph();
-        plot->graph(k)->setPen( QPen( classColors[k] ) );
-        plot->graph(k)->setLineStyle( QCPGraph::lsNone );
-        plot->graph(k)->setScatterStyle( QCPScatterStyle::ssCross );
-
-        unsigned int index = 0;
-        for(unsigned int i=0; i<M; i++)
-        {
-            if( trainingData[i].getClassLabel() == classTracker[k].classLabel ){
-                x[ index ] = prjData[i][0];
-                y[ index ] = prjData[i][1];
-                index++;
-            }
-        }
-
-        // pass data points to graphs:
-        plot->graph( k )->setData(x, y);
-    }
-
-    plot->xAxis->setVisible( true );
-    plot->xAxis->setTickLabels( false );
-    plot->yAxis->setVisible( true );
-    plot->yAxis->setTickLabels( false );
-
-    //plot->setTitle("PCA Projection");
-    plot->rescaleAxes();
-    plot->replot();
-    */
 }
 
 void MainWindow::updateTimeseriesGraph(){
@@ -1679,6 +1624,7 @@ void MainWindow::resetTrainingToolView( int trainingMode ){
     clearPrecisionGraph();
     clearRecallGraph();
     clearFmeasureGraph();
+    clearConfusionMatrixGraph();
 
 }
 
@@ -1741,6 +1687,7 @@ void MainWindow::pipelineTrainingStarted(){
     clearPrecisionGraph();
     clearRecallGraph();
     clearFmeasureGraph();
+    clearConfusionMatrixGraph();
 
     QString infoText;
     infoText += "---------------------------------------------------------------\n";
@@ -1753,7 +1700,7 @@ void MainWindow::pipelineTrainingStarted(){
 
 void MainWindow::pipelineTrainingFinished(bool result){
 
-    qDebug() << "pipelineTrainingFinished(bool result)";
+    //qDebug() << "pipelineTrainingFinished(bool result)";
 
     boost::mutex::scoped_lock lock( mutex );
 
@@ -1886,6 +1833,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
                     infoText += "\n";
                 }
                 infoText += "\n";
+                updateConfusionMatrixGraph( testResult.confusionMatrix, classLabels );
 
             }
 
@@ -2044,8 +1992,6 @@ void MainWindow::updatePrecisionGraph(const GRT::VectorDouble &precision,const v
     plot->xAxis->setTickVectorLabels( tickLabels );
     plot->xAxis->setLabel("Class Labels");
     plot->yAxis->setRange(0, 1);
-
-    //plot->setTitle("Precision results for each class");
     plot->rescaleAxes();
     plot->replot();
 }
@@ -2085,10 +2031,6 @@ void MainWindow::updateRecallGraph(const GRT::VectorDouble &recall,const vector<
     plot->xAxis->setTickVectorLabels( tickLabels );
     plot->xAxis->setLabel("Class Labels");
     plot->yAxis->setRange(0, 1);
-
-    //plot->setTitle("Recall results for each class");
-    plot->plotLayout()->insertRow(0);
-    plot->plotLayout()->addElement(0, 0, new QCPPlotTitle(plot, "Recall results for each class"));
     plot->rescaleAxes();
     plot->replot();
 }
@@ -2135,13 +2077,78 @@ void MainWindow::updateFmeasureGraph(const GRT::VectorDouble &fmeasure,const vec
     plot->xAxis->setTickVector( xTickVector );
     //plot->yAxis->setTickVector( yTickVector );
     plot->xAxis->setLabel("Class Labels");
-
-    //plot->setTitle("F-Measure results for each class");
-    plot->plotLayout()->insertRow(0);
-    plot->plotLayout()->addElement(0, 0, new QCPPlotTitle(plot, "F-Measure results for each class"));
+    plot->yAxis->setRange(0, 1);
     plot->rescaleAxes();
     plot->replot();
 }
+
+void MainWindow::updateConfusionMatrixGraph(const GRT::MatrixDouble &confusionMatrix,const vector< unsigned int > &classLabels){
+
+    QCustomPlot *plot = ui->trainingTool_confusionMatrixGraph;
+    const unsigned int K = (unsigned int)classLabels.size();
+    const unsigned int numRows = confusionMatrix.getNumRows();
+    const unsigned int numCols = confusionMatrix.getNumCols();
+    const bool nullRejectionEnabled = numRows != K ? true : false;
+    const unsigned int minClassLabel = nullRejectionEnabled ? 0 : GRT::Util::getMin( classLabels );
+    const unsigned int maxClassLabel = GRT::Util::getMax( classLabels );
+
+    QVector<double> keyData;
+    QVector<double> valueData;
+    QVector<double> xTickVector;
+    QVector<double> yTickVector;
+    QVector<QString> xTickLabels;
+    QVector<QString> yTickLabels;
+
+    //Clear any previous graphs
+    plot->clearPlottables();
+
+    //Add a new color map
+    QCPColorMap *colorMap = new QCPColorMap(plot->xAxis, plot->yAxis);
+    plot->addPlottable( colorMap );
+
+    colorMap->data()->setSize(numRows,numCols);
+    colorMap->data()->setRange(QCPRange(minClassLabel, maxClassLabel+1), QCPRange(minClassLabel, maxClassLabel+1));
+    colorMap->setInterpolate( false );
+    colorMap->setTightBoundary( false );
+    for (unsigned int x=0; x<numRows; ++x)
+      for (unsigned int y=0; y<numCols; ++y)
+        colorMap->data()->setCell(x, y, confusionMatrix[x][ numCols-1-y ]);
+
+    colorMap->setGradient(QCPColorGradient::gpJet);
+    colorMap->rescaleDataRange(true);
+
+    //Add the tick labels
+    if( nullRejectionEnabled ){
+        xTickVector << double(0);
+        yTickVector << double(K+1);
+        xTickLabels << QString::fromStdString( GRT::Util::intToString(0) );
+        yTickLabels << QString::fromStdString( GRT::Util::intToString(0) );
+    }
+    for(unsigned int k=0; k<K; k++){
+        xTickVector << double(k+1);
+        yTickVector << double(k+1);
+        xTickLabels << QString::fromStdString( GRT::Util::intToString( classLabels[k]) );
+        yTickLabels << QString::fromStdString( GRT::Util::intToString( classLabels[K-1-k]) );
+    }
+    if( nullRejectionEnabled ){
+        //yTickVector << double(0);
+        //yTickLabels << QString::fromStdString( GRT::Util::intToString(0) );
+    }
+
+    plot->xAxis->setAutoTicks(false);
+    plot->xAxis->setAutoTickLabels(false);
+    plot->yAxis->setAutoTicks(false);
+    plot->yAxis->setAutoTickLabels(false);
+    plot->xAxis->setTickVectorLabels( xTickLabels );
+    plot->xAxis->setTickVector( xTickVector );
+    plot->yAxis->setTickVectorLabels( yTickLabels );
+    plot->yAxis->setTickVector( yTickVector );
+    plot->xAxis->setLabel( "Class Label" );
+    plot->yAxis->setLabel( "Predicted Class Label" );
+    plot->rescaleAxes();
+    plot->replot();
+}
+
 
 void MainWindow::clearPrecisionGraph(){
     QCustomPlot *plot = ui->trainingTool_precisionGraph;
@@ -2155,6 +2162,11 @@ void MainWindow::clearRecallGraph(){
 
 void MainWindow::clearFmeasureGraph(){
     QCustomPlot *plot = ui->trainingTool_fmeasureGraph;
+    plot->clearPlottables();
+}
+
+void MainWindow::clearConfusionMatrixGraph(){
+    QCustomPlot *plot = ui->trainingTool_confusionMatrixGraph;
     plot->clearPlottables();
 }
 

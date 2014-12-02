@@ -162,6 +162,7 @@ protected:
     bool trainAndTest(){
 
         debugLog << "trainAndTest()" << endl;
+
         //Train
         bool result = false;
         switch( pipelineMode ){

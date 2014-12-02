@@ -26,7 +26,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>qcustomplot</class>
+   <class>QCustomPlot</class>
    <extends>QWidget</extends>
    <header>qcustomplot.h</header>
    <container>1</container>
