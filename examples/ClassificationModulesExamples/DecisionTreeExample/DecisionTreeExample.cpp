@@ -53,9 +53,16 @@ int main(int argc, const char * argv[])
     //Create a new DecisionTree instance
     DecisionTree dTree;
     
+    //Set the node that the DecisionTree will use - different nodes may result in different decision boundaries
+    //and some nodes may provide better accuracy than others on specific classification tasks
+    //The current node options are:
+    //- DecisionTreeClusterNode
+    //- DecisionTreeThresholdNode
+    dTree.setDecisionTreeNode( DecisionTreeClusterNode() );
+    
     //Set the number of steps that will be used to choose the best splitting values
     //More steps will give you a better model, but will take longer to train
-    dTree.setNumSplittingSteps( 100 );
+    dTree.setNumSplittingSteps( 1000 );
     
     //Set the maximum depth of the tree
     dTree.setMaxDepth( 10 );

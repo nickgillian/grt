@@ -150,6 +150,7 @@ defined(USE_GRT_SOURCE_CODE,var){
  #Add the Core Alogrithm headers
  HEADERS += ../../GRT/CoreAlgorithms/BernoulliRBM/*.h \
            ../../GRT/CoreAlgorithms/EvolutionaryAlgorithm/*.h \
+           ../../GRT/CoreAlgorithms/LeastSquares/LinearLeastSquares.h \
            ../../GRT/CoreAlgorithms/ParticleFilter/*.h \
            ../../GRT/CoreAlgorithms/ParticleSwarmOptimization/*.h \
            ../../GRT/CoreAlgorithms/PrincipalComponentAnalysis/*.h  \

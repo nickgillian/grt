@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -1339,7 +1339,7 @@
           </rect>
          </property>
          <property name="currentIndex">
-          <number>9</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="page_7">
           <widget class="QLabel" name="label_26">
@@ -1412,7 +1412,7 @@
            <property name="geometry">
             <rect>
              <x>190</x>
-             <y>25</y>
+             <y>60</y>
              <width>86</width>
              <height>24</height>
             </rect>
@@ -1422,7 +1422,7 @@
            <property name="geometry">
             <rect>
              <x>190</x>
-             <y>50</y>
+             <y>90</y>
              <width>86</width>
              <height>24</height>
             </rect>
@@ -1432,7 +1432,7 @@
            <property name="geometry">
             <rect>
              <x>10</x>
-             <y>50</y>
+             <y>90</y>
              <width>161</width>
              <height>21</height>
             </rect>
@@ -1445,7 +1445,7 @@
            <property name="geometry">
             <rect>
              <x>190</x>
-             <y>75</y>
+             <y>120</y>
              <width>86</width>
              <height>24</height>
             </rect>
@@ -1455,7 +1455,7 @@
            <property name="geometry">
             <rect>
              <x>10</x>
-             <y>75</y>
+             <y>120</y>
              <width>166</width>
              <height>21</height>
             </rect>
@@ -1468,7 +1468,7 @@
            <property name="geometry">
             <rect>
              <x>10</x>
-             <y>25</y>
+             <y>60</y>
              <width>171</width>
              <height>21</height>
             </rect>
@@ -1476,6 +1476,39 @@
            <property name="text">
             <string>Number of splitting steps:</string>
            </property>
+          </widget>
+          <widget class="QLabel" name="label_127">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>30</y>
+             <width>171</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Decision Tree Node Type:</string>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="pipelineTool_decisionTreeNodeType">
+           <property name="geometry">
+            <rect>
+             <x>185</x>
+             <y>25</y>
+             <width>156</width>
+             <height>26</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Cluster Node</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Threshold</string>
+            </property>
+           </item>
           </widget>
          </widget>
          <widget class="QWidget" name="page_6">

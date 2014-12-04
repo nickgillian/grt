@@ -328,6 +328,7 @@ bool MainWindow::initPipelineToolView(){
     ui->pipelineTool_adaboostNumBoostingIterations->setRange(1,100000);
 
     //DecisionTree
+    ui->pipelineTool_decisionTreeNodeType->setCurrentIndex( 0 );
     ui->pipelineTool_decisionTree_numSpiltingSteps->setValue( 20 );
     ui->pipelineTool_decisionTree_numSpiltingSteps->setRange(1,10000);
     ui->pipelineTool_decisionTree_minSamplesPerNode->setValue( 5 );
@@ -524,7 +525,6 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->dataLabelingTool_trainingDataTab, SIGNAL(currentChanged(int)), this, SLOT(updateTrainingTabView(int)));
     connect(ui->dataLabellingTool_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(handleDatasetClicked(QModelIndex)));
     connect(ui->dataLabellingTool_featurePlotButton, SIGNAL(clicked()), this, SLOT(generateFeaturePlot()));
-
 
     connect(ui->pipelineTool_infoButton, SIGNAL(clicked()), this, SLOT(showPipelineToolInfo()));
     connect(ui->pipelineTool_savePipelineButton, SIGNAL(clicked()), this, SLOT(savePipelineToFile()));
@@ -2301,6 +2301,18 @@ void MainWindow::updateClassifierView(int viewIndex){
             core.setClassifier( adaBoost );
             break;
         case CLASSIFIER_DECISION_TREE:
+            //Set the decision tree node type
+            switch( ui->pipelineTool_decisionTreeNodeType->currentIndex() ){
+                case DECISION_TREE_CLUSTER_NODE:
+                    decisionTree.setDecisionTreeNode( GRT::DecisionTreeClusterNode() );
+                break;
+                case DECISION_TREE_THRESHOLD_NODE:
+                    decisionTree.setDecisionTreeNode( GRT::DecisionTreeThresholdNode() );
+                break;
+                default:
+                    decisionTree.setDecisionTreeNode( GRT::DecisionTreeClusterNode() );
+                break;
+            }
             decisionTree.enableScaling( ui->pipelineTool_enableScaling->isChecked() );
             decisionTree.enableNullRejection( ui->pipelineTool_enableNullRejection->isChecked() );
             decisionTree.setNullRejectionCoeff( ui->pipelineTool_nullRejectionCoeff->value() );
