@@ -38,6 +38,8 @@
 #include "../../CoreModules/Classifier.h"
 #include "../../CoreAlgorithms/Tree/Tree.h"
 #include "DecisionTreeNode.h"
+#include "DecisionTreeThresholdNode.h"
+#include "DecisionTreeClusterNode.h"
 
 namespace GRT{
 
@@ -47,14 +49,15 @@ public:
     /**
      Default Constructor
 
-     @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node. Default value = 100
+     @param const DecisionTreeNode &decisionTreeNode: sets the type of decision tree node that will be used when training a new decision tree model. Default: DecisionTreeClusterNode
      @param UINT minNumSamplesPerNode: sets the minimum number of samples that are allowed per node, if the number of samples is below that, the node will become a leafNode.  Default value = 5
      @param UINT maxDepth: sets the maximum depth of the tree. Default value = 10
      @param bool removeFeaturesAtEachSpilt: sets if a feature is removed at each spilt so it can not be used again. Default value = false
      @param UINT trainingMode: sets the training mode, this should be one of the TrainingMode enums. Default value = BEST_ITERATIVE_SPILT
+     @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node. Default value = 100
      @param bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      */
-	DecisionTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false);
+	DecisionTree(const DecisionTreeNode &decisionTreeNode = DecisionTreeClusterNode(),const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const UINT numSplittingSteps=100,const bool useScaling=false );
     
     /**
      Defines the copy constructor.
@@ -118,6 +121,12 @@ public:
      */
     virtual bool print() const;
     
+    /**
+     This recomputes the null rejection thresholds for each of the classes in the DecisionTree model.
+     The DecisionTree model needs to be trained first before this function can be called.
+     
+     @return returns true if the null rejection thresholds were updated successfully, false otherwise
+     */
     virtual bool recomputeNullRejectionThresholds();
     
     /**
@@ -154,6 +163,20 @@ public:
      */
     const DecisionTreeNode* getTree() const;
     
+    /**
+     Gets a pointer to the decision tree node. NULL will be returned if the decision tree node has not been set.
+     
+     @return returns a pointer to a deep copy of the decision tree node
+     */
+    DecisionTreeNode* deepCopyDecisionTreeNode() const;
+    
+    /**
+     Sets the decision tree node, this will be used as the starting node the next time the DecisionTree model is trained.
+     
+     @return returns true if the decision tree node was updated, false otherwise
+     */
+    bool setDecisionTreeNode( const DecisionTreeNode &node );
+    
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
@@ -163,15 +186,13 @@ public:
 protected:
     bool loadLegacyModelFromFile_v1( fstream &file );
     bool loadLegacyModelFromFile_v2( fstream &file );
+    bool loadLegacyModelFromFile_v3( fstream &file );
     
     DecisionTreeNode* buildTree( const ClassificationData &trainingData, DecisionTreeNode *parent, vector< UINT > features, const vector< UINT > &classLabels, UINT nodeID );
-    bool computeBestSpilt( const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
-    bool computeBestSpiltBestIterativeSpilt( const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
-    bool computeBestSpiltBestRandomSpilt( const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &threshold, double &minError );
-    VectorDouble getClassProbabilities( const ClassificationData &trainingData, const vector< UINT > &classLabels );
     double getNodeDistance( const VectorDouble &x, const UINT nodeID );
     double getNodeDistance( const VectorDouble &x, const VectorDouble &y );
     
+    DecisionTreeNode* decisionTreeNode;
     std::map< UINT, VectorDouble > nodeClusters;
     VectorDouble classClusterMean;
     VectorDouble classClusterStdDev;

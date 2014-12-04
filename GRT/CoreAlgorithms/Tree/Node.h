@@ -219,8 +219,6 @@ protected:
      */
     virtual bool loadParametersFromFile(fstream &file){
         
-
-        
         return true;
     }
     

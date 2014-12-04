@@ -1331,6 +1331,35 @@ vector< MatrixDouble > ClassificationData::getHistogramData(UINT numBins) const{
 
     return histData;
 }
+   
+VectorDouble ClassificationData::getClassProbabilities() const {
+    return getClassProbabilities( getClassLabels() );
+}
+    
+VectorDouble ClassificationData::getClassProbabilities( const vector< UINT > &classLabels ) const {
+    const UINT K = (UINT)classLabels.size();
+    const UINT N = getNumClasses();
+    double sum = 0;
+    VectorDouble x(K,0);
+    for(UINT k=0; k<K; k++){
+        for(UINT n=0; n<N; n++){
+            if( classLabels[k] == classTracker[n].classLabel ){
+                x[k] = classTracker[n].counter;
+                sum += classTracker[n].counter;
+                break;
+            }
+        }
+    }
+    
+    //Normalize the class probabilities
+    if( sum > 0 ){
+        for(UINT k=0; k<K; k++){
+            x[k] /= sum;
+        }
+    }
+    
+    return x;
+}
 
 vector< UINT > ClassificationData::getClassDataIndexes(UINT classLabel) const{
 

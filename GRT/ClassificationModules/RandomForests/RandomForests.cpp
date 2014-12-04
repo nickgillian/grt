@@ -68,7 +68,7 @@ RandomForests& RandomForests::operator=(const RandomForests &rhs){
             if( rhs.getTrained() ){
                 //Deep copy the forest
                 for(UINT i=0; i<rhs.forest.size(); i++){
-                    this->forest.push_back( rhs.forest[i]->deepCopyTree() );
+                    this->forest.push_back( rhs.forest[i]->deepCopy() );
                 }
             }
             
@@ -97,7 +97,7 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
             if( ptr->getTrained() ){
                 //Deep copy the forest
                 for(UINT i=0; i<ptr->forest.size(); i++){
-                    this->forest.push_back( ptr->forest[i]->deepCopyTree() );
+                    this->forest.push_back( ptr->forest[i]->deepCopy() );
                 }
             }
             

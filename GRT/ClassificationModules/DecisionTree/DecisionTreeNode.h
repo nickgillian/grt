@@ -3,7 +3,7 @@
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
  
- @brief This file implements a DecisionTreeNode, which is a specific type of node used for a DecisionTree.
+ @brief This file implements a DecisionTreeNode, which is a specific base node used for a DecisionTree.
  
  @example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
  */
@@ -32,6 +32,8 @@
 #define GRT_DECISION_TREE_NODE_HEADER
 
 #include "../../CoreAlgorithms/Tree/Node.h"
+#include "../../CoreAlgorithms/Tree/Tree.h"
+#include "../../DataStructures/ClassificationData.h"
 
 namespace GRT{
     
@@ -40,35 +42,12 @@ public:
     /**
      Default Constructor. Sets all the pointers to NULL.
      */
-    DecisionTreeNode(){
-        nodeType = "DecisionTreeNode";
-        parent = NULL;
-        leftChild = NULL;
-        rightChild = NULL;
-        clear();
-    }
+    DecisionTreeNode();
     
     /**
      Default Destructor. Cleans up any memory.
      */
-    virtual ~DecisionTreeNode(){
-        clear();
-    }
-    
-    /**
-     This function predicts if the input is greater than or equal to the nodes threshold.
-     If the input is greater than or equal to the nodes threshold then this function will return true, otherwise it will return false.
-     
-     NOTE: The threshold and featureIndex should be set first BEFORE this function is called. The threshold and featureIndex can be set by
-     training the node through the DecisionTree class.
-     
-     @param const VectorDouble &x: the input vector that will be used for the prediction
-     @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
-     */
-    virtual bool predict(const VectorDouble &x){
-        if( x[ featureIndex ] >= threshold ) return true;
-        return false;
-    }
+    virtual ~DecisionTreeNode();
     
     /**
      This function recursively predicts if the probability of the input vector.  
@@ -83,35 +62,23 @@ public:
      @param VectorDouble &classLikelihoods: a reference to a vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &classLikelihoods){
-        
-        predictedNodeID = 0;
-        
-        if( isLeafNode ){
-            classLikelihoods = classProbabilities;
-            predictedNodeID = nodeID;
-            return true;
-        }
-        
-        if( leftChild == NULL && rightChild == NULL )
-            return false;
-        
-        if( predict( x ) ){
-            if( rightChild ){
-                bool predictionOK = rightChild->predict( x, classLikelihoods );
-                predictedNodeID = rightChild->getPredictedNodeID();
-                return predictionOK;
-            }
-        }else{
-            if( leftChild ){
-                bool predictionOK = leftChild->predict( x, classLikelihoods );
-                predictedNodeID = leftChild->getPredictedNodeID();
-                return predictionOK;
-            }
-        }
-        
-        return false;
-    }
+    virtual bool predict(const VectorDouble &x,VectorDouble &classLikelihoods);
+    
+    /**
+     This function calls the best spliting algorithm based on the current trainingMode.  
+     
+     This function will return true if the best spliting algorithm found a split, false otherwise.
+     
+     @param const UINT &trainingMode: the training mode to use, this should be one of the
+     @param const UINT &numSplittingSteps: sets the number of iterations that will be used to search for the best threshold
+     @param const ClassificationData &trainingData: the training data to use for the best split search
+     @param const const vector< UINT > &features: a vector containing the indexs of the features that can be used for the search
+     @param const vector< UINT > &classLabels: a vector containing the class labels for the search
+     @param UINT &featureIndex: this will store the best feature index found during the search
+     @param double &minError: this will store the minimum error found during the search
+     @return returns true if the best spliting algorithm found a split, false otherwise
+     */
+    virtual bool computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError );
     
     /**
      This functions cleans up any dynamic memory assigned by the node.
@@ -119,18 +86,7 @@ public:
      
      @return returns true of the node was cleared correctly, false otherwise
      */
-    virtual bool clear(){
-        
-        //Call the base class clear function
-        Node::clear();
-        
-        nodeSize = 0;
-        featureIndex = 0;
-        threshold = 0;
-        classProbabilities.clear();
-        
-        return true;
-    }
+    virtual bool clear();
     
     /**
      This functions prints the node data to std::out.
@@ -138,30 +94,7 @@ public:
      
      @return returns true if the data was printed correctly, false otherwise
      */
-    virtual bool print() const{
-        
-        string tab = "";
-        for(UINT i=0; i<depth; i++) tab += "\t";
-        
-        cout << tab << "depth: " << depth << " nodeSize: " << nodeSize << " featureIndex: " << featureIndex << " threshold " << threshold << " isLeafNode: " << isLeafNode << endl;
-        cout << tab << "ClassProbabilities: ";
-        for(UINT i=0; i<classProbabilities.size(); i++){
-            cout << classProbabilities[i] << "\t";
-        }
-        cout << endl;
-        
-        if( leftChild != NULL ){
-            cout << tab << "LeftChild: " << endl;
-            leftChild->print();
-        }
-        
-        if( rightChild != NULL ){
-            cout << tab << "RightChild: " << endl;
-            rightChild->print();
-        }
-        
-        return true;
-    }
+    virtual bool print() const;
     
     /**
      This function returns a deep copy of the DecisionTreeNode and all it's children.
@@ -169,38 +102,7 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
      */
-    virtual Node* deepCopyNode() const{
-        
-        DecisionTreeNode *node = new DecisionTreeNode;
-        
-        if( node == NULL ){
-            return NULL;
-        }
-        
-        //Copy this node into the node
-        node->depth = depth;
-        node->isLeafNode = isLeafNode;
-        node->nodeID = nodeID;
-        node->predictedNodeID = predictedNodeID;
-        node->nodeSize = nodeSize;
-        node->featureIndex = featureIndex;
-        node->threshold = threshold;
-        node->classProbabilities = classProbabilities;
-        
-        //Recursively deep copy the left child
-        if( leftChild ){
-            node->leftChild = leftChild->deepCopyNode();
-            node->leftChild->setParent( node );
-        }
-        
-        //Recursively deep copy the right child
-        if( rightChild ){
-            node->rightChild = rightChild->deepCopyNode();
-            node->rightChild->setParent( node );
-        }
-        
-        return (Node*)node;
-    }
+    virtual Node* deepCopyNode() const;
     
     /**
      This function returns a deep copy of the DecisionTreeNode and all it's children.
@@ -208,74 +110,71 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
      */
-    DecisionTreeNode* deepCopyTree() const{
-        DecisionTreeNode *node = (DecisionTreeNode*)deepCopyNode();
-        return node;
-    }
+    DecisionTreeNode* deepCopy() const;
     
     /**
      This function returns the nodeSize, this is the number of training samples that reached the node during the training phase.
      
      @return returns the nodeSize
      */
-    UINT getNodeSize() const{
-        return nodeSize;
-    }
-    
-    /**
-     This function returns the featureIndex, this is index in the input data that the decision threshold is computed on.
-     
-     @return returns the featureIndex
-     */
-    UINT getFeatureIndex() const{
-        return featureIndex;
-    }
+    UINT getNodeSize() const;
     
     /**
      This function returns the number of classes in the class probabilities vector.
      
      @return returns the number of classes in the class probabilities vector
      */
-    UINT getNumClasses() const{
-        return (UINT)classProbabilities.size();
-    }
-    
-    /**
-     This function returns the threshold, this is the value used to compute the decision threshold.
-     
-     @return returns the threshold
-     */
-    double getThreshold() const{
-        return threshold;
-    }
+    UINT getNumClasses() const;
     
     /**
      This function returns the class probabilities vector.
      
      @return returns the classProbabilities vector
      */
-    VectorDouble getClassProbabilities() const{
-        return classProbabilities;
-    }
+    VectorDouble getClassProbabilities() const;
     
     /**
-     This function sets the Decision Tree Node.
+     This function sets the Decision Tree Node as a leaf node.
      
      @param const UINT nodeSize: sets the node size, this is the number of training samples at that node
-     @param const UINT featureIndex: sets the index of the feature that should be used for the threshold spilt
-     @param const double threshold: set the threshold value used for the spilt
      @param const VectorDouble &classProbabilities: the vector of class probabilities at this node
-     @return returns true if the node was set, false otherwise
+     @return returns true if the node was updated, false otherwise
      */
-    bool set(const UINT nodeSize,const UINT featureIndex,const double threshold,const VectorDouble &classProbabilities){
-        this->nodeSize = nodeSize;
-        this->featureIndex = featureIndex;
-        this->threshold = threshold;
-        this->classProbabilities = classProbabilities;
-        return true;
-    }
+    bool setLeafNode( const UINT nodeSize, const VectorDouble &classProbabilities );
+    
+    /**
+     This function sets the Decision Tree Node nodeSize.
+     
+     @param const UINT nodeSize: sets the node size, this is the number of training samples at that node
+     @return returns true if the node size was set, false otherwise
+     */
+    bool setNodeSize(const UINT nodeSize);
+    
+    /**
+     This function sets the Decision Tree Node class probabilities.
+     
+     @param const VectorDouble &classProbabilities: the vector of class probabilities at this node
+     @return returns true if the node was set classProbabilities, false otherwise
+     */
+    bool setClassProbabilities(const VectorDouble &classProbabilities);
+    
+    using Node::predict;
     
 protected:
+    virtual bool computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+        
+        errorLog << "computeBestSpiltBestIterativeSpilt(...) - Base class not overwritten!" << endl;
+        
+        return false;
+    }
+    
+    virtual bool computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+        
+        errorLog << "computeBestSpiltBestRandomSpilt(...) - Base class not overwritten!" << endl;
+        
+        return false;
+    }
+    
     /**
      This saves the DecisionTreeNode custom parameters to a file. It will be called automatically by the Node base class
      if the saveToFile function is called.
@@ -293,8 +192,6 @@ protected:
         
         //Save the custom DecisionTreeNode parameters
         file << "NodeSize: " << nodeSize << endl;
-        file << "FeatureIndex: " << featureIndex << endl;
-        file << "Threshold: " << threshold << endl;
         file << "NumClasses: " << classProbabilities.size() << endl;
         file << "ClassProbabilities: ";
         for(UINT i=0; i<classProbabilities.size(); i++){
@@ -332,20 +229,6 @@ protected:
         file >> nodeSize;
         
         file >> word;
-        if( word != "FeatureIndex:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndex header!" << endl;
-            return false;
-        }
-        file >> featureIndex;
-        
-        file >> word;
-        if( word != "Threshold:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find Threshold header!" << endl;
-            return false;
-        }
-        file >> threshold;
-        
-        file >> word;
         if( word != "NumClasses:" ){
             errorLog << "loadParametersFromFile(fstream &file) - Failed to find NumClasses header!" << endl;
             return false;
@@ -365,9 +248,15 @@ protected:
         return true;
     }
     
+    UINT getClassLabelIndexValue(UINT classLabel,const vector< UINT > &classLabels) const{
+        for(UINT i=0; i<classLabels.size(); i++){
+            if( classLabel == classLabels[i] )
+                return i;
+        }
+        return 0;
+    }
+    
     UINT nodeSize;
-    UINT featureIndex;
-    double threshold;
     VectorDouble classProbabilities;
     
     static RegisterNode< DecisionTreeNode > registerModule;

@@ -1,9 +1,4 @@
 /**
- @file
- @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @section LICENSE
  GRT MIT License
  Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
  
@@ -21,9 +16,6 @@
  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
- @brief
- 
  */
 
 #include "Node.h"
@@ -39,6 +31,7 @@ Node* Node::createInstanceFromString(string const &nodeType){
     if( iter == getMap()->end() ){
         return NULL;
     }
+    
     return iter->second();
 }
     
@@ -64,10 +57,12 @@ Node::~Node(){
 }
 
 bool Node::predict(const VectorDouble &x){
+    warningLog << "predict(const VectorDouble &x) - Base class not overwritten!" << endl;
     return false;
 }
 
 bool Node::predict(const VectorDouble &x,VectorDouble &y){
+    warningLog << "predict(const VectorDouble &x) - Base class not overwritten!" << endl;
     return false;
 }
 

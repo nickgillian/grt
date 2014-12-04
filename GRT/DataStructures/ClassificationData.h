@@ -509,6 +509,10 @@ public:
      @return a vector of LabelledClassificationSamples
     */
 	vector< ClassificationSample > getClassificationData() const{ return data; }
+    
+    VectorDouble getClassProbabilities() const;
+    
+    VectorDouble getClassProbabilities( const vector< UINT > &classLabels ) const;
 
     /**
      Gets the mean values across all classes in the dataset.

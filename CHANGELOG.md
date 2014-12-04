@@ -2,6 +2,9 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 4th December 2014 
+- **updated Decision Tree, user can now dynamically select the DecisionTreeNode**. The GRT Decision Tree algorithm has been improved to enable the user to dynamically select the type of DecisionTreeNode used for the main train and prediction functions.  There are currently two types of DecisionTreeNodes, DecisionTreeThresholdNode and DecisionTreeClusterNode.  Each node will give result in a different decision boundary and one node may therefore out perform another for a given classification task.  This new update also enables the user to create their own custom DecisionTreeNode (by inheriting from the GRT::DecistionTreeNode base class), and use this in the GRT DecisionTree.
+
 ## 2nd December 2014 
 - **updated GUI to version 0.1.16**. Added new graphs and fixed PCA plot bug.
 
