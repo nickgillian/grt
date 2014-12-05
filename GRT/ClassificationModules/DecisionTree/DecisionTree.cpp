@@ -354,12 +354,6 @@ bool DecisionTree::recomputeNullRejectionThresholds(){
  
     return true;
 }
-
-bool DecisionTree::print() const{
-    if( tree != NULL )
-        return tree->print();
-    return false;
-}
     
 bool DecisionTree::saveModelToFile(fstream &file) const{
     
@@ -640,6 +634,14 @@ bool DecisionTree::loadModelFromFile(fstream &file){
     }
     
     return true;
+}
+    
+bool DecisionTree::getModel(ostream &stream) const{
+    
+    if( tree != NULL )
+        return tree->getModel( stream );
+    return false;
+
 }
     
 DecisionTreeNode* DecisionTree::deepCopyTree() const{

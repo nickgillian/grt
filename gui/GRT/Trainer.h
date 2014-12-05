@@ -10,7 +10,7 @@ namespace GRT{
 
 class Trainer : public GRT::GRTBase{
 public:
-    Trainer(){ initialized = false; }
+    Trainer(){ initialized = false; useStratifiedSampling = false; }
 
     virtual ~Trainer(){}
 
@@ -20,6 +20,7 @@ public:
         clear();
 
         initialized = true;
+        useStratifiedSampling = false;
         pipelineMode = CLASSIFICATION_MODE;
         trainingMode = NO_VALIDATION;
         this->pipeline = pipeline;
@@ -33,6 +34,7 @@ public:
         clear();
 
         initialized = true;
+        useStratifiedSampling = false;
         pipelineMode = REGRESSION_MODE;
         trainingMode = NO_VALIDATION;
         this->pipeline = pipeline;
@@ -46,6 +48,7 @@ public:
         clear();
 
         initialized = true;
+        useStratifiedSampling = false;
         pipelineMode = CLASSIFICATION_MODE;
         trainingMode = TEST_DATASET;
         this->pipeline = pipeline;
@@ -60,6 +63,7 @@ public:
         clear();
 
         initialized = true;
+        useStratifiedSampling = false;
         pipelineMode = REGRESSION_MODE;
         trainingMode = TEST_DATASET;
         this->pipeline = pipeline;
@@ -68,7 +72,7 @@ public:
         return true;
     }
 
-    bool setupCVTraining( const GRT::GestureRecognitionPipeline &pipeline, const GRT::ClassificationData &trainingData, const unsigned int numFolds ){
+    bool setupCVTraining( const GRT::GestureRecognitionPipeline &pipeline, const GRT::ClassificationData &trainingData, const unsigned int numFolds, const bool useStratifiedSampling ){
 
         //Clear any previous setup
         clear();
@@ -79,6 +83,7 @@ public:
         this->pipeline = pipeline;
         this->classificationTrainingData = trainingData;
         this->numFolds = numFolds;
+        this->useStratifiedSampling = useStratifiedSampling;
         return true;
     }
 
@@ -90,6 +95,7 @@ public:
         initialized = true;
         pipelineMode = REGRESSION_MODE;
         trainingMode = CROSS_VALIDATION;
+        useStratifiedSampling = false;
         this->pipeline = pipeline;
         this->regressionTrainingData = trainingData;
         this->numFolds = numFolds;
@@ -118,6 +124,7 @@ public:
 
     bool clear(){
         initialized = false;
+        useStratifiedSampling = false;
         pipelineMode = CLASSIFICATION_MODE;
         trainingMode = NO_VALIDATION;
         numFolds = 0;
@@ -170,9 +177,7 @@ protected:
                 result = pipeline.train( classificationTrainingData );
             break;
             case REGRESSION_MODE:
-                debugLog << "starting regresion training..." << endl;
                 result = pipeline.train( regressionTrainingData );
-                debugLog << "regresion training finished with result: " << result << endl;
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
             break;
@@ -180,7 +185,6 @@ protected:
         if( !result ){ debugLog << "Training Failed!" << endl; return false; }
 
         //Test
-        debugLog << "Testing..." << endl;
         switch( pipelineMode ){
             case CLASSIFICATION_MODE:
                 return pipeline.test( classificationTestData );
@@ -197,7 +201,7 @@ protected:
     bool trainWithCV(){
         switch( pipelineMode ){
             case CLASSIFICATION_MODE:
-                return pipeline.train( classificationTrainingData, numFolds );
+                return pipeline.train( classificationTrainingData, numFolds, useStratifiedSampling );
             break;
             case REGRESSION_MODE:
                 return pipeline.train( regressionTrainingData, numFolds );
@@ -209,6 +213,7 @@ protected:
     }
 
     bool initialized;
+    bool useStratifiedSampling;
     unsigned int pipelineMode;
     unsigned int trainingMode;
     unsigned int numFolds;

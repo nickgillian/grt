@@ -96,7 +96,7 @@ public:
             }
             
             //Setup the row pointers
-            unsigned int i,j=0;
+            unsigned int i=0;
             T *p = &(dataPtr[0]);
             for(i=0; i<rows; i++){
                 rowPtr[i] = p;
@@ -495,7 +495,7 @@ public:
 		if( cols == 0 ) return false;
 		
 		//Reserve the data and copy and existing data
-        unsigned int i,j =0;
+        unsigned int i=0;
 		T* tmpDataPtr = new T[ capacity * cols ];
         T** tmpRowPtr = new T*[ capacity ];
 		if( tmpDataPtr == NULL || tmpRowPtr == NULL ){//If NULL then we have run out of memory

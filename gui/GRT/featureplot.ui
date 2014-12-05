@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="qcustomplot" name="plot" native="true">
+  <widget class="QCustomPlot" name="plot" native="true">
    <property name="geometry">
     <rect>
      <x>10</x>

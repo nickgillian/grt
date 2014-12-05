@@ -82,6 +82,15 @@ public:
     virtual bool print() const;
     
     /**
+     This function adds the current model to the formatted stream.
+     This function should be overwritten by the derived class.
+     
+     @param ostream &file: a reference to the stream the model will be added to
+     @return returns true if the model was added successfully, false otherwise
+     */
+    virtual bool getModel(ostream &stream) const;
+    
+    /**
      This saves the Node to a file.
      
      @param fstream &file: a reference to the file the Node model will be saved to

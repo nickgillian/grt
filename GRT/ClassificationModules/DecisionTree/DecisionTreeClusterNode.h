@@ -81,6 +81,15 @@ public:
     virtual bool print() const;
     
     /**
+     This function adds the current model to the formatted stream.
+     This function should be overwritten by the derived class.
+     
+     @param ostream &file: a reference to the stream the model will be added to
+     @return returns true if the model was added successfully, false otherwise
+     */
+    virtual bool getModel(ostream &stream) const;
+    
+    /**
      This function returns a deep copy of the DecisionTreeThresholdNode and all it's children.
      The user is responsible for managing the dynamic data that is returned from this function as a pointer.
      

@@ -48,6 +48,7 @@ public:
     std::string getInfoMessage();
     std::string getVersion();
     std::string getIncomingDataAddress();
+    std::string getModelAsString();
 
 signals:
     void coreStarted();
@@ -102,7 +103,7 @@ public slots:
     bool loadTestDatasetFromFile(std::string filename);
     void clearTrainingData();
     bool train();
-    bool trainAndTestOnRandomSubset(unsigned int randomTestSubsetPercentage);
+    bool trainAndTestOnRandomSubset(unsigned int randomTestSubsetPercentage,bool useStratifiedSampling);
     bool trainAndTestOnTestDataset();
     bool trainWithCrossValidation(unsigned int numFolds);
     bool enablePrediction(bool);

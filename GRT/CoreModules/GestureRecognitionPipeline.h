@@ -805,6 +805,13 @@ public:
     }
     
     /**
+     Gets the pipeline model as a string.  This includes any classification or regression model, but also any preprocessing, feature extraction or post processing settings.
+     
+     @return returns the pipeline model as a string
+     */
+    string getModelAsString() const;
+    
+    /**
      Gets the pipeline mode as a string, this will be either "PIPELINE_MODE_NOT_SET","CLASSIFICATION_MODE", or "REGRESSION_MODE".
      
      @return returns the pipeline mode as a string

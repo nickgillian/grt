@@ -593,6 +593,11 @@ vector< GRT::TestResult > Core::getCrossValidationResults(){
     return pipeline.getCrossValidationResults();
 }
 
+std::string Core::getModelAsString(){
+    boost::mutex::scoped_lock lock( mutex );
+    return pipeline.getModelAsString();
+}
+
 ///////////////////////////////////////////////////////////////////////////
 ////////////////////////////      SETTERS      ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -1397,7 +1402,7 @@ bool Core::train(){
     return result;
 }
 
-bool Core::trainAndTestOnRandomSubset(unsigned int randomTestSubsetPercentage){
+bool Core::trainAndTestOnRandomSubset(unsigned int randomTestSubsetPercentage,bool useStratifiedSampling){
 
     //Check to make sure we are not already training something
     if( trainingThread.getTrainingInProcess() ){
@@ -1417,7 +1422,7 @@ bool Core::trainAndTestOnRandomSubset(unsigned int randomTestSubsetPercentage){
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             tempClassificationTrainingData = classificationTrainingData;
-            tempClassificationTestData = tempClassificationTrainingData.partition( 100-randomTestSubsetPercentage );
+            tempClassificationTestData = tempClassificationTrainingData.partition( 100-randomTestSubsetPercentage, useStratifiedSampling );
             trainer.setupTrainingAndTesting( pipeline, tempClassificationTrainingData, tempClassificationTestData );
             result = trainingThread.startNewTraining( trainer );
         break;
@@ -1490,7 +1495,7 @@ bool Core::trainWithCrossValidation(unsigned int numFolds){
 
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
-            trainer.setupCVTraining( pipeline, classificationTrainingData, numFolds );
+            trainer.setupCVTraining( pipeline, classificationTrainingData, numFolds, false );
             result = trainingThread.startNewTraining( trainer );
         break;
         case REGRESSION_MODE:

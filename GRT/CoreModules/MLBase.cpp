@@ -126,7 +126,7 @@ bool MLBase::clear(){
     return true;
 }
 
-bool MLBase::print() const { return true; }
+bool MLBase::print() const { cout << getModelAsString(); return true; }
     
 bool MLBase::save(const string filename) const {
     return saveModelToFile( filename );
@@ -170,6 +170,16 @@ bool MLBase::loadModelFromFile(const string filename){
 }
 
 bool MLBase::loadModelFromFile(fstream &file){ return false; }
+    
+bool MLBase::getModel(ostream &stream) const { return true; }
+    
+string MLBase::getModelAsString() const{
+    std::ostringstream stream;
+    if( getModel( stream ) ){
+        return stream.str();
+    }
+    return "";
+}
 
 UINT MLBase::getBaseType() const{ return baseType; }
 

@@ -2931,6 +2931,31 @@ bool GestureRecognitionPipeline::computeTestMetrics(VectorDouble &precisionCount
     return true;
 }
     
+string GestureRecognitionPipeline::getModelAsString() const{
+    string model = "";
+    
+    switch( pipelineMode ){
+        case PIPELINE_MODE_NOT_SET:
+            break;
+        case CLASSIFICATION_MODE:
+            if( getIsClassifierSet() ){
+                model += "Classifier: " + classifier->getClassifierType() + "\n";
+                model += classifier->getModelAsString();
+            }
+            break;
+        case REGRESSION_MODE:
+            if( getIsRegressifierSet() ){
+                model += "Regressifier: " + regressifier->getRegressifierType() + "\n";
+                model += regressifier->getModelAsString();
+            }
+            break;
+        default:
+            break;
+    }
+    
+    return model;
+}
+    
 string GestureRecognitionPipeline::getPipelineModeAsString() const{
     switch( pipelineMode ){
         case PIPELINE_MODE_NOT_SET:

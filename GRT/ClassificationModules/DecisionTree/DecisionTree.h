@@ -115,13 +115,6 @@ public:
     virtual bool clear();
     
     /**
-     Prints the tree to std::cout.
-     
-     @return returns true if the model was printed
-     */
-    virtual bool print() const;
-    
-    /**
      This recomputes the null rejection thresholds for each of the classes in the DecisionTree model.
      The DecisionTree model needs to be trained first before this function can be called.
      
@@ -146,6 +139,15 @@ public:
      @return returns true if the model was loaded successfully, false otherwise
      */
     virtual bool loadModelFromFile(fstream &file);
+    
+    /**
+     This function adds the current model to the formatted stream.
+     This function should be overwritten by the derived class.
+     
+     @param ostream &file: a reference to the stream the model will be added to
+     @return returns true if the model was added successfully, false otherwise
+     */
+    virtual bool getModel(ostream &stream) const;
 
     /**
      Deep copies the decision tree, returning a pointer to the new decision tree. 
@@ -182,6 +184,7 @@ public:
     using MLBase::loadModelFromFile;
     using MLBase::train;
     using MLBase::predict;
+    using MLBase::print;
     
 protected:
     bool loadLegacyModelFromFile_v1( fstream &file );

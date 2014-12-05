@@ -54,8 +54,24 @@ bool Tree::clear(){
 }
 
 bool Tree::print() const{
-    if( tree != NULL )
-        return tree->print();
+    std::ostringstream stream;
+    if( tree != NULL ){
+        if( tree->getModel( stream ) ){
+            std::cout << stream.str();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Tree::getModel(ostream &stream) const{
+    
+    if( tree != NULL ){
+        if( tree->getModel( stream ) ){
+            return true;
+        }
+    }
+    
     return false;
 }
     

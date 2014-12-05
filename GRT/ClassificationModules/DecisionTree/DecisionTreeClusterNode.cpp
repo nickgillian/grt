@@ -38,24 +38,41 @@ bool DecisionTreeClusterNode::clear(){
 
 bool DecisionTreeClusterNode::print() const{
     
+    ostringstream stream;
+    
+    if( getModel( stream ) ){
+        cout << stream.str();
+        return true;
+    }
+    
+    return false;
+}
+    
+bool DecisionTreeClusterNode::getModel(ostream &stream) const{
+
     string tab = "";
     for(UINT i=0; i<depth; i++) tab += "\t";
     
-    cout << tab << "depth: " << depth << " nodeSize: " << nodeSize << " featureIndex: " << featureIndex << " threshold " << threshold << " isLeafNode: " << isLeafNode << endl;
-    cout << tab << "ClassProbabilities: ";
+    stream << tab << "depth: " << depth;
+    stream << " nodeSize: " << nodeSize;
+    stream << " featureIndex: " << featureIndex;
+    stream << " threshold " << threshold;
+    stream << " isLeafNode: " << isLeafNode << endl;
+
+    stream << tab << "ClassProbabilities: ";
     for(UINT i=0; i<classProbabilities.size(); i++){
-        cout << classProbabilities[i] << "\t";
+        stream << classProbabilities[i] << "\t";
     }
-    cout << endl;
+    stream << endl;
     
     if( leftChild != NULL ){
-        cout << tab << "LeftChild: " << endl;
-        leftChild->print();
+        stream << tab << "LeftChild: " << endl;
+        leftChild->getModel( stream );
     }
     
     if( rightChild != NULL ){
-        cout << tab << "RightChild: " << endl;
-        rightChild->print();
+        stream << tab << "RightChild: " << endl;
+        rightChild->getModel( stream );
     }
     
     return true;

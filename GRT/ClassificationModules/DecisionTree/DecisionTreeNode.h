@@ -89,12 +89,13 @@ public:
     virtual bool clear();
     
     /**
-     This functions prints the node data to std::out.
-     It will recursively print all the child nodes.
+     This function adds the current model to the formatted stream.
+     This function should be overwritten by the derived class.
      
-     @return returns true if the data was printed correctly, false otherwise
+     @param ostream &file: a reference to the stream the model will be added to
+     @return returns true if the model was added successfully, false otherwise
      */
-    virtual bool print() const;
+    virtual bool getModel(ostream &stream) const;
     
     /**
      This function returns a deep copy of the DecisionTreeNode and all it's children.

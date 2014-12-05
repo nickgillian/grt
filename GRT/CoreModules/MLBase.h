@@ -317,6 +317,15 @@ public:
     virtual bool loadModelFromFile(fstream &file);
     
     /**
+     This function adds the current model to the formatted stream.
+     This function should be overwritten by the derived class.
+     
+     @param ostream &file: a reference to the stream the model will be added to
+     @return returns true if the model was added successfully, false otherwise
+     */
+    virtual bool getModel(ostream &stream) const;
+    
+    /**
      Scales the input value x (which should be in the range [minSource maxSource]) to a value in the new target range of [minTarget maxTarget].
      
      @param const double &x: the value that should be scaled
@@ -335,6 +344,13 @@ public:
         if( minSource == maxSource ) return minTarget;
         return (((x-minSource)*(maxTarget-minTarget))/(maxSource-minSource))+minTarget;
     }
+    
+    /**
+     Gets the current model and settings as a string.
+     
+     @return returns a string containing the model
+     */
+    virtual string getModelAsString() const;
 
     /**
      Gets the current ML base type.

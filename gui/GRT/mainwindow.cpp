@@ -229,6 +229,7 @@ bool MainWindow::initTrainingToolView(){
     ui->trainingTool_randomTestPercentageBox->setText("20%");
     ui->trainingTool_randomTestPercentageSlider->setValue(20);
     ui->trainingTool_randomTestPercentageSlider->setRange(0,100);
+    ui->trainingTool_useStratifiedSampling->setChecked( true );
     ui->trainingTool_numCVFolds->setValue( 10 );
     ui->trainingTool_numCVFolds->setRange(1,1000000);
     ui->trainingTool_results->setText("");
@@ -864,6 +865,7 @@ void MainWindow::updatePipelineMode(unsigned int pipelineMode){
             ui->trainingTool_resultsTab->insertTab( 2, trainingToolTabHistory[2], "Recall" );
             ui->trainingTool_resultsTab->insertTab( 3, trainingToolTabHistory[3], "F-Measure" );
             ui->trainingTool_resultsTab->insertTab( 4, trainingToolTabHistory[5], "Confusion Matrix" );
+            ui->trainingTool_resultsTab->insertTab( 5, trainingToolTabHistory[6], "Model" );
             ui->trainingTool_resultsTab->setCurrentIndex( 0 );
         break;
         case Core::REGRESSION_MODE:
@@ -1625,6 +1627,7 @@ void MainWindow::resetTrainingToolView( int trainingMode ){
     clearRecallGraph();
     clearFmeasureGraph();
     clearConfusionMatrixGraph();
+    ui->trainingTool_model->setText("");
 
 }
 
@@ -1640,7 +1643,7 @@ void MainWindow::train(){
             core.train();
         break;
         case 1://Random Subset
-            core.trainAndTestOnRandomSubset( ui->trainingTool_randomTestPercentageSlider->value() );
+            core.trainAndTestOnRandomSubset( ui->trainingTool_randomTestPercentageSlider->value(), ui->trainingTool_useStratifiedSampling->checkState() == Qt::CheckState::Checked );
         break;
         case 2://External Test Dataset
             core.trainAndTestOnTestDataset();
@@ -1688,6 +1691,8 @@ void MainWindow::pipelineTrainingStarted(){
     clearRecallGraph();
     clearFmeasureGraph();
     clearConfusionMatrixGraph();
+
+    ui->trainingTool_model->setText("");
 
     QString infoText;
     infoText += "---------------------------------------------------------------\n";
@@ -1834,6 +1839,11 @@ void MainWindow::pipelineTrainingFinished(bool result){
                 }
                 infoText += "\n";
                 updateConfusionMatrixGraph( testResult.confusionMatrix, classLabels );
+
+                std::string model = core.getModelAsString();
+                cout << "MODEL" << endl;
+                cout << model << endl;
+                ui->trainingTool_model->append( QString::fromStdString( model ) );
 
             }
 

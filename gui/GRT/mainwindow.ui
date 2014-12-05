@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -3374,7 +3374,7 @@
         <rect>
          <x>485</x>
          <y>20</y>
-         <width>301</width>
+         <width>486</width>
          <height>71</height>
         </rect>
        </property>
@@ -3417,6 +3417,19 @@
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="trainingTool_useStratifiedSampling">
+         <property name="geometry">
+          <rect>
+           <x>285</x>
+           <y>30</y>
+           <width>176</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Use Stratified Sampling</string>
          </property>
         </widget>
        </widget>
@@ -3540,7 +3553,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="tab_6">
         <attribute name="title">
@@ -3616,6 +3629,21 @@
           <rect>
            <x>0</x>
            <y>5</y>
+           <width>966</width>
+           <height>346</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="tab_20">
+        <attribute name="title">
+         <string>Page</string>
+        </attribute>
+        <widget class="QTextBrowser" name="trainingTool_model">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
            <width>966</width>
            <height>346</height>
           </rect>

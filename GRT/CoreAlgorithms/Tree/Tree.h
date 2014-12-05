@@ -70,6 +70,15 @@ public:
     virtual bool print() const;
     
     /**
+     This function adds the current model to the formatted stream.
+     This function should be overwritten by the derived class.
+     
+     @param ostream &file: a reference to the stream the model will be added to
+     @return returns true if the model was added successfully, false otherwise
+     */
+    virtual bool getModel(ostream &stream) const;
+    
+    /**
      Deep copies the tree, returning a pointer to the new tree.
      The user is in charge of cleaning up the memory so must delete the pointer when they no longer need it.
      NULL will be returned if the tree could not be copied.
