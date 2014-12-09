@@ -47,6 +47,17 @@
 #ifndef GRT_LIB_SVM_HEADER
 #define GRT_LIB_SVM_HEADER
 
+//Define the following to stop issues with visual studio
+
+// Must be defined before following inclusions
+// May be already defined : check with ifndef
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#ifndef _CRT_NONSTDC_NO_DEPRECATE
+#define _CRT_NONSTDC_NO_DEPRECATE
+#endif
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,10 +74,6 @@ namespace LIBSVM {
 
 #define LIBSVM_VERSION 312
     
-//Define the following to stop issues with visual studio
-#define _CRT_SECURE_NO_WARNINGS
-#define _CRT_NONSTDC_NO_DEPRECATE
-
 #ifdef __cplusplus
 extern "C" {
 #endif
