@@ -121,7 +121,7 @@ bool ThresholdCrossingDetector::update( const double x ){
         switch( detectionTimeoutMode ){
             case TIMEOUT_COUNTER:
                 // searchTimeoutDuration is cast because of a C4018 warning on visual (signed/unsigned incompatibility)
-                if (searchTimeoutCounter.getMilliSeconds() >= signed long(searchTimeoutDuration)){
+                if (searchTimeoutCounter.getMilliSeconds() >= (signed long)searchTimeoutDuration){
                     currentSearchState = SEARCHING_FOR_FIRST_THRESHOLD_CROSSING;
                     searchTimeoutCounter.stop();
                 }else return false;
@@ -196,7 +196,7 @@ bool ThresholdCrossingDetector::update( const double x ){
         //If we are in the NO_SEARCH_GATE_TIME_OUT state then we need to update the counter
         if( currentSearchState == NO_SEARCH_GATE_TIME_OUT ){
             // searchTimeoutDuration is cast because of a C4018 warning on visual (signed/unsigned incompatibility)
-            if (searchTimeoutCounter.getMilliSeconds() >= signed long(searchTimeoutDuration)){
+            if (searchTimeoutCounter.getMilliSeconds() >= (signed long)searchTimeoutDuration){
                 currentSearchState = SEARCHING_FOR_FIRST_THRESHOLD_CROSSING;
                 searchTimeoutCounter.stop();
             }

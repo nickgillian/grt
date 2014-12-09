@@ -70,7 +70,7 @@ bool MovementDetector::predict_( VectorDouble &input ){
             break;
         case SEARCH_TIMEOUT:
             // searchTimeout is cast because of a C4018 warning on visual (signed/unsigned incompatibility)
-            if( searchTimer.getMilliSeconds() >= signed long(searchTimeout) ){
+            if( searchTimer.getMilliSeconds() >= (signed long)searchTimeout ){
                 state = SEARCH_TIMEOUT;
                 searchTimer.stop();
             }
