@@ -26,7 +26,7 @@ $ cd tmp
 - use cmake to generate the makefile for your machine:
 
 ```
-$ cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+$ cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
 ```
 	
 - if you want to build the library as a shared library (instead of static), add the following option:
