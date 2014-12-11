@@ -1,7 +1,7 @@
 #ifndef GRT_CORE_H
 #define GRT_CORE_H
 
-#define GRT_GUI_VERSION "0.1_16"
+#define GRT_GUI_VERSION "0.1_17"
 
 #include <QObject>
 #include "OSC/OSCServer.h"
