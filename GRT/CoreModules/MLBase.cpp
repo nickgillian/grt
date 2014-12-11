@@ -132,7 +132,7 @@ bool MLBase::save(const string filename) const {
     return saveModelToFile( filename );
 }
 
-bool MLBase::saveModelToFile(const string filename) const{
+bool MLBase::saveModelToFile(string filename) const{
     
     if( !trained ) return false;
     
@@ -154,7 +154,7 @@ bool MLBase::load(const string filename){
     return loadModelFromFile(filename);
 }
     
-bool MLBase::loadModelFromFile(const string filename){
+bool MLBase::loadModelFromFile(string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
