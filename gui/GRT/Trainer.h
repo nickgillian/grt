@@ -42,6 +42,34 @@ public:
         return true;
     }
 
+    bool setupNoValidationTraining( const GRT::GestureRecognitionPipeline &pipeline, const GRT::TimeSeriesClassificationData &trainingData ){
+
+        //Clear any previous setup
+        clear();
+
+        initialized = true;
+        useStratifiedSampling = false;
+        pipelineMode = TIMESERIES_CLASSIFICATION_MODE;
+        trainingMode = NO_VALIDATION;
+        this->pipeline = pipeline;
+        this->timeseriesClassificationTrainingData = trainingData;
+        return true;
+    }
+
+    bool setupNoValidationTraining( const GRT::GestureRecognitionPipeline &pipeline, const GRT::UnlabelledClassificationData &trainingData ){
+
+        //Clear any previous setup
+        clear();
+
+        initialized = true;
+        useStratifiedSampling = false;
+        pipelineMode = CLUSTER_MODE;
+        trainingMode = NO_VALIDATION;
+        this->pipeline = pipeline;
+        this->clusterTrainingData = trainingData;
+        return true;
+    }
+
     bool setupTrainingAndTesting( const GRT::GestureRecognitionPipeline &pipeline, const GRT::ClassificationData &trainingData, const GRT::ClassificationData &testData ){
 
         //Clear any previous setup
@@ -135,6 +163,8 @@ public:
         regressionTestData.clear();
         timeseriesClassificationTrainingData.clear();
         timeseriesClassificationTestData.clear();
+        clusterTrainingData.clear();
+        clusterTestData.clear();
         return true;
     }
 
@@ -161,14 +191,16 @@ protected:
                 result = pipeline.train( regressionTrainingData );
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
+                result = pipeline.train( timeseriesClassificationTrainingData );
+            break;
+            case CLUSTER_MODE:
+                result = pipeline.train( clusterTrainingData );
             break;
         }
         return result;
     }
 
     bool trainAndTest(){
-
-        debugLog << "trainAndTest()" << endl;
 
         //Train
         bool result = false;
@@ -224,8 +256,10 @@ protected:
     RegressionData regressionTestData;
     TimeSeriesClassificationData timeseriesClassificationTrainingData;
     TimeSeriesClassificationData timeseriesClassificationTestData;
+    UnlabelledData clusterTrainingData;
+    UnlabelledData clusterTestData;
 
-    enum PipelineModes{CLASSIFICATION_MODE=0,REGRESSION_MODE,TIMESERIES_CLASSIFICATION_MODE};
+    enum PipelineModes{CLASSIFICATION_MODE=0,REGRESSION_MODE,TIMESERIES_CLASSIFICATION_MODE,CLUSTER_MODE};
     enum TrainingModes{NO_VALIDATION=0,TEST_DATASET,CROSS_VALIDATION};
 };
 

@@ -110,6 +110,9 @@ public:
      */
 	virtual bool train_(UnlabelledData &trainingData);
     
+    
+    virtual bool predict_(VectorDouble &inputVector);
+    
     /**
      This saves the trained GaussianMixtureModels model to a file.
      This overrides the saveModelToFile function in the base class.
@@ -171,6 +174,28 @@ protected:
 	bool computeInvAndDet();
 	inline void SWAP(UINT &a,UINT &b);
 	inline double SQR(const double v){ return v*v; }
+    
+    double gauss(const VectorDouble &x,const UINT clusterIndex,const VectorDouble &det,const MatrixDouble &mu,const vector< MatrixDouble > &invSigma){
+        
+        double y = 0;
+        double sum = 0;
+        UINT i,j = 0;
+        const UINT N = (UINT)x.size();
+        VectorDouble temp(N,0);
+        
+        //Compute the first part of the equation
+        y = (1.0/pow(TWO_PI,N/2.0)) * (1.0/pow(det[clusterIndex],0.5));
+        
+        //Compute the later half
+        for(i=0; i<N; i++){
+            for(j=0; j<N; j++){
+                temp[i] += (x[j]-mu[clusterIndex][j]) * invSigma[clusterIndex][j][i];
+            }
+            sum += (x[i]-mu[clusterIndex][i]) * temp[i];
+        }
+        
+        return ( y*exp( -0.5*sum ) );
+    }
     
 	UINT numTrainingSamples;                    ///< The number of samples in the training data
 	double loglike;                             ///< The current loglikelihood value of the models given the data

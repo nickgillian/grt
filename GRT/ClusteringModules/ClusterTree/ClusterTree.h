@@ -180,7 +180,6 @@ public:
     
 protected:
     double minRMSErrorPerNode;
-    UINT predictedClusterLabel;  ///<The most recent predicted cluster label
     
     ClusterTreeNode* buildTree( const MatrixDouble &trainingData, ClusterTreeNode *parent, vector< UINT > features, UINT &clusterLabel, UINT nodeID );
     bool computeBestSpilt( const MatrixDouble &trainingData, const vector< UINT > &features, UINT &featureIndex, double &threshold, double &minError );

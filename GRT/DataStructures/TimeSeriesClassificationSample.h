@@ -56,8 +56,9 @@ public:
 		return data[n];
 	}
 
-	void clear();
-	void setTrainingSample(const UINT classLabel,const MatrixDouble &data);
+	bool clear();
+    bool addSample(const UINT classLabel,const VectorDouble &sample);
+	bool setTrainingSample(const UINT classLabel,const MatrixDouble &data);
 	inline UINT getLength() const { return data.getNumRows(); }
     inline UINT getNumDimensions() const { return data.getNumCols(); }
     inline UINT getClassLabel() const { return classLabel; }

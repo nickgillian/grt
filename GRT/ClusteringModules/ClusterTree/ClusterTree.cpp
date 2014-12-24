@@ -160,6 +160,14 @@ bool ClusterTree::train_(MatrixDouble &trainingData){
     //Flag that the algorithm has been trained
     trained = true;
     
+    //Setup the cluster labels
+    clusterLabels.resize(numClusters);
+    for(UINT i=0; i<numClusters; i++){
+        clusterLabels[i] = i+1;
+    }
+    clusterLikelihoods.resize(numClusters,0);
+    clusterDistances.resize(numClusters,0);
+    
     return true;
 }
 
@@ -200,8 +208,6 @@ bool ClusterTree::clear(){
     
     //Clear the base variables
     Clusterer::clear();
-    
-    predictedClusterLabel = 0;
     
     if( tree != NULL ){
         tree->clear();
@@ -350,6 +356,14 @@ bool ClusterTree::loadModelFromFile(fstream &file){
                 Clusterer::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
                 return false;
         	}
+            
+            //Setup the cluster labels
+            clusterLabels.resize(numClusters);
+            for(UINT i=0; i<numClusters; i++){
+                clusterLabels[i] = i+1;
+            }
+            clusterLikelihoods.resize(numClusters,0);
+            clusterDistances.resize(numClusters,0);
     	}
     
     	return true;

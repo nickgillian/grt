@@ -405,7 +405,11 @@ public:
      */
     string getInfoText() const{ return infoText; }
 
+    /**
+     Gets the stats of the dataset as a string
 
+     @return returns the stats of this dataset as a string
+     */
     string getStatsAsString() const;
     
 	/**

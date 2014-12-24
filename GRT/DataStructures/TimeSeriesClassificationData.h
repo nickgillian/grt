@@ -288,6 +288,14 @@ public:
     bool printStats() const;
     
     /**
+     Gets the dataset info (such as its name and infoText) and the stats (such as the number of examples, number of dimensions, number of classes, etc.)
+     as a string.
+     
+     @return returns a string containing the dataset stats
+     */
+    std::string getStatsAsString() const;
+    
+    /**
      Partitions the dataset into a training dataset (which is kept by this instance of the TimeSeriesClassificationData) and
 	 a testing/validation dataset (which is returned as a new instance of a TimeSeriesClassificationData).
      

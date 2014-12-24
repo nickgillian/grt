@@ -49,7 +49,10 @@ bool TimeseriesGraph::init(const unsigned int numDimensions,const unsigned int g
 
 bool TimeseriesGraph::update(const GRT::VectorDouble &sample ){
 
-    if( !initialized ) return false;
+    if( !initialized ){
+        cout << "TimeseriesGraph::update(const GRT::VectorDouble &sample ) - graph not initialized!" << endl;
+        return false;
+    }
 
     //Add the new sample to the buffer
     data.push_back( sample );
@@ -100,6 +103,7 @@ bool TimeseriesGraph::update(const GRT::VectorDouble &sample ){
     plot->xAxis->setRange(0, graphWidth);
     plot->yAxis->setRange(minRange, maxRange);
 
+    //Limit the plot refresh rate so we do not kill the CPU
     double timestamp = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
     if( timestamp - plotTimestamp > 0.2 ){
         plotTimestamp = timestamp;

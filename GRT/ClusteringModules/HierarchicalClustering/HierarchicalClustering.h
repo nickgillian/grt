@@ -93,7 +93,8 @@ public:
     }
     
     ClusterLevel(const ClusterLevel &rhs){
-        *this = rhs;
+        this->level = rhs.level;
+        this->clusters = rhs.clusters;
     }
     
     ~ClusterLevel(){
@@ -232,7 +233,7 @@ public:
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
 
-private:
+protected:
 	inline double SQR(const double &a) {return a*a;};
     double squaredEuclideanDistance(const double *a,const double *b);
     double computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB );
@@ -242,7 +243,10 @@ private:
 	UINT N;                             //Number of dimensions
     vector< ClusterLevel > clusters;
     MatrixDouble distanceMatrix;                     //The distance matrix
-	
+
+private:
+    static RegisterClustererModule< HierarchicalClustering > registerModule;
+
 		
 };
     

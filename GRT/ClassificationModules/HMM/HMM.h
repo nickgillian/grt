@@ -31,7 +31,9 @@
 #ifndef GRT_HMM_HEADER
 #define GRT_HMM_HEADER
 
-#include "HiddenMarkovModel.h"
+#include "HMMEnums.h"
+#include "DiscreteHiddenMarkovModel.h"
+#include "ContinuousHiddenMarkovModel.h"
 #include "../../CoreModules/Classifier.h"
 
 namespace GRT{
@@ -39,7 +41,7 @@ namespace GRT{
 class HMM : public Classifier
 {
 public:
-	HMM(UINT numStates=5,UINT numSymbols=10,UINT modelType=HiddenMarkovModel::LEFTRIGHT,UINT delta=1,UINT maxNumIter=100,double minImprovement=1.0e-2,bool useNullRejection = false);
+	HMM(UINT hmmType=HMM_CONTINUOUS,UINT modelType=HMM_LEFTRIGHT,UINT delta=1,bool useScaling = false,bool useNullRejection = false);
     
     HMM(const HMM &rhs);
     
@@ -126,20 +128,6 @@ public:
     virtual bool loadModelFromFile(fstream &file);
     
     /**
-     This function gets the number of states in each HMM.
-     
-     @return returns the number of states in each HMM
-     */
-    UINT getNumStates() const;
-    
-    /**
-     This function gets the number of symbols in each HMM.
-     
-     @return returns the number of symbols in each HMM
-     */
-    UINT getNumSymbols() const;
-    
-    /**
      This function gets the model type for each HMM, this will be one of the HMM enum ModelTypes.
      
      @return returns the model type for each HMM
@@ -153,6 +141,22 @@ public:
      @return returns the delta parameter for each HMM
      */
     UINT getDelta() const;
+    
+    UINT getHMMType() const;
+    
+    /**
+     This function gets the number of states in each HMM.
+     
+     @return returns the number of states in each HMM
+     */
+    UINT getNumStates() const;
+    
+    /**
+     This function gets the number of symbols in each HMM.
+     
+     @return returns the number of symbols in each HMM
+     */
+    UINT getNumSymbols() const;
     
     /**
      This function gets the maximum number of iterations used to train each HMM.  
@@ -174,39 +178,30 @@ public:
     UINT getNumRandomTrainingIterations() const;
     
     /**
-     This function gets the minimum improvement parameter which controls when the HMM training algorithm should stop.
-     
-     @return returns the minimum improvment parameter
-     */
-    double getMinImprovement() const;
-    
-    /**
-     This function gets returns a vector of trained HiddenMarkovModels.  There will be one HiddenMarkovModel for each class in
+     This function gets returns a vector of trained DiscreteHiddenMarkovModels.  There will be one HiddenMarkovModel for each class in
      the training data.
      
-     @return returns the trained HiddenMarkovModels
+     @return returns the trained DiscreteHiddenMarkovModels
      */
-    vector< HiddenMarkovModel > getModels() const;
+    vector< DiscreteHiddenMarkovModel > getDiscreteModels() const;
     
     /**
-     This function sets the number of states in each HMM.  The parameter must be greater than zero.
+     This function gets returns a vector of trained ContinuousHiddenMarkovModels.  There will be one HiddenMarkovModel for each sample in
+     the training data.
+     
+     @return returns the trained ContinuousHiddenMarkovModels
+     */
+    vector< ContinuousHiddenMarkovModel > getContinuousModels() const;
+    
+    /**
+     This function sets the hmmType.  This should be either a HMM_DISCRETE, or HMM_CONTINUOUS.
      
      This will clear any trained model.
      
-     @param const UINT numStates: the number of states in each HMM
+     @param const UINT hmmType: the new hmmType
      @return returns true if the parameter was set correctly, false otherwise
      */
-    bool setNumStates(const UINT numStates);
-    
-    /**
-     This function sets the number of symbols in each HMM.  The parameter must be greater than zero.
-     
-     This will clear any trained model.
-     
-     @param const UINT symbols: the number of symbols in each HMM
-     @return returns true if the parameter was set correctly, false otherwise
-     */
-    bool setNumSymbols(const UINT numStates);
+    bool setHMMType(const UINT hmmType);
     
     /**
      This function sets the modelType used for each HMM.  This should be one of the HMM modelType enums.
@@ -233,14 +228,46 @@ public:
     bool setDelta(const UINT delta);
     
     /**
-     This function sets the maximum number of iterations used to train each HMM.  The parameter must be greater than zero.
+     This function sets the downsample factor used for a HMM_CONTINUOUS.  The downsample factor controls the resampling of each training 
+     timeseries for the continuous HMM.  A downsample factor of 5, for instance, will result in each timeseries being resized (smaller) by a factor of 5.
+     Increasing the downsample factor will significantly increase the realtime prediction time for each model, however, setting this value too high may
+     reduce the overall accuracy of the model.
      
-     This will clear any trained model.
+     The parameter must be greater than zero. This will clear any trained model.
      
-     @param const UINT maxNumIter: the maximum number of iterations used to train each HMM
+     @param const UINT downsampleFactor: the downsample factor used for a continuous HMM
      @return returns true if the parameter was set correctly, false otherwise
      */
-    bool setMaxNumIterations(const UINT maxNumIter);
+    bool setDownsampleFactor(const UINT downsampleFactor);
+    
+    /**
+     This function sets the committeeSize used for a HMM_CONTINUOUS.  The commitee size controls the number of votes used to make a prediction for a 
+     continuous HMM.  For example, if the committeeSize is 5, then the top 5 estimations will be combined togethere
+     
+     The parameter must be greater than zero. This will NOT clear any trained model.
+     
+     @param const UINT committeeSize: the committeeSize used for a continuous HMM
+     @return returns true if the parameter was set correctly, false otherwise
+     */
+    bool setCommitteeSize(const UINT committeeSize);
+    
+    /**
+     This function sets the number of states for a HMM_DISCRETE.
+     
+     The parameter must be greater than zero. This will clear any trained model.
+     
+     @param const UINT numStates: the number of states in each HMM
+     @return returns true if the parameter was set correctly, false otherwise
+     */
+    bool setNumStates(const UINT numStates);
+    
+    /**
+     This function sets the number of symbols for a HMM_DISCRETE.  The parameter must be greater than zero. This will clear any trained model.
+     
+     @param const UINT symbols: the number of symbols in each HMM
+     @return returns true if the parameter was set correctly, false otherwise
+     */
+    bool setNumSymbols(const UINT numStates);
     
     /**
      This function sets the number of random training iterations used to train each HMM.
@@ -256,16 +283,6 @@ public:
      */
     bool setNumRandomTrainingIterations(const UINT numRandomTrainingIterations);
     
-    /**
-     This function sets the minimum improvement parameter which controls when the HMM training algorithm should stop.
-     
-     This will clear any trained model.
-     
-     @param const double minImprovement: the minimum improvement parameter which controls when the HMM training algorithm should stop
-     @return returns true if the parameter was set correctly, false otherwise
-     */
-    bool setMinImprovement(const double minImprovement);
-    
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
@@ -273,24 +290,32 @@ public:
     using MLBase::predict;
 
 protected:
+    bool train_discrete(TimeSeriesClassificationData &trainingData);
+    bool train_continuous(TimeSeriesClassificationData &trainingData);
+    bool predict_discrete( VectorDouble &inputVector );
+    bool predict_continuous( VectorDouble &inputVector );
+    bool predict_discrete(MatrixDouble &timeseries);
+    bool predict_continuous(MatrixDouble &timeseries);
     bool convertDataToObservationSequence( TimeSeriesClassificationData &classData, vector< vector< UINT > > &observationSequences );
     bool loadLegacyModelFromFile( fstream &file );
 
-	//Variables for all the HMMs
+	UINT hmmType;           ///<Controls if this is a HMM_DISCRETE or a HMM_CONTINUOUS
+    UINT modelType;         //Set if the model is ERGODIC or LEFTRIGHT
+	UINT delta;				//The number of states a model can move to in a LeftRight model
+    
+    //Discrete HMM variables
 	UINT numStates;			//The number of states for each model
 	UINT numSymbols;		//The number of symbols for each model
-	UINT modelType;         //Set if the model is ERGODIC or LEFTRIGHT
-	UINT delta;				//The number of states a model can move to in a LeftRight model
-	UINT maxNumIter;		//The maximum number of iter allowed during the full training
-    UINT numRandomTrainingIterations; 
-	double minImprovement;  //The minimum improvement value for each model during training
+	
+    UINT numRandomTrainingIterations;
+    vector< DiscreteHiddenMarkovModel > discreteModels;
+    vector< ContinuousHiddenMarkovModel > continuousModels;
     
-    vector< HiddenMarkovModel > models;
+    //Continuous HMM variables
+    UINT downsampleFactor;
+    UINT committeeSize;
     
     static RegisterClassifierModule< HMM > registerModule;
-    
-public:
-    enum ModelTypes{ERGODIC=0,LEFTRIGHT=1};
 };
     
 }//End of namespace GRT

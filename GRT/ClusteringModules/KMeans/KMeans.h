@@ -116,12 +116,20 @@ public:
     virtual bool train_(ClassificationData &trainingData);
     
     /**
-     This is the main training interface for reference UnlabelledData data. It overrides the trainInplace function in the ML base class.
+     This is the main training interface for reference UnlabelledData data. It overrides the train_ function in the ML base class.
      
      @param UnlabelledData &trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
      virtual bool train_(UnlabelledData &trainingData);
+    
+    /**
+     This is the main prediction interface for all reference VectorDouble data. It overrides the predict_ function in the ML base class.
+     
+     @param VectorDouble &inputVector: a reference to the input vector for prediction
+     @return returns true if the prediction was completed succesfully, false otherwise (the base class always returns false)
+     */
+    virtual bool predict_(VectorDouble &inputVector);
     
     /**
      This saves the trained KMeans model to a file.

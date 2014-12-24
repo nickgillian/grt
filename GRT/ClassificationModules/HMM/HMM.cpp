@@ -25,15 +25,23 @@ namespace GRT {
 //Register the HMM with the classifier base type
 RegisterClassifierModule< HMM > HMM::registerModule("HMM");
     
-HMM::HMM(UINT numStates,UINT numSymbols,UINT modelType,UINT delta,UINT maxNumIter,double minImprovement,bool useNullRejection)
+HMM::HMM(UINT hmmType,UINT modelType,UINT delta,bool useScaling,bool useNullRejection)
 {
-	this->numStates = numStates;
-	this->numSymbols = numSymbols;
-	this->modelType = modelType; 
-	this->delta = delta;
-	this->maxNumIter = maxNumIter;
-	this->minImprovement = minImprovement;
+    this->hmmType = hmmType;
+    this->modelType = modelType;
+    this->delta = delta;
+    this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
+    
+    //Default discrete setup
+	numStates = 10;
+	numSymbols = 20;
+	maxNumEpochs = 1000;
+	minChange = 1.0e-5;
+	
+    //Default continuous setup
+	downsampleFactor = 5;
+    committeeSize = 5;
     
     supportsNullRejection = true;
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
@@ -60,13 +68,15 @@ HMM::~HMM(void)
 
 HMM& HMM::operator=(const HMM &rhs){
     if( this != &rhs ){
-        this->numStates = rhs.numStates;
-        this->numSymbols = rhs.numSymbols;
+        this->hmmType = rhs.hmmType;
         this->modelType = rhs.modelType;
         this->delta = rhs.delta;
-        this->maxNumIter = rhs.maxNumIter;
-        this->minImprovement = rhs.minImprovement;
-        this->models = rhs.models;
+        this->numStates = rhs.numStates;
+        this->numSymbols = rhs.numSymbols;
+        this->downsampleFactor = rhs.downsampleFactor;
+        this->committeeSize = rhs.committeeSize;
+        this->discreteModels = rhs.discreteModels;
+        this->continuousModels = rhs.continuousModels;
         
         copyBaseVariables( (Classifier*)&rhs );
     }
@@ -84,13 +94,15 @@ bool HMM::deepCopyFrom(const Classifier *classifier){
         HMM *ptr = (HMM*)classifier;
         
         //Copy the HMM variables
-        this->numStates = ptr->numStates;
-        this->numSymbols = ptr->numSymbols;
+        this->hmmType = ptr->hmmType;
         this->modelType = ptr->modelType;
         this->delta = ptr->delta;
-        this->maxNumIter = ptr->maxNumIter;
-        this->minImprovement = ptr->minImprovement;
-        this->models = ptr->models;
+        this->numStates = ptr->numStates;
+        this->numSymbols = ptr->numSymbols;
+        this->downsampleFactor = ptr->downsampleFactor;
+        this->committeeSize = ptr->committeeSize;
+        this->discreteModels = ptr->discreteModels;
+        this->continuousModels = ptr->continuousModels;
         
         //Copy the base variables
         return copyBaseVariables( classifier );
@@ -106,30 +118,46 @@ bool HMM::train(ClassificationData trainingData){
     
 bool HMM::train_(TimeSeriesClassificationData &trainingData){
     
+    switch( hmmType ){
+        case HMM_DISCRETE:
+            return train_discrete( trainingData );
+            break;
+        case HMM_CONTINUOUS:
+            return train_continuous( trainingData );
+            break;
+    }
+    
+    errorLog << "train_(TimeSeriesClassificationData &trainingData) - Failed to train model, unknown HMM type!" << endl;
+
+	return false;
+}
+    
+bool HMM::train_discrete(TimeSeriesClassificationData &trainingData){
+    
     clear();
     
     if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train_(TimeSeriesClassificationData &trainingData) - There are no training samples to train the HMM classifer!" << endl;
+        errorLog << "train_discrete(TimeSeriesClassificationData &trainingData) - There are no training samples to train the HMM classifer!" << endl;
         return false;
     }
     
     if( trainingData.getNumDimensions() != 1 ){
-        errorLog << "train_(TimeSeriesClassificationData &trainingData) - The number of dimensions in the training data must be 1. If your training data is not 1 dimensional then you must quantize the training data using one of the GRT quantization algorithms" << endl;
+        errorLog << "train_discrete(TimeSeriesClassificationData &trainingData) - The number of dimensions in the training data must be 1. If your training data is not 1 dimensional then you must quantize the training data using one of the GRT quantization algorithms" << endl;
         return false;
     }
-
-	//Reset the HMM
+    
+    //Reset the HMM
     numInputDimensions = trainingData.getNumDimensions();
-	numClasses = trainingData.getNumClasses();
-	models.resize( numClasses );
+    numClasses = trainingData.getNumClasses();
+    discreteModels.resize( numClasses );
     classLabels.resize( numClasses );
-
-	//Init the models
-	for(UINT k=0; k<numClasses; k++){
-		models[k].resetModel(numStates,numSymbols,modelType,delta);
-		models[k].maxNumIter = maxNumIter;
-		models[k].minImprovement = minImprovement;
-	}
+    
+    //Init the models
+    for(UINT k=0; k<numClasses; k++){
+        discreteModels[k].resetModel(numStates,numSymbols,modelType,delta);
+        discreteModels[k].setMaxNumEpochs( maxNumEpochs );
+        discreteModels[k].setMinChange( minChange );
+    }
     
     //Train each of the models
     for(UINT k=0; k<numClasses; k++){
@@ -145,11 +173,11 @@ bool HMM::train_(TimeSeriesClassificationData &trainingData){
         }
         
         //Train the model
-		if( !models[k].train( observationSequences ) ){
-            errorLog << "train_(TimeSeriesClassificationData &trainingData) - Failed to train HMM for class " << classID << endl;
+        if( !discreteModels[k].train( observationSequences ) ){
+            errorLog << "train_discrete(TimeSeriesClassificationData &trainingData) - Failed to train HMM for class " << classID << endl;
             return false;
         }
-	}
+    }
     
     //Compute the rejection thresholds
     nullRejectionThresholds.resize(numClasses);
@@ -170,19 +198,91 @@ bool HMM::train_(TimeSeriesClassificationData &trainingData){
         double loglikelihood = 0;
         double avgLoglikelihood = 0;
         for(UINT i=0; i<observationSequences.size(); i++){
-            loglikelihood = models[k].predict( observationSequences[i] );
+            loglikelihood = discreteModels[k].predict( observationSequences[i] );
             avgLoglikelihood += fabs( loglikelihood );
         }
         nullRejectionThresholds[k] = -( avgLoglikelihood / double( observationSequences.size() ) );
-	}
+    }
     
     //Flag that the model has been trained
     trained = true;
-
-	return true;
+    
+    return true;
+    
+}
+    
+bool HMM::train_continuous(TimeSeriesClassificationData &trainingData){
+    
+    clear();
+    
+    if( trainingData.getNumSamples() == 0 ){
+        errorLog << "train_continuous(TimeSeriesClassificationData &trainingData) - There are no training samples to train the CHMM classifer!" << endl;
+        return false;
+    }
+    
+    //Reset the CHMM
+    numInputDimensions = trainingData.getNumDimensions();
+    numClasses = trainingData.getNumClasses();
+    classLabels.resize( numClasses );
+    for(UINT k=0; k<numClasses; k++){
+        classLabels[k] = trainingData.getClassTracker()[k].classLabel;
+    }
+    
+    //Scale the training data if needed
+    ranges = trainingData.getRanges();
+    if( useScaling ){
+        trainingData.scale(0, 1);
+    }
+    
+    //Setup the models, there will be 1 model for each training sample
+    const UINT numTrainingSamples = trainingData.getNumSamples();
+    continuousModels.resize( numTrainingSamples );
+    
+    //Train each of the models
+    for(UINT k=0; k<numTrainingSamples; k++){
+        
+        //Init the model
+        continuousModels[k].setDownsampleFactor( downsampleFactor );
+        continuousModels[k].setModelType( modelType );
+        continuousModels[k].setDelta( delta );
+        continuousModels[k].enableScaling( false ); //Scaling should always off for the models as we do any scaling in the CHMM
+        
+        //Train the model
+        if( !continuousModels[k].train_( trainingData[k] ) ){
+            errorLog << "train_continuous(TimeSeriesClassificationData &trainingData) - Failed to train CHMM for sample " << k << endl;
+            return false;
+        }
+    }
+    
+    //Flag that the model has been trained
+    trained = true;
+    
+    //Compute any null rejection thresholds if needed
+    if( useNullRejection ){
+        //Compute the rejection thresholds
+        nullRejectionThresholds.resize(numClasses);
+    }
+    
+    return true;
 }
     
 bool HMM::predict_(VectorDouble &inputVector){
+    
+    switch( hmmType ){
+        case HMM_DISCRETE:
+            return predict_discrete( inputVector );
+            break;
+        case HMM_CONTINUOUS:
+            return predict_continuous( inputVector );
+            break;
+    }
+    
+    errorLog << "predict_(VectorDouble &inputVector) - Failed to predict, unknown HMM type!" << endl;
+    
+	return false;
+}
+    
+bool HMM::predict_discrete( VectorDouble &inputVector ){
     
     predictedClassLabel = 0;
 	maxLikelihood = -10000;
@@ -211,7 +311,7 @@ bool HMM::predict_(VectorDouble &inputVector){
     }
     
 	for(UINT k=0; k<numClasses; k++){
-		classDistances[k] = models[k].predict( newObservation );
+		classDistances[k] = discreteModels[k].predict( newObservation );
         
         //Set the class likelihood as the antilog of the class distances
         classLikelihoods[k] = antilog( classDistances[k] );
@@ -242,10 +342,101 @@ bool HMM::predict_(VectorDouble &inputVector){
     return true;
 }
     
+bool HMM::predict_continuous( VectorDouble &inputVector ){
+    
+    if( !trained ){
+        errorLog << "predict_(VectorDouble &inputVector) - The HMM classifier has not been trained!" << endl;
+        return false;
+    }
+    
+	if( inputVector.size() != numInputDimensions ){
+        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
+		return false;
+	}
+    
+    //Scale the input vector if needed
+    if( useScaling ){
+        for(UINT i=0; i<numInputDimensions; i++){
+            inputVector[i] = scale(inputVector[i], ranges[i].minValue, ranges[i].maxValue, 0, 1);
+        }
+    }
+    
+    if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
+    if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
+    
+    std::fill(classDistances.begin(),classDistances.end(),0);
+    
+    bestDistance = -1000;
+    UINT bestIndex = 0;
+    double minValue = -1000;
+    
+    const UINT numModels = (UINT)continuousModels.size();
+    vector< IndexedDouble > results(numModels);
+    for(UINT i=0; i<numModels; i++){
+        
+        //Run the prediction for this model
+        results[i].value = continuousModels[i].predict( inputVector );
+        results[i].index = continuousModels[i].getClassLabel();
+        
+        if( results[i].value < minValue ){
+            minValue = results[i].value;
+        }
+    }
+    
+    //Sort the results
+    std::sort(results.begin(),results.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
+    
+    //Run the majority vote
+    for(UINT i=0; i<committeeSize; i++){
+        classDistances[ getClassLabelIndexValue( results[i].index ) ] += 1.0 / (results[i].value / minValue);
+    }
+    
+    //Turn the class distances into likelihoods
+    double sum = Util::sum(classDistances);
+    for(UINT k=0; k<numClasses; k++){
+        classLikelihoods[k] = classDistances[k] / sum;
+    }
+    
+    //Find the maximum label
+    for(UINT k=0; k<numClasses; k++){
+        if( classDistances[k] > bestDistance ){
+            bestDistance = classDistances[k];
+            bestIndex = k;
+        }
+    }
+    
+    maxLikelihood = classLikelihoods[ bestIndex ];
+    predictedClassLabel = classLabels[ bestIndex ];
+    
+    return true;
+}
+    
 bool HMM::predict_(MatrixDouble &timeseries){
     
+    switch( hmmType ){
+        case HMM_DISCRETE:
+            return predict_discrete( timeseries );
+            break;
+        case HMM_CONTINUOUS:
+            return predict_continuous( timeseries );
+            break;
+    }
+    
+    errorLog << "predict_(MatrixDouble &timeseries) - Failed to predict, unknown HMM type!" << endl;
+    
+	return false;
+    
+}
+    
+bool HMM::predict_discrete(MatrixDouble &timeseries){
+    
+    if( !trained ){
+        errorLog << "predict_continuous(MatrixDouble &timeseries) - The HMM classifier has not been trained!" << endl;
+        return false;
+    }
+    
     if( timeseries.getNumCols() != 1 ){
-        errorLog << "predict_(MatrixDouble &timeseries) The number of columns in the input matrix must be 1. It is: " << timeseries.getNumCols() << endl;
+        errorLog << "predict_discrete(MatrixDouble &timeseries) The number of columns in the input matrix must be 1. It is: " << timeseries.getNumCols() << endl;
         return false;
     }
     
@@ -257,7 +448,7 @@ bool HMM::predict_(MatrixDouble &timeseries){
         observationSequence[i] = (UINT)timeseries[i][0];
         
         if( observationSequence[i] >= numSymbols ){
-            errorLog << "predict_(VectorDouble &inputVector) - The new observation is not a valid symbol! It should be in the range [0 numSymbols-1]" << endl;
+            errorLog << "predict_discrete(VectorDouble &inputVector) - The new observation is not a valid symbol! It should be in the range [0 numSymbols-1]" << endl;
             return false;
         }
     }
@@ -269,7 +460,7 @@ bool HMM::predict_(MatrixDouble &timeseries){
     UINT bestIndex = 0;
     double sum = 0;
 	for(UINT k=0; k<numClasses; k++){
-		classDistances[k] = models[k].predict( observationSequence );
+		classDistances[k] = discreteModels[k].predict( observationSequence );
         
         //Set the class likelihood as the antilog of the class distances
         classLikelihoods[k] = antilog( classDistances[k] );
@@ -300,12 +491,95 @@ bool HMM::predict_(MatrixDouble &timeseries){
     return true;
 }
     
+    
+bool HMM::predict_continuous(MatrixDouble &timeseries){
+    
+    if( !trained ){
+        errorLog << "predict_continuous(MatrixDouble &timeseries) - The HMM classifier has not been trained!" << endl;
+        return false;
+    }
+    
+	if( timeseries.getNumCols() != numInputDimensions ){
+        errorLog << "predict_continuous(MatrixDouble &timeseries) - The number of columns in the input matrix (" << timeseries.getNumCols() << ") does not match the num features in the model (" << numInputDimensions << endl;
+		return false;
+	}
+    
+    //Scale the input vector if needed
+    if( useScaling ){
+        const UINT timeseriesLength = timeseries.getNumRows();
+        for(UINT j=0; j<numInputDimensions; j++){
+            for(UINT i=0; i<timeseriesLength; i++){
+                timeseries[i][j] = scale(timeseries[i][j], ranges[j].minValue, ranges[j].maxValue, 0, 1);
+            }
+        }
+    }
+    
+    if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
+    if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
+    
+    std::fill(classDistances.begin(),classDistances.end(),0);
+    
+    bestDistance = -1000;
+    UINT bestIndex = 0;
+    double minValue = -1000;
+    
+    const UINT numModels = (UINT)continuousModels.size();
+    vector< IndexedDouble > results(numModels);
+    for(UINT i=0; i<numModels; i++){
+        
+        //Run the prediction for this model
+        results[i].value = continuousModels[i].predict( timeseries );
+        results[i].index = continuousModels[i].getClassLabel();
+        
+        if( results[i].value < minValue ){
+            minValue = results[i].value;
+        }
+    }
+    
+    //Sort the results
+    std::sort(results.begin(),results.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
+    
+    //Run the majority vote
+    for(UINT i=0; i<committeeSize; i++){
+        classDistances[ getClassLabelIndexValue( results[i].index ) ] += 1.0 / (results[i].value / minValue);
+    }
+    
+    //Turn the class distances into likelihoods
+    double sum = Util::sum(classDistances);
+    for(UINT k=0; k<numClasses; k++){
+        classLikelihoods[k] = classDistances[k] / sum;
+    }
+    
+    //Find the maximum label
+    for(UINT k=0; k<numClasses; k++){
+        if( classDistances[k] > bestDistance ){
+            bestDistance = classDistances[k];
+            bestIndex = k;
+        }
+    }
+    
+    maxLikelihood = classLikelihoods[ bestIndex ];
+    predictedClassLabel = classLabels[ bestIndex ];
+    
+    return true;
+}
+    
 bool HMM::reset(){
     
+    //Reset the base class
     Classifier::reset();
     
-    for(UINT i=0; i<models.size(); i++){
-        models[i].reset();
+    switch( hmmType ){
+        case HMM_DISCRETE:
+            for(size_t i=0; i<discreteModels.size(); i++){
+                discreteModels[i].reset();
+            }
+            break;
+        case HMM_CONTINUOUS:
+            for(size_t i=0; i<continuousModels.size(); i++){
+                continuousModels[i].reset();
+            }
+            break;
     }
     
     return true;
@@ -316,7 +590,8 @@ bool HMM::clear(){
     //Clear the base class
     Classifier::clear();
     
-    models.clear();
+    discreteModels.clear();
+    continuousModels.clear();
     
     return true;
 }
@@ -330,13 +605,15 @@ bool HMM::saveModelToFile( fstream &file ) const{
 	}
 
 	//Write the header info
-	file << "HMM_MODEL_FILE_V2.0\n";
+	file << "HMM_MODEL_FILE_V1.0\n";
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
         errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
 		return false;
     }
+    
+    /*
     
 	file << "NumStates: " << numStates << endl;
 	file << "NumSymbols: " << numSymbols << endl;
@@ -376,7 +653,7 @@ bool HMM::saveModelToFile( fstream &file ) const{
             }
         }
     }
-
+*/
 	return true;
 }
 
@@ -389,19 +666,14 @@ bool HMM::loadModelFromFile( fstream &file ){
 		errorLog << "loadModelFromFile( fstream &file ) - File is not open!" << endl;
 		return false;
 	}
-
+/*
 	std::string word;
     double value;
     
     file >> word;
     
-    //Check to see if we should load a legacy file
-    if( word == "HMM_MODEL_FILE_V1.0" ){
-        return loadLegacyModelFromFile( file );
-    }
-    
 	//Find the file type header
-	if(word != "HMM_MODEL_FILE_V2.0"){
+	if(word != "HMM_MODEL_FILE_V1.0"){
 		errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header!" << endl;
 		return false;
 	}
@@ -569,7 +841,7 @@ bool HMM::loadModelFromFile( fstream &file ){
         classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
         classDistances.resize(numClasses,DEFAULT_NULL_DISTANCE_VALUE);
     }
-
+*/
 	return true;
 
 }
@@ -592,6 +864,18 @@ bool HMM::convertDataToObservationSequence( TimeSeriesClassificationData &classD
     
     return true;
 }
+   
+UINT HMM::getHMMType() const{
+    return hmmType;
+}
+    
+UINT HMM::getModelType() const{
+    return modelType;
+}
+
+UINT HMM::getDelta() const{
+    return delta;
+}
     
 UINT HMM::getNumStates() const{
     return numStates;
@@ -600,32 +884,81 @@ UINT HMM::getNumStates() const{
 UINT HMM::getNumSymbols() const{
     return numSymbols;
 }
-
-UINT HMM::getModelType() const{
-    return modelType;
-}
-
-UINT HMM::getDelta() const{
-    return delta;
-}
-
-UINT HMM::getMaxNumIterations() const{
-    return maxNumIter;
-}
     
 UINT HMM::getNumRandomTrainingIterations() const{
     return numRandomTrainingIterations;
 }
 
-double HMM::getMinImprovement() const{
-    return minImprovement;
+vector< DiscreteHiddenMarkovModel > HMM::getDiscreteModels() const{
+    return discreteModels;
+}
+    
+vector< ContinuousHiddenMarkovModel > HMM::getContinuousModels() const{
+    return continuousModels;
+}
+    
+bool HMM::setHMMType(const UINT hmmType){
+    
+    clear();
+    
+    if( hmmType == HMM_DISCRETE || hmmType == HMM_CONTINUOUS ){
+        this->hmmType = hmmType;
+        return true;
+    }
+    
+    warningLog << "setHMMType(const UINT hmmType) - Unknown HMM type!" << endl;
+    return false;
 }
 
-vector< HiddenMarkovModel > HMM::getModels() const{
-    return models;
+bool HMM::setModelType(const UINT modelType){
+    
+    clear();
+    
+    if( modelType == HMM_ERGODIC || modelType == HMM_LEFTRIGHT ){
+        this->modelType = modelType;
+        return true;
+    }
+    
+    warningLog << "setModelType(const UINT modelType) - Unknown model type!" << endl;
+    return false;
+}
+
+bool HMM::setDelta(const UINT delta){
+    
+    clear();
+    
+    if( delta > 0 ){
+        this->delta = delta;
+        return true;
+    }
+    
+    warningLog << "setDelta(const UINT delta) - Delta must be greater than zero!" << endl;
+    return false;
+}
+    
+bool HMM::setDownsampleFactor(const UINT downsampleFactor){
+    
+    clear();
+    if( downsampleFactor > 0 ){
+        this->downsampleFactor = downsampleFactor;
+        return true;
+    }
+    return false;
+}
+    
+bool HMM::setCommitteeSize(const UINT committeeSize){
+    
+    if( committeeSize > 0 ){
+        this->committeeSize = committeeSize;
+        return true;
+    }
+    
+    return false;
 }
     
 bool HMM::setNumStates(const UINT numStates){
+    
+    clear();
     
     if( numStates > 0 ){
         this->numStates = numStates;
@@ -638,6 +971,8 @@ bool HMM::setNumStates(const UINT numStates){
     
 bool HMM::setNumSymbols(const UINT numSymbols){
     
+    clear();
+    
     if( numSymbols > 0 ){
         this->numSymbols = numSymbols;
         return true;
@@ -647,40 +982,9 @@ bool HMM::setNumSymbols(const UINT numSymbols){
     return false;
 }
 
-bool HMM::setModelType(const UINT modelType){
-    
-    if( modelType == ERGODIC || modelType == LEFTRIGHT ){
-        this->modelType = modelType;
-        return true;
-    }
-    
-    warningLog << "setModelType(const UINT modelType) - Unknown model type!" << endl;
-    return false;
-}
-
-bool HMM::setDelta(const UINT delta){
-    
-    if( delta > 0 ){
-        this->delta = delta;
-        return true;
-    }
-    
-    warningLog << "setDelta(const UINT delta) - Delta must be greater than zero!" << endl;
-    return false;
-}
-
-bool HMM::setMaxNumIterations(const UINT maxNumIter){
-    
-    if( maxNumIter > 0 ){
-        this->maxNumIter = maxNumIter;
-        return true;
-    }
-    
-    warningLog << "setMaxNumIterations(const UINT maxNumIter) - The maximum number of iterations must be greater than zero!" << endl;
-    return false;
-}
-    
 bool HMM::setNumRandomTrainingIterations(const UINT numRandomTrainingIterations){
+    
+    clear();
     
     if( numRandomTrainingIterations > 0 ){
         this->numRandomTrainingIterations = numRandomTrainingIterations;
@@ -689,192 +993,6 @@ bool HMM::setNumRandomTrainingIterations(const UINT numRandomTrainingIterations)
     
     warningLog << "setMaxNumIterations(const UINT maxNumIter) - The number of random training iterations must be greater than zero!" << endl;
     return false;
-}
-    
-bool HMM::setMinImprovement(const double minImprovement){
-    
-    if( minImprovement > 0 ){
-        this->minImprovement = minImprovement;
-        return true;
-    }
-    
-    warningLog << "setMinImprovement(const double minImprovement) - Minimum improvement must be greater than zero!" << endl;
-    return false;
-}
-    
-bool HMM::loadLegacyModelFromFile( fstream &file ){
-    
-    double value;
-    string word;
-    
-    file >> word;
-    if(word != "Trained:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find Trained." << endl;
-        return false;
-    }
-    file >> trained;
-    
-    file >> word;
-    if(word != "NumClasses:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find NumClasses." << endl;
-        return false;
-    }
-    file >> numClasses;
-    
-    file >> word;
-    if(word != "NumStates:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find NumStates." << endl;
-        return false;
-    }
-    file >> numStates;
-    
-    file >> word;
-    if(word != "NumSymbols:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find NumSymbols." << endl;
-        return false;
-    }
-    file >> numSymbols;
-    
-    file >> word;
-    if(word != "ModelType:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find ModelType." << endl;
-        return false;
-    }
-    file >> modelType;
-    
-    file >> word;
-    if(word != "Delta:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find Delta." << endl;
-        return false;
-    }
-    file >> delta;
-    
-    file >> word;
-    if(word != "NumRandomTrainingIterations:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find NumRandomTrainingIterations." << endl;
-        return false;
-    }
-    file >> numRandomTrainingIterations;
-    
-    //If the HMM has been trained then load the models
-    if( trained ){
-        
-        //Resize the buffer
-        models.resize(numClasses);
-        
-        //Load each of the K classes
-        for(UINT k=0; k<numClasses; k++){
-            UINT modelID;
-            
-            file >> word;
-            if(word != "Model_ID:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find model ID for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> modelID;
-            
-            if(modelID-1!=k){
-                errorLog << "loadModelFromFile( fstream &file ) - Model ID does not match the current class ID for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            
-            file >> word;
-            if(word != "NumStates:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumStates for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> models[k].numStates;
-            
-            file >> word;
-            if(word != "NumSymbols:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumSymbols for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> models[k].numSymbols;
-            
-            file >> word;
-            if(word != "ModelType:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the modelType for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> models[k].modelType;
-            
-            file >> word;
-            if(word != "Delta:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the Delta for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> models[k].delta;
-            
-            file >> word;
-            if(word != "Threshold:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the Threshold for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> models[k].cThreshold;
-            
-            file >> word;
-            if(word != "NumRandomTrainingIterations:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the numRandomTrainingIterations for the " << k+1 << "th model." << endl;
-                return false;
-            }
-            file >> models[k].numRandomTrainingIterations;
-            
-            file >> word;
-            if(word != "MaxNumIter:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the MaxNumIter for the " << k+1 << "th model." << endl;
-                return false;
-            }
-            file >> models[k].maxNumIter;
-            
-            models[k].a.resize(models[k].numStates,models[k].numStates);
-            models[k].b.resize(models[k].numStates,models[k].numSymbols);
-            models[k].pi.resize(models[k].numStates);
-            
-            //Load the A, B and Pi matrices
-            file >> word;
-            if(word != "A:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the A matrix for the "<<k+1<<"th model." << endl;
-                return false;
-            }
-            
-            //Load A
-            for(UINT i=0; i<models[k].numStates; i++){
-                for(UINT j=0; j<models[k].numStates; j++){
-                    file >> value;
-                    models[k].a[i][j] = value;
-                }
-            }
-            
-            file >> word;
-            if(word != "B:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the B matrix for the "<<k+1<<"th model." << endl;
-                return false;
-            }
-            
-            //Load B
-            for(UINT i=0; i<models[k].numStates; i++){
-                for(UINT j=0; j<models[k].numSymbols; j++){
-                    file >> value;
-                    models[k].b[i][j] = value;
-                }
-            }
-            
-            file >> word;
-            if(word != "Pi:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi matrix for the "<<k+1<<"th model." << endl;
-                return false;
-            }
-            
-            //Load Pi
-            for(UINT i=0; i<models[k].numStates; i++){
-                file >> value;
-                models[k].pi[i] = value;
-            }
-        }
-    }
-    
-    return true;
 }
 
 }//End of namespace GRT

@@ -232,6 +232,14 @@ bool GaussianMixtureModels::train_(MatrixDouble &data){
     //Flag that the model was trained
     trained = true;
     
+    //Setup the cluster labels
+    clusterLabels.resize(numClusters);
+    for(UINT i=0; i<numClusters; i++){
+        clusterLabels[i] = i+1;
+    }
+    clusterLikelihoods.resize(numClusters,0);
+    clusterDistances.resize(numClusters,0);
+    
     return true;
 }
 
@@ -243,6 +251,59 @@ bool GaussianMixtureModels::train_(ClassificationData &trainingData){
 bool GaussianMixtureModels::train_(UnlabelledData &trainingData){
     MatrixDouble data = trainingData.getDataAsMatrixDouble();
     return train_( data );
+}
+    
+bool GaussianMixtureModels::predict_(VectorDouble &x){
+    
+    if( !trained ){
+        return false;
+    }
+    
+    if( x.size() != numInputDimensions ){
+        return false;
+    }
+    
+    if( useScaling ){
+        for(UINT n=0; n<numInputDimensions; n++){
+            x[n] = scale(x[n], ranges[n].minValue, ranges[n].maxValue, 0, 1);
+        }
+    }
+    
+    double sum = 0;
+    double dist = 0;
+    UINT minIndex = 0;
+    bestDistance = 0;
+    predictedClusterLabel = 0;
+    maxLikelihood = 0;
+    if( clusterLikelihoods.size() != numClusters )
+        clusterLikelihoods.resize( numClusters );
+    if( clusterDistances.size() != numClusters )
+        clusterDistances.resize( numClusters );
+    
+    for(UINT i=0; i<numClusters; i++){
+        
+        dist = gauss(x,i,det,mu,invSigma);
+        
+        clusterDistances[i] = dist;
+        clusterLikelihoods[i] = dist;
+        
+        sum += clusterLikelihoods[i];
+        
+        if( dist > bestDistance ){
+            bestDistance = dist;
+            minIndex = i;
+        }
+    }
+    
+    //Normalize the likelihood
+    for(UINT i=0; i<numClusters; i++){
+        clusterLikelihoods[i] /= sum;
+    }
+    
+    predictedClusterLabel = clusterLabels[ minIndex ];
+    maxLikelihood = clusterLikelihoods[ minIndex ];
+    
+    return true;
 }
     
 bool GaussianMixtureModels::saveModelToFile(fstream &file) const{
@@ -378,6 +439,14 @@ bool GaussianMixtureModels::loadModelFromFile(fstream &file){
         for(UINT k=0; k<numClusters; k++){
             file >> det[k];
         }
+        
+        //Setup the cluster labels
+        clusterLabels.resize(numClusters);
+        for(UINT i=0; i<numClusters; i++){
+            clusterLabels[i] = i+1;
+        }
+        clusterLikelihoods.resize(numClusters,0);
+        clusterDistances.resize(numClusters,0);
         
     }
     

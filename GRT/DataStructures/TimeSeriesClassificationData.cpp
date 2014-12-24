@@ -655,33 +655,42 @@ bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename
     
 bool TimeSeriesClassificationData::printStats() const {
     
-    cout << "DatasetName:\t" << datasetName << endl;
-    cout << "DatasetInfo:\t" << infoText << endl;
-    cout << "Number of Dimensions:\t" << numDimensions << endl;
-    cout << "Number of Samples:\t" << totalNumSamples << endl;
-    cout << "Number of Classes:\t" << getNumClasses() << endl;
-    cout << "ClassStats:\n";
+    cout << getStatsAsString();
+    
+    return true;
+}
+    
+std::string TimeSeriesClassificationData::getStatsAsString() const{
+    
+    string stats;
+    
+    stats += "DatasetName:\t" + datasetName + "\n";
+    stats += "DatasetInfo:\t" + infoText + "\n";
+    stats += "Number of Dimensions:\t" + Util::toString(numDimensions) + "\n";
+    stats += "Number of Samples:\t" + Util::toString(totalNumSamples) + "\n";
+    stats += "Number of Classes:\t" + Util::toString(getNumClasses()) + "\n";
+    stats += "ClassStats:\n";
     
     for(UINT k=0; k<getNumClasses(); k++){
-        cout << "ClassLabel:\t" << classTracker[k].classLabel;
-        cout << "\tNumber of Samples:\t" << classTracker[k].counter;
-        cout << "\tClassName:\t" << classTracker[k].className << endl;
+        stats += "ClassLabel:\t" + Util::toString(classTracker[k].classLabel);
+        stats += "\tNumber of Samples:\t" + Util::toString( classTracker[k].counter );
+        stats +="\tClassName:\t" + classTracker[k].className + "\n";
     }
     
     vector< MinMax > ranges = getRanges();
     
-    cout << "Dataset Ranges:\n";
+    stats += "Dataset Ranges:\n";
     for(UINT j=0; j<ranges.size(); j++){
-        cout << "[" << j+1 << "] Min:\t" << ranges[j].minValue << "\tMax: " << ranges[j].maxValue << endl;
+        stats += "[" + Util::toString( j+1 ) + "] Min:\t" + Util::toString( ranges[j].minValue ) + "\tMax: " + Util::toString( ranges[j].maxValue ) + "\n";
     }
     
-    cout << "Timeseries Lengths:\n";
+    stats += "Timeseries Lengths:\n";
     UINT M = (UINT)data.size();
     for(UINT j=0; j<M; j++){
-        cout << "ClassLabel: " << data[j].getClassLabel() << " Length:\t" << data[j].getLength() << endl;
+        stats += "ClassLabel: " + Util::toString( data[j].getClassLabel() ) + " Length:\t" + Util::toString( data[j].getLength() ) + "\n";
     }
     
-    return true;
+    return stats;
 }
     
 TimeSeriesClassificationData TimeSeriesClassificationData::partition(const UINT trainingSizePercentage,const bool useStratifiedSampling){

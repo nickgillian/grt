@@ -120,59 +120,6 @@ bool KMeans::deepCopyFrom(const Clusterer *clusterer){
     return false;
 }
 
-    /*
-bool KMeans::predict(VectorDouble inputVector,UINT &predictedClusterLabel,double &maxLikelihood,VectorDouble &clusterLikelihoods){
-	
-	if( !trained ){
-		 return false;
-	}
-	
-	if( inputVector.size() != numInputDimensions ){
-		return false;
-	}
-    
-    if( useScaling ){
-        for(UINT n=0; n<numInputDimensions; n++){
-            inputVector[n] = scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0, 1);
-        }
-    }
-	
-	double minDist = numeric_limits<double>::max();
-	double sum = 0;
-	UINT minIndex = 0;
-	predictedClusterLabel = 0;
-	maxLikelihood = 0;
-	if( clusterLikelihoods.size() != numClusters )
-        clusterLikelihoods.resize( numClusters );
-	
-	for(UINT i=0; i<numClusters; i++){
-		
-		double dist = 0;
-		for(UINT j=0; j<numInputDimensions; j++){
-			dist += SQR( inputVector[j]-clusters[i][j] );
-		}
-        
-        //We don't need to compute the sqrt as it works without it and is faster
-		clusterLikelihoods[i] = dist;
-		sum += dist;
-				
-		if( dist < minDist ){
-			minDist = dist;
-			minIndex = i;
-		}
-	}
-	
-	//Normalize the likelihood
-	for(UINT i=0; i<numClusters; i++){
-		clusterLikelihoods[i] /= sum;
-	}
-	
-	predictedClusterLabel = clusterLabels[ minIndex ];
-	maxLikelihood = 1.0 - clusterLikelihoods[ minIndex ];
-	
-	return true;
-}
-*/
 bool KMeans::train_(ClassificationData &trainingData){
 	
 	if( trainingData.getNumSamples() == 0 ){
@@ -247,6 +194,65 @@ bool KMeans::train_(MatrixDouble &data){
 	}
 
 	return trainModel( data );
+}
+    
+bool KMeans::predict_(VectorDouble &inputVector){
+    
+    if( !trained ){
+        return false;
+	}
+	
+	if( inputVector.size() != numInputDimensions ){
+		return false;
+	}
+    
+    if( useScaling ){
+        for(UINT n=0; n<numInputDimensions; n++){
+            inputVector[n] = scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0, 1);
+        }
+    }
+	
+    const double sigma = 1.0;
+    const double gamma = 1.0 / (2*SQR(sigma));
+    double sum = 0;
+    double dist = 0;
+	UINT minIndex = 0;
+	bestDistance = numeric_limits<double>::max();
+	predictedClusterLabel = 0;
+	maxLikelihood = 0;
+	if( clusterLikelihoods.size() != numClusters )
+        clusterLikelihoods.resize( numClusters );
+    if( clusterDistances.size() != numClusters )
+        clusterDistances.resize( numClusters );
+	
+	for(UINT i=0; i<numClusters; i++){
+		
+        //We don't need to compute the sqrt as it works without it and is faster
+		dist = 0;
+		for(UINT j=0; j<numInputDimensions; j++){
+			dist += SQR( inputVector[j]-clusters[i][j] );
+		}
+    
+        clusterDistances[i] = dist;
+        clusterLikelihoods[i] = exp( - SQR(gamma * dist) ); //1.0/(1.0+dist); //This will give us a value close to 1 for a dist of 0, and a value closer to 0 when the dist is large
+        
+		sum += clusterLikelihoods[i];
+        
+		if( dist < bestDistance ){
+			bestDistance = dist;
+			minIndex = i;
+		}
+	}
+	
+	//Normalize the likelihood
+	for(UINT i=0; i<numClusters; i++){
+		clusterLikelihoods[i] /= sum;
+	}
+	
+	predictedClusterLabel = clusterLabels[ minIndex ];
+	maxLikelihood = clusterLikelihoods[ minIndex ];
+    
+    return true;
 }
 
 bool KMeans::trainModel(MatrixDouble &data){
@@ -327,6 +333,14 @@ bool KMeans::trainModel(MatrixDouble &data){
     finalTheta = theta;
     numTrainingIterationsToConverge = currentIter;
 	trained = true;
+    
+    //Setup the cluster labels
+    clusterLabels.resize(numClusters);
+    for(UINT i=0; i<numClusters; i++){
+        clusterLabels[i] = i+1;
+    }
+    clusterLikelihoods.resize(numClusters,0);
+    clusterDistances.resize(numClusters,0);
 	
 	return true;
 }

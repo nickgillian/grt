@@ -37,14 +37,22 @@ TimeSeriesClassificationSample::TimeSeriesClassificationSample(const TimeSeriesC
 
 TimeSeriesClassificationSample::~TimeSeriesClassificationSample(){};
 
-void TimeSeriesClassificationSample::clear(){
+bool TimeSeriesClassificationSample::clear(){
 	classLabel = 0;
 	data.clear();
+    return true;
 }
 
-void TimeSeriesClassificationSample::setTrainingSample(const UINT classLabel,const MatrixDouble &data){
+bool TimeSeriesClassificationSample::addSample(const UINT classLabel,const VectorDouble &sample){
+    this->classLabel = classLabel;
+    this->data.push_back( sample );
+    return true;
+}
+    
+bool TimeSeriesClassificationSample::setTrainingSample(const UINT classLabel,const MatrixDouble &data){
 	this->classLabel = classLabel;
 	this->data = data;
+    return true;
 }
 
 } //End of namespace GRT

@@ -19,20 +19,19 @@
  */
 
 /*
- GRT HMM Example
- This examples demonstrates how to initialize, train, and use the HMM algorithm for classification. 
+ GRT HMM Discrete Example
+ This examples demonstrates how to initialize, train, and use the Discrete HMM algorithm for classification.
  
  Hidden Markov Models (HMM) are powerful classifiers that work well on temporal classification problems when you have a large training dataset.
 
- The HMM algorithm in the GRT is a discrete HMM, which means that the input to the HMM algorithm must be a discrete integer value in the range [0 numSymbols-1].  You can
- convert N-dimensional continuous data into a 1-dimensional discrete data using one of the GRT Quantization algorithms, such as KMeansQuantizer.
+ The HMM algorithm in the GRT can be either a discrete or continuous HMM.  A discrete HMM means that the input to the HMM algorithm must be a discrete integer value in the range [0 numSymbols-1].  A continuous HMM means that the input to the HMM algorithm can be an N-dimensional floating point vector.  For the discrete HMM, you can convert N-dimensional continuous data into a 1-dimensional discrete data using one of the GRT Quantization algorithms, such as KMeansQuantizer.
 
- In this example we create an instance of a HMM algorithm and then train a HMM model using some pre-recorded training data.
+ In this example we create an instance of a Discrete HMM algorithm and then train a Discrete HMM model using some pre-recorded training data.
  The trained HMM algorithm is then used to predict the class label of some test data.
  
  This example shows you how to:
- - Create an initialize the HMM algorithm 
- - Load some LabelledTimeSeriesClassificationData from a file and partition the training data into a training dataset and a test dataset
+ - Create an initialize the Discrete HMM algorithm
+ - Load some TimeSeriesClassificationData from a file and partition the training data into a training dataset and a test dataset
  - Train a KMeansQuantizer and quantize the training and test data using the trained quantizer
  - Train the HMM algorithm using the quantized training dataset
  - Test the HMM algorithm using the quantized test dataset
@@ -91,6 +90,9 @@ int main(int argc, const char * argv[]){
     //Create a new HMM instance
     HMM hmm;
     
+    //Set the HMM as a Discrete HMM
+    hmm.setHMMType( HMM_DISCRETE );
+    
     //Set the number of states in each model
     hmm.setNumStates( 4 );
     
@@ -98,12 +100,12 @@ int main(int argc, const char * argv[]){
     hmm.setNumSymbols( NUM_SYMBOLS );
     
     //Set the HMM model type to LEFTRIGHT with a delta of 1
-    hmm.setModelType( HiddenMarkovModel::LEFTRIGHT );
+    hmm.setModelType( HMM_LEFTRIGHT );
     hmm.setDelta( 1 );
     
     //Set the training parameters
-    hmm.setMinImprovement( 1.0e-5 );
-    hmm.setMaxNumIterations( 100 );
+    hmm.setMinChange( 1.0e-5 );
+    hmm.setMaxNumEpochs( 100 );
     hmm.setNumRandomTrainingIterations( 20 );
     
     //Train the HMM model

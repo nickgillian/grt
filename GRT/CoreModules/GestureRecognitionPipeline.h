@@ -39,6 +39,7 @@
 #include "FeatureExtraction.h"
 #include "Classifier.h"
 #include "Regressifier.h"
+#include "Clusterer.h"
 #include "PostProcessing.h"
 #include "Context.h"
 #include "../DataStructures/TimeSeriesClassificationDataStream.h"
@@ -141,6 +142,17 @@ public:
      @return bool returns true if the regressifier was trained and tested successfully, false otherwise
      */
     bool train(RegressionData trainingData,const UINT kFoldValue);
+    
+    /**
+     This is the main training interface for training a Clusterer with UnlabelledData using K-fold cross validation.  This function will pass
+     the trainingData through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the
+     training function of the Clusterer module that has been added to the GestureRecognitionPipeline.
+     The function will return true if the regressifier was trained successfully, false otherwise.
+     
+     @param UnlabelledData trainingData: the unlabelledData training data that will be used to train the clusterer at the core of the pipeline
+     @return bool returns true if the clusterer was trained and tested successfully, false otherwise
+     */
+    bool train(const UnlabelledData &trainingData);
     
     /**
      This function is the main interface for testing the accuracy of a pipeline with ClassificationData.  This function will pass
@@ -314,6 +326,13 @@ public:
 	@return bool returns true if a regressifier has been added to the pipeline, false otherwise.
 	*/
     bool getIsRegressifierSet() const;
+    
+    /**
+	 This function returns true if a clusterer has been added to the pipeline.
+     
+     @return bool returns true if a clusterer has been added to the pipeline, false otherwise.
+     */
+    bool getIsClustererSet() const;
 
     /**
 	 This function returns true if any post processing modules have been added to the pipeline.
@@ -693,6 +712,13 @@ public:
      @return returns a pointer to the regressifier module, or NULL if the regressifier has not been set
      */
     Regressifier* getRegressifier() const;
+    
+    /**
+     Gets a pointer to the clusterer module.
+     
+     @return returns a pointer to the clusterer module, or NULL if the clusterer has not been set
+     */
+    Clusterer* getClusterer() const;
 
     /**
      Gets a pointer to the post processing module at the specific moduleIndex.
@@ -770,6 +796,25 @@ public:
         
         if( temp.getRegressifierType() == regressifier->getRegressifierType() ){
             return (T*)regressifier;
+        }
+        
+        return NULL;
+    }
+    
+    /**
+     Gets a pointer to the cluster module. If the cluster has not been set, or the template type T does not match the current
+     cluster type then the function will return NULL.
+     
+     @return returns a pointer to the cluster module, or NULL if the cluster has not been set
+     */
+    template <class T> T* getCluster() const{
+        
+        if( clusterer == NULL ) return NULL;
+        
+        T temp;
+        
+        if( temp.getClassifierType() == clusterer->getClustererType() ){
+            return (T*)clusterer;
         }
         
         return NULL;
@@ -879,6 +924,14 @@ public:
     bool setRegressifier(const Regressifier &regressifier);
 
     /**
+     Sets the clusterer at the core of the pipeline.  A pipeline can only have one cluster algorithm, setting a new cluster will override any previous classifier or regressifier.
+     
+     @param const Regressifier &regressifier: a reference to the regression module you want to add to the pipeline
+     @return returns true if the regressifier module was set successfully, false otherwise
+     */
+    bool setClusterer(const Clusterer &clusterer);
+ 
+    /**
      Adds a new post processing module to the pipeline.  The user can specify the position at which the new module should be inserted into the list of post processing modules.  
      The default position is to insert the new module at the end of the list.
      
@@ -961,7 +1014,14 @@ public:
 	 @return returns true if regressifier was removed successfully, false otherwise
 	 */
 	bool removeRegressifier(){ deleteRegressifier(); return true; }
-	
+
+    /**
+	 Removes the clusterer from the current pipeline.
+     
+	 @return returns true if clusterer was removed successfully, false otherwise
+	 */
+	bool removeClusterer(){ deleteClusterer(); return true; }
+
 	/**
 	 Removes all the post processing extraction modules from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
  
@@ -1010,10 +1070,12 @@ public:
 protected:
     bool predict_classifier(VectorDouble inputVector);
     bool predict_regressifier(VectorDouble inputVector);
+    bool predict_clusterer(VectorDouble inputVector);
     void deleteAllPreProcessingModules();
     void deleteAllFeatureExtractionModules();
     void deleteClassifier();
     void deleteRegressifier();
+    void deleteClusterer();
     void deleteAllPostProcessingModules();
     void deleteAllContextModules();
     bool updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorDouble &precisionCounter,VectorDouble &recallCounter,double &rejectionPrecisionCounter,double &rejectionRecallCounter,VectorDouble &confusionMatrixCounter);
@@ -1024,6 +1086,7 @@ protected:
     UINT inputVectorDimensions;
     UINT outputVectorDimensions;
     UINT predictedClassLabel;
+    UINT predictedClusterLabel;
     UINT pipelineMode;
     UINT predictionModuleIndex;
     UINT numTrainingSamples;
@@ -1047,10 +1110,11 @@ protected:
     vector< FeatureExtraction* > featureExtractionModules;
     Classifier *classifier;
     Regressifier *regressifier;
+    Clusterer *clusterer;
     vector< PostProcessing* > postProcessingModules;
     vector< vector< Context* > > contextModules;
     
-    enum PipelineModes{PIPELINE_MODE_NOT_SET=0,CLASSIFICATION_MODE,REGRESSION_MODE};
+    enum PipelineModes{PIPELINE_MODE_NOT_SET=0,CLASSIFICATION_MODE,REGRESSION_MODE,CLUSTER_MODE};
     
 public:
     enum ContextLevels{START_OF_PIPELINE=0,AFTER_PREPROCESSING,AFTER_FEATURE_EXTRACTION,AFTER_CLASSIFIER,END_OF_PIPELINE,NUM_CONTEXT_LEVELS};

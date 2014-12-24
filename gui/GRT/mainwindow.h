@@ -25,7 +25,9 @@ enum Views{
     PIPELINE_VIEW,
     TRAINING_VIEW,
     PREDICTION_VIEW,
-    LOG_VIEW
+    LOG_VIEW,
+    SETTINGS_VIEW,
+    HELP_VIEW
 };
 
 enum PreProcessingOptions{
@@ -37,6 +39,10 @@ enum PreProcessingOptions{
     HIGH_PASS_FILTER_PRE_PROCESSING,
     DERIVATIVE_PRE_PROCESSING,
     DEAD_ZONE_PRE_PROCESSING
+};
+
+enum FeatureExtractionOptions{
+    NO_FEATURE_EXTRACTION_SELECTED=0
 };
 
 enum ClassifierOptions{
@@ -52,33 +58,60 @@ enum ClassifierOptions{
     CLASSIFIER_SWIPE_DETECTOR
 };
 
+enum RegressionOptions{
+    REGRESSIFIER_LINEAR = 0,
+    REGRESSIFIER_LOGISTIC,
+    REGRESSIFIER_MLP
+};
+
+enum TimeseriesClassifierOptions{
+    TIMESERIES_CLASSIFIER_DTW=0,
+    TIMESERIES_CLASSIFIER_HMM
+};
+
+enum ClusterOptions{
+    CLUSTER_KMEANS=0,
+    CLUSTER_GAUSSIAN_MIXTURE_MODEL,
+    CLUSTER_HIERARCHICAL_CLUSTERING,
+    CLUSTER_CLUSTER_TREE
+};
+
+enum PostProcessingOptions{
+    NO_POST_POST_PROCESSING = 0,
+    CLASS_LABEL_FILTER_POST_PROCESSING,
+    CLASS_LABEL_CHANGE_FILTER_POST_PROCESSING,
+    CLASS_LABEL_TIMEOUT_FILTER_POST_PROCESSING
+};
+
 enum DecisionTreeNodeOptions{
     DECISION_TREE_CLUSTER_NODE=0,
     DECISION_TREE_THRESHOLD_NODE
 };
 
-#define NO_FEATURE_EXTRACTION_SELECTED 0
+enum PipelineViewModes{
+    CLASSIFICATION_VIEW=0,
+    REGRESSION_VIEW,
+    TIMESERIES_CLASSIFICATION_VIEW,
+    CLUSTER_VIEW
+};
 
-#define REGRESSIFIER_LINEAR 0
-#define REGRESSIFIER_LOGISTIC 1
-#define REGRESSIFIER_MLP 2
+enum LogViewModes{
+    ALL_LOGS_VIEW=0,
+    INFO_LOG_VIEW,
+    WARNING_LOG_VIEW,
+    ERROR_LOG_VIEW
+};
 
-#define NO_POST_POST_PROCESSING 0
-#define CLASS_LABEL_FILTER_POST_PROCESSING 1
-#define CLASS_LABEL_CHANGE_FILTER_POST_PROCESSING 2
-#define CLASS_LABEL_TIMEOUT_FILTER_POST_PROCESSING 3
-
-#define CLASSIFICATION_VIEW 0
-#define REGRESSION_VIEW 1
+enum TrainingModes{
+    TRAINING_MODE_NO_VALIDATION=0,
+    TRAINING_MODE_RANDOM_SUBSET,
+    TRAINING_MODE_EXTERNAL_TEST_DATASET,
+    TRAINING_MODE_CROSS_VALIDATION
+};
 
 #define DEFAULT_GRAPH_WIDTH 100
 #define FEATURE_PLOT_DEFAULT_WIDTH 600
 #define FEATURE_PLOT_DEFAULT_HEIGHT 600
-
-#define ALL_LOGS_VIEW 0
-#define INFO_LOG_VIEW 1
-#define WARNING_LOG_VIEW 2
-#define ERROR_LOG_VIEW 3
 
 namespace Ui {
     class MainWindow;
@@ -134,6 +167,7 @@ private slots:
     void setPipelineModeAsClassificationMode();
     void setPipelineModeAsRegressionMode();
     void setPipelineModeAsTimeseriesMode();
+    void setPipelineModeAsClusterMode();
     void updatePipelineMode(unsigned int);
     void resetAll();
 
@@ -159,8 +193,12 @@ private slots:
     void updateRecordStatus(bool recordStatus);
     void updateNumTrainingSamples(unsigned int numTrainingSamples);
     void addNewTrainingSample(unsigned int numTrainingSamples,GRT::ClassificationSample trainingSample);
+    void addNewTrainingSample(GRT::MatrixDouble trainingSample);
+    void addNewTrainingSample(unsigned int numTrainingSamples,GRT::TimeSeriesClassificationSample trainingSample);
     void resetTrainingData(GRT::ClassificationData trainingData);
     void resetTrainingData(GRT::RegressionData trainingData);
+    void resetTrainingData(GRT::TimeSeriesClassificationData trainingData);
+    void resetTrainingData(GRT::UnlabelledData trainingData);
     void resetTestData(GRT::ClassificationData testData);
     void handleDatasetClicked(const QModelIndex &index);
     void updateDatasetName();
@@ -184,17 +222,25 @@ private slots:
     void updateFeatureExtractionView(int viewIndex);
     void updateClassifierView(int viewIndex);
     void updateRegressifierView(int viewIndex);
+    void updateClusterView(int viewIndex);
+    void updateTimeseriesClassifierView(int viewIndex);
     void updatePostProcessingView(int viewIndex);
     void refreshPipelineSetup();
     void updatePreProcessingSettings();
     void updateClassifierSettings();
+    void updateTimeseriesClassifierSettings();
+    void updateClusterSettings();
     void clearPipelineConfiguration();
     void updatePipelineConfiguration();
     void resetPipelineConfiguration();
     void resetDefaultPipelineClassificationSetup();
     void resetDefaultPipelineRegressionSetup();
+    void resetDefaultPipelineTimeseriesClassificationSetup();
+    void resetDefaultPipelineClusterSetup();
     void setupDefaultClassifier();
     void setupDefaultRegressifier();
+    void setupDefaultTimeseriesClassifier();
+    void setupDefaultCluster();
     void updateClassifier(unsigned int classifierType,bool useScaling,bool useNullRejection,double nullRejectionCoeff,double parameter1);
 
     //////////////////////////////// TRAINING TOOl FUNCTIONS ////////////////////////////////
@@ -224,6 +270,7 @@ private slots:
     void updateFeatureExtractionData(const GRT::VectorDouble &featureExtractionData);
     void updatePredictionResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
     void updateRegressionResults(GRT::VectorDouble regressionData);
+    void updateClusterResults(unsigned int predictedClusterLabel,double maximumLikelihood,GRT::VectorDouble clusterLikelihoods,GRT::VectorDouble clusterDistances,std::vector<unsigned int> clusterLabels);
     void resetPredictionViewGraphs();
 
     ///////////////////////////////    LOG VIEW FUNCTIONS     ///////////////////////////////
@@ -233,6 +280,12 @@ private slots:
     void showWarningLog();
     void showErrorLog();
     void updateLogView(unsigned int viewID);
+
+    //////////////////////////////   SETTINGS VIEW FUNCTIONS     /////////////////////////////
+    void openGRTWiki();
+    void openGRTForum();
+    void openGRTSource();
+    void openGRTDownload();
 
     /////////////////////////////////// CORE DATA FUNCTIONS /////////////////////////////////
     void coreTick();
@@ -248,6 +301,8 @@ private:
     bool initTrainingToolView();
     bool initPreditionView();
     bool initLogView();
+    bool initSettingsView();
+    bool initHelpView();
     bool initSignalsAndSlots();
     virtual void notify(const GRT::TrainingLogMessage &log);
     virtual void notify(const GRT::TestingLogMessage &log);
@@ -270,6 +325,9 @@ private:
     TimeseriesGraph *classDistancesGraph;
     TimeseriesGraph *regressionGraph;
     TimeseriesGraph *swipeDetectorGraph;
+    TimeseriesGraph *clusterPredictionsGraph;
+    TimeseriesGraph *clusterLikelihoodsGraph;
+    TimeseriesGraph *clusterDistancesGraph;
     FeaturePlot *pcaGraph;
     vector< FeaturePlot* > featurePlots;
     GRT::ErrorLog errorLog;

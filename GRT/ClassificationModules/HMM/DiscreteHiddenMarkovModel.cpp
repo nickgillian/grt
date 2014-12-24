@@ -18,68 +18,64 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "HiddenMarkovModel.h"
+#include "DiscreteHiddenMarkovModel.h"
 
 using namespace std;
 
 namespace GRT {
 
 //Default constructor
-HiddenMarkovModel::HiddenMarkovModel(){
+DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(){
 	numStates = 0;
 	numSymbols = 0;
 	delta = 1;
 	numRandomTrainingIterations = 5;
-	maxNumIter = 100;
+	maxNumEpochs = 100;
 	cThreshold = -1000;
-	modelTrained = false;
-	modelType = ERGODIC;
+	modelType = HMM_LEFTRIGHT;
 	logLikelihood = 0.0;
-	minImprovement = 1.0e-5;
+	minChange = 1.0e-5;
     
-    debugLog.setProceedingText("[DEBUG HiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR HiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING HiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING HiddenMarkovModel]");
+    debugLog.setProceedingText("[DEBUG DiscreteHiddenMarkovModel]");
+    errorLog.setProceedingText("[ERROR DiscreteHiddenMarkovModel]");
+    warningLog.setProceedingText("[WARNING DiscreteHiddenMarkovModel]");
+    trainingLog.setProceedingText("[TRAINING DiscreteHiddenMarkovModel]");
 }
 
 //Init the model with a set number of states and symbols
-HiddenMarkovModel::HiddenMarkovModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta){
+DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta){
     this->numStates = numStates;
     this->numSymbols = numSymbols;
 	this->modelType = modelType;
 	this->delta = delta;
 	logLikelihood = 0.0;
 	numRandomTrainingIterations = 5;
-	maxNumIter = 100;
 	cThreshold = -1000;
 	logLikelihood = 0.0;
-	minImprovement = 1.0e-5;
     
-    debugLog.setProceedingText("[DEBUG HiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR HiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING HiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING HiddenMarkovModel]");
+    debugLog.setProceedingText("[DEBUG DiscreteHiddenMarkovModel]");
+    errorLog.setProceedingText("[ERROR DiscreteHiddenMarkovModel]");
+    warningLog.setProceedingText("[WARNING DiscreteHiddenMarkovModel]");
+    trainingLog.setProceedingText("[TRAINING DiscreteHiddenMarkovModel]");
     
 	randomizeMatrices(numStates,numSymbols);
 }
 
 //Init the model with a pre-trained a, b, and pi matrices
-HiddenMarkovModel::HiddenMarkovModel(const MatrixDouble &a,const MatrixDouble &b,const VectorDouble &pi,const UINT modelType,const UINT delta){
+DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const MatrixDouble &a,const MatrixDouble &b,const VectorDouble &pi,const UINT modelType,const UINT delta){
     
     numStates = 0;
     numSymbols = 0;
     numRandomTrainingIterations = 5;
-	maxNumIter = 100;
+	maxNumEpochs = 100;
 	cThreshold = -1000;
 	logLikelihood = 0.0;
-	minImprovement = 1.0e-5;
-	modelTrained = false;
+	minChange = 1.0e-5;
     
-    debugLog.setProceedingText("[DEBUG HiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR HiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING HiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING HiddenMarkovModel]");
+    debugLog.setProceedingText("[DEBUG DiscreteHiddenMarkovModel]");
+    errorLog.setProceedingText("[ERROR DiscreteHiddenMarkovModel]");
+    warningLog.setProceedingText("[WARNING DiscreteHiddenMarkovModel]");
+    trainingLog.setProceedingText("[TRAINING DiscreteHiddenMarkovModel]");
 
     if( a.getNumRows() == a.getNumRows() && a.getNumRows() == b.getNumRows() && a.getNumRows() == pi.size() ){
         this->a = a;
@@ -89,41 +85,38 @@ HiddenMarkovModel::HiddenMarkovModel(const MatrixDouble &a,const MatrixDouble &b
         this->delta = delta;
         numStates = b.getNumRows();
         numSymbols = b.getNumCols();
-        modelTrained = true;
+        trained = true;
     }else{
-        errorLog << "HiddenMarkovModel(...) - The a,b,pi sizes are invalid!" << endl;
+        errorLog << "DiscreteHiddenMarkovModel(...) - The a,b,pi sizes are invalid!" << endl;
     }
 }
     
-HiddenMarkovModel::HiddenMarkovModel(const HiddenMarkovModel &rhs){
+DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const DiscreteHiddenMarkovModel &rhs){
     this->numStates = rhs.numStates;
 	this->numSymbols = rhs.numSymbols;
 	this->delta = rhs.delta;
 	this->numRandomTrainingIterations = rhs.numRandomTrainingIterations;
-	this->maxNumIter = rhs.maxNumIter;
 	this->cThreshold = rhs.cThreshold;
-	this->modelTrained = rhs.modelTrained;
 	this->modelType = rhs.modelType;
 	this->logLikelihood = rhs.logLikelihood;
-	this->minImprovement = rhs.minImprovement;
 	this->a = rhs.a;
 	this->b = rhs.b;
 	this->pi = rhs.pi;
     this->trainingLog = rhs.trainingLog;
 
-    debugLog.setProceedingText("[DEBUG HiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR HiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING HiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING HiddenMarkovModel]");
+    debugLog.setProceedingText("[DEBUG DiscreteHiddenMarkovModel]");
+    errorLog.setProceedingText("[ERROR DiscreteHiddenMarkovModel]");
+    warningLog.setProceedingText("[WARNING DiscreteHiddenMarkovModel]");
+    trainingLog.setProceedingText("[TRAINING DiscreteHiddenMarkovModel]");
 }
     
 //Default destructor
-HiddenMarkovModel::~HiddenMarkovModel(){
+DiscreteHiddenMarkovModel::~DiscreteHiddenMarkovModel(){
     
 }
 
 //This can be called at any time to reset the entire model
-bool HiddenMarkovModel::resetModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta){
+bool DiscreteHiddenMarkovModel::resetModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta){
 	this->numStates = numStates;
     this->numSymbols = numSymbols;
 	this->modelType = modelType;
@@ -131,10 +124,10 @@ bool HiddenMarkovModel::resetModel(const UINT numStates,const UINT numSymbols,co
 	return randomizeMatrices(numStates,numSymbols);
 }
 
-bool HiddenMarkovModel::randomizeMatrices(const UINT numStates,const UINT numSymbols){
+bool DiscreteHiddenMarkovModel::randomizeMatrices(const UINT numStates,const UINT numSymbols){
 
 	//Set the model as untrained as everything will now be reset
-	modelTrained = false;
+	trained = false;
 	logLikelihood = 0.0;
 
 	//Set the new state and symbol size
@@ -162,10 +155,10 @@ bool HiddenMarkovModel::randomizeMatrices(const UINT numStates,const UINT numSym
     
     //Set any constraints on the model
 	switch( modelType ){
-		case(ERGODIC):
+		case(HMM_ERGODIC):
 			//Don't need todo anything
 			break;
-		case(LEFTRIGHT):
+		case(HMM_LEFTRIGHT):
 			//Set the state transitions constraints
 			for(UINT i=0; i<numStates; i++)
 				for(UINT j=0; j<numStates; j++)
@@ -203,9 +196,9 @@ bool HiddenMarkovModel::randomizeMatrices(const UINT numStates,const UINT numSym
     return true;
 }
     
-double HiddenMarkovModel::predict(const UINT newSample){
+double DiscreteHiddenMarkovModel::predict(const UINT newSample){
     
-    if( !modelTrained ){
+    if( !trained ){
         return 0;
     }
     
@@ -219,7 +212,7 @@ double HiddenMarkovModel::predict(const UINT newSample){
 /*double predictLogLikelihood(Vector<UINT> &obs)
  - This method computes P(O|A,B,Pi) using the forward algorithm
  */
-double HiddenMarkovModel::predict(const vector<UINT> &obs){
+double DiscreteHiddenMarkovModel::predict(const vector<UINT> &obs){
     
 	const int N = (int)numStates;
     const int T = (int)obs.size();
@@ -281,7 +274,7 @@ double HiddenMarkovModel::predict(const vector<UINT> &obs){
 /*double predictLogLikelihood(Vector<UINT> &obs)
 - This method computes P(O|A,B,Pi) using the forward algorithm
 */
-double HiddenMarkovModel::predictLogLikelihood(const vector<UINT> &obs){
+double DiscreteHiddenMarkovModel::predictLogLikelihood(const vector<UINT> &obs){
 
 	const UINT T = (unsigned int)obs.size();
 	UINT t,i,j,minState = 0;
@@ -335,7 +328,7 @@ double HiddenMarkovModel::predictLogLikelihood(const vector<UINT> &obs){
 /*double forwardBackward(Vector<UINT> &obs)
 - This method runs one pass of the forward backward algorithm, the hmm training object needs to be resized BEFORE calling this function!
 */
-bool HiddenMarkovModel::forwardBackward(HMMTrainingObject &hmm,const vector<UINT> &obs){
+bool DiscreteHiddenMarkovModel::forwardBackward(HMMTrainingObject &hmm,const vector<UINT> &obs){
 
 	const int N = (int)numStates;
 	const int T = (int)obs.size();
@@ -411,10 +404,10 @@ bool HiddenMarkovModel::forwardBackward(HMMTrainingObject &hmm,const vector<UINT
 /*bool batchTrain(Vector<UINT> &obs)
 - This method 
 */
-bool HiddenMarkovModel::train(const vector< vector<UINT> > &trainingData){
+bool DiscreteHiddenMarkovModel::train(const vector< vector<UINT> > &trainingData){
 
     //Clear any previous models
-    modelTrained = false;
+    trained = false;
     observationSequence.clear();
     estimatedStates.clear();
     trainingIterationLog.clear();
@@ -429,7 +422,7 @@ bool HiddenMarkovModel::train(const vector< vector<UINT> > &trainingData){
         vector< MatrixDouble > bTracker( numRandomTrainingIterations );
         vector< double > loglikelihoodTracker( numRandomTrainingIterations );
         
-        UINT maxNumTestIter = maxNumIter > 10 ? 10 : maxNumIter;
+        UINT maxNumTestIter = maxNumEpochs > 10 ? 10 : maxNumEpochs;
 
         //Try and find the best starting point
         for(n=0; n<numRandomTrainingIterations; n++){
@@ -463,7 +456,7 @@ bool HiddenMarkovModel::train(const vector< vector<UINT> > &trainingData){
     }
 
 	//Perform the actual training
-    if( !train_(trainingData,maxNumIter,currentIter,newLoglikelihood) ){
+    if( !train_(trainingData,maxNumEpochs,currentIter,newLoglikelihood) ){
         return false;
     }
 
@@ -481,12 +474,12 @@ bool HiddenMarkovModel::train(const vector< vector<UINT> > &trainingData){
     estimatedStates.resize( averageObsLength );
     
     //Finally, flag that the model was trained
-    modelTrained = true;
+    trained = true;
 
 	return true;
 }
 
-bool HiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,double &newLoglikelihood){
+bool DiscreteHiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,double &newLoglikelihood){
     
     const UINT numObs = (unsigned int)obs.size();
     UINT i,j,k,t = 0;
@@ -537,12 +530,12 @@ bool HiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const UINT maxI
         trainingIterationLog.push_back( newLoglikelihood );
         
         if( ++currentIter >= maxIter ){ keepTraining = false; trainingLog << "Max Iter Reached! Stopping Training" << endl; }
-        if( fabs(newLoglikelihood-oldLoglikelihood) < minImprovement && currentIter > 1 ){ keepTraining = false; trainingLog << "Min Improvement Reached! Stopping Training" << endl; }
+        if( fabs(newLoglikelihood-oldLoglikelihood) < minChange && currentIter > 1 ){ keepTraining = false; trainingLog << "Min Improvement Reached! Stopping Training" << endl; }
         //if( newLoglikelihood < oldLoglikelihood ){ cout<<"Warning: Inverted Training!\n";}
         
-        trainingLog << "Iter: "<<currentIter<<" logLikelihood: "<<newLoglikelihood<<" change: "<<oldLoglikelihood - newLoglikelihood<<endl;
+        trainingLog << "Iter: " << currentIter << " logLikelihood: " << newLoglikelihood << " change: " << oldLoglikelihood - newLoglikelihood << endl;
         
-        printMatrices();
+        print();
         //PAUSE;
         
         oldLoglikelihood = newLoglikelihood;
@@ -620,8 +613,8 @@ bool HiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const UINT maxI
                 }
             }
             
-            //Re-estimate Pi - only if the model type is ERGODIC, otherwise Pi[0] == 1 and everything else is 0
-            if (modelType==ERGODIC ){
+            //Re-estimate Pi - only if the model type is HMM_ERGODIC, otherwise Pi[0] == 1 and everything else is 0
+            if (modelType==HMM_ERGODIC ){
                 for(k=0; k<numObs; k++){
                     const UINT T = (unsigned int)obs[k].size();
                     //Compute epsilon
@@ -669,7 +662,7 @@ bool HiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const UINT maxI
     
 }
     
-bool HiddenMarkovModel::reset(){
+bool DiscreteHiddenMarkovModel::reset(){
 
     for(UINT i=0; i<observationSequence.getSize(); i++){
         observationSequence.push_back( 0 );
@@ -678,7 +671,7 @@ bool HiddenMarkovModel::reset(){
     return true;
 }
 
-void HiddenMarkovModel::printMatrices(){
+bool DiscreteHiddenMarkovModel::print() const{
 
 	trainingLog << "A: " << endl;
 	for(UINT i=0; i<a.getNumRows(); i++){
@@ -718,9 +711,10 @@ void HiddenMarkovModel::printMatrices(){
         }
     }
 
+    return true;
 }
     
-VectorDouble HiddenMarkovModel::getTrainingIterationLog() const{
+VectorDouble DiscreteHiddenMarkovModel::getTrainingIterationLog() const{
     return trainingIterationLog;
 }
 

@@ -195,7 +195,7 @@ public:
     }
     
 private:    
-    double gauss(const VectorDouble &x,double det,const VectorDouble &mu,Matrix<double> &invSigma){
+    double gauss(const VectorDouble &x,double det,const VectorDouble &mu,const MatrixDouble &invSigma){
         
         double y = 0;
         double sum = 0;

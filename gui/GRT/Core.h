@@ -38,6 +38,10 @@ public:
     GRT::ClassificationData getClassificationTestData();
     GRT::RegressionData getRegressionTrainingData();
     GRT::RegressionData getRegressionTestData();
+    GRT::TimeSeriesClassificationData getTimeSeriesClassificationTrainingData();
+    GRT::TimeSeriesClassificationData getTimeSeriesClassificationTestData();
+    GRT::UnlabelledData getClusterTrainingData();
+    GRT::UnlabelledData getClusterTestData();
     double getTestAccuracy();
     double getCrossValidationAccuracy();
     double getTrainingRMSError();
@@ -72,12 +76,19 @@ signals:
     void newTestInstanceResultReceived( const GRT::TestInstanceResult &data );
     void newTrainingSampleAdded(unsigned int numTrainingSamples,GRT::ClassificationSample trainingSample);
     void newTrainingSampleAdded(unsigned int numTrainingSamples,GRT::RegressionSample trainingSample);
+    void newTrainingSampleAdded(unsigned int numTrainingSamples,GRT::TimeSeriesClassificationSample trainingSample);
+    void newTrainingSampleAdded(GRT::MatrixDouble trainingSample);
+    void newTrainingSampleAdded(GRT::VectorDouble trainingSample);
     void numTrainingSamplesChanged(unsigned int numTrainingSamples);
     void trainMessageReceived();
     void trainingDataReset(GRT::ClassificationData trainingData);
-    void trainingDataReset(GRT::RegressionData regressionData);
+    void trainingDataReset(GRT::RegressionData trainingData);
+    void trainingDataReset(GRT::TimeSeriesClassificationData trainingData);
+    void trainingDataReset(GRT::UnlabelledData trainingData);
     void testDataReset(GRT::ClassificationData testData);
-    void testDataReset(GRT::RegressionData regressionData);
+    void testDataReset(GRT::RegressionData testData);
+    void testDataReset(GRT::TimeSeriesClassificationData testData);
+    void testDataReset(GRT::UnlabelledData testData);
     void saveTrainingDataToFileResult(bool result);
     void loadTrainingDataFromFileResult(bool result);
     void loadTestDataFromFileResult(bool result);
@@ -85,6 +96,7 @@ signals:
     void featureExtractionDataChanged(const GRT::VectorDouble &featureExtractionData);
     void predictionResultsChanged(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
     void regressionResultsChanged(GRT::VectorDouble regressionData);
+    void clusterResultsChanged(unsigned int predictedClusterLabel,double maximumLikelihood,GRT::VectorDouble clusterLikelihoods,GRT::VectorDouble clusterDistances,std::vector<unsigned int> clusterLabels);
     void pipelineTrainingStarted();
     void pipelineTrainingFinished(bool result);
     void pipelineTestingFinished(bool result);
@@ -118,6 +130,7 @@ public slots:
     bool setFeatureExtraction( const GRT::FeatureExtraction &featureExtraction );
     bool setClassifier( const GRT::Classifier &classifier );
     bool setRegressifier( const GRT::Regressifier &regressifier );
+    bool setClusterer( const GRT::Clusterer &clusterer );
     bool setPostProcessing( const GRT::PostProcessing &postProcessing );
     bool setPipeline( const GRT::GestureRecognitionPipeline &pipeline );
     bool setTargetVector( const GRT::VectorDouble &targetVector );
@@ -176,6 +189,9 @@ protected:
     GRT::RegressionData regressionTestData;
     GRT::TimeSeriesClassificationData timeseriesClassificationTrainingData;
     GRT::TimeSeriesClassificationData timeseriesClassificationTestData;
+    GRT::MatrixDouble timeseriesSample;
+    GRT::UnlabelledData clusterTrainingData;
+    GRT::UnlabelledData clusterTestData;
     GRT::GestureRecognitionPipeline pipeline;
     GRT::WarningLog warningLog;
     GRT::ErrorLog errorLog;
@@ -185,7 +201,7 @@ protected:
     TrainingThread trainingThread;
 
 public:
-    enum PipelineModes{CLASSIFICATION_MODE=0,REGRESSION_MODE,TIMESERIES_CLASSIFICATION_MODE};
+    enum PipelineModes{CLASSIFICATION_MODE=0,REGRESSION_MODE,TIMESERIES_CLASSIFICATION_MODE,CLUSTER_MODE};
     
 };
 

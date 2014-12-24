@@ -28,11 +28,12 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef GRT_HIDDEN_MARKOV_MODEL_HEADER
-#define GRT_HIDDEN_MARKOV_MODEL_HEADER
+#ifndef GRT_DISCRETE_HIDDEN_MARKOV_MODEL_HEADER
+#define GRT_DISCRETE_HIDDEN_MARKOV_MODEL_HEADER
 
+#include "HMMEnums.h"
 #include "../../Util/GRTCommon.h"
-#include "../../CoreModules/GRTBase.h"
+#include "../../CoreModules/MLBAse.h"
 
 namespace GRT {
 
@@ -49,31 +50,32 @@ public:
 	double pk;				//P( O | Model )
 };
 
-class HiddenMarkovModel : public GRTBase {
+class DiscreteHiddenMarkovModel : public MLBase {
 
 public:
-	HiddenMarkovModel();
+	DiscreteHiddenMarkovModel();
 
-	HiddenMarkovModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta);
+	DiscreteHiddenMarkovModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta);
     
-	HiddenMarkovModel(const MatrixDouble &a,const MatrixDouble &b,const VectorDouble &pi,const UINT modelType,const UINT delta);
+	DiscreteHiddenMarkovModel(const MatrixDouble &a,const MatrixDouble &b,const VectorDouble &pi,const UINT modelType,const UINT delta);
     
-    HiddenMarkovModel(const HiddenMarkovModel &rhs);
+    DiscreteHiddenMarkovModel(const DiscreteHiddenMarkovModel &rhs);
     
-    virtual ~HiddenMarkovModel();
+    virtual ~DiscreteHiddenMarkovModel();
     
     double predict(const UINT newSample);
     double predict(const vector<UINT> &obs);
     
     bool resetModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta);
     bool train(const vector< vector<UINT> > &trainingData);
-    bool reset();
+    
+    virtual bool reset();
 
     bool randomizeMatrices(const UINT numStates,const UINT numSymbols);
 	double predictLogLikelihood(const vector<UINT> &obs);
 	bool forwardBackward(HMMTrainingObject &trainingObject,const vector<UINT> &obs);
     bool train_(const vector< vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,double &newLoglikelihood);
-    void printMatrices();
+    virtual bool print() const;
     
     VectorDouble getTrainingIterationLog() const;
     
@@ -87,16 +89,10 @@ public:
 	UINT modelType;
 	UINT delta;				//The number of states a model can move to in a LeftRight model
 	UINT numRandomTrainingIterations;		//The number of training loops to find the best starting values
-	UINT maxNumIter;		//The maximum number of iter allowed during the full training
-	bool modelTrained;
 	double logLikelihood;	//The log likelihood of an observation sequence given the modal, calculated by the forward method
 	double cThreshold;		//The classification threshold for this model
-	double minImprovement;	//The minimum improvement value for the training loop
     CircularBuffer<UINT> observationSequence;
     vector< UINT > estimatedStates;
-
-	enum HMMModelTypes{ERGODIC=0,LEFTRIGHT=1};
-    
 };
 
 }//end of namespace GRT

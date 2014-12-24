@@ -32,7 +32,7 @@
      <rect>
       <x>85</x>
       <y>555</y>
-      <width>741</width>
+      <width>606</width>
       <height>21</height>
      </rect>
     </property>
@@ -40,9 +40,9 @@
    <widget class="QLineEdit" name="mainWindow_pipelineTrainedInfoTextField">
     <property name="geometry">
      <rect>
-      <x>960</x>
+      <x>965</x>
       <y>555</y>
-      <width>51</width>
+      <width>46</width>
       <height>21</height>
      </rect>
     </property>
@@ -50,7 +50,7 @@
    <widget class="QLabel" name="label_25">
     <property name="geometry">
      <rect>
-      <x>840</x>
+      <x>850</x>
       <y>555</y>
       <width>111</width>
       <height>16</height>
@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -112,12 +112,12 @@
        </rect>
       </property>
       <property name="title">
-       <string>STEP 1: Select your classification or regression task</string>
+       <string>STEP 1: Select your classification, regression, timeseries classification or clustering task</string>
       </property>
       <widget class="QPushButton" name="setupView_timeseriesModeButton">
        <property name="geometry">
         <rect>
-         <x>575</x>
+         <x>485</x>
          <y>155</y>
          <width>241</width>
          <height>32</height>
@@ -130,7 +130,7 @@
       <widget class="QPushButton" name="setupView_classificationModeButton">
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>60</x>
          <y>155</y>
          <width>171</width>
          <height>32</height>
@@ -146,7 +146,7 @@
       <widget class="QPushButton" name="setupView_regressionModeButton">
        <property name="geometry">
         <rect>
-         <x>350</x>
+         <x>265</x>
          <y>155</y>
          <width>171</width>
          <height>32</height>
@@ -159,7 +159,7 @@
       <widget class="QLabel" name="setupView_classificationImage">
        <property name="geometry">
         <rect>
-         <x>135</x>
+         <x>85</x>
          <y>25</y>
          <width>125</width>
          <height>125</height>
@@ -172,7 +172,7 @@
       <widget class="QLabel" name="setupView_regressionImage">
        <property name="geometry">
         <rect>
-         <x>375</x>
+         <x>290</x>
          <y>25</y>
          <width>125</width>
          <height>125</height>
@@ -185,7 +185,33 @@
       <widget class="QLabel" name="setupView_timeseriesImage">
        <property name="geometry">
         <rect>
-         <x>635</x>
+         <x>545</x>
+         <y>25</y>
+         <width>125</width>
+         <height>125</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="setupView_clusterModeButton">
+       <property name="geometry">
+        <rect>
+         <x>760</x>
+         <y>155</y>
+         <width>171</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cluster Mode</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="setupView_clusterImage">
+       <property name="geometry">
+        <rect>
+         <x>785</x>
          <y>25</y>
          <width>125</width>
          <height>125</height>
@@ -272,12 +298,12 @@
         <rect>
          <x>30</x>
          <y>180</y>
-         <width>521</width>
+         <width>586</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>In classification mode, or timeseries classification mode, this should be one.</string>
+        <string>In classification mode, timeseries classification mode, or cluster mode, this should be one.</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_68">
@@ -591,20 +617,20 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="page_24">
         <widget class="QGroupBox" name="groupBox_19">
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
+           <y>-5</y>
            <width>971</width>
            <height>161</height>
           </rect>
          </property>
          <property name="title">
-          <string>Recording Controls</string>
+          <string>Classification Recording Controls</string>
          </property>
          <widget class="QLabel" name="label_15">
           <property name="geometry">
@@ -632,7 +658,7 @@
            <string>Dataset Name:</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="dataLabellingTool_numInputDimensionsField">
+         <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numInputDimensionsField">
           <property name="geometry">
            <rect>
             <x>590</x>
@@ -642,17 +668,17 @@
            </rect>
           </property>
          </widget>
-         <widget class="QLineEdit" name="dataLabellingTool_numTrainingSamples">
+         <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numTrainingSamples">
           <property name="geometry">
            <rect>
             <x>210</x>
-            <y>130</y>
+            <y>100</y>
             <width>141</width>
             <height>21</height>
            </rect>
           </property>
          </widget>
-         <widget class="QLineEdit" name="dataLabellingTool_classificationDatasetName">
+         <widget class="QLineEdit" name="dataLabellingTool_classificationMode_datasetName">
           <property name="geometry">
            <rect>
             <x>590</x>
@@ -666,7 +692,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>130</y>
+            <y>100</y>
             <width>191</width>
             <height>16</height>
            </rect>
@@ -679,7 +705,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>100</y>
+            <y>70</y>
             <width>131</width>
             <height>16</height>
            </rect>
@@ -705,13 +731,13 @@
           <property name="geometry">
            <rect>
             <x>210</x>
-            <y>100</y>
+            <y>70</y>
             <width>141</width>
             <height>24</height>
            </rect>
           </property>
          </widget>
-         <widget class="QLineEdit" name="dataLabellingTool_numClassesField">
+         <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numClassesField">
           <property name="geometry">
            <rect>
             <x>590</x>
@@ -747,7 +773,7 @@
            <string>Info:</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="dataLabellingTool_classificationDataInfoTextField">
+         <widget class="QLineEdit" name="dataLabellingTool_classificationMode_infoTextField">
           <property name="geometry">
            <rect>
             <x>590</x>
@@ -770,7 +796,7 @@
           </rect>
          </property>
          <property name="title">
-          <string>Recording Controls</string>
+          <string>Regression Recording Controls</string>
          </property>
          <widget class="QLabel" name="label_58">
           <property name="geometry">
@@ -798,7 +824,7 @@
            <string>Dataset Name:</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="dataLabellingTool_numInputDimensionsField_2">
+         <widget class="QLineEdit" name="dataLabellingTool_regressionMode_numInputDimensionsField">
           <property name="geometry">
            <rect>
             <x>590</x>
@@ -808,7 +834,7 @@
            </rect>
           </property>
          </widget>
-         <widget class="QLineEdit" name="dataLabellingTool_numTrainingSamples_2">
+         <widget class="QLineEdit" name="dataLabellingTool_regressionMode_numTrainingSamples">
           <property name="geometry">
            <rect>
             <x>210</x>
@@ -818,7 +844,7 @@
            </rect>
           </property>
          </widget>
-         <widget class="QLineEdit" name="dataLabellingTool_regressionDatasetName">
+         <widget class="QLineEdit" name="dataLabellingTool_regressionMode_datasetName">
           <property name="geometry">
            <rect>
             <x>590</x>
@@ -890,7 +916,7 @@
            <string>Info:</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="dataLabellingTool_regressionDataInfoTextField">
+         <widget class="QLineEdit" name="dataLabellingTool_regressionMode_infoTextField">
           <property name="geometry">
            <rect>
             <x>590</x>
@@ -971,6 +997,315 @@
          </widget>
         </widget>
        </widget>
+       <widget class="QWidget" name="page_4">
+        <widget class="QGroupBox" name="groupBox_27">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>-5</y>
+           <width>971</width>
+           <height>161</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Timeseries Classification Recording Controls</string>
+         </property>
+         <widget class="QLabel" name="label_152">
+          <property name="geometry">
+           <rect>
+            <x>410</x>
+            <y>100</y>
+            <width>171</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Number of Dimensions:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_153">
+          <property name="geometry">
+           <rect>
+            <x>410</x>
+            <y>40</y>
+            <width>131</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Dataset Name:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField">
+          <property name="geometry">
+           <rect>
+            <x>590</x>
+            <y>100</y>
+            <width>200</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numTrainingSamples">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>130</y>
+            <width>141</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_datasetName">
+          <property name="geometry">
+           <rect>
+            <x>590</x>
+            <y>40</y>
+            <width>200</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_154">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>130</y>
+            <width>191</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Number of Training Samples:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_155">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>70</y>
+            <width>131</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Training Class Label:</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="dataLabellingTool_timeseriesClassificationModeRecordButton">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>114</width>
+            <height>32</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Record</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="dataLabellingTool_timeseriesClassificationMode_classLabel">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>70</y>
+            <width>141</width>
+            <height>24</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numClassesField">
+          <property name="geometry">
+           <rect>
+            <x>590</x>
+            <y>130</y>
+            <width>200</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_156">
+          <property name="geometry">
+           <rect>
+            <x>410</x>
+            <y>130</y>
+            <width>171</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Number of Classes:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_157">
+          <property name="geometry">
+           <rect>
+            <x>410</x>
+            <y>70</y>
+            <width>131</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Info:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_infoTextField">
+          <property name="geometry">
+           <rect>
+            <x>590</x>
+            <y>70</y>
+            <width>200</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_158">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>100</y>
+            <width>191</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Training Sample Length:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_timeseriesSampleLength">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>100</y>
+            <width>141</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="page_3">
+        <widget class="QGroupBox" name="groupBox_26">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>966</width>
+           <height>161</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Cluster Recording Controls</string>
+         </property>
+         <widget class="QLabel" name="label_128">
+          <property name="geometry">
+           <rect>
+            <x>440</x>
+            <y>100</y>
+            <width>171</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Number of Dimensions:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_129">
+          <property name="geometry">
+           <rect>
+            <x>440</x>
+            <y>40</y>
+            <width>131</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Dataset Name:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_clusterMode_numInputDimensionsField">
+          <property name="geometry">
+           <rect>
+            <x>620</x>
+            <y>100</y>
+            <width>331</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_clusterMode_numTrainingSamples">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>65</y>
+            <width>156</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_clusterMode_datasetName">
+          <property name="geometry">
+           <rect>
+            <x>620</x>
+            <y>40</y>
+            <width>331</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_130">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>65</y>
+            <width>191</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Number of Training Samples:</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="dataLabellingTool_clusterModeRecordButton">
+          <property name="geometry">
+           <rect>
+            <x>5</x>
+            <y>25</y>
+            <width>114</width>
+            <height>32</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Record</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_132">
+          <property name="geometry">
+           <rect>
+            <x>440</x>
+            <y>70</y>
+            <width>131</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Info:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="dataLabellingTool_clusterMode_infoTextField">
+          <property name="geometry">
+           <rect>
+            <x>620</x>
+            <y>70</y>
+            <width>331</width>
+            <height>21</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+       </widget>
       </widget>
       <widget class="QPushButton" name="dataLabellingTool_loadButton">
        <property name="geometry">
@@ -1021,7 +1356,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -1244,7 +1579,7 @@
        <string>Load</string>
       </property>
      </widget>
-     <widget class="QStackedWidget" name="pipelineTool_classifierRegressifierView">
+     <widget class="QStackedWidget" name="pipelineTool_classifierRegressifierClustererView">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -1254,7 +1589,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_27">
        <widget class="QGroupBox" name="groupBox_14">
@@ -2315,6 +2650,495 @@
         </widget>
        </widget>
       </widget>
+      <widget class="QWidget" name="page_61">
+       <widget class="QGroupBox" name="groupBox_9">
+        <property name="geometry">
+         <rect>
+          <x>5</x>
+          <y>-5</y>
+          <width>981</width>
+          <height>196</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Timeseries Classifier</string>
+        </property>
+        <widget class="QCheckBox" name="pipelineTool_timeseriesClassification_enableNullRejection">
+         <property name="geometry">
+          <rect>
+           <x>5</x>
+           <y>75</y>
+           <width>266</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Enable Null Rejection</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="pipelineTool_timeseriesClassification_enableScaling">
+         <property name="geometry">
+          <rect>
+           <x>5</x>
+           <y>55</y>
+           <width>271</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Enable Scaling</string>
+         </property>
+        </widget>
+        <widget class="QComboBox" name="pipelineTool_timeseriesClassification_classifierType">
+         <property name="geometry">
+          <rect>
+           <x>5</x>
+           <y>25</y>
+           <width>271</width>
+           <height>26</height>
+          </rect>
+         </property>
+         <item>
+          <property name="text">
+           <string>Dynamic Time Warping</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Hidden Markov Model</string>
+          </property>
+         </item>
+        </widget>
+        <widget class="QLabel" name="label_159">
+         <property name="geometry">
+          <rect>
+           <x>15</x>
+           <y>105</y>
+           <width>131</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Null Rejection Coeff:</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="pipelineTool_timeseriesClassification_nullRejectionCoeff">
+         <property name="geometry">
+          <rect>
+           <x>155</x>
+           <y>105</y>
+           <width>101</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QStackedWidget" name="pipelineTool_timeseriesClassification_classifierOptionsView">
+         <property name="geometry">
+          <rect>
+           <x>280</x>
+           <y>25</y>
+           <width>696</width>
+           <height>166</height>
+          </rect>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="page_62">
+          <widget class="QLabel" name="label_160">
+           <property name="geometry">
+            <rect>
+             <x>5</x>
+             <y>0</y>
+             <width>281</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Dynamic Time Warping Settings</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_168">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>30</y>
+             <width>131</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Warping Radius:</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_dtw_warpingRadius">
+           <property name="geometry">
+            <rect>
+             <x>160</x>
+             <y>30</y>
+             <width>101</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page_63">
+          <widget class="QLabel" name="label_161">
+           <property name="geometry">
+            <rect>
+             <x>5</x>
+             <y>0</y>
+             <width>281</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Hidden Markov Model Settings</string>
+           </property>
+          </widget>
+         </widget>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="page_5">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="geometry">
+         <rect>
+          <x>5</x>
+          <y>0</y>
+          <width>981</width>
+          <height>191</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Clusterer</string>
+        </property>
+        <widget class="QComboBox" name="pipelineTool_clusterType">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>25</y>
+           <width>276</width>
+           <height>26</height>
+          </rect>
+         </property>
+         <item>
+          <property name="text">
+           <string>KMeans</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Gaussian Mixture Model</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Hierarchical Clustering</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cluster Tree</string>
+          </property>
+         </item>
+        </widget>
+        <widget class="QStackedWidget" name="pipelineTool_clusterOptionsView">
+         <property name="geometry">
+          <rect>
+           <x>305</x>
+           <y>30</y>
+           <width>671</width>
+           <height>151</height>
+          </rect>
+         </property>
+         <property name="currentIndex">
+          <number>3</number>
+         </property>
+         <widget class="QWidget" name="page_48">
+          <widget class="QLabel" name="label_131">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>0</y>
+             <width>316</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>KMeans Settings</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_136">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>40</y>
+             <width>171</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Number of clusters:</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_clusterView_kmeans_numClusters">
+           <property name="geometry">
+            <rect>
+             <x>165</x>
+             <y>40</y>
+             <width>91</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page_56">
+          <widget class="QLabel" name="label_143">
+           <property name="geometry">
+            <rect>
+             <x>5</x>
+             <y>5</y>
+             <width>316</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Gaussian Mixture Model Settings</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_clusterView_gmm_numClusters">
+           <property name="geometry">
+            <rect>
+             <x>160</x>
+             <y>40</y>
+             <width>91</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_144">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>40</y>
+             <width>171</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Number of clusters:</string>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page_59">
+          <widget class="QLabel" name="label_145">
+           <property name="geometry">
+            <rect>
+             <x>5</x>
+             <y>5</y>
+             <width>316</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Hierarchical Clustering Settings</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_146">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>40</y>
+             <width>171</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Number of clusters:</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_clusterView_hierarchicalClustering_numClusters">
+           <property name="geometry">
+            <rect>
+             <x>165</x>
+             <y>40</y>
+             <width>91</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page_60">
+          <widget class="QLabel" name="label_147">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>35</y>
+             <width>171</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Number of clusters:</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_clusterView_clusterTree_numClusters">
+           <property name="geometry">
+            <rect>
+             <x>195</x>
+             <y>35</y>
+             <width>91</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_148">
+           <property name="geometry">
+            <rect>
+             <x>5</x>
+             <y>5</y>
+             <width>316</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Cluster Tree Settings</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_149">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>95</y>
+             <width>161</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Minimum node samples:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_150">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>65</y>
+             <width>171</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Number of splitting steps:</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_clusterView_clusterTree_numSpiltingSteps">
+           <property name="geometry">
+            <rect>
+             <x>195</x>
+             <y>65</y>
+             <width>91</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_clusterView_clusterTree_minSamplesPerNode">
+           <property name="geometry">
+            <rect>
+             <x>195</x>
+             <y>95</y>
+             <width>91</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_clusterView_clusterTree_maxDepth">
+           <property name="geometry">
+            <rect>
+             <x>195</x>
+             <y>125</y>
+             <width>91</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_151">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>125</y>
+             <width>166</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Max tree depth:</string>
+           </property>
+          </widget>
+         </widget>
+        </widget>
+        <widget class="QDoubleSpinBox" name="pipelineTool_clusterView_minChangeSpinBox">
+         <property name="geometry">
+          <rect>
+           <x>195</x>
+           <y>135</y>
+           <width>91</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="pipelineTool_clusterView_maxNumEpochsSpinBox">
+         <property name="geometry">
+          <rect>
+           <x>195</x>
+           <y>105</y>
+           <width>91</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="pipelineTool_clusterView_enableScaling">
+         <property name="geometry">
+          <rect>
+           <x>15</x>
+           <y>75</y>
+           <width>121</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Enable Scaling</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_134">
+         <property name="geometry">
+          <rect>
+           <x>15</x>
+           <y>135</y>
+           <width>121</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Minimum change:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_135">
+         <property name="geometry">
+          <rect>
+           <x>15</x>
+           <y>105</y>
+           <width>171</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Max number of iterations:</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="page_26"/>
      </widget>
      <widget class="QStackedWidget" name="pipelineTool_postProcessingStackedWidget">
       <property name="geometry">
@@ -3553,7 +4377,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>6</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab_6">
         <attribute name="title">
@@ -3765,7 +4589,7 @@
         <rect>
          <x>160</x>
          <y>90</y>
-         <width>751</width>
+         <width>756</width>
          <height>21</height>
         </rect>
        </property>
@@ -3841,9 +4665,9 @@
         <widget class="QLineEdit" name="predictionWindow_classLabels">
          <property name="geometry">
           <rect>
-           <x>185</x>
+           <x>180</x>
            <y>275</y>
-           <width>656</width>
+           <width>736</width>
            <height>21</height>
           </rect>
          </property>
@@ -3854,9 +4678,9 @@
         <widget class="QLineEdit" name="predictionWindow_classLikelihoods">
          <property name="geometry">
           <rect>
-           <x>185</x>
+           <x>180</x>
            <y>195</y>
-           <width>590</width>
+           <width>736</width>
            <height>21</height>
           </rect>
          </property>
@@ -3906,9 +4730,9 @@
         <widget class="QLineEdit" name="predictionWindow_classDistances">
          <property name="geometry">
           <rect>
-           <x>185</x>
+           <x>180</x>
            <y>235</y>
-           <width>590</width>
+           <width>736</width>
            <height>21</height>
           </rect>
          </property>
@@ -3991,7 +4815,7 @@
         <widget class="QPushButton" name="predictionWindow_plotClassLikelihoodsDataButton">
          <property name="geometry">
           <rect>
-           <x>790</x>
+           <x>920</x>
            <y>190</y>
            <width>56</width>
            <height>32</height>
@@ -4004,7 +4828,7 @@
         <widget class="QPushButton" name="predictionWindow_plotClassDistancesDataButton">
          <property name="geometry">
           <rect>
-           <x>790</x>
+           <x>920</x>
            <y>230</y>
            <width>56</width>
            <height>32</height>
@@ -4035,8 +4859,8 @@
          <rect>
           <x>5</x>
           <y>10</y>
-          <width>821</width>
-          <height>231</height>
+          <width>981</width>
+          <height>111</height>
          </rect>
         </property>
         <property name="title">
@@ -4047,7 +4871,7 @@
           <rect>
            <x>160</x>
            <y>30</y>
-           <width>590</width>
+           <width>756</width>
            <height>21</height>
           </rect>
          </property>
@@ -4071,7 +4895,7 @@
         <widget class="QPushButton" name="predictionWindow_plotRegressionDataButton">
          <property name="geometry">
           <rect>
-           <x>765</x>
+           <x>920</x>
            <y>25</y>
            <width>56</width>
            <height>32</height>
@@ -4079,6 +4903,414 @@
          </property>
          <property name="text">
           <string>Plot</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="page_57">
+       <widget class="QGroupBox" name="groupBox16_3">
+        <property name="geometry">
+         <rect>
+          <x>5</x>
+          <y>5</y>
+          <width>981</width>
+          <height>336</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Timeseries Classification Data</string>
+        </property>
+        <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_classLabels">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>275</y>
+           <width>736</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_classLikelihoods">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>195</y>
+           <width>736</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_162">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>40</y>
+           <width>151</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Predicted Class Label:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_163">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>195</y>
+           <width>121</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Class Likelihoods:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_164">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>235</y>
+           <width>111</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Class Distances:</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_classDistances">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>235</y>
+           <width>736</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_predictedClassLabel">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>40</y>
+           <width>120</width>
+           <height>21</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_maximumLikelihood">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>135</y>
+           <width>120</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_165">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>275</y>
+           <width>111</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Class Labels:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_166">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>135</y>
+           <width>151</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Maximum Likelihood:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_167">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>90</y>
+           <width>166</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Unprocessed Class Label:</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_predictedClassLabel_5">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>90</y>
+           <width>120</width>
+           <height>21</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="predictionWindow_timeseriesClassification_plotClassLikelihoodsDataButton">
+         <property name="geometry">
+          <rect>
+           <x>920</x>
+           <y>190</y>
+           <width>56</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plot</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="predictionWindow_timeseriesClassification_plotClassDistancesDataButton">
+         <property name="geometry">
+          <rect>
+           <x>920</x>
+           <y>230</y>
+           <width>56</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plot</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="predictionWindow_timeseriesClassification_plotPredictedClassLabelsDataButton">
+         <property name="geometry">
+          <rect>
+           <x>305</x>
+           <y>35</y>
+           <width>56</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plot</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="page_58">
+       <widget class="QGroupBox" name="groupBox16_2">
+        <property name="geometry">
+         <rect>
+          <x>5</x>
+          <y>0</y>
+          <width>981</width>
+          <height>336</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Cluster Data</string>
+        </property>
+        <widget class="QLineEdit" name="predictionWindow_clusterer_clusterLikelihoods">
+         <property name="geometry">
+          <rect>
+           <x>185</x>
+           <y>195</y>
+           <width>716</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_28">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>40</y>
+           <width>151</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Predicted Cluster Label:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_29">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>195</y>
+           <width>131</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Cluster Likelihoods:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_30">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>235</y>
+           <width>126</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Cluster Distances:</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_clusterer_clusterDistances">
+         <property name="geometry">
+          <rect>
+           <x>185</x>
+           <y>235</y>
+           <width>716</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_clusterer_predictedClusterLabel">
+         <property name="geometry">
+          <rect>
+           <x>185</x>
+           <y>40</y>
+           <width>120</width>
+           <height>21</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_clusterer_maximumLikelihood">
+         <property name="geometry">
+          <rect>
+           <x>185</x>
+           <y>135</y>
+           <width>120</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_138">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>135</y>
+           <width>151</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Maximum Likelihood:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_139">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>90</y>
+           <width>176</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Unprocessed Cluster Label:</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_predictedClassLabel_4">
+         <property name="geometry">
+          <rect>
+           <x>185</x>
+           <y>90</y>
+           <width>120</width>
+           <height>21</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="predictionWindow_plotClusterLikelihoodsDataButton">
+         <property name="geometry">
+          <rect>
+           <x>915</x>
+           <y>190</y>
+           <width>56</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plot</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="predictionWindow_plotClusterDistancesDataButton">
+         <property name="geometry">
+          <rect>
+           <x>915</x>
+           <y>230</y>
+           <width>56</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plot</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="predictionWindow_plotPredictedClusterLabelsDataButton">
+         <property name="geometry">
+          <rect>
+           <x>310</x>
+           <y>35</y>
+           <width>56</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plot</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_clusterer_classLabels">
+         <property name="geometry">
+          <rect>
+           <x>185</x>
+           <y>280</y>
+           <width>716</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_137">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>280</y>
+           <width>111</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Cluster Labels:</string>
          </property>
         </widget>
        </widget>
@@ -4284,6 +5516,177 @@
       <widget class="QWidget" name="page_55"/>
      </widget>
     </widget>
+    <widget class="QWidget" name="tab_21">
+     <attribute name="title">
+      <string>Page</string>
+     </attribute>
+     <widget class="QGroupBox" name="groupBox_5">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>5</y>
+        <width>981</width>
+        <height>166</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Info</string>
+      </property>
+      <widget class="QLabel" name="label_140">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>35</y>
+         <width>86</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>GUI Version:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="settingsView_guiVersion">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>35</y>
+         <width>166</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_141">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>35</y>
+         <width>91</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>GRT Version:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="settingsView_grtVersion">
+       <property name="geometry">
+        <rect>
+         <x>380</x>
+         <y>35</y>
+         <width>171</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_142">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>75</y>
+         <width>101</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Links: </string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="settingsView_openGUIReferenceButton">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>95</y>
+         <width>191</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>View GUI Wiki</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="settingsView_openGRTForumButton">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>120</y>
+         <width>191</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>View GRT Forum</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="settingsView_openGRTSourceButton">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>95</y>
+         <width>191</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>View GRT Source</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="settingsView_openGRTDownloadButton">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>120</y>
+         <width>191</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Download Latest Release</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_8">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>175</y>
+        <width>981</width>
+        <height>331</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Settings</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label_133">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>555</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Recording:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mainWindow_recordingInfoTextField">
+    <property name="geometry">
+     <rect>
+      <x>790</x>
+      <y>555</y>
+      <width>46</width>
+      <height>21</height>
+     </rect>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -4333,15 +5736,15 @@
   <tabstop>dataLabellingTool_infoButton</tabstop>
   <tabstop>dataLabellingTool_loadButton</tabstop>
   <tabstop>dataLabellingTool_clearButton</tabstop>
-  <tabstop>dataLabellingTool_numInputDimensionsField</tabstop>
-  <tabstop>dataLabellingTool_numTrainingSamples</tabstop>
-  <tabstop>dataLabellingTool_classificationDatasetName</tabstop>
+  <tabstop>dataLabellingTool_classificationMode_numInputDimensionsField</tabstop>
+  <tabstop>dataLabellingTool_classificationMode_numTrainingSamples</tabstop>
+  <tabstop>dataLabellingTool_classificationMode_datasetName</tabstop>
   <tabstop>dataLabellingTool_saveButton</tabstop>
   <tabstop>dataLabellingTool_classificationModeRecordButton</tabstop>
   <tabstop>dataLabellingTool_classLabel</tabstop>
-  <tabstop>dataLabellingTool_numInputDimensionsField_2</tabstop>
-  <tabstop>dataLabellingTool_numTrainingSamples_2</tabstop>
-  <tabstop>dataLabellingTool_regressionDatasetName</tabstop>
+  <tabstop>dataLabellingTool_regressionMode_numInputDimensionsField</tabstop>
+  <tabstop>dataLabellingTool_regressionMode_numTrainingSamples</tabstop>
+  <tabstop>dataLabellingTool_regressionMode_datasetName</tabstop>
   <tabstop>dataLabellingTool_regressionModeRecordButton</tabstop>
   <tabstop>dataLabellingTool_targetVectorTextField</tabstop>
   <tabstop>pipelineTool_preProcessingType</tabstop>

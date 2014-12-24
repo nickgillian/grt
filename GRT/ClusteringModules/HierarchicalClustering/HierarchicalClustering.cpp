@@ -21,6 +21,9 @@
 #include "HierarchicalClustering.h"
 
 namespace GRT{
+    
+//Register the HierarchicalClustering class with the Clusterer base class
+RegisterClustererModule< HierarchicalClustering > HierarchicalClustering::registerModule("HierarchicalClustering");
 
 HierarchicalClustering::HierarchicalClustering(){
     M = N = 0;
@@ -30,7 +33,6 @@ HierarchicalClustering::HierarchicalClustering(){
     errorLog.setProceedingText("[ERROR HierarchicalClustering]");
     trainingLog.setProceedingText("[TRAINING HierarchicalClustering]");
     warningLog.setProceedingText("[WARNING HierarchicalClustering]");
-
 }
     
 HierarchicalClustering::HierarchicalClustering(const HierarchicalClustering &rhs){
@@ -218,6 +220,7 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
         if( minDist == numeric_limits<double>::max() ){
             keepClustering = false;
             warningLog << "train_(MatrixDouble &data) - Failed to find any cluster at level: " << level << endl;
+            return false;
         }else{
         
             //Merge the two closest clusters together and create a new level
@@ -271,7 +274,6 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
             
             //Update the level
             level++;
-            
         }
         
         //Check to see if we should stop clustering
@@ -283,8 +285,19 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
             keepClustering = false;
         }
         
-        trainingLog << "Cluster level: " << level << endl;
+        trainingLog << "Cluster level: " << level << " Number of clusters: " << clusters.back().getNumClusters() << endl;
     }
+    
+    //Flag that the model is trained
+    trained = true;
+    
+    //Setup the cluster labels
+    clusterLabels.resize(numClusters);
+    for(UINT i=0; i<numClusters; i++){
+        clusterLabels[i] = i+1;
+    }
+    clusterLikelihoods.resize(numClusters,0);
+    clusterDistances.resize(numClusters,0);
 
 	return true;
 }

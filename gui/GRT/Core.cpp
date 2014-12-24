@@ -182,8 +182,46 @@ bool Core::setPipelineMode(unsigned int pipelineMode){
 }
 
 bool Core::setRecordingState(bool state){
-    boost::mutex::scoped_lock lock( mutex );
-    recordTrainingData = state;
+
+    bool newSampleAdded = false;
+    unsigned int numTrainingSamples = 0;
+    GRT::TimeSeriesClassificationSample timeseriesSample_;
+
+    {
+        boost::mutex::scoped_lock lock( mutex );
+        recordTrainingData = state;
+
+        switch( pipelineMode ){
+            case CLASSIFICATION_MODE:
+            break;
+            case REGRESSION_MODE:
+            break;
+            case TIMESERIES_CLASSIFICATION_MODE:
+                //If the record training data has stopped then we should add the current timeseries sample to the timeseries classification data
+                if( !recordTrainingData ){
+                    if(timeseriesSample.getNumRows() >= 1 ){
+                        if( timeseriesClassificationTrainingData.addSample(trainingClassLabel, timeseriesSample) ){
+                            newSampleAdded = true;
+                            numTrainingSamples = timeseriesClassificationTrainingData.getNumSamples();
+                            timeseriesSample_ = timeseriesClassificationTrainingData[ numTrainingSamples-1 ];
+                        }
+                    }
+                    timeseriesSample.clear();
+                }
+            break;
+            case CLUSTER_MODE:
+            break;
+            default:
+                qDebug() << "ERROR: Core::setRecordingState(bool state) - Unknown pipeline mode!";
+            break;
+        }
+
+    }
+
+    if( newSampleAdded ){
+        emit newTrainingSampleAdded( numTrainingSamples, timeseriesSample_ );
+    }
+
     return true;
 }
 
@@ -201,6 +239,9 @@ bool Core::saveTrainingDatasetToFile(std::string filename){
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
                 result = timeseriesClassificationTrainingData.save(filename);
+            break;
+            case CLUSTER_MODE:
+                result = clusterTrainingData.save(filename);
             break;
             default:
                 qDebug() << "ERROR: Unknown pipeline mode!";
@@ -226,6 +267,7 @@ bool Core::loadTrainingDatasetFromFile(std::string filename){
     GRT::ClassificationData tempClassificationData;
     GRT::RegressionData tempRegressionData;
     GRT::TimeSeriesClassificationData tempTimeSeriesData;
+    GRT::UnlabelledData tempClusterData;
 
     //Check to see if we should load the data from the default GRT fileformat or as a CSV file
     bool loadFromCSV = false;
@@ -268,6 +310,13 @@ bool Core::loadTrainingDatasetFromFile(std::string filename){
                  tempTimeSeriesData = timeseriesClassificationTrainingData;
                  trainingDataSize = timeseriesClassificationTrainingData.getNumDimensions();
              break;
+             case CLUSTER_MODE:
+                clusterTrainingData.load( filename );
+
+                numTrainingSamples = clusterTrainingData.getNumSamples();
+                tempClusterData = clusterTrainingData;
+                trainingDataSize = clusterTrainingData.getNumDimensions();
+             break;
              default:
                  qDebug() << "ERROR: Unknown pipeline mode!";
                  return false;
@@ -295,7 +344,10 @@ bool Core::loadTrainingDatasetFromFile(std::string filename){
                 emit trainingDataReset( tempRegressionData );
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
-                //TODO
+                emit trainingDataReset( tempTimeSeriesData );
+            break;
+            case CLUSTER_MODE:
+                emit trainingDataReset( tempClusterData );
             break;
             default:
                 qDebug() << "ERROR: Unknown pipeline mode!";
@@ -319,6 +371,7 @@ bool Core::loadTestDatasetFromFile(std::string filename){
     GRT::ClassificationData tempClassificationData;
     GRT::RegressionData tempRegressionData;
     GRT::TimeSeriesClassificationData tempTimeSeriesData;
+    GRT::UnlabelledData tempClusterData;
 
     {
          boost::mutex::scoped_lock lock( mutex );
@@ -349,8 +402,17 @@ bool Core::loadTestDatasetFromFile(std::string filename){
              case TIMESERIES_CLASSIFICATION_MODE:
                  //TODO
              break;
+             case CLUSTER_MODE:
+                result = clusterTestData.loadDatasetFromFile( filename );
+                numTestSamples = clusterTestData.getNumSamples();
+                tempClusterData = clusterTestData;
+                if( clusterTestData.getNumDimensions() != clusterTrainingData.getNumDimensions() ){
+                    result = false;
+                    emit newWarningMessage("WARNING: The number of dimensions in the test data does not match the training data");
+                }
+             break;
              default:
-                 qDebug() << "ERROR: Unknown pipeline mode!";
+                 qDebug() << "ERROR: loadTestDatasetFromFile(std::string filename) - Unknown pipeline mode!";
                  return false;
              break;
          }
@@ -368,8 +430,11 @@ bool Core::loadTestDatasetFromFile(std::string filename){
             case TIMESERIES_CLASSIFICATION_MODE:
                 //TODO
             break;
+            case CLUSTER_MODE:
+                emit testDataReset( tempClusterData );
+            break;
             default:
-                qDebug() << "ERROR: Unknown pipeline mode!";
+                qDebug() << "ERROR: loadTestDatasetFromFile(std::string filename) - Unknown pipeline mode!";
                 return false;
             break;
         }
@@ -388,6 +453,7 @@ void Core::clearTrainingData(){
     GRT::ClassificationData tempClassificationData;
     GRT::RegressionData tempRegressionData;
     GRT::TimeSeriesClassificationData tempTimeSeriesData;
+    GRT::UnlabelledData tempClusterData;
 
     {
         boost::mutex::scoped_lock lock( mutex );
@@ -404,8 +470,12 @@ void Core::clearTrainingData(){
                 timeseriesClassificationTrainingData.clear();
                 tempTimeSeriesData = timeseriesClassificationTrainingData;
             break;
+            case CLUSTER_MODE:
+                clusterTrainingData.clear();
+                tempClusterData = clusterTrainingData;
+            break;
             default:
-                qDebug() << "ERROR: Unknown pipeline mode!";
+                qDebug() << "ERROR: clearTrainingData() - Unknown pipeline mode!";
                 return;
             break;
         }
@@ -422,10 +492,13 @@ void Core::clearTrainingData(){
             emit trainingDataReset( tempRegressionData );
         break;
         case TIMESERIES_CLASSIFICATION_MODE:
-            //TODO
+            emit trainingDataReset( tempTimeSeriesData );
+        break;
+        case CLUSTER_MODE:
+            emit trainingDataReset( tempClusterData );
         break;
         default:
-            qDebug() << "ERROR: Unknown pipeline mode!";
+            qDebug() << "ERROR: clearTrainingData() - Unknown pipeline mode!";
             return;
         break;
     }
@@ -477,8 +550,11 @@ unsigned int Core::getNumTrainingSamples(){
         case TIMESERIES_CLASSIFICATION_MODE:
             return timeseriesClassificationTrainingData.getNumSamples();
         break;
+        case CLUSTER_MODE:
+            return clusterTrainingData.getNumSamples();
+        break;
         default:
-            qDebug() << "ERROR: Unknown pipeline mode!";
+            qDebug() << "ERROR: getNumTrainingSamples() - Unknown pipeline mode!";
             return false;
         break;
     }
@@ -496,8 +572,11 @@ unsigned int Core::getNumTestSamples(){
         case TIMESERIES_CLASSIFICATION_MODE:
             return timeseriesClassificationTestData.getNumSamples();
         break;
+        case CLUSTER_MODE:
+            return clusterTestData.getNumSamples();
+        break;
         default:
-            qDebug() << "ERROR: Unknown pipeline mode!";
+            qDebug() << "ERROR: getNumTestSamples() - Unknown pipeline mode!";
             return false;
         break;
     }
@@ -515,13 +594,16 @@ unsigned int Core::getNumClassesInTrainingData(){
             return classificationTrainingData.getNumClasses();
         break;
         case REGRESSION_MODE:
-            return 0;
+            return 0; //There are no classes in regression data
         break;
         case TIMESERIES_CLASSIFICATION_MODE:
             return timeseriesClassificationTrainingData.getNumClasses();
         break;
+        case CLUSTER_MODE:
+            return 0; //There are no classes in cluster mode
+        break;
         default:
-            qDebug() << "ERROR: Unknown pipeline mode!";
+            qDebug() << "ERROR: getNumClassesInTrainingData() - Unknown pipeline mode!";
             return false;
         break;
     }
@@ -556,6 +638,26 @@ GRT::RegressionData Core::getRegressionTrainingData(){
 GRT::RegressionData Core::getRegressionTestData(){
     boost::mutex::scoped_lock lock( mutex );
     return regressionTestData;
+}
+
+GRT::TimeSeriesClassificationData Core::getTimeSeriesClassificationTrainingData(){
+    boost::mutex::scoped_lock lock( mutex );
+    return timeseriesClassificationTrainingData;
+}
+
+GRT::TimeSeriesClassificationData Core::getTimeSeriesClassificationTestData(){
+    boost::mutex::scoped_lock lock( mutex );
+    return timeseriesClassificationTestData;
+}
+
+GRT::UnlabelledData Core::getClusterTrainingData(){
+    boost::mutex::scoped_lock lock( mutex );
+    return clusterTrainingData;
+}
+
+GRT::UnlabelledData Core::getClusterTestData(){
+    boost::mutex::scoped_lock lock( mutex );
+    return clusterTestData;
 }
 
 double Core::getTestAccuracy(){
@@ -608,6 +710,7 @@ bool Core::setNumInputDimensions(int numInputDimensions){
     GRT::ClassificationData tempClassificationData;
     GRT::RegressionData tempRegressionData;
     GRT::TimeSeriesClassificationData tempTimeSeriesData;
+    GRT::UnlabelledData tempClusterData;
 
     {
         boost::mutex::scoped_lock lock( mutex );
@@ -633,8 +736,13 @@ bool Core::setNumInputDimensions(int numInputDimensions){
                 timeseriesClassificationTrainingData.setNumDimensions( numInputDimensions );
                 tempTimeSeriesData = timeseriesClassificationTrainingData;
             break;
+            case CLUSTER_MODE:
+                clusterTrainingData.clear();
+                clusterTrainingData.setNumDimensions( numInputDimensions );
+                tempClusterData = clusterTrainingData;
+            break;
             default:
-                qDebug() << "ERROR: Unknown pipeline mode!";
+                qDebug() << "ERROR: setNumInputDimensions() - Unknown pipeline mode!";
                 return false;
             break;
         }
@@ -656,8 +764,11 @@ bool Core::setNumInputDimensions(int numInputDimensions){
             case TIMESERIES_CLASSIFICATION_MODE:
                 //TODO
             break;
+            case CLUSTER_MODE:
+                 emit trainingDataReset( tempClusterData );
+            break;
             default:
-                qDebug() << "ERROR: Unknown pipeline mode!";
+                qDebug() << "ERROR: setNumInputDimensions() - Unknown pipeline mode!";
                 return false;
             break;
         }
@@ -718,7 +829,7 @@ bool Core::setDatasetName(std::string datasetName){
             //TODO
         break;
         default:
-            qDebug() << "ERROR: Unknown pipeline mode!";
+            qDebug() << "ERROR: setDatasetName(std::string datasetName) - Unknown pipeline mode!";
             return false;
         break;
     }
@@ -738,7 +849,7 @@ bool Core::setDatasetInfoText(std::string infoText){
             return timeseriesClassificationTrainingData.setInfoText( infoText );
         break;
         default:
-            qDebug() << "ERROR: Unknown pipeline mode!";
+            qDebug() << "ERROR: setDatasetInfoText(std::string infoText) - Unknown pipeline mode!";
             return false;
         break;
     }
@@ -845,6 +956,31 @@ bool Core::setRegressifier( const GRT::Regressifier &regressifier ){
     if( result ){
         //Set the pipeline mode into regression mode
         setPipelineMode( REGRESSION_MODE );
+    }
+
+    emit pipelineConfigurationChanged();
+
+    return result;
+}
+
+bool Core::setClusterer( const GRT::Clusterer &clusterer ){
+
+    bool result = false;
+    {
+        boost::mutex::scoped_lock lock( mutex );
+        result = pipeline.setClusterer( clusterer );
+
+        //Register the training results callback
+        GRT::Clusterer *ptr = pipeline.getClusterer();
+        ptr->removeAllTrainingObservers();
+        ptr->removeAllTestObservers();
+        ptr->registerTrainingResultsObserver( *this );
+        ptr->registerTestResultsObserver( *this );
+    }
+
+    if( result ){
+        //Set the pipeline mode into cluster mode
+        setPipelineMode( CLUSTER_MODE );
     }
 
     emit pipelineConfigurationChanged();
@@ -1233,17 +1369,24 @@ bool Core::processNewData(){
     bool newFeatureData = false;
     bool newPredictionData = false;
     bool newRegressionData = false;
+    bool newClusterData = false;
     unsigned int numTrainingSamples = 0;
     unsigned int predictedClassLabel = 0;
+    unsigned int predictedClusterLabel = 0;
     double maximumLikelihood = 0;
     GRT::VectorDouble preProcessedData;
     GRT::VectorDouble featureData;
     GRT::VectorDouble classLikelihoods;
     GRT::VectorDouble classDistances;
+    GRT::VectorDouble clusterLikelihoods;
+    GRT::VectorDouble clusterDistances;
     GRT::VectorDouble regressionData;
     GRT::vector<unsigned int> classLabels;
+    GRT::vector<unsigned int> clusterLabels;
     GRT::ClassificationSample newSample;
     GRT::RegressionSample newRegressionSample;
+    GRT::MatrixDouble newTimeseriesSample;
+    GRT::VectorDouble newClusterSample;
 
     {
         boost::mutex::scoped_lock lock( mutex );
@@ -1271,9 +1414,20 @@ bool Core::processNewData(){
                     }else newWarningMessage( "Warning: Failed to add regression sample!" );
                 break;
                 case TIMESERIES_CLASSIFICATION_MODE:
+                    if( timeseriesSample.push_back(inputData) ){
+                        newTimeseriesSample = timeseriesSample;
+                        newSampleAdded = true;
+                    }else newWarningMessage( "Warning: Failed to add timeseries sample!" );
+                break;
+                case CLUSTER_MODE:
+                    if( clusterTrainingData.addSample(inputData) ){
+                        numTrainingSamples = clusterTrainingData.getNumSamples();
+                        newClusterSample = clusterTrainingData[clusterTrainingData.getNumSamples()-1];
+                        newSampleAdded = true;
+                    }
                 break;
                 default:
-                    qDebug() << "ERROR: Unknown pipeline mode!";
+                    qDebug() << "ERROR: processNewData() - Unknown pipeline mode!";
                     return false;
                 break;
             }
@@ -1296,6 +1450,14 @@ bool Core::processNewData(){
                         case REGRESSION_MODE:
                             regressionData = pipeline.getRegressionData();
                             newRegressionData = true;
+                        break;
+                        case CLUSTER_MODE:
+                            predictedClusterLabel = pipeline.getPredictedClassLabel();
+                            maximumLikelihood = pipeline.getMaximumLikelihood();
+                            clusterLikelihoods = pipeline.getClassLikelihoods();
+                            clusterDistances = pipeline.getClassDistances();
+                            clusterLabels = pipeline.getClassLabels();
+                            newClusterData = true;
                         break;
                         default:
                             qDebug() << "ERROR: Unknown pipeline mode!";
@@ -1332,6 +1494,10 @@ bool Core::processNewData(){
                 emit newTrainingSampleAdded( numTrainingSamples, newRegressionSample );
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
+                emit newTrainingSampleAdded( newTimeseriesSample );
+            break;
+            case CLUSTER_MODE:
+                emit newTrainingSampleAdded( newClusterSample );
             break;
             default:
                 qDebug() << "ERROR: Unknown pipeline mode!";
@@ -1366,6 +1532,11 @@ bool Core::processNewData(){
         emit regressionResultsChanged(regressionData);
     }
 
+    if( newClusterData ){
+        //sendClusterData( clusterData );
+        emit clusterResultsChanged(predictedClusterLabel,maximumLikelihood,clusterLikelihoods,clusterDistances,clusterLabels);
+    }
+
     return true;
 }
 
@@ -1392,6 +1563,12 @@ bool Core::train(){
             result = trainingThread.startNewTraining( trainer );
         break;
         case TIMESERIES_CLASSIFICATION_MODE:
+            trainer.setupNoValidationTraining( pipeline, timeseriesClassificationTrainingData );
+            result = trainingThread.startNewTraining( trainer );
+        break;
+        case CLUSTER_MODE:
+            trainer.setupNoValidationTraining( pipeline, clusterTrainingData );
+            result = trainingThread.startNewTraining( trainer );
         break;
         default:
             qDebug() << "ERROR: Unknown pipeline mode!";
@@ -1439,8 +1616,6 @@ bool Core::trainAndTestOnRandomSubset(unsigned int randomTestSubsetPercentage,bo
             return false;
         break;
     }
-
-    qDebug() << "end of trainAndTestOnRandomSubset()";
 
     return result;
 }

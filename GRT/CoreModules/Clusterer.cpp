@@ -64,6 +64,9 @@ Clusterer::Clusterer(void){
     baseType = MLBase::CLUSTERER;
     clustererType = "NOT_SET";
     numClusters = 10;
+    predictedClusterLabel = 0;
+    maxLikelihood = 0;
+    bestDistance = 0;
     minNumEpochs = 1;
     maxNumEpochs = 1000;
     minChange = 1.0e-5;
@@ -92,6 +95,13 @@ bool Clusterer::copyBaseVariables(const Clusterer *clusterer){
     //Copy the clusterer base variables
     this->clustererType = clusterer->clustererType;
     this->numClusters = clusterer->numClusters;
+    this->predictedClusterLabel = clusterer->predictedClusterLabel;
+    this->predictedClusterLabel = clusterer->predictedClusterLabel;
+    this->maxLikelihood = clusterer->maxLikelihood;
+    this->bestDistance = clusterer->bestDistance;
+    this->clusterLikelihoods = clusterer->clusterLikelihoods;
+    this->clusterDistances = clusterer->clusterDistances;
+    this->clusterLabels = clusterer->clusterLabels;
     this->converged = clusterer->converged;
     this->ranges = clusterer->ranges;
     
@@ -107,10 +117,21 @@ bool Clusterer::train_(ClassificationData &trainingData){
     return train_( data );
 }
     
+bool Clusterer::train_(UnlabelledData &trainingData){
+    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    return train_( data );
+}
+    
 bool Clusterer::reset(){
     
     //Reset the base class
     MLBase::reset();
+    
+    predictedClusterLabel = 0;
+    maxLikelihood = 0;
+    bestDistance = 0;
+    std::fill(clusterLikelihoods.begin(),clusterLikelihoods.end(),0);
+    std::fill(clusterDistances.begin(),clusterDistances.end(),0);
     
     return true;
 }
@@ -120,15 +141,18 @@ bool Clusterer::clear(){
     //Clear the MLBase variables
     MLBase::clear();
     
+    predictedClusterLabel = 0;
+    maxLikelihood = 0;
+    bestDistance = 0;
+    clusterLikelihoods.clear();
+    clusterDistances.clear();
+    clusterLabels.clear();
+    
     return true;
 }
     
 bool Clusterer::saveClustererSettingsToFile(fstream &file) const{
 	
-	debugLog << "saveClustererSettingsToFile(...)" << endl;
-    debugLog << "trained: " << trained << endl;
-    debugLog << "MLBase::trained: " << MLBase::trained << endl;
-    
     if( !file.is_open() ){
         errorLog << "saveClustererSettingsToFile(fstream &file) - The file is not open!" << endl;
         return false;
@@ -139,7 +163,6 @@ bool Clusterer::saveClustererSettingsToFile(fstream &file) const{
     file << "NumClusters: " << numClusters << endl;
 	
 	if( trained ){
-		debugLog << "saveClustererSettingsToFile(...) SAVING RANGES" << endl;
     	file << "Ranges: " << endl;
     
     	for(UINT i=0; i<ranges.size(); i++){
@@ -187,6 +210,15 @@ bool Clusterer::loadClustererSettingsFromFile(fstream &file){
         	file >> ranges[i].minValue;
         	file >> ranges[i].maxValue;
     	}
+        
+        clusterLabels.resize(numClusters);
+        for(UINT i=0; i<numClusters; i++){
+            clusterLabels[i] = i+1;
+        }
+        
+        clusterLikelihoods.resize(numClusters,0);
+        clusterDistances.resize(numClusters,0);
+        
 	}
     
     return true;
@@ -198,6 +230,29 @@ bool Clusterer::getConverged() const{
 }
     
 UINT Clusterer::getNumClusters() const { return numClusters; }
+    
+UINT Clusterer::getPredictedClusterLabel() const { return predictedClusterLabel; }
+    
+
+double Clusterer::getMaximumLikelihood() const{
+    return maxLikelihood;
+}
+
+double Clusterer::getBestDistance() const{
+    return bestDistance;
+}
+
+VectorDouble Clusterer::getClusterLikelihoods() const{
+    return clusterLikelihoods;
+}
+
+VectorDouble Clusterer::getClusterDistances() const{
+    return clusterDistances;
+}
+    
+vector< UINT > Clusterer::getClusterLabels() const{
+    return clusterLabels;
+}
 
 string Clusterer::getClustererType() const{ return clustererType; }
     

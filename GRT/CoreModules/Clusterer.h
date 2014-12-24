@@ -82,6 +82,14 @@ public:
     virtual bool train_(ClassificationData &trainingData);
     
     /**
+     Override the main UnlabelledData train function to pass MatrixDouble data to the Clusterer train function.
+     
+     @param UnlabelledData &trainingData: a reference to the training data that will be used to train the ML model
+     @return returns true if the model was successfully trained, false otherwise
+     */
+    virtual bool train_(UnlabelledData &trainingData);
+    
+    /**
      This resets the Clusterer.
      This overrides the reset function in the MLBase base class.
      
@@ -110,6 +118,54 @@ public:
      @return returns the number of clusters
      */
     UINT getNumClusters() const;
+    
+    /**
+     Returns the predicted cluster label.
+     
+     @return returns the predicted cluster label
+     */
+    UINT getPredictedClusterLabel() const;
+    
+    /**
+     Returns the current maximumLikelihood value.
+     The maximumLikelihood value is computed during the prediction phase and is the likelihood of the most likely model.
+     This value will return 0 if a prediction has not been made.
+     
+     @return returns the current maximumLikelihood value
+     */
+    double getMaximumLikelihood() const;
+    
+    /**
+     Returns the current bestDistance value.
+     The bestDistance value is computed during the prediction phase and is either the minimum or maximum distance, depending on the algorithm.
+     This value will return 0 if a prediction has not been made.
+     
+     @return returns the current bestDistance value
+     */
+    double getBestDistance() const;
+    
+    /**
+     Gets a vector of the cluster likelihoods from the last prediction, this will be an N-dimensional vector, where N is the number of clusters in the model.
+     The exact form of these likelihoods depends on the cluster algorithm.
+     
+     @return returns a vector of the cluster likelihoods from the last prediction, an empty vector will be returned if the model has not been trained
+     */
+    VectorDouble getClusterLikelihoods() const;
+    
+    /**
+     Gets a vector of the cluster distances from the last prediction, this will be an N-dimensional vector, where N is the number of clusters in the model.
+     The exact form of these distances depends on the cluster algorithm.
+     
+     @return returns a vector of the cluster distances from the last prediction, an empty vector will be returned if the model has not been trained
+     */
+    VectorDouble getClusterDistances() const;
+    
+    /**
+     Gets a vector of unsigned ints containing the label of each cluster, this will be an K-dimensional vector, where K is the number of clusters in the model.
+
+     @return returns a vector of unsigned ints containing the label of each cluster, an empty vector will be returned if the model has not been trained
+     */
+    vector< UINT > getClusterLabels() const;
 
     /**
      Returns the classifeir type as a string.
@@ -190,7 +246,13 @@ protected:
     bool loadClustererSettingsFromFile(fstream &file);
 
     string clustererType;
-    UINT numClusters;                   //Number of clusters in the model
+    UINT numClusters;                   ///< Number of clusters in the model
+    UINT predictedClusterLabel;         ///< Stores the predicted cluster label from the most recent predict( )
+    double maxLikelihood;
+    double bestDistance;
+    VectorDouble clusterLikelihoods;
+    VectorDouble clusterDistances;
+    vector< UINT > clusterLabels;
     bool converged;
     vector<MinMax> ranges;
     

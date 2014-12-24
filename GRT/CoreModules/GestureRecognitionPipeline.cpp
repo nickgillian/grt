@@ -30,6 +30,7 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(void)
     inputVectorDimensions = 0;
     outputVectorDimensions = 0;
     predictedClassLabel = 0;
+    predictedClusterLabel = 0;
     predictionModuleIndex = 0;
     numTrainingSamples = 0;
     numTestSamples = 0;
@@ -42,6 +43,7 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(void)
     trainingTime = 0;
     classifier = NULL;
     regressifier = NULL;
+    clusterer = NULL;
     contextModules.resize( NUM_CONTEXT_LEVELS );
 
     debugLog.setProceedingText("[DEBUG GRP]");
@@ -58,6 +60,7 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionP
     inputVectorDimensions = 0;
     outputVectorDimensions = 0;
     predictedClassLabel = 0;
+    predictedClusterLabel = 0;
     predictionModuleIndex = 0;
     numTrainingSamples = 0;
     numTestSamples = 0;
@@ -70,6 +73,7 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionP
     trainingTime = 0;
     classifier = NULL;
     regressifier = NULL;
+    clusterer = NULL;
     contextModules.resize( NUM_CONTEXT_LEVELS );
     
     debugLog.setProceedingText("[DEBUG GRP]");
@@ -93,6 +97,7 @@ GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureR
 	    this->inputVectorDimensions = rhs.inputVectorDimensions;
 	    this->outputVectorDimensions = rhs.outputVectorDimensions;
 	    this->predictedClassLabel = rhs.predictedClassLabel;
+        this->predictedClusterLabel = rhs.predictedClusterLabel;
 	    this->pipelineMode = rhs.pipelineMode;
 	    this->predictionModuleIndex = rhs.predictionModuleIndex;
         this->numTrainingSamples = rhs.numTrainingSamples;
@@ -134,6 +139,10 @@ GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureR
 		if( rhs.getIsPipelineInRegressionMode() ){
 			setRegressifier( *rhs.regressifier );
 		}
+        
+        if( rhs.getIsClustererSet() ){
+			setClusterer( *rhs.clusterer );
+		}
 		
 		for(unsigned int i=0; i<rhs.postProcessingModules.size(); i++){
 			this->addPostProcessingModule( *(rhs.postProcessingModules[i]) );
@@ -159,6 +168,7 @@ GestureRecognitionPipeline::~GestureRecognitionPipeline(void)
     deleteAllFeatureExtractionModules();
     deleteClassifier();
     deleteRegressifier();
+    deleteClusterer();
     deleteAllPostProcessingModules();
     deleteAllContextModules();
 } 
@@ -750,6 +760,109 @@ bool GestureRecognitionPipeline::train(RegressionData trainingData,const UINT kF
     return true;
 }
     
+bool GestureRecognitionPipeline::train(const UnlabelledData &trainingData){
+    
+    trained = false;
+    trainingTime = 0;
+    clearTestResults();
+    
+    if( !getIsClustererSet() ){
+        errorLog << "train(UnlabelledData trainingData) - Failed To Train Clusterer, the clusterer has not been set!" << endl;
+        return false;
+    }
+    
+    if( trainingData.getNumSamples() == 0 ){
+        errorLog << "train(UnlabelledData trainingData) - Failed To Train Clusterer, there is no training data!" << endl;
+        return false;
+    }
+    
+    //Reset all the modules
+    reset();
+    
+    //Set the input vector dimension size
+    inputVectorDimensions = trainingData.getNumDimensions();
+    
+    //Pass the training data through any pre-processing or feature extraction units
+    UINT numDimensions = trainingData.getNumDimensions();
+    
+    //If there are any preprocessing or feature extraction modules, then get the size of the last module
+    if( getIsPreProcessingSet() || getIsFeatureExtractionSet() ){
+        if( getIsFeatureExtractionSet() ){
+            numDimensions = featureExtractionModules[ featureExtractionModules.size()-1 ]->getNumOutputDimensions();
+        }else{
+            numDimensions = preProcessingModules[ preProcessingModules.size()-1 ]->getNumOutputDimensions();
+        }
+    }
+    
+    //Start the training timer
+    Timer timer;
+    timer.start();
+    
+    UnlabelledData processedTrainingData( numDimensions );
+    
+    for(UINT i=0; i<trainingData.getNumSamples(); i++){
+        bool okToAddProcessedData = true;
+        VectorDouble trainingSample = trainingData[i];
+        
+        //Perform any preprocessing
+        if( getIsPreProcessingSet() ){
+            for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
+                if( !preProcessingModules[moduleIndex]->process( trainingSample ) ){
+                    errorLog << "train(UnlabelledData trainingData) - Failed to PreProcess Training Data. PreProcessingModuleIndex: ";
+                    errorLog << moduleIndex;
+                    errorLog << endl;
+                    return false;
+                }
+                trainingSample = preProcessingModules[moduleIndex]->getProcessedData();
+            }
+        }
+        
+        //Compute any features
+        if( getIsFeatureExtractionSet() ){
+            for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
+                if( !featureExtractionModules[moduleIndex]->computeFeatures( trainingSample ) ){
+                    errorLog << "train(UnlabelledData trainingData) - Failed to Compute Features from Training Data. FeatureExtractionModuleIndex ";
+                    errorLog << moduleIndex;
+                    errorLog << endl;
+                    return false;
+                }
+                if( featureExtractionModules[moduleIndex]->getFeatureDataReady() ){
+                    trainingSample = featureExtractionModules[moduleIndex]->getFeatureVector();
+                }else{
+                    okToAddProcessedData = false;
+                    break;
+                }
+            }
+        }
+        
+        if( okToAddProcessedData ){
+            //Add the training sample to the processed training data
+            processedTrainingData.addSample(trainingSample);
+        }
+        
+    }
+    
+    if( processedTrainingData.getNumSamples() != trainingData.getNumSamples() ){
+        
+        warningLog << "train(ClassificationData trainingData) - Lost " << trainingData.getNumSamples()-processedTrainingData.getNumSamples() << " of " << trainingData.getNumSamples() << " training samples due to the processing stage!" << endl;
+    }
+    
+    //Store the number of training samples
+    numTrainingSamples = processedTrainingData.getNumSamples();
+    
+    //Train the cluster model
+    trained = clusterer->train_( processedTrainingData );
+    if( !trained ){
+        errorLog << "train(UnlabelledData trainingData) - Failed To Train Clusterer: " << clusterer->getLastErrorMessage() << endl;
+        return false;
+    }
+    
+    //Store the training time
+    trainingTime = timer.getMilliSeconds();
+    
+    return true;
+}
+    
 bool GestureRecognitionPipeline::test(const ClassificationData &testData){
     
     //Clear any previous test results
@@ -966,8 +1079,8 @@ bool GestureRecognitionPipeline::test(TimeSeriesClassificationDataStream testDat
     //Reset all the modules
     reset();
     
-    double rejectionPrecisionCounter = 0;
-    double rejectionRecallCounter = 0;
+    //double rejectionPrecisionCounter = 0;
+    //double rejectionRecallCounter = 0;
     UINT confusionMatrixSize = classifier->getNullRejectionEnabled() ? classifier->getNumClasses()+1 : classifier->getNumClasses();
     VectorDouble precisionCounter(getNumClassesInModel(), 0);
     VectorDouble recallCounter(getNumClassesInModel(), 0);
@@ -1137,8 +1250,12 @@ bool GestureRecognitionPipeline::predict(const VectorDouble &inputVector){
 	if( getIsRegressifierSet() ){
         return predict_regressifier( inputVector );
     }
+    
+    if( getIsClustererSet() ){
+        return predict_clusterer( inputVector );
+    }
 
-    errorLog << "predict(const VectorDouble &inputVector) - Neither a classifier or regressifer is not set" << endl;
+    errorLog << "predict(const VectorDouble &inputVector) - Neither a classifier, regressifer or clusterer is set" << endl;
 	return false;
 }
 
@@ -1587,6 +1704,172 @@ bool GestureRecognitionPipeline::predict_regressifier(VectorDouble inputVector){
     return true;
 }
     
+bool GestureRecognitionPipeline::predict_clusterer(VectorDouble inputVector){
+    
+    predictedClusterLabel = 0;
+    
+    //Update the context module
+    predictionModuleIndex = START_OF_PIPELINE;
+    if( contextModules[ START_OF_PIPELINE ].size() ){
+        for(UINT moduleIndex=0; moduleIndex<contextModules[ START_OF_PIPELINE ].size(); moduleIndex++){
+            if( !contextModules[ START_OF_PIPELINE ][moduleIndex]->process( inputVector ) ){
+                errorLog << "predict_clusterer(VectorDouble inputVector) - Context Module Failed at START_OF_PIPELINE. ModuleIndex: " << moduleIndex << endl;
+                return false;
+            }
+            if( !contextModules[ START_OF_PIPELINE ][moduleIndex]->getOK() ){
+                return true;
+            }
+            inputVector = contextModules[ START_OF_PIPELINE ][moduleIndex]->getProcessedData();
+        }
+    }
+    
+    //Perform any pre-processing
+    if( getIsPreProcessingSet() ){
+        for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
+            if( !preProcessingModules[moduleIndex]->process( inputVector ) ){
+                errorLog << "predict_clusterer(VectorDouble inputVector) - Failed to PreProcess Input Vector. PreProcessingModuleIndex: " << moduleIndex << endl;
+                return false;
+            }
+            inputVector = preProcessingModules[moduleIndex]->getProcessedData();
+        }
+    }
+    
+    //Update the context module
+    predictionModuleIndex = AFTER_PREPROCESSING;
+    if( contextModules[ AFTER_PREPROCESSING ].size() ){
+        for(UINT moduleIndex=0; moduleIndex<contextModules[ AFTER_PREPROCESSING ].size(); moduleIndex++){
+            if( !contextModules[ AFTER_PREPROCESSING ][moduleIndex]->process( inputVector ) ){
+                errorLog << "predict_clusterer(VectorDouble inputVector) - Context Module Failed at AFTER_PREPROCESSING. ModuleIndex: " << moduleIndex << endl;
+                return false;
+            }
+            if( !contextModules[ AFTER_PREPROCESSING ][moduleIndex]->getOK() ){
+                predictionModuleIndex = AFTER_PREPROCESSING;
+                return false;
+            }
+            inputVector = contextModules[ AFTER_PREPROCESSING ][moduleIndex]->getProcessedData();
+        }
+    }
+    
+    //Perform any feature extraction
+    if( getIsFeatureExtractionSet() ){
+        for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
+            if( !featureExtractionModules[moduleIndex]->computeFeatures( inputVector ) ){
+                errorLog << "predict_clusterer(VectorDouble inputVector) - Failed to compute features from data. FeatureExtractionModuleIndex: " << moduleIndex << endl;
+                return false;
+            }
+            inputVector = featureExtractionModules[moduleIndex]->getFeatureVector();
+        }
+    }
+    
+    //Update the context module
+    predictionModuleIndex = AFTER_FEATURE_EXTRACTION;
+    if( contextModules[ AFTER_FEATURE_EXTRACTION ].size() ){
+        for(UINT moduleIndex=0; moduleIndex<contextModules[ AFTER_FEATURE_EXTRACTION ].size(); moduleIndex++){
+            if( !contextModules[ AFTER_FEATURE_EXTRACTION ][moduleIndex]->process( inputVector ) ){
+                errorLog << "predict_clusterer(VectorDouble inputVector) - Context Module Failed at AFTER_FEATURE_EXTRACTION. ModuleIndex: " << moduleIndex << endl;
+                return false;
+            }
+            if( !contextModules[ AFTER_FEATURE_EXTRACTION ][moduleIndex]->getOK() ){
+                predictionModuleIndex = AFTER_FEATURE_EXTRACTION;
+                return false;
+            }
+            inputVector = contextModules[ AFTER_FEATURE_EXTRACTION ][moduleIndex]->getProcessedData();
+        }
+    }
+    
+    //Perform the classification
+    if( !clusterer->predict(inputVector) ){
+        errorLog << "predict_clusterer(VectorDouble inputVector) - Prediction Failed! " << clusterer->getLastErrorMessage() << endl;
+        return false;
+    }
+    predictedClusterLabel = clusterer->getPredictedClusterLabel();
+    
+    //Update the context module
+    if( contextModules[ AFTER_CLASSIFIER ].size() ){
+        for(UINT moduleIndex=0; moduleIndex<contextModules[ AFTER_CLASSIFIER ].size(); moduleIndex++){
+            if( !contextModules[ AFTER_CLASSIFIER ][moduleIndex]->process( vector<double>(1,predictedClusterLabel) ) ){
+                errorLog << "predict_clusterer(VectorDouble inputVector) - Context Module Failed at AFTER_CLASSIFIER. ModuleIndex: " << moduleIndex << endl;
+                return false;
+            }
+            if( !contextModules[ AFTER_CLASSIFIER ][moduleIndex]->getOK() ){
+                predictionModuleIndex = AFTER_CLASSIFIER;
+                return false;
+            }
+            predictedClusterLabel = (UINT)contextModules[ AFTER_CLASSIFIER ][moduleIndex]->getProcessedData()[0];
+        }
+    }
+    
+    //Perform any post processing
+    predictionModuleIndex = AFTER_CLASSIFIER;
+    if( getIsPostProcessingSet() ){
+        
+        if( pipelineMode != CLASSIFICATION_MODE){
+            errorLog << "predict_clusterer(VectorDouble inputVector) - Pipeline Mode Is Not in CLASSIFICATION_MODE!" << endl;
+            return false;
+        }
+        
+        VectorDouble data;
+        for(UINT moduleIndex=0; moduleIndex<postProcessingModules.size(); moduleIndex++){
+            
+            //Select which input we should give the postprocessing module
+            if( postProcessingModules[moduleIndex]->getIsPostProcessingInputModePredictedClassLabel() ){
+                //Set the input
+                data.resize(1);
+                data[0] = predictedClusterLabel;
+                
+                //Verify that the input size is OK
+                if( data.size() != postProcessingModules[moduleIndex]->getNumInputDimensions() ){
+                    errorLog << "predict_clusterer(VectorDouble inputVector) - The size of the data vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << endl;
+                    return false;
+                }
+                
+                //Postprocess the data
+                if( !postProcessingModules[moduleIndex]->process( data ) ){
+                    errorLog << "predict_clusterer(VectorDouble inputVector) - Failed to post process data. PostProcessing moduleIndex: " << moduleIndex << endl;
+                    return false;
+                }
+                
+                //Select which output we should update
+                data = postProcessingModules[moduleIndex]->getProcessedData();
+            }
+            
+            //Select which output we should update
+            if( postProcessingModules[moduleIndex]->getIsPostProcessingOutputModePredictedClassLabel() ){
+                //Get the processed predicted class label
+                data = postProcessingModules[moduleIndex]->getProcessedData();
+                
+                //Verify that the output size is OK
+                if( data.size() != 1 ){
+                    errorLog << "predict_clusterer(VectorDouble inputVector) - The size of the processed data vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << endl;
+                    return false;
+                }
+                
+                //Update the predicted cluster label
+                predictedClusterLabel = (UINT)data[0];
+            }
+            
+        }
+    }
+    
+    //Update the context module
+    predictionModuleIndex = END_OF_PIPELINE;
+    if( contextModules[ END_OF_PIPELINE ].size() ){
+        for(UINT moduleIndex=0; moduleIndex<contextModules[ END_OF_PIPELINE ].size(); moduleIndex++){
+            if( !contextModules[ END_OF_PIPELINE ][moduleIndex]->process( vector<double>(1,predictedClassLabel) ) ){
+                errorLog << "predict_clusterer(VectorDouble inputVector) - Context Module Failed at END_OF_PIPELINE. ModuleIndex: " << moduleIndex << endl;
+                return false;
+            }
+            if( !contextModules[ END_OF_PIPELINE ][moduleIndex]->getOK() ){
+                predictionModuleIndex = END_OF_PIPELINE;
+                return false;
+            }
+            predictedClusterLabel = (UINT)contextModules[ END_OF_PIPELINE ][moduleIndex]->getProcessedData()[0];
+        }
+    }
+    
+    return true;
+}
+    
 bool GestureRecognitionPipeline::reset(){
     
     //Reset any pre processing
@@ -1625,6 +1908,14 @@ bool GestureRecognitionPipeline::reset(){
         }
     }
     
+    //Reset the clusterer
+    if( getIsClustererSet() ){
+        if( !clusterer->reset() ){
+            errorLog << "Failed To Reset clusterer! " << clusterer->getLastErrorMessage() << endl;
+            return false;
+        }
+    }
+    
     //Reset any post processing
     if( getIsPostProcessingSet() ){
         for(UINT moduleIndex=0; moduleIndex<postProcessingModules.size(); moduleIndex++){
@@ -1659,7 +1950,7 @@ bool GestureRecognitionPipeline::savePipelineToFile(const string &filename) cons
     }
     
     //Write the pipeline header info
-    file << "GRT_PIPELINE_FILE_V1.0\n";
+    file << "GRT_PIPELINE_FILE_V2.0\n";
     file << "PipelineMode: " << getPipelineModeAsString() << endl;
     file << "NumPreprocessingModules: " << getNumPreProcessingModules() << endl;
     file << "NumFeatureExtractionModules: " << getNumFeatureExtractionModules() << endl;
@@ -1687,8 +1978,12 @@ bool GestureRecognitionPipeline::savePipelineToFile(const string &filename) cons
             else file << "ClassificationModuleDatatype:\tCLASSIFIER_NOT_SET" << endl;
             break;
         case REGRESSION_MODE:
-            if( getIsRegressifierSet() ) file << "RegressionnModuleDatatype:\t" << regressifier->getRegressifierType() << endl;
-            else file << "RegressionnModuleDatatype:\tREGRESSIFIER_NOT_SET" << endl;
+            if( getIsRegressifierSet() ) file << "RegressionModuleDatatype:\t" << regressifier->getRegressifierType() << endl;
+            else file << "RegressionModuleDatatype:\tREGRESSIFIER_NOT_SET" << endl;
+            break;
+        case CLUSTER_MODE:
+            if( getIsClustererSet() ) file << "ClusterModuleDatatype:\t" << clusterer->getClustererType() << endl;
+            else file << "ClusterModuleDatatype:\tCLUSTERER_NOT_SET" << endl;
             break;
         default:
             break;
@@ -1741,6 +2036,15 @@ bool GestureRecognitionPipeline::savePipelineToFile(const string &filename) cons
                 }
             }
             break;
+        case CLUSTER_MODE:
+            if( getIsClustererSet() ){
+                if( !clusterer->saveModelToFile( file ) ){
+                    errorLog << "Failed to write clusterer model to file!" << endl;
+                    file.close();
+                    return false;
+                }
+            }
+            break;
         default:
             break;
     }
@@ -1783,7 +2087,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
 	
 	//Load the file header
 	file >> word;
-	if( word != "GRT_PIPELINE_FILE_V1.0" ){
+	if( word != "GRT_PIPELINE_FILE_V2.0" ){
         errorLog << "loadPipelineFromFile(string filename) - Failed to read file header" << endl;
 		file.close();
         return false;
@@ -1900,8 +2204,8 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
             break;
         case REGRESSION_MODE:
 			file >> word;
-			if( word != "RegressionnModuleDatatype:" ){
-                errorLog << "loadPipelineFromFile(string filename) - Failed to read RegressionnModuleDatatype" << endl;
+			if( word != "RegressionModuleDatatype:" ){
+                errorLog << "loadPipelineFromFile(string filename) - Failed to read RegressionModuleDatatype" << endl;
 				file.close();
 		        return false;
 			}
@@ -1912,6 +2216,24 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
 			regressifier = Regressifier::createInstanceFromString( word );
 			if( regressifier == NULL ){
                 errorLog << "loadPipelineFromFile(string filename) - Failed to create regressifier instance from string: " << word << endl;
+				file.close();
+		        return false;
+			}
+            break;
+        case CLUSTER_MODE:
+            file >> word;
+			if( word != "ClusterModuleDatatype:" ){
+                errorLog << "loadPipelineFromFile(string filename) - Failed to read ClusterModuleDatatype" << endl;
+				file.close();
+		        return false;
+			}
+			//Load the clusterer type
+			file >> word;
+			
+			//Initialize the clusterer
+			clusterer = Clusterer::createInstanceFromString( word );
+			if( clusterer == NULL ){
+                errorLog << "loadPipelineFromFile(string filename) - Failed to create clusterer instance from string: " << word << endl;
 				file.close();
 		        return false;
 			}
@@ -1972,6 +2294,13 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
                    return false;
                }
             break;
+        case CLUSTER_MODE:
+            if( !clusterer->loadModelFromFile( file ) ){
+                errorLog << "Failed to load cluster model from file!" << endl;
+                file.close();
+                return false;
+            }
+            break;
         default:
             break;
     }
@@ -2007,6 +2336,9 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
                     break;
                 case REGRESSION_MODE:
                     inputVectorDimensions = regressifier->getNumInputFeatures();
+                    break;
+                case CLUSTER_MODE:
+                    inputVectorDimensions = clusterer->getNumInputDimensions();
                     break;
                 default:
                     break;
@@ -2078,6 +2410,10 @@ bool GestureRecognitionPipeline::getIsClassifierSet() const{
 bool GestureRecognitionPipeline::getIsRegressifierSet() const{ 
     return (regressifier!=NULL); 
 }
+  
+bool GestureRecognitionPipeline::getIsClustererSet() const{
+    return (clusterer!=NULL);
+}
     
 bool GestureRecognitionPipeline::getIsPostProcessingSet() const{ 
     return postProcessingModules.size() > 0; 
@@ -2134,7 +2470,14 @@ UINT GestureRecognitionPipeline::getNumClassesInModel() const{
 }
     
 UINT GestureRecognitionPipeline::getNumClasses() const{
-    return (getIsClassifierSet() ? classifier->getNumClasses() : 0); 
+    UINT numClasses = 0;
+    if( getIsClassifierSet() ){
+        numClasses = classifier->getNumClasses();
+    }
+    if( getIsClustererSet() ){
+        numClasses = clusterer->getNumClusters();
+    }
+    return numClasses;
 }
     
 UINT GestureRecognitionPipeline::getNumPreProcessingModules() const{ 
@@ -2153,16 +2496,35 @@ UINT GestureRecognitionPipeline::getPredictionModuleIndexPosition() const{
     return predictionModuleIndex; 
 }
     
-UINT GestureRecognitionPipeline::getPredictedClassLabel() const{ 
-    return (getIsClassifierSet() ? predictedClassLabel : 0); 
+UINT GestureRecognitionPipeline::getPredictedClassLabel() const{
+    
+    if( getIsClassifierSet() ){
+        return predictedClassLabel;
+    }
+    if( getIsClustererSet() ){
+        return predictedClusterLabel;
+    }
+    return 0;
 }
     
-UINT GestureRecognitionPipeline::getUnProcessedPredictedClassLabel() const{ 
-    return (getIsClassifierSet() ? classifier->getPredictedClassLabel() : 0); 
+UINT GestureRecognitionPipeline::getUnProcessedPredictedClassLabel() const{
+    if( getIsClassifierSet() ){
+        return classifier->getPredictedClassLabel();
+    }
+    if( getIsClustererSet() ){
+        return clusterer->getPredictedClusterLabel();
+    }
+    return 0;
 }
 
-double GestureRecognitionPipeline::getMaximumLikelihood() const{ 
-    return (getIsClassifierSet() ? classifier->getMaximumLikelihood() : 0); 
+double GestureRecognitionPipeline::getMaximumLikelihood() const{
+    if( getIsClassifierSet() ){
+        return classifier->getMaximumLikelihood();
+    }
+    if( getIsClustererSet() ){
+        return clusterer->getMaximumLikelihood();
+    }
+    return 0;
 }
     
 double GestureRecognitionPipeline::getCrossValidationAccuracy() const{ 
@@ -2280,11 +2642,13 @@ VectorDouble GestureRecognitionPipeline::getTestFMeasure() const{
 
 VectorDouble GestureRecognitionPipeline::getClassLikelihoods() const{ 
     if( getIsClassifierSet() ){ return classifier->getClassLikelihoods(); }
+    if( getIsClustererSet() ){ return clusterer->getClusterLikelihoods(); }
     else{ return VectorDouble(); } 
 }
 
 VectorDouble GestureRecognitionPipeline::getClassDistances() const{ 
     if( getIsClassifierSet() ){ return classifier->getClassDistances(); }
+    if( getIsClustererSet() ){ return clusterer->getClusterDistances(); }
     else{ return VectorDouble(); } 
 }
 
@@ -2338,8 +2702,12 @@ VectorDouble GestureRecognitionPipeline::getFeatureExtractionData(const UINT mod
 }
     
 vector< UINT > GestureRecognitionPipeline::getClassLabels() const{ 
-    if( getIsClassifierSet() )
+    if( getIsClassifierSet() ){
         return classifier->getClassLabels();
+    }
+    if( getIsClustererSet() ){
+        return clusterer->getClusterLabels();
+    }
     warningLog << "getClassLabels() - Failed to get class labels!" << endl;
     return vector< UINT>(); 
 }
@@ -2374,6 +2742,10 @@ Classifier* GestureRecognitionPipeline::getClassifier() const{
     
 Regressifier* GestureRecognitionPipeline::getRegressifier() const{
     return regressifier; 
+}
+    
+Clusterer* GestureRecognitionPipeline::getClusterer() const{
+    return clusterer;
 }
     
 PostProcessing* GestureRecognitionPipeline::getPostProcessingModule(UINT moduleIndex) const{
@@ -2475,9 +2847,11 @@ bool GestureRecognitionPipeline::setFeatureExtractionModule(const FeatureExtract
 }
 
 bool GestureRecognitionPipeline::setClassifier(const Classifier &classifier){
-    //Delete any previous classifier and regressifier
+    
+    //Delete any previous classifier, regressifier or clusterer
     deleteClassifier();
     deleteRegressifier();
+    deleteClusterer();
 
     //Create a new instance of the classifier and then clone the values across from the reference classifier
     this->classifier = classifier.createNewInstance();
@@ -2513,9 +2887,10 @@ bool GestureRecognitionPipeline::setClassifier(const Classifier &classifier){
 
 bool GestureRecognitionPipeline::setRegressifier(const Regressifier &regressifier){
     
-    //Delete any previous classifier and regressifier
+    //Delete any previous classifier, regressifier or clusterer
     deleteClassifier();
     deleteRegressifier();
+    deleteClusterer();
     
     //Set the mode of the pipeline to regression mode
     pipelineMode = REGRESSION_MODE;
@@ -2538,6 +2913,39 @@ bool GestureRecognitionPipeline::setRegressifier(const Regressifier &regressifie
     //Otherwise the user needs to train the pipeline
     if( !getIsPreProcessingSet() && !getIsFeatureExtractionSet() ){
         trained = regressifier.getTrained();
+    }else trained = false;
+    
+    return true;
+}
+    
+bool GestureRecognitionPipeline::setClusterer(const Clusterer &clusterer){
+    
+    //Delete any previous classifier, regressifier or clusterer
+    deleteClassifier();
+    deleteRegressifier();
+    deleteClusterer();
+    
+    //Set the mode of the pipeline to cluster mode
+    pipelineMode = CLUSTER_MODE;
+    
+    //Create a new instance of the clusterer and then clone the values across from the reference clusterer
+    this->clusterer = clusterer.createNewInstance();
+    
+    //Validate that the regressifier was cloned correctly
+    if( !this->clusterer->deepCopyFrom( &clusterer ) ){
+        deleteClusterer();
+        pipelineMode = PIPELINE_MODE_NOT_SET;
+        errorLog << "setClusterer(const Clusterer &clusterer) - Clusterer Module Not Set!" << endl;
+        return false;
+    }
+    
+    //Flag that the key part of the pipeline has now been initialized
+    initialized = true;
+    
+    //If there is no preprocessing / feature extraction and the regressifier is trained, then flag the pipeline is trained
+    //Otherwise the user needs to train the pipeline
+    if( !getIsPreProcessingSet() && !getIsFeatureExtractionSet() ){
+        trained = clusterer.getTrained();
     }else trained = false;
     
     return true;
@@ -2794,6 +3202,15 @@ void GestureRecognitionPipeline::deleteRegressifier(){
     if( regressifier != NULL ){
         delete regressifier;
         regressifier = NULL;
+    }
+    trained = false;
+    initialized = false;
+}
+    
+void GestureRecognitionPipeline::deleteClusterer(){
+    if( clusterer != NULL ){
+        delete clusterer;
+        clusterer = NULL;
     }
     trained = false;
     initialized = false;

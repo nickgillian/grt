@@ -598,6 +598,23 @@ UnlabelledData UnlabelledData::getTestFoldData(const UINT foldIndex) const{
     return testData;
 }
 
+string UnlabelledData::getStatsAsString() const{
+    string statsText;
+    statsText += "DatasetName:\t" + datasetName + "\n";
+    statsText += "DatasetInfo:\t" + infoText + "\n";
+    statsText += "Number of Dimensions:\t" + Util::toString( numDimensions ) + "\n";
+    statsText += "Number of Samples:\t" + Util::toString( totalNumSamples ) + "\n";
+
+    vector< MinMax > ranges = getRanges();
+
+    statsText += "Dataset Ranges:\n";
+    for(UINT j=0; j<ranges.size(); j++){
+        statsText += "[" + Util::toString( j+1 ) + "] Min:\t" + Util::toString( ranges[j].minValue ) + "\tMax: " + Util::toString( ranges[j].maxValue ) + "\n";
+    }
+
+    return statsText;
+}
+
 vector<MinMax> UnlabelledData::getRanges() const{
 
     //If the dataset should be scaled using the external ranges then return the external ranges

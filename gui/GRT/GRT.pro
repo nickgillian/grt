@@ -7,6 +7,7 @@
 #NOTE: Have a look at the GRT GUI README before attempting to build this project
 
 QT += core gui
+QT += webkitwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -53,7 +54,7 @@ macx{
 
  #Flag that we want to use the GRT library
  USE_GRT_LIB = "true"
-#USE_GRT_SOURCE = "true"
+ #USE_GRT_SOURCE = "true"
 
  #Link against the main boost libraries
  LIBS += -lboost_thread
