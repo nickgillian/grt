@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -617,7 +617,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="page_24">
         <widget class="QGroupBox" name="groupBox_19">
@@ -2705,7 +2705,12 @@
          </item>
          <item>
           <property name="text">
-           <string>Hidden Markov Model</string>
+           <string>Hidden Markov Model (Discrete)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Hidden Markov Model (Continuous)</string>
           </property>
          </item>
         </widget>
@@ -2742,7 +2747,7 @@
           </rect>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="page_62">
           <widget class="QLabel" name="label_160">
@@ -2793,10 +2798,225 @@
             </rect>
            </property>
            <property name="text">
-            <string>Hidden Markov Model Settings</string>
+            <string>Hidden Markov Model Discrete Settings</string>
            </property>
           </widget>
          </widget>
+         <widget class="QWidget" name="page_64">
+          <widget class="QLabel" name="label_169">
+           <property name="geometry">
+            <rect>
+             <x>5</x>
+             <y>0</y>
+             <width>281</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Hidden Markov Model Continuous Settings</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_170">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>90</y>
+             <width>131</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Delta:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_171">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>30</y>
+             <width>131</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Comittee Size:</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_hmm_continuous_committeeSize">
+           <property name="geometry">
+            <rect>
+             <x>155</x>
+             <y>25</y>
+             <width>101</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_172">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>60</y>
+             <width>131</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Downsample Factor:</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_hmm_continuous_downsampleFactor">
+           <property name="geometry">
+            <rect>
+             <x>155</x>
+             <y>55</y>
+             <width>101</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_hmm_continuous_delta">
+           <property name="geometry">
+            <rect>
+             <x>155</x>
+             <y>85</y>
+             <width>101</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_hmm_continuous_sigma">
+           <property name="geometry">
+            <rect>
+             <x>155</x>
+             <y>115</y>
+             <width>101</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_173">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>120</y>
+             <width>131</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Sigma:</string>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page_65">
+          <widget class="QLabel" name="label_175">
+           <property name="geometry">
+            <rect>
+             <x>5</x>
+             <y>0</y>
+             <width>281</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Finite State Machine Settings</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_176">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>30</y>
+             <width>131</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Number of Particles:</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_fsm_stateTransitionSmoothingCoeff">
+           <property name="geometry">
+            <rect>
+             <x>275</x>
+             <y>85</y>
+             <width>101</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_177">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>90</y>
+             <width>261</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>State Transition Smoothing Coefficient:</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_fsm_numClustersPerState">
+           <property name="geometry">
+            <rect>
+             <x>275</x>
+             <y>55</y>
+             <width>101</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_fsm_numParticles">
+           <property name="geometry">
+            <rect>
+             <x>275</x>
+             <y>25</y>
+             <width>101</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_178">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>60</y>
+             <width>191</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Number of Clusters Per State:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_179">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>120</y>
+             <width>261</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Measurement Noise:</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_fsm_measurementNoise">
+           <property name="geometry">
+            <rect>
+             <x>275</x>
+             <y>115</y>
+             <width>101</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page_66"/>
         </widget>
        </widget>
       </widget>
@@ -4647,7 +4867,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_22">
        <widget class="QGroupBox" name="groupBox16">
@@ -5012,7 +5232,7 @@
          <property name="geometry">
           <rect>
            <x>180</x>
-           <y>135</y>
+           <y>120</y>
            <width>120</width>
            <height>21</height>
           </rect>
@@ -5038,7 +5258,7 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>135</y>
+           <y>120</y>
            <width>151</width>
            <height>16</height>
           </rect>
@@ -5051,7 +5271,7 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>90</y>
+           <y>80</y>
            <width>166</width>
            <height>16</height>
           </rect>
@@ -5064,7 +5284,7 @@
          <property name="geometry">
           <rect>
            <x>180</x>
-           <y>90</y>
+           <y>80</y>
            <width>120</width>
            <height>21</height>
           </rect>
@@ -5107,6 +5327,32 @@
          </property>
          <property name="text">
           <string>Plot</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_174">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>160</y>
+           <width>151</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Phase:</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_phase">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>160</y>
+           <width>120</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </widget>

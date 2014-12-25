@@ -1367,13 +1367,15 @@ bool Core::processNewData(){
     bool newSampleAdded = false;
     bool newPreProcessedData = false;
     bool newFeatureData = false;
-    bool newPredictionData = false;
+    bool newClassificationData = false;
     bool newRegressionData = false;
+    bool newTimeseriesData = false;
     bool newClusterData = false;
     unsigned int numTrainingSamples = 0;
     unsigned int predictedClassLabel = 0;
     unsigned int predictedClusterLabel = 0;
     double maximumLikelihood = 0;
+    double phase = 0;
     GRT::VectorDouble preProcessedData;
     GRT::VectorDouble featureData;
     GRT::VectorDouble classLikelihoods;
@@ -1439,13 +1441,21 @@ bool Core::processNewData(){
 
                     switch( pipelineMode ){
                         case CLASSIFICATION_MODE:
+                            predictedClassLabel = pipeline.getPredictedClassLabel();
+                            maximumLikelihood = pipeline.getMaximumLikelihood();
+                            classLikelihoods = pipeline.getClassLikelihoods();
+                            classDistances = pipeline.getClassDistances();
+                            classLabels = pipeline.getClassLabels();
+                            newClassificationData = true;
+                        break;
                         case TIMESERIES_CLASSIFICATION_MODE:
                             predictedClassLabel = pipeline.getPredictedClassLabel();
                             maximumLikelihood = pipeline.getMaximumLikelihood();
                             classLikelihoods = pipeline.getClassLikelihoods();
                             classDistances = pipeline.getClassDistances();
                             classLabels = pipeline.getClassLabels();
-                            newPredictionData = true;
+                            phase = pipeline.getPhase();
+                            newTimeseriesData = true;
                         break;
                         case REGRESSION_MODE:
                             regressionData = pipeline.getRegressionData();
@@ -1518,18 +1528,27 @@ bool Core::processNewData(){
         emit featureExtractionDataChanged( featureData );
     }
 
-    if( newPredictionData ){
+    if( newClassificationData ){
         //Send the results out over OSC
         sendPredictionResults( predictedClassLabel, maximumLikelihood );
         sendClassLikelihoods( classLikelihoods );
         sendClassDistances( classDistances );
         sendClassLabels( classLabels );
-        emit predictionResultsChanged(predictedClassLabel,maximumLikelihood,classLikelihoods,classDistances,classLabels);
+        emit classificationResultsChanged(predictedClassLabel,maximumLikelihood,classLikelihoods,classDistances,classLabels);
     }
 
     if( newRegressionData ){
         sendRegressionData( regressionData );
         emit regressionResultsChanged(regressionData);
+    }
+
+    if( newTimeseriesData ){
+        //Send the results out over OSC
+        sendPredictionResults( predictedClassLabel, maximumLikelihood );
+        sendClassLikelihoods( classLikelihoods );
+        sendClassDistances( classDistances );
+        sendClassLabels( classLabels );
+        emit timeseriesClassificationResultsChanged(predictedClassLabel,maximumLikelihood,phase,classLikelihoods,classDistances,classLabels);
     }
 
     if( newClusterData ){

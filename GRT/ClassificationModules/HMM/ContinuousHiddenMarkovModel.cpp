@@ -32,6 +32,7 @@ ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFa
 	this->downsampleFactor = downsampleFactor;
 	this->delta = delta;
     modelType = HMM_LEFTRIGHT;
+    sigma = 10;
 	cThreshold = -1000;
     useScaling = false;
     
@@ -42,16 +43,24 @@ ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFa
 }
  
 ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const ContinuousHiddenMarkovModel &rhs){
-    this->numStates = rhs.numStates;
-	this->numInputDimensions = rhs.numInputDimensions;
-	this->delta = rhs.delta;
-	this->cThreshold = rhs.cThreshold;
-	this->modelType = rhs.modelType;
-	this->loglikelihood = rhs.loglikelihood;
+    
+    this->downsampleFactor = rhs.downsampleFactor;
+	this->numStates = rhs.numStates;
+    this->classLabel = rhs.classLabel;
+    this->sigma = rhs.sigma;
 	this->a = rhs.a;
 	this->b = rhs.b;
 	this->pi = rhs.pi;
-    this->trainingLog = rhs.trainingLog;
+    this->observationSequence = rhs.observationSequence;
+    this->obsSequence = rhs.obsSequence;
+    this->estimatedStates = rhs.estimatedStates;
+    this->modelType = rhs.modelType;
+	this->delta = rhs.delta;
+	this->loglikelihood = rhs.loglikelihood;
+	this->cThreshold = rhs.cThreshold;
+    
+    const MLBase *basePointer = &rhs;
+    this->copyMLBaseVariables( basePointer );
 
     debugLog.setProceedingText("[DEBUG ContinuousHiddenMarkovModel]");
     errorLog.setProceedingText("[ERROR ContinuousHiddenMarkovModel]");
@@ -64,38 +73,75 @@ ContinuousHiddenMarkovModel::~ContinuousHiddenMarkovModel(){
     
 }
     
-double ContinuousHiddenMarkovModel::predict(const VectorDouble &x){
+ContinuousHiddenMarkovModel& ContinuousHiddenMarkovModel::operator=(const ContinuousHiddenMarkovModel &rhs){
+    
+    if( this != &rhs ){
+        this->downsampleFactor = rhs.downsampleFactor;
+        this->numStates = rhs.numStates;
+        this->classLabel = rhs.classLabel;
+        this->sigma = rhs.sigma;
+        this->a = rhs.a;
+        this->b = rhs.b;
+        this->pi = rhs.pi;
+        this->alpha = rhs.alpha;
+        this->c = rhs.c;
+        this->observationSequence = rhs.observationSequence;
+        this->obsSequence = rhs.obsSequence;
+        this->estimatedStates = rhs.estimatedStates;
+        this->modelType = rhs.modelType;
+        this->delta = rhs.delta;
+        this->loglikelihood = rhs.loglikelihood;
+        this->cThreshold = rhs.cThreshold;
+        
+        const MLBase *basePointer = &rhs;
+        this->copyMLBaseVariables( basePointer );
+    }
+    
+    return *this;
+}
+    
+bool ContinuousHiddenMarkovModel::predict_(VectorDouble &x){
     
     if( !trained ){
-        return 0;
+        errorLog << "predict_(VectorDouble &x) - The model is not trained!" << endl;
+        return false;
     }
     
     if( x.size() != numInputDimensions ){
-        return 0;
+        errorLog << "predict_(VectorDouble &x) - The input vector size (" << x.size() << ") does not match the number of input dimensions (" << numInputDimensions << ")" << endl;
+        return false;
     }
     
     //Add the new sample to the circular buffer
     observationSequence.push_back( x );
     
     //Convert the circular buffer to MatrixDouble
-    for(unsigned int i=0; i<numStates; i++){
+    for(unsigned int i=0; i<observationSequence.getSize(); i++){
         for(unsigned int j=0; j<numInputDimensions; j++){
             obsSequence[i][j] = observationSequence[i][j];
         }
     }
 
-    return predict( obsSequence );
+    return predict_( obsSequence );
 }
   
-/*double predictLogLikelihood(Vector<UINT> &obs)
- - This method computes P(O|A,B,Pi) using the forward algorithm
- */
-double ContinuousHiddenMarkovModel::predict(const MatrixDouble &obs){
+bool ContinuousHiddenMarkovModel::predict_(MatrixDouble &obs){
+    
+    if( !trained ){
+        errorLog << "predict_(MatrixDouble &obs) - The model is not trained!" << endl;
+        return false;
+    }
+    
+    if( obs.getNumCols() != numInputDimensions ){
+        errorLog << "predict_(MatrixDouble &obs) - The matrix column size (" << obs.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")" << endl;
+        return false;
+    }
     
     const int T = (int)obs.getNumRows();
 	int t,i,j = 0;
-    MatrixDouble alpha(T,numStates);
-    VectorDouble c(T);
+    double maxValue = 0;
+    alpha.resize(T,numStates);
+    c.resize(T);
     
 	////////////////// Run the forward algorithm ////////////////////////
 	//Step 1: Init at t=0
@@ -133,7 +179,7 @@ double ContinuousHiddenMarkovModel::predict(const MatrixDouble &obs){
     
     if( int(estimatedStates.size()) != T ) estimatedStates.resize(T);
     for(t=0; t<T; t++){
-        double maxValue = 0;
+        maxValue = 0;
         for(i=0; i<numStates; i++){
             if( alpha[t][i] > maxValue ){
                 maxValue = alpha[t][i];
@@ -145,7 +191,12 @@ double ContinuousHiddenMarkovModel::predict(const MatrixDouble &obs){
 	//Termination
 	loglikelihood = 0.0;
     for(t=0; t<T; t++) loglikelihood += log( c[t] );
-    return -loglikelihood; //Return the negative log likelihood
+    loglikelihood = -loglikelihood; //Store the negative log likelihood
+    
+    //Set the phase as the last estimated state, this will give a phase between [0 1]
+    phase = (estimatedStates[T-1]+1.0)/double(numStates);
+
+    return true;
 }
 
 bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainingData){
@@ -154,7 +205,8 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
     clear();
 
     //The number of states is simply set as the number of samples in the training sample
-    numStates = (unsigned int)floor(trainingData.getLength()/downsampleFactor);
+    const unsigned int timeseriesLength = trainingData.getLength();
+    numStates = (unsigned int)floor(timeseriesLength/downsampleFactor);
     numInputDimensions = trainingData.getNumDimensions();
     classLabel = trainingData.getClassLabel();
     
@@ -197,9 +249,18 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
 			break;
 		case(HMM_LEFTRIGHT):
 			//Set the state transitions constraints
-			for(UINT i=0; i<numStates; i++)
-				for(UINT j=0; j<numStates; j++)
+			for(UINT i=0; i<numStates; i++){
+                norm = 0;
+				for(UINT j=0; j<numStates; j++){
 					if((j<i) || (j>i+delta)) a[i][j] = 0.0;
+                    norm += a[i][j];
+                }
+                if( norm > 0 ){
+                    for(UINT j=0; j<numStates; j++){
+                        a[i][j] /= norm;
+                    }
+                }
+            }
             
 			//Set pi to start in state 0
 			for(UINT i=0; i<numStates; i++){
@@ -212,17 +273,11 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
 			break;
 	}
     
-    //Estimate sigma, this is just the average standard deviation across all dimensions
-    sigma = 0;
-    VectorDouble sig = trainingData.getData().getStdDev();
-    for(UINT i=0; i<numInputDimensions; i++){
-        sigma += sig[i];
-    }
-    sigma /= numInputDimensions;
+    //TODO: Estimate sigma
 
     //Setup the observation buffer for prediction
-    observationSequence.resize( numStates );
-    obsSequence.resize(numStates,numInputDimensions);
+    observationSequence.resize( timeseriesLength, VectorDouble(numInputDimensions,0) );
+    obsSequence.resize(timeseriesLength,numInputDimensions);
     estimatedStates.resize( numStates );
     
     //Finally, flag that the model was trained
@@ -250,7 +305,6 @@ bool ContinuousHiddenMarkovModel::clear(){
     //Clear the base class
     MLBase::clear();
     
-    trained = false;
     numStates = 0;
     loglikelihood = 0;
 	a.clear();
@@ -333,12 +387,20 @@ bool ContinuousHiddenMarkovModel::setDelta(const UINT delta){
     return false;
 }
     
+bool ContinuousHiddenMarkovModel::setSigma(const double sigma){
+    if( sigma > 0 ){
+        this->sigma = sigma;
+        return true;
+    }
+    return false;
+}
+    
 double ContinuousHiddenMarkovModel::gauss( const MatrixDouble &x, const MatrixDouble &y,const unsigned int i,const unsigned int j,const unsigned int N, const double sigma ){
     double sum = 0;
     for(unsigned int n=0; n<N; n++){
         sum += SQR(  x[i][n] - y[j][n] );
     }
-    return exp( -SQR(sqrt( sum )/sigma) );
+    return exp( -SQR(sqrt( sum )/(2*SQR(sigma))) );
 }
     
 bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{

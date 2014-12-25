@@ -245,6 +245,7 @@ bool HMM::train_continuous(TimeSeriesClassificationData &trainingData){
         continuousModels[k].setDownsampleFactor( downsampleFactor );
         continuousModels[k].setModelType( modelType );
         continuousModels[k].setDelta( delta );
+        continuousModels[k].setSigma( sigma );
         continuousModels[k].enableScaling( false ); //Scaling should always off for the models as we do any scaling in the CHMM
         
         //Train the model
@@ -252,6 +253,11 @@ bool HMM::train_continuous(TimeSeriesClassificationData &trainingData){
             errorLog << "train_continuous(TimeSeriesClassificationData &trainingData) - Failed to train CHMM for sample " << k << endl;
             return false;
         }
+    }
+    
+    if( committeeSize > trainingData.getNumSamples() ){
+        committeeSize = trainingData.getNumSamples();
+        warningLog << "train_continuous(TimeSeriesClassificationData &trainingData) - The committeeSize is larger than the number of training sample. Setting committeeSize to number of training samples: " << trainingData.getNumSamples() << endl;
     }
     
     //Flag that the model has been trained
@@ -375,26 +381,47 @@ bool HMM::predict_continuous( VectorDouble &inputVector ){
     for(UINT i=0; i<numModels; i++){
         
         //Run the prediction for this model
-        results[i].value = continuousModels[i].predict( inputVector );
-        results[i].index = continuousModels[i].getClassLabel();
+        if( continuousModels[i].predict_( inputVector ) ){
+            results[i].value = continuousModels[i].getLoglikelihood();
+            results[i].index = continuousModels[i].getClassLabel();
+        }else{
+            errorLog << "predict_(VectorDouble &inputVector) - Prediction failed for model: " << i << endl;
+            return false;
+        }
         
         if( results[i].value < minValue ){
-            minValue = results[i].value;
+            if( !grt_isnan(results[i].value) ){
+                minValue = results[i].value;
+            }
         }
+        
+        if( results[i].value > bestDistance ){
+            if( !grt_isnan(results[i].value) ){
+                bestDistance = results[i].value;
+                bestIndex = i;
+            }
+        }
+        
+        //cout << "value: " << results[i].value << " label: " << results[i].index << endl;
     }
+    
+    //Store the phase from the best model
+    phase = continuousModels[ bestIndex ].getPhase();
     
     //Sort the results
     std::sort(results.begin(),results.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
     
     //Run the majority vote
     for(UINT i=0; i<committeeSize; i++){
-        classDistances[ getClassLabelIndexValue( results[i].index ) ] += 1.0 / (results[i].value / minValue);
+        classDistances[ getClassLabelIndexValue( results[i].index ) ] += Util::scale(results[i].value, -1000, 0, 0, 1, true);
     }
     
     //Turn the class distances into likelihoods
     double sum = Util::sum(classDistances);
-    for(UINT k=0; k<numClasses; k++){
-        classLikelihoods[k] = classDistances[k] / sum;
+    if( sum > 0 ){
+        for(UINT k=0; k<numClasses; k++){
+            classLikelihoods[k] = classDistances[k] / sum;
+        }
     }
     
     //Find the maximum label
@@ -404,7 +431,7 @@ bool HMM::predict_continuous( VectorDouble &inputVector ){
             bestIndex = k;
         }
     }
-    
+
     maxLikelihood = classLikelihoods[ bestIndex ];
     predictedClassLabel = classLabels[ bestIndex ];
     
@@ -528,20 +555,33 @@ bool HMM::predict_continuous(MatrixDouble &timeseries){
     for(UINT i=0; i<numModels; i++){
         
         //Run the prediction for this model
-        results[i].value = continuousModels[i].predict( timeseries );
-        results[i].index = continuousModels[i].getClassLabel();
+        if( continuousModels[i].predict_( timeseries ) ){
+            results[i].value = continuousModels[i].getLoglikelihood();
+            results[i].index = continuousModels[i].getClassLabel();
+        }else{
+            errorLog << "predict_(VectorDouble &inputVector) - Prediction failed for model: " << i << endl;
+            return false;
+        }
         
         if( results[i].value < minValue ){
             minValue = results[i].value;
         }
+        
+        if( results[i].value > bestDistance ){
+            bestDistance = results[i].value;
+            bestIndex = i;
+        }
     }
+    
+    //Store the phase from the best model
+    phase = continuousModels[ bestIndex ].getPhase();
     
     //Sort the results
     std::sort(results.begin(),results.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
     
     //Run the majority vote
     for(UINT i=0; i<committeeSize; i++){
-        classDistances[ getClassLabelIndexValue( results[i].index ) ] += 1.0 / (results[i].value / minValue);
+        classDistances[ getClassLabelIndexValue( results[i].index ) ] += Util::scale(results[i].value, -1000, 0, 0, 1, true);
     }
     
     //Turn the class distances into likelihoods
@@ -551,6 +591,7 @@ bool HMM::predict_continuous(MatrixDouble &timeseries){
     }
     
     //Find the maximum label
+    bestIndex = 0;
     for(UINT k=0; k<numClasses; k++){
         if( classDistances[k] > bestDistance ){
             bestDistance = classDistances[k];
@@ -992,6 +1033,17 @@ bool HMM::setNumRandomTrainingIterations(const UINT numRandomTrainingIterations)
     }
     
     warningLog << "setMaxNumIterations(const UINT maxNumIter) - The number of random training iterations must be greater than zero!" << endl;
+    return false;
+}
+    
+bool HMM::setSigma(const double sigma){
+    if( sigma > 0 ){
+        this->sigma = sigma;
+        for(size_t i=0; i<continuousModels.size(); i++){
+            continuousModels[i].setSigma(sigma);
+        }
+        return true;
+    }
     return false;
 }
 

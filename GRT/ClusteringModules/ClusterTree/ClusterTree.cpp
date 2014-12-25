@@ -606,9 +606,6 @@ bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixDouble &trainingD
     UINT groupID = 0;
     double bestThreshold = 0;
     double error = 0;
-    double minRange = 0;
-    double maxRange = 0;
-    double step = 0;
     vector< UINT > groupIndex(M);
     vector< double > groupCounter(2);
     vector< double > groupMean(2);

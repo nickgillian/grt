@@ -2526,6 +2526,13 @@ double GestureRecognitionPipeline::getMaximumLikelihood() const{
     }
     return 0;
 }
+ 
+double GestureRecognitionPipeline::getPhase() const{
+    if( getIsClassifierSet() ){
+        return classifier->getPhase();
+    }
+    return 0;
+}
     
 double GestureRecognitionPipeline::getCrossValidationAccuracy() const{ 
     return (getIsClassifierSet()||getIsRegressifierSet() ? testAccuracy : 0);

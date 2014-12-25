@@ -66,7 +66,9 @@ enum RegressionOptions{
 
 enum TimeseriesClassifierOptions{
     TIMESERIES_CLASSIFIER_DTW=0,
-    TIMESERIES_CLASSIFIER_HMM
+    TIMESERIES_CLASSIFIER_HMM_DISCRETE,
+    TIMESERIES_CLASSIFIER_HMM_CONTINUOUS,
+    TIMESERIES_CLASSIFIER_FSM
 };
 
 enum ClusterOptions{
@@ -268,8 +270,9 @@ private slots:
     void showPredictionToolInfo();
     void updatePreProcessingData(const GRT::VectorDouble &preProcessedData);
     void updateFeatureExtractionData(const GRT::VectorDouble &featureExtractionData);
-    void updatePredictionResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
+    void updateClassificationResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
     void updateRegressionResults(GRT::VectorDouble regressionData);
+    void updateTimeseriesClassificationResults(unsigned int predictedClassLabel,double maximumLikelihood,double phase,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
     void updateClusterResults(unsigned int predictedClusterLabel,double maximumLikelihood,GRT::VectorDouble clusterLikelihoods,GRT::VectorDouble clusterDistances,std::vector<unsigned int> clusterLabels);
     void resetPredictionViewGraphs();
 

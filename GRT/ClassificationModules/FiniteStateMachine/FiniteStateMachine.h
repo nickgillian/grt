@@ -24,8 +24,8 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef GRT_FPSM_HEADER
-#define GRT_FPSM_HEADER
+#ifndef GRT_FINITE_STATE_MACHINE_HEADER
+#define GRT_FINITE_STATE_MACHINE_HEADER
 
 #include "../../CoreModules/Classifier.h"
 #include "FSMParticleFilter.h"
@@ -41,7 +41,7 @@ public:
      Default constructor.
      
      */
-	FiniteStateMachine(const UINT numParticles = 200,const UINT numClustersPerState = 20,const double stateTransitionSmoothingCoeff = 0.0);
+	FiniteStateMachine(const UINT numParticles = 200,const UINT numClustersPerState = 20,const double stateTransitionSmoothingCoeff = 0.0,const double measurementNoise = 10.0);
     
     /**
      Defines the copy constructor.
@@ -81,6 +81,16 @@ public:
      @return returns true if the FiniteStateMachine model was trained, false otherwise
     */
     virtual bool train_( ClassificationData &trainingData );
+    
+    /**
+     This trains the FiniteStateMachine model, using the labelled timeseries classification data.
+     This overrides the train function in the Classifier base class.
+     It converts the data into a TimeSeriesClassificationDataStream format and calls that train_ function.
+     
+     @param TimeSeriesClassificationData trainingData: a reference to the training data
+     @return returns true if the FiniteStateMachine model was trained, false otherwise
+     */
+    virtual bool train_( TimeSeriesClassificationData &trainingData );
     
     /**
      This is the main training function for the FiniteStateMachine model, using the TimeSeriesClassificationDataStream data.
@@ -143,6 +153,12 @@ public:
      */
     virtual bool loadModelFromFile(fstream &file);
     
+    
+    bool setNumParticles(const UINT numParticles);
+    bool setNumClustersPerState(const UINT numClustersPerState);
+    bool setStateTransitionSmoothingCoeff(const double stateTransitionSmoothingCoeff);
+    bool setMeasurementNoise(const double measurementNoise);
+    
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
@@ -159,11 +175,13 @@ protected:
     UINT numParticles;
     UINT numClustersPerState;
     double stateTransitionSmoothingCoeff;
+    double measurementNoise;
     FSMParticleFilter particles;
     MatrixDouble stateTransitions;
     vector< MatrixDouble > stateEmissions;
     vector< vector< IndexedDouble > > pt;   ///<This stores the stateTransitions matrix in a format more efficient for the particle filter
     vector< vector< VectorDouble > > pe;    ///<This stores the stateEmissions model in a format more efficient for the particle filter
+    
     static RegisterClassifierModule< FiniteStateMachine > registerModule;
 };
 

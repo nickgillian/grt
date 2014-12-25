@@ -131,6 +131,13 @@ public:
     double getBestDistance() const;
     
     /**
+	 This function returns the estimated gesture phase from the most recent prediction.  This value is only relevant if the classifier supports timeseries classification.
+     
+     @return double representing the gesture phase value from the most likely class from the most recent prediction
+     */
+    double getPhase() const;
+    
+    /**
      Gets the number of classes in trained model.
      
      @return returns the number of classes in the trained model, a value of 0 will be returned if the model has not been trained
@@ -309,6 +316,7 @@ protected:
     double nullRejectionCoeff;
     double maxLikelihood;
     double bestDistance;
+    double phase;
     VectorDouble classLikelihoods;
     VectorDouble classDistances;
     VectorDouble nullRejectionThresholds;

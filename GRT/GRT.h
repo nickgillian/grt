@@ -121,6 +121,7 @@
 #include "ClassificationModules/KNN/KNN.h"
 #include "ClassificationModules/LDA/LDA.h"
 #include "ClassificationModules/MinDist/MinDist.h"
+#include "ClassificationModules/ParticleClassifier/ParticleClassifier.h"
 #include "ClassificationModules/RandomForests/RandomForests.h"
 #include "ClassificationModules/Softmax/Softmax.h"
 #include "ClassificationModules/SVM/SVM.h"

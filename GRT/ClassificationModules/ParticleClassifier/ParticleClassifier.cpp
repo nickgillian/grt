@@ -1,0 +1,210 @@
+/*
+ GRT MIT License
+ Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ and associated documentation files (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all copies or substantial
+ portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+#include "ParticleClassifier.h"
+
+namespace GRT{
+    
+//Register the ParticleClassifier module with the Classifier base class
+RegisterClassifierModule< ParticleClassifier > ParticleClassifier::registerModule("ParticleClassifier");
+
+ParticleClassifier::ParticleClassifier( const unsigned int numParticles )
+{
+    this->numParticles = numParticles;
+    classType = "ParticleClassifier";
+    classifierType = classifierType;
+    classifierMode = TIMESERIES_CLASSIFIER_MODE;
+    debugLog.setProceedingText("[DEBUG ParticleClassifier]");
+    errorLog.setProceedingText("[ERROR ParticleClassifier]");
+    trainingLog.setProceedingText("[TRAINING ParticleClassifier]");
+    warningLog.setProceedingText("[WARNING ParticleClassifier]");
+}
+
+ParticleClassifier::ParticleClassifier(const ParticleClassifier &rhs){
+    *this = rhs;
+}
+
+ParticleClassifier::~ParticleClassifier(void)
+{
+}
+
+ParticleClassifier& ParticleClassifier::operator=(const ParticleClassifier &rhs){
+	
+	if( this != &rhs ){
+        
+        this->numParticles = rhs.numParticles;
+        this->particleFilter = rhs.particleFilter;
+        
+	    //Copy the classifier variables
+		copyBaseVariables( (Classifier*)&rhs );
+	}
+	return *this;
+}
+
+bool ParticleClassifier::deepCopyFrom(const Classifier *classifier){
+    if( classifier == NULL ) return false;
+    
+    if( this->getClassifierType() == classifier->getClassifierType() ){
+        ParticleClassifier *ptr = (ParticleClassifier*)classifier;
+        
+        this->numParticles = ptr->numParticles;
+        this->particleFilter = ptr->particleFilter;
+        
+	    //Copy the classifier variables
+		return copyBaseVariables( classifier );
+    }
+    return false;
+}
+
+bool ParticleClassifier::train_(TimeSeriesClassificationData &trainingData){
+    
+    clear();
+    
+    numClasses = trainingData.getNumClasses();
+    numInputDimensions = trainingData.getNumDimensions();
+    
+    //Train the particle filter
+    particleFilter.train( numParticles, trainingData );
+    
+    classLabels.resize(numClasses);
+    classLikelihoods.resize(numClasses,0);
+    classDistances.resize(numClasses,0);
+    
+    for(unsigned int i=0; i<numClasses; i++){
+        classLabels[i] = trainingData.getClassTracker()[i].classLabel;
+    }
+    
+    trained = true;
+  
+    return trained;
+}
+
+bool ParticleClassifier::predict_(VectorDouble &inputVector){
+
+    if( !trained ){
+        errorLog << "predict_(VectorDouble &inputVector) - The model has not been trained!" << endl;
+        return false;
+    }
+    
+    predictedClassLabel = 0;
+    maxLikelihood = 0;
+    std::fill(classLikelihoods.begin(),classLikelihoods.end(),0);
+    std::fill(classDistances.begin(),classDistances.end(),0);
+
+	if( numInputDimensions != inputVector.size() ){
+        errorLog << "predict_(VectorDouble &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.size() << endl;
+        return false;
+    }
+    
+    //Update the particle filter
+    particleFilter.filter( inputVector );
+    
+    //Count the number of particles per class
+    unsigned int gestureTemplate = 0;
+    unsigned int gestureLabel = 0;
+    for(unsigned int i=0; i<numParticles; i++){
+        gestureTemplate = (unsigned int)particleFilter[i][0];
+        gestureLabel = particleFilter.gestureTemplates[ gestureTemplate ].classLabel;
+        classDistances[ getClassLabelIndexValue( gestureLabel ) ]++;
+    }
+    
+    //Compute the class likelihoods
+    for(unsigned int i=0; i<numClasses; i++){
+        classLikelihoods[i] = classDistances[i] / numParticles;
+        
+        if( classLikelihoods[i] > maxLikelihood ){
+            predictedClassLabel = classLabels[i];
+            maxLikelihood = classLikelihoods[i];
+        }
+    }
+    
+    return true;
+
+}
+
+bool ParticleClassifier::reset(){
+    return true;
+}
+    
+bool ParticleClassifier::saveModelToFile(fstream &file) const{
+    
+    if(!file.is_open())
+    {
+        errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
+        return false;
+    }
+    
+    
+    
+    return true;
+}
+    
+bool ParticleClassifier::loadModelFromFile(fstream &file){
+    
+    clear();
+    
+    if(!file.is_open())
+    {
+        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
+        return false;
+    }
+    
+    
+    
+    //Flag that the model is trained
+    trained = true;
+    
+    //Resize the prediction results to make sure it is setup for realtime prediction
+    maxLikelihood = DEFAULT_NULL_LIKELIHOOD_VALUE;
+    bestDistance = DEFAULT_NULL_DISTANCE_VALUE;
+    classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
+    classDistances.resize(numClasses,DEFAULT_NULL_DISTANCE_VALUE);
+    
+    return true;
+}
+    
+const vector< ParticleClassifierGestureTemplate >& ParticleClassifier::getGestureTemplates() const{
+    return particleFilter.gestureTemplates;
+}
+    
+const ParticleClassifierParticleFilter& ParticleClassifier::getParticleFilter() const {
+    return particleFilter;
+}
+    
+VectorDouble ParticleClassifier::getStateEstimation() const{
+    return particleFilter.getStateEstimation();
+}
+    
+double ParticleClassifier::getPhase() const{
+    if( trained ){
+        return particleFilter.getStateEstimation()[1];
+    }
+    return 0;
+}
+
+double ParticleClassifier::getVelocity() const{
+    if( trained ){
+        return particleFilter.getStateEstimation()[2];
+    }
+    return 0;
+}
+
+} //End of namespace GRT
+

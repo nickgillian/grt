@@ -599,7 +599,7 @@ protected:
     virtual bool computeEstimate(){
         
         typename vector< PARTICLE >::iterator iter;
-        const unsigned int N = x.size();
+        const unsigned int N = (unsigned int)x.size();
         unsigned int bestIndex = 0;
         unsigned int robustMeanParticleCounter = 0;
         double bestWeight = 0;

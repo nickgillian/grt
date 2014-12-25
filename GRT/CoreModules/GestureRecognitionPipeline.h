@@ -451,6 +451,13 @@ public:
 	@return double representing the maximum likelihood value from the most likely class from the most recent prediction.
 	*/
     double getMaximumLikelihood() const;
+    
+    /**
+	 This function returns the estimated gesture phase from the most recent prediction.  This value is only relevant when the pipeline is in timeseries classification mode.
+     
+     @return double representing the gesture phase value from the most likely class from the most recent prediction.
+     */
+    double getPhase() const;
 
     /**
 	 This function returns the cross validation value from the most recent cross validation test.  If the pipeline is in prediction mode, then the cross

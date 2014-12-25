@@ -45,10 +45,12 @@ public:
     
     virtual ~ContinuousHiddenMarkovModel();
     
-    double predict(const VectorDouble &x);
-    double predict(const MatrixDouble &obs);
+    ContinuousHiddenMarkovModel& operator=(const ContinuousHiddenMarkovModel &rhs);
     
-    bool train_(TimeSeriesClassificationSample &trainingData);
+    virtual bool predict_(VectorDouble &x);
+    virtual bool predict_(MatrixDouble &obs);
+    
+    virtual bool train_(TimeSeriesClassificationSample &trainingData);
     
     /**
      This is the main reset interface for all the GRT machine learning algorithms.
@@ -87,6 +89,10 @@ public:
     
     UINT getClassLabel() const { return classLabel; }
     
+    double getLoglikelihood() const { return loglikelihood; }
+    
+    double getPhase() const { return phase; }
+    
     bool setDownsampleFactor(const UINT downsampleFactor);
     
     /**
@@ -113,6 +119,8 @@ public:
      */
     bool setDelta(const UINT delta);
     
+    bool setSigma(const double sigma);
+    
 protected:
     
     double gauss( const MatrixDouble &x, const MatrixDouble &y,const unsigned int i,const unsigned int j,const unsigned int N,const double sigma );
@@ -121,9 +129,12 @@ protected:
 	UINT numStates;             ///<The number of states for this model
     UINT classLabel;            ///<The class label associated with this model
     double sigma;
+    double phase;
 	MatrixDouble a;             ///<The transitions probability matrix
 	MatrixDouble b;             ///<The emissions probability matrix
 	VectorDouble pi;            ///<The state start probability vector
+    MatrixDouble alpha;
+    VectorDouble c;
     CircularBuffer< VectorDouble > observationSequence; ///<A buffer to store data for realtime prediction
     MatrixDouble obsSequence;
     vector< UINT > estimatedStates; ///<The estimated states for prediction

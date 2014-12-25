@@ -25,14 +25,15 @@ namespace GRT{
 //Register the FiniteStateMachine module with the Classifier base class
 RegisterClassifierModule< FiniteStateMachine > FiniteStateMachine::registerModule("FiniteStateMachine");
 
-FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClustersPerState,const double stateTransitionSmoothingCoeff)
+FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClustersPerState,const double stateTransitionSmoothingCoeff,const double measurementNoise)
 {
     this->numParticles = numParticles;
     this->numClustersPerState = numClustersPerState;
     this->stateTransitionSmoothingCoeff = stateTransitionSmoothingCoeff;
+    this->measurementNoise = measurementNoise;
     classType = "FiniteStateMachine";
     classifierType = classType;
-    classifierMode = STANDARD_CLASSIFIER_MODE;
+    classifierMode = TIMESERIES_CLASSIFIER_MODE;
     debugLog.setProceedingText("[DEBUG FiniteStateMachine]");
     errorLog.setProceedingText("[ERROR FiniteStateMachine]");
     trainingLog.setProceedingText("[TRAINING FiniteStateMachine]");
@@ -71,10 +72,11 @@ FiniteStateMachine& FiniteStateMachine::operator=(const FiniteStateMachine &rhs)
         this->numParticles = rhs.numParticles;
         this->numClustersPerState = rhs.numClustersPerState;
         this->stateTransitionSmoothingCoeff = rhs.stateTransitionSmoothingCoeff;
+        this->measurementNoise = rhs.measurementNoise;
         this->particles = rhs.particles;
         this->stateTransitions = rhs.stateTransitions;
         this->stateEmissions = rhs.stateEmissions;
-        
+
         if( rhs.trained ){
             this->initParticles();
         }
@@ -101,6 +103,7 @@ bool FiniteStateMachine::deepCopyFrom(const Classifier *classifier){
         this->numParticles = ptr->numParticles;
         this->numClustersPerState = ptr->numClustersPerState;
         this->stateTransitionSmoothingCoeff = ptr->stateTransitionSmoothingCoeff;
+        this->measurementNoise = ptr->measurementNoise;
         this->particles = ptr->particles;
         this->stateTransitions = ptr->stateTransitions;
         this->stateEmissions = ptr->stateEmissions;
@@ -118,7 +121,6 @@ bool FiniteStateMachine::train_( ClassificationData &trainingData ){
     
     const unsigned int M = trainingData.getNumSamples();
     const unsigned int N = trainingData.getNumDimensions();
-    const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
         errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << endl;
@@ -138,6 +140,37 @@ bool FiniteStateMachine::train_( ClassificationData &trainingData ){
     if( !train_( timeseries ) ){
         clear();
         errorLog << "train_(ClassificationData &trainingData) - Failed to train particle filter!" << endl;
+        return false;
+    }
+    
+    return true;
+}
+    
+bool FiniteStateMachine::train_( TimeSeriesClassificationData &trainingData ){
+    
+    const unsigned int M = trainingData.getNumSamples();
+    const unsigned int N = trainingData.getNumDimensions();
+    
+    if( M == 0 ){
+        errorLog << "train_(TimeSeriesClassificationData &trainingData) - Training data has zero samples!" << endl;
+        clear();
+        return false;
+    }
+    
+    //Convert the timeseries classification data into a continuous time stream
+    TimeSeriesClassificationDataStream timeseries;
+    timeseries.setNumDimensions( N );
+    
+    for(unsigned int i=0; i<M; i++){
+        for(unsigned int j=0; j<trainingData[i].getLength(); j++){
+            timeseries.addSample(trainingData[i].getClassLabel(), trainingData[i].getData().getRowVector(j));
+        }
+    }
+    
+    //Train the particle filter
+    if( !train_( timeseries ) ){
+        clear();
+        errorLog << "train_(TimeSeriesClassificationData &trainingData) - Failed to train particle filter!" << endl;
         return false;
     }
     
@@ -237,6 +270,8 @@ bool FiniteStateMachine::train_( TimeSeriesClassificationDataStream &data ){
     
     //Reset the particles to random starting states
     reset();
+    
+    print();
     
     return true;
 }
@@ -361,7 +396,7 @@ bool FiniteStateMachine::saveModelToFile(fstream &file) const{
 	}
     
 	//Write the header info
-	file << "GRT_FPSM_MODEL_FILE_V1.0\n";
+    file << "GRT_FSM_MODEL_FILE_V1.0\n";
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
@@ -418,7 +453,7 @@ bool FiniteStateMachine::loadModelFromFile(fstream &file){
     
     //Find the file type header
     file >> word;
-    if( word != "GRT_FPSM_MODEL_FILE_V1.0" ){
+    if( word != "GRT_FSM_MODEL_FILE_V1.0" ){
         errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
         return false;
     }
@@ -567,8 +602,8 @@ bool FiniteStateMachine::initParticles(){
     
     //Init the particles
     vector< VectorDouble > initModel( numInputDimensions, VectorDouble(2,0) );
-    VectorDouble processNoise( numInputDimensions, 0 ); //Process noise is ignored for the FSM particle filter
-    VectorDouble measurementNoise( numInputDimensions, 0 ); //Measurement noise is ignored for the FSM particle filter
+    VectorDouble initProcessNoise( numInputDimensions, 0 ); //Process noise is ignored for the FSM particle filter
+    VectorDouble initMeasurementNoise( numInputDimensions, 0 );
     
     //Setup the init model
     for(unsigned int i=0; i<numInputDimensions; i++){
@@ -576,7 +611,12 @@ bool FiniteStateMachine::initParticles(){
         initModel[i][1] = useScaling ? 1 : ranges[i].maxValue;
     }
     
-    particles.init(numParticles, initModel, processNoise, measurementNoise);
+    //Set the measurement noise
+    for(unsigned int i=0; i<numInputDimensions; i++){
+        initMeasurementNoise[i] = measurementNoise;
+    }
+    
+    particles.init(numParticles, initModel, initProcessNoise, initMeasurementNoise);
     
     recomputePT();
     recomputePE();
@@ -589,6 +629,42 @@ bool FiniteStateMachine::initParticles(){
     
     return true;
 }
+    
+bool FiniteStateMachine::setNumParticles(const UINT numParticles){
+    
+    clear();
+    
+    this->numParticles = numParticles;
+    
+    return true;
+}
+
+bool FiniteStateMachine::setNumClustersPerState(const UINT numClustersPerState){
+    
+    clear();
+    
+    this->numClustersPerState = numClustersPerState;
+    
+    return true;
+}
+
+bool FiniteStateMachine::setStateTransitionSmoothingCoeff(const double stateTransitionSmoothingCoeff){
+    
+    clear();
+    
+    this->stateTransitionSmoothingCoeff = stateTransitionSmoothingCoeff;
+    
+    return true;
+}
+    
+    bool FiniteStateMachine::setMeasurementNoise(const double measurementNoise){
+        
+        clear();
+        
+        this->measurementNoise = measurementNoise;
+        
+        return true;
+    }
     
 } //End of namespace GRT
 

@@ -76,6 +76,7 @@ Classifier::Classifier(void){
     predictedClassLabel = 0;
     maxLikelihood = 0;
     bestDistance = 0;
+    phase = 0;
     nullRejectionCoeff = 5;
     numClassifierInstances++;
 }
@@ -107,6 +108,7 @@ bool Classifier::copyBaseVariables(const Classifier *classifier){
     this->nullRejectionCoeff = classifier->nullRejectionCoeff;
     this->maxLikelihood = classifier->maxLikelihood;
     this->bestDistance = classifier->bestDistance;
+    this->phase = classifier->phase;
     this->classLabels = classifier->classLabels;
     this->classLikelihoods = classifier->classLikelihoods;
     this->classDistances = classifier->classDistances;
@@ -124,6 +126,8 @@ bool Classifier::reset(){
     //Reset the classifier
     predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
     maxLikelihood = 0;
+    bestDistance = 0;
+    phase = 0;
     if( trained ){
         classLikelihoods.clear();
         classDistances.clear();
@@ -139,8 +143,10 @@ bool Classifier::clear(){
     MLBase::clear();
     
     //Clear the classifier variables
+    predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
     maxLikelihood = 0;
     bestDistance = 0;
+    phase = 0;
     classLikelihoods.clear();
     classDistances.clear();
     nullRejectionThresholds.clear();
@@ -169,6 +175,10 @@ double Classifier::getNullRejectionCoeff() const{
 double Classifier::getMaximumLikelihood() const{ 
     if( trained ) return maxLikelihood; 
     return DEFAULT_NULL_LIKELIHOOD_VALUE; 
+}
+  
+double Classifier::getPhase() const{
+    return phase;
 }
     
 double Classifier::getBestDistance() const{ 

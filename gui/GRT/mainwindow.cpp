@@ -432,9 +432,32 @@ bool MainWindow::initPipelineToolView(){
     ui->pipelineTool_timeseriesClassification_enableNullRejection->setChecked( false );
     ui->pipelineTool_timeseriesClassification_nullRejectionCoeff->setRange(0,10000);
     ui->pipelineTool_timeseriesClassification_nullRejectionCoeff->setValue( 5 );
+
+    //Dynamic Time Warping
     ui->pipelineTool_dtw_warpingRadius->setRange(0,1);
     ui->pipelineTool_dtw_warpingRadius->setValue( 0.2 );
 
+    //Discrete Hidden Markov Model
+
+    //Continuous Hidden Markov Model
+    ui->pipelineTool_hmm_continuous_downsampleFactor->setRange(1,100000);
+    ui->pipelineTool_hmm_continuous_downsampleFactor->setValue( 10 );
+    ui->pipelineTool_hmm_continuous_committeeSize->setRange(1,100000);
+    ui->pipelineTool_hmm_continuous_committeeSize->setValue( 5 );
+    ui->pipelineTool_hmm_continuous_delta->setRange(1,100000);
+    ui->pipelineTool_hmm_continuous_delta->setValue( 2 );
+    ui->pipelineTool_hmm_continuous_sigma->setRange(0.00001,10000000);
+    ui->pipelineTool_hmm_continuous_sigma->setValue( 10.0 );
+
+    //Finite State Machine
+    ui->pipelineTool_fsm_numParticles->setRange(1,10000000);
+    ui->pipelineTool_fsm_numParticles->setValue( 500 );
+    ui->pipelineTool_fsm_numClustersPerState->setRange(1,10000000);
+    ui->pipelineTool_fsm_numClustersPerState->setValue( 10 );
+    ui->pipelineTool_fsm_stateTransitionSmoothingCoeff->setRange(0,10000000);
+    ui->pipelineTool_fsm_stateTransitionSmoothingCoeff->setValue( 0.0 );
+    ui->pipelineTool_fsm_measurementNoise->setRange(0.000000001,100000000);
+    ui->pipelineTool_fsm_measurementNoise->setValue( 10 );
 
     /////////////////////////////////////// Clusterer //////////////////////////////////////
     ui->pipelineTool_clusterView_enableScaling->setChecked( true );
@@ -500,6 +523,8 @@ bool MainWindow::initPreditionView(){
     ui->predictionWindow_featureExtractionData->setReadOnly( true );
     ui->predictionWindow_predictedClassLabel->setReadOnly( true );
     ui->predictionWindow_maximumLikelihood->setReadOnly( true );
+    ui->predictionWindow_timeseriesClassification_maximumLikelihood->setReadOnly( true );
+    ui->predictionWindow_timeseriesClassification_phase->setReadOnly( true );
     ui->predictionWindow_classLikelihoods->setReadOnly( true );
     ui->predictionWindow_classDistances->setReadOnly( true );
     ui->predictionWindow_classLabels->setReadOnly( true );
@@ -671,6 +696,14 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->pipelineTool_timeseriesClassification_enableNullRejection, SIGNAL(clicked()), this, SLOT(updateTimeseriesClassifierSettings()));
     connect(ui->pipelineTool_timeseriesClassification_nullRejectionCoeff, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
     connect(ui->pipelineTool_dtw_warpingRadius, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_hmm_continuous_downsampleFactor, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_hmm_continuous_committeeSize, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_hmm_continuous_delta, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_hmm_continuous_sigma, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_fsm_numParticles, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_fsm_numClustersPerState, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_fsm_stateTransitionSmoothingCoeff, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_fsm_measurementNoise, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
 
     //Swipe Detector
     connect(ui->pipelineTool_swipeDetector_plot, SIGNAL(clicked(bool)), swipeDetectorGraph, SLOT(setVisible(bool)));
@@ -759,8 +792,9 @@ bool MainWindow::initSignalsAndSlots(){
     connect(&core, SIGNAL(testDataReset(GRT::ClassificationData)), this, SLOT(resetTestData(GRT::ClassificationData)));
     connect(&core, SIGNAL(preProcessingDataChanged(GRT::VectorDouble)), this, SLOT(updatePreProcessingData(GRT::VectorDouble)));
     connect(&core, SIGNAL(featureExtractionDataChanged(GRT::VectorDouble)), this, SLOT(updateFeatureExtractionData(GRT::VectorDouble)));
-    connect(&core, SIGNAL(predictionResultsChanged(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)), this, SLOT(updatePredictionResults(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)));
+    connect(&core, SIGNAL(classificationResultsChanged(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)), this, SLOT(updateClassificationResults(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)));
     connect(&core, SIGNAL(regressionResultsChanged(GRT::VectorDouble)), this, SLOT(updateRegressionResults(GRT::VectorDouble)));
+    connect(&core, SIGNAL(timeseriesClassificationResultsChanged(unsigned int,double,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)), this, SLOT(updateTimeseriesClassificationResults(unsigned int,double,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)));
     connect(&core, SIGNAL(clusterResultsChanged(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)), this, SLOT(updateClusterResults(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)) );
     connect(&core, SIGNAL(pipelineTrainingStarted()), this, SLOT(pipelineTrainingStarted()));
     connect(&core, SIGNAL(pipelineTrainingFinished(bool)), this, SLOT(pipelineTrainingFinished(bool)));
@@ -974,14 +1008,6 @@ void MainWindow::setPipelineModeAsTimeseriesMode(){
     core.setPipelineMode( Core::TIMESERIES_CLASSIFICATION_MODE );
     core.setNumInputDimensions( ui->setupView_numInputsSpinBox->value() );
     resetDefaultPipelineTimeseriesClassificationSetup();
-
-    /*
-    QString infoText;
-    infoText += "Sorry, the timeseries mode is not supported yet. This will be added soon!\n";
-    QMessageBox::information(0, "Information", infoText);
-
-    //core.setPipelineMode( Core::CLASSIFICATION_MODE );
-    */
 }
 
 void MainWindow::setPipelineModeAsClusterMode(){
@@ -2845,6 +2871,7 @@ void MainWindow::updateTimeseriesClassifierView(int viewIndex){
 
     GRT::DTW dtw;
     GRT::HMM hmm;
+    GRT::FiniteStateMachine fsm;
 
     switch( viewIndex ){
         case TIMESERIES_CLASSIFIER_DTW:
@@ -2854,7 +2881,33 @@ void MainWindow::updateTimeseriesClassifierView(int viewIndex){
             dtw.setWarpingRadius( ui->pipelineTool_dtw_warpingRadius->value() );
             core.setClassifier( dtw );
             break;
-        case TIMESERIES_CLASSIFIER_HMM:
+        case TIMESERIES_CLASSIFIER_HMM_DISCRETE:
+            hmm.setHMMType( GRT::HMM_DISCRETE );
+            hmm.enableScaling( ui->pipelineTool_timeseriesClassification_enableScaling->isChecked() );
+            hmm.enableNullRejection( ui->pipelineTool_timeseriesClassification_enableNullRejection->isChecked() );
+            hmm.setNullRejectionCoeff( ui->pipelineTool_timeseriesClassification_nullRejectionCoeff->value() );
+            core.setClassifier( hmm );
+        break;
+        case TIMESERIES_CLASSIFIER_HMM_CONTINUOUS:
+            hmm.setHMMType( GRT::HMM_CONTINUOUS );
+            hmm.enableScaling( ui->pipelineTool_timeseriesClassification_enableScaling->isChecked() );
+            hmm.enableNullRejection( ui->pipelineTool_timeseriesClassification_enableNullRejection->isChecked() );
+            hmm.setNullRejectionCoeff( ui->pipelineTool_timeseriesClassification_nullRejectionCoeff->value() );
+            hmm.setDownsampleFactor( ui->pipelineTool_hmm_continuous_downsampleFactor->value() );
+            hmm.setCommitteeSize( ui->pipelineTool_hmm_continuous_committeeSize->value() );
+            hmm.setDelta( ui->pipelineTool_hmm_continuous_delta->value() );
+            hmm.setSigma( ui->pipelineTool_hmm_continuous_sigma->value() );
+            core.setClassifier( hmm );
+        break;
+        case TIMESERIES_CLASSIFIER_FSM:
+            fsm.enableScaling( ui->pipelineTool_timeseriesClassification_enableScaling->isChecked() );
+            fsm.enableNullRejection( ui->pipelineTool_timeseriesClassification_enableNullRejection->isChecked() );
+            fsm.setNullRejectionCoeff( ui->pipelineTool_timeseriesClassification_nullRejectionCoeff->value() );
+            fsm.setNumParticles( ui->pipelineTool_fsm_numParticles->value() );
+            fsm.setNumClustersPerState( ui->pipelineTool_fsm_numClustersPerState->value() );
+            fsm.setStateTransitionSmoothingCoeff( ui->pipelineTool_fsm_stateTransitionSmoothingCoeff->value() );
+            fsm.setMeasurementNoise( ui->pipelineTool_fsm_measurementNoise->value() );
+            core.setClassifier( fsm );
         break;
     }
 
@@ -3193,7 +3246,7 @@ void MainWindow::updateFeatureExtractionData(const GRT::VectorDouble &featureExt
     featureExtractionDataGraph->update( featureExtractionData );
 }
 
-void MainWindow::updatePredictionResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels){
+void MainWindow::updateClassificationResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels){
 
     const size_t K = classLabels.size();
     QString infoText;
@@ -3211,70 +3264,32 @@ void MainWindow::updatePredictionResults(unsigned int predictedClassLabel,double
     classLikelihoodsGraph->update( classLikelihoods );
     classDistancesGraph->update( classDistances );
 
-    switch( core.getPipelineMode() ){
-        case Core::CLASSIFICATION_MODE:
-            ui->predictionWindow_predictedClassLabel->setText( QString::number( predictedClassLabel ) );
-            ui->predictionWindow_maximumLikelihood->setText( QString::number( maximumLikelihood ) );
+    ui->predictionWindow_predictedClassLabel->setText( QString::number( predictedClassLabel ) );
+    ui->predictionWindow_maximumLikelihood->setText( QString::number( maximumLikelihood ) );
 
-            for(size_t k=0; k<K; k++){
-                infoText += "[" + QString::number( k ) + "]: ";
-                if( classLikelihoods[k] > 1.0e-4 ) infoText += QString::number( classLikelihoods[k] );
-                else infoText += QString::number( 0 );
-                infoText += " ";
-            }
-            ui->predictionWindow_classLikelihoods->setText( infoText );
-
-            infoText = "";
-            for(size_t k=0; k<K; k++){
-                infoText += "[" + QString::number( k ) + "]: ";
-                infoText += QString::number( classDistances[k] );
-                infoText += " ";
-            }
-            ui->predictionWindow_classDistances->setText( infoText );
-
-            infoText = "";
-            for(size_t k=0; k<K; k++){
-                infoText += "[" + QString::number( k ) + "]: ";
-                infoText += QString::number( classLabels[k] );
-                infoText += " ";
-            }
-            ui->predictionWindow_classLabels->setText( infoText );
-
-        break;
-        case Core::TIMESERIES_CLASSIFICATION_MODE:
-
-            ui->predictionWindow_timeseriesClassification_predictedClassLabel->setText( QString::number( predictedClassLabel ) );
-            ui->predictionWindow_timeseriesClassification_maximumLikelihood->setText( QString::number( maximumLikelihood ) );
-
-            for(size_t k=0; k<K; k++){
-                infoText += "[" + QString::number( k ) + "]: ";
-                if( classLikelihoods[k] > 1.0e-4 ) infoText += QString::number( classLikelihoods[k] );
-                else infoText += QString::number( 0 );
-                infoText += " ";
-            }
-            ui->predictionWindow_timeseriesClassification_classLikelihoods->setText( infoText );
-
-            infoText = "";
-            for(size_t k=0; k<K; k++){
-                infoText += "[" + QString::number( k ) + "]: ";
-                infoText += QString::number( classDistances[k] );
-                infoText += " ";
-            }
-            ui->predictionWindow_timeseriesClassification_classDistances->setText( infoText );
-
-            infoText = "";
-            for(size_t k=0; k<K; k++){
-                infoText += "[" + QString::number( k ) + "]: ";
-                infoText += QString::number( classLabels[k] );
-                infoText += " ";
-            }
-            ui->predictionWindow_timeseriesClassification_classLabels->setText( infoText );
-
-        break;
+    for(size_t k=0; k<K; k++){
+        infoText += "[" + QString::number( k ) + "]: ";
+        if( classLikelihoods[k] > 1.0e-4 ) infoText += QString::number( classLikelihoods[k] );
+        else infoText += QString::number( 0 );
+        infoText += " ";
     }
+    ui->predictionWindow_classLikelihoods->setText( infoText );
 
+    infoText = "";
+    for(size_t k=0; k<K; k++){
+        infoText += "[" + QString::number( k ) + "]: ";
+        infoText += QString::number( classDistances[k] );
+        infoText += " ";
+    }
+    ui->predictionWindow_classDistances->setText( infoText );
 
-
+    infoText = "";
+    for(size_t k=0; k<K; k++){
+        infoText += "[" + QString::number( k ) + "]: ";
+        infoText += QString::number( classLabels[k] );
+        infoText += " ";
+    }
+    ui->predictionWindow_classLabels->setText( infoText );
 
 }
 
@@ -3292,6 +3307,53 @@ void MainWindow::updateRegressionResults(GRT::VectorDouble regressionData){
 
     regressionGraph->update( regressionData );
 
+}
+
+void MainWindow::updateTimeseriesClassificationResults(unsigned int predictedClassLabel,double maximumLikelihood,double phase,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels){
+
+    const size_t K = classLabels.size();
+    QString infoText;
+
+    if( K != classLikelihoods.size() ){
+        errorLog << "updatePredictionResults(...) The size of the class labels vector does not match the size of the class likelihoods vector!" << endl;
+        return;
+    }
+    if( K != classDistances.size() ){
+        errorLog << "updatePredictionResults(...) The size of the class labels vector does not match the size of the class distances vector!" << endl;
+        return;
+    }
+
+    classPredictionsGraph->update( GRT::VectorDouble(1,predictedClassLabel) );
+    classLikelihoodsGraph->update( classLikelihoods );
+    classDistancesGraph->update( classDistances );
+
+    ui->predictionWindow_timeseriesClassification_predictedClassLabel->setText( QString::number( predictedClassLabel ) );
+    ui->predictionWindow_timeseriesClassification_maximumLikelihood->setText( QString::number( maximumLikelihood ) );
+    ui->predictionWindow_timeseriesClassification_phase->setText( QString::number( phase )  );
+
+    for(size_t k=0; k<K; k++){
+        infoText += "[" + QString::number( k ) + "]: ";
+        if( classLikelihoods[k] > 1.0e-4 ) infoText += QString::number( classLikelihoods[k] );
+        else infoText += QString::number( 0 );
+        infoText += " ";
+    }
+    ui->predictionWindow_timeseriesClassification_classLikelihoods->setText( infoText );
+
+    infoText = "";
+    for(size_t k=0; k<K; k++){
+        infoText += "[" + QString::number( k ) + "]: ";
+        infoText += QString::number( classDistances[k] );
+        infoText += " ";
+    }
+    ui->predictionWindow_timeseriesClassification_classDistances->setText( infoText );
+
+    infoText = "";
+    for(size_t k=0; k<K; k++){
+        infoText += "[" + QString::number( k ) + "]: ";
+        infoText += QString::number( classLabels[k] );
+        infoText += " ";
+    }
+    ui->predictionWindow_timeseriesClassification_classLabels->setText( infoText );
 }
 
 void MainWindow::updateClusterResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels){

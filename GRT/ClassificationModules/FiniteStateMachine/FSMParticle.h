@@ -24,8 +24,8 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef GRT_FPSM__PARTICLE_HEADER
-#define GRT_FPSM__PARTICLE_HEADER
+#ifndef GRT_FSM_PARTICLE_HEADER
+#define GRT_FSM_PARTICLE_HEADER
 
 #include "../../CoreAlgorithms/ParticleFilter/Particle.h"
 

@@ -1,0 +1,195 @@
+/*
+ GRT MIT License
+ Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ and associated documentation files (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all copies or substantial
+ portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+#ifndef GRT_PARTICLE_CLASSIFIER_PARTICLE_FILTER_HEADER
+#define GRT_PARTICLE_CLASSIFIER_PARTICLE_FILTER_HEADER
+
+#include "../../CoreAlgorithms/ParticleFilter/ParticleFilter.h"
+
+namespace GRT{
+    
+class ParticleClassifierGestureTemplate{
+public:
+    ParticleClassifierGestureTemplate(){
+        classLabel = 0;
+    }
+    
+    virtual ~ParticleClassifierGestureTemplate(){
+        
+    }
+    
+    unsigned int getLength() const {
+        return timeseries.getNumRows();
+    }
+    
+    unsigned int classLabel;
+    MatrixDouble timeseries;
+};
+
+class ParticleClassifierParticleFilter : public ParticleFilter< Particle,VectorDouble > {
+    
+public:
+    ParticleClassifierParticleFilter(){
+        setEstimationMode( WEIGHTED_MEAN );
+        clear();
+    }
+    
+    virtual ~ParticleClassifierParticleFilter(){
+    
+    }
+    
+    virtual bool predict( Particle &p ){
+        
+        //Given the prior set of particles, randomly generate new state estimations using the process model
+        
+        //Randomly select a new template
+        if( rand.getRandomNumberUniform(0,1) >= processNoise[0] ){
+            p.x[0] = rand.getRandomNumberInt(0, numTemplates); //Randomly pick a template
+            p.x[1] = rand.getRandomNumberUniform(0,1); //Randomly pick a phase
+            p.x[2] = rand.getRandomNumberUniform(-processNoise[2],processNoise[2]); //Randomly pick a speed
+        }else{
+            //Get the gesture template
+            const unsigned int templateIndex = (unsigned int)p.x[0];
+            const double phase = p.x[1];
+            const double velocity = p.x[2];
+            
+            //Update the phase
+            p.x[1] = Util::limit( phase + velocity + rand.getRandomNumberGauss(0.0,processNoise[1]) , 0, 1);
+            
+            //Update the velocity
+            p.x[2] += phase-p.x[1];
+            
+            //Limit the velocity
+            p.x[2] = Util::limit( p.x[2], -processNoise[2], processNoise[2] );
+        }
+    
+        return true;
+    }
+    
+    virtual bool update( Particle &p, VectorDouble &data ){
+        
+        //Generate the weights for the current particle
+        p.w = 1;
+        
+        //Get the gesture template
+        const unsigned int templateIndex = (unsigned int)p.x[0];
+        
+        if( templateIndex >= numTemplates ){
+            errorLog << "update( Particle &p, VectorDouble &data ) - Template index out of bounds! templateIndex: " << templateIndex << endl;
+            return false;
+        }
+        
+        //Get the current position in the template
+        const unsigned int templateLength = gestureTemplates[templateIndex].timeseries.getNumRows();
+        const unsigned int templatePos = (unsigned int)(p.x[1] * double(templateLength-1));
+        
+        if( templatePos >= templateLength ){
+            errorLog << "update( Particle &p, VectorDouble &data ) - Template position out of bounds! templatePos: " << templatePos << " templateLength: " << templateLength << endl;
+            return false;
+        }
+        
+        for(unsigned int j=0; j<numInputDimensions; j++){
+            p.w *= gauss( data[j], gestureTemplates[templateIndex].timeseries[templatePos][j], measurementNoise[j] );
+        }
+        
+        return true;
+    }
+    
+    virtual bool clear(){
+        
+        //Clear the base class
+        ParticleFilter::clear();
+        
+        numInputDimensions = 0;
+        numTemplates = 0;
+        numClasses = 0;
+        gestureTemplates.clear();
+        
+        return true;
+    }
+    
+    bool train( const unsigned int numParticles, const TimeSeriesClassificationData &trainingData ){
+        
+        //Clear any previous model
+        clear();
+        
+        this->numParticles = numParticles;
+        numInputDimensions = trainingData.getNumDimensions();
+        numTemplates = trainingData.getNumSamples();
+        numClasses = trainingData.getNumClasses();
+        
+        gestureTemplates.resize( numTemplates );
+        for(unsigned int i=0; i<numTemplates; i++){
+            gestureTemplates[i].classLabel = trainingData[i].getClassLabel();
+            gestureTemplates[i].timeseries = trainingData[i].getData();
+        }
+        
+        //Init the particle filter
+        //State vector is:
+        //[0] gesture template index
+        //[1] phase (position within the template, normalized [0 1])
+        //[2] velocity (value between [-0.2 0.2])
+        stateVectorSize = 3;
+        initModel.resize( stateVectorSize, VectorDouble(2,0) );
+        processNoise.resize( stateVectorSize );
+        measurementNoise.resize( numInputDimensions );
+        
+        //Min state range
+        initModel[0][0] = 0;
+        initModel[1][0] = 0;
+        initModel[2][0] = -0.2;
+        
+        //Max state range
+        initModel[0][1] = numTemplates;
+        initModel[1][1] = 1;
+        initModel[2][1] = 0.2;
+        
+        //Set the measurement noise - this sets the sigma difference between the estimated position in the template and sensor input
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            measurementNoise[i] = 10;
+        }
+        
+        //Set the process noise used for the
+        processNoise[0] = 0.9999; //Controls the random template selection
+        processNoise[1] = 0.1; //Controls the phase update
+        processNoise[2] = 0.01; //Controls the maximum velocity update
+        
+        x.resize( stateVectorSize );
+        initialized = true;
+        
+        if( !initParticles( numParticles ) ){
+            errorLog << "ERROR: Failed to init particles!" << endl;
+            clear();
+            return false;
+        }
+        
+        return true;
+    }
+    
+    unsigned int numInputDimensions;
+    unsigned int numTemplates;
+    unsigned int numClasses;
+    vector< ParticleClassifierGestureTemplate > gestureTemplates;
+    
+};
+    
+}
+
+#endif //GRT_PARTICLE_CLASSIFIER_PARTICLE_FILTER_HEADER

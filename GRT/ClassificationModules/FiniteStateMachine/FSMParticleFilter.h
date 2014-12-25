@@ -24,8 +24,8 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef GRT_FPSM_PARTICLE_FILTER_HEADER
-#define GRT_FPSM_PARTICLE_FILTER_HEADER
+#ifndef GRT_FSM_PARTICLE_FILTER_HEADER
+#define GRT_FSM_PARTICLE_FILTER_HEADER
 
 #include "../../CoreAlgorithms/ParticleFilter/ParticleFilter.h"
 #include "FSMParticle.h"
@@ -62,7 +62,7 @@ public:
         const vector< VectorDouble > &model = pe->at( p.currentState );
         
         //Pick a random sample from the model and set this as the particles state vector
-        const int K = model.size();
+        const unsigned int K = (unsigned int)model.size();
         if( K > 0 )
             p.x =  model[ random.getRandomNumberInt(0, K) ];
         
@@ -87,6 +87,16 @@ public:
         for(size_t i=0; i<N; i++){
             p.w *= gauss(p.x[i], data[i], measurementNoise[i]);
         }
+        
+        cout << "w: " << p.w << " p.x: ";
+        for(size_t i=0; i<N; i++){
+            cout << p.x[i] << " ";
+        }
+        cout << " data: ";
+        for(size_t i=0; i<N; i++){
+            cout << data[i] << " ";
+        }
+        cout << endl;
         
         return true;
     }

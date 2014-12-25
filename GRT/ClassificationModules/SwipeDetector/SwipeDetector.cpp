@@ -159,7 +159,6 @@ bool SwipeDetector::train_(ClassificationData &trainingData){
     
     const unsigned int M = trainingData.getNumSamples();
     const unsigned int N = trainingData.getNumDimensions();
-    const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
         errorLog << "train_(trainingData &labelledTrainingData) - Training data has zero samples!" << endl;

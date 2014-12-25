@@ -283,6 +283,8 @@ public:
      */
     bool setNumRandomTrainingIterations(const UINT numRandomTrainingIterations);
     
+    bool setSigma(const double sigma);
+    
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
@@ -314,6 +316,7 @@ protected:
     //Continuous HMM variables
     UINT downsampleFactor;
     UINT committeeSize;
+    double sigma;
     
     static RegisterClassifierModule< HMM > registerModule;
 };
