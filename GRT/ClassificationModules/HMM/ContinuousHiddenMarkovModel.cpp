@@ -47,6 +47,7 @@ ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const ContinuousHiddenM
     this->downsampleFactor = rhs.downsampleFactor;
 	this->numStates = rhs.numStates;
     this->classLabel = rhs.classLabel;
+    this->timeseriesLength = rhs.timeseriesLength;
     this->sigma = rhs.sigma;
 	this->a = rhs.a;
 	this->b = rhs.b;
@@ -79,6 +80,7 @@ ContinuousHiddenMarkovModel& ContinuousHiddenMarkovModel::operator=(const Contin
         this->downsampleFactor = rhs.downsampleFactor;
         this->numStates = rhs.numStates;
         this->classLabel = rhs.classLabel;
+        this->timeseriesLength = rhs.timeseriesLength;
         this->sigma = rhs.sigma;
         this->a = rhs.a;
         this->b = rhs.b;
@@ -205,7 +207,7 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
     clear();
 
     //The number of states is simply set as the number of samples in the training sample
-    const unsigned int timeseriesLength = trainingData.getLength();
+    timeseriesLength = trainingData.getLength();
     numStates = (unsigned int)floor(timeseriesLength/downsampleFactor);
     numInputDimensions = trainingData.getNumDimensions();
     classLabel = trainingData.getClassLabel();
@@ -307,6 +309,7 @@ bool ContinuousHiddenMarkovModel::clear(){
     
     numStates = 0;
     loglikelihood = 0;
+    timeseriesLength = 0;
 	a.clear();
 	b.clear();
 	pi.clear();
@@ -405,11 +408,192 @@ double ContinuousHiddenMarkovModel::gauss( const MatrixDouble &x, const MatrixDo
     
 bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
     
+    if(!file.is_open())
+    {
+        errorLog << "saveModelToFile( fstream &file ) - File is not open!" << endl;
+        return false;
+    }
+    
+    //Write the header info
+    file << "CONTINUOUS_HMM_MODEL_FILE_V1.0\n";
+    
+    //Write the base settings to the file
+    if( !MLBase::saveBaseSettingsToFile(file) ){
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        return false;
+    }
+    
+    file << "DownsampleFactor: " << downsampleFactor << endl;
+    file << "NumStates: " << numStates << endl;
+    file << "ClassLabel: " << classLabel << endl;
+    file << "TimeseriesLength: " << timeseriesLength << endl;
+    file << "Sigma: " << sigma << endl;
+    file << "ModelType: " << modelType << endl;
+    file << "Delta: " << delta << endl;
+    file << "Threshold: " << cThreshold << endl;
+    
+    if( trained ){
+        file << "A:\n";
+        for(UINT i=0; i<numStates; i++){
+            for(UINT j=0; j<numStates; j++){
+                file << a[i][j];
+                if( j+1 < numStates ) file << "\t";
+            }file << endl;
+        }
+        
+        file << "B:\n";
+        for(UINT i=0; i<numStates; i++){
+            for(UINT j=0; j<numInputDimensions; j++){
+                file << b[i][j];
+                if( j+1 < numInputDimensions ) file << "\t";
+            }file << endl;
+        }
+        
+        file<<"Pi:\n";
+        for(UINT i=0; i<numStates; i++){
+            file << pi[i];
+            if( i+1 < numStates ) file << "\t";
+        }
+        file << endl;
+    }
+    
     return true;
 }
 
 bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
     
+    clear();
+    
+    if(!file.is_open())
+    {
+        errorLog << "loadModelFromFile( fstream &file ) - File is not open!" << endl;
+        return false;
+    }
+    
+    std::string word;
+    
+    file >> word;
+    
+    cout << "WORD: " << word;
+    
+    //Find the file type header
+    if(word != "CONTINUOUS_HMM_MODEL_FILE_V1.0"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header!" << endl;
+        return false;
+    }
+    
+    //Load the base settings from the file
+    if( !MLBase::loadBaseSettingsFromFile(file) ){
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        return false;
+    }
+    
+    file >> word;
+    if(word != "DownsampleFactor:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the DownsampleFactor header." << endl;
+        return false;
+    }
+    file >> downsampleFactor;
+    
+    file >> word;
+    if(word != "NumStates:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumStates header." << endl;
+        return false;
+    }
+    file >> numStates;
+    
+    file >> word;
+    if(word != "ClassLabel:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the ClassLabel header." << endl;
+        return false;
+    }
+    file >> classLabel;
+    
+    file >> word;
+    if(word != "TimeseriesLength:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the TimeseriesLength header." << endl;
+        return false;
+    }
+    file >> timeseriesLength;
+    
+    file >> word;
+    if(word != "Sigma:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Sigma for the header." << endl;
+        return false;
+    }
+    file >> sigma;
+    
+    file >> word;
+    if(word != "ModelType:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the ModelType for the header." << endl;
+        return false;
+    }
+    file >> modelType;
+    
+    file >> word;
+    if(word != "Delta:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Delta for the header." << endl;
+        return false;
+    }
+    file >> delta;
+    
+    file >> word;
+    if(word != "Threshold:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Threshold for the header." << endl;
+        return false;
+    }
+    file >> cThreshold;
+    
+    if( trained ){
+        a.resize(numStates,numStates);
+        b.resize(numStates,numInputDimensions);
+        pi.resize(numStates);
+        
+        //Load the A, B and Pi matrices
+        file >> word;
+        if(word != "A:"){
+            errorLog << "loadModelFromFile( fstream &file ) - Could not find the A matrix header." << endl;
+            return false;
+        }
+        
+        //Load A
+        for(UINT i=0; i<numStates; i++){
+            for(UINT j=0; j<numStates; j++){
+                file >> a[i][j];
+            }
+        }
+        
+        file >> word;
+        if(word != "B:"){
+            errorLog << "loadModelFromFile( fstream &file ) - Could not find the B matrix header." << endl;
+            return false;
+        }
+        
+        //Load B
+        for(UINT i=0; i<numStates; i++){
+            for(UINT j=0; j<numInputDimensions; j++){
+                file >> b[i][j];
+            }
+        }
+        
+        file >> word;
+        if(word != "Pi:"){
+            errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi matrix header." << endl;
+            return false;
+        }
+        
+        //Load Pi
+        for(UINT i=0; i<numStates; i++){
+            file >> pi[i];
+        }
+
+        
+        //Setup the observation buffer for prediction
+        observationSequence.resize( timeseriesLength, VectorDouble(numInputDimensions,0) );
+        obsSequence.resize(timeseriesLength,numInputDimensions);
+        estimatedStates.resize( numStates );
+    }
+
     return true;
 }
 

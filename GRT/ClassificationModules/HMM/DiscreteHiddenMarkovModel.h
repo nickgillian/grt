@@ -70,6 +70,22 @@ public:
     bool train(const vector< vector<UINT> > &trainingData);
     
     virtual bool reset();
+    
+    /**
+     This saves the trained model to a file.
+     
+     @param fstream &file: a reference to the file the model will be saved to
+     @return returns true if the model was saved successfully, false otherwise
+     */
+    virtual bool saveModelToFile(fstream &file) const;
+    
+    /**
+     This loads a trained model from a file.
+     
+     @param fstream &file: a reference to the file the model will be loaded from
+     @return returns true if the model was loaded successfully, false otherwise
+     */
+    virtual bool loadModelFromFile(fstream &file);
 
     bool randomizeMatrices(const UINT numStates,const UINT numSymbols);
 	double predictLogLikelihood(const vector<UINT> &obs);

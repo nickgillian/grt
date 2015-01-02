@@ -128,6 +128,7 @@ protected:
     UINT downsampleFactor;
 	UINT numStates;             ///<The number of states for this model
     UINT classLabel;            ///<The class label associated with this model
+    UINT timeseriesLength;      ///<The length of the training timeseries
     double sigma;
     double phase;
 	MatrixDouble a;             ///<The transitions probability matrix

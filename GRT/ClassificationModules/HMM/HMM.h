@@ -308,15 +308,14 @@ protected:
     //Discrete HMM variables
 	UINT numStates;			//The number of states for each model
 	UINT numSymbols;		//The number of symbols for each model
-	
     UINT numRandomTrainingIterations;
     vector< DiscreteHiddenMarkovModel > discreteModels;
-    vector< ContinuousHiddenMarkovModel > continuousModels;
     
     //Continuous HMM variables
     UINT downsampleFactor;
     UINT committeeSize;
     double sigma;
+    vector< ContinuousHiddenMarkovModel > continuousModels;
     
     static RegisterClassifierModule< HMM > registerModule;
 };

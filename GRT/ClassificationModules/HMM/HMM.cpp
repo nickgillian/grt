@@ -646,7 +646,7 @@ bool HMM::saveModelToFile( fstream &file ) const{
 	}
 
 	//Write the header info
-	file << "HMM_MODEL_FILE_V1.0\n";
+	file << "HMM_MODEL_FILE_V2.0\n";
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
@@ -654,47 +654,41 @@ bool HMM::saveModelToFile( fstream &file ) const{
 		return false;
     }
     
-    /*
+    //Write the generic hmm data
+    file << "HmmType: " << hmmType << endl;
+    file << "ModelType: " << modelType << endl;
+    file << "Delta: " << delta << endl;
     
-	file << "NumStates: " << numStates << endl;
-	file << "NumSymbols: " << numSymbols << endl;
-	file << "ModelType: " << modelType << endl;
-	file << "Delta: " << delta << endl;
-    file << "NumRandomTrainingIterations: " << numRandomTrainingIterations << endl;
-
-    if( trained ){
-        //Write each of the models
-        for(UINT k=0; k<numClasses; k++){
-            file << "Model_ID: " << k+1 << endl;
-            file << "NumStates: " << models[k].numStates << endl;
-            file << "NumSymbols: " << models[k].numSymbols << endl;
-            file << "ModelType: " << models[k].modelType << endl;
-            file << "Delta: " << models[k].delta << endl;
-            file << "Threshold: " << models[k].cThreshold << endl;
-            file << "NumRandomTrainingIterations: " << models[k].numRandomTrainingIterations << endl;
-            file << "MaxNumIter: " << models[k].maxNumIter << endl;
-
-            file << "A:\n";
-            for(UINT i=0; i<models[k].numStates; i++){
-                for(UINT j=0; j<models[k].numStates; j++){
-                    file<<models[k].a[i][j]<<"\t";
-                }file<<endl;
+    //Write the model specific data
+    switch( hmmType ){
+        case HMM_DISCRETE:
+            file << "NumStates: " << numStates << endl;
+            file << "NumSymbols: " << numSymbols << endl;
+            file << "NumRandomTrainingIterations: " << numRandomTrainingIterations << endl;
+            file << "NumDiscreteModels: " << discreteModels.size() << endl;
+            file << "DiscreteModels: " << endl;
+            for(size_t i=0; i<discreteModels.size(); i++){
+                if( !discreteModels[i].saveModelToFile( file ) ){
+                    errorLog <<"saveModelToFile(fstream &file) - Failed to save discrete model " << i << " to file!" << endl;
+                    return false;
+                }
             }
-
-            file << "B:\n";
-            for(UINT i=0; i<models[k].numStates; i++){
-                for(UINT j=0; j<models[k].numSymbols; j++){
-                    file<<models[k].b[i][j]<<"\t";
-                }file<<endl;
+            break;
+        case HMM_CONTINUOUS:
+            file << "DownsampleFactor: " << downsampleFactor << endl;
+            file << "CommitteeSize: " << committeeSize << endl;
+            file << "Sigma: " << sigma << endl;
+            file << "NumContinuousModels: " << continuousModels.size() << endl;
+            file << "ContinuousModels: " << endl;
+            for(size_t i=0; i<continuousModels.size(); i++){
+                if( !continuousModels[i].saveModelToFile( file ) ){
+                    errorLog <<"saveModelToFile(fstream &file) - Failed to save continuous model " << i << " to file!" << endl;
+                    return false;
+                }
             }
-
-            file<<"Pi:\n";
-            for(UINT i=0; i<models[k].numStates; i++){
-             file<<models[k].pi[i]<<"\t";
-            }
-        }
+            break;
     }
-*/
+
 	return true;
 }
 
@@ -707,14 +701,14 @@ bool HMM::loadModelFromFile( fstream &file ){
 		errorLog << "loadModelFromFile( fstream &file ) - File is not open!" << endl;
 		return false;
 	}
-/*
+
 	std::string word;
-    double value;
+    UINT numModels = 0;
     
     file >> word;
     
 	//Find the file type header
-	if(word != "HMM_MODEL_FILE_V1.0"){
+	if(word != "HMM_MODEL_FILE_V2.0"){
 		errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header!" << endl;
 		return false;
 	}
@@ -724,165 +718,125 @@ bool HMM::loadModelFromFile( fstream &file ){
         errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
         return false;
     }
-
-	file >> word;
-	if(word != "NumStates:"){
-		errorLog << "loadModelFromFile( fstream &file ) - Could not find NumStates." << endl;
-		return false;
-	}
-	file >> numStates;
-
-	file >> word;
-	if(word != "NumSymbols:"){
-		errorLog << "loadModelFromFile( fstream &file ) - Could not find NumSymbols." << endl;
-		return false;
-	}
-	file >> numSymbols;
-
-	file >> word;
-	if(word != "ModelType:"){
-		errorLog << "loadModelFromFile( fstream &file ) - Could not find ModelType." << endl;
-		return false;
-	}
-	file >> modelType;
-
-	file >> word;
-	if(word != "Delta:"){
-		errorLog << "loadModelFromFile( fstream &file ) - Could not find Delta." << endl;
-		return false;
-	}
-	file >> delta;
+    
+    //Load the generic hmm data
+    file >> word;
+    if(word != "HmmType:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find HmmType." << endl;
+        return false;
+    }
+    file >> hmmType;
     
     file >> word;
-	if(word != "NumRandomTrainingIterations:"){
-		errorLog << "loadModelFromFile( fstream &file ) - Could not find NumRandomTrainingIterations." << endl;
-		return false;
-	}
-	file >> numRandomTrainingIterations;
+    if(word != "ModelType:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find ModelType." << endl;
+        return false;
+    }
+    file >> modelType;
     
-    //If the HMM has been trained then load the models
-    if( trained ){
-
-        //Resize the buffer
-        models.resize(numClasses);
-
-        //Load each of the K classes
-        for(UINT k=0; k<numClasses; k++){
-            UINT modelID;
-
-            file >> word;
-            if(word != "Model_ID:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find model ID for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> modelID;
-
-            if(modelID-1!=k){
-                errorLog << "loadModelFromFile( fstream &file ) - Model ID does not match the current class ID for the " << k+1 << "th model" << endl;
-                return false;
-            }
-
+    file >> word;
+    if(word != "Delta:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find Delta." << endl;
+        return false;
+    }
+    file >> delta;
+    
+    //Load the model specific data
+    switch( hmmType ){
+        case HMM_DISCRETE:
+            
             file >> word;
             if(word != "NumStates:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumStates for the " << k+1 << "th model" << endl;
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find NumStates." << endl;
                 return false;
             }
-            file >> models[k].numStates;
-
+            file >> numStates;
+            
             file >> word;
             if(word != "NumSymbols:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumSymbols for the " << k+1 << "th model" << endl;
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find NumSymbols." << endl;
                 return false;
             }
-            file >> models[k].numSymbols;
-
-            file >> word;
-            if(word != "ModelType:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the modelType for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> models[k].modelType;
-
-            file >> word;
-            if(word != "Delta:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the Delta for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> models[k].delta;
-
-            file >> word;
-            if(word != "Threshold:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the Threshold for the " << k+1 << "th model" << endl;
-                return false;
-            }
-            file >> models[k].cThreshold;
-
+            file >> numSymbols;
+            
             file >> word;
             if(word != "NumRandomTrainingIterations:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the numRandomTrainingIterations for the " << k+1 << "th model." << endl;
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find NumRandomTrainingIterations." << endl;
                 return false;
             }
-            file >> models[k].numRandomTrainingIterations;
-
+            file >> numRandomTrainingIterations;
+            
             file >> word;
-            if(word != "MaxNumIter:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the MaxNumIter for the " << k+1 << "th model." << endl;
+            if(word != "NumDiscreteModels:"){
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find NumDiscreteModels." << endl;
                 return false;
             }
-            file >> models[k].maxNumIter;
-
-            models[k].a.resize(models[k].numStates,models[k].numStates);
-            models[k].b.resize(models[k].numStates,models[k].numSymbols);
-            models[k].pi.resize(models[k].numStates);
-
-            //Load the A, B and Pi matrices
+            file >> numModels;
+            
             file >> word;
-            if(word != "A:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the A matrix for the "<<k+1<<"th model." << endl;
+            if(word != "DiscreteModels:"){
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find DiscreteModels." << endl;
                 return false;
             }
-
-            //Load A
-            for(UINT i=0; i<models[k].numStates; i++){
-                for(UINT j=0; j<models[k].numStates; j++){
-                    file >> value;
-                    models[k].a[i][j] = value;
-                }
-            }
-
-            file >> word;
-            if(word != "B:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the B matrix for the "<<k+1<<"th model." << endl;
-                return false;
-            }
-
-            //Load B
-            for(UINT i=0; i<models[k].numStates; i++){
-                for(UINT j=0; j<models[k].numSymbols; j++){
-                    file >> value;
-                    models[k].b[i][j] = value;
-                }
-            }
-
-            file >> word;
-            if(word != "Pi:"){
-                errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi matrix for the "<<k+1<<"th model." << endl;
-                return false;
-            }
-
-            //Load Pi
-            for(UINT i=0; i<models[k].numStates; i++){
-                file >> value;
-                models[k].pi[i] = value;
-            }
-        }
         
-        maxLikelihood = DEFAULT_NULL_LIKELIHOOD_VALUE;
-        bestDistance = DEFAULT_NULL_DISTANCE_VALUE;
-        classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
-        classDistances.resize(numClasses,DEFAULT_NULL_DISTANCE_VALUE);
+            if( numModels > 0 ){
+                discreteModels.resize(numModels);
+                for(size_t i=0; i<discreteModels.size(); i++){
+                    if( !discreteModels[i].loadModelFromFile( file ) ){
+                        errorLog <<"loadModelFromFile(fstream &file) - Failed to load discrete model " << i << " from file!" << endl;
+                        return false;
+                    }
+                }
+            }
+            break;
+        case HMM_CONTINUOUS:
+            
+            file >> word;
+            if(word != "DownsampleFactor:"){
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find DownsampleFactor." << endl;
+                return false;
+            }
+            file >> downsampleFactor;
+            
+            file >> word;
+            if(word != "CommitteeSize:"){
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find CommitteeSize." << endl;
+                return false;
+            }
+            file >> committeeSize;
+            
+            file >> word;
+            if(word != "Sigma:"){
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find Sigma." << endl;
+                return false;
+            }
+            file >> sigma;
+            
+            file >> word;
+            if(word != "NumContinuousModels:"){
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find NumContinuousModels." << endl;
+                return false;
+            }
+            file >> numModels;
+            
+            file >> word;
+            if(word != "ContinuousModels:"){
+                errorLog << "loadModelFromFile( fstream &file ) - Could not find ContinuousModels." << endl;
+                return false;
+            }
+            
+            if( numModels > 0 ){
+                continuousModels.resize(numModels);
+                for(size_t i=0; i<continuousModels.size(); i++){
+                    if( !continuousModels[i].loadModelFromFile( file ) ){
+                        errorLog <<"loadModelFromFile(fstream &file) - Failed to load continuous model " << i << " from file!" << endl;
+                        return false;
+                    }
+                }
+            }
+            break;
     }
-*/
+    
 	return true;
 
 }

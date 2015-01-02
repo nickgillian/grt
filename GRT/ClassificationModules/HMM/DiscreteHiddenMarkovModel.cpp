@@ -670,6 +670,169 @@ bool DiscreteHiddenMarkovModel::reset(){
     
     return true;
 }
+    
+bool DiscreteHiddenMarkovModel::saveModelToFile(fstream &file) const{
+    
+    if(!file.is_open())
+    {
+        errorLog << "saveModelToFile( fstream &file ) - File is not open!" << endl;
+        return false;
+    }
+    
+    //Write the header info
+    file << "DISCRETE_HMM_MODEL_FILE_V1.0\n";
+    
+    //Write the base settings to the file
+    if( !MLBase::saveBaseSettingsToFile(file) ){
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        return false;
+    }
+    
+    file << "NumStates: " << numStates << endl;
+    file << "NumSymbols: " << numSymbols << endl;
+    file << "ModelType: " << modelType << endl;
+    file << "Delta: " << delta << endl;
+    file << "Threshold: " << cThreshold << endl;
+    file << "NumRandomTrainingIterations: " << numRandomTrainingIterations << endl;
+    
+    file << "A:\n";
+    for(UINT i=0; i<numStates; i++){
+        for(UINT j=0; j<numStates; j++){
+            file << a[i][j];
+            if( j+1 < numStates ) file << "\t";
+        }file << endl;
+    }
+    
+    file << "B:\n";
+    for(UINT i=0; i<numStates; i++){
+        for(UINT j=0; j<numSymbols; j++){
+            file << b[i][j];
+            if( j+1 < numSymbols ) file << "\t";
+        }file << endl;
+    }
+    
+    file<<"Pi:\n";
+    for(UINT i=0; i<numStates; i++){
+        file << pi[i];
+        if( i+1 < numStates ) file << "\t";
+    }
+    file << endl;
+    
+    return true;
+}
+
+bool DiscreteHiddenMarkovModel::loadModelFromFile(fstream &file){
+    
+    clear();
+    
+    if(!file.is_open())
+    {
+        errorLog << "loadModelFromFile( fstream &file ) - File is not open!" << endl;
+        return false;
+    }
+    
+    std::string word;
+    
+    file >> word;
+    
+    //Find the file type header
+    if(word != "DISCRETE_HMM_MODEL_FILE_V1.0"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header!" << endl;
+        return false;
+    }
+    
+    //Load the base settings from the file
+    if( !MLBase::loadBaseSettingsFromFile(file) ){
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        return false;
+    }
+    
+    file >> word;
+    if(word != "NumStates:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumStates header." << endl;
+        return false;
+    }
+    file >> numStates;
+    
+    file >> word;
+    if(word != "NumSymbols:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumSymbols header." << endl;
+        return false;
+    }
+    file >> numSymbols;
+    
+    file >> word;
+    if(word != "ModelType:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the modelType for the header." << endl;
+        return false;
+    }
+    file >> modelType;
+    
+    file >> word;
+    if(word != "Delta:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Delta for the header." << endl;
+        return false;
+    }
+    file >> delta;
+    
+    file >> word;
+    if(word != "Threshold:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Threshold for the header." << endl;
+        return false;
+    }
+    file >> cThreshold;
+    
+    file >> word;
+    if(word != "NumRandomTrainingIterations:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the numRandomTrainingIterations header." << endl;
+        return false;
+    }
+    file >> numRandomTrainingIterations;
+    
+    a.resize(numStates,numStates);
+    b.resize(numStates,numSymbols);
+    pi.resize(numStates);
+    
+    //Load the A, B and Pi matrices
+    file >> word;
+    if(word != "A:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the A matrix header." << endl;
+        return false;
+    }
+    
+    //Load A
+    for(UINT i=0; i<numStates; i++){
+        for(UINT j=0; j<numStates; j++){
+            file >> a[i][j];
+        }
+    }
+    
+    file >> word;
+    if(word != "B:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the B matrix header." << endl;
+        return false;
+    }
+    
+    //Load B
+    for(UINT i=0; i<numStates; i++){
+        for(UINT j=0; j<numSymbols; j++){
+            file >> b[i][j];
+        }
+    }
+    
+    file >> word;
+    if(word != "Pi:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi matrix header." << endl;
+        return false;
+    }
+    
+    //Load Pi
+    for(UINT i=0; i<numStates; i++){
+        file >> pi[i];
+    }
+    
+    return true;
+}
 
 bool DiscreteHiddenMarkovModel::print() const{
 
