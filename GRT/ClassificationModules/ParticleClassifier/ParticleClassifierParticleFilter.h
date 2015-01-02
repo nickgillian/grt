@@ -59,14 +59,26 @@ public:
         
         //Given the prior set of particles, randomly generate new state estimations using the process model
         
-        //Randomly select a new template
-        if( rand.getRandomNumberUniform(0,1) >= processNoise[0] ){
+        //Check to see if we should randomly select a new template
+        bool randomSelect = false;
+        bool isNan = grt_isnan(p.w);
+        
+        if( p.w < 1.0/double(numParticles) - processNoise[0] || isNan ){
+            if( rand.getRandomNumberUniform(0,1) >= 0.8 || isNan ){
+                randomSelect = true;
+            }
+        }else{
+            //No matter what the weight is, every so often we want to force a particle to jump to a new template
+            if( rand.getRandomNumberUniform(0,1) >= 0.9999999 ){
+                randomSelect = true;
+            }
+        }
+        
+        if( randomSelect ){
             p.x[0] = rand.getRandomNumberInt(0, numTemplates); //Randomly pick a template
             p.x[1] = rand.getRandomNumberUniform(0,1); //Randomly pick a phase
             p.x[2] = rand.getRandomNumberUniform(-processNoise[2],processNoise[2]); //Randomly pick a speed
         }else{
-            //Get the gesture template
-            const unsigned int templateIndex = (unsigned int)p.x[0];
             const double phase = p.x[1];
             const double velocity = p.x[2];
             
@@ -125,7 +137,7 @@ public:
         return true;
     }
     
-    bool train( const unsigned int numParticles, const TimeSeriesClassificationData &trainingData ){
+    bool train( const unsigned int numParticles, const TimeSeriesClassificationData &trainingData, double sensorNoise, double transitionSigma, double phaseSigma, double velocitySigma){
         
         //Clear any previous model
         clear();
@@ -163,13 +175,13 @@ public:
         
         //Set the measurement noise - this sets the sigma difference between the estimated position in the template and sensor input
         for(unsigned int i=0; i<numInputDimensions; i++){
-            measurementNoise[i] = 10;
+            measurementNoise[i] = sensorNoise;
         }
         
         //Set the process noise used for the
-        processNoise[0] = 0.9999; //Controls the random template selection
-        processNoise[1] = 0.1; //Controls the phase update
-        processNoise[2] = 0.01; //Controls the maximum velocity update
+        processNoise[0] = transitionSigma; //Controls the random template selection
+        processNoise[1] = phaseSigma; //Controls the phase update
+        processNoise[2] = velocitySigma; //Controls the maximum velocity update
         
         x.resize( stateVectorSize );
         initialized = true;

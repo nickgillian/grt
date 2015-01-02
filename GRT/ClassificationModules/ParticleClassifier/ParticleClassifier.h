@@ -33,7 +33,7 @@ public:
     /**
      Default Constructor
      */
-	ParticleClassifier(const unsigned int numParticles = 2000);
+	ParticleClassifier(const unsigned int numParticles = 2000,const double sensorNoise = 10.0,const double transitionSigma = 0.9999,const double phaseSigma = 0.1,const double velocitySigma = 0.01);
 	
     /**
      Default copy constructor
@@ -48,14 +48,6 @@ public:
      Default Destructor
      */
 	virtual ~ParticleClassifier(void);
-    
-    /**
-     Defines how the data from the rhs ParticleClassifier should be copied to this ParticleClassifier
-     
-     @param const ParticleClassifier &rhs: another instance of a ParticleClassifier
-     @return returns a pointer to this instance of the ParticleClassifier
-     */
-	ParticleClassifier& operator=(const ParticleClassifier &rhs);
     
     /**
      Defines how the data from the rhs ParticleClassifier should be copied to this ParticleClassifier
@@ -111,6 +103,13 @@ public:
     virtual bool loadModelFromFile(fstream &file);
     
     /**
+     This clears the ParticleClassifier classifier.
+     
+     @return returns true if the ParticleClassifier model was successfully cleared, false otherwise.
+     */
+    virtual bool clear();
+    
+    /**
      This resets the ParticleClassifier classifier.
      
      @return returns true if the ParticleClassifier model was successfully reset, false otherwise.
@@ -127,15 +126,30 @@ public:
     
     double getVelocity() const;
     
+    bool setNumParticles(const unsigned int numParticles);
+
+    bool setSensorNoise(const unsigned int sensorNoise);
+    
+    bool setTransitionSigma(const unsigned int transitionSigma);
+    
+    bool setPhaseSigma(const unsigned int phaseSigma);
+    
+    bool setVelocitySigma(const unsigned int velocitySigma);
+    
+    
     using MLBase::predict;
     using MLBase::train;
     
 protected:
     unsigned int numParticles;
+    double sensorNoise;
+    double transitionSigma;
+    double phaseSigma;
+    double velocitySigma;
 	ParticleClassifierParticleFilter particleFilter;
+    
+private:
     static RegisterClassifierModule< ParticleClassifier > registerModule;
-
-public:
 	
 
 };

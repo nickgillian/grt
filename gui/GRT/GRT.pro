@@ -57,10 +57,10 @@ macx{
  #USE_GRT_SOURCE = "true"
 
  #Link against the main boost libraries
- LIBS += -lboost_thread
- LIBS += -lboost_date_time
- LIBS += -lboost_system
- LIBS += -lboost_chrono
+ LIBS += -lboost_thread-mt
+ LIBS += -lboost_date_time-mt
+ LIBS += -lboost_system-mt
+ LIBS += -lboost_chrono-mt
 }
 
 #Linux pkgconfig

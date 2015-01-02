@@ -25,11 +25,15 @@ namespace GRT{
 //Register the ParticleClassifier module with the Classifier base class
 RegisterClassifierModule< ParticleClassifier > ParticleClassifier::registerModule("ParticleClassifier");
 
-ParticleClassifier::ParticleClassifier( const unsigned int numParticles )
+ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const double sensorNoise,const double transitionSigma,const double phaseSigma,const double velocitySigma )
 {
     this->numParticles = numParticles;
+    this->sensorNoise = sensorNoise;
+    this->transitionSigma = transitionSigma;
+    this->phaseSigma = phaseSigma;
+    this->velocitySigma = velocitySigma;
     classType = "ParticleClassifier";
-    classifierType = classifierType;
+    classifierType = classType;
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
     debugLog.setProceedingText("[DEBUG ParticleClassifier]");
     errorLog.setProceedingText("[ERROR ParticleClassifier]");
@@ -50,6 +54,10 @@ ParticleClassifier& ParticleClassifier::operator=(const ParticleClassifier &rhs)
 	if( this != &rhs ){
         
         this->numParticles = rhs.numParticles;
+        this->sensorNoise = rhs.sensorNoise;
+        this->transitionSigma = rhs.transitionSigma;
+        this->phaseSigma = rhs.phaseSigma;
+        this->velocitySigma = rhs.velocitySigma;
         this->particleFilter = rhs.particleFilter;
         
 	    //Copy the classifier variables
@@ -65,6 +73,10 @@ bool ParticleClassifier::deepCopyFrom(const Classifier *classifier){
         ParticleClassifier *ptr = (ParticleClassifier*)classifier;
         
         this->numParticles = ptr->numParticles;
+        this->sensorNoise = ptr->sensorNoise;
+        this->transitionSigma = ptr->transitionSigma;
+        this->phaseSigma = ptr->phaseSigma;
+        this->velocitySigma = ptr->velocitySigma;
         this->particleFilter = ptr->particleFilter;
         
 	    //Copy the classifier variables
@@ -81,7 +93,7 @@ bool ParticleClassifier::train_(TimeSeriesClassificationData &trainingData){
     numInputDimensions = trainingData.getNumDimensions();
     
     //Train the particle filter
-    particleFilter.train( numParticles, trainingData );
+    particleFilter.train( numParticles, trainingData, sensorNoise, transitionSigma, phaseSigma, velocitySigma );
     
     classLabels.resize(numClasses);
     classLikelihoods.resize(numClasses,0);
@@ -103,16 +115,16 @@ bool ParticleClassifier::predict_(VectorDouble &inputVector){
         return false;
     }
     
+    if( numInputDimensions != inputVector.size() ){
+        errorLog << "predict_(VectorDouble &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.size() << endl;
+        return false;
+    }
+    
     predictedClassLabel = 0;
     maxLikelihood = 0;
     std::fill(classLikelihoods.begin(),classLikelihoods.end(),0);
     std::fill(classDistances.begin(),classDistances.end(),0);
 
-	if( numInputDimensions != inputVector.size() ){
-        errorLog << "predict_(VectorDouble &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.size() << endl;
-        return false;
-    }
-    
     //Update the particle filter
     particleFilter.filter( inputVector );
     
@@ -127,7 +139,7 @@ bool ParticleClassifier::predict_(VectorDouble &inputVector){
     
     //Compute the class likelihoods
     for(unsigned int i=0; i<numClasses; i++){
-        classLikelihoods[i] = classDistances[i] / numParticles;
+        classLikelihoods[i] = classDistances[i] / double(numParticles);
         
         if( classLikelihoods[i] > maxLikelihood ){
             predictedClassLabel = classLabels[i];
@@ -135,11 +147,28 @@ bool ParticleClassifier::predict_(VectorDouble &inputVector){
         }
     }
     
+    //Estimate the phase
+    phase = particleFilter.getStateEstimation()[0];
+    
     return true;
 
 }
 
+bool ParticleClassifier::clear(){
+    
+    Classifier::clear();
+    
+    particleFilter.clear();
+    
+    return true;
+}
+    
 bool ParticleClassifier::reset(){
+    
+    Classifier::reset();
+    
+    particleFilter.reset();
+    
     return true;
 }
     
@@ -205,6 +234,52 @@ double ParticleClassifier::getVelocity() const{
     }
     return 0;
 }
+    
+bool ParticleClassifier::setNumParticles(const unsigned int numParticles){
+    
+    clear();
+    
+    this->numParticles = numParticles;
+    
+    return true;
+}
+  
+bool ParticleClassifier::setSensorNoise(const unsigned int sensorNoise){
+    
+    clear();
+    
+    this->sensorNoise = sensorNoise;
+    
+    return true;
+}
+
+bool ParticleClassifier::setTransitionSigma(const unsigned int transitionSigma){
+    
+    clear();
+    
+    this->transitionSigma = transitionSigma;
+    
+    return true;
+}
+
+bool ParticleClassifier::setPhaseSigma(const unsigned int phaseSigma){
+    
+    clear();
+    
+    this->phaseSigma = phaseSigma;
+    
+    return true;
+}
+
+bool ParticleClassifier::setVelocitySigma(const unsigned int velocitySigma){
+    
+    clear();
+    
+    this->velocitySigma = velocitySigma;
+    
+    return true;
+}
+    
 
 } //End of namespace GRT
 

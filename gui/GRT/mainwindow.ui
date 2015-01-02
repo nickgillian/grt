@@ -2713,6 +2713,11 @@
            <string>Hidden Markov Model (Continuous)</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Particle Classifier</string>
+          </property>
+         </item>
         </widget>
         <widget class="QLabel" name="label_159">
          <property name="geometry">
@@ -2906,6 +2911,136 @@
            </property>
            <property name="text">
             <string>Sigma:</string>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page_67">
+          <widget class="QLabel" name="label_180">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>55</y>
+             <width>261</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Sensor Noise:</string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="pipelineTool_particleClassifier_numParticles">
+           <property name="geometry">
+            <rect>
+             <x>250</x>
+             <y>30</y>
+             <width>141</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_particleClassifier_sensorNoise">
+           <property name="geometry">
+            <rect>
+             <x>250</x>
+             <y>55</y>
+             <width>141</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_181">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>30</y>
+             <width>131</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Number of Particles:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_182">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>5</y>
+             <width>281</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Particle Classifier Settings</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_183">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>80</y>
+             <width>261</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Transition Sigma:</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_particleClassifier_transitionSigma">
+           <property name="geometry">
+            <rect>
+             <x>250</x>
+             <y>80</y>
+             <width>141</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_184">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>105</y>
+             <width>261</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Phase Sigma:</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_particleClassifier_phaseSigma">
+           <property name="geometry">
+            <rect>
+             <x>250</x>
+             <y>105</y>
+             <width>141</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_185">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>130</y>
+             <width>261</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Velocity Sigma:</string>
+           </property>
+          </widget>
+          <widget class="QDoubleSpinBox" name="pipelineTool_particleClassifier_velocitySigma">
+           <property name="geometry">
+            <rect>
+             <x>250</x>
+             <y>130</y>
+             <width>141</width>
+             <height>24</height>
+            </rect>
            </property>
           </widget>
          </widget>

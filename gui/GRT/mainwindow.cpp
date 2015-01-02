@@ -459,6 +459,19 @@ bool MainWindow::initPipelineToolView(){
     ui->pipelineTool_fsm_measurementNoise->setRange(0.000000001,100000000);
     ui->pipelineTool_fsm_measurementNoise->setValue( 10 );
 
+    //Particle Classifier
+    ui->pipelineTool_particleClassifier_numParticles->setRange(1,10000000);
+    ui->pipelineTool_particleClassifier_numParticles->setValue( 500 );
+    ui->pipelineTool_particleClassifier_sensorNoise->setRange(0.000001,10000000);
+    ui->pipelineTool_particleClassifier_sensorNoise->setValue( 10 );
+    ui->pipelineTool_particleClassifier_transitionSigma->setRange(0,1);
+    ui->pipelineTool_particleClassifier_transitionSigma->setDecimals( 5 );
+    ui->pipelineTool_particleClassifier_transitionSigma->setValue( 0.01 );
+    ui->pipelineTool_particleClassifier_phaseSigma->setRange(0,1);
+    ui->pipelineTool_particleClassifier_phaseSigma->setValue( 0.2 );
+    ui->pipelineTool_particleClassifier_velocitySigma->setRange(0,1);
+    ui->pipelineTool_particleClassifier_velocitySigma->setValue( 0.1 );
+
     /////////////////////////////////////// Clusterer //////////////////////////////////////
     ui->pipelineTool_clusterView_enableScaling->setChecked( true );
     ui->pipelineTool_clusterView_minChangeSpinBox->setRange( 0.0, 1.0 );
@@ -704,6 +717,11 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->pipelineTool_fsm_numClustersPerState, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
     connect(ui->pipelineTool_fsm_stateTransitionSmoothingCoeff, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
     connect(ui->pipelineTool_fsm_measurementNoise, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_particleClassifier_numParticles, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_particleClassifier_sensorNoise, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_particleClassifier_transitionSigma, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_particleClassifier_phaseSigma, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_particleClassifier_velocitySigma, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
 
     //Swipe Detector
     connect(ui->pipelineTool_swipeDetector_plot, SIGNAL(clicked(bool)), swipeDetectorGraph, SLOT(setVisible(bool)));
@@ -2872,6 +2890,7 @@ void MainWindow::updateTimeseriesClassifierView(int viewIndex){
     GRT::DTW dtw;
     GRT::HMM hmm;
     GRT::FiniteStateMachine fsm;
+    GRT::ParticleClassifier particleClassifier;
 
     switch( viewIndex ){
         case TIMESERIES_CLASSIFIER_DTW:
@@ -2898,6 +2917,17 @@ void MainWindow::updateTimeseriesClassifierView(int viewIndex){
             hmm.setDelta( ui->pipelineTool_hmm_continuous_delta->value() );
             hmm.setSigma( ui->pipelineTool_hmm_continuous_sigma->value() );
             core.setClassifier( hmm );
+        break;
+        case TIMESERIES_PARTICLE_CLASSIFIER:
+            particleClassifier.enableScaling( ui->pipelineTool_timeseriesClassification_enableScaling->isChecked() );
+            particleClassifier.enableNullRejection( ui->pipelineTool_timeseriesClassification_enableNullRejection->isChecked() );
+            particleClassifier.setNullRejectionCoeff( ui->pipelineTool_timeseriesClassification_nullRejectionCoeff->value() );
+            particleClassifier.setNumParticles( ui->pipelineTool_particleClassifier_numParticles->value() );
+            particleClassifier.setSensorNoise( ui->pipelineTool_particleClassifier_sensorNoise->value() );
+            particleClassifier.setTransitionSigma( ui->pipelineTool_particleClassifier_transitionSigma->value() );
+            particleClassifier.setPhaseSigma( ui->pipelineTool_particleClassifier_phaseSigma->value() );
+            particleClassifier.setVelocitySigma( ui->pipelineTool_particleClassifier_velocitySigma->value() );
+            core.setClassifier( particleClassifier );
         break;
         case TIMESERIES_CLASSIFIER_FSM:
             fsm.enableScaling( ui->pipelineTool_timeseriesClassification_enableScaling->isChecked() );

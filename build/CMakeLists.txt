@@ -6,17 +6,18 @@ project(GRT C CXX)
 
 #set the main options
 option(BUILD_EXAMPLES “build-examples” ON)
-option(BUILD_STATIC_LIB "build-static-lib" ON)
+option(BUILD_SHARED_LIB "build-shared-lib" ON)
+option(BUILD_STATIC_LIB "build-static-lib" OFF)
 
-#Setup if the library should be built as static or shared
-if(BUILD_STATIC_LIB)
-	set(LIB_BUILD_TYPE STATIC)
-	set(LIB_BUILD_TYPE_INFO "static")
-	set(BUILD_SHARED_LIB OFF)
-else()
+#Setup if the library should be built as static or shared, default is SHARED
+if(BUILD_SHARED_LIB)
 	set(LIB_BUILD_TYPE SHARED)
 	set(LIB_BUILD_TYPE_INFO "shared")
-	set(BUILD_SHARED_LIB ON)
+	set(BUILD_STATIC_LIB OFF) #Make sure the static lib is off
+else()
+	set(LIB_BUILD_TYPE STATIC)
+	set(LIB_BUILD_TYPE_INFO "static")
+	set(BUILD_SHARED_LIB OFF) #Make sure the shared lib is off
 endif()
 
 #Add any custom OS definitions
