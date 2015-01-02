@@ -1,5 +1,5 @@
 ##Build
-This folder contains a CMakeLists.txt that can be used to generate a makefile for building the GRT (as a static library) and also for building the GRT examples.
+This folder contains a CMakeLists.txt that can be used to generate a makefile for building the GRT (as a shared or static library) and also for building the GRT examples.
 
 ##Supported Operating Systems
 This CMakeLists file has been tested on Windows, Linux (Ubuntu 14.04), and OSX (10.9).
@@ -7,7 +7,7 @@ This CMakeLists file has been tested on Windows, Linux (Ubuntu 14.04), and OSX (
 ##Build Instructions
 Note, you will need to install make (http://www.gnu.org/software/make/) and cmake (http://www.cmake.org/). 
 
-You can build the GRT as a static library and compile the examples examples by:
+You can build the GRT as a shared library and compile the examples examples by:
 
 - open terminal and cd to this build directory
 
@@ -29,10 +29,10 @@ $ cd tmp
 $ cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
 ```
 	
-- if you want to build the library as a shared library (instead of static), add the following option:
+- if you want to build the library as a static library (instead of shared), add the following option:
 
 ```
-$ cmake .. -DBUILD_STATIC_LIB=OFF
+$ cmake .. -DBUILD_STATIC_LIB=ON
 ```
 
 - compile the GRT library and examples (j controls the number of cores you want to use):
