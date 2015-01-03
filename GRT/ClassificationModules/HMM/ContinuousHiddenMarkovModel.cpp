@@ -52,6 +52,8 @@ ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const ContinuousHiddenM
 	this->a = rhs.a;
 	this->b = rhs.b;
 	this->pi = rhs.pi;
+    this->alpha = rhs.alpha;
+    this->c = rhs.c;
     this->observationSequence = rhs.observationSequence;
     this->obsSequence = rhs.obsSequence;
     this->estimatedStates = rhs.estimatedStates;
@@ -141,17 +143,25 @@ bool ContinuousHiddenMarkovModel::predict_(MatrixDouble &obs){
     
     const int T = (int)obs.getNumRows();
 	int t,i,j = 0;
-    double maxValue = 0;
+    double maxAlpha = 0;
     alpha.resize(T,numStates);
     c.resize(T);
+    if( int(estimatedStates.size()) != T ) estimatedStates.resize(T);
     
 	////////////////// Run the forward algorithm ////////////////////////
 	//Step 1: Init at t=0
 	t = 0;
-	c[t] = 0.0;
+	c[t] = 0;
+    maxAlpha = 0;
 	for(i=0; i<numStates; i++){
 		alpha[t][i] = pi[i]*gauss(b,obs,i,t,numInputDimensions,sigma);
 		c[t] += alpha[t][i];
+        
+        //Keep track of the best state at time t
+        if( alpha[t][i] > maxAlpha ){
+            maxAlpha = alpha[t][i];
+            estimatedStates[t] = i;
+        }
 	}
     
 	//Set the inital scaling coeff
@@ -163,6 +173,7 @@ bool ContinuousHiddenMarkovModel::predict_(MatrixDouble &obs){
 	//Step 2: Induction
 	for(t=1; t<T; t++){
 		c[t] = 0.0;
+        maxAlpha = 0;
 		for(j=0; j<numStates; j++){
 			alpha[t][j] = 0.0;
 			for(i=0; i<numStates; i++){
@@ -170,6 +181,12 @@ bool ContinuousHiddenMarkovModel::predict_(MatrixDouble &obs){
 			}
             alpha[t][j] *= gauss(b,obs,j,t,numInputDimensions,sigma);
             c[t] += alpha[t][j];
+            
+            //Keep track of the best state at time t
+            if( alpha[t][j] > maxAlpha ){
+                maxAlpha = alpha[t][j];
+                estimatedStates[t] = j;
+            }
 		}
         
 		//Set the scaling coeff
@@ -178,17 +195,6 @@ bool ContinuousHiddenMarkovModel::predict_(MatrixDouble &obs){
 		//Scale Alpha
         for(j=0; j<numStates; j++) alpha[t][j] *= c[t];
 	}
-    
-    if( int(estimatedStates.size()) != T ) estimatedStates.resize(T);
-    for(t=0; t<T; t++){
-        maxValue = 0;
-        for(i=0; i<numStates; i++){
-            if( alpha[t][i] > maxValue ){
-                maxValue = alpha[t][i];
-                estimatedStates[t] = i;
-            }
-        }
-    }
     
 	//Termination
 	loglikelihood = 0.0;
@@ -220,7 +226,7 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
         }
     }
     
-	//b is simply set as the training sample
+	//b is simply set as the downsampled training sample
     b.resize(numStates, numInputDimensions);
     
     unsigned int index = 0;
@@ -243,11 +249,12 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
     
     //Estimate pi
     pi.resize(numStates);
-    pi[0] = 1;
     
     switch( modelType ){
 		case(HMM_ERGODIC):
-			//Don't need todo anything
+			for(UINT i=0; i<numStates; i++){
+                pi[i] = 1.0/numStates;
+            }
 			break;
 		case(HMM_LEFTRIGHT):
 			//Set the state transitions constraints
@@ -275,8 +282,6 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
 			break;
 	}
     
-    //TODO: Estimate sigma
-
     //Setup the observation buffer for prediction
     observationSequence.resize( timeseriesLength, VectorDouble(numInputDimensions,0) );
     obsSequence.resize(timeseriesLength,numInputDimensions);
@@ -313,7 +318,10 @@ bool ContinuousHiddenMarkovModel::clear(){
 	a.clear();
 	b.clear();
 	pi.clear();
+    alpha.clear();
+    c.clear();
     observationSequence.clear();
+    obsSequence.clear();
     estimatedStates.clear();
     
     return true;
@@ -350,12 +358,6 @@ bool ContinuousHiddenMarkovModel::print() const{
           sum=0.0;
           for(UINT j=0; j<a.getNumCols(); j++) sum += a[i][j];
           if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: A Row " << i <<" Sum: "<< sum << endl;
-        }
-
-        for(UINT i=0; i<b.getNumRows(); i++){
-          sum=0.0;
-          for(UINT j=0; j<b.getNumCols(); j++) sum += b[i][j];
-          if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: B Row " << i << " Sum: " << sum << endl;
         }
     }
     
@@ -403,7 +405,8 @@ double ContinuousHiddenMarkovModel::gauss( const MatrixDouble &x, const MatrixDo
     for(unsigned int n=0; n<N; n++){
         sum += SQR(  x[i][n] - y[j][n] );
     }
-    return exp( -SQR(sqrt( sum )/(2*SQR(sigma))) );
+    sum = sqrt( sum );
+    return exp( - sum/(2.0*sigma*sigma) );
 }
     
 bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{

@@ -104,7 +104,7 @@ public:
      @param const UINT cols: the number of columns, must be greater than zero
      @return returns true or false, indicating if the resize was successful
      */
-    virtual bool resize(const unsigned int rows,const unsigned int cols);
+    //virtual bool resize(const unsigned int rows,const unsigned int cols);
     
     /**
      Saves the matrix to a CSV file.  This replaces the deprecated saveToCSVFile function.

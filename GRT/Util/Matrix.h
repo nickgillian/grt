@@ -76,38 +76,7 @@ public:
         this->cols = 0;
         this->size = 0;
         this->capacity = 0;
-        
-		if(this!=&rhs){
-            this->rows = rhs.rows;
-            this->cols = rhs.cols;
-            this->size = rows*cols;
-            this->capacity = rhs.rows;
-            dataPtr = new T[rows*cols];
-            rowPtr = new T*[rows];
-            
-            if( dataPtr == NULL ){
-                throw Exception("Matrix(const Matrix &rhs) - Failed to allocate memory!");
-                return;
-            }
-            
-            if( rowPtr == NULL ){
-                throw Exception("Matrix(const Matrix &rhs) - Failed to allocate memory!");
-                return;
-            }
-            
-            //Setup the row pointers
-            unsigned int i=0;
-            T *p = &(dataPtr[0]);
-            for(i=0; i<rows; i++){
-                rowPtr[i] = p;
-                p += cols;
-            }
-            
-            //Copy the data
-            for(i=0; i<size; i++){
-                this->dataPtr[i] = rhs.dataPtr[i];
-            }
-		}
+        this->copy( rhs );
 	}
     
     /**
@@ -329,9 +298,9 @@ public:
      @param const Matrix<T> &rhs: the matrix you want to copy into this matrix
      @return returns true or false, indicating if the copy was successful
      */
-    bool copy( const Matrix<T> &rhs ){
+    virtual bool copy( const Matrix<T> &rhs ){
         
-        if( this !=& rhs ){
+        if( this != &rhs ){
             
             if( this->size != rhs.size ){
                 if( !this->resize( rhs.rows, rhs.cols ) ){
@@ -346,6 +315,7 @@ public:
                 this->dataPtr[i] = rhs.dataPtr[i];
             }
         }
+        
         return true;
     }
 

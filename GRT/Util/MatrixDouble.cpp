@@ -45,10 +45,9 @@ MatrixDouble::MatrixDouble(const MatrixDouble &rhs){
     this->dataPtr = NULL;
     this->rowPtr = NULL;
     this->copy( rhs );
-    
 }
     
-MatrixDouble::MatrixDouble(const Matrix<double> &rhs){
+MatrixDouble::MatrixDouble(const Matrix< double > &rhs){
     warningLog.setProceedingText("[WARNING MatrixDouble]");
     errorLog.setProceedingText("[ERROR MatrixDouble]");
     this->dataPtr = NULL;
@@ -68,7 +67,7 @@ MatrixDouble& MatrixDouble::operator=(const MatrixDouble &rhs){
     return *this;
 }
     
-MatrixDouble& MatrixDouble::operator=(const Matrix<double> &rhs){
+MatrixDouble& MatrixDouble::operator=(const Matrix< double > &rhs){
     if( this != &rhs ){
         this->clear();
         this->copy( rhs );
@@ -76,7 +75,7 @@ MatrixDouble& MatrixDouble::operator=(const Matrix<double> &rhs){
     return *this;
 }
     
-MatrixDouble& MatrixDouble::operator=(const vector< VectorDouble> &rhs){
+MatrixDouble& MatrixDouble::operator=(const vector< VectorDouble > &rhs){
     
     clear();
     
@@ -98,10 +97,12 @@ MatrixDouble& MatrixDouble::operator=(const vector< VectorDouble> &rhs){
     
     return *this;
 }
-    
+  
+    /*
 bool MatrixDouble::resize(const unsigned int rows,const unsigned int cols){
     return Matrix<double>::resize(rows, cols);
 }
+     */
  
 bool MatrixDouble::print(const string title) const {
     

@@ -87,11 +87,17 @@ public:
     
     virtual bool print() const;
     
+    UINT getNumStates() const { return numStates; }
+    
     UINT getClassLabel() const { return classLabel; }
     
     double getLoglikelihood() const { return loglikelihood; }
     
     double getPhase() const { return phase; }
+    
+    vector< UINT > getEstimatedStates() const { return estimatedStates; }
+    
+    MatrixDouble getAlpha() const { return alpha; }
     
     bool setDownsampleFactor(const UINT downsampleFactor);
     

@@ -20,12 +20,12 @@
 
 #include "HMM.h"
 
-namespace GRT {
+using namespace GRT;
 
 //Register the HMM with the classifier base type
 RegisterClassifierModule< HMM > HMM::registerModule("HMM");
     
-HMM::HMM(UINT hmmType,UINT modelType,UINT delta,bool useScaling,bool useNullRejection)
+HMM::HMM(const UINT hmmType,const UINT modelType,const UINT delta,const bool useScaling,const bool useNullRejection)
 {
     this->hmmType = hmmType;
     this->modelType = modelType;
@@ -43,7 +43,7 @@ HMM::HMM(UINT hmmType,UINT modelType,UINT delta,bool useScaling,bool useNullReje
 	downsampleFactor = 5;
     committeeSize = 5;
     
-    supportsNullRejection = true;
+    supportsNullRejection = false; //TODO - need to add better null rejection support
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
     classType = "HMM";
     classifierType = classType;
@@ -370,6 +370,7 @@ bool HMM::predict_continuous( VectorDouble &inputVector ){
     if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
+    std::fill(classLikelihoods.begin(),classLikelihoods.end(),0);
     std::fill(classDistances.begin(),classDistances.end(),0);
     
     bestDistance = -1000;
@@ -412,8 +413,9 @@ bool HMM::predict_continuous( VectorDouble &inputVector ){
     std::sort(results.begin(),results.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
     
     //Run the majority vote
+    const double committeeWeight = 1.0 / committeeSize;
     for(UINT i=0; i<committeeSize; i++){
-        classDistances[ getClassLabelIndexValue( results[i].index ) ] += Util::scale(results[i].value, -1000, 0, 0, 1, true);
+        classDistances[ getClassLabelIndexValue( results[i].index ) ] += Util::scale(results[i].value, -1000, 0, 0, committeeWeight, true);
     }
     
     //Turn the class distances into likelihoods
@@ -422,18 +424,22 @@ bool HMM::predict_continuous( VectorDouble &inputVector ){
         for(UINT k=0; k<numClasses; k++){
             classLikelihoods[k] = classDistances[k] / sum;
         }
-    }
-    
-    //Find the maximum label
-    for(UINT k=0; k<numClasses; k++){
-        if( classDistances[k] > bestDistance ){
-            bestDistance = classDistances[k];
-            bestIndex = k;
+        
+        //Find the maximum label
+        for(UINT k=0; k<numClasses; k++){
+            if( classDistances[k] > bestDistance ){
+                bestDistance = classDistances[k];
+                bestIndex = k;
+            }
         }
+        
+        maxLikelihood = classLikelihoods[ bestIndex ];
+        predictedClassLabel = classLabels[ bestIndex ];
+    }else{
+        //If the sum is not greater than 1, then no class is close to any model
+        maxLikelihood = 0;
+        predictedClassLabel = 0;
     }
-
-    maxLikelihood = classLikelihoods[ bestIndex ];
-    predictedClassLabel = classLabels[ bestIndex ];
     
     return true;
 }
@@ -544,6 +550,7 @@ bool HMM::predict_continuous(MatrixDouble &timeseries){
     if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
+    std::fill(classLikelihoods.begin(),classLikelihoods.end(),0);
     std::fill(classDistances.begin(),classDistances.end(),0);
     
     bestDistance = -1000;
@@ -580,28 +587,33 @@ bool HMM::predict_continuous(MatrixDouble &timeseries){
     std::sort(results.begin(),results.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
     
     //Run the majority vote
+    const double committeeWeight = 1.0 / committeeSize;
     for(UINT i=0; i<committeeSize; i++){
-        classDistances[ getClassLabelIndexValue( results[i].index ) ] += Util::scale(results[i].value, -1000, 0, 0, 1, true);
+        classDistances[ getClassLabelIndexValue( results[i].index ) ] += Util::scale(results[i].value, -1000, 0, 0, committeeWeight, true);
     }
     
     //Turn the class distances into likelihoods
     double sum = Util::sum(classDistances);
-    for(UINT k=0; k<numClasses; k++){
-        classLikelihoods[k] = classDistances[k] / sum;
-    }
-    
-    //Find the maximum label
-    bestIndex = 0;
-    for(UINT k=0; k<numClasses; k++){
-        if( classDistances[k] > bestDistance ){
-            bestDistance = classDistances[k];
-            bestIndex = k;
+    if( sum > 0 ){
+        for(UINT k=0; k<numClasses; k++){
+            classLikelihoods[k] = classDistances[k] / sum;
         }
+        
+        //Find the maximum label
+        for(UINT k=0; k<numClasses; k++){
+            if( classDistances[k] > bestDistance ){
+                bestDistance = classDistances[k];
+                bestIndex = k;
+            }
+        }
+        
+        maxLikelihood = classLikelihoods[ bestIndex ];
+        predictedClassLabel = classLabels[ bestIndex ];
+    }else{
+        //If the sum is not greater than 1, then no class is close to any model
+        maxLikelihood = 0;
+        predictedClassLabel = 0;
     }
-    
-    maxLikelihood = classLikelihoods[ bestIndex ];
-    predictedClassLabel = classLabels[ bestIndex ];
-    
     return true;
 }
     
@@ -1000,5 +1012,3 @@ bool HMM::setSigma(const double sigma){
     }
     return false;
 }
-
-}//End of namespace GRT

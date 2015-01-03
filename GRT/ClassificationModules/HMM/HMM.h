@@ -41,12 +41,41 @@ namespace GRT{
 class HMM : public Classifier
 {
 public:
-	HMM(UINT hmmType=HMM_CONTINUOUS,UINT modelType=HMM_LEFTRIGHT,UINT delta=1,bool useScaling = false,bool useNullRejection = false);
+    /**
+     Default Constructor.
+     
+     Sets up the HMM instance with default parameters.
+     
+     @param const UINT hmmType: sets the HMM type, this should be either HMM_DISCRETE or HMM_CONTINUOUS. Default: HMM_CONTINUOUS
+     @param const UINT modelType: sets the model type used by either the discrete or continuous hmm. This should be either HMM_ERGODIC or HMM_LEFTRIGHT. Default: HMM_LEFTRIGHT
+     @param const UINT delta: sets the number of states a model can transistion to for a HMM_LEFTRIGHT model. Default: 1
+     @param const UINT useScaling: sets if the training/input data should be scaled to the range [0 1]. Default: false
+     @param const UINT useNullRejection: sets if the algorithm should use null rejection (i.e., automatically gesture spotting). Default: false
+     */
+	HMM(const UINT hmmType=HMM_CONTINUOUS,const UINT modelType=HMM_LEFTRIGHT,const UINT delta=1,const bool useScaling = false,const bool useNullRejection = false);
     
+    /**
+     Default Constructor.
+     
+     Copies the settings/models from the rhs HMM instance to this instance.
+     
+     @param const HMM &rhs: another HMM instance from which the settings/models will be copied to this instance
+     */
     HMM(const HMM &rhs);
     
+    /**
+     Default Destructor.
+     */
 	virtual ~HMM(void);
     
+    /**
+     Custom Equals Operator.
+     
+     Copies the settings/models from the rhs HMM instance to this instance.
+     
+     @param const HMM &rhs: another HMM instance from which the settings/models will be copied to this instance
+     @return returns a reference to this instance
+     */
     HMM& operator=(const HMM &rhs);
     
     /**
@@ -69,6 +98,7 @@ public:
     
     /**
      This trains the HMM model, using the labelled timeseries classification data.
+     This is the main training function for the HMM class.
      This overrides the train function in the Classifier base class.
      
      @param TimeSeriesClassificationData trainingData: a reference to the training data
@@ -128,6 +158,13 @@ public:
     virtual bool loadModelFromFile(fstream &file);
     
     /**
+     This function gets the HMM type.  This will be either HMM_DISCRETE or HMM_CONTINUOUS.
+     
+     @return returns the current HMM type
+     */
+    UINT getHMMType() const;
+    
+    /**
      This function gets the model type for each HMM, this will be one of the HMM enum ModelTypes.
      
      @return returns the model type for each HMM
@@ -142,31 +179,22 @@ public:
      */
     UINT getDelta() const;
     
-    UINT getHMMType() const;
-    
     /**
-     This function gets the number of states in each HMM.
+     This function gets the number of states in each HMM.  This is only relevant if the HMM model type is HMM_DISCRETE.
      
-     @return returns the number of states in each HMM
+     @return returns the number of states in each discrete HMM
      */
     UINT getNumStates() const;
     
     /**
-     This function gets the number of symbols in each HMM.
+     This function gets the number of symbols in each HMM.  This is only relevant if the HMM model type is HMM_DISCRETE.
      
-     @return returns the number of symbols in each HMM
+     @return returns the number of symbols in each discrete HMM
      */
     UINT getNumSymbols() const;
     
     /**
-     This function gets the maximum number of iterations used to train each HMM.  
-     
-     @return returns the maximum number of iterations used to trained each HMM
-     */
-    UINT getMaxNumIterations() const;
-    
-    /**
-     This function gets the number of random training iterations used to train each HMM.
+     This function gets the number of random training iterations used to train each discrete HMM.
      
      The accuracy of the Baum Welch algorithm can be effected by the starting values of the A, B, and PI matrices.  The HMM
      algorithm therefore tries several different starting values and then continues to train the algorithm with the best settings.
@@ -179,7 +207,7 @@ public:
     
     /**
      This function gets returns a vector of trained DiscreteHiddenMarkovModels.  There will be one HiddenMarkovModel for each class in
-     the training data.
+     the training data. This is only relevant if the HMM model type is HMM_DISCRETE.
      
      @return returns the trained DiscreteHiddenMarkovModels
      */
@@ -187,7 +215,7 @@ public:
     
     /**
      This function gets returns a vector of trained ContinuousHiddenMarkovModels.  There will be one HiddenMarkovModel for each sample in
-     the training data.
+     the training data. This is only relevant if the HMM model type is HMM_CONTINUOUS.
      
      @return returns the trained ContinuousHiddenMarkovModels
      */
