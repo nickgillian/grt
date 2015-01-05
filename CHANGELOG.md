@@ -2,6 +2,9 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 4th January 2015
+- **add new Continuous HMM algorithm**. The HMM algorithm has been improved to support both Discrete and Continuous HMMs.  The toolkit used to only support Discrete HMMs (the input to the HMM had to be quantized to a discrete integer value using a quantization algorithm), but this update enables the user to now use a Continuous HMM (the input to the HMM can now consist of an N-dimensional vector like all the other GRT classifiers).  See the new HMM Discrete and HMM Continuous examples for more information on each algorithm.
+
 ## 4th December 2014 
 - **updated Decision Tree, user can now dynamically select the DecisionTreeNode**. The GRT Decision Tree algorithm has been improved to enable the user to dynamically select the type of DecisionTreeNode used for the main train and prediction functions.  There are currently two types of DecisionTreeNodes, DecisionTreeThresholdNode and DecisionTreeClusterNode.  Each node will give result in a different decision boundary and one node may therefore out perform another for a given classification task.  This new update also enables the user to create their own custom DecisionTreeNode (by inheriting from the GRT::DecistionTreeNode base class), and use this in the GRT DecisionTree.
 
