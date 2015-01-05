@@ -33,7 +33,7 @@ ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFa
 	this->delta = delta;
     modelType = HMM_LEFTRIGHT;
     sigma = 10;
-	cThreshold = -1000;
+	cThreshold = 0;
     useScaling = false;
     
     debugLog.setProceedingText("[DEBUG ContinuousHiddenMarkovModel]");
@@ -129,23 +129,46 @@ bool ContinuousHiddenMarkovModel::predict_(VectorDouble &x){
     return predict_( obsSequence );
 }
   
-bool ContinuousHiddenMarkovModel::predict_(MatrixDouble &obs){
+bool ContinuousHiddenMarkovModel::predict_( MatrixDouble &timeseries ){
     
     if( !trained ){
-        errorLog << "predict_(MatrixDouble &obs) - The model is not trained!" << endl;
+        errorLog << "predict_( MatrixDouble &timeseries ) - The model is not trained!" << endl;
         return false;
     }
     
-    if( obs.getNumCols() != numInputDimensions ){
-        errorLog << "predict_(MatrixDouble &obs) - The matrix column size (" << obs.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")" << endl;
+    if( timeseries.getNumCols() != numInputDimensions ){
+        errorLog << "predict_( MatrixDouble &timeseries ) - The matrix column size (" << timeseries.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")" << endl;
         return false;
     }
     
-    const int T = (int)obs.getNumRows();
-	int t,i,j = 0;
+    int t,i,j,k,index = 0;
     double maxAlpha = 0;
-    alpha.resize(T,numStates);
-    c.resize(T);
+    double norm = 0;
+    
+    //Downsample the observation timeseries using the same downsample factor of the training data
+    const int T = (int)floor( timeseries.getNumRows() / double(downsampleFactor) );
+    const int N = (int)numInputDimensions;
+    const int K = (int)downsampleFactor;
+    MatrixDouble obs(T,N);
+    for(j=0; j<N; j++){
+        index = 0;
+        for(i=0; i<T; i++){
+            norm = 0;
+            obs[i][j] = 0;
+            for(k=0; k<K; k++){
+                if( index < timeseries.getNumRows() ){
+                    obs[i][j] += timeseries[index++][j];
+                    norm += 1;
+                }
+            }
+            if( norm > 1 )
+                obs[i][j] /= norm;
+        }
+    }
+    
+	//Resize alpha, c, and the estimated states vector as needed
+    if( int(alpha.getNumRows()) != T || int(alpha.getNumCols()) != numStates ) alpha.resize(T,numStates);
+    if( int(c.size()) != T ) c.resize(T);
     if( int(estimatedStates.size()) != T ) estimatedStates.resize(T);
     
 	////////////////// Run the forward algorithm ////////////////////////
@@ -349,7 +372,7 @@ bool ContinuousHiddenMarkovModel::print() const{
 	for(UINT i=0; i<pi.size(); i++){
         trainingLog << pi[i] << "\t";
     }
-    trainingLog<<endl;
+    trainingLog << endl;
 
     //Check the weights all sum to 1
     if( true ){
@@ -371,6 +394,7 @@ bool ContinuousHiddenMarkovModel::setDownsampleFactor(const UINT downsampleFacto
         this->downsampleFactor = downsampleFactor;
         return true;
     }
+    warningLog << "setDownsampleFactor(const UINT downsampleFactor) - Failed to set downsample factor, it must be greater than zero!" << endl;
     return false;
 }
     
@@ -380,6 +404,7 @@ bool ContinuousHiddenMarkovModel::setModelType(const UINT modelType){
         this->modelType = modelType;
         return true;
     }
+    warningLog << "setModelType(const UINT modelType) - Failed to set model type, unknown type!" << endl;
     return false;
 }
 
@@ -389,6 +414,7 @@ bool ContinuousHiddenMarkovModel::setDelta(const UINT delta){
         this->delta = delta;
         return true;
     }
+    warningLog << "setDelta(const UINT delta) - Failed to set delta, it must be greater than zero!" << endl;
     return false;
 }
     
@@ -397,6 +423,7 @@ bool ContinuousHiddenMarkovModel::setSigma(const double sigma){
         this->sigma = sigma;
         return true;
     }
+    warningLog << "setSigma(const double sigma) - Failed to set sigma, it must be greater than zero!" << endl;
     return false;
 }
     
@@ -406,7 +433,7 @@ double ContinuousHiddenMarkovModel::gauss( const MatrixDouble &x, const MatrixDo
         sum += SQR(  x[i][n] - y[j][n] );
     }
     sum = sqrt( sum );
-    return exp( - sum/(2.0*sigma*sigma) );
+    return (1.0/( sigma * SQRT_TWO_PI )) * exp( - sum/(2.0*sigma*sigma) );
 }
     
 bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
@@ -476,8 +503,6 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
     std::string word;
     
     file >> word;
-    
-    cout << "WORD: " << word;
     
     //Find the file type header
     if(word != "CONTINUOUS_HMM_MODEL_FILE_V1.0"){

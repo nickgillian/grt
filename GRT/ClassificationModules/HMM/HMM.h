@@ -311,6 +311,18 @@ public:
      */
     bool setNumRandomTrainingIterations(const UINT numRandomTrainingIterations);
     
+    /**
+     This function sets the sigma parameter used for HMM_CONTINUOUS.
+     
+     Sigma controls the width of the Gaussian distance function that estimates the similarity between the input sample and the model.
+     
+     Modifing sigma will NOT clear the trained model, enabling the user to tune this parameter when needed.
+     
+     Sigma must be greater than zero.
+     
+     @param const double sigma: the new sigma parameter
+     @return returns true if the parameter was set correctly, false otherwise
+     */
     bool setSigma(const double sigma);
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
