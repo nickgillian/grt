@@ -55,42 +55,42 @@ public:
     
     }
     
+    virtual bool preFilterUpdate( VectorDouble &data ){
+        
+        //Randomly reset a small number of particles to ensure the classifier does not get stuck on one gesture
+        unsigned int numRandomFlipParticles = (unsigned int)floor( processNoise[0] * double(numParticles) );
+        
+        for(unsigned int i=0; i<numRandomFlipParticles; i++){
+            //unsigned int randomParticleIndex = rand.getRandomNumberInt(0, numParticles);
+            unsigned int randomParticleIndex = i;
+            
+            particles[ randomParticleIndex ].x[0] = rand.getRandomNumberInt(0, numTemplates); //Randomly pick a template
+            particles[ randomParticleIndex ].x[1] = 0; //rand.getRandomNumberUniform(0,1); //Randomly pick a phase
+            particles[ randomParticleIndex ].x[2] = 0; //rand.getRandomNumberUniform(-processNoise[2],processNoise[2]); //Randomly pick a speed
+        }
+        
+        return true;
+    }
+    
+    virtual bool postFilterUpdate( VectorDouble &data ){
+        
+        return true;
+    }
+    
     virtual bool predict( Particle &p ){
         
         //Given the prior set of particles, randomly generate new state estimations using the process model
-        
-        //Check to see if we should randomly select a new template
-        bool randomSelect = false;
-        bool isNan = grt_isnan(p.w);
-        
-        if( p.w < 1.0/double(numParticles) - processNoise[0] || isNan ){
-            if( rand.getRandomNumberUniform(0,1) >= 0.8 || isNan ){
-                randomSelect = true;
-            }
-        }else{
-            //No matter what the weight is, every so often we want to force a particle to jump to a new template
-            if( rand.getRandomNumberUniform(0,1) >= 0.9999999 ){
-                randomSelect = true;
-            }
-        }
-        
-        if( randomSelect ){
-            p.x[0] = rand.getRandomNumberInt(0, numTemplates); //Randomly pick a template
-            p.x[1] = rand.getRandomNumberUniform(0,1); //Randomly pick a phase
-            p.x[2] = rand.getRandomNumberUniform(-processNoise[2],processNoise[2]); //Randomly pick a speed
-        }else{
-            const double phase = p.x[1];
-            const double velocity = p.x[2];
+        const double phase = p.x[1];
+        const double velocity = p.x[2];
             
-            //Update the phase
-            p.x[1] = Util::limit( phase + velocity + rand.getRandomNumberGauss(0.0,processNoise[1]) , 0, 1);
+        //Update the phase
+        p.x[1] = Util::limit( phase + rand.getRandomNumberGauss(0.0,processNoise[1]) , 0, 1);
             
-            //Update the velocity
-            p.x[2] += phase-p.x[1];
+        //Update the velocity
+        p.x[2] += phase-p.x[1];
             
-            //Limit the velocity
-            p.x[2] = Util::limit( p.x[2], -processNoise[2], processNoise[2] );
-        }
+        //Limit the velocity
+        p.x[2] = Util::limit( p.x[2], -processNoise[2], processNoise[2] );
     
         return true;
     }

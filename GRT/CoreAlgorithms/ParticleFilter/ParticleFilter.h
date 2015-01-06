@@ -53,7 +53,9 @@ public:
         numParticles = 0;
         stateVectorSize = 0;
         numDeadParticles = 0;
-        minimumWeightThreshold = 1.0e-5;
+        wNorm = 0;
+        minimumWeightThreshold = 1.0e-20;
+        resampleThreshold = 1.0e+5;
         robustMeanWeightDistance = 0.2;
         estimationLikelihood = 0;
         warningLog.setProceedingText("[WARNING ParticleFilter]");
@@ -126,7 +128,9 @@ public:
             this->initMode = rhs.initMode;
             this->estimationMode= rhs.estimationMode;
             this->numDeadParticles = rhs.numDeadParticles;
+            this->wNorm = rhs.wNorm;
             this->minimumWeightThreshold = rhs.minimumWeightThreshold;
+            this->resampleThreshold = rhs.resampleThreshold;
             this->robustMeanWeightDistance= rhs.robustMeanWeightDistance;
             this->estimationLikelihood = rhs.estimationLikelihood;
             this->x = rhs.x;
@@ -288,6 +292,7 @@ public:
         numParticles = 0;
         stateVectorSize = 0;
         estimationLikelihood = 0;
+        wNorm = 0;
         numDeadParticles = 0;
         x.clear();
         initModel.clear();
@@ -429,6 +434,19 @@ public:
     }
     
     /**
+     Sets the threshold used to determine if the particles should be resampled.
+     The particles will be resampled if the wNorm value is greater than the resampleThreshold.
+     The resampleThreshold should be in the range [0 1], normally something like: 1.0e+10 works well.
+     
+     @param const double resampleThreshold: the new resampleThreshold
+     @return returns true if the parameter was successfully updated, false otherwise
+     */
+    bool setResampleThreshold(const double resampleThreshold){
+        this->resampleThreshold = resampleThreshold;
+        return true;
+    }
+    
+    /**
      Sets the estimation mode. This should be one of the EstimationModes.
      
      @param const unsigned int estimationMode: the new estimation mode (must be one of the EstimationModes enums)
@@ -530,7 +548,7 @@ protected:
      @return returns true if the particle prediction was updated successfully, false otherwise
      */
     virtual bool predict( PARTICLE &p ){
-        errorLog << "predict( PARTICLE &p ) Prediction function not implemented!" << endl;
+        errorLog << "predict( PARTICLE &p ) Prediction function not implemented! This must be implemented by the derived class!" << endl;
         return false;
     }
     
@@ -545,7 +563,7 @@ protected:
      @return returns true if the particle update was updated successfully, false otherwise
      */
     virtual bool update( PARTICLE &p, SENSOR_DATA &data ){
-        errorLog << "update( PARTICLE &p, SENSOR_DATA &data ) Update function not implemented!" << endl;
+        errorLog << "update( PARTICLE &p, SENSOR_DATA &data ) Update function not implemented! This must be implemented by the derived class!" << endl;
         return false;
     }
     
@@ -557,34 +575,30 @@ protected:
      */
     virtual bool normalizeWeights(){
         
-        //Compute the total particle weight
-        double wNorm = 0;
+        //Compute the total particle weight and number of dead particles
+        wNorm = 0;
         numDeadParticles = 0;
         typename vector< PARTICLE >::iterator iter;
         for( iter = particles.begin(); iter != particles.end(); ++iter ){
-            wNorm += iter->w;
-            
             if( grt_isinf( iter->w ) ){
                 numDeadParticles++;
+            }else{
+                wNorm += iter->w;
             }
         }
         
-        if( grt_isnan(wNorm) ){
+        if( wNorm == 0 ){
             if( verbose )
-                warningLog << "WARNING: Weight norm is NAN!" << endl;
-            return true;
-        }
-        
-        if( grt_isinf(wNorm) ){
-            if( verbose )
-                warningLog << "WARNING: Weight norm is INF!" << endl;
+                warningLog << "normalizeWeights() - Weight norm is zero!" << endl;
             return true;
         }
         
         //Normalized the weights so they sum to 1
+        wNorm = 1.0 / wNorm;
         for( iter = particles.begin(); iter != particles.end(); ++iter ){
-            iter->w /= wNorm;
+            iter->w *= wNorm;
         }
+        cout << "wNorm: " << wNorm << endl;
 
         return true;
     }
@@ -698,7 +712,7 @@ protected:
      @return returns true if the particles should be resampled, false otherwise
      */
     virtual bool checkForResample(){
-        return true;
+        return wNorm > resampleThreshold;
     }
     
     /**
@@ -708,6 +722,8 @@ protected:
      @return returns true if the particles were correctly resampled, false otherwise
      */
     virtual bool resample(){
+        
+        cout << "resampling..." << endl;
         
         vector< PARTICLE > *tempParticles = NULL;
         
@@ -776,7 +792,7 @@ protected:
 	@return returns true if the update was completed successfully, false otherwise
      */
     virtual bool preFilterUpdate( SENSOR_DATA &data ){
-	return true;
+        return true;
     }
 
     /**
@@ -785,7 +801,7 @@ protected:
 	@return returns true if the update was completed successfully, false otherwise
      */
     virtual bool postFilterUpdate( SENSOR_DATA &data ){
-	return true;
+        return true;
     }
     
     /**
@@ -854,6 +870,8 @@ protected:
     double minimumWeightThreshold;                  ///<Any weight below this value will not be resampled
     double robustMeanWeightDistance;                ///<The distance parameter used in the ROBUST_MEAN estimation mode
     double estimationLikelihood;                    ///<The likelihood of the estimated state
+    double wNorm;                                   ///<Stores the total weight norm value
+    double resampleThreshold;                       ///<The threshold below which the particles will be resampled
     VectorDouble x;                                 ///<The state estimation
     std::vector< VectorDouble > initModel;           ///<The noise model for the initial starting guess
     VectorDouble processNoise;                      ///<The noise covariance in the system

@@ -91,6 +91,12 @@ bool ParticleClassifier::train_(TimeSeriesClassificationData &trainingData){
     
     numClasses = trainingData.getNumClasses();
     numInputDimensions = trainingData.getNumDimensions();
+    ranges = trainingData.getRanges();
+    
+    //Scale the training data if needed
+    if( useScaling ){
+        trainingData.scale(0, 1);
+    }
     
     //Train the particle filter
     particleFilter.train( numParticles, trainingData, sensorNoise, transitionSigma, phaseSigma, velocitySigma );
@@ -108,7 +114,7 @@ bool ParticleClassifier::train_(TimeSeriesClassificationData &trainingData){
     return trained;
 }
 
-bool ParticleClassifier::predict_(VectorDouble &inputVector){
+bool ParticleClassifier::predict_( VectorDouble &inputVector ){
 
     if( !trained ){
         errorLog << "predict_(VectorDouble &inputVector) - The model has not been trained!" << endl;
@@ -118,6 +124,13 @@ bool ParticleClassifier::predict_(VectorDouble &inputVector){
     if( numInputDimensions != inputVector.size() ){
         errorLog << "predict_(VectorDouble &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.size() << endl;
         return false;
+    }
+    
+    //Scale the input data if needed
+    if( useScaling ){
+        for(unsigned int j=0; j<numInputDimensions; j++){
+            inputVector[j] = scale(inputVector[j],ranges[j].minValue,ranges[j].maxValue,0,1);
+        }
     }
     
     predictedClassLabel = 0;
