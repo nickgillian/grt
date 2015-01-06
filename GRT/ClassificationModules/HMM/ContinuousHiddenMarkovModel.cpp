@@ -509,9 +509,6 @@ double ContinuousHiddenMarkovModel::gauss( const MatrixDouble &x, const MatrixDo
     for(unsigned int n=0; n<N; n++){
         z *= (1.0/( sigma[i][n] * SQRT_TWO_PI )) * exp( - SQR(x[i][n]-y[j][n])/(2.0*SQR(sigma[i][n])) );
     }
-    //eturn 1.0/(SQRT_TWO_PI*sigma) * exp( -SQR(x-mu)/(2.0*SQR(sigma)) );
-    //(1.0/( sigma[i][n] * SQRT_TWO_PI )) *
-    //cout << "z: " << z << endl;
     return z;
 }
     
