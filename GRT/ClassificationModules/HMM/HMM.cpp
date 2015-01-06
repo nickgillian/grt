@@ -42,6 +42,7 @@ HMM::HMM(const UINT hmmType,const UINT modelType,const UINT delta,const bool use
     //Default continuous setup
 	downsampleFactor = 5;
     committeeSize = 5;
+    sigma = 10.0;
     
     supportsNullRejection = false; //TODO - need to add better null rejection support
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
@@ -1006,7 +1007,7 @@ bool HMM::setSigma(const double sigma){
     if( sigma > 0 ){
         this->sigma = sigma;
         for(size_t i=0; i<continuousModels.size(); i++){
-            continuousModels[i].setSigma(sigma);
+            continuousModels[i].setSigma( sigma );
         }
         return true;
     }

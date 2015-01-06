@@ -69,6 +69,10 @@ int main(int argc, const char * argv[]){
     //Set the committee size
     hmm.setCommitteeSize( 5 );
     
+    //Set sigma, this will vary depending on the range of your sensor data
+    //You might need to tune this to increase the accuracy of the model
+    hmm.setSigma( 2.0 );
+    
     //Set the HMM model type to LEFTRIGHT with a delta of 1
     hmm.setModelType( HMM_LEFTRIGHT );
     hmm.setDelta( 1 );

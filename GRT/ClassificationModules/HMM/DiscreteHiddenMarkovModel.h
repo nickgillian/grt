@@ -33,7 +33,7 @@
 
 #include "HMMEnums.h"
 #include "../../Util/GRTCommon.h"
-#include "../../CoreModules/MLBAse.h"
+#include "../../CoreModules/MLBase.h"
 
 namespace GRT {
 
