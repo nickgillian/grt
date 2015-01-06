@@ -39,7 +39,7 @@ namespace GRT {
 
 class ContinuousHiddenMarkovModel : public MLBase {
 public:
-	ContinuousHiddenMarkovModel(const UINT downsampleFactor = 5,const UINT delta = 1);
+	ContinuousHiddenMarkovModel(const UINT downsampleFactor = 5,const UINT delta = 1,const bool autoEstimateSigma = true,const double sigma = 10.0);
     
     ContinuousHiddenMarkovModel(const ContinuousHiddenMarkovModel &rhs);
     
@@ -127,14 +127,17 @@ public:
     
     bool setSigma(const double sigma);
     
+    bool setAutoEstimateSigma(const bool autoEstimateSigma);
+    
 protected:
     
-    double gauss( const MatrixDouble &x, const MatrixDouble &y,const unsigned int i,const unsigned int j,const unsigned int N,const double sigma );
+    double gauss( const MatrixDouble &x, const MatrixDouble &y, const MatrixDouble &sigma, const unsigned int i,const unsigned int j,const unsigned int N );
     
     UINT downsampleFactor;
 	UINT numStates;             ///<The number of states for this model
     UINT classLabel;            ///<The class label associated with this model
     UINT timeseriesLength;      ///<The length of the training timeseries
+    bool autoEstimateSigma;
     double sigma;
     double phase;
 	MatrixDouble a;             ///<The transitions probability matrix
@@ -145,6 +148,7 @@ protected:
     CircularBuffer< VectorDouble > observationSequence; ///<A buffer to store data for realtime prediction
     MatrixDouble obsSequence;
     vector< UINT > estimatedStates; ///<The estimated states for prediction
+    MatrixDouble sigmaStates; ///<The sigma value for each state
 
 	UINT modelType;         ///<The model type (LEFTRIGHT, or ERGODIC)
 	UINT delta;				///<The number of states a model can move to in a LEFTRIGHT model

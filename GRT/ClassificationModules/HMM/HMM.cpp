@@ -43,6 +43,7 @@ HMM::HMM(const UINT hmmType,const UINT modelType,const UINT delta,const bool use
 	downsampleFactor = 5;
     committeeSize = 5;
     sigma = 10.0;
+    autoEstimateSigma = true;
     
     supportsNullRejection = false; //TODO - need to add better null rejection support
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
@@ -76,6 +77,8 @@ HMM& HMM::operator=(const HMM &rhs){
         this->numSymbols = rhs.numSymbols;
         this->downsampleFactor = rhs.downsampleFactor;
         this->committeeSize = rhs.committeeSize;
+        this->sigma = rhs.sigma;
+        this->autoEstimateSigma = rhs.autoEstimateSigma;
         this->discreteModels = rhs.discreteModels;
         this->continuousModels = rhs.continuousModels;
         
@@ -102,6 +105,8 @@ bool HMM::deepCopyFrom(const Classifier *classifier){
         this->numSymbols = ptr->numSymbols;
         this->downsampleFactor = ptr->downsampleFactor;
         this->committeeSize = ptr->committeeSize;
+        this->sigma = ptr->sigma;
+        this->autoEstimateSigma = ptr->autoEstimateSigma;
         this->discreteModels = ptr->discreteModels;
         this->continuousModels = ptr->continuousModels;
         
@@ -247,6 +252,7 @@ bool HMM::train_continuous(TimeSeriesClassificationData &trainingData){
         continuousModels[k].setModelType( modelType );
         continuousModels[k].setDelta( delta );
         continuousModels[k].setSigma( sigma );
+        continuousModels[k].setAutoEstimateSigma( autoEstimateSigma );
         continuousModels[k].enableScaling( false ); //Scaling should always off for the models as we do any scaling in the CHMM
         
         //Train the model
@@ -650,6 +656,49 @@ bool HMM::clear(){
     return true;
 }
 
+bool HMM::print() const{
+    
+    cout << "HMM Model\n";
+    
+    //Write the generic hmm data
+    cout << "HmmType: " << hmmType << endl;
+    cout << "ModelType: " << modelType << endl;
+    cout << "Delta: " << delta << endl;
+    
+    //Write the model specific data
+    switch( hmmType ){
+        case HMM_DISCRETE:
+            cout << "NumStates: " << numStates << endl;
+            cout << "NumSymbols: " << numSymbols << endl;
+            cout << "NumRandomTrainingIterations: " << numRandomTrainingIterations << endl;
+            cout << "NumDiscreteModels: " << discreteModels.size() << endl;
+            cout << "DiscreteModels: " << endl;
+            for(size_t i=0; i<discreteModels.size(); i++){
+                if( !discreteModels[i].print() ){
+                    errorLog <<"saveModelToFile(fstream &file) - Failed to print discrete model " << i << " to file!" << endl;
+                    return false;
+                }
+            }
+            break;
+        case HMM_CONTINUOUS:
+            cout << "DownsampleFactor: " << downsampleFactor << endl;
+            cout << "CommitteeSize: " << committeeSize << endl;
+            cout << "Sigma: " << sigma << endl;
+            cout << "AutoEstimateSigma: " << autoEstimateSigma << endl;
+            cout << "NumContinuousModels: " << continuousModels.size() << endl;
+            cout << "ContinuousModels: " << endl;
+            for(size_t i=0; i<continuousModels.size(); i++){
+                if( !continuousModels[i].print() ){
+                    errorLog <<"saveModelToFile(fstream &file) - Failed to print continuous model " << i << " to file!" << endl;
+                    return false;
+                }
+            }
+            break;
+    }
+    
+    return true;
+}
+
 bool HMM::saveModelToFile( fstream &file ) const{
 	
 	if(!file.is_open())
@@ -1012,4 +1061,13 @@ bool HMM::setSigma(const double sigma){
         return true;
     }
     return false;
+}
+
+bool HMM::setAutoEstimateSigma(const bool autoEstimateSigma){
+    
+    clear();
+    
+    this->autoEstimateSigma = autoEstimateSigma;
+    
+    return true;
 }

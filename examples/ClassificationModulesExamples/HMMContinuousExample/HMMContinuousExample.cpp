@@ -63,24 +63,23 @@ int main(int argc, const char * argv[]){
     //Set the HMM as a Continuous HMM
     hmm.setHMMType( HMM_CONTINUOUS );
     
-    //Set the downsample factor
-    hmm.setDownsampleFactor( 10 );
+    //Set the downsample factor, a higher downsample factor will speed up the prediction time, but might reduce the classification accuracy
+    hmm.setDownsampleFactor( 5 );
     
-    //Set the committee size
-    hmm.setCommitteeSize( 5 );
+    //Set the committee size, this sets the (top) number of models that will be used to make a prediction
+    hmm.setCommitteeSize( 10 );
     
-    //Set sigma, this will vary depending on the range of your sensor data
-    //You might need to tune this to increase the accuracy of the model
-    hmm.setSigma( 2.0 );
+    //Tell the hmm algorithm that we want it to estimate sigma from the training data
+    hmm.setAutoEstimateSigma( true );
     
-    //Set the HMM model type to LEFTRIGHT with a delta of 1
+    //Set the minimum value for sigma, you might need to adjust this based on the range of your data
+    //If you set setAutoEstimateSigma to false, then all sigma values will use the value below
+    hmm.setSigma( 20.0 );
+    
+    //Set the HMM model type to LEFTRIGHT with a delta of 1, this means the HMM can only move from the left-most state to the right-most state
+    //in steps of 1
     hmm.setModelType( HMM_LEFTRIGHT );
     hmm.setDelta( 1 );
-    
-    //Set the training parameters
-    hmm.setMinChange( 1.0e-5 );
-    hmm.setMaxNumEpochs( 100 );
-    hmm.setNumRandomTrainingIterations( 20 );
     
     //Train the HMM model
     if( !hmm.train( trainingData ) ){

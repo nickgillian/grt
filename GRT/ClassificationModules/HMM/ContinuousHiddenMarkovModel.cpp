@@ -20,19 +20,17 @@
 
 #include "ContinuousHiddenMarkovModel.h"
 
-using namespace std;
-
-namespace GRT {
-
+using namespace GRT;
 
 //Init the model with a set number of states and symbols
-ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFactor,const UINT delta){
+ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFactor,const UINT delta,const bool autoEstimateSigma,const double sigma){
 
     clear();
 	this->downsampleFactor = downsampleFactor;
 	this->delta = delta;
+    this->autoEstimateSigma = autoEstimateSigma;
+    this->sigma = sigma;
     modelType = HMM_LEFTRIGHT;
-    sigma = 10;
 	cThreshold = 0;
     useScaling = false;
     
@@ -49,6 +47,8 @@ ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const ContinuousHiddenM
     this->classLabel = rhs.classLabel;
     this->timeseriesLength = rhs.timeseriesLength;
     this->sigma = rhs.sigma;
+    this->autoEstimateSigma = rhs.autoEstimateSigma;
+    this->sigmaStates = rhs.sigmaStates;
 	this->a = rhs.a;
 	this->b = rhs.b;
 	this->pi = rhs.pi;
@@ -84,6 +84,8 @@ ContinuousHiddenMarkovModel& ContinuousHiddenMarkovModel::operator=(const Contin
         this->classLabel = rhs.classLabel;
         this->timeseriesLength = rhs.timeseriesLength;
         this->sigma = rhs.sigma;
+        this->autoEstimateSigma = rhs.autoEstimateSigma;
+        this->sigmaStates = rhs.sigmaStates;
         this->a = rhs.a;
         this->b = rhs.b;
         this->pi = rhs.pi;
@@ -177,7 +179,7 @@ bool ContinuousHiddenMarkovModel::predict_( MatrixDouble &timeseries ){
 	c[t] = 0;
     maxAlpha = 0;
 	for(i=0; i<numStates; i++){
-		alpha[t][i] = pi[i]*gauss(b,obs,i,t,numInputDimensions,sigma);
+		alpha[t][i] = pi[i]*gauss(b,obs,sigmaStates,i,t,numInputDimensions);
 		c[t] += alpha[t][i];
         
         //Keep track of the best state at time t
@@ -202,7 +204,7 @@ bool ContinuousHiddenMarkovModel::predict_( MatrixDouble &timeseries ){
 			for(i=0; i<numStates; i++){
 				alpha[t][j] +=  alpha[t-1][i] * a[i][j];
 			}
-            alpha[t][j] *= gauss(b,obs,j,t,numInputDimensions,sigma);
+            alpha[t][j] *= gauss(b,obs,sigmaStates,j,t,numInputDimensions);
             c[t] += alpha[t][j];
             
             //Keep track of the best state at time t
@@ -305,6 +307,56 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
 			break;
 	}
     
+    //Setup sigma for each state
+    sigmaStates.resize( numStates, numInputDimensions );
+    
+    if( autoEstimateSigma ){
+        
+        //Estimate the standard dev for each dimension, for each state
+        MatrixDouble meanResults( numStates, numInputDimensions );
+        for(unsigned int j=0; j<numInputDimensions; j++){
+            
+            //Estimate the mean for each state
+            index = 0;
+            for(unsigned int i=0; i<numStates; i++){
+                norm = 0;
+                meanResults[i][j] = 0;
+                for(unsigned int k=0; k<downsampleFactor; k++){
+                    if( index < trainingData.getLength() ){
+                        meanResults[i][j] += trainingData[index++][j];
+                        norm += 1;
+                    }
+                }
+                if( norm > 1 ){
+                    meanResults[i][j] /= norm;
+                }
+            }
+            
+            //Loop back over the data again and estimate the stddev for each state
+            index = 0;
+            for(unsigned int i=0; i<numStates; i++){
+                norm = 0;
+                sigmaStates[i][j] = 0;
+                for(unsigned int k=0; k<downsampleFactor; k++){
+                    if( index < trainingData.getLength() ){
+                        sigmaStates[i][j] += SQR( trainingData[index++][j]-meanResults[i][j] );
+                        norm += 1;
+                    }
+                }
+                if( norm > 1 ){
+                    sigmaStates[i][j] = sqrt( 1.0/norm * sigmaStates[i][j] );
+                }
+                
+                if( sigmaStates[i][j] < sigma ){
+                    sigmaStates[i][j] = sigma;
+                }
+            }
+        }
+        
+    }else{
+        sigmaStates.setAllValues(sigma);
+    }
+    
     //Setup the observation buffer for prediction
     observationSequence.resize( timeseriesLength, VectorDouble(numInputDimensions,0) );
     obsSequence.resize(timeseriesLength,numInputDimensions);
@@ -346,41 +398,53 @@ bool ContinuousHiddenMarkovModel::clear(){
     observationSequence.clear();
     obsSequence.clear();
     estimatedStates.clear();
+    sigmaStates.clear();
     
     return true;
 }
 
 bool ContinuousHiddenMarkovModel::print() const{
 
-	trainingLog << "A: " << endl;
-	for(UINT i=0; i<a.getNumRows(); i++){
-		for(UINT j=0; j<a.getNumCols(); j++){
-			trainingLog << a[i][j] << "\t";
-		}
-        trainingLog << endl;
-	}
-
-	trainingLog << "B: " << endl;
-	for(UINT i=0; i<b.getNumRows(); i++){
-		for(UINT j=0; j<b.getNumCols(); j++){
-			trainingLog << b[i][j] << "\t";
-		}
-        trainingLog << endl;
-	}
-    
-    trainingLog << "Pi: ";
-	for(UINT i=0; i<pi.size(); i++){
-        trainingLog << pi[i] << "\t";
-    }
-    trainingLog << endl;
-
-    //Check the weights all sum to 1
-    if( true ){
-        double sum=0.0;
+    if( trained ){
+        trainingLog << "A: " << endl;
         for(UINT i=0; i<a.getNumRows(); i++){
-          sum=0.0;
-          for(UINT j=0; j<a.getNumCols(); j++) sum += a[i][j];
-          if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: A Row " << i <<" Sum: "<< sum << endl;
+            for(UINT j=0; j<a.getNumCols(); j++){
+                trainingLog << a[i][j] << "\t";
+            }
+            trainingLog << endl;
+        }
+
+        trainingLog << "B: " << endl;
+        for(UINT i=0; i<b.getNumRows(); i++){
+            for(UINT j=0; j<b.getNumCols(); j++){
+                trainingLog << b[i][j] << "\t";
+            }
+            trainingLog << endl;
+        }
+        
+        trainingLog << "Pi: ";
+        for(size_t i=0; i<pi.size(); i++){
+            trainingLog << pi[i] << "\t";
+        }
+        trainingLog << endl;
+        
+        trainingLog << "SigmaStates: ";
+        for(UINT i=0; i<sigmaStates.getNumRows(); i++){
+            for(UINT j=0; j<sigmaStates.getNumCols(); j++){
+                trainingLog << sigmaStates[i][j] << "\t";
+            }
+            trainingLog << endl;
+        }
+        trainingLog << endl;
+
+        //Check the weights all sum to 1
+        if( true ){
+            double sum=0.0;
+            for(UINT i=0; i<a.getNumRows(); i++){
+              sum=0.0;
+              for(UINT j=0; j<a.getNumCols(); j++) sum += a[i][j];
+              if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: A Row " << i <<" Sum: "<< sum << endl;
+            }
         }
     }
     
@@ -421,19 +485,34 @@ bool ContinuousHiddenMarkovModel::setDelta(const UINT delta){
 bool ContinuousHiddenMarkovModel::setSigma(const double sigma){
     if( sigma > 0 ){
         this->sigma = sigma;
+        
+        if( !autoEstimateSigma && trained ){
+            sigmaStates.setAllValues(sigma);
+        }
         return true;
     }
     warningLog << "setSigma(const double sigma) - Failed to set sigma, it must be greater than zero!" << endl;
     return false;
 }
+
+bool ContinuousHiddenMarkovModel::setAutoEstimateSigma(const bool autoEstimateSigma){
     
-double ContinuousHiddenMarkovModel::gauss( const MatrixDouble &x, const MatrixDouble &y,const unsigned int i,const unsigned int j,const unsigned int N, const double sigma ){
-    double sum = 0;
+    clear();
+    
+    this->autoEstimateSigma = autoEstimateSigma;
+    
+    return true;
+}
+
+double ContinuousHiddenMarkovModel::gauss( const MatrixDouble &x, const MatrixDouble &y, const MatrixDouble &sigma, const unsigned int i,const unsigned int j,const unsigned int N ){
+    double z = 1;
     for(unsigned int n=0; n<N; n++){
-        sum += SQR(  x[i][n] - y[j][n] );
+        z *= (1.0/( sigma[i][n] * SQRT_TWO_PI )) * exp( - SQR(x[i][n]-y[j][n])/(2.0*SQR(sigma[i][n])) );
     }
-    sum = sqrt( sum );
-    return (1.0/( sigma * SQRT_TWO_PI )) * exp( - sum/(2.0*sigma*sigma) );
+    //eturn 1.0/(SQRT_TWO_PI*sigma) * exp( -SQR(x-mu)/(2.0*SQR(sigma)) );
+    //(1.0/( sigma[i][n] * SQRT_TWO_PI )) *
+    //cout << "z: " << z << endl;
+    return z;
 }
     
 bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
@@ -458,6 +537,7 @@ bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
     file << "ClassLabel: " << classLabel << endl;
     file << "TimeseriesLength: " << timeseriesLength << endl;
     file << "Sigma: " << sigma << endl;
+    file << "AutoEstimateSigma: " << autoEstimateSigma << endl;
     file << "ModelType: " << modelType << endl;
     file << "Delta: " << delta << endl;
     file << "Threshold: " << cThreshold << endl;
@@ -479,12 +559,22 @@ bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
             }file << endl;
         }
         
-        file<<"Pi:\n";
+        file<<"Pi: ";
         for(UINT i=0; i<numStates; i++){
             file << pi[i];
             if( i+1 < numStates ) file << "\t";
         }
         file << endl;
+        
+        file << "SigmaStates: ";
+        for(UINT i=0; i<numStates; i++){
+            for(UINT j=0; j<numInputDimensions; j++){
+                file << sigmaStates[i][j];
+                if( j+1 < numInputDimensions ) file << "\t";
+            }file << endl;
+        }
+        file << endl;
+
     }
     
     return true;
@@ -552,6 +642,13 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
     file >> sigma;
     
     file >> word;
+    if(word != "AutoEstimateSigma:"){
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the AutoEstimateSigma for the header." << endl;
+        return false;
+    }
+    file >> autoEstimateSigma;
+    
+    file >> word;
     if(word != "ModelType:"){
         errorLog << "loadModelFromFile( fstream &file ) - Could not find the ModelType for the header." << endl;
         return false;
@@ -576,6 +673,7 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
         a.resize(numStates,numStates);
         b.resize(numStates,numInputDimensions);
         pi.resize(numStates);
+        sigmaStates.resize(numStates,numInputDimensions);
         
         //Load the A, B and Pi matrices
         file >> word;
@@ -606,7 +704,7 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
         
         file >> word;
         if(word != "Pi:"){
-            errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi matrix header." << endl;
+            errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi header." << endl;
             return false;
         }
         
@@ -615,6 +713,18 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
             file >> pi[i];
         }
 
+        file >> word;
+        if(word != "SigmaStates:"){
+            errorLog << "loadModelFromFile( fstream &file ) - Could not find the SigmaStates header." << endl;
+            return false;
+        }
+        
+        //Load sigmaStates
+        for(UINT i=0; i<numStates; i++){
+            for(UINT j=0; j<numInputDimensions; j++){
+                file >> sigmaStates[i][j];
+            }
+        }
         
         //Setup the observation buffer for prediction
         observationSequence.resize( timeseriesLength, VectorDouble(numInputDimensions,0) );
@@ -623,6 +733,4 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
     }
 
     return true;
-}
-
 }

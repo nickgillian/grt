@@ -139,6 +139,8 @@ public:
      */
     virtual bool clear();
     
+    virtual bool print() const;
+    
     /**
      This saves the trained HMM model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
@@ -325,6 +327,8 @@ public:
      */
     bool setSigma(const double sigma);
     
+    bool setAutoEstimateSigma(const bool autoEstimateSigma);
+    
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
@@ -355,6 +359,7 @@ protected:
     UINT downsampleFactor;
     UINT committeeSize;
     double sigma;
+    bool autoEstimateSigma;
     vector< ContinuousHiddenMarkovModel > continuousModels;
     
     static RegisterClassifierModule< HMM > registerModule;
