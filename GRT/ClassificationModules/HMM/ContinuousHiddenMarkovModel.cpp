@@ -143,22 +143,21 @@ bool ContinuousHiddenMarkovModel::predict_( MatrixDouble &timeseries ){
         return false;
     }
     
-    int t,i,j,k,index = 0;
+    unsigned int t,i,j,k,index = 0;
     double maxAlpha = 0;
     double norm = 0;
     
     //Downsample the observation timeseries using the same downsample factor of the training data
-    const int T = (int)floor( timeseries.getNumRows() / double(downsampleFactor) );
-    const int N = (int)numInputDimensions;
-    const int K = (int)downsampleFactor;
-    MatrixDouble obs(T,N);
-    for(j=0; j<N; j++){
+    const unsigned int timeseriesLength = (int)timeseries.getNumRows();
+    const unsigned int T = (int)floor( timeseriesLength / double(downsampleFactor) );
+    MatrixDouble obs(T,numInputDimensions);
+    for(j=0; j<numInputDimensions; j++){
         index = 0;
         for(i=0; i<T; i++){
             norm = 0;
             obs[i][j] = 0;
-            for(k=0; k<K; k++){
-                if( index < timeseries.getNumRows() ){
+            for(k=0; k<downsampleFactor; k++){
+                if( index < timeseriesLength ){
                     obs[i][j] += timeseries[index++][j];
                     norm += 1;
                 }
@@ -169,9 +168,9 @@ bool ContinuousHiddenMarkovModel::predict_( MatrixDouble &timeseries ){
     }
     
 	//Resize alpha, c, and the estimated states vector as needed
-    if( int(alpha.getNumRows()) != T || int(alpha.getNumCols()) != numStates ) alpha.resize(T,numStates);
-    if( int(c.size()) != T ) c.resize(T);
-    if( int(estimatedStates.size()) != T ) estimatedStates.resize(T);
+    if( alpha.getNumRows() != T || alpha.getNumCols() != numStates ) alpha.resize(T,numStates);
+    if( (unsigned int)c.size() != T ) c.resize(T);
+    if( (unsigned int)estimatedStates.size() != T ) estimatedStates.resize(T);
     
 	////////////////// Run the forward algorithm ////////////////////////
 	//Step 1: Init at t=0

@@ -32,6 +32,8 @@ ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const do
     this->transitionSigma = transitionSigma;
     this->phaseSigma = phaseSigma;
     this->velocitySigma = velocitySigma;
+    useNullRejection = true;
+    supportsNullRejection = true;
     classType = "ParticleClassifier";
     classifierType = classType;
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
@@ -149,12 +151,22 @@ bool ParticleClassifier::predict_( VectorDouble &inputVector ){
         gestureTemplate = (unsigned int)particleFilter[i].x[0]; //The first element in the state vector is the gesture template index
         gestureLabel = particleFilter.gestureTemplates[ gestureTemplate ].classLabel;
         gestureIndex = getClassLabelIndexValue( gestureLabel );
+        
         classDistances[ gestureIndex ] += particleFilter[i].w;
+    }
+    
+    bool rejectPrediction = false;
+    if( useNullRejection ){
+        if( particleFilter.getWeightSum() < 1.0e-5 ){
+            rejectPrediction = true;
+        }
     }
     
     //Compute the class likelihoods
     for(unsigned int i=0; i<numClasses; i++){
-        classLikelihoods[ i ] = classDistances[i];
+
+        classLikelihoods[ i ] = rejectPrediction ? 0 : classDistances[i];
+
         if( classLikelihoods[i] > maxLikelihood ){
             predictedClassLabel = classLabels[i];
             maxLikelihood = classLikelihoods[i];

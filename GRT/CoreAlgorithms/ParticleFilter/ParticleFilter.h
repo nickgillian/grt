@@ -397,12 +397,39 @@ public:
     }
     
     /**
+     Gets this sum of all the weights. This is the value that is used to normalize the weights.
+     
+     @return returns a double representing the sum of all the weights
+     */
+    double getWeightSum() const {
+        return wNorm;
+    }
+    
+    /**
      Gets the current state estimation vector.
      
      @return returns a double vector containing the current state estimation
      */
     VectorDouble getStateEstimation() const{
         return x;
+    }
+    
+    /**
+     The function returns the current vector of particles. These are the particles that have been resampled.
+     
+     @return returns a vector with the current particles
+     */
+    vector< PARTICLE > getParticles(){
+        return (&particles == &particleDistributionA ? particleDistributionA : particleDistributionB);
+    }
+    
+    /**
+     The function returns the vector of particles before they were resampled.
+     
+     @return returns a vector with the old particles (i.e. before they were resampled
+     */
+    vector< PARTICLE > getOldParticles(){
+        return (&particles == &particleDistributionA ? particleDistributionB : particleDistributionA);
     }
     
     /**
@@ -525,24 +552,6 @@ public:
         return false;
     }
     
-    /**
-     The function returns the current vector of particles. These are the particles that have been resampled.
-     
-     @return returns a vector with the current particles
-     */
-    vector< PARTICLE > getParticles(){
-        return (&particles == &particleDistributionA ? particleDistributionA : particleDistributionB);
-    }
-    
-    /**
-     The function returns the vector of particles before they were resampled.
-     
-     @return returns a vector with the old particles (i.e. before they were resampled
-     */
-    vector< PARTICLE > getOldParticles(){
-        return (&particles == &particleDistributionA ? particleDistributionB : particleDistributionA);
-    }
-    
 protected:
     /**
      This is the main predict function. This function must be implemented in your derived class.
@@ -604,12 +613,6 @@ protected:
             
             //Normalize the weights (so they sum to 1)
             iter->w *= weightUpdate;
-            
-            //Stop the weights from blowing up if they are divided by a very small wNorm value
-            if( iter->w > 1.0 ){
-                cout << "BLOW UP: iter->w: " << iter->w << " wNorm: " << wNorm << endl;
-                iter->w = 0;
-            }
             
             //Compute the total weights dot product (this is used later to test for degeneracy)
             wDotProduct += iter->w * iter->w;
@@ -719,7 +722,7 @@ protected:
                 return false;
                 break;
         }
-        
+        cout << "estimationLikelihood: " << estimationLikelihood << endl;
         return true;
     }
     
@@ -740,8 +743,6 @@ protected:
      @return returns true if the particles were correctly resampled, false otherwise
      */
     virtual bool resample(){
-        
-        cout << "resample() wNorm: " << wNorm << endl;
         
         vector< PARTICLE > *tempParticles = NULL;
         
