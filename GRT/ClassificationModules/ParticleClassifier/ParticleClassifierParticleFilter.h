@@ -58,14 +58,14 @@ public:
     virtual bool preFilterUpdate( VectorDouble &data ){
         
         //Randomly reset a small number of particles to ensure the classifier does not get stuck on one gesture
-        unsigned int numRandomFlipParticles = (unsigned int)floor( processNoise[0] * double(numParticles) );
+        unsigned int numRandomFlipParticles = 0;//(unsigned int)floor( processNoise[0] * double(numParticles) );
         
         for(unsigned int i=0; i<numRandomFlipParticles; i++){
             //unsigned int randomParticleIndex = rand.getRandomNumberInt(0, numParticles);
             unsigned int randomParticleIndex = i;
             
             particles[ randomParticleIndex ].x[0] = rand.getRandomNumberInt(0, numTemplates); //Randomly pick a template
-            particles[ randomParticleIndex ].x[1] = 0; //rand.getRandomNumberUniform(0,1); //Randomly pick a phase
+            particles[ randomParticleIndex ].x[1] = rand.getRandomNumberUniform(0,1); //Randomly pick a phase
             particles[ randomParticleIndex ].x[2] = 0; //rand.getRandomNumberUniform(-processNoise[2],processNoise[2]); //Randomly pick a speed
         }
         
@@ -132,6 +132,7 @@ public:
         numInputDimensions = 0;
         numTemplates = 0;
         numClasses = 0;
+        resampleCounter = 0;
         gestureTemplates.clear();
         
         return true;
@@ -195,9 +196,20 @@ public:
         return true;
     }
     
+    /*
+    virtual bool checkForResample(){
+        if( ++resampleCounter >= 100 ){
+            resampleCounter = 0;
+            return true;
+        }
+        return false;
+    }
+     */
+    
     unsigned int numInputDimensions;
     unsigned int numTemplates;
     unsigned int numClasses;
+    unsigned int resampleCounter;
     vector< ParticleClassifierGestureTemplate > gestureTemplates;
     
 };

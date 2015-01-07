@@ -54,8 +54,9 @@ public:
         stateVectorSize = 0;
         numDeadParticles = 0;
         wNorm = 0;
+        wDotProduct = 0;
         minimumWeightThreshold = 1.0e-20;
-        resampleThreshold = 1.0e+5;
+        resampleThreshold = 1.0e-5;
         robustMeanWeightDistance = 0.2;
         estimationLikelihood = 0;
         warningLog.setProceedingText("[WARNING ParticleFilter]");
@@ -129,6 +130,7 @@ public:
             this->estimationMode= rhs.estimationMode;
             this->numDeadParticles = rhs.numDeadParticles;
             this->wNorm = rhs.wNorm;
+            this->wDotProduct = rhs.wDotProduct;
             this->minimumWeightThreshold = rhs.minimumWeightThreshold;
             this->resampleThreshold = rhs.resampleThreshold;
             this->robustMeanWeightDistance= rhs.robustMeanWeightDistance;
@@ -293,6 +295,7 @@ public:
         stateVectorSize = 0;
         estimationLikelihood = 0;
         wNorm = 0;
+        wDotProduct = 0;
         numDeadParticles = 0;
         x.clear();
         initModel.clear();
@@ -435,8 +438,8 @@ public:
     
     /**
      Sets the threshold used to determine if the particles should be resampled.
-     The particles will be resampled if the wNorm value is greater than the resampleThreshold.
-     The resampleThreshold should be in the range [0 1], normally something like: 1.0e+10 works well.
+     The particles will be resampled if the wNorm value is less than the resampleThreshold.
+     The resampleThreshold should be in the range [0 1], normally something like: 1.0e-20 works well.
      
      @param const double resampleThreshold: the new resampleThreshold
      @return returns true if the parameter was successfully updated, false otherwise
@@ -577,11 +580,13 @@ protected:
         
         //Compute the total particle weight and number of dead particles
         wNorm = 0;
+        wDotProduct = 0;
         numDeadParticles = 0;
         typename vector< PARTICLE >::iterator iter;
         for( iter = particles.begin(); iter != particles.end(); ++iter ){
             if( grt_isinf( iter->w ) ){
                 numDeadParticles++;
+                iter->w = 0;
             }else{
                 wNorm += iter->w;
             }
@@ -594,11 +599,24 @@ protected:
         }
         
         //Normalized the weights so they sum to 1
-        wNorm = 1.0 / wNorm;
+        double weightUpdate = 1.0 / wNorm;
         for( iter = particles.begin(); iter != particles.end(); ++iter ){
-            iter->w *= wNorm;
+            
+            //Normalize the weights (so they sum to 1)
+            iter->w *= weightUpdate;
+            
+            //Stop the weights from blowing up if they are divided by a very small wNorm value
+            if( iter->w > 1.0 ){
+                cout << "BLOW UP: iter->w: " << iter->w << " wNorm: " << wNorm << endl;
+                iter->w = 0;
+            }
+            
+            //Compute the total weights dot product (this is used later to test for degeneracy)
+            wDotProduct += iter->w * iter->w;
         }
-        cout << "wNorm: " << wNorm << endl;
+        wDotProduct = 1.0 / wDotProduct;
+        
+        //cout << "wNorm: " << wNorm << " wDotProduct: " << wDotProduct << endl;
 
         return true;
     }
@@ -712,7 +730,7 @@ protected:
      @return returns true if the particles should be resampled, false otherwise
      */
     virtual bool checkForResample(){
-        return wNorm > resampleThreshold;
+        return wNorm < resampleThreshold;
     }
     
     /**
@@ -723,7 +741,7 @@ protected:
      */
     virtual bool resample(){
         
-        cout << "resampling..." << endl;
+        cout << "resample() wNorm: " << wNorm << endl;
         
         vector< PARTICLE > *tempParticles = NULL;
         
@@ -762,24 +780,46 @@ protected:
         }
         
         //Resample the weights
+        const unsigned int numRandomParticles = round(numParticles/100.0*10.0);
         for(unsigned int n=0; n<numParticles; n++){
             
-            //Pick a random number between 0 and the max cumsum
-            double randValue = rand.getRandomNumberUniform(0,cumsum[numWeights-1]);
-            randIndex = 0;
+            if( numParticles-n > numParticles-numRandomParticles){
             
-            //Find which bin the rand value falls into, set the random index to this value
-            for(unsigned int i=0; i<numWeights; i++){
-                if( randValue <= cumsum[i] ){
-                    randIndex = i;
-                    break;
+                //Pick a random number between 0 and the max cumsum
+                double randValue = rand.getRandomNumberUniform(0,cumsum[numWeights-1]);
+                randIndex = 0;
+                
+                //Find which bin the rand value falls into, set the random index to this value
+                for(unsigned int i=0; i<numWeights; i++){
+                    if( randValue <= cumsum[i] ){
+                        randIndex = i;
+                        break;
+                    }
+                }
+                
+                (*tempParticles)[n] = particles[ weights[randIndex].index ];
+            }else{
+                //Randomly initalize the weakest particles
+                PARTICLE &p = (*tempParticles)[n];
+                for(unsigned int j=0; j<stateVectorSize; j++){
+                    switch( initMode ){
+                        case INIT_MODE_UNIFORM:
+                            p.x[j] = rand.getRandomNumberUniform(initModel[j][0],initModel[j][1]);
+                            break;
+                        case INIT_MODE_GAUSSIAN:
+                            p.x[j] = initModel[j][0] + rand.getRandomNumberGauss(0,initModel[j][1]);
+                            break;
+                        default:
+                            errorLog << "ERROR: Unknown initMode!" << endl;
+                            return false;
+                            break;
+                    }
+                    
                 }
             }
-            
-            (*tempParticles)[n] = particles[ weights[randIndex].index ];
         }
         
-        //Flip the particle references
+        //Swap the particle references
         if( &particles == &particleDistributionA ) particles = particleDistributionB;
         else particles = particleDistributionA;
         
@@ -844,7 +884,7 @@ protected:
      */
     double rbf(const VectorDouble &x,const VectorDouble &mu,double sigma,double weight=1.0){
         double sum = 0;
-        const unsigned int N = x.size();
+        const unsigned int N = (unsigned int)x.size();
         for(UINT i=0; i<N; i++){
             sum += fabs(x[i]-mu[i]);
         }
@@ -871,6 +911,7 @@ protected:
     double robustMeanWeightDistance;                ///<The distance parameter used in the ROBUST_MEAN estimation mode
     double estimationLikelihood;                    ///<The likelihood of the estimated state
     double wNorm;                                   ///<Stores the total weight norm value
+    double wDotProduct;                             ///<Stores the dot product of all the weights, used to test for degeneracy
     double resampleThreshold;                       ///<The threshold below which the particles will be resampled
     VectorDouble x;                                 ///<The state estimation
     std::vector< VectorDouble > initModel;           ///<The noise model for the initial starting guess

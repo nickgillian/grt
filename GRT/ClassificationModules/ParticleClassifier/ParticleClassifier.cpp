@@ -144,16 +144,17 @@ bool ParticleClassifier::predict_( VectorDouble &inputVector ){
     //Count the number of particles per class
     unsigned int gestureTemplate = 0;
     unsigned int gestureLabel = 0;
+    unsigned int gestureIndex = 0;
     for(unsigned int i=0; i<numParticles; i++){
-        gestureTemplate = (unsigned int)particleFilter[i][0];
+        gestureTemplate = (unsigned int)particleFilter[i].x[0]; //The first element in the state vector is the gesture template index
         gestureLabel = particleFilter.gestureTemplates[ gestureTemplate ].classLabel;
-        classDistances[ getClassLabelIndexValue( gestureLabel ) ]++;
+        gestureIndex = getClassLabelIndexValue( gestureLabel );
+        classDistances[ gestureIndex ] += particleFilter[i].w;
     }
     
     //Compute the class likelihoods
     for(unsigned int i=0; i<numClasses; i++){
-        classLikelihoods[i] = classDistances[i] / double(numParticles);
-        
+        classLikelihoods[ i ] = classDistances[i];
         if( classLikelihoods[i] > maxLikelihood ){
             predictedClassLabel = classLabels[i];
             maxLikelihood = classLikelihoods[i];
@@ -161,7 +162,7 @@ bool ParticleClassifier::predict_( VectorDouble &inputVector ){
     }
     
     //Estimate the phase
-    phase = particleFilter.getStateEstimation()[0];
+    phase = particleFilter.getStateEstimation()[1]; //The 2nd element in the state vector is the estimatied phase
     
     return true;
 
