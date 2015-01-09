@@ -48,11 +48,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         break;
     }
 
-    //Store the tabs in the tab view so we can use them later
+    //Store the tabs in the data labeling tool tab view so we can use them later
     for(int i=0; i<ui->dataLabelingTool_trainingDataTab->count(); i++){
         dataLabelingToolTabHistory.push_back( ui->dataLabelingTool_trainingDataTab->widget(i) );
     }
 
+    //Store the tabs in the training tool tab view so we can use them later
     for(int i=0; i<ui->trainingTool_resultsTab->count(); i++){
         trainingToolTabHistory.push_back( ui->trainingTool_resultsTab->widget(i) );
     }

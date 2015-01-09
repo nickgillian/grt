@@ -722,7 +722,6 @@ protected:
                 return false;
                 break;
         }
-        cout << "estimationLikelihood: " << estimationLikelihood << endl;
         return true;
     }
     

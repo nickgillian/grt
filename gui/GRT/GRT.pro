@@ -134,6 +134,7 @@ defined(USE_GRT_SOURCE_CODE,var){
            ../../GRT/ClassificationModules/KNN/*.h \
            ../../GRT/ClassificationModules/LDA/*.h \
            ../../GRT/ClassificationModules/MinDist/*.h \
+           ../../GRT/ClassificationModules/ParticleClassifier/*.h \
            ../../GRT/ClassificationModules/RandomForests/*.h \
            ../../GRT/ClassificationModules/Softmax/*.h \
            ../../GRT/ClassificationModules/SVM/*.h \
@@ -203,6 +204,7 @@ defined(USE_GRT_SOURCE_CODE,var){
            ../../GRT/ClassificationModules/KNN/*.cpp \
            ../../GRT/ClassificationModules/LDA/*.cpp \
            ../../GRT/ClassificationModules/MinDist/*.cpp \
+           ../../GRT/ClassificationModules/ParticleClassifier/*.cpp \
            ../../GRT/ClassificationModules/RandomForests/*.cpp \
            ../../GRT/ClassificationModules/Softmax/*.cpp \
            ../../GRT/ClassificationModules/SVM/*.cpp \
