@@ -46,13 +46,14 @@ public:
     /**
      Default Constructor
      
+     @param const DecisionTreeNode &decisionTreeNode: sets the type of decision tree node that will be used when training a new RandomForest model. Default: DecisionTreeClusterNode
      @param const UINT forestSize: sets the number of decision trees that will be trained. Default value = 10
      @param const UINT numRandomSplits: sets the number of random spilts that will be used to search for the best spliting value for each node. Default value = 100
      @param const UINT minNumSamplesPerNode: sets the minimum number of samples that are allowed per node, if the number of samples is below that, the node will become a leafNode.  Default value = 5
      @param const UINT maxDepth: sets the maximum depth of the tree. Default value = 10
      @param const bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      */
-	RandomForests(const UINT forestSize=10,const UINT numRandomSplits=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const UINT trainingMode = DecisionTree::BEST_RANDOM_SPLIT,const bool useScaling=false);
+	RandomForests(const DecisionTreeNode &decisionTreeNode = DecisionTreeClusterNode(),const UINT forestSize=10,const UINT numRandomSplits=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const UINT trainingMode = DecisionTree::BEST_RANDOM_SPLIT,const bool useScaling=false);
     
     /**
      Defines the copy constructor.
@@ -170,6 +171,13 @@ public:
     UINT getTrainingMode() const;
     
     /**
+     Gets a pointer to the decision tree node. NULL will be returned if the decision tree node has not been set.
+     
+     @return returns a pointer to a deep copy of the decision tree node
+     */
+    DecisionTreeNode* deepCopyDecisionTreeNode() const;
+    
+    /**
      Sets the number of trees in the forest.  Changing this value will clear any previously trained model.
      
      @param UINT forestSize: sets the number of trees in the forest.
@@ -215,20 +223,28 @@ public:
      */
     bool setTrainingMode(const UINT trainingMode);
     
+    /**
+     Sets the decision tree node, this will be used as the starting node the next time the RandomForest model is trained.
+     
+     @return returns true if the decision tree node was updated, false otherwise
+     */
+    bool setDecisionTreeNode( const DecisionTreeNode &node );
+    
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
     
 protected:
-    bool loadLegacyModelFromFile( fstream &file );
     
     UINT forestSize;
     UINT numRandomSplits;
     UINT minNumSamplesPerNode;
     UINT maxDepth;
     UINT trainingMode;
+    DecisionTreeNode* decisionTreeNode;
     vector< DecisionTreeNode* > forest;
     
+private:
     static RegisterClassifierModule< RandomForests > registerModule;
     
 };

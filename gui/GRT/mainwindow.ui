@@ -1589,7 +1589,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_27">
        <widget class="QGroupBox" name="groupBox_14">
@@ -1674,7 +1674,7 @@
           </rect>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>6</number>
          </property>
          <widget class="QWidget" name="page_7">
           <widget class="QLabel" name="label_26">
@@ -2065,6 +2065,39 @@
              <height>24</height>
             </rect>
            </property>
+          </widget>
+          <widget class="QLabel" name="label_186">
+           <property name="geometry">
+            <rect>
+             <x>300</x>
+             <y>35</y>
+             <width>171</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Decision Tree Node Type:</string>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="pipelineTool_randomForestsNodeType">
+           <property name="geometry">
+            <rect>
+             <x>475</x>
+             <y>30</y>
+             <width>156</width>
+             <height>26</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Cluster Node</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Threshold</string>
+            </property>
+           </item>
           </widget>
          </widget>
          <widget class="QWidget" name="page_10">

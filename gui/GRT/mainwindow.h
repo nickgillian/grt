@@ -256,6 +256,7 @@ private slots:
     void pipelineTrainingStarted();
     void pipelineTrainingFinished(bool result);
     void pipelineTestingFinished(bool result);
+    void updateTrainingToolLog(const std::string message);
     void updateTrainingResults(const GRT::TrainingResult &trainingResult);
     void updateTestResults(const GRT::TestInstanceResult&);
     void updatePrecisionGraph(const GRT::VectorDouble &precision,const vector< unsigned int > &classLabels);

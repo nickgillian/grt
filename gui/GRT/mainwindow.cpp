@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     qRegisterMetaType< GRT::TestInstanceResult >("GRT::TestInstanceResult");
     qRegisterMetaType< GRT::GestureRecognitionPipeline >("GRT::GestureRecognitionPipeline");
     qRegisterMetaType< GRT::MLBase >("GRT::MLBase");
+    qRegisterMetaType< QTextBlock >("QTextBlock");
 
     //Setup the UI
     ui->setupUi(this);
@@ -942,7 +943,7 @@ void MainWindow::updateInfoText(std::string msg){
 }
 
 void MainWindow::updateWarningText(std::string msg){
-    return;
+
     ui->mainWindow_infoTextField->setText( QString::fromStdString( msg ) );
     QPalette p = ui->mainWindow_infoTextField->palette();
     p.setColor(QPalette::Text, QColor(200,100,20));
@@ -2342,6 +2343,12 @@ void MainWindow::pipelineTestingFinished(bool result){
 
 }
 
+void MainWindow::updateTrainingToolLog(const std::string message){
+
+    //ui->trainingTool_results->append( QString::fromStdString( message ) ); //This seems to be crashing things sometimes, WHY?
+
+}
+
 void MainWindow::updateTrainingResults(const GRT::TrainingResult &trainingResult){
 
     //qDebug() << "updateTrainingResults(const GRT::TrainingResult &trainingResult,const GRT::MLBase *model)";
@@ -2773,6 +2780,18 @@ void MainWindow::updateClassifierView(int viewIndex){
             core.setClassifier( minDist );
             break;
         case CLASSIFIER_RANDOM_FORESTS:
+            //Set the random forest tree node type
+            switch( ui->pipelineTool_randomForestsNodeType->currentIndex() ){
+                case DECISION_TREE_CLUSTER_NODE:
+                    randomForests.setDecisionTreeNode( GRT::DecisionTreeClusterNode() );
+                break;
+                case DECISION_TREE_THRESHOLD_NODE:
+                    randomForests.setDecisionTreeNode( GRT::DecisionTreeThresholdNode() );
+                break;
+                default:
+                    randomForests.setDecisionTreeNode( GRT::DecisionTreeClusterNode() );
+                break;
+            }
             randomForests.enableScaling( ui->pipelineTool_enableScaling->isChecked() );
             randomForests.enableNullRejection( ui->pipelineTool_enableNullRejection->isChecked() );
             randomForests.setNullRejectionCoeff( ui->pipelineTool_nullRejectionCoeff->value() );
@@ -3593,9 +3612,7 @@ void MainWindow::updateData(GRT::VectorDouble data){
     ui->predictionWindow_data->setText( text );
     inputDataGraph->update( data );
 
-
     //TODO - THis is a quick hack
-
     //Check to see if we are using the swipe detector
     if( ui->pipelineTool_classifierType->currentIndex() == CLASSIFIER_SWIPE_DETECTOR ){
 
@@ -3624,9 +3641,9 @@ void MainWindow::updateTargetVector(GRT::VectorDouble targetVector){
 }
 
 void MainWindow::notify(const GRT::TrainingLogMessage &log){
-    boost::mutex::scoped_lock lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
-    ui->trainingTool_results->append( QString::fromStdString( message ) ); //This seems to be crashing things sometimes, WHY?
+    boost::mutex::scoped_lock lock( mutex );
+    updateTrainingToolLog( message );
 }
 
 void MainWindow::notify(const GRT::TestingLogMessage &log){
@@ -3636,16 +3653,19 @@ void MainWindow::notify(const GRT::TestingLogMessage &log){
 }
 
 void MainWindow::notify(const GRT::WarningLogMessage &log){
+    boost::mutex::scoped_lock lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
     updateWarningText( message );
 }
 
 void MainWindow::notify(const GRT::ErrorLogMessage &log){
+    boost::mutex::scoped_lock lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
     updateErrorText( message );
 }
 
 void MainWindow::notify(const GRT::InfoLogMessage &log){
+    boost::mutex::scoped_lock lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
     updateInfoText( message );
 }

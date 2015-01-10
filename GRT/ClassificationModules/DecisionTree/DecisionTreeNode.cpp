@@ -33,15 +33,21 @@ bool DecisionTreeNode::predict(const VectorDouble &x,VectorDouble &classLikeliho
     
     if( predict( x ) ){
         if( rightChild ){
-            bool predictionOK = rightChild->predict( x, classLikelihoods );
-            predictedNodeID = rightChild->getPredictedNodeID();
-            return predictionOK;
+            if( rightChild->predict( x, classLikelihoods ) ){
+                predictedNodeID = rightChild->getPredictedNodeID();
+                return true;
+            }
+            warningLog << "predict(const VectorDouble &x,VectorDouble &classLikelihoods) - Right child failed prediction!" << endl;
+            return false;
         }
     }else{
         if( leftChild ){
-            bool predictionOK = leftChild->predict( x, classLikelihoods );
-            predictedNodeID = leftChild->getPredictedNodeID();
-            return predictionOK;
+            if( leftChild->predict( x, classLikelihoods ) ){
+                predictedNodeID = leftChild->getPredictedNodeID();
+                return true;
+            }
+            warningLog << "predict(const VectorDouble &x,VectorDouble &classLikelihoods) - Left child failed prediction!" << endl;
+            return false;
         }
     }
     

@@ -212,6 +212,8 @@ protected:
      */
     virtual bool loadParametersFromFile(fstream &file){
         
+        debugLog << "DecisionTreeNode::loadParametersFromFile()" << endl;
+        
         if(!file.is_open())
         {
             errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << endl;
@@ -250,7 +252,8 @@ protected:
     }
     
     UINT getClassLabelIndexValue(UINT classLabel,const vector< UINT > &classLabels) const{
-        for(UINT i=0; i<classLabels.size(); i++){
+        const UINT N = (UINT)classLabels.size();
+        for(UINT i=0; i<N; i++){
             if( classLabel == classLabels[i] )
                 return i;
         }

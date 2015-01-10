@@ -259,6 +259,9 @@ bool DecisionTreeClusterNode::saveParametersToFile(fstream &file) const{
 
 bool DecisionTreeClusterNode::loadParametersFromFile(fstream &file){
     
+    
+    debugLog << "DecisionTreeClusterNode::loadParametersFromFile()" << endl;
+    
     if(!file.is_open())
     {
         errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << endl;
@@ -286,6 +289,7 @@ bool DecisionTreeClusterNode::loadParametersFromFile(fstream &file){
         return false;
     }
     file >> threshold;
+    
     return true;
 }
 
