@@ -29,7 +29,7 @@
  This example provides a basic makefile template for the GRT.
 */
 
-#include "GRT.h"
+#include <GRT/GRT.h>
 using namespace GRT;
 
 int main (int argc, const char * argv[])
