@@ -1,6 +1,11 @@
 #include "timeseriesgraph.h"
 #include "ui_timeseriesgraph.h"
 
+double TimeseriesGraph::maximumGraphRefreshFramerate = 0.2;
+bool TimeseriesGraph::setMaximumGraphRefreshRate(const double framerate){
+    maximumGraphRefreshFramerate = framerate;
+}
+
 TimeseriesGraph::TimeseriesGraph(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::TimeseriesGraph)
@@ -105,7 +110,7 @@ bool TimeseriesGraph::update(const GRT::VectorDouble &sample ){
 
     //Limit the plot refresh rate so we do not kill the CPU
     double timestamp = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-    if( timestamp - plotTimestamp > 0.2 ){
+    if( timestamp - plotTimestamp > maximumGraphRefreshFramerate ){
         plotTimestamp = timestamp;
         plot->replot();
     }

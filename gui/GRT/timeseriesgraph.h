@@ -21,6 +21,8 @@ public:
     bool update(const GRT::VectorDouble &sample );
     bool setYAxisRanges(const double minRange,const double maxRange,const bool lockRanges=false);
     void resizeEvent (QResizeEvent *event);
+
+    static bool setMaximumGraphRefreshRate(const double framerate);
     
 private:
     bool initialized;
@@ -33,6 +35,8 @@ private:
     double minRange;
     double maxRange;
     vector< Qt::GlobalColor > colors;
+
+    static double maximumGraphRefreshFramerate;
 };
 
 #endif // TIMESERIESGRAPH_H

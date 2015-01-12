@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>7</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -1589,7 +1589,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_27">
        <widget class="QGroupBox" name="groupBox_14">
@@ -2785,7 +2785,7 @@
           </rect>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="page_62">
           <widget class="QLabel" name="label_160">
@@ -2805,7 +2805,7 @@
            <property name="geometry">
             <rect>
              <x>20</x>
-             <y>30</y>
+             <y>110</y>
              <width>131</width>
              <height>21</height>
             </rect>
@@ -2817,11 +2817,37 @@
           <widget class="QDoubleSpinBox" name="pipelineTool_dtw_warpingRadius">
            <property name="geometry">
             <rect>
-             <x>160</x>
-             <y>30</y>
+             <x>150</x>
+             <y>110</y>
              <width>101</width>
              <height>24</height>
             </rect>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="pipelineTool_dtw_offsetTimeseriesUsingFirstSample">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>40</y>
+             <width>256</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Offset Timeseries Using First Sample</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="pipelineTool_dtw_constrainWarpingPath">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>75</y>
+             <width>186</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Constrain Warping Path</string>
            </property>
           </widget>
          </widget>
@@ -6076,6 +6102,104 @@
       <property name="title">
        <string>Settings</string>
       </property>
+      <widget class="QLabel" name="label_187">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>155</y>
+         <width>196</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Maximum Graph Refresh Rate:</string>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="settingsView_graphRefreshRate">
+       <property name="geometry">
+        <rect>
+         <x>225</x>
+         <y>150</y>
+         <width>96</width>
+         <height>24</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_188">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>40</y>
+         <width>196</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Core Update Rate:</string>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="settingsView_coreUpdateRate">
+       <property name="geometry">
+        <rect>
+         <x>225</x>
+         <y>40</y>
+         <width>96</width>
+         <height>24</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_189">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>70</y>
+         <width>931</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Sets the time in seconds at which the GRT core processes incoming data.  An update rate of 0.1, for example, would set the main core thread to loop</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_190">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>95</y>
+         <width>931</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>at 100Hz (100 times per second).</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_191">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>210</y>
+         <width>931</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>A maximum refresh rate of 0.1, for example, would stop the GRT graphs from refreshing more than 100 times per second.</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_192">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>185</y>
+         <width>931</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Sets the time in seconds at which the GRT graphs will refresh.  Limiting the refresh rate helps to reduce the CPU load on your machine.</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </widget>

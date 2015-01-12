@@ -110,7 +110,9 @@ MainWindow::~MainWindow()
     numInstances--;
 }
 
-unsigned int MainWindow::getCurrentView() const{ return ui->mainTab->currentIndex(); }
+unsigned int MainWindow::getCurrentView() const{
+    return ui->mainTab->currentIndex();
+}
 
 bool MainWindow::initMainMenu(){
 
@@ -438,6 +440,8 @@ bool MainWindow::initPipelineToolView(){
     //Dynamic Time Warping
     ui->pipelineTool_dtw_warpingRadius->setRange(0,1);
     ui->pipelineTool_dtw_warpingRadius->setValue( 0.2 );
+    ui->pipelineTool_dtw_constrainWarpingPath->setChecked( false );
+    ui->pipelineTool_dtw_offsetTimeseriesUsingFirstSample->setChecked( false );
 
     //Discrete Hidden Markov Model
 
@@ -630,6 +634,12 @@ bool MainWindow::initSettingsView(){
     ui->settingsView_guiVersion->setText( QString::fromStdString( core.getVersion() ) );
     ui->settingsView_grtVersion->setReadOnly( true );
     ui->settingsView_grtVersion->setText( QString::fromStdString( GRT::GRTBase::getGRTVersion() ) );
+
+    ui->settingsView_coreUpdateRate->setRange(0.0,1.0);
+    ui->settingsView_coreUpdateRate->setValue( 1.0 / 100.0 );
+    ui->settingsView_graphRefreshRate->setRange(0.0,1.0);
+    ui->settingsView_graphRefreshRate->setValue( 1.0 / 100.0 );
+
     return true;
 }
 
@@ -642,15 +652,15 @@ bool MainWindow::initSignalsAndSlots(){
 
     //Connect the main signals and slots
     connect(ui->mainMenu_about, SIGNAL(triggered()), this, SLOT(showVersionInfo()));
-    connect(ui->mainTab, SIGNAL(currentChanged(int)), this, SLOT(updateMainView(int)));
+    connect(ui->mainTab, SIGNAL(currentChanged(int)), this, SLOT(updateMainView(const int)));
 
     connect(ui->setupView_infoButton, SIGNAL(clicked()), this, SLOT(showSetupViewInfo()));
     connect(ui->setupView_classificationModeButton, SIGNAL(pressed()), this, SLOT(setPipelineModeAsClassificationMode()));
     connect(ui->setupView_regressionModeButton, SIGNAL(pressed()), this, SLOT(setPipelineModeAsRegressionMode()));
     connect(ui->setupView_timeseriesModeButton, SIGNAL(pressed()), this, SLOT(setPipelineModeAsTimeseriesMode()));
     connect(ui->setupView_clusterModeButton, SIGNAL(pressed()), this, SLOT(setPipelineModeAsClusterMode()));
-    connect(ui->setupView_numInputsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setNumInputs(int)));
-    connect(ui->setupView_numOutputsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setNumOutputs(int)));
+    connect(ui->setupView_numInputsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setNumInputs(const int)));
+    connect(ui->setupView_numOutputsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setNumOutputs(const int)));
     connect(ui->setup_resetAllButton, SIGNAL(clicked()), this, SLOT(resetAll()));
 
     connect(ui->dataIO_infoButton, SIGNAL(clicked()), this, SLOT(showDataIOInfo()));
@@ -658,40 +668,40 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->dataIO_enableMouseInputButton, SIGNAL(clicked()), this, SLOT(updateMouseInput()));
     connect(ui->dataIO_enableOSCCommandsButton, SIGNAL(clicked()), this, SLOT(updateOSCControlCommands()));
     connect(ui->dataIO_mainDataAddressTextField, SIGNAL(editingFinished()), this, SLOT(updateDataAddress()));
-    connect(ui->dataIO_oscIncomingPortSpinBox, SIGNAL(valueChanged(int)), &core, SLOT(resetOSCServer(int)));
+    connect(ui->dataIO_oscIncomingPortSpinBox, SIGNAL(valueChanged(int)), &core, SLOT(resetOSCServer(const int)));
     connect(ui->dataIO_clientIPAddressTextField, SIGNAL(editingFinished()), this, SLOT(resetOSCClient()));
     connect(ui->dataIO_oscOutgoingPortSpinBox, SIGNAL(editingFinished()), this, SLOT(resetOSCClient()));
 
     connect(ui->dataLabellingTool_infoButton, SIGNAL(clicked()), this, SLOT(showDataLabellingToolInfo()));
-    connect(ui->dataLabellingTool_classificationModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(bool)));
-    connect(ui->dataLabellingTool_regressionModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(bool)));
-    connect(ui->dataLabellingTool_timeseriesClassificationModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(bool)));
-    connect(ui->dataLabellingTool_clusterModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(bool)));
+    connect(ui->dataLabellingTool_classificationModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
+    connect(ui->dataLabellingTool_regressionModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
+    connect(ui->dataLabellingTool_timeseriesClassificationModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
+    connect(ui->dataLabellingTool_clusterModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
     connect(ui->dataLabellingTool_saveButton, SIGNAL(clicked()),this, SLOT(saveTrainingDatasetToFile()));
     connect(ui->dataLabellingTool_loadButton, SIGNAL(clicked()),this, SLOT(loadTrainingDatasetFromFile()));
     connect(ui->dataLabellingTool_clearButton, SIGNAL(clicked()), &core, SLOT(clearTrainingData()));
-    connect(ui->dataLabellingTool_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(int)));
-    connect(ui->dataLabellingTool_timeseriesClassificationMode_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(int)));
-    connect(ui->dataLabellingTool_targetVectorValueSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateTargetVectorValue(double)));
+    connect(ui->dataLabellingTool_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(const int)));
+    connect(ui->dataLabellingTool_timeseriesClassificationMode_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(const int)));
+    connect(ui->dataLabellingTool_targetVectorValueSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateTargetVectorValue(const double)));
     connect(ui->dataLabellingTool_classificationMode_datasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
     connect(ui->dataLabellingTool_regressionMode_datasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
     connect(ui->dataLabellingTool_classificationMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
     connect(ui->dataLabellingTool_regressionMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
     connect(ui->dataLabellingTool_timeseriesClassificationMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
     connect(ui->dataLabellingTool_clusterMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
-    connect(ui->dataLabelingTool_trainingDataTab, SIGNAL(currentChanged(int)), this, SLOT(updateTrainingTabView(int)));
-    connect(ui->dataLabellingTool_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(handleDatasetClicked(QModelIndex)));
+    connect(ui->dataLabelingTool_trainingDataTab, SIGNAL(currentChanged(int)), this, SLOT(updateTrainingTabView(const int)));
+    connect(ui->dataLabellingTool_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(handleDatasetClicked(const QModelIndex)));
     connect(ui->dataLabellingTool_featurePlotButton, SIGNAL(clicked()), this, SLOT(generateFeaturePlot()));
 
     connect(ui->pipelineTool_infoButton, SIGNAL(clicked()), this, SLOT(showPipelineToolInfo()));
     connect(ui->pipelineTool_savePipelineButton, SIGNAL(clicked()), this, SLOT(savePipelineToFile()));
     connect(ui->pipelineTool_loadPipelineButton, SIGNAL(clicked()), this, SLOT(loadPipelineFromFile()));
     connect(ui->pipelineTool_clearPipelineButton, SIGNAL(clicked()), this, SLOT(clearPipelineConfiguration()));
-    connect(ui->pipelineTool_preProcessingType, SIGNAL(currentIndexChanged(int)), this, SLOT(updatePreProcessingView(int)));
-    connect(ui->pipelineTool_classifierType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateClassifierView(int)));
-    connect(ui->pipelineTool_regressifierType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRegressifierView(int)));
-    connect(ui->pipelineTool_timeseriesClassification_classifierType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateTimeseriesClassifierView(int)));
-    connect(ui->pipelineTool_clusterType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateClusterView(int)));
+    connect(ui->pipelineTool_preProcessingType, SIGNAL(currentIndexChanged(int)), this, SLOT(updatePreProcessingView(const int)));
+    connect(ui->pipelineTool_classifierType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateClassifierView(const int)));
+    connect(ui->pipelineTool_regressifierType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRegressifierView(const int)));
+    connect(ui->pipelineTool_timeseriesClassification_classifierType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateTimeseriesClassifierView(const int)));
+    connect(ui->pipelineTool_clusterType, SIGNAL(currentIndexChanged(int)), this, SLOT(updateClusterView(const int)));
     connect(ui->pipelineTool_movingAverageFilterSizeSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
     connect(ui->pipelineTool_doubleMovingAverageFilterSizeSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
     connect(ui->pipelineTool_leakyIntegrator_leakRateSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
@@ -711,6 +721,8 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->pipelineTool_timeseriesClassification_enableNullRejection, SIGNAL(clicked()), this, SLOT(updateTimeseriesClassifierSettings()));
     connect(ui->pipelineTool_timeseriesClassification_nullRejectionCoeff, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
     connect(ui->pipelineTool_dtw_warpingRadius, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_dtw_constrainWarpingPath, SIGNAL(clicked()), this, SLOT(updateTimeseriesClassifierSettings()));
+    connect(ui->pipelineTool_dtw_offsetTimeseriesUsingFirstSample, SIGNAL(clicked()), this, SLOT(updateTimeseriesClassifierSettings()));
     connect(ui->pipelineTool_hmm_continuous_downsampleFactor, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
     connect(ui->pipelineTool_hmm_continuous_committeeSize, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
     connect(ui->pipelineTool_hmm_continuous_delta, SIGNAL(valueChanged(int)), this, SLOT(updateTimeseriesClassifierSettings()));
@@ -726,7 +738,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->pipelineTool_particleClassifier_velocitySigma, SIGNAL(valueChanged(double)), this, SLOT(updateTimeseriesClassifierSettings()));
 
     //Swipe Detector
-    connect(ui->pipelineTool_swipeDetector_plot, SIGNAL(clicked(bool)), swipeDetectorGraph, SLOT(setVisible(bool)));
+    connect(ui->pipelineTool_swipeDetector_plot, SIGNAL(clicked(bool)), swipeDetectorGraph, SLOT(setVisible(const bool)));
     connect(ui->pipelineTool_swipeDetector_swipeIndex, SIGNAL(editingFinished()), this, SLOT(updateClassifierSettings()));
     connect(ui->pipelineTool_swipeDetector_swipeDirection, SIGNAL(currentIndexChanged(int)), this, SLOT(updateClassifierSettings()));
     connect(ui->pipelineTool_swipeDetector_hysteresisThreshold, SIGNAL(editingFinished()), this, SLOT(updateClassifierSettings()));
@@ -746,31 +758,31 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->pipelineTool_clusterView_clusterTree_numClusters, SIGNAL(editingFinished()), this, SLOT(updateClusterSettings()));
 
     connect(ui->predictionTool_infoButton, SIGNAL(clicked()), this, SLOT(showPredictionToolInfo()));
-    connect(ui->pipelineTool_postProcessingType, SIGNAL(currentIndexChanged(int)), this, SLOT(updatePostProcessingView(int)));
+    connect(ui->pipelineTool_postProcessingType, SIGNAL(currentIndexChanged(int)), this, SLOT(updatePostProcessingView(const int)));
     connect(ui->pipelineTool_classLabelTimeoutFilterTimeoutDurationSpinBox, SIGNAL(editingFinished()), this, SLOT(updatePreProcessingSettings()));
     connect(ui->pipelineTool_classLabelTimeoutFilterFilterModeList, SIGNAL(currentIndexChanged(int)), this, SLOT(updatePreProcessingSettings()));
 
     connect(ui->trainingTool_infoButton, SIGNAL(clicked()), this, SLOT(showTrainingToolInfo()));
     connect(ui->trainingTool_trainButton, SIGNAL(clicked()), this, SLOT(train()));
-    connect(ui->trainingTool_trainingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(resetTrainingToolView(int)));
-    connect(ui->trainingTool_randomTestPercentageSlider, SIGNAL(sliderMoved(int)), this, SLOT(randomTestSliderMoved(int)));
-    connect(ui->trainingTool_numCVFolds, SIGNAL(valueChanged(int)), this, SLOT(numCVFoldsValueChanged(int)));
+    connect(ui->trainingTool_trainingMode, SIGNAL(currentIndexChanged(int)), this, SLOT(resetTrainingToolView(const int)));
+    connect(ui->trainingTool_randomTestPercentageSlider, SIGNAL(sliderMoved(int)), this, SLOT(randomTestSliderMoved(const int)));
+    connect(ui->trainingTool_numCVFolds, SIGNAL(valueChanged(int)), this, SLOT(numCVFoldsValueChanged(const int)));
     connect(ui->trainingTool_loadExternalTestDatasetButton, SIGNAL(clicked()), this, SLOT(loadTestDatasetFromFile()));
 
-    connect(ui->predictionWindow_EnablePrediction, SIGNAL(clicked(bool)), &core, SLOT(enablePrediction(bool)));
-    connect(ui->predictionWindow_plotInputDataButton, SIGNAL(clicked(bool)), inputDataGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_plotPreProcessedDataButton, SIGNAL(clicked(bool)), preProcessedDataGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_plotFeatureExtractionDataButton, SIGNAL(clicked(bool)), featureExtractionDataGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_plotPredictedClassLabelsDataButton, SIGNAL(clicked(bool)), classPredictionsGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_plotClassLikelihoodsDataButton, SIGNAL(clicked(bool)), classLikelihoodsGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_plotClassDistancesDataButton, SIGNAL(clicked(bool)), classDistancesGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_plotRegressionDataButton, SIGNAL(clicked(bool)), regressionGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_timeseriesClassification_plotPredictedClassLabelsDataButton, SIGNAL(clicked(bool)), classPredictionsGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_timeseriesClassification_plotClassLikelihoodsDataButton, SIGNAL(clicked(bool)), classLikelihoodsGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_timeseriesClassification_plotClassDistancesDataButton, SIGNAL(clicked(bool)), classDistancesGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_plotPredictedClusterLabelsDataButton, SIGNAL(clicked(bool)), clusterPredictionsGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_plotClusterLikelihoodsDataButton, SIGNAL(clicked(bool)), clusterLikelihoodsGraph, SLOT(setVisible(bool)));
-    connect(ui->predictionWindow_plotClusterDistancesDataButton, SIGNAL(clicked(bool)), clusterDistancesGraph, SLOT(setVisible(bool)));
+    connect(ui->predictionWindow_EnablePrediction, SIGNAL(clicked(bool)), &core, SLOT(enablePrediction(const bool)));
+    connect(ui->predictionWindow_plotInputDataButton, SIGNAL(clicked(bool)), inputDataGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_plotPreProcessedDataButton, SIGNAL(clicked(bool)), preProcessedDataGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_plotFeatureExtractionDataButton, SIGNAL(clicked(bool)), featureExtractionDataGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_plotPredictedClassLabelsDataButton, SIGNAL(clicked(bool)), classPredictionsGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_plotClassLikelihoodsDataButton, SIGNAL(clicked(bool)), classLikelihoodsGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_plotClassDistancesDataButton, SIGNAL(clicked(bool)), classDistancesGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_plotRegressionDataButton, SIGNAL(clicked(bool)), regressionGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_timeseriesClassification_plotPredictedClassLabelsDataButton, SIGNAL(clicked(bool)), classPredictionsGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_timeseriesClassification_plotClassLikelihoodsDataButton, SIGNAL(clicked(bool)), classLikelihoodsGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_timeseriesClassification_plotClassDistancesDataButton, SIGNAL(clicked(bool)), classDistancesGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_plotPredictedClusterLabelsDataButton, SIGNAL(clicked(bool)), clusterPredictionsGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_plotClusterLikelihoodsDataButton, SIGNAL(clicked(bool)), clusterLikelihoodsGraph, SLOT(setVisible(const bool)));
+    connect(ui->predictionWindow_plotClusterDistancesDataButton, SIGNAL(clicked(bool)), clusterDistancesGraph, SLOT(setVisible(const bool)));
 
     connect(ui->logView_infoButton, SIGNAL(clicked()), this, SLOT(showLogViewInfo()));
     connect(ui->logView_allLogsButton, SIGNAL(clicked()), this, SLOT(showAllLogs()));
@@ -782,44 +794,46 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->settingsView_openGRTForumButton, SIGNAL(clicked()), this, SLOT(openGRTForum()));
     connect(ui->settingsView_openGRTSourceButton, SIGNAL(clicked()), this, SLOT(openGRTSource()));
     connect(ui->settingsView_openGRTDownloadButton, SIGNAL(clicked()), this, SLOT(openGRTDownload()));
+    connect(ui->settingsView_coreUpdateRate, SIGNAL(valueChanged(double)), this, SLOT(updateCoreRefreshRate(const double)));
+    connect(ui->settingsView_graphRefreshRate, SIGNAL(valueChanged(double)), this, SLOT(updateMaximumGraphRefreshRate(const double)));
 
     connect(&core, SIGNAL(tick()), this, SLOT(coreTick()));
-    connect(&core, SIGNAL(newInfoMessage(std::string)), this, SLOT(updateInfoText(std::string)));
-    connect(&core, SIGNAL(newWarningMessage(std::string)), this, SLOT(updateWarningText(std::string)));
-    connect(&core, SIGNAL(newErrorMessage(std::string)), this, SLOT(updateErrorText(std::string)));
-    connect(&core, SIGNAL(newHelpMessage(std::string)), this, SLOT(updateHelpText(std::string)));
-    connect(&core, SIGNAL(newOSCMessage(std::string)), this, SLOT(updateOSCMessageLog(std::string)));
+    connect(&core, SIGNAL(newInfoMessage(std::string)), this, SLOT(updateInfoText(const std::string)));
+    connect(&core, SIGNAL(newWarningMessage(std::string)), this, SLOT(updateWarningText(const std::string)));
+    connect(&core, SIGNAL(newErrorMessage(std::string)), this, SLOT(updateErrorText(const std::string)));
+    connect(&core, SIGNAL(newHelpMessage(std::string)), this, SLOT(updateHelpText(const std::string)));
+    connect(&core, SIGNAL(newOSCMessage(std::string)), this, SLOT(updateOSCMessageLog(const std::string)));
     connect(&core, SIGNAL(newTrainingResultReceived(const GRT::TrainingResult&)), this, SLOT(updateTrainingResults(const GRT::TrainingResult&)));
     connect(&core, SIGNAL(newTestInstanceResultReceived(const GRT::TestInstanceResult&)), this, SLOT(updateTestResults(const GRT::TestInstanceResult&)));
-    connect(&core, SIGNAL(pipelineModeChanged(unsigned int)), this, SLOT(updatePipelineMode(unsigned int)));
-    connect(&core, SIGNAL(numInputDimensionsChanged(int)), this, SLOT(updateNumInputDimensions(int)));
-    connect(&core, SIGNAL(numTargetDimensionsChanged(int)), this, SLOT(updateNumTargetDimensions(int)));
-    connect(&core, SIGNAL(trainingClassLabelChanged(unsigned int)), this, SLOT(updateTrainingClassLabel(unsigned int)));
-    connect(&core, SIGNAL(dataChanged(GRT::VectorDouble)), this, SLOT(updateData(GRT::VectorDouble)));
-    connect(&core, SIGNAL(targetDataChanged(GRT::VectorDouble)), this, SLOT(updateTargetVector(GRT::VectorDouble)));
-    connect(&core, SIGNAL(recordStatusChanged(bool)), this, SLOT(updateRecordStatus(bool)));
+    connect(&core, SIGNAL(pipelineModeChanged(unsigned int)), this, SLOT(updatePipelineMode(const unsigned int)));
+    connect(&core, SIGNAL(numInputDimensionsChanged(int)), this, SLOT(updateNumInputDimensions(const int)));
+    connect(&core, SIGNAL(numTargetDimensionsChanged(int)), this, SLOT(updateNumTargetDimensions(const int)));
+    connect(&core, SIGNAL(trainingClassLabelChanged(unsigned int)), this, SLOT(updateTrainingClassLabel(const unsigned int)));
+    connect(&core, SIGNAL(dataChanged(const GRT::VectorDouble&)), this, SLOT(updateData(const GRT::VectorDouble&)));
+    connect(&core, SIGNAL(targetDataChanged(const GRT::VectorDouble&)), this, SLOT(updateTargetVector(const GRT::VectorDouble&)));
+    connect(&core, SIGNAL(recordStatusChanged(bool)), this, SLOT(updateRecordStatus(const bool)));
     connect(&core, SIGNAL(pipelineConfigurationChanged()), this, SLOT(updatePipelineConfiguration()));
     connect(&core, SIGNAL(pipelineConfigurationReset()), this, SLOT(resetPipelineConfiguration()));
-    connect(&core, SIGNAL(numTrainingSamplesChanged(unsigned int)), this, SLOT(updateNumTrainingSamples(unsigned int)));
-    connect(&core, SIGNAL(newTrainingSampleAdded(unsigned int,GRT::ClassificationSample)), this, SLOT(addNewTrainingSample(unsigned int,GRT::ClassificationSample)));
-    connect(&core, SIGNAL(newTrainingSampleAdded(GRT::MatrixDouble)), this, SLOT(addNewTrainingSample(GRT::MatrixDouble)));
-    connect(&core, SIGNAL(newTrainingSampleAdded(unsigned int,GRT::TimeSeriesClassificationSample)), this, SLOT(addNewTrainingSample(unsigned int,GRT::TimeSeriesClassificationSample)));
+    connect(&core, SIGNAL(numTrainingSamplesChanged( const unsigned int )), this, SLOT(updateNumTrainingSamples( const unsigned int )));
+    connect(&core, SIGNAL(newTrainingSampleAdded( const unsigned int,const GRT::ClassificationSample& )), this, SLOT(addNewTrainingSample( const unsigned int,const GRT::ClassificationSample& )));
+    connect(&core, SIGNAL(newTrainingSampleAdded( const GRT::MatrixDouble& )), this, SLOT(addNewTrainingSample(const GRT::MatrixDouble&)));
+    connect(&core, SIGNAL(newTrainingSampleAdded( const unsigned int,const GRT::TimeSeriesClassificationSample& )), this, SLOT(addNewTrainingSample( const unsigned int,const GRT::TimeSeriesClassificationSample&)));
     connect(&core, SIGNAL(trainMessageReceived()), ui->trainingTool_trainButton, SLOT(click()));
-    connect(&core, SIGNAL(trainingDataReset(GRT::ClassificationData)), this, SLOT(resetTrainingData(GRT::ClassificationData)));
-    connect(&core, SIGNAL(trainingDataReset(GRT::RegressionData)), this, SLOT(resetTrainingData(GRT::RegressionData)));
-    connect(&core, SIGNAL(trainingDataReset(GRT::TimeSeriesClassificationData)), this, SLOT(resetTrainingData(GRT::TimeSeriesClassificationData)));
-    connect(&core, SIGNAL(trainingDataReset(GRT::UnlabelledData)), this, SLOT(resetTrainingData(GRT::UnlabelledData)));
-    connect(&core, SIGNAL(testDataReset(GRT::ClassificationData)), this, SLOT(resetTestData(GRT::ClassificationData)));
-    connect(&core, SIGNAL(preProcessingDataChanged(GRT::VectorDouble)), this, SLOT(updatePreProcessingData(GRT::VectorDouble)));
-    connect(&core, SIGNAL(featureExtractionDataChanged(GRT::VectorDouble)), this, SLOT(updateFeatureExtractionData(GRT::VectorDouble)));
-    connect(&core, SIGNAL(classificationResultsChanged(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)), this, SLOT(updateClassificationResults(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)));
-    connect(&core, SIGNAL(regressionResultsChanged(GRT::VectorDouble)), this, SLOT(updateRegressionResults(GRT::VectorDouble)));
-    connect(&core, SIGNAL(timeseriesClassificationResultsChanged(unsigned int,double,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)), this, SLOT(updateTimeseriesClassificationResults(unsigned int,double,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)));
-    connect(&core, SIGNAL(clusterResultsChanged(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)), this, SLOT(updateClusterResults(unsigned int,double,GRT::VectorDouble,GRT::VectorDouble,std::vector<unsigned int>)) );
+    connect(&core, SIGNAL(trainingDataReset( const GRT::ClassificationData& )), this, SLOT(resetTrainingData( const GRT::ClassificationData& )));
+    connect(&core, SIGNAL(trainingDataReset( const GRT::RegressionData& )), this, SLOT(resetTrainingData( const GRT::RegressionData& )));
+    connect(&core, SIGNAL(trainingDataReset( const GRT::TimeSeriesClassificationData& )), this, SLOT(resetTrainingData( const GRT::TimeSeriesClassificationData& )));
+    connect(&core, SIGNAL(trainingDataReset( const GRT::UnlabelledData& )), this, SLOT(resetTrainingData( const GRT::UnlabelledData& )));
+    connect(&core, SIGNAL(testDataReset( const GRT::ClassificationData& )), this, SLOT(resetTestData( const GRT::ClassificationData& )));
+    connect(&core, SIGNAL(preProcessingDataChanged( const GRT::VectorDouble& )), this, SLOT(updatePreProcessingData( const GRT::VectorDouble& )));
+    connect(&core, SIGNAL(featureExtractionDataChanged( const GRT::VectorDouble& )), this, SLOT(updateFeatureExtractionData( const GRT::VectorDouble& )));
+    connect(&core, SIGNAL(classificationResultsChanged( const unsigned int,double, const GRT::VectorDouble& , const GRT::VectorDouble& , const std::vector<unsigned int>& )), this, SLOT(updateClassificationResults( const unsigned int,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )));
+    connect(&core, SIGNAL(regressionResultsChanged( const GRT::VectorDouble& )), this, SLOT(updateRegressionResults( const GRT::VectorDouble& )));
+    connect(&core, SIGNAL(timeseriesClassificationResultsChanged( const unsigned int, const double,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )), this, SLOT(updateTimeseriesClassificationResults( const unsigned int,const double,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )));
+    connect(&core, SIGNAL(clusterResultsChanged( const unsigned int,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )), this, SLOT(updateClusterResults( const unsigned int,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )) );
     connect(&core, SIGNAL(pipelineTrainingStarted()), this, SLOT(pipelineTrainingStarted()));
-    connect(&core, SIGNAL(pipelineTrainingFinished(bool)), this, SLOT(pipelineTrainingFinished(bool)));
-    connect(&core, SIGNAL(pipelineTestingFinished(bool)), this, SLOT(pipelineTestingFinished(bool)));
-    connect(&core, SIGNAL(setClassifierMessageReceived(unsigned int,bool,bool,double,double)), this, SLOT(updateClassifier(unsigned int,bool,bool,double,double)));
+    connect(&core, SIGNAL(pipelineTrainingFinished(const bool)), this, SLOT(pipelineTrainingFinished(const bool)));
+    connect(&core, SIGNAL(pipelineTestingFinished(const bool)), this, SLOT(pipelineTestingFinished(const bool)));
+    connect(&core, SIGNAL(setClassifierMessageReceived(const unsigned int,const bool,const bool,const double,const double)), this, SLOT(updateClassifier(const unsigned int,const bool,const bool,const double,const double)));
 
     //Setup the keyboard shortcuts
     QShortcut *ctrlRShortcut = new QShortcut( QKeySequence( QString::fromStdString("Ctrl+R") ), this);
@@ -834,7 +848,7 @@ bool MainWindow::initSignalsAndSlots(){
     return true;
 }
 
-void MainWindow::updateMainView(int tabIndex){
+void MainWindow::updateMainView(const int tabIndex){
 
     switch( tabIndex ){
         case SETUP_VIEW:
@@ -924,7 +938,7 @@ void MainWindow::showLogView(){
     updateInfoText( "" );
 }
 
-void MainWindow::updateInfoText(std::string msg){
+void MainWindow::updateInfoText(const std::string msg){
     ui->mainWindow_infoTextField->setText( QString::fromStdString( msg ) );
     QPalette p = ui->mainWindow_infoTextField->palette();
     p.setColor(QPalette::Text, Qt::black);
@@ -942,7 +956,7 @@ void MainWindow::updateInfoText(std::string msg){
     }
 }
 
-void MainWindow::updateWarningText(std::string msg){
+void MainWindow::updateWarningText(const std::string msg){
 
     ui->mainWindow_infoTextField->setText( QString::fromStdString( msg ) );
     QPalette p = ui->mainWindow_infoTextField->palette();
@@ -961,7 +975,7 @@ void MainWindow::updateWarningText(std::string msg){
     }
 }
 
-void MainWindow::updateErrorText(std::string msg){
+void MainWindow::updateErrorText(const std::string msg){
     return;
     if( msg.length() > 0 ){
         GRT::TimeStamp ts;
@@ -977,7 +991,7 @@ void MainWindow::updateErrorText(std::string msg){
     core.setInfoMessage( msg );
 }
 
-void MainWindow::updateHelpText(std::string msg){
+void MainWindow::updateHelpText(const std::string msg){
     QMessageBox::information(0, "Information", QString::fromStdString( msg ));
 }
 
@@ -995,11 +1009,11 @@ void MainWindow::showSetupViewInfo(){
     QMessageBox::information(0, "Information", infoText);
 }
 
-void MainWindow::setNumInputs(int numInputs){
+void MainWindow::setNumInputs(const int numInputs){
     core.setNumInputDimensions( numInputs );
 }
 
-void MainWindow::setNumOutputs(int numOutputs){
+void MainWindow::setNumOutputs(const int numOutputs){
 
     //Make sure the number of outputs is limited to 1 if we are not in regression mode
     if( core.getPipelineMode() == Core::REGRESSION_MODE ) core.setTargetVectorSize( numOutputs );
@@ -1036,7 +1050,7 @@ void MainWindow::setPipelineModeAsClusterMode(){
     resetDefaultPipelineClusterSetup();
 }
 
-void MainWindow::updatePipelineMode(unsigned int pipelineMode){
+void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
 
     //Remove all the tabs from the dataLabellingTool
     while( ui->dataLabelingTool_trainingDataTab->count() > 0 ){
@@ -1239,7 +1253,7 @@ void MainWindow::updateDataAddress(){
     core.setMainDataAddress( address );
 }
 
-void MainWindow::updateNumInputDimensions(int numInputDimensions){
+void MainWindow::updateNumInputDimensions(const int numInputDimensions){
     ui->setupView_numInputsSpinBox->setValue( numInputDimensions );
     ui->dataIO_numInputDimensionsField->setText( QString::number( numInputDimensions ) );
     ui->dataLabellingTool_classificationMode_numInputDimensionsField->setText( QString::number( numInputDimensions ) );
@@ -1262,7 +1276,7 @@ void MainWindow::updateNumInputDimensions(int numInputDimensions){
     updateInfoText( "" );
 }
 
-void MainWindow::updateNumTargetDimensions(int numTargetDimensions){
+void MainWindow::updateNumTargetDimensions(const int numTargetDimensions){
 
     //Reset the setupview
     ui->setupView_numOutputsSpinBox->setValue ( numTargetDimensions );
@@ -1285,7 +1299,7 @@ void MainWindow::updateNumTargetDimensions(int numTargetDimensions){
     updateInfoText( "" );
 }
 
-void MainWindow::updateOSCMessageLog(std::string msg){
+void MainWindow::updateOSCMessageLog(const std::string msg){
     ui->dataIO_OSCMessageLog->appendPlainText( QString::fromUtf8( msg.c_str() ) );
 }
 
@@ -1293,7 +1307,7 @@ void MainWindow::updateOSCMessageLog(std::string msg){
 ////////////////////////////// DATA LABELING TOOL FUNCTIONS /////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::recordTrainingData(bool recordState){
+void MainWindow::recordTrainingData(const bool recordState){
     core.setRecordingState( recordState );
 
     if( recordState ){
@@ -1317,11 +1331,11 @@ void MainWindow::loadTrainingDatasetFromFile(){
     core.loadTrainingDatasetFromFile( filename );
 }
 
-void MainWindow::updateTrainingClassLabel(unsigned int trainingClassLabel){
+void MainWindow::updateTrainingClassLabel(const unsigned int trainingClassLabel){
     ui->dataLabellingTool_classLabel->setValue( trainingClassLabel );
 }
 
-void MainWindow::updateTargetVectorValue(double value){
+void MainWindow::updateTargetVectorValue(const double value){
 
     //Get the current target vector from the core
     GRT::VectorDouble targetVector = core.getTargetVector();
@@ -1334,7 +1348,7 @@ void MainWindow::updateTargetVectorValue(double value){
     core.setTargetVector( targetVector );
 }
 
-void MainWindow::updateRecordStatus(bool recordStatus){
+void MainWindow::updateRecordStatus(const bool recordStatus){
 
     switch( core.getPipelineMode() ){
         case Core::CLASSIFICATION_MODE:
@@ -1358,7 +1372,7 @@ void MainWindow::updateRecordStatus(bool recordStatus){
     }
 }
 
-void MainWindow::updateNumTrainingSamples(unsigned int numTrainingSamples){
+void MainWindow::updateNumTrainingSamples(const unsigned int numTrainingSamples){
 
     const unsigned int numClasses = core.getNumClassesInTrainingData();
 
@@ -1380,19 +1394,19 @@ void MainWindow::updateNumTrainingSamples(unsigned int numTrainingSamples){
     }
 }
 
-void MainWindow::addNewTrainingSample(unsigned int numTrainingSamples,GRT::ClassificationSample trainingSample){
+void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::ClassificationSample &trainingSample){
 
 }
 
-void MainWindow::addNewTrainingSample(GRT::MatrixDouble trainingSample){
+void MainWindow::addNewTrainingSample(const GRT::MatrixDouble &trainingSample){
 
     ui->dataLabellingTool_timeseriesSampleLength->setText( QString::fromStdString( GRT::Util::toString( trainingSample.getNumRows() ) ) );
 
 }
 
-void MainWindow::addNewTrainingSample(unsigned int numTrainingSamples,GRT::TimeSeriesClassificationSample trainingSample){
+void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::TimeSeriesClassificationSample &trainingSample){
 
-   //ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::fromStdString( GRT::Util::toString( numTrainingSamples ) ) );
+    ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::fromStdString( GRT::Util::toString( numTrainingSamples ) ) );
 
     if( numTrainingSamples > 0 ){
         resetTrainingToolView( ui->trainingTool_trainingMode->currentIndex() );
@@ -1404,7 +1418,7 @@ void MainWindow::addNewTrainingSample(unsigned int numTrainingSamples,GRT::TimeS
     }
 }
 
-void MainWindow::resetTrainingData(GRT::ClassificationData trainingData){
+void MainWindow::resetTrainingData(const GRT::ClassificationData &trainingData){
 
     ui->dataLabellingTool_classificationMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
     ui->dataLabellingTool_classificationMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
@@ -1444,7 +1458,7 @@ void MainWindow::resetTrainingData(GRT::ClassificationData trainingData){
     resetTrainingToolView( ui->trainingTool_trainingMode->currentIndex() );
 }
 
-void MainWindow::resetTrainingData(GRT::RegressionData trainingData){
+void MainWindow::resetTrainingData(const GRT::RegressionData &trainingData){
 
     ui->dataLabellingTool_regressionMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
     ui->dataLabellingTool_regressionMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
@@ -1489,13 +1503,14 @@ void MainWindow::resetTrainingData(GRT::RegressionData trainingData){
     resetTrainingToolView( ui->trainingTool_trainingMode->currentIndex() );
 }
 
-void MainWindow::resetTrainingData(GRT::TimeSeriesClassificationData trainingData){
+void MainWindow::resetTrainingData(const GRT::TimeSeriesClassificationData &trainingData){
 
     ui->dataLabellingTool_timeseriesClassificationMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
     ui->dataLabellingTool_timeseriesClassificationMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
     ui->dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField->setText( QString::number( trainingData.getNumDimensions() ) );
     ui->dataLabellingTool_timeseriesClassificationMode_numClassesField->setText( QString::number( trainingData.getNumClasses() ) );
 
+    /*
     ui->dataLabellingTool_treeView->setRootIsDecorated(false);
     ui->dataLabellingTool_treeView->setAlternatingRowColors(true);
     ui->dataLabellingTool_treeView->clearSelection();
@@ -1508,7 +1523,7 @@ void MainWindow::resetTrainingData(GRT::TimeSeriesClassificationData trainingDat
     //Add the headers
     model->setHeaderData(0, Qt::Horizontal, QObject::tr("Sample Index"));
     model->setHeaderData(1, Qt::Horizontal, QObject::tr("Class Label"));
-/*
+
     for(unsigned int n=0; n<N; n++){
         std::string colName = "Feature " + GRT::Util::intToString(n+1);
         model->setHeaderData(2+n, Qt::Horizontal, QString::fromStdString(colName) );
@@ -1529,7 +1544,7 @@ void MainWindow::resetTrainingData(GRT::TimeSeriesClassificationData trainingDat
     resetTrainingToolView( ui->trainingTool_trainingMode->currentIndex() );
 }
 
-void MainWindow::resetTrainingData(GRT::UnlabelledData trainingData){
+void MainWindow::resetTrainingData(const GRT::UnlabelledData &trainingData){
 
     ui->dataLabellingTool_clusterMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
     ui->dataLabellingTool_clusterMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
@@ -1573,7 +1588,7 @@ void MainWindow::handleDatasetClicked(const QModelIndex &index){
     //qDebug() << "v: " << v;
 }
 
-void MainWindow::resetTestData(GRT::ClassificationData testData){
+void MainWindow::resetTestData(const GRT::ClassificationData &testData){
     ui->trainingTool_numTestSamples->setText( QString::number( testData.getNumSamples() ) );
 }
 
@@ -1622,7 +1637,7 @@ void MainWindow::updateDatasetInfoText(){
     }
 }
 
-void MainWindow::updateTrainingTabView(int tabIndex){
+void MainWindow::updateTrainingTabView(const int tabIndex){
 
     QString infoText;
 
@@ -1973,7 +1988,7 @@ void MainWindow::ctrlLShortcut(){
 //////////////////////////////// TRAINING TOOL FUNCTIONS ////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::resetTrainingToolView( int trainingMode ){
+void MainWindow::resetTrainingToolView( const int trainingMode ){
 
     unsigned int numTrainingSamples = core.getNumTrainingSamples();
     unsigned int numTestSamples = core.getNumTestSamples();
@@ -2076,7 +2091,7 @@ void MainWindow::train(){
     }
 }
 
-void MainWindow::randomTestSliderMoved(int value){
+void MainWindow::randomTestSliderMoved(const int value){
     ui->trainingTool_randomTestPercentageBox->setText( QString::number( value ) + "%" );
     unsigned int M = core.getNumTrainingSamples();
     unsigned int N = (unsigned int)floor( M * value / 100.0 );
@@ -2084,7 +2099,7 @@ void MainWindow::randomTestSliderMoved(int value){
     ui->trainingTool_numTestSamples->setText( QString::number( N ) );
 }
 
-void MainWindow::numCVFoldsValueChanged(int value){
+void MainWindow::numCVFoldsValueChanged(const int value){
     unsigned int M = core.getNumTrainingSamples();
     unsigned int N = (unsigned int)floor( M / double( value ) );
     ui->trainingTool_numTrainingSamples->setText( QString::number( M-N ));
@@ -2124,7 +2139,7 @@ void MainWindow::pipelineTrainingStarted(){
 
 }
 
-void MainWindow::pipelineTrainingFinished(bool result){
+void MainWindow::pipelineTrainingFinished(const bool result){
 
     //qDebug() << "pipelineTrainingFinished(bool result)";
 
@@ -2326,7 +2341,7 @@ void MainWindow::pipelineTrainingFinished(bool result){
 
 }
 
-void MainWindow::pipelineTestingFinished(bool result){
+void MainWindow::pipelineTestingFinished(const bool result){
 
     //qDebug() << "pipelineTestingFinished(bool result): " << result;
 
@@ -2643,7 +2658,7 @@ void MainWindow::loadPipelineFromFile(){
         emit updateInfoText( "WARNING: Failed to load pipeline." );
 }
 
-void MainWindow::updatePreProcessingView(int viewIndex){
+void MainWindow::updatePreProcessingView(const int viewIndex){
 
     ui->pipelineTool_preProcessingOptionsView->setCurrentIndex( viewIndex );
     ui->pipelineTool_preProcessingType->setCurrentIndex( viewIndex );
@@ -2696,7 +2711,7 @@ void MainWindow::updatePreProcessingView(int viewIndex){
     }
 }
 
-void MainWindow::updateFeatureExtractionView(int viewIndex){
+void MainWindow::updateFeatureExtractionView(const int viewIndex){
 
     ui->pipelineTool_featureExtractionType->setCurrentIndex( viewIndex );
 
@@ -2710,7 +2725,7 @@ void MainWindow::updateFeatureExtractionView(int viewIndex){
 
 }
 
-void MainWindow::updateClassifierView(int viewIndex){
+void MainWindow::updateClassifierView(const int viewIndex){
 
     ui->pipelineTool_classifierOptionsView->setCurrentIndex( viewIndex );
     ui->pipelineTool_classifierType->setCurrentIndex( viewIndex );
@@ -2832,7 +2847,7 @@ void MainWindow::updateClassifierView(int viewIndex){
     }
 }
 
-void MainWindow::updateRegressifierView(int viewIndex){
+void MainWindow::updateRegressifierView(const int viewIndex){
 
     ui->pipelineTool_regressifierOptionsView->setCurrentIndex( viewIndex );
     ui->pipelineTool_regressifierType->setCurrentIndex( viewIndex );
@@ -2902,7 +2917,7 @@ void MainWindow::updateRegressifierView(int viewIndex){
 
 }
 
-void MainWindow::updateTimeseriesClassifierView(int viewIndex){
+void MainWindow::updateTimeseriesClassifierView(const int viewIndex){
 
     ui->pipelineTool_timeseriesClassification_classifierOptionsView->setCurrentIndex( viewIndex );
     ui->pipelineTool_timeseriesClassification_classifierType->setCurrentIndex( viewIndex );
@@ -2918,6 +2933,8 @@ void MainWindow::updateTimeseriesClassifierView(int viewIndex){
             dtw.enableNullRejection( ui->pipelineTool_timeseriesClassification_enableNullRejection->isChecked() );
             dtw.setNullRejectionCoeff( ui->pipelineTool_timeseriesClassification_nullRejectionCoeff->value() );
             dtw.setWarpingRadius( ui->pipelineTool_dtw_warpingRadius->value() );
+            dtw.setContrainWarpingPath( ui->pipelineTool_dtw_constrainWarpingPath->isChecked() );
+            dtw.setOffsetTimeseriesUsingFirstSample( ui->pipelineTool_dtw_offsetTimeseriesUsingFirstSample->isChecked() );
             core.setClassifier( dtw );
             break;
         case TIMESERIES_CLASSIFIER_HMM_DISCRETE:
@@ -2963,7 +2980,7 @@ void MainWindow::updateTimeseriesClassifierView(int viewIndex){
 
 }
 
-void MainWindow::updateClusterView(int viewIndex){
+void MainWindow::updateClusterView(const int viewIndex){
 
     ui->pipelineTool_clusterOptionsView->setCurrentIndex( viewIndex );
     ui->pipelineTool_clusterType->setCurrentIndex( viewIndex );
@@ -3017,7 +3034,7 @@ void MainWindow::updateClusterView(int viewIndex){
     }
 }
 
-void MainWindow::updatePostProcessingView(int viewIndex){
+void MainWindow::updatePostProcessingView(const int viewIndex){
 
     ui->pipelineTool_postProcessingOptionsView->setCurrentIndex( viewIndex );
     ui->pipelineTool_postProcessingType->setCurrentIndex( viewIndex );
@@ -3258,7 +3275,7 @@ void MainWindow::setupDefaultCluster(){
     ui->trainingTool_results->setText("");
 }
 
-void MainWindow::updateClassifier(unsigned int classifierType,bool useScaling,bool useNullRejection,double nullRejectionCoeff,double parameter1){
+void MainWindow::updateClassifier(const unsigned int classifierType,const bool useScaling,const bool useNullRejection,const double nullRejectionCoeff,const double parameter1){
 
     //Setup the classifier view
     ui->pipelineTool_classifierType->setCurrentIndex( classifierType );
@@ -3296,7 +3313,7 @@ void MainWindow::updateFeatureExtractionData(const GRT::VectorDouble &featureExt
     featureExtractionDataGraph->update( featureExtractionData );
 }
 
-void MainWindow::updateClassificationResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels){
+void MainWindow::updateClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels){
 
     const size_t K = classLabels.size();
     QString infoText;
@@ -3343,7 +3360,7 @@ void MainWindow::updateClassificationResults(unsigned int predictedClassLabel,do
 
 }
 
-void MainWindow::updateRegressionResults(GRT::VectorDouble regressionData){
+void MainWindow::updateRegressionResults(const GRT::VectorDouble &regressionData){
 
     const size_t N = regressionData.size();
 
@@ -3359,7 +3376,7 @@ void MainWindow::updateRegressionResults(GRT::VectorDouble regressionData){
 
 }
 
-void MainWindow::updateTimeseriesClassificationResults(unsigned int predictedClassLabel,double maximumLikelihood,double phase,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels){
+void MainWindow::updateTimeseriesClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const double phase,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels){
 
     const size_t K = classLabels.size();
     QString infoText;
@@ -3406,7 +3423,7 @@ void MainWindow::updateTimeseriesClassificationResults(unsigned int predictedCla
     ui->predictionWindow_timeseriesClassification_classLabels->setText( infoText );
 }
 
-void MainWindow::updateClusterResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels){
+void MainWindow::updateClusterResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels){
 
     clusterPredictionsGraph->update( GRT::VectorDouble(1,predictedClassLabel) );
     clusterLikelihoodsGraph->update( classLikelihoods );
@@ -3527,7 +3544,7 @@ void MainWindow::showErrorLog(){
     updateLogView( ERROR_LOG_VIEW );
 }
 
-void MainWindow::updateLogView(unsigned int viewID){
+void MainWindow::updateLogView(const unsigned int viewID){
 
     switch( viewID ){
         case ALL_LOGS_VIEW:
@@ -3577,6 +3594,16 @@ void MainWindow::openGRTDownload(){
     QDesktopServices::openUrl(QUrl("http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download", QUrl::TolerantMode));
 }
 
+void MainWindow::updateCoreRefreshRate(const double rate){
+    //Convert the millisecond rate to sleep time
+    unsigned int sleepTime = (unsigned int)(rate * 1000.0);
+    core.setCoreSleepTime( sleepTime );
+}
+
+void MainWindow::updateMaximumGraphRefreshRate(const double framerate){
+    TimeseriesGraph::setMaximumGraphRefreshRate( framerate );
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////     CORE DATA FUNCTIONS   ///////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -3602,7 +3629,7 @@ void MainWindow::coreTick(){
     }
 }
 
-void MainWindow::updateData(GRT::VectorDouble data){
+void MainWindow::updateData(const GRT::VectorDouble &data){
     QString text = "";
     for(size_t i=0; i<data.size(); i++){
         text += "[" + QString::number( i ) + "]: ";
@@ -3629,7 +3656,7 @@ void MainWindow::updateData(GRT::VectorDouble data){
     }
 }
 
-void MainWindow::updateTargetVector(GRT::VectorDouble targetVector){
+void MainWindow::updateTargetVector(const GRT::VectorDouble &targetVector){
 
     QString text = "";
     for(size_t i=0; i<targetVector.size(); i++){

@@ -2,6 +2,7 @@
 
 Core::Core(QObject *parent) : QObject(parent)
 {
+    coreSleepTime = DEFAULT_CORE_THREAD_SLEEP_TIME;
     coreRunning = false;
     stopMainThread = false;
     verbose = true;
@@ -106,7 +107,7 @@ bool Core::stop(){
 //////////////////////////      PUBLIC SLOTS      //////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-bool Core::resetOSCClient(std::string clientAddress,int clientPort){
+bool Core::resetOSCClient( const std::string clientAddress,const int clientPort ){
 
     outgoingOSCAddress = clientAddress;
     outgoingOSCDataPort = (unsigned int)clientPort;
@@ -123,7 +124,7 @@ bool Core::resetOSCClient(std::string clientAddress,int clientPort){
     return true;
 }
 
-bool Core::resetOSCServer(int incomingOSCDataPort){
+bool Core::resetOSCServer( const int incomingOSCDataPort ){
 
     if( getCoreRunning() ){
         //Stop the OSC server
@@ -151,25 +152,25 @@ bool Core::addMessaage( const OSCMessagePtr msg ){
     return true;
 }
 
-bool Core::setVersion(std::string version){
+bool Core::setVersion( const std::string version ){
     boost::mutex::scoped_lock lock( mutex );
     this->version = version;
     return true;
 }
 
-bool Core::setEnableOSCInput(bool state){
+bool Core::setEnableOSCInput( const bool state ){
     boost::mutex::scoped_lock lock( mutex );
     enableOSCInput = state;
     return true;
 }
 
-bool Core::setEnableOSCControlCommands(bool state){
+bool Core::setEnableOSCControlCommands( const bool state ){
     boost::mutex::scoped_lock lock( mutex );
     enableOSCControlCommands = state;
     return true;
 }
 
-bool Core::setPipelineMode(unsigned int pipelineMode){
+bool Core::setPipelineMode( const unsigned int pipelineMode ){
     bool modeChanged = false;
     if( pipelineMode != this->pipelineMode ){
         boost::mutex::scoped_lock lock( mutex );
@@ -181,7 +182,7 @@ bool Core::setPipelineMode(unsigned int pipelineMode){
     return true;
 }
 
-bool Core::setRecordingState(bool state){
+bool Core::setRecordingState( const bool state ){
 
     bool newSampleAdded = false;
     unsigned int numTrainingSamples = 0;
@@ -225,7 +226,7 @@ bool Core::setRecordingState(bool state){
     return true;
 }
 
-bool Core::saveTrainingDatasetToFile(std::string filename){
+bool Core::saveTrainingDatasetToFile( const std::string filename ){
     bool result = false;
     {
         boost::mutex::scoped_lock lock( mutex );
@@ -257,7 +258,7 @@ bool Core::saveTrainingDatasetToFile(std::string filename){
     return result;
 }
 
-bool Core::loadTrainingDatasetFromFile(std::string filename){
+bool Core::loadTrainingDatasetFromFile( const std::string filename ){
 
     bool result = false;
     bool inputDimensionsSizeError = false;
@@ -304,14 +305,14 @@ bool Core::loadTrainingDatasetFromFile(std::string filename){
                  trainingDataSize = regressionTrainingData.getNumInputDimensions();
              break;
              case TIMESERIES_CLASSIFICATION_MODE:
-                 timeseriesClassificationTrainingData.load( filename );
+                 result = timeseriesClassificationTrainingData.load( filename );
 
                  numTrainingSamples = timeseriesClassificationTrainingData.getNumSamples();
                  tempTimeSeriesData = timeseriesClassificationTrainingData;
                  trainingDataSize = timeseriesClassificationTrainingData.getNumDimensions();
              break;
              case CLUSTER_MODE:
-                clusterTrainingData.load( filename );
+                result = clusterTrainingData.load( filename );
 
                 numTrainingSamples = clusterTrainingData.getNumSamples();
                 tempClusterData = clusterTrainingData;
@@ -365,7 +366,7 @@ bool Core::loadTrainingDatasetFromFile(std::string filename){
     return result;
 }
 
-bool Core::loadTestDatasetFromFile(std::string filename){
+bool Core::loadTestDatasetFromFile( const std::string filename ){
     bool result = false;
     unsigned int numTestSamples = 0;
     GRT::ClassificationData tempClassificationData;
@@ -516,6 +517,11 @@ bool Core::getCoreRunning(){
 bool Core::getTrained(){
     boost::mutex::scoped_lock lock( mutex );
     return pipeline.getTrained();
+}
+
+bool Core::getTrainingInProcess(){
+    boost::mutex::scoped_lock lock( mutex );
+    return trainingThread.getTrainingInProcess();
 }
 
 bool Core::getRecordStatus(){
@@ -704,7 +710,13 @@ std::string Core::getModelAsString(){
 ////////////////////////////      SETTERS      ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-bool Core::setNumInputDimensions(int numInputDimensions){
+bool Core::setCoreSleepTime( const unsigned int coreSleepTime ){
+    boost::mutex::scoped_lock lock( mutex );
+    this->coreSleepTime = coreSleepTime;
+    return true;
+}
+
+bool Core::setNumInputDimensions( const int numInputDimensions ){
 
     bool result = false;
     GRT::ClassificationData tempClassificationData;
@@ -777,14 +789,14 @@ bool Core::setNumInputDimensions(int numInputDimensions){
     return result;
 }
 
-bool Core::setTargetVectorSize(int targetVectorSize_tmp ){
+bool Core::setTargetVectorSize( const int targetVectorSize_ ){
 
     bool result = false;
     GRT::LabelledRegressionData tempRegressionData;
 
     {
         boost::mutex::scoped_lock lock( mutex );
-        targetVectorSize = (unsigned int)targetVectorSize_tmp;
+        targetVectorSize = (unsigned int)targetVectorSize_;
         targetVector.clear();
         targetVector.resize( targetVectorSize, 0 );
         regressionTrainingData.clear();
@@ -794,14 +806,14 @@ bool Core::setTargetVectorSize(int targetVectorSize_tmp ){
     }
 
     if( result ){
-        emit numTargetDimensionsChanged( targetVectorSize_tmp );
+        emit numTargetDimensionsChanged( targetVectorSize_ );
         emit trainingDataReset( tempRegressionData );
     }
 
     return true;
 }
 
-bool Core::setMainDataAddress(std::string address){
+bool Core::setMainDataAddress( const std::string address ){
     bool addressUpdated = false;
     {
         boost::mutex::scoped_lock lock( mutex );
@@ -816,7 +828,7 @@ bool Core::setMainDataAddress(std::string address){
     return true;
 }
 
-bool Core::setDatasetName(std::string datasetName){
+bool Core::setDatasetName( const std::string datasetName ){
     boost::mutex::scoped_lock lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
@@ -836,7 +848,7 @@ bool Core::setDatasetName(std::string datasetName){
     return false;
 }
 
-bool Core::setDatasetInfoText(std::string infoText){
+bool Core::setDatasetInfoText( const std::string infoText ){
     boost::mutex::scoped_lock lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
@@ -856,7 +868,7 @@ bool Core::setDatasetInfoText(std::string infoText){
     return false;
 }
 
-bool Core::setTrainingClassLabel(int trainingClassLabel){
+bool Core::setTrainingClassLabel( const int trainingClassLabel ){
     bool classLabelUpdated = false;
     {
         boost::mutex::scoped_lock lock( mutex );
@@ -1025,7 +1037,7 @@ bool Core::setTargetVector( const GRT::VectorDouble &targetVector_ ){
     return false;
 }
 
-bool Core::savePipelineToFile(std::string filename){
+bool Core::savePipelineToFile( const std::string filename ){
 
     bool result = false;
 
@@ -1041,7 +1053,7 @@ bool Core::savePipelineToFile(std::string filename){
     return result;
 }
 
-bool Core::loadPipelineFromFile(std::string filename){
+bool Core::loadPipelineFromFile( const std::string filename ){
 
     bool result = false;
 
@@ -1058,7 +1070,7 @@ bool Core::loadPipelineFromFile(std::string filename){
     return result;
 }
 
-bool Core::setInfoMessage(std::string infoMessage){
+bool Core::setInfoMessage( const std::string infoMessage ){
     boost::mutex::scoped_lock lock( mutex );
     this->infoMessage = infoMessage;
     return true;
@@ -1105,11 +1117,14 @@ void Core::mainThreadFunction(){
         return;
     }
 
+    unsigned int coreSleepTime_ = 0;
+
     //Flag that the core is running
     {
         boost::mutex::scoped_lock lock( mutex );
         coreRunning = true;
         stopMainThread = false;
+        coreSleepTime_ = coreSleepTime;
     }
 
     //Flag that the core is now running
@@ -1147,13 +1162,15 @@ void Core::mainThreadFunction(){
         }
 
         //Let the thread sleep so we don't kill the CPU
-        boost::this_thread::sleep( boost::posix_time::milliseconds( DEFAULT_CORE_THREAD_SLEEP_TIME ) );
+        boost::this_thread::sleep( boost::posix_time::milliseconds( coreSleepTime_ ) );
 
         //Check to see if we should stop the thread
         {
             boost::mutex::scoped_lock lock( mutex );
             if( stopMainThread ){
                 keepRunning = false;
+            }else{
+                coreSleepTime_ = coreSleepTime;
             }
         }
     }
@@ -1417,6 +1434,7 @@ bool Core::processNewData(){
                 break;
                 case TIMESERIES_CLASSIFICATION_MODE:
                     if( timeseriesSample.push_back(inputData) ){
+                        numTrainingSamples = timeseriesClassificationTrainingData.getNumSamples();
                         newTimeseriesSample = timeseriesSample;
                         newSampleAdded = true;
                     }else newWarningMessage( "Warning: Failed to add timeseries sample!" );
@@ -1598,10 +1616,10 @@ bool Core::train(){
     return result;
 }
 
-bool Core::trainAndTestOnRandomSubset(unsigned int randomTestSubsetPercentage,bool useStratifiedSampling){
+bool Core::trainAndTestOnRandomSubset( const unsigned int randomTestSubsetPercentage,const bool useStratifiedSampling ){
 
     //Check to make sure we are not already training something
-    if( trainingThread.getTrainingInProcess() ){
+    if( getTrainingInProcess() ){
         emit newInfoMessage( "Can't start training, training already in process" );
         return false;
     }
@@ -1674,7 +1692,7 @@ bool Core::trainAndTestOnTestDataset(){
     return false;
 }
 
-bool Core::trainWithCrossValidation(unsigned int numFolds){
+bool Core::trainWithCrossValidation( const unsigned int numFolds ){
 
     //Check to make sure we are not already training something
     if( trainingThread.getTrainingInProcess() ){
@@ -1709,7 +1727,7 @@ bool Core::trainWithCrossValidation(unsigned int numFolds){
     return result;
 }
 
-bool Core::enablePrediction(bool state){
+bool Core::enablePrediction( const bool state ){
     boost::mutex::scoped_lock lock( mutex );
     predictionModeEnabled = state;
     return true;
@@ -1749,7 +1767,7 @@ void Core::sendFeatureExtractionData( const GRT::VectorDouble &featureData ){
     socket->Send( msg.Data(), msg.Size() );
 }
 
-void Core::sendPredictionResults( unsigned int predictedClassLabel, double maximumLikelihood ){
+void Core::sendPredictionResults( const unsigned int predictedClassLabel, const double maximumLikelihood ){
 
     const unsigned int msgBufferSize = 1024;
     char msgBuffer[ msgBufferSize ];
@@ -1830,7 +1848,7 @@ void Core::sendRegressionData( const GRT::VectorDouble &regressionData ){
     socket->Send( msg.Data(), msg.Size() );
 }
 
-void Core::sendStatusMessage(int pipelineMode,int trained,int recording,int numTrainingSamples,int numClassesInTrainingData,std::string infoMessage,std::string version){
+void Core::sendStatusMessage( const int pipelineMode,const int trained,const int recording,const int numTrainingSamples,const int numClassesInTrainingData,const std::string infoMessage,const std::string version ){
 
     const unsigned int msgBufferSize = 1024;
     char msgBuffer[ msgBufferSize ];

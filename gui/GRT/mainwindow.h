@@ -149,7 +149,7 @@ public:
 
 private slots:
     ////////////////////////////////// MAIN VIEW FUNCTIONS ////////////////////////////////
-    void updateMainView(int tabIndex);
+    void updateMainView(const int tabIndex);
     void showVersionInfo();
     void showSetupView();
     void showDataIOView();
@@ -158,20 +158,20 @@ private slots:
     void showTrainingToolView();
     void showPredictionView();
     void showLogView();
-    void updateInfoText(std::string msg);
-    void updateWarningText(std::string msg);
-    void updateErrorText(std::string msg);
-    void updateHelpText(std::string msg);
+    void updateInfoText(const std::string msg);
+    void updateWarningText(const std::string msg);
+    void updateErrorText(const std::string msg);
+    void updateHelpText(const std::string msg);
 
     /////////////////////////////////// SETUP VIEW FUNCTIONS /////////////////////////////////
     void showSetupViewInfo();
-    void setNumInputs(int numInputs);
-    void setNumOutputs(int numOutputs);
+    void setNumInputs(const int numInputs);
+    void setNumOutputs(const int numOutputs);
     void setPipelineModeAsClassificationMode();
     void setPipelineModeAsRegressionMode();
     void setPipelineModeAsTimeseriesMode();
     void setPipelineModeAsClusterMode();
-    void updatePipelineMode(unsigned int);
+    void updatePipelineMode(const unsigned int pipelineMode);
     void resetAll();
 
     ////////////////////////////////// DATA IO TOOL FUNCTIONS ////////////////////////////////
@@ -179,34 +179,34 @@ private slots:
     void updateOSCInput();
     void updateMouseInput();
     void updateOSCControlCommands();
-    void resetOSCServer( int port );
+    void resetOSCServer(const int port);
     void resetOSCClient();
     void updateDataAddress();
-    void updateOSCMessageLog(std::string msg);
-    void updateNumInputDimensions(int numInputDimensions);
-    void updateNumTargetDimensions(int numTargetDimensions);
+    void updateOSCMessageLog(const std::string msg);
+    void updateNumInputDimensions(const int numInputDimensions);
+    void updateNumTargetDimensions(const int numTargetDimensions);
 
     //////////////////////////// DATA LABELING TOOL FUNCTIONS ///////////////////////////////
     void showDataLabellingToolInfo();
-    void recordTrainingData(bool state);
+    void recordTrainingData(const bool state);
     void saveTrainingDatasetToFile();
     void loadTrainingDatasetFromFile();
-    void updateTrainingClassLabel(unsigned int trainingClassLabel);
-    void updateTargetVectorValue(double value);
-    void updateRecordStatus(bool recordStatus);
-    void updateNumTrainingSamples(unsigned int numTrainingSamples);
-    void addNewTrainingSample(unsigned int numTrainingSamples,GRT::ClassificationSample trainingSample);
-    void addNewTrainingSample(GRT::MatrixDouble trainingSample);
-    void addNewTrainingSample(unsigned int numTrainingSamples,GRT::TimeSeriesClassificationSample trainingSample);
-    void resetTrainingData(GRT::ClassificationData trainingData);
-    void resetTrainingData(GRT::RegressionData trainingData);
-    void resetTrainingData(GRT::TimeSeriesClassificationData trainingData);
-    void resetTrainingData(GRT::UnlabelledData trainingData);
-    void resetTestData(GRT::ClassificationData testData);
+    void updateTrainingClassLabel(const unsigned int trainingClassLabel);
+    void updateTargetVectorValue(const double value);
+    void updateRecordStatus(const bool recordStatus);
+    void updateNumTrainingSamples(const unsigned int numTrainingSamples);
+    void addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::ClassificationSample &trainingSample);
+    void addNewTrainingSample(const GRT::MatrixDouble &trainingSample);
+    void addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::TimeSeriesClassificationSample &trainingSample);
+    void resetTrainingData(const GRT::ClassificationData &trainingData);
+    void resetTrainingData(const GRT::RegressionData &trainingData);
+    void resetTrainingData(const GRT::TimeSeriesClassificationData &trainingData);
+    void resetTrainingData(const GRT::UnlabelledData &trainingData);
+    void resetTestData(const GRT::ClassificationData &testData);
     void handleDatasetClicked(const QModelIndex &index);
     void updateDatasetName();
     void updateDatasetInfoText();
-    void updateTrainingTabView(int tabIndex);
+    void updateTrainingTabView(const int tabIndex);
     void updateDatasetStatsView();
     void updateClassStatsGraph();
     void updatePCAProjectionGraph();
@@ -221,13 +221,13 @@ private slots:
     void updatePipelineFilename();
     void savePipelineToFile();
     void loadPipelineFromFile();
-    void updatePreProcessingView(int viewIndex);
-    void updateFeatureExtractionView(int viewIndex);
-    void updateClassifierView(int viewIndex);
-    void updateRegressifierView(int viewIndex);
-    void updateClusterView(int viewIndex);
-    void updateTimeseriesClassifierView(int viewIndex);
-    void updatePostProcessingView(int viewIndex);
+    void updatePreProcessingView(const int viewIndex);
+    void updateFeatureExtractionView(const int viewIndex);
+    void updateClassifierView(const int viewIndex);
+    void updateRegressifierView(const int viewIndex);
+    void updateClusterView(const int viewIndex);
+    void updateTimeseriesClassifierView(const int viewIndex);
+    void updatePostProcessingView(const int viewIndex);
     void refreshPipelineSetup();
     void updatePreProcessingSettings();
     void updateClassifierSettings();
@@ -244,21 +244,21 @@ private slots:
     void setupDefaultRegressifier();
     void setupDefaultTimeseriesClassifier();
     void setupDefaultCluster();
-    void updateClassifier(unsigned int classifierType,bool useScaling,bool useNullRejection,double nullRejectionCoeff,double parameter1);
+    void updateClassifier(const unsigned int classifierType,const bool useScaling,const bool useNullRejection,const double nullRejectionCoeff,const double parameter1);
 
     //////////////////////////////// TRAINING TOOl FUNCTIONS ////////////////////////////////
     void showTrainingToolInfo();
     void loadTestDatasetFromFile();
-    void resetTrainingToolView(int trainingMode);
+    void resetTrainingToolView(const int trainingMode);
     void train();
-    void randomTestSliderMoved(int value);
-    void numCVFoldsValueChanged(int value);
+    void randomTestSliderMoved(const int value);
+    void numCVFoldsValueChanged(const int value);
     void pipelineTrainingStarted();
-    void pipelineTrainingFinished(bool result);
-    void pipelineTestingFinished(bool result);
+    void pipelineTrainingFinished(const bool result);
+    void pipelineTestingFinished(const bool result);
     void updateTrainingToolLog(const std::string message);
     void updateTrainingResults(const GRT::TrainingResult &trainingResult);
-    void updateTestResults(const GRT::TestInstanceResult&);
+    void updateTestResults(const GRT::TestInstanceResult &testResult);
     void updatePrecisionGraph(const GRT::VectorDouble &precision,const vector< unsigned int > &classLabels);
     void updateRecallGraph(const GRT::VectorDouble &recall,const vector< unsigned int > &classLabels);
     void updateFmeasureGraph(const GRT::VectorDouble &fmeasure,const vector< unsigned int > &classLabels);
@@ -272,10 +272,10 @@ private slots:
     void showPredictionToolInfo();
     void updatePreProcessingData(const GRT::VectorDouble &preProcessedData);
     void updateFeatureExtractionData(const GRT::VectorDouble &featureExtractionData);
-    void updateClassificationResults(unsigned int predictedClassLabel,double maximumLikelihood,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
-    void updateRegressionResults(GRT::VectorDouble regressionData);
-    void updateTimeseriesClassificationResults(unsigned int predictedClassLabel,double maximumLikelihood,double phase,GRT::VectorDouble classLikelihoods,GRT::VectorDouble classDistances,std::vector<unsigned int> classLabels);
-    void updateClusterResults(unsigned int predictedClusterLabel,double maximumLikelihood,GRT::VectorDouble clusterLikelihoods,GRT::VectorDouble clusterDistances,std::vector<unsigned int> clusterLabels);
+    void updateClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels);
+    void updateRegressionResults(const GRT::VectorDouble &regressionData);
+    void updateTimeseriesClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const double phase,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels);
+    void updateClusterResults(const unsigned int predictedClusterLabel,const double maximumLikelihood,const GRT::VectorDouble &clusterLikelihoods,const GRT::VectorDouble &clusterDistances,const std::vector<unsigned int> &clusterLabels);
     void resetPredictionViewGraphs();
 
     ///////////////////////////////    LOG VIEW FUNCTIONS     ///////////////////////////////
@@ -284,18 +284,20 @@ private slots:
     void showInfoLog();
     void showWarningLog();
     void showErrorLog();
-    void updateLogView(unsigned int viewID);
+    void updateLogView(const unsigned int viewID);
 
     //////////////////////////////   SETTINGS VIEW FUNCTIONS     /////////////////////////////
     void openGRTWiki();
     void openGRTForum();
     void openGRTSource();
     void openGRTDownload();
+    void updateCoreRefreshRate(const double rate);
+    void updateMaximumGraphRefreshRate(const double framerate);
 
     /////////////////////////////////// CORE DATA FUNCTIONS /////////////////////////////////
     void coreTick();
-    void updateData(GRT::VectorDouble data);
-    void updateTargetVector(GRT::VectorDouble targetVector);
+    void updateData( const GRT::VectorDouble &data );
+    void updateTargetVector( const GRT::VectorDouble &targetVector );
 
 private:
     bool initMainMenu();
