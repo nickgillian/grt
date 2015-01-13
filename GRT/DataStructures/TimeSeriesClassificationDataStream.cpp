@@ -825,7 +825,8 @@ ClassificationData TimeSeriesClassificationDataStream::getClassificationData() c
     ClassificationData classificationData;
     
     classificationData.setNumDimensions( getNumDimensions() );
-    
+    classificationData.setAllowNullGestureClass( true );
+
     for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
         if( timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL ){
             MatrixDouble dataSegment = getTimeSeriesData( timeSeriesPositionTracker[i] );
