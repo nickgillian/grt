@@ -743,7 +743,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const string &fi
         }
     }
 
-    return false;
+    return true;
 }
     
 bool TimeSeriesClassificationDataStream::printStats() const {
