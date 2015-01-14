@@ -253,7 +253,7 @@ public:
                 size = r * c;
                 capacity = r;
                 
-                dataPtr = new T[rows*cols];
+                dataPtr = new T[size];
                 rowPtr = new T*[rows];
                 
                 if( dataPtr == NULL ){
@@ -261,6 +261,7 @@ public:
                     cols = 0;
                     size = 0;
                     capacity = 0;
+					errorLog << "resize(const unsigned r,const unsigned int c) - Failed to allocate memory! r: " << r << " c: " << c << std::endl;
                     throw Exception("Matrix::resize(const unsigned int r,const unsigned int c) - Failed to allocate memory!");
                     return false;
                 }
@@ -270,6 +271,7 @@ public:
                     cols = 0;
                     size = 0;
                     capacity = 0;
+					errorLog << "resize(const unsigned r,const unsigned int c) - Failed to allocate memory! r: " << r << " c: " << c << std::endl;
                     throw Exception("Matrix::resize(const unsigned int r,const unsigned int c) - Failed to allocate memory!");
                     return false;
                 }
@@ -285,7 +287,7 @@ public:
                 return true;
                 
             }catch( std::exception& e ){
-                errorLog << "resize: Failed to allocate memory. Error: " << e.what() << std::endl;
+                errorLog << "resize: Failed to allocate memory. Error: " << e.what() << " rows: " << r << " cols: " << c <<  std::endl;
                 clear();
                 return false;
             }catch( ... ){

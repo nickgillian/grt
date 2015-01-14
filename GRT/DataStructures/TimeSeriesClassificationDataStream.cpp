@@ -814,7 +814,8 @@ TimeSeriesClassificationData TimeSeriesClassificationDataStream::getTimeSeriesCl
     tsData.setAllowNullGestureClass( includeNullGestures );
     
     bool addSample = false;
-    for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
+    const UINT numTimeseries = (UINT)timeSeriesPositionTracker.size();
+    for(UINT i=0; i<numTimeseries; i++){
         addSample = includeNullGestures ? true : timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL;
         if( addSample ){
             tsData.addSample(timeSeriesPositionTracker[i].getClassLabel(), getTimeSeriesData( timeSeriesPositionTracker[i] ) );
@@ -851,9 +852,12 @@ MatrixDouble TimeSeriesClassificationDataStream::getTimeSeriesData( const TimeSe
         warningLog << "getTimeSeriesData(TimeSeriesPositionTracker trackerInfo) - Invalid tracker indexs!" << endl;
         return MatrixDouble();
     }
-    UINT M = trackerInfo.getLength();
-    UINT N = getNumDimensions();
+
     UINT startIndex = trackerInfo.getStartIndex();
+    UINT endIndex = trackerInfo.getEndIndex();
+    UINT M = endIndex > 0 ? trackerInfo.getLength() : totalNumSamples - startIndex;
+    UINT N = getNumDimensions();
+
     MatrixDouble tsData(M,N);
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<N; j++){
