@@ -277,19 +277,19 @@ bool GestureRecognitionPipeline::train(const ClassificationData &trainingData){
     return true;
 }
     
-bool GestureRecognitionPipeline::train(ClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling){
+bool GestureRecognitionPipeline::train(const ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling){
     
     trained = false;
     trainingTime = 0;
     clearTestResults();
     
     if( !getIsClassifierSet() ){
-        errorLog << "train(ClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Train Classifier, the classifier has not been set!" << endl;
+        errorLog << "train(const ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Train Classifier, the classifier has not been set!" << endl;
         return false;
     }
     
     if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train(ClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Train Classifier, there is no training data!" << endl;
+        errorLog << "train(const ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Train Classifier, there is no training data!" << endl;
         return false;
     }
     
@@ -299,9 +299,12 @@ bool GestureRecognitionPipeline::train(ClassificationData trainingData,const UIN
     //Start the training timer
     Timer timer;
     timer.start();
+	
+	//Get a copy of the data so we can spilt it
+	ClassificationData data = trainingData;
 
     //Spilt the data into K folds
-    bool spiltResult = trainingData.spiltDataIntoKFolds(kFoldValue, useStratifiedSampling);
+    bool spiltResult = data.spiltDataIntoKFolds(kFoldValue, useStratifiedSampling);
     
     if( !spiltResult ){
         return false;
@@ -315,14 +318,14 @@ bool GestureRecognitionPipeline::train(ClassificationData trainingData,const UIN
 
     for(UINT k=0; k<kFoldValue; k++){
         ///Train the classification system
-		foldTrainingData = trainingData.getTrainingFoldData(k);
+		foldTrainingData = data.getTrainingFoldData(k);
         
         if( !train( foldTrainingData ) ){
             return false;
         }
         
         //Test the classification system
-        foldTestData = trainingData.getTestFoldData(k);
+        foldTestData = data.getTestFoldData(k);
         
         if( !test( foldTestData ) ){
             return false;
@@ -345,14 +348,14 @@ bool GestureRecognitionPipeline::train(ClassificationData trainingData,const UIN
     return true;
 }
 
-bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData){
+bool GestureRecognitionPipeline::train( const TimeSeriesClassificationData &trainingData ){
     
     trained = false;
     trainingTime = 0;
     clearTestResults();
     
     if( !getIsClassifierSet() ){
-        errorLog << "train(TimeSeriesClassificationData trainingData) - Failed To Train Classifier, the classifier has not been set!" << endl;
+        errorLog << "train(const TimeSeriesClassificationData &trainingData) - Failed To Train Classifier, the classifier has not been set!" << endl;
         return false;
     }
     
@@ -370,13 +373,18 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
     
     //Set the input vector dimension size of the pipeline
     inputVectorDimensions = trainingData.getNumDimensions();
-    
+   
     TimeSeriesClassificationData processedTrainingData( trainingData.getNumDimensions() );
-    TimeSeriesClassificationData labelledTimeseriesClassificationData;
-    ClassificationData labelledClassificationData;
+    TimeSeriesClassificationData timeseriesClassificationData;
+    ClassificationData classificationData;
+
+    bool allowNullGestureClass = true;
+	processedTrainingData.setAllowNullGestureClass( allowNullGestureClass );
+	timeseriesClassificationData.setAllowNullGestureClass( allowNullGestureClass );
+	classificationData.setAllowNullGestureClass( allowNullGestureClass );
     
-    //Setup the data structure, if the classifier works with timeseries data then we use LabelledTimeSeriesClassificationData
-    //otherwise we format the data as LabelledClassificationData
+    //Setup the data structure, if the classifier works with timeseries data then we use TimeSeriesClassificationData
+    //otherwise we format the data as ClassificationData
     if( classifier->getTimeseriesCompatible() ){
         UINT trainingDataInputDimensionSize = trainingData.getNumDimensions();
         if( getIsPreProcessingSet() ){
@@ -385,7 +393,7 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
         if( getIsFeatureExtractionSet() ){
             trainingDataInputDimensionSize = featureExtractionModules[ featureExtractionModules.size()-1 ]->getNumOutputDimensions();
         }
-        labelledTimeseriesClassificationData.setNumDimensions( trainingDataInputDimensionSize );
+        timeseriesClassificationData.setNumDimensions( trainingDataInputDimensionSize );
     }else{
         UINT trainingDataInputDimensionSize = trainingData.getNumDimensions();
         if( getIsPreProcessingSet() ){
@@ -394,7 +402,7 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
         if( getIsFeatureExtractionSet() ){
             trainingDataInputDimensionSize = featureExtractionModules[ featureExtractionModules.size()-1 ]->getNumOutputDimensions();
         }
-        labelledClassificationData.setNumDimensions( trainingDataInputDimensionSize );
+        classificationData.setNumDimensions( trainingDataInputDimensionSize );
     }
     
     //Pass the timeseries data through any pre-processing modules and add it to the processedTrainingData structure
@@ -459,10 +467,11 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
         bool featureDataReady = false;
         bool resetFeatureExtractionModules = true;
         
+		VectorDouble inputVector;
         MatrixDouble featureData;
         //Try to process the matrix data row-by-row
         for(UINT r=0; r<trainingSample.getNumRows(); r++){
-            VectorDouble inputVector = trainingSample.getRowVector( r );
+            inputVector = trainingSample.getRowVector( r );
             featureDataReady = true;
             
              //Pass the processed training data through the feature extraction
@@ -497,7 +506,7 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
                             errorLog << "train(TimeSeriesClassificationData trainingData) - Failed To add feature vector to feature data matrix! FeatureExtractionModuleIndex: " << endl;
                             return false;
                         }
-                    }else labelledClassificationData.addSample(classLabel, inputVector);
+                    }else classificationData.addSample(classLabel, inputVector);
                 }
                 
             }else{
@@ -507,21 +516,21 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
                         return false;
                     }
                 }
-                else labelledClassificationData.addSample(classLabel, inputVector);
+                else classificationData.addSample(classLabel, inputVector);
             }
         }
         
-        if( classifier->getTimeseriesCompatible() ) labelledTimeseriesClassificationData.addSample(classLabel, featureData);
+        if( classifier->getTimeseriesCompatible() ) timeseriesClassificationData.addSample(classLabel, featureData);
         
     }
         
     //Train the classification system
     if( classifier->getTimeseriesCompatible() ){
-        numTrainingSamples = labelledTimeseriesClassificationData.getNumSamples();
-        trained = classifier->train( labelledTimeseriesClassificationData );
+        numTrainingSamples = timeseriesClassificationData.getNumSamples();
+        trained = classifier->train( timeseriesClassificationData );
     }else{
-        numTrainingSamples = labelledClassificationData.getNumSamples();
-        trained = classifier->train( labelledClassificationData );
+        numTrainingSamples = classificationData.getNumSamples();
+        trained = classifier->train( classificationData );
     }
 
     if( !trained ){
@@ -535,19 +544,19 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
     return true;
 }
     
-bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling){
+bool GestureRecognitionPipeline::train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling){
     
     trained = false;
     trainingTime = 0;
     clearTestResults();
     
     if( !getIsClassifierSet() ){
-        errorLog << "train(TimeSeriesClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Train Classifier, the classifier has not been set!" << endl;
+        errorLog << "train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Train Classifier, the classifier has not been set!" << endl;
         return false;
     }
     
     if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train(TimeSeriesClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Train Classifier, there is no training data!" << endl;
+        errorLog << "train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Train Classifier, there is no training data!" << endl;
         return false;
     }
     
@@ -557,10 +566,13 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
     //Start the training timer
     Timer timer;
     timer.start();
+
+	//Get a copy of the data so we can split it
+	TimeSeriesClassificationData data = trainingData;
     
     //Spilt the data into K folds
-    if( !trainingData.spiltDataIntoKFolds(kFoldValue, useStratifiedSampling) ){
-        errorLog << "train(TimeSeriesClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Spilt Dataset into KFolds!" << endl;
+    if( !data.spiltDataIntoKFolds(kFoldValue, useStratifiedSampling) ){
+        errorLog << "train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed To Spilt Dataset into KFolds!" << endl;
         return false;
     }
     
@@ -571,18 +583,18 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
     
     for(UINT k=0; k<kFoldValue; k++){
         ///Train the classification system
-		foldTrainingData = trainingData.getTrainingFoldData(k);
+		foldTrainingData = data.getTrainingFoldData(k);
         
         if( !train( foldTrainingData ) ){
-            errorLog << "train(TimeSeriesClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed to train pipeline for fold " << k << "." << endl;
+            errorLog << "train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed to train pipeline for fold " << k << "." << endl;
             return false;
         }
         
         //Test the classification system
-        foldTestData = trainingData.getTestFoldData(k);
+        foldTestData = data.getTestFoldData(k);
         
         if( !test( foldTestData ) ){
-            errorLog << "train(TimeSeriesClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed to test pipeline for fold " << k << "." << endl;
+            errorLog << "train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling) - Failed to test pipeline for fold " << k << "." << endl;
             return false;
         }
         
@@ -601,7 +613,7 @@ bool GestureRecognitionPipeline::train(TimeSeriesClassificationData trainingData
     return true;
 }
     
-bool GestureRecognitionPipeline::train(RegressionData trainingData){
+bool GestureRecognitionPipeline::train(const RegressionData &trainingData){
     
     trained = false;
     trainingTime = 0;
@@ -649,7 +661,7 @@ bool GestureRecognitionPipeline::train(RegressionData trainingData){
         if( getIsPreProcessingSet() ){
             for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
                 if( !preProcessingModules[ moduleIndex ]->process( inputVector ) ){
-                    errorLog << "train(const RegressionData trainingData) - Failed To Compute Features For Training Data. PreProcessingModuleIndex: " << moduleIndex << endl;
+                    errorLog << "train(const RegressionData &trainingData) - Failed To Compute Features For Training Data. PreProcessingModuleIndex: " << moduleIndex << endl;
                     return false;
                 }
                 
@@ -660,7 +672,7 @@ bool GestureRecognitionPipeline::train(RegressionData trainingData){
         if( getIsFeatureExtractionSet() ){
             for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
                 if( !featureExtractionModules[ moduleIndex ]->computeFeatures( inputVector ) ){
-                    errorLog << "train(const RegressionData trainingData) - Failed To Compute Features For Training Data. FeatureExtractionModuleIndex: " << moduleIndex << endl;
+                    errorLog << "train(const RegressionData &trainingData) - Failed To Compute Features For Training Data. FeatureExtractionModuleIndex: " << moduleIndex << endl;
                     return false;
                 }
                 
@@ -670,7 +682,7 @@ bool GestureRecognitionPipeline::train(RegressionData trainingData){
         
         //Add the training sample to the processed training data
         if( !processedTrainingData.addSample(inputVector,targetVector) ){
-            errorLog << "train(const RegressionData trainingData) - Failed to add processed training sample to training data" << endl;
+            errorLog << "train(const RegressionData &trainingData) - Failed to add processed training sample to training data" << endl;
             return false;
         }
     }
@@ -682,11 +694,11 @@ bool GestureRecognitionPipeline::train(RegressionData trainingData){
     if( getIsRegressifierSet() ){
         trained =  regressifier->train( processedTrainingData );
         if( !trained ){
-            errorLog << "train(const RegressionData trainingData) - Failed To Train Regressifier: " << regressifier->getLastErrorMessage() << endl;
+            errorLog << "train(const RegressionData &trainingData) - Failed To Train Regressifier: " << regressifier->getLastErrorMessage() << endl;
             return false;
         }
     }else{
-        errorLog << "train(const RegressionData trainingData) - Classifier is not set" << endl;
+        errorLog << "train(const RegressionData &trainingData) - Classifier is not set" << endl;
         return false;
     }
     
@@ -696,19 +708,19 @@ bool GestureRecognitionPipeline::train(RegressionData trainingData){
     return true;
 }
     
-bool GestureRecognitionPipeline::train(RegressionData trainingData,const UINT kFoldValue){
+bool GestureRecognitionPipeline::train(const RegressionData &trainingData,const UINT kFoldValue){
 
     trained = false;
     trainingTime = 0;
     clearTestResults();
     
     if( !getIsRegressifierSet() ){
-        errorLog << "train(RegressionData trainingData,const UINT kFoldValue) - Failed To Train Regressifier, the regressifier has not been set!" << endl;
+        errorLog << "train(const RegressionData &trainingData,const UINT kFoldValue) - Failed To Train Regressifier, the regressifier has not been set!" << endl;
         return false;
     }
     
     if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train(RegressionData trainingData,const UINT kFoldValue) - Failed To Train Regressifier, there is no training data!" << endl;
+        errorLog << "train(const RegressionData &trainingData,const UINT kFoldValue) - Failed To Train Regressifier, there is no training data!" << endl;
         return false;
     }
     
@@ -718,9 +730,12 @@ bool GestureRecognitionPipeline::train(RegressionData trainingData,const UINT kF
     //Start the training timer
     Timer timer;
     timer.start();
-    
+   
+    //Get a copy of the training data so we can split it
+	RegressionData data = trainingData;
+
     //Spilt the data into K folds
-    bool spiltResult = trainingData.spiltDataIntoKFolds(kFoldValue);
+    bool spiltResult = data.spiltDataIntoKFolds(kFoldValue);
     
     if( !spiltResult ){
         return false;
@@ -732,14 +747,14 @@ bool GestureRecognitionPipeline::train(RegressionData trainingData,const UINT kF
     RegressionData foldTestData;
     for(UINT k=0; k<kFoldValue; k++){
         ///Train the classification system
-        foldTrainingData = trainingData.getTrainingFoldData(k);
+        foldTrainingData = data.getTrainingFoldData(k);
         
         if( !train( foldTrainingData ) ){
             return false;
         }
         
         //Test the classification system
-        foldTestData = trainingData.getTestFoldData(k);
+        foldTestData = data.getTestFoldData(k);
         
         if( !test( foldTestData ) ){
             return false;
@@ -767,12 +782,12 @@ bool GestureRecognitionPipeline::train(const UnlabelledData &trainingData){
     clearTestResults();
     
     if( !getIsClustererSet() ){
-        errorLog << "train(UnlabelledData trainingData) - Failed To Train Clusterer, the clusterer has not been set!" << endl;
+        errorLog << "train(const UnlabelledData &trainingData) - Failed To Train Clusterer, the clusterer has not been set!" << endl;
         return false;
     }
     
     if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train(UnlabelledData trainingData) - Failed To Train Clusterer, there is no training data!" << endl;
+        errorLog << "train(const UnlabelledData &trainingData) - Failed To Train Clusterer, there is no training data!" << endl;
         return false;
     }
     
@@ -808,7 +823,7 @@ bool GestureRecognitionPipeline::train(const UnlabelledData &trainingData){
         if( getIsPreProcessingSet() ){
             for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
                 if( !preProcessingModules[moduleIndex]->process( trainingSample ) ){
-                    errorLog << "train(UnlabelledData trainingData) - Failed to PreProcess Training Data. PreProcessingModuleIndex: ";
+                    errorLog << "train(const UnlabelledData &trainingData) - Failed to PreProcess Training Data. PreProcessingModuleIndex: ";
                     errorLog << moduleIndex;
                     errorLog << endl;
                     return false;
@@ -821,7 +836,7 @@ bool GestureRecognitionPipeline::train(const UnlabelledData &trainingData){
         if( getIsFeatureExtractionSet() ){
             for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
                 if( !featureExtractionModules[moduleIndex]->computeFeatures( trainingSample ) ){
-                    errorLog << "train(UnlabelledData trainingData) - Failed to Compute Features from Training Data. FeatureExtractionModuleIndex ";
+                    errorLog << "train(const UnlabelledData &trainingData) - Failed to Compute Features from Training Data. FeatureExtractionModuleIndex ";
                     errorLog << moduleIndex;
                     errorLog << endl;
                     return false;
@@ -844,7 +859,7 @@ bool GestureRecognitionPipeline::train(const UnlabelledData &trainingData){
     
     if( processedTrainingData.getNumSamples() != trainingData.getNumSamples() ){
         
-        warningLog << "train(ClassificationData trainingData) - Lost " << trainingData.getNumSamples()-processedTrainingData.getNumSamples() << " of " << trainingData.getNumSamples() << " training samples due to the processing stage!" << endl;
+        warningLog << "train(const ClassificationData &trainingData) - Lost " << trainingData.getNumSamples()-processedTrainingData.getNumSamples() << " of " << trainingData.getNumSamples() << " training samples due to the processing stage!" << endl;
     }
     
     //Store the number of training samples
@@ -853,7 +868,7 @@ bool GestureRecognitionPipeline::train(const UnlabelledData &trainingData){
     //Train the cluster model
     trained = clusterer->train_( processedTrainingData );
     if( !trained ){
-        errorLog << "train(UnlabelledData trainingData) - Failed To Train Clusterer: " << clusterer->getLastErrorMessage() << endl;
+        errorLog << "train(const UnlabelledData &trainingData) - Failed To Train Clusterer: " << clusterer->getLastErrorMessage() << endl;
         return false;
     }
     
@@ -870,18 +885,18 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
     
     //Make sure the classification model has been trained
     if( !trained ){
-        errorLog << "test(ClassificationData testData) - Classifier is not trained" << endl;
+        errorLog << "test(const ClassificationData &testData) - Classifier is not trained" << endl;
         return false;
     }
     
     //Make sure the dimensionality of the test data matches the input vector's dimensions
     if( testData.getNumDimensions() != inputVectorDimensions ){
-        errorLog << "test(ClassificationData testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
+        errorLog << "test(const ClassificationData &testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
         return false;
     }
     
     if( !getIsClassifierSet() ){
-        errorLog << "test(ClassificationData testData) - The classifier has not been set" << endl;
+        errorLog << "test(const ClassificationData &testData) - The classifier has not been set" << endl;
         return false;
     }
     
@@ -901,12 +916,12 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
 
 		if( !labelFound ){
 			classLabelValidationPassed = false;
-            errorLog << "test(ClassificationData testData) - The test dataset contains a class label (" << testData.getClassTracker()[i].classLabel << ") that is not in the model!" << endl;
+            errorLog << "test(const ClassificationData &testData) - The test dataset contains a class label (" << testData.getClassTracker()[i].classLabel << ") that is not in the model!" << endl;
 		}
 	}
 
 	if( !classLabelValidationPassed ){
-        errorLog << "test(ClassificationData testData) -  Model Class Labels: ";
+        errorLog << "test(const ClassificationData &testData) -  Model Class Labels: ";
         for(UINT k=0; k<classifier->getNumClasses(); k++){
             errorLog << classifier->getClassLabels()[k] << "\t";
 		}
@@ -946,7 +961,7 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
         
         //Pass the test sample through the pipeline
         if( !predict( testSample ) ){
-            errorLog << "test(ClassificationData testData) - Prediction failed for test sample at index: " << i << endl;
+            errorLog << "test(const ClassificationData &testData) - Prediction failed for test sample at index: " << i << endl;
             return false;
         }
         
@@ -954,7 +969,7 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
         UINT predictedClassLabel = getPredictedClassLabel();
         
         if( !updateTestMetrics(classLabel,predictedClassLabel,precisionCounter,recallCounter,rejectionPrecisionCounter,rejectionRecallCounter, confusionMatrixCounter) ){
-            errorLog << "test(ClassificationData testData) - Failed to update test metrics at test sample index: " << i << endl;
+            errorLog << "test(const ClassificationData &testData) - Failed to update test metrics at test sample index: " << i << endl;
             return false;
         }
         
@@ -966,7 +981,7 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
     }
     
     if( !computeTestMetrics(precisionCounter,recallCounter,rejectionPrecisionCounter,rejectionRecallCounter, confusionMatrixCounter, numTestSamples) ){
-        errorLog <<"test(ClassificationData testData) - Failed to compute test metrics!" << endl;
+        errorLog <<"test(const ClassificationData &testData) - Failed to compute test metrics!" << endl;
         return false;
     }
     
@@ -975,25 +990,25 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
     return true;
 }
     
-bool GestureRecognitionPipeline::test(TimeSeriesClassificationData testData){
+bool GestureRecognitionPipeline::test(const TimeSeriesClassificationData &testData){
 
     //Clear any previous test results
     clearTestResults();
     
     //Make sure the classification model has been trained
     if( !trained ){
-        errorLog << "test(TimeSeriesClassificationData testData) - The classifier has not been trained" << endl;
+        errorLog << "test(const TimeSeriesClassificationData &testData) - The classifier has not been trained" << endl;
         return false;
     }
     
     //Make sure the dimensionality of the test data matches the input vector's dimensions
     if( testData.getNumDimensions() != inputVectorDimensions ){
-        errorLog << "test(TimeSeriesClassificationData testData) - The dimensionality of the test data (" << testData.getNumDimensions() << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
+        errorLog << "test(const TimeSeriesClassificationData &testData) - The dimensionality of the test data (" << testData.getNumDimensions() << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
         return false;
     }
     
     if( !getIsClassifierSet() ){
-        errorLog << "test(TimeSeriesClassificationData testData) - The classifier has not been set" << endl;
+        errorLog << "test(const TimeSeriesClassificationData &testData) - The classifier has not been set" << endl;
         return false;
     }
     
@@ -1030,7 +1045,7 @@ bool GestureRecognitionPipeline::test(TimeSeriesClassificationData testData){
             
         //Pass the test timeseries through the pipeline
         if( !predict( timeseries ) ){
-            errorLog << "test(TimeSeriesClassificationData testData) - Failed to run prediction for test sample index: " << i << endl;
+            errorLog << "test(const TimeSeriesClassificationData &testData) - Failed to run prediction for test sample index: " << i << endl;
             return false;
         }
         
@@ -1038,14 +1053,14 @@ bool GestureRecognitionPipeline::test(TimeSeriesClassificationData testData){
         UINT predictedClassLabel = getPredictedClassLabel();
         
         if( !updateTestMetrics(classLabel,predictedClassLabel,precisionCounter,recallCounter,rejectionPrecisionCounter,rejectionRecallCounter, confusionMatrixCounter) ){
-            errorLog << "test(TimeSeriesClassificationData testData) - Failed to update test metrics at test sample index: " << i << endl;
+            errorLog << "test(const TimeSeriesClassificationData &testData) - Failed to update test metrics at test sample index: " << i << endl;
             return false;
         }
         
     }
         
     if( !computeTestMetrics(precisionCounter,recallCounter,rejectionPrecisionCounter,rejectionRecallCounter, confusionMatrixCounter, M) ){
-        errorLog << "test(TimeSeriesClassificationData testData) - Failed to compute test metrics!" << endl;
+        errorLog << "test(const TimeSeriesClassificationData &testData) - Failed to compute test metrics!" << endl;
         return false;
     }
     
@@ -1054,25 +1069,25 @@ bool GestureRecognitionPipeline::test(TimeSeriesClassificationData testData){
     return true;
 }
     
-bool GestureRecognitionPipeline::test(TimeSeriesClassificationDataStream testData){
+bool GestureRecognitionPipeline::test(const TimeSeriesClassificationDataStream &testData){
     
     //Clear any previous test results
     clearTestResults();
     
     //Make sure the classification model has been trained
     if( !trained ){
-        errorLog << "test(TimeSeriesClassificationDataStream testData) - The classifier has not been trained" << endl;
+        errorLog << "test(const TimeSeriesClassificationDataStream &testData) - The classifier has not been trained" << endl;
         return false;
     }
     
     //Make sure the dimensionality of the test data matches the input vector's dimensions
     if( testData.getNumDimensions() != inputVectorDimensions ){
-        errorLog << "test(TimeSeriesClassificationDataStream testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
+        errorLog << "test(const TimeSeriesClassificationDataStream &testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
         return false;
     }
     
     if( !getIsClassifierSet() ){
-        errorLog << "test(TimeSeriesClassificationDataStream testData) - The classifier has not been set" << endl;
+        errorLog << "test(const TimeSeriesClassificationDataStream &testData) - The classifier has not been set" << endl;
         return false;
     }
     
@@ -1102,17 +1117,20 @@ bool GestureRecognitionPipeline::test(TimeSeriesClassificationDataStream testDat
     //Start the test timer
     Timer timer;
     timer.start();
+
+	//Get a copy of the data so we can modify it
+	TimeSeriesClassificationDataStream data = testData;
     
     //Run the test
-    testData.resetPlaybackIndex(0); //Make sure that the test data start at 0
-    for(UINT i=0; i<testData.getNumSamples(); i++){
-        ClassificationSample sample = testData.getNextSample();
+    data.resetPlaybackIndex(0); //Make sure that the test data start at 0
+    for(UINT i=0; i<data.getNumSamples(); i++){
+        ClassificationSample sample = data.getNextSample();
         UINT classLabel = sample.getClassLabel();
         VectorDouble testSample = sample.getSample();
             
         //Pass the test sample through the pipeline
         if( !predict( testSample ) ){
-            errorLog << "test(TimeSeriesClassificationDataStream testData) - Prediction Failed! " << classifier->getLastErrorMessage() << endl;
+            errorLog << "test(const TimeSeriesClassificationDataStream &testData) - Prediction Failed! " << classifier->getLastErrorMessage() << endl;
             return false;
         }
         
@@ -1155,30 +1173,30 @@ bool GestureRecognitionPipeline::test(TimeSeriesClassificationDataStream testDat
     return true;
 }
     
-bool GestureRecognitionPipeline::test(RegressionData testData){
+bool GestureRecognitionPipeline::test(const RegressionData &testData){
     
     //Clear any previous test results
     clearTestResults();
     
     //Make sure the classification model has been trained
     if( !trained ){
-        errorLog << "test(RegressionData testData) - Regressifier is not trained" << endl;
+        errorLog << "test(const RegressionData &testData) - Regressifier is not trained" << endl;
         return false;
     }
     
     //Make sure the dimensionality of the test data matches the input vector's dimensions
     if( testData.getNumInputDimensions() != inputVectorDimensions ){
-        errorLog << "test(RegressionData testData) - The dimensionality of the test data (" << testData.getNumInputDimensions() << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
+        errorLog << "test(const RegressionData &testData) - The dimensionality of the test data (" << testData.getNumInputDimensions() << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
         return false;
     }
     
     if( !getIsRegressifierSet() ){
-        errorLog << "test(RegressionData testData) - The regressifier has not been set" << endl;
+        errorLog << "test(const RegressionData &testData) - The regressifier has not been set" << endl;
         return false;
     }
     
     if( regressifier->getNumOutputDimensions() != testData.getNumTargetDimensions() ){
-        errorLog << "test(RegressionData testData) - The size of the output of the regressifier (" << regressifier->getNumOutputDimensions() << ") does not match that of the size of the number of target dimensions (" << testData.getNumTargetDimensions() << ")" << endl;
+        errorLog << "test(const RegressionData &testData) - The size of the output of the regressifier (" << regressifier->getNumOutputDimensions() << ") does not match that of the size of the number of target dimensions (" << testData.getNumTargetDimensions() << ")" << endl;
         return false;
     }
     
@@ -1201,7 +1219,7 @@ bool GestureRecognitionPipeline::test(RegressionData testData){
         
         //Pass the test sample through the pipeline
         if( !map( inputVector ) ){
-            errorLog <<  "test(RegressionData testData) - Failed to map input vector!" << endl;
+            errorLog <<  "test(const RegressionData &testData) - Failed to map input vector!" << endl;
             return false;
         }
         
@@ -1259,24 +1277,26 @@ bool GestureRecognitionPipeline::predict(const VectorDouble &inputVector){
 	return false;
 }
 
-bool GestureRecognitionPipeline::predict(MatrixDouble inputMatrix){
+bool GestureRecognitionPipeline::predict(const MatrixDouble &input){
 	
 	//Make sure the classification model has been trained
     if( !trained ){
-        errorLog << "predict(MatrixDouble inputMatrix) - The classifier has not been trained" << endl;
+        errorLog << "predict(const MatrixDouble &inputMatrix) - The classifier has not been trained" << endl;
         return false;
     }
     
     //Make sure the dimensionality of the input matrix matches the inputVectorDimensions
-    if( inputMatrix.getNumCols() != inputVectorDimensions ){
-        errorLog << "predict(MatrixDouble inputMatrix) - The dimensionality of the input matrix (" << inputMatrix.getNumCols() << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
+    if( input.getNumCols() != inputVectorDimensions ){
+        errorLog << "predict(const MatrixDouble &inputMatrix) - The dimensionality of the input matrix (" << input.getNumCols() << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << endl;
         return false;
     }
 
 	if( !getIsClassifierSet() ){
-        errorLog << "predict(MatrixDouble inputMatrix) - A classifier has not been set" << endl;
+        errorLog << "predict(const MatrixDouble &inputMatrix) - A classifier has not been set" << endl;
 		return false;
     }
+
+	MatrixDouble inputMatrix = input;
 
 	predictedClassLabel = 0;
     
@@ -1291,7 +1311,7 @@ bool GestureRecognitionPipeline::predict(MatrixDouble inputMatrix){
 			
 			for(UINT i=0; i<inputMatrix.getNumRows(); i++){
             	if( !preProcessingModules[moduleIndex]->process( inputMatrix.getRowVector(i) ) ){
-                    errorLog << "predict(MatrixDouble inputMatrix) - Failed to PreProcess Input Matrix. PreProcessingModuleIndex: " << moduleIndex << endl;
+                    errorLog << "predict(const MatrixDouble &inputMatrix) - Failed to PreProcess Input Matrix. PreProcessingModuleIndex: " << moduleIndex << endl;
                 	return false;
             	}
             	tmpMatrix.setRowVector( preProcessingModules[moduleIndex]->getProcessedData(), i );
@@ -1314,7 +1334,7 @@ bool GestureRecognitionPipeline::predict(MatrixDouble inputMatrix){
 			
 			for(UINT i=0; i<inputMatrix.getNumRows(); i++){
             	if( !featureExtractionModules[moduleIndex]->computeFeatures( inputMatrix.getRowVector(i) ) ){
-                    errorLog << "predict(MatrixDouble inputMatrix) - Failed to PreProcess Input Matrix. FeatureExtractionModuleIndex: " << moduleIndex << endl;
+                    errorLog << "predict(const MatrixDouble &inputMatrix) - Failed to PreProcess Input Matrix. FeatureExtractionModuleIndex: " << moduleIndex << endl;
                 	return false;
             	}
             	tmpMatrix.setRowVector( featureExtractionModules[moduleIndex]->getFeatureVector(), i );
@@ -1331,7 +1351,7 @@ bool GestureRecognitionPipeline::predict(MatrixDouble inputMatrix){
     
     //Perform the classification
     if( !classifier->predict( inputMatrix ) ){
-        errorLog <<"predict(MatrixDouble inputMatrix) - Prediction Failed! " << classifier->getLastErrorMessage() << endl;
+        errorLog <<"predict(const MatrixDouble &inputMatrix) - Prediction Failed! " << classifier->getLastErrorMessage() << endl;
         return false;
     }
     predictedClassLabel = classifier->getPredictedClassLabel();
@@ -1344,7 +1364,7 @@ bool GestureRecognitionPipeline::predict(MatrixDouble inputMatrix){
     if( getIsPostProcessingSet() ){
         
         if( pipelineMode != CLASSIFICATION_MODE){
-            errorLog << "predict_classifier(VectorDouble inputVector) - Pipeline Mode Is Not in CLASSIFICATION_MODE!" << endl;
+            errorLog << "predict_(const MatrixDouble &inputMatrix) - Pipeline Mode Is Not in CLASSIFICATION_MODE!" << endl;
             return false;
         }
         
@@ -1359,13 +1379,13 @@ bool GestureRecognitionPipeline::predict(MatrixDouble inputMatrix){
                 
                 //Verify that the input size is OK
                 if( data.size() != postProcessingModules[moduleIndex]->getNumInputDimensions() ){
-                    errorLog << "predict_classifier(VectorDouble inputVector) - The size of the data vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << endl;
+                    errorLog << "predict(const MatrixDouble &inputMatrix) - The size of the data vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << endl;
                     return false;
                 }
                 
                 //Postprocess the data
                 if( !postProcessingModules[moduleIndex]->process( data ) ){
-                    errorLog << "predict_classifier(VectorDouble inputVector) - Failed to post process data. PostProcessing moduleIndex: " << moduleIndex << endl;
+                    errorLog << "predict(const MatrixDouble &inputMatrix) - Failed to post process data. PostProcessing moduleIndex: " << moduleIndex << endl;
                     return false;
                 }
                 
@@ -1380,7 +1400,7 @@ bool GestureRecognitionPipeline::predict(MatrixDouble inputMatrix){
                 
                 //Verify that the output size is OK
                 if( data.size() != 1 ){
-                    errorLog << "predict_classifier(VectorDouble inputVector) - The size of the processed data vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << endl;
+                    errorLog << "predict(const MatrixDouble &inputMatrix) - The size of the processed data vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << endl;
                     return false;
                 }
                 
@@ -1398,20 +1418,21 @@ bool GestureRecognitionPipeline::predict(MatrixDouble inputMatrix){
 	return true;
 }
 
-bool GestureRecognitionPipeline::map(VectorDouble inputVector){
+bool GestureRecognitionPipeline::map(const VectorDouble &inputVector){
 	return predict_regressifier( inputVector );
 }
 
-bool GestureRecognitionPipeline::predict_classifier(VectorDouble inputVector){
+bool GestureRecognitionPipeline::predict_classifier(const VectorDouble &input){
     
     predictedClassLabel = 0;
+	VectorDouble inputVector = input;
     
     //Update the context module
     predictionModuleIndex = START_OF_PIPELINE;
     if( contextModules[ START_OF_PIPELINE ].size() > 0 ){
         for(UINT moduleIndex=0; moduleIndex<contextModules[ START_OF_PIPELINE ].size(); moduleIndex++){
             if( !contextModules[ START_OF_PIPELINE ][moduleIndex]->process( inputVector ) ){
-                errorLog << "predict_classifier(VectorDouble inputVector) - Context Module Failed at START_OF_PIPELINE. ModuleIndex: " << moduleIndex << endl;
+                errorLog << "predict_classifier(const VectorDouble &inputVector) - Context Module Failed at START_OF_PIPELINE. ModuleIndex: " << moduleIndex << endl;
                 return false;
             }
             if( !contextModules[ START_OF_PIPELINE ][moduleIndex]->getOK() ){
@@ -1425,7 +1446,7 @@ bool GestureRecognitionPipeline::predict_classifier(VectorDouble inputVector){
     if( getIsPreProcessingSet() ){
         for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
             if( !preProcessingModules[moduleIndex]->process( inputVector ) ){
-                errorLog << "predict_classifier(VectorDouble inputVector) - Failed to PreProcess Input Vector. PreProcessingModuleIndex: " << moduleIndex << endl;
+                errorLog << "predict_classifier(const VectorDouble &inputVector) - Failed to PreProcess Input Vector. PreProcessingModuleIndex: " << moduleIndex << endl;
                 return false;
             }
             inputVector = preProcessingModules[moduleIndex]->getProcessedData();
@@ -1568,8 +1589,10 @@ bool GestureRecognitionPipeline::predict_classifier(VectorDouble inputVector){
     return true;
 }
     
-bool GestureRecognitionPipeline::predict_regressifier(VectorDouble inputVector){
+bool GestureRecognitionPipeline::predict_regressifier(const VectorDouble &input){
     
+	VectorDouble inputVector = input;
+
     //Update the context module
     predictionModuleIndex = START_OF_PIPELINE;
     if( contextModules[ START_OF_PIPELINE ].size() ){
@@ -1704,8 +1727,9 @@ bool GestureRecognitionPipeline::predict_regressifier(VectorDouble inputVector){
     return true;
 }
     
-bool GestureRecognitionPipeline::predict_clusterer(VectorDouble inputVector){
+bool GestureRecognitionPipeline::predict_clusterer(const VectorDouble &input){
     
+	VectorDouble inputVector = input;
     predictedClusterLabel = 0;
     
     //Update the context module
