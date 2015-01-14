@@ -806,13 +806,16 @@ TimeSeriesClassificationDataStream TimeSeriesClassificationDataStream::getSubset
     return subset;
 }
     
-TimeSeriesClassificationData TimeSeriesClassificationDataStream::getTimeSeriesClassificationData() const {
-    TimeSeriesClassificationData tsData;
+TimeSeriesClassificationData TimeSeriesClassificationDataStream::getTimeSeriesClassificationData( const bool includeNullGestures ) const {
+    
+	TimeSeriesClassificationData tsData;
     
     tsData.setNumDimensions( getNumDimensions() );
     
+	bool addSample = false;
     for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
-        if( timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL ){
+		addSample = includeNullGestures ? true : timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL;
+        if( addSample ){
             tsData.addSample(timeSeriesPositionTracker[i].getClassLabel(), getTimeSeriesData( timeSeriesPositionTracker[i] ) );
         }
     }
@@ -820,15 +823,20 @@ TimeSeriesClassificationData TimeSeriesClassificationDataStream::getTimeSeriesCl
     return tsData;
 }
     
-ClassificationData TimeSeriesClassificationDataStream::getClassificationData() const {
+ClassificationData TimeSeriesClassificationDataStream::getClassificationData( const bool includeNullGestures ) const {
     
     ClassificationData classificationData;
     
     classificationData.setNumDimensions( getNumDimensions() );
-    classificationData.setAllowNullGestureClass( true );
 
+	if( includeNullGestures ){
+    	classificationData.setAllowNullGestureClass( true );
+	}
+
+	bool addSample = false;
     for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
-        if( timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL ){
+		addSample = includeNullGestures ? true : timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL;
+        if( addSample ){
             MatrixDouble dataSegment = getTimeSeriesData( timeSeriesPositionTracker[i] );
             for(UINT j=0; j<dataSegment.getNumRows(); j++){
                 classificationData.addSample(timeSeriesPositionTracker[i].getClassLabel(), dataSegment.getRowVector(j) );

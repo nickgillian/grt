@@ -392,21 +392,23 @@ public:
     
     /**
      This function segments the continuous time series data into individual time series and then adds these time series into a new
-     TimeSeriesClassificationData dataset.  This new dataset is then returned. The new dataset will not contain any time series
-     with the class label of GRT_DEFAULT_NULL_CLASS_LABEL (as this is assumed to be a NULL gesture).
+     TimeSeriesClassificationData dataset.  This new dataset is then returned. By default, the new dataset will not contain any time series
+     with the class label of GRT_DEFAULT_NULL_CLASS_LABEL (as this is assumed to be a NULL gesture) unless you set the includeNullGestures 
+	 parameter to true.
      
      @return returns a new TimeSeriesClassificationData built from the time series data in this dataset.
      */
-    TimeSeriesClassificationData getTimeSeriesClassificationData() const;
+    TimeSeriesClassificationData getTimeSeriesClassificationData( const bool includeNullGestures = false ) const;
     
     /**
      This function segments the continuous time series data into individual samples and then adds these samples into a new
-     ClassificationData dataset.  This new dataset is then returned. The new dataset will not contain any samples
-     with the class label of GRT_DEFAULT_NULL_CLASS_LABEL (as this is assumed to be a NULL gesture).
+     ClassificationData dataset.  This new dataset is then returned. By default, the new dataset will not contain any samples
+     with the class label of GRT_DEFAULT_NULL_CLASS_LABEL (as this is assumed to be a NULL gesture) unless you set the includeNullGestures
+	 parameter to true.
      
      @return returns a new ClassificationData built from the samples in this dataset.
      */
-    ClassificationData getClassificationData() const;
+    ClassificationData getClassificationData( const bool includeNullGestures = false ) const;
     
     /**
      This function segments a specific time series from the main data set and returns this as a MatrixDouble.
