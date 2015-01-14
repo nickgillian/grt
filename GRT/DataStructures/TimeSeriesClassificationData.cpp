@@ -141,28 +141,28 @@ bool TimeSeriesClassificationData::addSample(const UINT classLabel,const MatrixD
         return false;
     }
 
-	TimeSeriesClassificationSample newSample(classLabel,trainingSample);
-	data.push_back( newSample );
-	totalNumSamples++;
+    TimeSeriesClassificationSample newSample(classLabel,trainingSample);
+    data.push_back( newSample );
+    totalNumSamples++;
 
-	if( classTracker.size() == 0 ){
-		ClassTracker tracker(classLabel,1);
-		classTracker.push_back(tracker);
-	}else{
-		bool labelFound = false;
-		for(UINT i=0; i<classTracker.size(); i++){
-			if( classLabel == classTracker[i].classLabel ){
-				classTracker[i].counter++;
-				labelFound = true;
-				break;
-			}
-		}
-		if( !labelFound ){
-			ClassTracker tracker(classLabel,1);
-			classTracker.push_back(tracker);
-		}
-	}
-	return true;
+    if( classTracker.size() == 0 ){
+        ClassTracker tracker(classLabel,1);
+        classTracker.push_back(tracker);
+    }else{
+        bool labelFound = false;
+        for(UINT i=0; i<classTracker.size(); i++){
+            if( classLabel == classTracker[i].classLabel ){
+                classTracker[i].counter++;
+                labelFound = true;
+                break;
+            }
+        }
+        if( !labelFound ){
+            ClassTracker tracker(classLabel,1);
+            classTracker.push_back(tracker);
+        }
+    }
+    return true;
 }
 
 UINT TimeSeriesClassificationData::eraseAllSamplesWithClassLabel(const UINT classLabel){

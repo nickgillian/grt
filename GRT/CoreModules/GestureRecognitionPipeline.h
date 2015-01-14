@@ -90,12 +90,12 @@ public:
      training function of the Classification module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the classifier was trained successfully, false otherwise.
 
-	@param ClassificationData trainingData: the labelled classification training data that will be used to train the classifier at the core of the pipeline
+	@param const ClassificationData &trainingData: the labelled classification training data that will be used to train the classifier at the core of the pipeline
 	@param const UINT kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples int the LabelledClassificationData
 	@param const bool useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
 	@return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    bool train(ClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false );
+    bool train(const ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false );
 
 	/**
      This is the main training interface for training a Classifier with TimeSeriesClassificationData.  This function will pass
@@ -103,22 +103,22 @@ public:
      training function of the Classification module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the classifier was trained successfully, false otherwise.
 
-    @param TimeSeriesClassificationData trainingData: the labelled time-series classification training data that will be used to train the classifier at the core of the pipeline
+    @param const TimeSeriesClassificationData &trainingData: the labelled time-series classification training data that will be used to train the classifier at the core of the pipeline
     @return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    bool train(TimeSeriesClassificationData trainingData);
+    bool train(const TimeSeriesClassificationData &trainingData);
     
     /**
      This is the main training interface for training a Classifier with TimeSeriesClassificationData using K-fold cross validation.
      This function will pass the trainingData through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the training function of the Classification module that has been added to the GestureRecognitionPipeline.
      The function will return true if the classifier was trained successfully, false otherwise.
      
-     @param TimeSeriesClassificationData trainingData: the labelled time-series classification training data that will be used to train the classifier at the core of the pipeline
+     @param const TimeSeriesClassificationData &trainingData: the labelled time-series classification training data that will be used to train the classifier at the core of the pipeline
      @param const UINT kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples in the LabelledClassificationData
      @param const bool useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
      @return bool returns true if the classifier was trained and tested successfully, false otherwise
      */
-    bool train(TimeSeriesClassificationData trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
+    bool train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
 
 	/**
      This is the main training interface for training a regression module with RegressionData.  This function will pass
@@ -126,10 +126,10 @@ public:
      training function of the regression module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the classifier was trained successfully, false otherwise.
 
-    @param RegressionData trainingData: the labelled regression training data that will be used to train the regression module at the core of the pipeline
+    @param const RegressionData &trainingData: the labelled regression training data that will be used to train the regression module at the core of the pipeline
     @return bool returns true if the regression module was trained successfully, false otherwise
 	*/
-    bool train(RegressionData trainingData);
+    bool train(const RegressionData &trainingData);
     
     /**
      This is the main training interface for training a Regressifier with RegressionData using K-fold cross validation.  This function will pass
@@ -137,11 +137,11 @@ public:
      training function of the Regression module that has been added to the GestureRecognitionPipeline.
      The function will return true if the regressifier was trained successfully, false otherwise.
      
-     @param RegressionData trainingData: the labelled regression training data that will be used to train the regressifier at the core of the pipeline
+     @param const RegressionData &trainingData: the labelled regression training data that will be used to train the regressifier at the core of the pipeline
      @param const UINT kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples in the LabelledRegressionData
      @return bool returns true if the regressifier was trained and tested successfully, false otherwise
      */
-    bool train(RegressionData trainingData,const UINT kFoldValue);
+    bool train(const RegressionData &trainingData,const UINT kFoldValue);
     
     /**
      This is the main training interface for training a Clusterer with UnlabelledData using K-fold cross validation.  This function will pass
@@ -149,7 +149,7 @@ public:
      training function of the Clusterer module that has been added to the GestureRecognitionPipeline.
      The function will return true if the regressifier was trained successfully, false otherwise.
      
-     @param UnlabelledData trainingData: the unlabelledData training data that will be used to train the clusterer at the core of the pipeline
+     @param const UnlabelledData &trainingData: the unlabelledData training data that will be used to train the clusterer at the core of the pipeline
      @return bool returns true if the clusterer was trained and tested successfully, false otherwise
      */
     bool train(const UnlabelledData &trainingData);
@@ -166,26 +166,26 @@ public:
     bool test(const ClassificationData &testData);
 
     /**
-     This function is the main interface for testing the accuracy of a pipeline with LabelledTimeSeriesClassificationData.  This function will pass
+     This function is the main interface for testing the accuracy of a pipeline with TimeSeriesClassificationData.  This function will pass
      the testData through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the 
      predict function of the classification module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the pipeline was tested successfully, false otherwise.
 
-     @param LabelledTimeSeriesClassificationData testData: the labelled timeseries classification data that will be used to test the accuracy of the pipeline
+     @param const TimeSeriesClassificationData &testData: the labelled timeseries classification data that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
 	*/
-    bool test(TimeSeriesClassificationData testData);
+    bool test(const TimeSeriesClassificationData &testData);
 
     /**
-     This function is the main interface for testing the accuracy of a pipeline with LabelledContinuousTimeSeriesClassificationData.  This function will pass
+     This function is the main interface for testing the accuracy of a pipeline with TimeSeriesClassificationDataStream.  This function will pass
      the testData through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the 
      predict function of the classification module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the pipeline was tested successfully, false otherwise.
 
-     @param TimeSeriesClassificationDataStream testData: the timeseries classification data stream that will be used to test the accuracy of the pipeline
+     @param const TimeSeriesClassificationDataStreamStream &testData: the timeseries classification data stream that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
 	*/
-    bool test(TimeSeriesClassificationDataStream testData);
+    bool test(const TimeSeriesClassificationDataStream &testData);
 
     /**
      This function is the main interface for testing the accuracy of a pipeline with RegressionData.  This function will pass
@@ -193,10 +193,10 @@ public:
      predict function of the regression module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the pipeline was tested successfully, false otherwise.
 
-     @param RegressionData testData: the labelled regression data that will be used to test the accuracy of the pipeline
+     @param const RegressionData &testData: the labelled regression data that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
 	*/
-    bool test(RegressionData testData);
+    bool test(const RegressionData &testData);
     
     /**
      This function is the main interface for all predictions using the gesture recognition pipeline.  You can use this function for both classification
@@ -211,10 +211,10 @@ public:
      This function is an interface for predictions using timeseries or Matrix data.
      You should only call this function if you  have trained the pipeline.  The input matrix should have the same number of columns as your training data.
      
-     @param MatrixDouble inputMatrix: the input atrix that will be passed through the pipeline for classification
+     @param const MatrixDouble &inputMatrix: the input atrix that will be passed through the pipeline for classification
      @return bool returns true if the prediction was successful, false otherwise
      */
-    bool predict(MatrixDouble inputMatrix);
+    bool predict(const MatrixDouble &inputMatrix);
 
     /**
      This function is now depreciated, you should use the predict function instead.
@@ -222,10 +222,10 @@ public:
      This function used to be the main interface for all regression using the gesture recognition pipeline.  
      You should only call this function if you  have trained the pipeline.  The input vector should be the same size as your training data.
 
-     @param VectorDouble inputVector: the input data that will be passed through the pipeline for regression
+     @param const VectorDouble &inputVector: the input data that will be passed through the pipeline for regression
      @return bool returns true if the regression was successful, false otherwise
 	*/
-    bool map(VectorDouble inputVector);
+    bool map(const VectorDouble &inputVector);
     
     /**
      This function is the main interface for resetting the entire gesture recognition pipeline.  This function will call reset on all the modules in 
@@ -1075,9 +1075,9 @@ public:
     bool clearTestResults();
 
 protected:
-    bool predict_classifier(VectorDouble inputVector);
-    bool predict_regressifier(VectorDouble inputVector);
-    bool predict_clusterer(VectorDouble inputVector);
+    bool predict_classifier(const VectorDouble &inputVector);
+    bool predict_regressifier(const VectorDouble &inputVector);
+    bool predict_clusterer(const VectorDouble &inputVector);
     void deleteAllPreProcessingModules();
     void deleteAllFeatureExtractionModules();
     void deleteClassifier();

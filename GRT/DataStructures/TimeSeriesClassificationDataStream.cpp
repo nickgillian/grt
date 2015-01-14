@@ -453,36 +453,36 @@ bool TimeSeriesClassificationDataStream::load(const string &filename){
 
 bool TimeSeriesClassificationDataStream::saveDatasetToFile(const string &filename) {
 
-	std::fstream file; 
-	file.open(filename.c_str(), std::ios::out);
+    std::fstream file;
+    file.open(filename.c_str(), std::ios::out);
 
-	if( !file.is_open() ){
+    if( !file.is_open() ){
         errorLog << "saveDatasetToFile(const string &filename) - Failed to open file!" << endl;
-		return false;
-	}
+        return false;
+    }
 
-	if( trackingClass ){
-		//The class tracker was not stopped so assume the last sample is the end
-		trackingClass = false;
-		timeSeriesPositionTracker[ timeSeriesPositionTracker.size()-1 ].setEndIndex( totalNumSamples-1 );
-	}
+    if( trackingClass ){
+        //The class tracker was not stopped so assume the last sample is the end
+        trackingClass = false;
+        timeSeriesPositionTracker[ timeSeriesPositionTracker.size()-1 ].setEndIndex( totalNumSamples-1 );
+    }
 
-	file << "GRT_LABELLED_CONTINUOUS_TIME_SERIES_CLASSIFICATION_FILE_V1.0\n";
+    file << "GRT_LABELLED_CONTINUOUS_TIME_SERIES_CLASSIFICATION_FILE_V1.0\n";
     file << "DatasetName: " << datasetName << endl;
     file << "InfoText: " << infoText << endl;
-	file << "NumDimensions: "<<numDimensions<<endl;
-	file << "TotalNumSamples: "<<totalNumSamples<<endl;
-	file << "NumberOfClasses: "<<classTracker.size()<<endl;
-	file << "ClassIDsAndCounters: "<<endl;
-	for(UINT i=0; i<classTracker.size(); i++){
-		file << classTracker[i].classLabel << "\t" << classTracker[i].counter << endl;
-	}
+    file << "NumDimensions: "<<numDimensions<<endl;
+    file << "TotalNumSamples: "<<totalNumSamples<<endl;
+    file << "NumberOfClasses: "<<classTracker.size()<<endl;
+    file << "ClassIDsAndCounters: "<<endl;
+    for(UINT i=0; i<classTracker.size(); i++){
+        file << classTracker[i].classLabel << "\t" << classTracker[i].counter << endl;
+    }
 
-	file << "NumberOfPositionTrackers: "<<timeSeriesPositionTracker.size()<<endl;
-	file << "TimeSeriesPositionTrackers: "<<endl;
-	for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
-		file << timeSeriesPositionTracker[i].getClassLabel() << "\t" << timeSeriesPositionTracker[i].getStartIndex() << "\t" << timeSeriesPositionTracker[i].getEndIndex() <<endl;
-	}
+    file << "NumberOfPositionTrackers: "<<timeSeriesPositionTracker.size()<<endl;
+    file << "TimeSeriesPositionTrackers: "<<endl;
+    for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
+        file << timeSeriesPositionTracker[i].getClassLabel() << "\t" << timeSeriesPositionTracker[i].getStartIndex() << "\t" << timeSeriesPositionTracker[i].getEndIndex() <<endl;
+    }
     
     file << "UseExternalRanges: " << useExternalRanges << endl;
     
@@ -492,17 +492,17 @@ bool TimeSeriesClassificationDataStream::saveDatasetToFile(const string &filenam
         }
     }
 
-	file << "LabelledContinuousTimeSeriesClassificationData:\n";
-	for(UINT i=0; i<totalNumSamples; i++){
-		file << data[i].getClassLabel();
-		for(UINT j=0; j<numDimensions; j++){
-			file << "\t" << data[i][j];
-		}
-		file << endl;
-	}
+    file << "LabelledContinuousTimeSeriesClassificationData:\n";
+    for(UINT i=0; i<totalNumSamples; i++){
+        file << data[i].getClassLabel();
+        for(UINT j=0; j<numDimensions; j++){
+            file << "\t" << data[i][j];
+        }
+        file << endl;
+    }
 
-	file.close();
-	return true;
+    file.close();
+    return true;
 }
 
 bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filename){
@@ -670,11 +670,11 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
     
 bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const string &filename) {
     std::fstream file; 
-	file.open(filename.c_str(), std::ios::out );
+    file.open(filename.c_str(), std::ios::out );
     
-	if( !file.is_open() ){
-		return false;
-	}
+    if( !file.is_open() ){
+        return false;
+    }
     
     //Write the data to the CSV file
 
@@ -686,7 +686,7 @@ bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const string &file
         file << endl;
     }
     
-	file.close();
+    file.close();
     
     return true;
 }
@@ -743,7 +743,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const string &fi
         }
     }
 
-    return false;
+    return true;
 }
     
 bool TimeSeriesClassificationDataStream::printStats() const {
@@ -806,13 +806,18 @@ TimeSeriesClassificationDataStream TimeSeriesClassificationDataStream::getSubset
     return subset;
 }
     
-TimeSeriesClassificationData TimeSeriesClassificationDataStream::getTimeSeriesClassificationData() const {
+TimeSeriesClassificationData TimeSeriesClassificationDataStream::getTimeSeriesClassificationData( const bool includeNullGestures ) const {
+    
     TimeSeriesClassificationData tsData;
     
     tsData.setNumDimensions( getNumDimensions() );
+    tsData.setAllowNullGestureClass( includeNullGestures );
     
-    for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
-        if( timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL ){
+    bool addSample = false;
+    const UINT numTimeseries = (UINT)timeSeriesPositionTracker.size();
+    for(UINT i=0; i<numTimeseries; i++){
+        addSample = includeNullGestures ? true : timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL;
+        if( addSample ){
             tsData.addSample(timeSeriesPositionTracker[i].getClassLabel(), getTimeSeriesData( timeSeriesPositionTracker[i] ) );
         }
     }
@@ -820,14 +825,17 @@ TimeSeriesClassificationData TimeSeriesClassificationDataStream::getTimeSeriesCl
     return tsData;
 }
     
-ClassificationData TimeSeriesClassificationDataStream::getClassificationData() const {
+ClassificationData TimeSeriesClassificationDataStream::getClassificationData( const bool includeNullGestures ) const {
     
     ClassificationData classificationData;
     
     classificationData.setNumDimensions( getNumDimensions() );
-    
+    classificationData.setAllowNullGestureClass( includeNullGestures );
+
+    bool addSample = false;
     for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
-        if( timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL ){
+        addSample = includeNullGestures ? true : timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL;
+        if( addSample ){
             MatrixDouble dataSegment = getTimeSeriesData( timeSeriesPositionTracker[i] );
             for(UINT j=0; j<dataSegment.getNumRows(); j++){
                 classificationData.addSample(timeSeriesPositionTracker[i].getClassLabel(), dataSegment.getRowVector(j) );
@@ -844,9 +852,12 @@ MatrixDouble TimeSeriesClassificationDataStream::getTimeSeriesData( const TimeSe
         warningLog << "getTimeSeriesData(TimeSeriesPositionTracker trackerInfo) - Invalid tracker indexs!" << endl;
         return MatrixDouble();
     }
-    UINT M = trackerInfo.getLength();
-    UINT N = getNumDimensions();
+
     UINT startIndex = trackerInfo.getStartIndex();
+    UINT endIndex = trackerInfo.getEndIndex();
+    UINT M = endIndex > 0 ? trackerInfo.getLength() : totalNumSamples - startIndex;
+    UINT N = getNumDimensions();
+
     MatrixDouble tsData(M,N);
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<N; j++){

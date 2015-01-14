@@ -233,6 +233,11 @@ public:
     */
 	virtual bool resize(const unsigned int r,const unsigned int c){
         
+		if( r + c == 0 ){
+			errorLog << "resize(...) - Failed to resize matrix, rows and cols == zero!" << std::endl;
+			return false;
+		}
+
         //If the rows and cols are unchanged then do not resize the data
         if( r == rows && c == cols ){
             return true;
@@ -248,7 +253,7 @@ public:
                 size = r * c;
                 capacity = r;
                 
-                dataPtr = new T[rows*cols];
+                dataPtr = new T[size];
                 rowPtr = new T*[rows];
                 
                 if( dataPtr == NULL ){
@@ -256,6 +261,7 @@ public:
                     cols = 0;
                     size = 0;
                     capacity = 0;
+					errorLog << "resize(const unsigned r,const unsigned int c) - Failed to allocate memory! r: " << r << " c: " << c << std::endl;
                     throw Exception("Matrix::resize(const unsigned int r,const unsigned int c) - Failed to allocate memory!");
                     return false;
                 }
@@ -265,6 +271,7 @@ public:
                     cols = 0;
                     size = 0;
                     capacity = 0;
+					errorLog << "resize(const unsigned r,const unsigned int c) - Failed to allocate memory! r: " << r << " c: " << c << std::endl;
                     throw Exception("Matrix::resize(const unsigned int r,const unsigned int c) - Failed to allocate memory!");
                     return false;
                 }
@@ -280,7 +287,7 @@ public:
                 return true;
                 
             }catch( std::exception& e ){
-                errorLog << "resize: Failed to allocate memory. Error: " << e.what() << std::endl;
+                errorLog << "resize: Failed to allocate memory. Error: " << e.what() << " rows: " << r << " cols: " << c <<  std::endl;
                 clear();
                 return false;
             }catch( ... ){
