@@ -233,6 +233,11 @@ public:
     */
 	virtual bool resize(const unsigned int r,const unsigned int c){
         
+		if( r + c == 0 ){
+			errorLog << "resize(...) - Failed to resize matrix, rows and cols == zero!" << std::endl;
+			return false;
+		}
+
         //If the rows and cols are unchanged then do not resize the data
         if( r == rows && c == cols ){
             return true;
