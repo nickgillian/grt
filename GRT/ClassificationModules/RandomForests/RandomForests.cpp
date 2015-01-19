@@ -25,7 +25,7 @@ namespace GRT{
 //Register the RandomForests module with the Classifier base class
 RegisterClassifierModule< RandomForests >  RandomForests::registerModule("RandomForests");
 
-RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool useScaling)
+RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling)
 {
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->forestSize = forestSize;
@@ -33,6 +33,7 @@ RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT
     this->minNumSamplesPerNode = minNumSamplesPerNode;
     this->maxDepth = maxDepth;
     this->trainingMode = trainingMode;
+    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
     this->useScaling = useScaling;
     classType = "RandomForests";
     classifierType = classType;
@@ -93,6 +94,7 @@ RandomForests& RandomForests::operator=(const RandomForests &rhs){
             this->numRandomSplits = rhs.numRandomSplits;
             this->minNumSamplesPerNode = rhs.minNumSamplesPerNode;
             this->maxDepth = rhs.maxDepth;
+            this->removeFeaturesAtEachSpilt = rhs.removeFeaturesAtEachSpilt;
             this->trainingMode = rhs.trainingMode;
             
         }else errorLog << "deepCopyFrom(const Classifier *classifier) - Failed to copy base variables!" << endl;
@@ -131,6 +133,8 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
             this->numRandomSplits = ptr->numRandomSplits;
             this->minNumSamplesPerNode = ptr->minNumSamplesPerNode;
             this->maxDepth = ptr->maxDepth;
+            this->removeFeaturesAtEachSpilt = ptr->removeFeaturesAtEachSpilt;
+            this->trainingMode = ptr->trainingMode;
             
             return true;
         }
@@ -182,6 +186,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
         tree.setMinNumSamplesPerNode( minNumSamplesPerNode );
         tree.setMaxDepth( maxDepth );
         tree.enableNullRejection( useNullRejection );
+        tree.setRemoveFeaturesAtEachSpilt( removeFeaturesAtEachSpilt );
         
         //Train this tree
         if( !tree.train( data ) ){
@@ -281,6 +286,7 @@ bool RandomForests::print() const{
     cout << "NumSplittingSteps: " << numRandomSplits << endl;
     cout << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
     cout << "MaxDepth: " << maxDepth << endl;
+    cout << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << endl;
     cout << "TrainingMode: " << trainingMode << endl;
     cout << "ForestBuilt: " << (trained ? 1 : 0) << endl;
     
@@ -326,6 +332,7 @@ bool RandomForests::saveModelToFile(fstream &file) const{
     file << "NumSplittingSteps: " << numRandomSplits << endl;
     file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
     file << "MaxDepth: " << maxDepth << endl;
+    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << endl;
     file << "TrainingMode: " << trainingMode << endl;
     file << "ForestBuilt: " << (trained ? 1 : 0) << endl;
     
@@ -423,6 +430,13 @@ bool RandomForests::loadModelFromFile(fstream &file){
     file >> maxDepth;
     
     file >> word;
+    if(word != "RemoveFeaturesAtEachSpilt:"){
+        errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
+        return false;
+    }
+    file >> removeFeaturesAtEachSpilt;
+    
+    file >> word;
     if(word != "TrainingMode:"){
         errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
         return false;
@@ -504,6 +518,10 @@ UINT RandomForests::getTrainingMode() const {
     return trainingMode;
 }
     
+bool RandomForests::getRemoveFeaturesAtEachSpilt() const {
+    return removeFeaturesAtEachSpilt;
+}
+    
 DecisionTreeNode* RandomForests::deepCopyDecisionTreeNode() const{
     
     if( decisionTreeNode == NULL ){
@@ -544,6 +562,11 @@ bool RandomForests::setMaxDepth(const UINT maxDepth){
         return true;
     }
     return false;
+}
+    
+bool RandomForests::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
+    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+    return true;
 }
     
 bool RandomForests::setTrainingMode(const UINT trainingMode){

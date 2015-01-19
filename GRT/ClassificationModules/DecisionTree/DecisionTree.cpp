@@ -167,6 +167,12 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         trainingData.scale(0, 1);
     }
     
+    //If we are using null rejection, then we need a copy of the training dataset for later
+    ClassificationData trainingDataCopy;
+    if( useNullRejection ){
+        trainingDataCopy = trainingData;
+    }
+    
     //Setup the valid features - at this point all features can be used
     vector< UINT > features(N);
     for(UINT i=0; i<N; i++){
@@ -196,14 +202,14 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         //Run over the training dataset and compute the distance between each training sample and the predicted node cluster
         for(UINT i=0; i<M; i++){
             //Run the prediction for this sample
-            if( !tree->predict( trainingData[i].getSample(), classLikelihoods ) ){
+            if( !tree->predict( trainingDataCopy[i].getSample(), classLikelihoods ) ){
                 Classifier::errorLog << "predict_(VectorDouble &inputVector) - Failed to predict!" << endl;
                 return false;
             }
             
             //Store the predicted class index and cluster distance
             predictions[i] = Util::getMaxIndex( classLikelihoods );
-            distances[i] = getNodeDistance(trainingData[i].getSample(), tree->getPredictedNodeID() );
+            distances[i] = getNodeDistance(trainingDataCopy[i].getSample(), tree->getPredictedNodeID() );
             
             classCounter[ predictions[i] ]++;
         }
@@ -677,7 +683,7 @@ bool DecisionTree::setDecisionTreeNode( const DecisionTreeNode &node ){
     return true;
 }
     
-DecisionTreeNode* DecisionTree::buildTree(const ClassificationData &trainingData,DecisionTreeNode *parent,vector< UINT > features,const vector< UINT > &classLabels, UINT nodeID){
+DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,DecisionTreeNode *parent,vector< UINT > features,const vector< UINT > &classLabels, UINT nodeID){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = trainingData.getNumDimensions();
@@ -750,6 +756,9 @@ DecisionTreeNode* DecisionTree::buildTree(const ClassificationData &trainingData
             rhs.addSample(trainingData[i].getClassLabel(), trainingData[i].getSample());
         }else lhs.addSample(trainingData[i].getClassLabel(), trainingData[i].getSample());
     }
+    
+    //Clear the parent dataset so we do not run out of memory with very large datasets (with very deep trees)
+    trainingData.clear();
     
     //Get the new node IDs for the children
     UINT leftNodeID = ++nodeID;

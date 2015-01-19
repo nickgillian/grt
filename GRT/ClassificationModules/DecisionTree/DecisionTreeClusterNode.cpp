@@ -177,8 +177,8 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
         KMeans kmeans;
         kmeans.setNumClusters( 2 );
         kmeans.setComputeTheta( true );
-        kmeans.setMinChange( 1.0e-10 );
-        kmeans.setMinNumEpochs( 10 );
+        kmeans.setMinChange( 1.0e-5 );
+        kmeans.setMinNumEpochs( 1 );
         kmeans.setMaxNumEpochs( numSplittingSteps );
         
         if( !kmeans.train( data ) ){

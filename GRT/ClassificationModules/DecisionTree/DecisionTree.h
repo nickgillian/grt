@@ -191,7 +191,7 @@ protected:
     bool loadLegacyModelFromFile_v2( fstream &file );
     bool loadLegacyModelFromFile_v3( fstream &file );
     
-    DecisionTreeNode* buildTree( const ClassificationData &trainingData, DecisionTreeNode *parent, vector< UINT > features, const vector< UINT > &classLabels, UINT nodeID );
+    DecisionTreeNode* buildTree(ClassificationData &trainingData, DecisionTreeNode *parent, vector< UINT > features, const vector< UINT > &classLabels, UINT nodeID );
     double getNodeDistance( const VectorDouble &x, const UINT nodeID );
     double getNodeDistance( const VectorDouble &x, const VectorDouble &y );
     

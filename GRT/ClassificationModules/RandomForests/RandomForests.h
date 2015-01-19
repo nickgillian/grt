@@ -51,9 +51,10 @@ public:
      @param const UINT numRandomSplits: sets the number of random spilts that will be used to search for the best spliting value for each node. Default value = 100
      @param const UINT minNumSamplesPerNode: sets the minimum number of samples that are allowed per node, if the number of samples is below that, the node will become a leafNode.  Default value = 5
      @param const UINT maxDepth: sets the maximum depth of the tree. Default value = 10
+     @param const bool removeFeaturesAtEachSpilt: sets if features are removed at each stage in the tree
      @param const bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      */
-	RandomForests(const DecisionTreeNode &decisionTreeNode = DecisionTreeClusterNode(),const UINT forestSize=10,const UINT numRandomSplits=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const UINT trainingMode = DecisionTree::BEST_RANDOM_SPLIT,const bool useScaling=false);
+	RandomForests(const DecisionTreeNode &decisionTreeNode = DecisionTreeClusterNode(),const UINT forestSize=10,const UINT numRandomSplits=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const UINT trainingMode = DecisionTree::BEST_RANDOM_SPLIT,const bool removeFeaturesAtEachSpilt = true,const bool useScaling=false);
     
     /**
      Defines the copy constructor.
@@ -171,6 +172,15 @@ public:
     UINT getTrainingMode() const;
     
     /**
+     Gets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be
+     removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
+     be used, regardless of how many times it has been used again.
+     
+     @return returns the removeFeaturesAtEachSpilt parameter
+     */
+    bool getRemoveFeaturesAtEachSpilt() const;
+    
+    /**
      Gets a pointer to the decision tree node. NULL will be returned if the decision tree node has not been set.
      
      @return returns a pointer to a deep copy of the decision tree node
@@ -216,6 +226,16 @@ public:
     bool setMaxDepth(const UINT maxDepth);
     
     /**
+     Sets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be
+     removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
+     be used, regardless of how many times it has been used again.
+     
+     @param bool removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
+     @return returns true if the parameter was set, false otherwise
+     */
+    bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
+    
+    /**
      Sets the training mode used to train each DecisionTree in the forest, this should be one of the DecisionTree::TrainingModes enums.
      
      @param const UINT trainingMode: the new trainingMode, this should be one of the DecisionTree::TrainingModes enums
@@ -241,6 +261,7 @@ protected:
     UINT minNumSamplesPerNode;
     UINT maxDepth;
     UINT trainingMode;
+    bool removeFeaturesAtEachSpilt;
     DecisionTreeNode* decisionTreeNode;
     vector< DecisionTreeNode* > forest;
     
