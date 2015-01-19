@@ -165,15 +165,7 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
     
     //Randomly select which features we want to use
     UINT numRandomFeatures = numSplittingSteps > N ? N : numSplittingSteps;
-    vector< UINT > randomFeatures( numRandomFeatures );
-    vector< UINT > indexs( N );
-    for(UINT i=0; i<N; i++){
-        indexs[i] = i;
-    }
-    std::random_shuffle(indexs.begin(), indexs.end());
-    for(UINT i=0; i<numRandomFeatures; i++){
-        randomFeatures[i] = indexs[i];
-    }
+    vector< UINT > randomFeatures = random.getRandomSubset( 0, N, numRandomFeatures );
 
     //Loop over each random feature and try and find the best split point
     for(UINT n=0; n<numRandomFeatures; n++){

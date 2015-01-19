@@ -30,6 +30,7 @@
 #ifndef GRT_RANDOM_HEADER
 #define GRT_RANDOM_HEADER
 
+#include <assert.h>
 #include "../Util/GRTVersionInfo.h"
 #include "Timer.h"
 
@@ -253,6 +254,40 @@ public:
             randomValues[i] = getRandomNumberGauss(mu,sigma);
         }
         return randomValues;
+    }
+    
+    /**
+     Gets an N-dimensional vector of random unsigned ints drawn from the range controlled by the start and end range parameters.
+     
+     @param const unsigned int startRange: indicates the start of the range the random subset will selected from (e.g. 0)
+     @param const unsigned int endRange: indicates the end of the range the random subset will selected from (e.g. 100)
+     @param const unsigned int subsetSize: controls the size of the vector returned by the function (e.g. 50
+     @return returns a vector of unsigned ints selected from the
+     */
+    std::vector< unsigned int > getRandomSubset( const unsigned int startRange, const unsigned int endRange, const unsigned int subsetSize ){
+        
+        unsigned int i = 0;
+        const unsigned int rangeSize = endRange - startRange;
+        
+        assert( rangeSize > 0 );
+        assert( endRange > startRange );
+        assert( subsetSize <= rangeSize );
+        
+        std::vector< unsigned int > indexs( rangeSize );
+        std::vector< unsigned int > subset ( subsetSize );
+        
+        //Fill up the range buffer and the randomly suffle it
+        for(i=startRange; i<endRange; i++){
+            indexs[i] = i;
+        }
+        std::random_shuffle(indexs.begin(), indexs.end());
+        
+        //Select the first X values from the randomly shuffled range buffer as the subset
+        for(i=0; i<subsetSize; i++){
+            subset[i] = indexs[i];
+        }
+        
+        return subset;
     }
     
 private:
