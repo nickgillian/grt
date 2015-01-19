@@ -195,6 +195,10 @@ if( BUILD_EXAMPLES )
 	            ${sources}
 	        )
 
+		include_directories(
+    			"${GRT_EXAMPLES_DIR}/.."
+		)
+
 	        target_link_libraries(${_example_name}
 	            grt
 	        )
