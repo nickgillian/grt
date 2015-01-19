@@ -162,11 +162,23 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
     vector< MinMax > ranges = trainingData.getRanges();
     MatrixDouble classProbabilities(K,2);
     MatrixDouble data(M,1); //This will store our temporary data for each dimension
+    
+    //Randomly select which features we want to use
+    UINT numRandomFeatures = numSplittingSteps > N ? N : numSplittingSteps;
+    vector< UINT > randomFeatures( numRandomFeatures );
+    vector< UINT > indexs( N );
+    for(UINT i=0; i<N; i++){
+        indexs[i] = i;
+    }
+    std::random_shuffle(indexs.begin(), indexs.end());
+    for(UINT i=0; i<numRandomFeatures; i++){
+        randomFeatures[i] = indexs[i];
+    }
 
-    //Loop over each feature and try and find the best split point
-    for(UINT n=0; n<N; n++){
+    //Loop over each random feature and try and find the best split point
+    for(UINT n=0; n<numRandomFeatures; n++){
         
-        featureIndex = features[n];
+        featureIndex = features[ randomFeatures[n] ];
         
         //Use the data in this feature dimension to create a sum dataset
         for(UINT i=0; i<M; i++){
@@ -179,7 +191,7 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
         kmeans.setComputeTheta( true );
         kmeans.setMinChange( 1.0e-5 );
         kmeans.setMinNumEpochs( 1 );
-        kmeans.setMaxNumEpochs( numSplittingSteps );
+        kmeans.setMaxNumEpochs( 100 );
         
         if( !kmeans.train( data ) ){
             errorLog << "computeBestSpilt() - Failed to train KMeans model for feature: " << featureIndex << endl;

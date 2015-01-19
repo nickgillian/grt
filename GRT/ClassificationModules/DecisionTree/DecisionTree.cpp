@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "DecisionTree.h"
 
-namespace GRT{
+using namespace GRT;
 
 //Register the DecisionTree module with the Classifier base class
 RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule("DecisionTree");
@@ -751,6 +751,10 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     ClassificationData lhs(N);
     ClassificationData rhs(N);
     
+    //Reserve the memory to speed up the allocation of large datasets
+    lhs.reserve( M );
+    rhs.reserve( M );
+    
     for(UINT i=0; i<M; i++){
         if( node->predict( trainingData[i].getSample() ) ){
             rhs.addSample(trainingData[i].getClassLabel(), trainingData[i].getSample());
@@ -1148,6 +1152,4 @@ bool DecisionTree::loadLegacyModelFromFile_v3( fstream &file ){
     
     return true;
 }
-
-} //End of namespace GRT
 
