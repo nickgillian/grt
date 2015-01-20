@@ -185,7 +185,7 @@ protected:
      */
     virtual bool saveParametersToFile(fstream &file) const{
         
-        if(!file.is_open())
+        if( !file.is_open() )
         {
             errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
             return false;
@@ -195,10 +195,12 @@ protected:
         file << "NodeSize: " << nodeSize << endl;
         file << "NumClasses: " << classProbabilities.size() << endl;
         file << "ClassProbabilities: ";
-        for(UINT i=0; i<classProbabilities.size(); i++){
-            file << classProbabilities[i];
-            if( i < classProbabilities.size()-1 ) file << "\t";
-            else file << endl;
+        if( classProbabilities.size() > 0 ){
+            for(UINT i=0; i<classProbabilities.size(); i++){
+                file << classProbabilities[i];
+                if( i < classProbabilities.size()-1 ) file << "\t";
+                else file << endl;
+            }
         }
         
         return true;
@@ -212,13 +214,13 @@ protected:
      */
     virtual bool loadParametersFromFile(fstream &file){
         
-        debugLog << "DecisionTreeNode::loadParametersFromFile()" << endl;
-        
-        if(!file.is_open())
+        if( !file.is_open() )
         {
             errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << endl;
             return false;
         }
+        
+        classProbabilities.clear();
         
         string word;
         UINT numClasses;
@@ -237,15 +239,18 @@ protected:
             return false;
         }
         file >> numClasses;
-        classProbabilities.resize( numClasses );
+        if( numClasses > 0 )
+            classProbabilities.resize( numClasses );
         
         file >> word;
         if( word != "ClassProbabilities:" ){
             errorLog << "loadParametersFromFile(fstream &file) - Failed to find ClassProbabilities header!" << endl;
             return false;
         }
-        for(UINT i=0; i<numClasses; i++){
-            file >> classProbabilities[i];
+        if( numClasses > 0 ){
+            for(UINT i=0; i<numClasses; i++){
+                file >> classProbabilities[i];
+            }
         }
         
         return true;

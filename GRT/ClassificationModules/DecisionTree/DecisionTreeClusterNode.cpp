@@ -1,7 +1,7 @@
 
 #include "DecisionTreeClusterNode.h"
 
-namespace GRT{
+using namespace GRT;
     
 //Register the DecisionTreeClusterNode module with the Node base class
 RegisterNode< DecisionTreeClusterNode > DecisionTreeClusterNode::registerModule("DecisionTreeClusterNode");
@@ -150,6 +150,7 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
     if( N == 0 ) return false;
     
     minError = numeric_limits<double>::max();
+    Random random;
     UINT bestFeatureIndex = 0;
     double bestThreshold = 0;
     double error = 0;
@@ -242,7 +243,7 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
 
 bool DecisionTreeClusterNode::saveParametersToFile(fstream &file) const{
     
-    if(!file.is_open())
+    if( !file.is_open() )
     {
         errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
         return false;
@@ -262,9 +263,6 @@ bool DecisionTreeClusterNode::saveParametersToFile(fstream &file) const{
 }
 
 bool DecisionTreeClusterNode::loadParametersFromFile(fstream &file){
-    
-    
-    debugLog << "DecisionTreeClusterNode::loadParametersFromFile()" << endl;
     
     if(!file.is_open())
     {
@@ -296,6 +294,4 @@ bool DecisionTreeClusterNode::loadParametersFromFile(fstream &file){
     
     return true;
 }
-
-} //End of namespace GRT
 

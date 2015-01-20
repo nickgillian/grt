@@ -110,7 +110,7 @@ bool DecisionTreeNode::getModel(ostream &stream) const{
 
 Node* DecisionTreeNode::deepCopyNode() const{
     
-    DecisionTreeNode *node = new DecisionTreeNode;
+    DecisionTreeNode *node = dynamic_cast< DecisionTreeNode* >( DecisionTreeNode::createInstanceFromString( nodeType ) );
     
     if( node == NULL ){
         return NULL;

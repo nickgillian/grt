@@ -451,7 +451,7 @@ bool DecisionTree::loadModelFromFile(fstream &file){
         decisionTreeNode = NULL;
     }
     
-    if(!file.is_open())
+    if( !file.is_open() )
     {
         Classifier::errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
         return false;
@@ -474,7 +474,7 @@ bool DecisionTree::loadModelFromFile(fstream &file){
     }
     
     //Find the file type header
-    if(word != "GRT_DECISION_TREE_MODEL_FILE_V4.0"){
+    if( word != "GRT_DECISION_TREE_MODEL_FILE_V4.0" ){
         Classifier::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
         return false;
     }

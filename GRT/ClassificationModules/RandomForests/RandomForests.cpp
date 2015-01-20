@@ -198,8 +198,6 @@ bool RandomForests::train_(ClassificationData &trainingData){
         //Deep copy the tree into the forest
         forest.push_back( tree.deepCopyTree() );
     }
-    
-    debugLog << "RandomForests trained!" << endl;
 
     return true;
 }
@@ -340,6 +338,7 @@ bool RandomForests::saveModelToFile(fstream &file) const{
         file << "Forest:\n";
         for(UINT i=0; i<forestSize; i++){
             file << "Tree: " << i+1 << endl;
+            file << "TreeNodeType: " << forest[i]->getNodeType() << endl;
             if( !forest[i]->saveToFile( file ) ){
                 errorLog << "saveModelToFile(fstream &file) - Failed to save tree " << i << " to file!" << endl;
                 return false;
@@ -361,6 +360,7 @@ bool RandomForests::loadModelFromFile(fstream &file){
     }
     
     std::string word;
+    std::string treeNodeType;
     
     file >> word;
     
@@ -381,14 +381,14 @@ bool RandomForests::loadModelFromFile(fstream &file){
         Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the DecisionTreeNodeType!" << endl;
         return false;
     }
-    file >> word;
+    file >> treeNodeType;
     
-    if( word != "NULL" ){
+    if( treeNodeType != "NULL" ){
         
-        decisionTreeNode = dynamic_cast< DecisionTreeNode* >( DecisionTreeNode::createInstanceFromString( word ) );
+        decisionTreeNode = dynamic_cast< DecisionTreeNode* >( DecisionTreeNode::createInstanceFromString( treeNodeType ) );
         
         if( decisionTreeNode == NULL ){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not create new DecisionTreeNode from type: " << word << endl;
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not create new DecisionTreeNode from type: " << treeNodeType << endl;
             return false;
         }
         
@@ -466,7 +466,7 @@ bool RandomForests::loadModelFromFile(fstream &file){
             if(word != "Tree:"){
                 errorLog << "loadModelFromFile(string filename) - Could not find the Tree Header!" << endl;
                 cout << "WORD: " << word << endl;
-                cout << "i: " << i << endl;
+                cout << "Tree i: " << i << endl;
                 return false;
             }
             file >> treeIndex;
@@ -476,14 +476,24 @@ bool RandomForests::loadModelFromFile(fstream &file){
                 return false;
             }
             
+            file >> word;
+            if(word != "TreeNodeType:"){
+                errorLog << "loadModelFromFile(string filename) - Could not find the TreeNodeType!" << endl;
+                cout << "WORD: " << word << endl;
+                cout << "i: " << i << endl;
+                return false;
+            }
+            file >> treeNodeType;
+            
             //Create a new DTree
-            DecisionTreeNode *tree = new DecisionTreeNode;
+            DecisionTreeNode *tree = dynamic_cast< DecisionTreeNode* >( DecisionTreeNode::createInstanceFromString( treeNodeType ) );
             
             if( tree == NULL ){
                 errorLog << "loadModelFromFile(fstream &file) - Failed to create new Tree!" << endl;
                 return false;
             }
             
+            //Load the tree from the file
             tree->setParent( NULL );
             if( !tree->loadFromFile( file ) ){
                 errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
