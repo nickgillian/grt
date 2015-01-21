@@ -250,6 +250,10 @@ bool MinDist::setNullRejectionCoeff(double nullRejectionCoeff){
     return false;
 }
     
+UINT MinDist::getNumClusters() const{
+    return numClusters;
+}
+    
 bool MinDist::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())

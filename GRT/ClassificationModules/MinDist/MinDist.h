@@ -134,6 +134,13 @@ public:
 	virtual bool recomputeNullRejectionThresholds();
     
     /**
+     Returns the number of clusters in the model.
+     
+     @return returns the number of clusters in the model.
+     */
+    UINT getNumClusters() const;
+    
+    /**
      Returns the MinDist models for each of the classes.
      
      @return returns a vector of the MinDist models for each of the classes
