@@ -44,9 +44,12 @@ public:
     /**
      Default Constructor
 
-     @param bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
+     @param const bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
+     @param double learningRate: the learningRate value used during the training phase. Default = 0.1
+     @param double minChange: sets the minimum change that must be achieved between two training epochs for the training to continue. Default = 1.0e-10
+     @param UINT maxNumEpochs: sets the maximum number of iterations that can be run during the training phase. Default = 1000
      */
-	Softmax(bool useScaling=false);
+	Softmax(const bool useScaling=false,const double learningRate = 0.1,const double minChange = 1.0e-10,const UINT maxNumEpochs = 1000);
     
     /**
      Defines the copy constructor.
@@ -120,55 +123,6 @@ public:
      @return returns true if the model was loaded successfully, false otherwise
      */
     virtual bool loadModelFromFile(fstream &file);
-
-    /**
-     Sets the learningRate. This is used to update the weights at each step of the stochastic gradient descent.
-     The learningRate value must be greater than zero.
-     
-     @param double learningRate: the learningRate value used during the training phase, must be greater than zero
-     @return returns true if the value was updated successfully, false otherwise
-     */
-    bool setLearningRate(double learningRate);
-    
-    /**
-     Sets the minimum change that must be achieved between two training epochs for the training to continue.
-     The minChange value must be greater than zero.
-     
-     @param double minChange: the minimum change value, must be greater than zero
-     @return returns true if the value was updated successfully, false otherwise
-     */
-    bool setMinChange(double minChange);
-    
-    /**
-     Sets the maximum number of iterations that can be run during the training phase.
-     The maxNumIterations value must be greater than zero.
-     
-     @param UINT maxNumIterations: the maximum number of iterations value, must be greater than zero
-     @return returns true if the value was updated successfully, false otherwise
-     */
-    bool setMaxNumIterations(UINT maxNumIterations);
-    
-    /**
-     Gets the current learningRate value, this is value used to update the weights at each step of the stochastic gradient descent.
-     
-     @return returns the current learningRate value
-     */
-    double getLearningRate();
-    
-    /**
-     Gets the current min change value, this is the difference that must be achieved between two training epochs
-     for the training to continue.
-     
-     @return returns the current min change value
-     */
-    double getMinChange();
-    
-    /**
-     Gets the current maxNumIterations value, this is the maximum number of iterations that can be run during the training phase.
-     
-     @return returns the maxNumIterations value
-     */
-    UINT getMaxNumIterations();
     
     /**
      Get the softmax models for each class. The Softmax class must be trained first.
@@ -185,9 +139,6 @@ protected:
     bool trainSoftmaxModel(UINT classLabel,SoftmaxModel &model,ClassificationData &data);
     bool loadLegacyModelFromFile( fstream &file );
     
-    double learningRate;
-    double minChange;
-    UINT maxNumIterations;
     vector< SoftmaxModel > models;
     
     static RegisterClassifierModule< Softmax > registerModule;
