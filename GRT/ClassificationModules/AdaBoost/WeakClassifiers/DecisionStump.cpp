@@ -27,20 +27,20 @@
 
 #include "DecisionStump.h"
 
-namespace GRT{
+using namespace GRT;
     
 //Register the DecisionStump module with the WeakClassifier base class
 RegisterWeakClassifierModule< DecisionStump > DecisionStump::registerModule("DecisionStump");
     
-DecisionStump::DecisionStump(UINT numSteps){
-    this->numSteps = numSteps;
+DecisionStump::DecisionStump(const UINT numRandomSplits){
+    this->numRandomSplits = numRandomSplits;
     trained = false;
     numInputDimensions = 0;
     decisionFeatureIndex = 0;
     decisionValue = 0;
     direction = 0;
     weakClassifierType = "DecisionStump";
-    trainingLog.setProceedingText("[DEBUG DecisionStump]");
+    trainingLog.setProceedingText("[TRAINING DecisionStump]");
     warningLog.setProceedingText("[WARNING DecisionStump]");
     errorLog.setProceedingText("[ERROR DecisionStump]");
 }
@@ -58,7 +58,7 @@ DecisionStump& DecisionStump::operator=(const DecisionStump &rhs){
         this->decisionFeatureIndex = rhs.decisionFeatureIndex;
         this->decisionValue = rhs.decisionValue;
         this->direction = rhs.direction;
-        this->numSteps = rhs.numSteps;
+        this->numRandomSplits = rhs.numRandomSplits;
         this->copyBaseVariables( &rhs );
     }
     return *this;
@@ -101,50 +101,49 @@ bool DecisionStump::train(ClassificationData &trainingData, VectorDouble &weight
     double step = 0;
     double threshold = 0;
     double bestThreshold = 0;
+    Random random;
     
-    for(UINT n=0; n<numInputDimensions; n++){
+    for(UINT k=0; k<numRandomSplits; k++){
+        
+        //Randomly select a feature and a threshold
+        UINT n = random.getRandomNumberInt(0,numInputDimensions);
         minRange = ranges[n].minValue;
         maxRange = ranges[n].maxValue;
-        step = (maxRange-minRange)/double(numSteps);
-        threshold = minRange;
-        while( threshold <= maxRange ){
+        threshold = random.getRandomNumberUniform( minRange, maxRange );
             
-            //Compute the error using the current threshold on the current input dimension
-            //We need to check both sides of the threshold
-            double rhsError = 0;
-            double lhsError = 0;
-            for(UINT i=0; i<M; i++){
-                bool positiveClass = trainingData[ i ].getClassLabel() == WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL;
-                bool rhs = trainingData[ i ][ n ] >= threshold;
-                bool lhs = trainingData[ i ][ n ] <= threshold;
-                if( (rhs && !positiveClass) || (!rhs && positiveClass) ) rhsError += weights[ i ];
-                if( (lhs && !positiveClass) || (!lhs && positiveClass) ) lhsError += weights[ i ];
-            }
-            
-            //Check to see if either the rhsError or lhsError beats the minError, if so then store the results
-            if( rhsError < minError ){
-                minError = rhsError;
-                bestFeatureIndex = n;
-                bestThreshold = threshold;
-                direction = 1; //1 means rhs
-            }
-            if( lhsError < minError ){
-                minError = lhsError;
-                bestFeatureIndex = n;
-                bestThreshold = threshold;
-                direction = 0; //0 means lhs
-            }
-            
-            //Update the threshold
-            threshold += step;
+        //Compute the error using the current threshold on the current input dimension
+        //We need to check both sides of the threshold
+        double rhsError = 0;
+        double lhsError = 0;
+        for(UINT i=0; i<M; i++){
+            bool positiveClass = trainingData[ i ].getClassLabel() == WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL;
+            bool rhs = trainingData[ i ][ n ] >= threshold;
+            bool lhs = trainingData[ i ][ n ] <= threshold;
+            if( (rhs && !positiveClass) || (!rhs && positiveClass) ) rhsError += weights[ i ];
+            if( (lhs && !positiveClass) || (!lhs && positiveClass) ) lhsError += weights[ i ];
         }
+            
+        //Check to see if either the rhsError or lhsError beats the minError, if so then store the results
+        if( rhsError < minError ){
+            minError = rhsError;
+            bestFeatureIndex = n;
+            bestThreshold = threshold;
+            direction = 1; //1 means rhs
+        }
+        if( lhsError < minError ){
+            minError = lhsError;
+            bestFeatureIndex = n;
+            bestThreshold = threshold;
+            direction = 0; //0 means lhs
+        }
+            
     }
     
     decisionFeatureIndex = bestFeatureIndex;
     decisionValue = bestThreshold;
     trained = true;
     
-    cout << "Best Feature Index: " << decisionFeatureIndex << " Value: " << decisionValue << " Direction: " << direction << " Error: " << minError << endl;
+    trainingLog << "Best Feature Index: " << decisionFeatureIndex << " Value: " << decisionValue << " Direction: " << direction << " Error: " << minError << endl;
     return true;
 }
 
@@ -158,20 +157,20 @@ double DecisionStump::predict(const VectorDouble &x){
 bool DecisionStump::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
-	{
-		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
-		return false;
-	}
+    {
+	errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
+	return false;
+    }
     
 	//Write the WeakClassifierType data
     file << "WeakClassifierType: " << weakClassifierType << endl;
-	file << "Trained: "<< trained << endl;
+    file << "Trained: "<< trained << endl;
     file << "NumInputDimensions: " << numInputDimensions << endl;
     
     //Write the DecisionStump data
     file << "DecisionFeatureIndex: " << decisionFeatureIndex << endl;
-	file << "Direction: "<< direction << endl;
-    file << "NumSteps: " << numSteps << endl;
+    file << "Direction: "<< direction << endl;
+    file << "NumRandomSplits: " << numRandomSplits << endl;
     file << "DecisionValue: " << decisionValue << endl;
     
     //We don't need to close the file as the function that called this function should handle that
@@ -181,64 +180,64 @@ bool DecisionStump::saveModelToFile(fstream &file) const{
 bool DecisionStump::loadModelFromFile(fstream &file){
     
     if(!file.is_open())
-	{
-		errorLog <<"loadModelFromFile(fstream &file) - The file is not open!" << endl;
-		return false;
-	}
+    {
+	errorLog <<"loadModelFromFile(fstream &file) - The file is not open!" << endl;
+	return false;
+    }
     
     string word;
     
     file >> word;
     if( word != "WeakClassifierType:" ){
         errorLog <<"loadModelFromFile(fstream &file) - Failed to read WeakClassifierType header!" << endl;
-		return false;
+	return false;
     }
     file >> word;
     
     if( word != weakClassifierType ){
         errorLog <<"loadModelFromFile(fstream &file) - The weakClassifierType:" << word << " does not match: " << weakClassifierType << endl;
-		return false;
+	return false;
     }
     
     file >> word;
     if( word != "Trained:" ){
         errorLog <<"loadModelFromFile(fstream &file) - Failed to read Trained header!" << endl;
-		return false;
+	return false;
     }
     file >> trained;
     
     file >> word;
     if( word != "NumInputDimensions:" ){
         errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
-		return false;
+	return false;
     }
     file >> numInputDimensions;
     
     file >> word;
     if( word != "DecisionFeatureIndex:" ){
         errorLog <<"loadModelFromFile(fstream &file) - Failed to read DecisionFeatureIndex header!" << endl;
-		return false;
+	return false;
     }
     file >> decisionFeatureIndex;
     
     file >> word;
     if( word != "Direction:" ){
         errorLog <<"loadModelFromFile(fstream &file) - Failed to read Direction header!" << endl;
-		return false;
+	return false;
     }
     file >> direction;
     
     file >> word;
-    if( word != "NumSteps:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumSteps header!" << endl;
-		return false;
+    if( word != "NumRandomSplits:" ){
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumRandomSplits header!" << endl;
+	return false;
     }
-    file >> numSteps;
+    file >> numRandomSplits;
     
     file >> word;
     if( word != "DecisionValue:" ){
         errorLog <<"loadModelFromFile(fstream &file) - Failed to read DecisionValue header!" << endl;
-		return false;
+	return false;
     }
     file >> decisionValue;
     
@@ -261,13 +260,12 @@ UINT DecisionStump::getDirection() const{
     return direction;
 }
 
-UINT DecisionStump::getNumSteps() const{
-    return numSteps;
+UINT DecisionStump::getNumRandomSplits() const{
+    return numRandomSplits;
 }
 
 double DecisionStump::getDecisionValue() const{
     return decisionValue;
 }
 
-} //End of namespace GRT
 

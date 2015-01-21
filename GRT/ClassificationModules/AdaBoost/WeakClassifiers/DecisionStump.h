@@ -38,11 +38,11 @@ public:
     /**
      Default Constructor.
      
-     Sets the number of steps that will be used to search for the best split value.
+     Sets the number of random splits that will be used to search for the best split value.
      
-     @param UINT numSteps: sets the number of steps that will be used to search for the best split value. Default value = 100
+     @param const UINT numRandomSplits: sets the number of random splits that will be used to search for the best split value. Default value = 100
      */
-    DecisionStump(UINT numSteps=100);
+    DecisionStump(const UINT numRandomSplits = 100);
     
     /**
      Default Destructor.
@@ -117,9 +117,9 @@ public:
     UINT getDirection() const;
     
     /**
-    @return returns the number of steps that will be used to search for the best decision spilt
+    @return returns the number of random splits that will be used to search for the best decision spilt
     */
-    UINT getNumSteps() const;
+    UINT getNumRandomSplits() const;
     
     /**
      @return returns the decision spilt threshold
@@ -128,7 +128,7 @@ public:
 protected:
     UINT decisionFeatureIndex;  ///< The dimension that the data will be spilt on
     UINT direction;             ///< Indicates if the decision spilt threshold is greater than (1), or less than (0)
-    UINT numSteps;              ///< The number of steps used to search for the best decision spilt
+    UINT numRandomSplits;       ///< The number of random splits used to search for the best decision spilt
     double decisionValue;       ///< The decision spilt threshold
     
     static RegisterWeakClassifierModule< DecisionStump > registerModule; ///< This is used to register the DecisionStump with the WeakClassifier base class
