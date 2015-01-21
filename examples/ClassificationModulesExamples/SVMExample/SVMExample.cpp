@@ -51,7 +51,7 @@ int main (int argc, const char * argv[])
     //Train the classifier with some training data
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("SVMTrainingData.grt") ){
+    if( !trainingData.load("SVMTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
