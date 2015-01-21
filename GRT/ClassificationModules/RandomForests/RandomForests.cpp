@@ -550,7 +550,7 @@ bool RandomForests::setForestSize(const UINT forestSize){
     return false;
 }
     
-bool RandomForests::setNumRandomSpilts(const UINT numRandomSplits){
+bool RandomForests::setNumRandomSplits(const UINT numRandomSplits){
     if( numRandomSplits > 0 ){
         this->numRandomSplits = numRandomSplits;
         return true;

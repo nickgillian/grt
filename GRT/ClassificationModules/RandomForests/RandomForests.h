@@ -204,7 +204,7 @@ public:
      @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
      @return returns true if the parameter was set, false otherwise
      */
-    bool setNumRandomSpilts(const UINT numSplittingSteps);
+    bool setNumRandomSplits(const UINT numSplittingSteps);
     
     /**
      Sets the minimum number of samples that are allowed per node, if the number of samples at a node is below this value then the node will automatically 
