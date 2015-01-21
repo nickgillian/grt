@@ -50,7 +50,7 @@ int main(int argc, const char * argv[])
     
     //Set the number of random candidate splits that will be used to choose the best splitting values
     //More steps will give you a better model, but will take longer to train
-    forest.setNumRandomSpilts( 100 );
+    forest.setNumRandomSplits( 100 );
     
     //Set the maximum depth of the tree
     forest.setMaxDepth( 10 );
@@ -62,7 +62,7 @@ int main(int argc, const char * argv[])
     ClassificationData trainingData;
     
     cout << "Loading Training Data\n";
-    if( !trainingData.loadDatasetFromFile("RandomForestsTrainingData.grt") ){
+    if( !trainingData.load("RandomForestsTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
