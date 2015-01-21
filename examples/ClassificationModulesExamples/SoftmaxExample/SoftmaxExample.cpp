@@ -48,7 +48,7 @@ int main (int argc, const char * argv[])
     //Load some training data to train the classifier
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("SoftmaxTrainingData.grt") ){
+    if( !trainingData.load("SoftmaxTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
