@@ -58,7 +58,7 @@ int main (int argc, const char * argv[])
     //Load some training data to train the classifier
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("ANBCTrainingData.grt") ){
+    if( !trainingData.load("ANBCTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -67,25 +67,19 @@ int main (int argc, const char * argv[])
     ClassificationData testData = trainingData.partition( 80 );
     
     //Train the classifier
-    bool trainSuccess = anbc.train( trainingData );
-    
-    if( !trainSuccess ){
+    if( !anbc.train( trainingData ) ){
         cout << "Failed to train classifier!\n";
         return EXIT_FAILURE;
     }
     
     //Save the ANBC model to a file
-    bool saveSuccess = anbc.save("ANBCModel.grt");
-    
-    if( !saveSuccess ){
+    if( !anbc.save("ANBCModel.grt") ){
         cout << "Failed to save the classifier model!\n";
         return EXIT_FAILURE;
     }
     
     //Load the ANBC model from a file
-    bool loadSuccess = anbc.load("ANBCModel.grt");
-    
-    if( !loadSuccess ){
+    if( !anbc.load("ANBCModel.grt") ){
         cout << "Failed to load the classifier model!\n";
         return EXIT_FAILURE;
     }
