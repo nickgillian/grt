@@ -512,7 +512,7 @@ UINT RandomForests::getForestSize()const{
     return forestSize;
 }
     
-UINT RandomForests::getNumRandomSpilts()const{
+UINT RandomForests::getNumRandomSplits()const{
     return numRandomSplits;
 }
 

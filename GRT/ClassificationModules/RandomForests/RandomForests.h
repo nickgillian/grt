@@ -143,11 +143,11 @@ public:
     UINT getForestSize() const;
     
     /**
-     Gets the number of random spilts that will be used to search for the best spliting value for each node.
+     Gets the number of random splits that will be used to search for the best spliting value for each node.
      
      @return returns the number of steps that will be used to search for the best spliting value for each node
      */
-    UINT getNumRandomSpilts() const;
+    UINT getNumRandomSplits() const;
     
     /**
      Gets the minimum number of samples that are allowed per node, if the number of samples at a node is below 
