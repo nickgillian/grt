@@ -73,7 +73,7 @@ int main(int argc, const char * argv[])
     //Load some training data to train the classifier
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("DecisionTreeTrainingData.grt") ){
+    if( !trainingData.load("DecisionTreeTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }

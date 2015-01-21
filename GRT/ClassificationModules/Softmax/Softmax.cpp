@@ -25,12 +25,12 @@ namespace GRT{
 //Register the Softmax module with the Classifier base class
 RegisterClassifierModule< Softmax >  Softmax::registerModule("Softmax");
 
-Softmax::Softmax(bool useScaling)
+Softmax::Softmax(const bool useScaling,const double learningRate,const double minChange,const UINT maxNumEpochs)
 {
     this->useScaling = useScaling;
-    minChange = 1.0e-10;
-    maxNumIterations = 1000;
-    learningRate = 0.01;
+    this->learningRate = learningRate;
+    this->minChange = minChange;
+    this->maxNumEpochs = maxNumEpochs;
     classType = "Softmax";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -59,7 +59,7 @@ Softmax& Softmax::operator=(const Softmax &rhs){
 	if( this != &rhs ){
         this->learningRate = rhs.learningRate;
         this->minChange = rhs.minChange;
-        this->maxNumIterations = rhs.maxNumIterations;
+        this->maxNumEpochs = rhs.maxNumEpochs;
         this->models = rhs.models;
         
         //Copy the base classifier variables
@@ -77,7 +77,7 @@ bool Softmax::deepCopyFrom(const Classifier *classifier){
         
         this->learningRate = ptr->learningRate;
         this->minChange = ptr->minChange;
-        this->maxNumIterations = ptr->maxNumIterations;
+        this->maxNumEpochs = ptr->maxNumEpochs;
         this->models = ptr->models;
         
         //Copy the base classifier variables
@@ -249,7 +249,7 @@ bool Softmax::trainSoftmaxModel(UINT classLabel,SoftmaxModel &model,Classificati
             keepTraining = false;
         }
         
-        if( ++iter >= maxNumIterations ){
+        if( ++iter >= maxNumEpochs ){
             keepTraining = false;
         }
         
@@ -383,42 +383,6 @@ bool Softmax::loadModelFromFile(fstream &file){
     }
     
     return true;
-}
-    
-bool Softmax::setLearningRate(double learningRate){
-    if( learningRate > 0 ){
-        this->learningRate = learningRate;
-        return true;
-    }
-    return false;
-}
-
-bool Softmax::setMinChange(double minChange){
-    if( minChange > 0 ){
-        this->minChange = minChange;
-        return true;
-    }
-    return false;
-}
-
-bool Softmax::setMaxNumIterations(UINT maxNumIterations){
-    if( maxNumIterations > 0 ){
-        this->maxNumIterations = maxNumIterations;
-        return true;
-    }
-    return false;
-}
-
-double Softmax::getLearningRate(){
-    return learningRate;
-}
-
-double Softmax::getMinChange(){
-    return minChange;
-}
-
-UINT Softmax::getMaxNumIterations(){
-    return maxNumIterations;
 }
     
 vector< SoftmaxModel > Softmax::getModels(){

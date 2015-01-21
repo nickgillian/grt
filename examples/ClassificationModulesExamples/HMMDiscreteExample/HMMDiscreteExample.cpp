@@ -47,7 +47,7 @@ int main(int argc, const char * argv[]){
     //Load the training data
     TimeSeriesClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("HMMTrainingData.grt") ){
+    if( !trainingData.load("HMMTrainingData.grt") ){
         cout << "ERROR: Failed to load training data!\n";
         return false;
     }
