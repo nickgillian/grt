@@ -446,6 +446,20 @@ public:
     UINT getUnProcessedPredictedClassLabel() const;
     
     /**
+     This function returns the number of training samples used to train the pipeline model.
+     
+     @return UINT representing the number of training samples used to train the pipeline model.
+     */
+    UINT getNumTrainingSamples() const;
+    
+    /**
+     This function returns the number of test samples used to train the pipeline model.
+     
+     @return UINT representing the number of test samples used to train the pipeline model.
+     */
+    UINT getNumTestSamples() const;
+    
+    /**
 	 This function returns the maximum likelihood value from the most likely class from the most recent prediction.  This value is only relevant when the pipeline is in prediction mode.
 	
 	@return double representing the maximum likelihood value from the most likely class from the most recent prediction.

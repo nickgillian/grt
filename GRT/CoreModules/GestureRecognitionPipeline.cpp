@@ -2540,6 +2540,14 @@ UINT GestureRecognitionPipeline::getUnProcessedPredictedClassLabel() const{
     }
     return 0;
 }
+    
+UINT GestureRecognitionPipeline::getNumTrainingSamples() const{
+    return numTrainingSamples;
+}
+
+UINT GestureRecognitionPipeline::getNumTestSamples() const{
+    return numTestSamples;
+}
 
 double GestureRecognitionPipeline::getMaximumLikelihood() const{
     if( getIsClassifierSet() ){
