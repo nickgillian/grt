@@ -50,7 +50,7 @@ int main (int argc, const char * argv[])
     //Train the classifier with some training data
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromFile("KNNTrainingData.grt") ){
+    if( !trainingData.load("KNNTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -59,9 +59,7 @@ int main (int argc, const char * argv[])
     ClassificationData testData = trainingData.partition( 80 );
     
     //Train the classifier
-    bool trainSuccess = knn.train( trainingData );
-    
-    if( !trainSuccess ){
+    if( !knn.train( trainingData ) ){
         cout << "Failed to train classifier!\n";
         return EXIT_FAILURE;
     }
