@@ -48,7 +48,7 @@ int main (int argc, const char * argv[])
 	//Load some training data to train the classifier - the DTW uses TimeSeriesClassificationData
 	TimeSeriesClassificationData trainingData;
     
-	if( !trainingData.loadDatasetFromFile("DTWTrainingData.grt") ){
+	if( !trainingData.load("DTWTrainingData.grt") ){
 		cout << "Failed to load training data!\n";
 		return EXIT_FAILURE;
 	}
