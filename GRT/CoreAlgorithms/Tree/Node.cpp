@@ -308,6 +308,29 @@ UINT Node::getPredictedNodeID() const{
     return predictedNodeID;
 }
     
+UINT Node::getMaxDepth() const {
+    
+    UINT maxDepth = depth;
+    
+    //Search for the maximum depth in the left child
+    if( getHasLeftChild() ){
+        UINT maxLeftDepth = leftChild->getMaxDepth();
+        if( maxLeftDepth > maxDepth ){
+            maxDepth = maxLeftDepth;
+        }
+    }
+    
+    //Search for the maximum depth in the right child
+    if( getHasRightChild() ){
+        UINT maxRightDepth = rightChild->getMaxDepth();
+        if( maxRightDepth > maxDepth ){
+            maxDepth = maxRightDepth;
+        }
+    }
+        
+    return maxDepth;
+}
+    
 bool Node::getIsLeafNode() const{
     return isLeafNode;
 }

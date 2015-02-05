@@ -27,7 +27,7 @@
 
 #include "DecisionStump.h"
 
-namespace GRT{
+using namespace GRT;
     
 //Register the DecisionStump module with the WeakClassifier base class
 RegisterWeakClassifierModule< DecisionStump > DecisionStump::registerModule("DecisionStump");
@@ -40,7 +40,7 @@ DecisionStump::DecisionStump(UINT numSteps){
     decisionValue = 0;
     direction = 0;
     weakClassifierType = "DecisionStump";
-    trainingLog.setProceedingText("[DEBUG DecisionStump]");
+    trainingLog.setProceedingText("[TRAINING DecisionStump]");
     warningLog.setProceedingText("[WARNING DecisionStump]");
     errorLog.setProceedingText("[ERROR DecisionStump]");
 }
@@ -144,7 +144,7 @@ bool DecisionStump::train(ClassificationData &trainingData, VectorDouble &weight
     decisionValue = bestThreshold;
     trained = true;
     
-    cout << "Best Feature Index: " << decisionFeatureIndex << " Value: " << decisionValue << " Direction: " << direction << " Error: " << minError << endl;
+    trainingLog << "Best Feature Index: " << decisionFeatureIndex << " Value: " << decisionValue << " Direction: " << direction << " Error: " << minError << endl;
     return true;
 }
 
@@ -268,6 +268,4 @@ UINT DecisionStump::getNumSteps() const{
 double DecisionStump::getDecisionValue() const{
     return decisionValue;
 }
-
-} //End of namespace GRT
 

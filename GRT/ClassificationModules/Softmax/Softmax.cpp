@@ -385,7 +385,7 @@ bool Softmax::loadModelFromFile(fstream &file){
     return true;
 }
     
-vector< SoftmaxModel > Softmax::getModels(){
+vector< SoftmaxModel > Softmax::getModels() const{
     return models;
 }
     

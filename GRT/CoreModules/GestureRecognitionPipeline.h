@@ -797,7 +797,7 @@ public:
         T temp;
         
         if( temp.getClassifierType() == classifier->getClassifierType() ){
-            return (T*)classifier;
+            return dynamic_cast<T*>(classifier);
         }
         
         return NULL;

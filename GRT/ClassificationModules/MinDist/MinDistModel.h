@@ -44,6 +44,11 @@ public:
 	MinDistModel();
     
     /**
+     Default Copy Constructor
+     */
+    MinDistModel(const MinDistModel &rhs);
+    
+    /**
      Default Destructor
      */
 	~MinDistModel(void);

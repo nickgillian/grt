@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     qRegisterMetaType< GRT::GestureRecognitionPipeline >("GRT::GestureRecognitionPipeline");
     qRegisterMetaType< GRT::MLBase >("GRT::MLBase");
     qRegisterMetaType< QTextBlock >("QTextBlock");
+    qRegisterMetaType< GRT::TimeSeriesClassificationSample >("GRT::TimeSeriesClassificationSample");
 
     //Setup the UI
     ui->setupUi(this);
@@ -206,6 +207,7 @@ bool MainWindow::initDataLabellingToolView(){
 
     ui->dataLabellingTool_classificationModeRecordButton->setChecked( false );
     ui->dataLabellingTool_regressionModeRecordButton->setChecked( false );
+    ui->dataLabellingTool_timeseriesClassificationModeRecordButton->setChecked( false );
     ui->dataLabellingTool_clusterModeRecordButton->setChecked( false );
 
     ui->dataLabellingTool_classificationMode_infoTextField->setText("");

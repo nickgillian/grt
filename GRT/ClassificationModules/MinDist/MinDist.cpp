@@ -254,6 +254,10 @@ UINT MinDist::getNumClusters() const{
     return numClusters;
 }
     
+vector< MinDistModel > MinDist::getModels() const {
+    return models;
+}
+    
 bool MinDist::saveModelToFile(fstream &file) const{
     
     if(!file.is_open())
@@ -298,11 +302,7 @@ bool MinDist::saveModelToFile(fstream &file) const{
     
 bool MinDist::loadModelFromFile(fstream &file){
     
-    trained = false;
-    numInputDimensions = 0;
-    numClasses = 0;
-    models.clear();
-    classLabels.clear();
+    clear();
     
     if(!file.is_open())
     {
@@ -312,6 +312,7 @@ bool MinDist::loadModelFromFile(fstream &file){
     
     std::string word;
     
+    //Load the file header
     file >> word;
     
     //Check to see if we should load a legacy file

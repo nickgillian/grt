@@ -531,6 +531,10 @@ UINT RandomForests::getTrainingMode() const {
 bool RandomForests::getRemoveFeaturesAtEachSpilt() const {
     return removeFeaturesAtEachSpilt;
 }
+
+const vector< DecisionTreeNode* > RandomForests::getForest() const {
+    return forest;
+}
     
 DecisionTreeNode* RandomForests::deepCopyDecisionTreeNode() const{
     

@@ -145,7 +145,7 @@ public:
      
      @return returns a vector of the MinDist models for each of the classes
     */
-    vector< MinDistModel > getModels(){ return models; }
+    vector< MinDistModel > getModels() const;
     
     /**
      Sets the nullRejectionCoeff parameter.
@@ -171,6 +171,7 @@ protected:
 	UINT numClusters; 
 	vector< MinDistModel > models;            //A buffer to hold all the models
     
+private:
     static RegisterClassifierModule< MinDist > registerModule;
 };
 

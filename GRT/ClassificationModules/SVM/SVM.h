@@ -245,6 +245,10 @@ public:
      */
     double getCrossValidationResult() const;
     
+    
+    
+    struct svm_model *getModel() const { return model; }
+    
     /**
      Sets the SVM type.
      This should be one of the SVMTypes enumeration types.

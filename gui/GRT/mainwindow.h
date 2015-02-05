@@ -131,6 +131,7 @@ Q_DECLARE_METATYPE(GRT::TrainingResult);
 Q_DECLARE_METATYPE(GRT::TestInstanceResult);
 Q_DECLARE_METATYPE(GRT::GestureRecognitionPipeline);
 Q_DECLARE_METATYPE(GRT::MLBase);
+Q_DECLARE_METATYPE(GRT::TimeSeriesClassificationSample);
 
 class MainWindow : public QMainWindow,
                    public GRT::Observer< GRT::TrainingLogMessage >,

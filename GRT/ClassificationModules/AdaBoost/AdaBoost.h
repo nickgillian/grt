@@ -213,7 +213,7 @@ public:
      
      @return a vector containing the current AdaBoostClassModel models.
      */
-    vector< AdaBoostClassModel > getModels(){ return models; }
+    vector< AdaBoostClassModel > getModels() const { return models; }
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::saveModelToFile;

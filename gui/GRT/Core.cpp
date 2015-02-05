@@ -269,12 +269,7 @@ bool Core::loadTrainingDatasetFromFile( const std::string filename ){
     GRT::RegressionData tempRegressionData;
     GRT::TimeSeriesClassificationData tempTimeSeriesData;
     GRT::UnlabelledData tempClusterData;
-
-    //Check to see if we should load the data from the default GRT fileformat or as a CSV file
-    bool loadFromCSV = false;
-    std::size_t found = filename.find( ".csv" );
-    if ( found!=std::string::npos )
-        loadFromCSV = true;
+    std::size_t found;
 
     {
          boost::mutex::scoped_lock lock( mutex );
@@ -297,7 +292,9 @@ bool Core::loadTrainingDatasetFromFile( const std::string filename ){
                  }
              break;
              case REGRESSION_MODE:
-                 if( !loadFromCSV ) result = regressionTrainingData.loadDatasetFromFile( filename );
+                 //Check to see if we should load the data from the default GRT fileformat or as a CSV file
+                 found = filename.find( ".csv" );
+                 if ( found!=std::string::npos ) result = regressionTrainingData.loadDatasetFromFile( filename );
                  else result = regressionTrainingData.loadDatasetFromCSVFile( filename, this->numInputDimensions, this->targetVectorSize );
 
                  numTrainingSamples = regressionTrainingData.getNumSamples();
@@ -941,6 +938,7 @@ bool Core::setClassifier( const GRT::Classifier &classifier ){
     }
 
     if( result ){
+        //TODO - Should this setPipelineMode happen here?
         if( timeseriesCompatible ) setPipelineMode( TIMESERIES_CLASSIFICATION_MODE );
         else setPipelineMode( CLASSIFICATION_MODE );
     }
@@ -1043,7 +1041,7 @@ bool Core::savePipelineToFile( const std::string filename ){
 
     {
         boost::mutex::scoped_lock lock( mutex );
-        result = pipeline.savePipelineToFile( filename );
+        result = pipeline.save( filename );
     }
 
     if( result ){
@@ -1059,7 +1057,7 @@ bool Core::loadPipelineFromFile( const std::string filename ){
 
     {
         boost::mutex::scoped_lock lock( mutex );
-        result = pipeline.loadPipelineFromFile( filename );
+        result = pipeline.load( filename );
     }
 
     if( result ){
@@ -1324,10 +1322,11 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
 
     if( m.getAddressPattern() == "/Record" && allowOSCControlCommands ){
         if( m.getNumArgs() == 1 ){
+
+            setRecordingState( (m[0].getInt() == 1 ? true : false) );
             bool recordTrainingData_ = false;
             {
                 boost::mutex::scoped_lock lock( mutex );
-                recordTrainingData = (m[0].getInt() == 1 ? true : false);
                 recordTrainingData_ = recordTrainingData;
             }
             emit recordStatusChanged( recordTrainingData_ );
@@ -1368,7 +1367,7 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
                 parameter1 = m[4].getDouble();
             }
 
-            setClassifierMessageReceived(classifierType,useScaling,useNullRejection,nullRejectionCoeff,parameter1);
+            //setClassifierMessageReceived(classifierType,useScaling,useNullRejection,nullRejectionCoeff,parameter1);
         }else return false;
     }
 

@@ -129,7 +129,7 @@ public:
      
      @return returns a vector of softmax models, with each element representing the model for a specific class
      */
-    vector< SoftmaxModel > getModels();
+    vector< SoftmaxModel > getModels() const;
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;

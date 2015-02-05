@@ -143,6 +143,8 @@ public:
      */
     UINT getPredictedNodeID() const;
     
+    UINT getMaxDepth() const;
+    
     /**
      This function returns true if this node is a leaf node, false otherwise.
      
@@ -170,6 +172,10 @@ public:
      @return returns true if this node has a rightChild, false otherwise
      */
     bool getHasRightChild() const;
+    
+    Node *getParent() const { return parent; }
+    Node *getLeftChild() const { return leftChild; }
+    Node *getRightChild() const { return rightChild; }
     
     bool initNode(Node *parent,const UINT depth,const UINT nodeID,const bool isLeafNode = false);
     

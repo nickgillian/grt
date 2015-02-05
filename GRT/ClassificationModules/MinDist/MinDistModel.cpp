@@ -17,23 +17,35 @@
 
 #include "MinDistModel.h"
 
-namespace GRT{
+using namespace GRT;
 
 MinDistModel::MinDistModel(){
-		classLabel = 0;
-		numFeatures = 0;
-		numClusters = 0;
-		rejectionThreshold = 0;
-		gamma = 0;
-		trainingMu = 0;
-		trainingSigma = 0;
+    classLabel = 0;
+    numFeatures = 0;
+    numClusters = 0;
+    rejectionThreshold = 0;
+    gamma = 0;
+    trainingMu = 0;
+    trainingSigma = 0;
+}
+    
+MinDistModel::MinDistModel(const MinDistModel &rhs){
+
+    this->classLabel = rhs.classLabel;
+    this->numFeatures = rhs.numFeatures;
+    this->numClusters = rhs.numClusters;
+    this->rejectionThreshold = rhs.rejectionThreshold;
+    this->gamma = rhs.gamma;
+    this->trainingMu = rhs.trainingMu;
+    this->trainingSigma = rhs.trainingSigma;
+    this->clusters = rhs.clusters;
 }
     
 MinDistModel::~MinDistModel(void){}
     
 MinDistModel& MinDistModel:: operator=(const MinDistModel &rhs){
 	if( this != &rhs ){
-           //MinDistModel variables
+        //MinDistModel variables
 		this->classLabel = rhs.classLabel;
 		this->numFeatures = rhs.numFeatures;
 		this->numClusters = rhs.numClusters;
@@ -189,6 +201,4 @@ bool MinDistModel::setTrainingMu(double trainingMu){
     this->trainingMu = trainingMu;
     return true;
 }
-
-} //End of namespace GRT
 

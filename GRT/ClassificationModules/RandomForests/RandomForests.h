@@ -171,6 +171,8 @@ public:
      */
     UINT getTrainingMode() const;
     
+    const vector< DecisionTreeNode* > getForest() const;
+    
     /**
      Gets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be
      removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will

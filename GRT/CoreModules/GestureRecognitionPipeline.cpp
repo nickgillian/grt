@@ -2356,10 +2356,10 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
                 case PIPELINE_MODE_NOT_SET:
                     break;
                 case CLASSIFICATION_MODE:
-                    inputVectorDimensions = classifier->getNumInputFeatures();
+                    inputVectorDimensions = classifier->getNumInputDimensions();
                     break;
                 case REGRESSION_MODE:
-                    inputVectorDimensions = regressifier->getNumInputFeatures();
+                    inputVectorDimensions = regressifier->getNumInputDimensions();
                     break;
                 case CLUSTER_MODE:
                     inputVectorDimensions = clusterer->getNumInputDimensions();
