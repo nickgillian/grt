@@ -26,6 +26,7 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(void)
 {
     initialized = false;
     trained = false;
+    info = "";
     pipelineMode = PIPELINE_MODE_NOT_SET;
     inputVectorDimensions = 0;
     outputVectorDimensions = 0;
@@ -56,6 +57,7 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionP
 	
 	initialized = false;
     trained = false;
+    info = "";
     pipelineMode = PIPELINE_MODE_NOT_SET;
     inputVectorDimensions = 0;
     outputVectorDimensions = 0;
@@ -94,6 +96,7 @@ GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureR
         //Copy the pipeline variables
 		this->initialized = rhs.initialized;
         this->trained = rhs.trained;
+        this->info = rhs.info;
 	    this->inputVectorDimensions = rhs.inputVectorDimensions;
 	    this->outputVectorDimensions = rhs.outputVectorDimensions;
 	    this->predictedClassLabel = rhs.predictedClassLabel;
@@ -1974,12 +1977,13 @@ bool GestureRecognitionPipeline::savePipelineToFile(const string &filename) cons
     }
     
     //Write the pipeline header info
-    file << "GRT_PIPELINE_FILE_V2.0\n";
+    file << "GRT_PIPELINE_FILE_V3.0\n";
     file << "PipelineMode: " << getPipelineModeAsString() << endl;
     file << "NumPreprocessingModules: " << getNumPreProcessingModules() << endl;
     file << "NumFeatureExtractionModules: " << getNumFeatureExtractionModules() << endl;
     file << "NumPostprocessingModules: " << getNumPostProcessingModules() << endl;
     file << "Trained: " << getTrained() << endl;
+    file << "Info: " << info << endl;
     
     //Write the module datatype names
     file << "PreProcessingModuleDatatypes:";
@@ -2111,7 +2115,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
 	
 	//Load the file header
 	file >> word;
-	if( word != "GRT_PIPELINE_FILE_V2.0" ){
+	if( word != "GRT_PIPELINE_FILE_V3.0" ){
         errorLog << "loadPipelineFromFile(string filename) - Failed to read file header" << endl;
 		file.close();
         return false;
@@ -2130,7 +2134,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
 	//Load the NumPreprocessingModules
 	file >> word;
 	if( word != "NumPreprocessingModules:" ){
-        errorLog << "loadPipelineFromFile(string filename) - Failed to read NumPreprocessingModules" << endl;
+        errorLog << "loadPipelineFromFile(string filename) - Failed to read NumPreprocessingModules header" << endl;
 		file.close();
         return false;
 	}
@@ -2140,7 +2144,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
 	//Load the NumFeatureExtractionModules
 	file >> word;
 	if( word != "NumFeatureExtractionModules:" ){
-        errorLog << "loadPipelineFromFile(string filename) - Failed to read NumFeatureExtractionModules" << endl;
+        errorLog << "loadPipelineFromFile(string filename) - Failed to read NumFeatureExtractionModules header" << endl;
 		file.close();
         return false;
 	}
@@ -2150,7 +2154,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
 	//Load the NumPostprocessingModules
 	file >> word;
 	if( word != "NumPostprocessingModules:" ){
-        errorLog << "loadPipelineFromFile(string filename) - Failed to read NumPostprocessingModules" << endl;
+        errorLog << "loadPipelineFromFile(string filename) - Failed to read NumPostprocessingModules header" << endl;
 		file.close();
         return false;
 	}
@@ -2160,19 +2164,32 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
 	//Load if the pipeline has been trained
 	file >> word;
 	if( word != "Trained:" ){
-        errorLog << "loadPipelineFromFile(string filename) - Failed to read Trained" << endl;
+        errorLog << "loadPipelineFromFile(string filename) - Failed to read Trained header" << endl;
 		file.close();
         return false;
 	}
 	file >> trained;
-	
+    
+    //Load the info
+    file >> word;
+    if( word != "Info:" ){
+        errorLog << "loadPipelineFromFile(string filename) - Failed to read Info header" << endl;
+        file.close();
+        return false;
+    }
+    info = "";
+    //Read the info text
+    file >> word;
+    while( word != "PreProcessingModuleDatatypes:" ){
+        info += word;
+    }
+    
 	//Resize the modules
 	if( numPreprocessingModules > 0 ) preProcessingModules.resize(numPreprocessingModules,NULL);
 	if( numFeatureExtractionModules > 0 ) featureExtractionModules.resize(numFeatureExtractionModules,NULL);
 	if( numPostprocessingModules > 0 ) postProcessingModules.resize(numPostprocessingModules,NULL);
 	
 	//Load the preprocessing module datatypes and initialize the modules
-	file >> word;
 	if( word != "PreProcessingModuleDatatypes:" ){
         errorLog << "loadPipelineFromFile(string filename) - Failed to read PreProcessingModuleDatatypes" << endl;
 		file.close();
@@ -3201,6 +3218,11 @@ bool GestureRecognitionPipeline::clearTestResults(){
     
     return true;
 }
+    
+bool GestureRecognitionPipeline::setInfo(const string info){
+    this->info = info;
+    return true;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
 ///////////////////////////////////////////          PROTECTED FUNCTIONS              ///////////////////////////////////////////
@@ -3429,6 +3451,10 @@ string GestureRecognitionPipeline::getPipelineModeAsString() const{
     }
     
     return "ERROR_UNKNWON_PIPELINE_MODE";
+}
+    
+string GestureRecognitionPipeline::getInfo() const{
+    return info;
 }
 
 UINT GestureRecognitionPipeline::getPipelineModeFromString(string pipelineModeAsString) const{

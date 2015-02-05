@@ -883,6 +883,13 @@ public:
      @return returns the pipeline mode as a string
      */
     string getPipelineModeAsString() const;
+    
+    /*
+     Gets the pipeline info text as a string.
+     
+     @return returns the pipeline info as a string
+     */
+    string getInfo() const;
 
     /**
      Converts a string to the pipeline mode.
@@ -1087,6 +1094,12 @@ public:
 	 @return returns true if the test results were cleared successfully, false otherwise
 	 */
     bool clearTestResults();
+    
+    /**
+     Sets the pipeline's info text.
+      @return returns true if the info text was updated successfully, false otherwise
+     */
+    bool setInfo(const string info);
 
 protected:
     bool predict_classifier(const VectorDouble &inputVector);
@@ -1104,6 +1117,7 @@ protected:
     
     bool initialized;
     bool trained;
+    string info;
     UINT inputVectorDimensions;
     UINT outputVectorDimensions;
     UINT predictedClassLabel;
