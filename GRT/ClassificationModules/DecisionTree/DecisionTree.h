@@ -40,6 +40,7 @@
 #include "DecisionTreeNode.h"
 #include "DecisionTreeThresholdNode.h"
 #include "DecisionTreeClusterNode.h"
+#include "DecisionTreeTripleFeatureNode.h"
 
 namespace GRT{
 
