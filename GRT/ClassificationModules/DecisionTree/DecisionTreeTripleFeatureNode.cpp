@@ -218,6 +218,8 @@ bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSt
             bestFeatureIndexC = featureIndexC;
         }
      }
+
+     trainingLog << "Best features indexs: [" << bestFeatureIndexA << "," << bestFeatureIndexB << "," << bestFeatureIndexC << "] Min Error: " << minError << endl;
      
      //Set the best feature index that will be returned to the DecisionTree that called this function
      featureIndex = bestFeatureIndexB;
