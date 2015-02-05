@@ -4,9 +4,9 @@
 using namespace GRT;
     
 //Register the DecisionTreeTripleFeatureNode module with the Node base class
-RegisterNode< DecisionTreeTripleFeatureNode > DecisionTreeClusterNode::registerModule("DecisionTreeTripleFeatureNode");
+RegisterNode< DecisionTreeTripleFeatureNode > DecisionTreeTripleFeatureNode::registerModule("DecisionTreeTripleFeatureNode");
     
-DecisionTreeTripleFeatureNode::DecisionTreeClusterNode(){
+DecisionTreeTripleFeatureNode::DecisionTreeTripleFeatureNode(){
     nodeType = "DecisionTreeTripleFeatureNode";
     parent = NULL;
     leftChild = NULL;
@@ -14,7 +14,7 @@ DecisionTreeTripleFeatureNode::DecisionTreeClusterNode(){
     clear();
 }
 
-DecisionTreeTripleFeatureNode::~DecisionTreeClusterNode(){
+DecisionTreeTripleFeatureNode::~DecisionTreeTripleFeatureNode(){
     clear();
 }
 
@@ -114,7 +114,7 @@ Node* DecisionTreeTripleFeatureNode::deepCopyNode() const{
     return dynamic_cast< DecisionTreeTripleFeatureNode* >( node );
 }
 
-DecisionTreeTripleFeatureNode* DecisionTreeClusterNode::deepCopy() const{
+DecisionTreeTripleFeatureNode* DecisionTreeTripleFeatureNode::deepCopy() const{
     return dynamic_cast< DecisionTreeTripleFeatureNode* >( deepCopyNode() );
 }
 
@@ -223,7 +223,7 @@ bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSt
      featureIndex = bestFeatureIndexB;
      
      //Store the node size, feature indexs and class probabilities for this node
-     set(M,bextFeatureIndexA,bextFeatureIndexB,bestFeatureIndexC,trainingData.getClassProbabilities(classLabels));
+     set(M,bestFeatureIndexA,bestFeatureIndexB,bestFeatureIndexC,trainingData.getClassProbabilities(classLabels));
 
      return true;
 }
