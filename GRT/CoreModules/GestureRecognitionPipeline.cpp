@@ -2164,25 +2164,26 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
 	//Load if the pipeline has been trained
 	file >> word;
 	if( word != "Trained:" ){
-        errorLog << "loadPipelineFromFile(string filename) - Failed to read Trained header" << endl;
+        	errorLog << "loadPipelineFromFile(string filename) - Failed to read Trained header" << endl;
 		file.close();
-        return false;
+        	return false;
 	}
 	file >> trained;
     
-    //Load the info
-    file >> word;
-    if( word != "Info:" ){
-        errorLog << "loadPipelineFromFile(string filename) - Failed to read Info header" << endl;
-        file.close();
-        return false;
-    }
-    info = "";
-    //Read the info text
-    file >> word;
-    while( word != "PreProcessingModuleDatatypes:" ){
-        info += word;
-    }
+    	//Load the info
+    	file >> word;
+    	if( word != "Info:" ){
+        	errorLog << "loadPipelineFromFile(string filename) - Failed to read Info header" << endl;
+        	file.close();
+        	return false;
+    	}
+    	info = "";
+    	//Read the info text
+    	file >> word;
+    	while( word != "PreProcessingModuleDatatypes:" ){
+        	info += word;
+		file >> word;
+    	}
     
 	//Resize the modules
 	if( numPreprocessingModules > 0 ) preProcessingModules.resize(numPreprocessingModules,NULL);
