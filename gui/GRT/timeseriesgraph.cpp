@@ -4,6 +4,7 @@
 double TimeseriesGraph::maximumGraphRefreshFramerate = 0.2;
 bool TimeseriesGraph::setMaximumGraphRefreshRate(const double framerate){
     maximumGraphRefreshFramerate = framerate;
+    return true;
 }
 
 TimeseriesGraph::TimeseriesGraph(QWidget *parent) :
