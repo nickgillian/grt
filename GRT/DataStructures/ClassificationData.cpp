@@ -288,21 +288,21 @@ bool ClassificationData::relabelAllSamplesWithClassLabel(const UINT oldClassLabe
     //Relabel the old class labels
     for(UINT i=0; i<totalNumSamples; i++){
         if( data[i].getClassLabel() == oldClassLabel ){
-            data[i].set(newClassLabel, data[i].getSample());
+            data[i].setClassLabel(newClassLabel);
         }
     }
 
-    //Update the class label counters
+    //Update the class tracler
     if( newClassLabelAllReadyExists ){
         //Add the old sample count to the new sample count
         classTracker[ indexOfNewClassLabel ].counter += classTracker[ indexOfOldClassLabel ].counter;
-
-        //Erase the old class tracker
-        classTracker.erase( classTracker.begin() + indexOfOldClassLabel );
     }else{
         //Create a new class tracker
         classTracker.push_back( ClassTracker(newClassLabel,classTracker[ indexOfOldClassLabel ].counter,classTracker[ indexOfOldClassLabel ].className) );
     }
+
+    //Erase the old class tracker
+    classTracker.erase( classTracker.begin() + indexOfOldClassLabel );
 
     //Sort the class labels
     sortClassLabels();

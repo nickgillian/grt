@@ -54,23 +54,23 @@ public:
 		return sample[n];
 	}
 
-    inline const double& operator[] (const UINT &n) const{
-        return sample[n];
-    }
+    	inline const double& operator[] (const UINT &n) const{
+        	return sample[n];
+    	}
 
 	bool clear();
 
-    //Getters
-    UINT getNumDimensions() const{ return numDimensions; }
-    UINT getClassLabel() const{ return classLabel; }
-    VectorDouble getSample() const{ return sample; }
+    	//Getters
+    	UINT getNumDimensions() const{ return numDimensions; }
+    	UINT getClassLabel() const{ return classLabel; }
+    	VectorDouble getSample() const{ return sample; }
     
-    //Setters
+    	//Setters
 	bool set(UINT classLabel,const VectorDouble &sample);
-    bool setClassLabel(const UINT classLabel);
-    bool setSample(const VectorDouble &sample);
+    	bool setClassLabel(const UINT classLabel);
+    	bool setSample(const VectorDouble &sample);
 
-private:
+protected:
 	UINT numDimensions;
 	UINT classLabel;
 	VectorDouble sample;
