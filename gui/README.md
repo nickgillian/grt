@@ -16,11 +16,11 @@
     python build-release_OSNAME.py
 	
 	
-####Building on Windows
+####Building on Windows (Visual Studio 2012 Express)
 
-1. Download and install QTCreator: http://qt-project.org/ (ensure you include the MinGW compiler)
+1. Download and install Qt 5.4.0 for Windows 32-bit (VS 2012, OpenGL, 643 MB) : http://www.qt.io/download-open-source/ 
 2. Open Qt and try and build and run one of the examples to ensure it is installed correctly)
-3. Download boost 1_54_0 (newer versions of boost are much harder to compile on Windows): http://www.boost.org/users/history/
+3. Download boost 1_57_0 (msvc-11_32 for Visual Studio 2012, msvc-12 for Visual Studio 2013): http://sourceforge.net/projects/boost/files/boost-binaries/1.57.0/
 4. Install boost (see notes below)
 5. Copy the main GRT project folder to: C:\grt
 6. Open the main GRT qt file (GRT.pro) using QtCreator (Qt: File -> Open File or Project)
@@ -29,9 +29,9 @@
 8. Build the project
 9. If the build is successful, press Run to launch the GUI
 
-Note, so far this has only been tested on Windows 7 with Qt Creator 5.3 and boost 1_54_0.
+Note, so far this has only been tested on Windows 7 with Qt 5.4.0 for Windows 32-bit (VS 2012, OpenGL) and boost 1_57_0 and Visual Studio 2012 Express.
 
-####Building Boost on Windows
+#### [OPTIONAL] Building Boost on Windows
 Building boost on Windows can be a major pain, this is the best options I've found so far:
 
 1. Download boost 1_54_0 (the steps below do not work on newer versions of boost): http://www.boost.org/users/history/
