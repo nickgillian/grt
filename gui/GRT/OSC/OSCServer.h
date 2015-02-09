@@ -8,7 +8,11 @@
 
 #include <boost/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include "OSC/OSCMessage.h"
+#if _MSC_VER >= 1600
+    #include "OSCMessage.h"
+#else
+    #include "OSC/OSCMessage.h"
+#endif
 #include <queue>
 
 #define STRING_TO_QSTRING(x) QString(x)
