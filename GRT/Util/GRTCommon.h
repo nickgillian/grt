@@ -70,4 +70,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "FileParser.h"
 #include "ObserverManager.h"
 
+#if _MSC_VER >= 1600
+    inline double round( double d ) {
+        return floor( d + 0.5 );
+    }
+#endif
+
 #endif //GRT_COMMON_HEADER

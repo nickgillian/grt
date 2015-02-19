@@ -2813,7 +2813,7 @@ void MainWindow::updateClassifierView(const int viewIndex){
             randomForests.enableNullRejection( ui->pipelineTool_enableNullRejection->isChecked() );
             randomForests.setNullRejectionCoeff( ui->pipelineTool_nullRejectionCoeff->value() );
             randomForests.setForestSize( ui->pipelineTool_randomForests_numTrees->value() );
-            randomForests.setNumRandomSpilts( ui->pipelineTool_randomForests_numSpiltingSteps->value() );
+            randomForests.setNumRandomSplits( ui->pipelineTool_randomForests_numSpiltingSteps->value() );
             randomForests.setMaxDepth( ui->pipelineTool_randomForests_maxDepth->value() );
             randomForests.setMinNumSamplesPerNode( ui->pipelineTool_randomForests_minSamplesPerNode->value() );
             core.setClassifier( randomForests );

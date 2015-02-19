@@ -91,8 +91,8 @@ unix:!macx{
 win32{
  #Add the custom GRT and boost paths
  INCLUDEPATH += C:\grt
- INCLUDEPATH += C:\boost\boost_1_54_0
- LIBS += -LC:\boost\boost_1_54_0\stage\lib
+ INCLUDEPATH += C:\boost_1_57_0
+ LIBS += -Lc:\boost_1_57_0\lib32-msvc-11.0\
 
  #Add the base oscpack directory
  INCLUDEPATH += OSC/oscpack/include
@@ -105,10 +105,10 @@ win32{
  LIBS += -lwinmm
 
  #Include the boost libraries (if you are using a different version of boost, then you will need to edit these)
- LIBS += -lboost_thread-mgw48-mt-1_54
- LIBS += -lboost_date_time-mgw48-mt-1_54
- LIBS += -lboost_system-mgw48-mt-1_54
- LIBS += -lboost_chrono-mgw48-mt-1_54
+ LIBS += -lboost_thread-vc110-mt-1_57
+ LIBS += -lboost_date_time-vc110-mt-1_57
+ LIBS += -lboost_system-vc110-mt-1_57
+ LIBS += -lboost_chrono-vc110-mt-1_57
 }
 
 #If USE_GRT_LIB is defined, then we add the prebuilt GRT lib
