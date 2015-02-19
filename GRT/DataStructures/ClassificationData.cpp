@@ -29,7 +29,7 @@ ClassificationData::ClassificationData(const UINT numDimensions,const string dat
     totalNumSamples = 0;
     crossValidationSetup = false;
     useExternalRanges = false;
-    allowNullGestureClass = false;
+    allowNullGestureClass = true;
     if( numDimensions > 0 ) setNumDimensions( numDimensions );
     debugLog.setProceedingText("[DEBUG LCD]");
     errorLog.setProceedingText("[ERROR LCD]");

@@ -71,7 +71,7 @@ TimeSeriesClassificationDataStream& TimeSeriesClassificationDataStream::operator
 
 void TimeSeriesClassificationDataStream::clear(){
 	totalNumSamples = 0;
-    playbackIndex = 0;
+	playbackIndex = 0;
 	trackingClass = false;
 	data.clear();
 	classTracker.clear();

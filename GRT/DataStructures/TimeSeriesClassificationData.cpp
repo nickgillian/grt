@@ -33,7 +33,7 @@ TimeSeriesClassificationData::TimeSeriesClassificationData(UINT numDimensions,st
     totalNumSamples = 0;
     crossValidationSetup = false;
     useExternalRanges = false;
-    allowNullGestureClass = false;
+    allowNullGestureClass = true;
     if( numDimensions > 0 ){
         setNumDimensions(numDimensions);
     }
