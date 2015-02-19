@@ -2,6 +2,9 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 19th February 2015
+- **merged cyberluke pull request**. This improves building the GRT on Windows, using MSVC compiler instead of mingw.
+
 ## 4th January 2015
 - **add new Continuous HMM algorithm**. The HMM algorithm has been improved to support both Discrete and Continuous HMMs.  The toolkit used to only support Discrete HMMs (the input to the HMM had to be quantized to a discrete integer value using a quantization algorithm), but this update enables the user to now use a Continuous HMM (the input to the HMM can now consist of an N-dimensional vector like all the other GRT classifiers).  See the new HMM Discrete and HMM Continuous examples for more information on each algorithm.
 
