@@ -61,6 +61,7 @@
 #include "Util/ClassificationResult.h"
 #include "Util/PeakDetection.h"
 #include "Util/ThresholdCrossingDetector.h"
+#include "Util/CommandLineParser.h"
 
 //Include the data structures
 #include "DataStructures/ClassificationData.h"
