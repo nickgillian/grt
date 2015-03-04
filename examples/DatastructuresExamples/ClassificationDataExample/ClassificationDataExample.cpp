@@ -55,7 +55,7 @@ int main (int argc, const char * argv[])
     if( !trainingData.save( "TrainingData.grt" ) ){
 		cout << "ERROR: Failed to save dataset to file!\n";
 		return EXIT_FAILURE;
-	}
+    }
     
     //This can then be loaded later
     if( !trainingData.load( "TrainingData.grt" ) ){

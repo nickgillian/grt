@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "ClassificationData.h"
 
-namespace GRT{
+using namespace GRT;
 
 ClassificationData::ClassificationData(const UINT numDimensions,const string datasetName,const string infoText){
     this->datasetName = datasetName;
@@ -31,9 +31,10 @@ ClassificationData::ClassificationData(const UINT numDimensions,const string dat
     useExternalRanges = false;
     allowNullGestureClass = true;
     if( numDimensions > 0 ) setNumDimensions( numDimensions );
-    debugLog.setProceedingText("[DEBUG LCD]");
-    errorLog.setProceedingText("[ERROR LCD]");
-    warningLog.setProceedingText("[WARNING LCD]");
+    infoLog.setProceedingText("[ClassificationData]");
+    debugLog.setProceedingText("[DEBUG ClassificationData]");
+    errorLog.setProceedingText("[ERROR ClassificationData]");
+    warningLog.setProceedingText("[WARNING ClassificationData]");
 }
 
 ClassificationData::ClassificationData(const ClassificationData &rhs){
@@ -57,6 +58,7 @@ ClassificationData& ClassificationData::operator=(const ClassificationData &rhs)
         this->classTracker = rhs.classTracker;
         this->data = rhs.data;
         this->crossValidationIndexs = rhs.crossValidationIndexs;
+        this->infoLog = rhs.infoLog;
         this->debugLog = rhs.debugLog;
         this->errorLog = rhs.errorLog;
         this->warningLog = rhs.warningLog;
@@ -1422,4 +1424,41 @@ MatrixDouble ClassificationData::getDataAsMatrixDouble() const{
     return d;
 }
 
-}; //End of namespace GRT
+bool ClassificationData::generateGaussDataset( const std::string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions, const double range, const double sigma ){
+    
+    Random random;
+    
+    //Generate a simple model that will be used to generate the main dataset
+    MatrixDouble model(numClasses,numDimensions);
+    for(UINT k=0; k<numClasses; k++){
+        for(UINT j=0; j<numDimensions; j++){
+            model[k][j] = random.getRandomNumberUniform(-range,range);
+        }
+    }
+    
+    //Use the model above to generate the main dataset
+    ClassificationData data;
+    data.setNumDimensions( numDimensions );
+    
+    for(UINT i=0; i<numSamples; i++){
+        
+        //Randomly select which class this sample belongs to
+        UINT k = random.getRandomNumberInt( 0, numClasses );
+        
+        //Generate a sample using the model (+ some Gaussian noise)
+        vector< double > sample( numDimensions );
+        for(UINT j=0; j<numDimensions; j++){
+            sample[j] = model[k][j] + random.getRandomNumberGauss(0,sigma);
+        }
+        
+        //By default in the GRT, the class label should not be 0, so add 1
+        UINT classLabel = k + 1;
+        
+        //Add the labeled sample to the dataset
+        data.addSample( classLabel, sample );
+    }
+    
+    //Save the dataset to a CSV file
+    return data.save( filename );
+}
+

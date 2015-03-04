@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "Util.h"
 
-namespace GRT{
+using namespace GRT;
     
 bool Util::sleep(const unsigned int &numMilliseconds){
     
@@ -378,5 +378,3 @@ void Util::polarToCart(const double r,const double theta,double &x, double &y){
     x = r * cos(theta);
     y = r * sin(theta);
 }
-    
-}; //End of namespace GRT
