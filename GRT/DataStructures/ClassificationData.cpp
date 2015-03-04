@@ -171,35 +171,50 @@ bool ClassificationData::addSample(const UINT classLabel,const VectorDouble &sam
 
 	return true;
 }
+    
+bool ClassificationData::removeSample( const UINT index ){
+    
+    if( totalNumSamples == 0 ){
+        warningLog << "removeSample( const UINT index ) - Failed to remove sample, the training dataset is empty!" << endl;
+        return false;
+    }
+    
+    if( index >= totalNumSamples ){
+        warningLog << "removeSample( const UINT index ) - Failed to remove sample, the index is out of bounds! Number of training samples: " << totalNumSamples << " index: " << index << endl;
+        return false;
+    }
+    
+    //The dataset has changed so flag that any previous cross validation setup will now not work
+    crossValidationSetup = false;
+    crossValidationIndexs.clear();
+    
+    //Find the corresponding class ID for the last training example
+    UINT classLabel = data[ index ].getClassLabel();
+    
+    //Remove the training example from the buffer
+    data.erase( data.begin()+index );
+    
+    totalNumSamples = (UINT)data.size();
+    
+    //Remove the value from the counter
+    for(size_t i=0; i<classTracker.size(); i++){
+        if( classTracker[i].classLabel == classLabel ){
+            classTracker[i].counter--;
+            break;
+        }
+    }
+    
+    return true;
+}
 
 bool ClassificationData::removeLastSample(){
+    
+    if( totalNumSamples == 0 ){
+        warningLog << "removeLastSample() - Failed to remove sample, the training dataset is empty!" << endl;
+        return false;
+    }
 
-    if( totalNumSamples > 0 ){
-
-        //The dataset has changed so flag that any previous cross validation setup will now not work
-        crossValidationSetup = false;
-        crossValidationIndexs.clear();
-
-        //Find the corresponding class ID for the last training example
-        UINT classLabel = data[ totalNumSamples-1 ].getClassLabel();
-
-        //Remove the training example from the buffer
-        data.erase(data.end()-1);
-
-        totalNumSamples = (UINT)data.size();
-
-        //Remove the value from the counter
-        for(UINT i=0; i<classTracker.size(); i++){
-            if( classTracker[i].classLabel == classLabel ){
-                classTracker[i].counter--;
-                break;
-            }
-        }
-
-        return true;
-
-    }else return false;
-
+    return removeSample( totalNumSamples-1 );
 }
 
 bool ClassificationData::reserve(const UINT N){
@@ -212,43 +227,15 @@ bool ClassificationData::reserve(const UINT N){
 }
     
 UINT ClassificationData::eraseAllSamplesWithClassLabel(const UINT classLabel){
-	UINT numExamplesRemoved = 0;
-	UINT numExamplesToRemove = 0;
-
-    //The dataset has changed so flag that any previous cross validation setup will now not work
-    crossValidationSetup = false;
-    crossValidationIndexs.clear();
-
-	//Find out how many training examples we need to remove
-	for(UINT i=0; i<classTracker.size(); i++){
-		if( classTracker[i].classLabel == classLabel ){
-			numExamplesToRemove = classTracker[i].counter;
-			classTracker.erase(classTracker.begin()+i);
-			break;
-		}
-	}
-
-	//Remove the samples with the matching class ID
-	if( numExamplesToRemove > 0 ){
-		UINT i=0;
-		while( numExamplesRemoved < numExamplesToRemove ){
-			if( data[i].getClassLabel() == classLabel ){
-				data.erase(data.begin()+i);
-				numExamplesRemoved++;
-			}else if( ++i == data.size() ) break;
-		}
-	}
-
-	totalNumSamples = (UINT)data.size();
-
-	return numExamplesRemoved;
+    return removeClass( classLabel );
 }
     
 bool ClassificationData::addClass(const UINT classLabel,const std::string className){
     
     //Check to make sure the class label does not exist
-    for(UINT i=0; i<classTracker.size(); i++){
+    for(size_t i=0; i<classTracker.size(); i++){
         if( classTracker[i].classLabel == classLabel ){
+            warningLog << "addClass(const UINT classLabel,const std::string className) - Failed to add class, it already exists! Class label: " << classLabel << endl;
             return false;
         }
     }
@@ -260,6 +247,40 @@ bool ClassificationData::addClass(const UINT classLabel,const std::string classN
     sortClassLabels();
     
     return true;
+}
+    
+UINT ClassificationData::removeClass(const UINT classLabel){
+    
+    UINT numExamplesRemoved = 0;
+    UINT numExamplesToRemove = 0;
+    
+    //The dataset has changed so flag that any previous cross validation setup will now not work
+    crossValidationSetup = false;
+    crossValidationIndexs.clear();
+    
+    //Find out how many training examples we need to remove
+    for(UINT i=0; i<classTracker.size(); i++){
+        if( classTracker[i].classLabel == classLabel ){
+            numExamplesToRemove = classTracker[i].counter;
+            classTracker.erase(classTracker.begin()+i);
+            break;
+        }
+    }
+    
+    //Remove the samples with the matching class ID
+    if( numExamplesToRemove > 0 ){
+        UINT i=0;
+        while( numExamplesRemoved < numExamplesToRemove ){
+            if( data[i].getClassLabel() == classLabel ){
+                data.erase(data.begin()+i);
+                numExamplesRemoved++;
+            }else if( ++i == data.size() ) break;
+        }
+    }
+    
+    totalNumSamples = (UINT)data.size();
+    
+    return numExamplesRemoved;
 }
 
 bool ClassificationData::relabelAllSamplesWithClassLabel(const UINT oldClassLabel,const UINT newClassLabel){

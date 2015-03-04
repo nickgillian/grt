@@ -160,6 +160,13 @@ public:
 	bool addSample(UINT classLabel,const VectorDouble &sample);
     
     /**
+     Removes the training sample at the specific index from the dataset.
+     
+     @return true if the index is valid and the sample was removed, false otherwise
+     */
+    bool removeSample( const UINT index );
+    
+    /**
      Removes the last training sample added to the dataset.
      
      @return true if the last sample was removed, false otherwise
@@ -175,14 +182,6 @@ public:
 	 @return true if the memory was reserved successfully, false otherwise
      */
     bool reserve(const UINT N);
-	
-	/**
-     Deletes from the dataset all the samples with a specific class label.
-
-     @param const UINT classLabel: the class label of the samples you wish to delete from the dataset
-     @return the number of samples deleted from the dataset
-    */
-	UINT eraseAllSamplesWithClassLabel(const UINT classLabel);
     
     /**
      This function adds the class with the classLabel to the class tracker.
@@ -193,6 +192,25 @@ public:
      @return returns true if the classLabel was added, false otherwise
      */
     bool addClass(const UINT classLabel,const std::string className = "NOT_SET");
+    
+    /**
+     Deletes from the dataset all the samples with a specific class label.
+     
+     @param const UINT classLabel: the class label of the samples you wish to delete from the dataset
+     @return the number of samples deleted from the dataset
+     */
+    UINT removeClass(const UINT classLabel);
+
+    /**
+     @deprecated
+     This function is now depreciated! You should use removeClass(const UINT classLabel) instead.
+     
+     Deletes from the dataset all the samples with a specific class label.
+     
+     @param const UINT classLabel: the class label of the samples you wish to delete from the dataset
+     @return the number of samples deleted from the dataset
+     */
+    UINT eraseAllSamplesWithClassLabel(const UINT classLabel);
     
     /**
      Relabels all the samples with the class label A with the new class label B.
