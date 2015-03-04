@@ -51,25 +51,22 @@ You can find this source code and a large number of other examples and tutorials
 
 ```C++
 //Include the main GRT header
-#include "GRT.h"
+#include <GRT/GRT.h>
 using namespace GRT;
-
-//A helper function to generate a dummy dataset
-bool generateDataset( const string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions  );
 
 int main (int argc, const char * argv[])
 {
+    //Generate a basic dummy dataset with 1000 samples, 5 classes, and 3 dimensions
+    cout << "Generating dataset..." << endl;
+    ClassificationData::generateGaussDataset( "data.csv", 1000, 5, 3 );
+	
     //Load some training data from a file
     ClassificationData trainingData;
 
-    //Generate a basic dataset with 1000 samples, 5 classes, and 3 dimensions
-    cout << "Generating dataset..." << endl;
-    generateDataset( "data.csv", 1000, 5, 3 );
-
     cout << "Loading dataset..." << endl;
     if( !trainingData.load( "data.csv" ) ){
-            cout << "ERROR: Failed to load training data from file\n";
-            return EXIT_FAILURE;
+		cout << "ERROR: Failed to load training data from file\n";
+		return EXIT_FAILURE;
     }
 
     cout << "Data Loaded" << endl;
@@ -142,45 +139,6 @@ int main (int argc, const char * argv[])
     }
 
     return EXIT_SUCCESS;
-}
-
-//This function generates a dummy dataset and saves it to a CSV file
-bool generateDataset( const string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions ){
-
-    Random random;
-
-    //Generate a simple model that will be used to generate the main dataset
-    MatrixDouble model(numClasses,numDimensions);
-    for(UINT k=0; k<numClasses; k++){
-        for(UINT j=0; j<numDimensions; j++){
-            model[k][j] = random.getRandomNumberUniform(-10,10);
-        }
-    }
-
-    //Use the model above to generate the main dataset
-    ClassificationData data;
-    data.setNumDimensions( numDimensions );
-
-    for(UINT i=0; i<numSamples; i++){
-    
-        //Randomly select which class this sample belongs to
-        UINT k = random.getRandomNumberInt( 0, numClasses );
-    
-        //Generate a sample using the model (+ some Gaussian noise)
-        vector< double > sample( numDimensions );
-        for(UINT j=0; j<numDimensions; j++){
-            sample[j] = model[k][j] + random.getRandomNumberGauss(0,1);
-        }
-    
-        //By default in the GRT, the class label should not be 0, so add 1
-        UINT classLabel = k + 1;
-    
-         //Add the labeled sample to the dataset
-         data.addSample( classLabel, sample );
-    }
-
-    //Save the dataset to a CSV file
-    return data.save( filename );
 }
 ```
 ##Tutorials and Examples
