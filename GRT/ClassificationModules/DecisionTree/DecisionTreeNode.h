@@ -159,6 +159,8 @@ public:
      */
     bool setClassProbabilities(const VectorDouble &classProbabilities);
     
+    static UINT getClassLabelIndexValue(UINT classLabel,const vector< UINT > &classLabels);
+    
     using Node::predict;
     
 protected:
@@ -254,15 +256,6 @@ protected:
         }
         
         return true;
-    }
-    
-    UINT getClassLabelIndexValue(UINT classLabel,const vector< UINT > &classLabels) const{
-        const UINT N = (UINT)classLabels.size();
-        for(UINT i=0; i<N; i++){
-            if( classLabel == classLabels[i] )
-                return i;
-        }
-        return 0;
     }
     
     UINT nodeSize;

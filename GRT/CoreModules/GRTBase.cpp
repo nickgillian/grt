@@ -20,7 +20,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "GRTBase.h"
 
-namespace GRT{
+using namespace GRT;
+
+//Initalize the static thread limit to the systems suggested thread limit
+std::atomic< UINT > GRTBase::threadLimit( std::thread::hardware_concurrency() );
     
 GRTBase::GRTBase(void):classType(""),debugLog("[DEBUG]"),errorLog("[ERROR]"),trainingLog("[TRAINING]"),testingLog("[TESTING]"),warningLog("[WARNING]"){
 
@@ -72,6 +75,10 @@ string GRTBase::getGRTRevison(){
 string GRTBase::getClassType() const{
     return classType;
 }
+
+UINT GRTBase::getThreadLimit(){
+    return threadLimit;
+}
     
 GRTBase* GRTBase::getGRTBasePointer(){
     return this;
@@ -80,6 +87,10 @@ GRTBase* GRTBase::getGRTBasePointer(){
 const GRTBase* GRTBase::getGRTBasePointer() const{
     return this;
 }
+    
+bool GRTBase::setThreadLimit( const UINT threadLimit_ ){
+    threadLimit = threadLimit_;
+    return true;
+}
 
-} //End of namespace GRT
 

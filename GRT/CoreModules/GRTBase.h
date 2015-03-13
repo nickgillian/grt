@@ -116,6 +116,14 @@ public:
     static string getGRTRevison();
     
     /**
+     This function returns the current thread limit.  This defaults to the number of threads set by std::thread::hardware_concurrency(), but the user
+     can override this value if needed using the setThreadLimit(...) function.
+     
+     @return returns the number of concurrent threads either (i) supported by the implementation, or (ii) set by the user.
+     */
+    static UINT getThreadLimit();
+    
+    /**
 	 This functions returns a pointer to the current instance.
      
      @return returns a GRTBase pointer to the current instance.
@@ -128,6 +136,14 @@ public:
      @return returns a const GRTBase pointer to the current instance.
      */
     const GRTBase* getGRTBasePointer() const;
+    
+    /**
+     This function sets the current thread limit.  This defaults to the number of threads set by std::thread::hardware_concurrency(), but the user
+     can override this value using this function.
+     
+     @return returns ture if the value was updated, false otherwise
+     */
+    static bool setThreadLimit( const UINT threadLimit );
 
 protected:
     inline double SQR(const double &x) const{ return x*x; }
@@ -139,6 +155,8 @@ protected:
     TrainingLog trainingLog;
     TestingLog testingLog;
     WarningLog warningLog;
+    
+    static std::atomic< UINT > threadLimit;
     
 };
 

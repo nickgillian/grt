@@ -2,6 +2,79 @@
 #include "DecisionTreeClusterNode.h"
 
 using namespace GRT;
+
+void do_work(){}
+
+void decision_tree_cluster_node_compute_split_error( const UINT featureIndex,
+                                                     const ClassificationData &trainingData,
+                                                     const vector< UINT > &classLabels,
+                                                     double &threshold,
+                                                     double &error ){
+    
+    threshold = 0;
+    error = numeric_limits<double>::max();
+
+    const UINT M = trainingData.getNumSamples();
+    const UINT K = (UINT)classLabels.size();
+    double giniIndexL = 0;
+    double giniIndexR = 0;
+    double weightL = 0;
+    double weightR = 0;
+    vector< UINT > groupIndex(M);
+    VectorDouble groupCounter(2,0);
+    vector< MinMax > ranges = trainingData.getRanges();
+    MatrixDouble classProbabilities(K,2);
+    MatrixDouble data(M,1); //This will store our temporary data for each dimension
+    
+    //Use the data in this feature dimension to create a sum dataset
+    for(UINT i=0; i<M; i++){
+        data[i][0] = trainingData[i][featureIndex];
+    }
+    
+    //Use this data to train a KMeans cluster with 2 clusters
+    KMeans kmeans;
+    kmeans.setNumClusters( 2 );
+    kmeans.setComputeTheta( true );
+    kmeans.setMinChange( 1.0e-5 );
+    kmeans.setMinNumEpochs( 1 );
+    kmeans.setMaxNumEpochs( 100 );
+    
+    if( !kmeans.train( data ) ){
+        return;
+    }
+    
+    //Set the split threshold as the mid point between the two clusters
+    MatrixDouble clusters = kmeans.getClusters();
+    for(UINT i=0; i<clusters.getNumRows(); i++){
+        threshold += clusters[i][0];
+    }
+    threshold /= clusters.getNumRows();
+    
+    //Iterate over each sample and work out if it should be in the lhs (0) or rhs (1) group based on the current threshold
+    groupCounter[0] = groupCounter[1] = 0;
+    classProbabilities.setAllValues(0);
+    for(UINT i=0; i<M; i++){
+        groupIndex[i] = trainingData[ i ][ featureIndex ] >= threshold ? 1 : 0;
+        groupCounter[ groupIndex[i] ]++;
+        classProbabilities[ DecisionTreeNode::getClassLabelIndexValue(trainingData[i].getClassLabel(),classLabels) ][ groupIndex[i] ]++;
+    }
+    
+    //Compute the class probabilities for the lhs group and rhs group
+    for(UINT k=0; k<K; k++){
+        classProbabilities[k][0] = groupCounter[0]>0 ? classProbabilities[k][0]/groupCounter[0] : 0;
+        classProbabilities[k][1] = groupCounter[1]>0 ? classProbabilities[k][1]/groupCounter[1] : 0;
+    }
+    
+    //Compute the Gini index for the lhs and rhs groups
+    giniIndexL = giniIndexR = 0;
+    for(UINT k=0; k<K; k++){
+        giniIndexL += classProbabilities[k][0] * (1.0-classProbabilities[k][0]);
+        giniIndexR += classProbabilities[k][1] * (1.0-classProbabilities[k][1]);
+    }
+    weightL = groupCounter[0]/M;
+    weightR = groupCounter[1]/M;
+    error = (giniIndexL*weightL) + (giniIndexR*weightR);
+}
     
 //Register the DecisionTreeClusterNode module with the Node base class
 RegisterNode< DecisionTreeClusterNode > DecisionTreeClusterNode::registerModule("DecisionTreeClusterNode");
@@ -145,100 +218,81 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
 
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();
-    const UINT K = (UINT)classLabels.size();
     
     if( N == 0 ) return false;
     
-    minError = numeric_limits<double>::max();
-    Random random;
-    UINT bestFeatureIndex = 0;
-    double bestThreshold = 0;
-    double error = 0;
-    double giniIndexL = 0;
-    double giniIndexR = 0;
-    double weightL = 0;
-    double weightR = 0;
-    vector< UINT > groupIndex(M);
-    VectorDouble groupCounter(2,0);
-    vector< MinMax > ranges = trainingData.getRanges();
-    MatrixDouble classProbabilities(K,2);
-    MatrixDouble data(M,1); //This will store our temporary data for each dimension
+    //Disable training logging as it will be a mess if multiple threads try and print to the screen
+    const bool enableLogging = trainingLog.getLoggingEnabled();
+    TrainingLog::enableLogging(false);
     
     //Randomly select which features we want to use
-    UINT numRandomFeatures = numSplittingSteps > N ? N : numSplittingSteps;
+    Random random;
+    const UINT numRandomFeatures = numSplittingSteps > N ? N : numSplittingSteps;
     vector< UINT > randomFeatures = random.getRandomSubset( 0, N, numRandomFeatures );
+    
+    //Setup the vectors that will store the errors and thresholds for each random feature
+    vector< double > errors( numRandomFeatures, numeric_limits<double>::max() );
+    vector< double > thresholds( numRandomFeatures, 0 );
 
     //Loop over each random feature and try and find the best split point
+    const UINT numThreads = GRTBase::getThreadLimit();
+    UINT n = 0;
+    UINT batchSize = 0;
+    while( n < numRandomFeatures ){
+        
+        //Work out how many threads we should run in this batch
+        batchSize = n + numThreads < numRandomFeatures ? numThreads : numRandomFeatures - n;
+        
+        vector< std::thread > threadBuffer( batchSize );
+        
+        //Launch the threads
+        for(UINT k=0; k<batchSize; k++){
+            
+            //Setup the thread
+            auto t = std::thread( &decision_tree_cluster_node_compute_split_error,
+                                 features[ randomFeatures[n] ],
+                                 std::ref(trainingData),
+                                 std::ref(classLabels),
+                                 std::ref(thresholds[n]),
+                                 std::ref(errors[n]) );
+            
+            //Add it to the buffer
+            threadBuffer[k] = std::move(t);
+            
+            n++;
+        }
+        
+        //Wait for the threads in this batch to finish
+        for(auto &t : threadBuffer ){
+            t.join();
+        }
+    
+    }
+    
+    //Reset the logging
+    TrainingLog::enableLogging( enableLogging );
+    
+    //Loop over the results and find the feature with the minimum error
+    UINT bestFeatureIndex = 0;
+    double bestThreshold = 0;
+    minError = numeric_limits<double>::max();
     for(UINT n=0; n<numRandomFeatures; n++){
         
-        featureIndex = features[ randomFeatures[n] ];
-        
-        //Use the data in this feature dimension to create a sum dataset
-        for(UINT i=0; i<M; i++){
-            data[i][0] = trainingData[i][featureIndex];
-        }
-        
-        //Use this data to train a KMeans cluster with 2 clusters
-        KMeans kmeans;
-        kmeans.setNumClusters( 2 );
-        kmeans.setComputeTheta( true );
-        kmeans.setMinChange( 1.0e-5 );
-        kmeans.setMinNumEpochs( 1 );
-        kmeans.setMaxNumEpochs( 100 );
-        
-        if( !kmeans.train( data ) ){
-            errorLog << "computeBestSpilt() - Failed to train KMeans model for feature: " << featureIndex << endl;
-            return false;
-        }
-        
-        //Set the split threshold as the mid point between the two clusters
-        MatrixDouble clusters = kmeans.getClusters();
-        threshold = 0;
-        for(UINT i=0; i<clusters.getNumRows(); i++){
-            threshold += clusters[i][0];
-        }
-        threshold /= clusters.getNumRows();
-        
-        //Iterate over each sample and work out if it should be in the lhs (0) or rhs (1) group based on the current threshold
-        groupCounter[0] = groupCounter[1] = 0;
-        classProbabilities.setAllValues(0);
-        for(UINT i=0; i<M; i++){
-            groupIndex[i] = trainingData[ i ][ featureIndex ] >= threshold ? 1 : 0;
-            groupCounter[ groupIndex[i] ]++;
-            classProbabilities[ getClassLabelIndexValue(trainingData[i].getClassLabel(),classLabels) ][ groupIndex[i] ]++;
-        }
-     
-        //Compute the class probabilities for the lhs group and rhs group
-        for(UINT k=0; k<K; k++){
-            classProbabilities[k][0] = groupCounter[0]>0 ? classProbabilities[k][0]/groupCounter[0] : 0;
-            classProbabilities[k][1] = groupCounter[1]>0 ? classProbabilities[k][1]/groupCounter[1] : 0;
-        }
-     
-        //Compute the Gini index for the lhs and rhs groups
-        giniIndexL = giniIndexR = 0;
-        for(UINT k=0; k<K; k++){
-            giniIndexL += classProbabilities[k][0] * (1.0-classProbabilities[k][0]);
-            giniIndexR += classProbabilities[k][1] * (1.0-classProbabilities[k][1]);
-        }
-        weightL = groupCounter[0]/M;
-        weightR = groupCounter[1]/M;
-        error = (giniIndexL*weightL) + (giniIndexR*weightR);
-     
         //Store the best threshold and feature index
-        if( error < minError ){
-            minError = error;
-            bestThreshold = threshold;
-            bestFeatureIndex = featureIndex;
+        if( errors[n] < minError ){
+            minError = errors[n];
+            bestThreshold = thresholds[n];
+            bestFeatureIndex = features[ randomFeatures[n] ];
         }
-     }
+    }
      
-     //Set the best feature index that will be returned to the DecisionTree that called this function
-     featureIndex = bestFeatureIndex;
+    //Set the best feature index that will be returned to the DecisionTree that called this function
+    featureIndex = bestFeatureIndex;
      
-     //Store the node size, feature index, best threshold and class probabilities for this node
-     set(M,featureIndex,bestThreshold,trainingData.getClassProbabilities(classLabels));
+    //Store the node size, feature index, best threshold and class probabilities for this node
+    set(M,featureIndex,bestThreshold,trainingData.getClassProbabilities(classLabels));
 
-     return true;
+    return true;
 }
 
 bool DecisionTreeClusterNode::saveParametersToFile(fstream &file) const{

@@ -1,7 +1,7 @@
 
 #include "DecisionTreeNode.h"
 
-namespace GRT {
+using namespace GRT;
     
 //Register the DecisionTreeNode with the Node base class
 RegisterNode< DecisionTreeNode > DecisionTreeNode::registerModule("DecisionTreeNode");
@@ -172,4 +172,11 @@ bool DecisionTreeNode::setClassProbabilities(const VectorDouble &classProbabilit
     return true;
 }
     
+UINT DecisionTreeNode::getClassLabelIndexValue(UINT classLabel,const vector< UINT > &classLabels){
+    const UINT N = (UINT)classLabels.size();
+    for(UINT i=0; i<N; i++){
+        if( classLabel == classLabels[i] )
+            return i;
+    }
+    return 0;
 }
