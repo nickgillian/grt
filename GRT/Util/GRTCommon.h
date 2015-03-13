@@ -38,6 +38,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <stddef.h>
 #include <cstddef>
+#include <thread>
 
 //Include the main GRT version and typedef headers
 #include "GRTVersionInfo.h"
