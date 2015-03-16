@@ -605,11 +605,16 @@ bool ClassificationData::loadDatasetFromCSVFile(const string &filename,const UIN
 
     //Parse the CSV file
     FileParser parser;
+
+    Timer timer;
+    timer.start();
     
     if( !parser.parseCSVFile(filename,true) ){
         errorLog << "loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex) - Failed to parse CSV file!" << endl;
         return false;
     }
+
+    cout << "parser timer: " << timer.getMilliSeconds() << endl;
     
     if( !parser.getConsistentColumnSize() ){
         errorLog << "loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndexe) - The CSV file does not have a consistent number of columns!" << endl;
@@ -623,10 +628,13 @@ bool ClassificationData::loadDatasetFromCSVFile(const string &filename,const UIN
     
     //Set the number of dimensions
     numDimensions = parser.getColumnSize()-1;
-    
+
+    timer.start();    
     //Reserve the memory for the data
     reserve( parser.getRowSize() );
-    
+    cout << "rserve timer: " << timer.getMilliSeconds() << endl;
+   
+    timer.start(); 
     UINT classLabel = 0;
     UINT j = 0;
     UINT n = 0;
@@ -650,6 +658,7 @@ bool ClassificationData::loadDatasetFromCSVFile(const string &filename,const UIN
             warningLog << "loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex) - Could not add sample " << i << " to the dataset!" << endl;
         }
     }
+    cout << "convert timer: " << timer.getMilliSeconds() << endl;
 
     //Sort the class labels
     sortClassLabels();

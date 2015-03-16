@@ -270,15 +270,13 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
 	for(auto &t : threadBuffer ){
             t.join();
             
-	    UINT i = nBuffer[k];
-    	    TrainingLog::enableLogging( enableLogging );
+	    UINT i = nBuffer[k++];
+    	    TrainingLog::enableLogging( true );
 	    trainingLog << "feature: " << i << "/" << numRandomFeatures << " featureIndex: " <<  features[ randomFeatures[i] ] << " threshold: " << thresholds[i] << " error: " << errors[i] << endl;
 	    
-    	    TrainingLog::enableLogging( false );
+    	    TrainingLog::enableLogging( enableLogging );
         }
-
-	infoLog << "n: " << n << " numRandomFeatures: " << numRandomFeatures << endl;
-    
+ 
     }
     
     //Reset the logging
