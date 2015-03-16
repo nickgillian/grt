@@ -244,10 +244,12 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
         batchSize = n + numThreads < numRandomFeatures ? numThreads : numRandomFeatures - n;
         
         vector< std::thread > threadBuffer( batchSize );
+	vector< UINT > nBuffer( batchSize );
         
         //Launch the threads
-        for(UINT k=0; k<batchSize; k++){
-            
+	UINT k = 0;
+        for(k=0; k<batchSize; k++){
+
             //Setup the thread
             auto t = std::thread( &decision_tree_cluster_node_compute_split_error,
                                  features[ randomFeatures[n] ],
@@ -258,14 +260,24 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
             
             //Add it to the buffer
             threadBuffer[k] = std::move(t);
-            
-            n++;
+           
+	    //Store n so we can access it below and also update it for the next batch 
+	    nBuffer[k] = n++;
         }
         
         //Wait for the threads in this batch to finish
-        for(auto &t : threadBuffer ){
+        k = 0;
+	for(auto &t : threadBuffer ){
             t.join();
+            
+	    UINT i = nBuffer[k];
+    	    TrainingLog::enableLogging( enableLogging );
+	    trainingLog << "feature: " << i << "/" << numRandomFeatures << " featureIndex: " <<  features[ randomFeatures[i] ] << " threshold: " << thresholds[i] << " error: " << errors[i] << endl;
+	    
+    	    TrainingLog::enableLogging( false );
         }
+
+	infoLog << "n: " << n << " numRandomFeatures: " << numRandomFeatures << endl;
     
     }
     
