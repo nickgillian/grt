@@ -71,6 +71,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "SVD.h"
 #include "FileParser.h"
 #include "ObserverManager.h"
+#include "ThreadPool.h"
 
 #if _MSC_VER >= 1600
     inline double round( double d ) {

@@ -573,6 +573,14 @@ public:
     bool setRandomiseTrainingOrder(const bool randomiseTrainingOrder);
     
     /**
+     Sets if training logging is enabled/disabled for this specific ML instance.
+     If you want to enable/disable training logging globally, then you should use the TrainingLog::enableLogging( bool ) function.
+     
+     @return returns true if the parameter was updated, false otherwise
+     */
+    bool setTrainingLoggingEnabled(const bool loggingEnabled);
+    
+    /**
      Registers the observer with the training result observer manager. The observer will then be notified when any new training result is computed.
      
      @return returns true the observer was added, false otherwise
