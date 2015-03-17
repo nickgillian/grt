@@ -1,3 +1,13 @@
+/**
+ @file
+ @author  Nicholas Gillian <ngillian@media.mit.edu>
+ @version 1.0
+ 
+ @brief The ThreadPool class implements a flexible inteface for performing a large number of batch tasks.
+ 
+ @note This class is mainly based on the following thread pool example: https://github.com/progschj/ThreadPool/
+ */
+
 /*
 GRT MIT License
 Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
@@ -16,8 +26,6 @@ LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE A
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
- This class is mainly based on the following thread pool example: https://github.com/progschj/ThreadPool/
 */
 
 #ifndef GRT_THREAD_POOL_HEADER
@@ -39,14 +47,33 @@ namespace GRT{
 class ThreadPool {
 public:
     
+    /**
+     Default Constructor. If this constructor is used, the number of threads will automatically be set to the current thread pool size.
+     */
     ThreadPool();
     
+    /**
+     If this constructor is used, the number of threads will be set to the numThreads value.
+     
+     @param const unsigned int numThreads: sets the number of threads in the thread pool.
+     */
     ThreadPool(const unsigned int numThreads);
     
+    /**
+     Default Destructor. Waits for all threads to finish their current tasks.
+     */
     ~ThreadPool();
     
+    /**
+     This function should be used to add new jobs to the thread pool.  The function enables the user to pass in a reference function (the task) and additional
+     arguments for that function (if needed).  The function will return a future variable with a type specified by the return type of the task function (F).
+     
+     @param F&& f: a reference to the function you want to queue
+     @param Args args: one or more arguments for the function (f)
+     @param future< T >: a future variable that will store the result of the function (f), the type (T) will be specified by the return type of the function (f)
+     */
     template<class F, class... Args>
-    auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
+    auto enqueue(F&& f, Args&&... args) -> std::future< typename std::result_of<F(Args...) >::type>;
     
     /**
      This function returns the current thread limit.  This defaults to the number of threads set by std::thread::hardware_concurrency(), but the user
@@ -78,19 +105,20 @@ protected:
     static std::atomic< unsigned int > threadPoolSize;
 };
     
-// add new work item to the pool
-template<class F, class... Args> auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>
+// This function adds a new work item (func) to the thread pool
+template<class F, class... Args> auto ThreadPool::enqueue(F&& func, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>
 {
-    using return_type = typename std::result_of<F(Args...)>::type;
+    //Get a shortcut to the return type of the input function
+    using return_type = typename std::result_of< F(Args...) >::type;
     
-    auto task = std::make_shared< std::packaged_task<return_type()> >( std::bind(std::forward<F>(f), std::forward<Args>(args)...) );
+    auto task = std::make_shared< std::packaged_task< return_type() > >( std::bind(std::forward<F>( func ), std::forward<Args>(args)...) );
     
     std::future<return_type> res = task->get_future();
     {
         std::unique_lock<std::mutex> lock(queue_mutex);
         
         // don't allow enqueueing after stopping the pool
-        if(stop)
+        if( stop )
             throw std::runtime_error("enqueue on stopped ThreadPool");
         
         tasks.emplace([task](){ (*task)(); });

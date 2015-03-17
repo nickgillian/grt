@@ -2,7 +2,7 @@
 
 using namespace GRT;
 
-//Initalize the static thread limit to the systems suggested thread limit
+//Initalize the static thread pool size to the systems suggested thread limit
 std::atomic< unsigned int > ThreadPool::threadPoolSize( std::thread::hardware_concurrency() );
 
 ThreadPool::ThreadPool() : stop(false)
