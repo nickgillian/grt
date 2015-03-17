@@ -625,7 +625,7 @@ bool ClassificationData::loadDatasetFromCSVFile(const string &filename,const UIN
     numDimensions = parser.getColumnSize()-1;
 
     //Reserve the memory for the data
-    data.resize( parser.getRowSize() );
+    data.resize( parser.getRowSize(), ClassificationSample(numDimensions) );
    
     //Loop over the samples and add them to the data set
     UINT classLabel = 0;
