@@ -5,7 +5,7 @@ using namespace GRT;
 
 void do_work(){}
 
-void decision_tree_cluster_node_compute_split_error( const UINT featureIndex,
+bool decision_tree_cluster_node_compute_split_error( const UINT featureIndex,
                                                      const ClassificationData &trainingData,
                                                      const vector< UINT > &classLabels,
                                                      double &threshold,
@@ -39,8 +39,11 @@ void decision_tree_cluster_node_compute_split_error( const UINT featureIndex,
     kmeans.setMinNumEpochs( 1 );
     kmeans.setMaxNumEpochs( 100 );
     
+    //Disable the logging as this will be a mess with multiple threads
+    kmeans.setTrainingLoggingEnabled( false );
+    
     if( !kmeans.train( data ) ){
-        return;
+        return false;
     }
     
     //Set the split threshold as the mid point between the two clusters
@@ -74,6 +77,8 @@ void decision_tree_cluster_node_compute_split_error( const UINT featureIndex,
     weightL = groupCounter[0]/M;
     weightR = groupCounter[1]/M;
     error = (giniIndexL*weightL) + (giniIndexR*weightR);
+    
+    return true;
 }
     
 //Register the DecisionTreeClusterNode module with the Node base class
@@ -84,6 +89,10 @@ DecisionTreeClusterNode::DecisionTreeClusterNode(){
     parent = NULL;
     leftChild = NULL;
     rightChild = NULL;
+    infoLog.setProceedingText("[DecisionTreeClusterNode]");
+    warningLog.setProceedingText("[WARNING DecisionTreeClusterNode]");
+    errorLog.setProceedingText("[ERROR DecisionTreeClusterNode]");
+    trainingLog.setProceedingText("[TRAINING DecisionTreeClusterNode]");
     clear();
 }
 
@@ -221,10 +230,6 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
     
     if( N == 0 ) return false;
     
-    //Disable training logging as it will be a mess if multiple threads try and print to the screen
-    const bool enableLogging = trainingLog.getLoggingEnabled();
-    TrainingLog::enableLogging(false);
-    
     //Randomly select which features we want to use
     Random random;
     const UINT numRandomFeatures = numSplittingSteps > N ? N : numSplittingSteps;
@@ -235,42 +240,35 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
     vector< double > thresholds( numRandomFeatures, 0 );
 
     //Loop over each random feature and try and find the best split point
-    const UINT numThreads = GRTBase::getThreadLimit();
-    UINT n = 0;
-    UINT batchSize = 0;
-    while( n < numRandomFeatures ){
-        
-        //Work out how many threads we should run in this batch
-        batchSize = n + numThreads < numRandomFeatures ? numThreads : numRandomFeatures - n;
-        
-        vector< std::thread > threadBuffer( batchSize );
-        
-        //Launch the threads
-        for(UINT k=0; k<batchSize; k++){
-            
-            //Setup the thread
-            auto t = std::thread( &decision_tree_cluster_node_compute_split_error,
-                                 features[ randomFeatures[n] ],
-                                 std::ref(trainingData),
-                                 std::ref(classLabels),
-                                 std::ref(thresholds[n]),
-                                 std::ref(errors[n]) );
-            
-            //Add it to the buffer
-            threadBuffer[k] = std::move(t);
-            
-            n++;
-        }
-        
-        //Wait for the threads in this batch to finish
-        for(auto &t : threadBuffer ){
-            t.join();
-        }
+    //This is done using a thread pool to speed up the search
     
+    //Setup the thread pool
+    vector< std::future<bool> > results( numRandomFeatures );
+    ThreadPool pool;
+    
+    //Add a new job for each random feature
+    for(UINT n=0; n<numRandomFeatures; n++){
+        results[n] = pool.enqueue( &decision_tree_cluster_node_compute_split_error,
+                     features[ randomFeatures[n] ],
+                     std::ref(trainingData),
+                     std::ref(classLabels),
+                     std::ref(thresholds[n]),
+                     std::ref(errors[n]) );
     }
     
-    //Reset the logging
-    TrainingLog::enableLogging( enableLogging );
+    //Wait for each job to complete
+    for(UINT n=0; n<numRandomFeatures; n++){
+        
+        if( results[n].get() ){
+            trainingLog << "random feature: " << n+1 << "/" << numRandomFeatures;
+            trainingLog << " featureIndex: " <<  features[ randomFeatures[n] ];
+            trainingLog << " threshold: " << thresholds[n];
+            trainingLog << " error: " << errors[n] << endl;
+        }else{
+            warningLog << "Failed to get results for random feature: " << n << endl;
+        }
+
+    }
     
     //Loop over the results and find the feature with the minimum error
     UINT bestFeatureIndex = 0;

@@ -187,6 +187,8 @@ bool RandomForests::train_(ClassificationData &trainingData){
         tree.setMaxDepth( maxDepth );
         tree.enableNullRejection( useNullRejection );
         tree.setRemoveFeaturesAtEachSpilt( removeFeaturesAtEachSpilt );
+
+	trainingLog << "Training forest " << i+1 << "/" << forestSize << "..." << endl;
         
         //Train this tree
         if( !tree.train( data ) ){

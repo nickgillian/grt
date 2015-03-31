@@ -287,6 +287,11 @@ bool MLBase::setRandomiseTrainingOrder(const bool randomiseTrainingOrder){
     return true;
 }
     
+bool MLBase::setTrainingLoggingEnabled(const bool loggingEnabled){
+    this->trainingLog.setEnableInstanceLogging( loggingEnabled );
+    return true;
+}
+    
 bool MLBase::registerTrainingResultsObserver( Observer< TrainingResult > &observer ){
     return trainingResultsObserverManager.registerObserver( observer );
 }

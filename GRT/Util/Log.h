@@ -32,6 +32,7 @@ public:
     Log(std::string proceedingText = ""){
         setProceedingText(proceedingText);
         loggingEnabledPtr = NULL;
+        instanceLoggingEnabled = true;
         writeProceedingText = true;
         writeProceedingTextPtr = &writeProceedingText;
         lastMessagePtr = &lastMessage;
@@ -40,7 +41,7 @@ public:
     virtual ~Log(){}
     
     const Log& operator<< (const bool val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -53,7 +54,7 @@ public:
     }
     
     const Log& operator<< (const short val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -66,7 +67,7 @@ public:
     }
 
     const Log& operator<< (const unsigned short val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -79,7 +80,7 @@ public:
     }
 
     const Log& operator<< (const int val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -92,7 +93,7 @@ public:
     }
 
     const Log& operator<< (const unsigned int val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -105,7 +106,7 @@ public:
     }
 
     const Log& operator<< (const long val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -117,7 +118,7 @@ public:
         return *this;    }
 
     const Log& operator<< (const unsigned long val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -130,7 +131,7 @@ public:
     }
 
     const Log& operator<< (const unsigned long long val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -143,7 +144,7 @@ public:
     }
 
     const Log& operator<< (const float val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -155,7 +156,7 @@ public:
         return *this;    }
 
     const Log& operator<< (const double val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -168,7 +169,7 @@ public:
     }
 
     const Log& operator<< (const long double val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -180,7 +181,7 @@ public:
         return *this;    }
 
     const Log& operator<< (const void* val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -192,7 +193,7 @@ public:
     }
     
     const Log& operator<< (const std::string val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 *lastMessagePtr = "";
@@ -205,7 +206,7 @@ public:
     }
     
     const Log& operator<< (const char* val ) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
                 *writeProceedingTextPtr = false;
                 std::cout << proceedingText.c_str();
@@ -225,7 +226,7 @@ public:
     
     // define an operator<< to take in std::endl
     const Log& operator<<(const StandardEndLine manip) const{
-        if( *loggingEnabledPtr ){
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
             // call the function, but we cannot return it's value
             manip(std::cout);
             *writeProceedingTextPtr = true;
@@ -239,6 +240,8 @@ public:
 
     //Getters
     virtual bool getLoggingEnabled() const{ return false; }
+    
+    bool getInstanceLoggingEnabled() const { return instanceLoggingEnabled; };
 
     std::string getProceedingText() const{ return proceedingText; }
 
@@ -249,6 +252,11 @@ public:
         if( proceedingText.length() == 0 ) this->proceedingText = "";
         else this->proceedingText = proceedingText + " ";
     }
+    
+    bool setEnableInstanceLogging(bool loggingEnabled){
+        this->instanceLoggingEnabled = loggingEnabled;
+        return true;
+    }
 
 protected:
     virtual void triggerCallback( const std::string &message ) const{
@@ -257,6 +265,7 @@ protected:
     
     std::string proceedingText;
     std::string lastMessage;
+    bool instanceLoggingEnabled;
     bool *loggingEnabledPtr;
     bool *writeProceedingTextPtr;
     std::string *lastMessagePtr;

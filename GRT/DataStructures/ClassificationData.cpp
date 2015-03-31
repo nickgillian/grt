@@ -623,31 +623,50 @@ bool ClassificationData::loadDatasetFromCSVFile(const string &filename,const UIN
     
     //Set the number of dimensions
     numDimensions = parser.getColumnSize()-1;
-    
+
     //Reserve the memory for the data
-    reserve( parser.getRowSize() );
-    
+    data.resize( parser.getRowSize(), ClassificationSample(numDimensions) );
+   
+    //Loop over the samples and add them to the data set
     UINT classLabel = 0;
     UINT j = 0;
     UINT n = 0;
-    VectorDouble sample(numDimensions);
-    for(UINT i=0; i<parser.getRowSize(); i++){
+    totalNumSamples = parser.getRowSize();
+    for(UINT i=0; i<totalNumSamples; i++){
         //Get the class label
         classLabel = Util::stringToInt( parser[i][classLabelColumnIndex] );
+        
+        //Set the class label
+        data[i].setClassLabel(classLabel);
         
         //Get the sample data
         j=0;
         n=0;
         while( j != numDimensions ){
             if( n != classLabelColumnIndex ){
-                sample[j++] = Util::stringToDouble( parser[i][n] );
+                data[i][j++] = Util::stringToDouble( parser[i][n] );
             }
             n++;
         }
         
-        //Add the labelled sample to the dataset
-        if( !addSample(classLabel, sample) ){
-            warningLog << "loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex) - Could not add sample " << i << " to the dataset!" << endl;
+        //Update the class tracker
+        if( classTracker.size() == 0 ){
+            ClassTracker tracker(classLabel,1);
+            classTracker.push_back(tracker);
+        }else{
+            bool labelFound = false;
+            const size_t numClasses = classTracker.size();
+            for(size_t i=0; i<numClasses; i++){
+                if( classLabel == classTracker[i].classLabel ){
+                    classTracker[i].counter++;
+                    labelFound = true;
+                    break;
+                }
+            }
+            if( !labelFound ){
+                ClassTracker tracker(classLabel,1);
+                classTracker.push_back(tracker);
+            }
         }
     }
 
