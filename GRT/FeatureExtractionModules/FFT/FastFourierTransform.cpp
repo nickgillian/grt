@@ -32,6 +32,7 @@ FastFourierTransform::FastFourierTransform(){
     initialized = false;
     computeMagnitude = true;
     computePhase = true;
+	enableZeroPadding = true;
     windowSize = 0;
     windowFunction = RECTANGULAR_WINDOW;
     averagePower = 0;
@@ -48,6 +49,7 @@ FastFourierTransform::FastFourierTransform(const FastFourierTransform &rhs){
     this->initialized = rhs.initialized;
     this->computeMagnitude = rhs.computeMagnitude;
     this->computePhase = rhs.computePhase;
+	this->enableZeroPadding = rhs.enableZeroPadding;
     this->windowSize = rhs.windowSize;
     this->windowFunction = rhs.windowFunction;
     this->averagePower = 0;
@@ -80,6 +82,7 @@ FastFourierTransform& FastFourierTransform::operator=(const FastFourierTransform
         this->initialized = rhs.initialized;
         this->computeMagnitude = rhs.computeMagnitude;
         this->computePhase = rhs.computePhase;
+		this->enableZeroPadding = rhs.enableZeroPadding;
         this->windowSize = rhs.windowSize;
         this->windowFunction = rhs.windowFunction;
         this->averagePower = 0;
@@ -101,7 +104,7 @@ FastFourierTransform& FastFourierTransform::operator=(const FastFourierTransform
     return *this;
 }
     
-bool FastFourierTransform::init(const unsigned int windowSize,const unsigned int windowFunction,const bool computeMagnitude,const bool computePhase){
+bool FastFourierTransform::init(const unsigned int windowSize,const unsigned int windowFunction,const bool computeMagnitude,const bool computePhase,const bool enableZeroPadding){
     
     initialized = false;
     averagePower = 0;
@@ -122,6 +125,7 @@ bool FastFourierTransform::init(const unsigned int windowSize,const unsigned int
     this->windowFunction = windowFunction;
     this->computeMagnitude = computeMagnitude;
     this->computePhase = computePhase;
+	this->enableZeroPadding = enableZeroPadding;
     
     //Init the memory
     fftReal.resize( windowSize );
@@ -157,12 +161,29 @@ bool FastFourierTransform::computeFFT( VectorDouble &data ){
     if( !initialized ){
         return false;
     }
-    
+
+	//Validate the input vector 
+    if( (unsigned int)data.size() != windowSize && !enableZeroPadding ){
+        errorLog << "The size of the data vector (" << data.size() << ") does not match the windowSize: " << windowSize << endl;
+        return false;
+    }
+
     //Window the input data
     if( !windowData( data ) ){
         return false;
     }
-    
+
+	//Zero padd the data if needed
+	if( enableZeroPadding ){
+		if( ((unsigned int)data.size()) != windowSize ){
+			const unsigned int oldSize = (unsigned int)data.size();
+			data.resize( windowSize );
+			for(unsigned int i=oldSize; i<windowSize; i++){
+				data[i] = 0;
+			}
+		}
+	}
+        
     //Perform the FFT
     realFFT(data, &fftReal[0], &fftImag[0]);
 	
@@ -188,11 +209,6 @@ bool FastFourierTransform::computeFFT( VectorDouble &data ){
 }
     
 bool FastFourierTransform::windowData( VectorDouble &data ){
-    
-    if( data.size() != windowSize ){
-        errorLog << "The size of the data vector (" << data.size() << ") does not match the windowSize: " << windowSize << endl;
-        return false;
-    }
     
     switch( windowFunction ){
         case RECTANGULAR_WINDOW:
@@ -227,9 +243,10 @@ VectorDouble FastFourierTransform::getMagnitudeData(){
     
     if( !initialized ) return VectorDouble();
     
-    VectorDouble magnitudeData(windowSize/2);
+	const unsigned int N = windowSize/2;    
+    VectorDouble magnitudeData(N);
     
-    for(unsigned int i=0; i<windowSize/2; i++){
+    for(unsigned int i=0; i<N; i++){
         magnitudeData[i] = magnitude[i];
     }
     
@@ -238,10 +255,11 @@ VectorDouble FastFourierTransform::getMagnitudeData(){
 
 VectorDouble FastFourierTransform::getPhaseData(){
     if( !initialized ) return VectorDouble();
+
+	const unsigned int N = windowSize/2;    
+    VectorDouble phaseData(N);
     
-    VectorDouble phaseData(windowSize/2);
-    
-    for(unsigned int i=0; i<windowSize/2; i++){
+    for(unsigned int i=0; i<N; i++){
         phaseData[i] = phase[i];
     }
     

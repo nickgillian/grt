@@ -37,25 +37,25 @@ public:
 		
 	FastFourierTransform();
     
-    FastFourierTransform(const FastFourierTransform &rhs);
+	FastFourierTransform(const FastFourierTransform &rhs);
     
-    virtual ~FastFourierTransform();
+	virtual ~FastFourierTransform();
     
-    FastFourierTransform& operator=(const FastFourierTransform &rhs);
+	FastFourierTransform& operator=(const FastFourierTransform &rhs);
     
-    bool init(const unsigned int windowSize,const unsigned int windowFunction = RECTANGULAR_WINDOW,const bool computeMagnitude = true,const bool computePhase = true);
+	bool init(const unsigned int windowSize,const unsigned int windowFunction = RECTANGULAR_WINDOW,const bool computeMagnitude = true,const bool computePhase = true,bool enableZeroPadding = true);
     
     bool computeFFT( VectorDouble &data );
     
-    VectorDouble getMagnitudeData();
-    VectorDouble getPhaseData();
-    VectorDouble getPowerData();
-    double getAveragePower();
-    double *getMagnitudeDataPtr();
-    double *getPhaseDataPtr();
-    double *getPowerDataPtr();
+	VectorDouble getMagnitudeData();
+	VectorDouble getPhaseData();
+	VectorDouble getPowerData();
+	double getAveragePower();
+	double *getMagnitudeDataPtr();
+	double *getPhaseDataPtr();
+	double *getPowerDataPtr();
     
-    UINT getFFTSize(){ return windowSize; }
+	UINT getFFTSize(){ return windowSize; }
     
 protected:
     bool windowData( VectorDouble &data );
@@ -72,6 +72,7 @@ protected:
     bool initialized;
     bool computeMagnitude;
     bool computePhase;
+	bool enableZeroPadding;
     VectorDouble fftReal;
     VectorDouble fftImag;
     VectorDouble tmpReal;
