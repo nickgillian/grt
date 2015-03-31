@@ -29,19 +29,19 @@
 namespace GRT{
 
 FastFourierTransform::FastFourierTransform(){
-    initialized = false;
-    computeMagnitude = true;
-    computePhase = true;
+	initialized = false;
+	computeMagnitude = true;
+	computePhase = true;
 	enableZeroPadding = true;
-    windowSize = 0;
-    windowFunction = RECTANGULAR_WINDOW;
-    averagePower = 0;
+	windowSize = 0;
+	windowFunction = RECTANGULAR_WINDOW;
+	averagePower = 0;
     
-    infoLog.setProceedingText("[FastFourierTransform]");
-    warningLog.setProceedingText("[WARNING FastFourierTransform]");
-    errorLog.setProceedingText("[ERROR FastFourierTransform]");
+	infoLog.setProceedingText("[FastFourierTransform]");
+	warningLog.setProceedingText("[WARNING FastFourierTransform]");
+	errorLog.setProceedingText("[ERROR FastFourierTransform]");
     
-    initFFT();
+	initFFT();
 }
     
 FastFourierTransform::FastFourierTransform(const FastFourierTransform &rhs){
@@ -163,10 +163,17 @@ bool FastFourierTransform::computeFFT( VectorDouble &data ){
     }
 
 	//Validate the input vector 
-    if( (unsigned int)data.size() != windowSize && !enableZeroPadding ){
-        errorLog << "The size of the data vector (" << data.size() << ") does not match the windowSize: " << windowSize << endl;
-        return false;
-    }
+    if( !enableZeroPadding ){
+		if( (unsigned int)data.size() != windowSize ){
+        	errorLog << "The size of the data vector (" << data.size() << ") does not match the windowSize: " << windowSize << endl;
+        	return false;
+    	}
+	}else{
+		if( (unsigned int)data.size() > windowSize ){
+        	errorLog << "The size of the data vector (" << data.size() << ") is greater than the windowSize: " << windowSize << endl;
+        	return false;
+    	}
+	}
 
     //Window the input data
     if( !windowData( data ) ){
@@ -209,26 +216,29 @@ bool FastFourierTransform::computeFFT( VectorDouble &data ){
 }
     
 bool FastFourierTransform::windowData( VectorDouble &data ){
-    
+   
+	const unsigned int N = (unsigned int)data.size();
+ 	const unsigned int K = N/2;
+
     switch( windowFunction ){
         case RECTANGULAR_WINDOW:
             return true;
             break;
         case BARTLETT_WINDOW:
-            for(unsigned int i=0; i<windowSize/2; i++) {
-                data[i] *= (i / (double) (windowSize / 2));
-                data[i + (windowSize/2)] *= (1.0 - (i / (double) (windowSize/2)));
+            for(unsigned int i=0; i<K; i++) {
+                data[i] *= (i / (double) (K));
+                data[i + K] *= (1.0 - (i / (double)K));
             }
             return true;
             break;
         case HAMMING_WINDOW:
-            for(unsigned int i=0; i<windowSize; i++)
-                data[i] *= 0.54 - 0.46 * cos(2 * PI * i / (windowSize - 1));
+            for(unsigned int i=0; i<N; i++)
+                data[i] *= 0.54 - 0.46 * cos(2 * PI * i / (N - 1));
             return true;
             break;
         case HANNING_WINDOW:
-            for(unsigned int i=0; i <windowSize; i++)
-                data[i] *= 0.50 - 0.50 * cos(2 * PI * i / (windowSize - 1));
+            for(unsigned int i=0; i <N; i++)
+                data[i] *= 0.50 - 0.50 * cos(2 * PI * i / (N - 1));
             return true;
             break;
         default:
