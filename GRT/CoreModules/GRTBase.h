@@ -100,7 +100,31 @@ public:
     string getLastInfoMessage() const;
     
     /**
-	 This functions the GRT version number and revision as a string. If you do not want the revision number then set the returnRevision
+     Sets if info logging is enabled/disabled for this specific instance.
+     If you want to enable/disable info logging globally, then you should use the InfoLog::enableLogging( bool ) function.
+     
+     @return returns true if the parameter was updated, false otherwise
+     */
+    bool setInfoLoggingEnabled(const bool loggingEnabled);
+    
+    /**
+     Sets if warning logging is enabled/disabled for this specific instance.
+     If you want to enable/disable warning logging globally, then you should use the WarningLog::enableLogging( bool ) function.
+     
+     @return returns true if the parameter was updated, false otherwise
+     */
+    bool setWarningLoggingEnabled(const bool loggingEnabled);
+    
+    /**
+     Sets if error logging is enabled/disabled for this specific instance.
+     If you want to enable/disable error logging globally, then you should use the ErrorLog::enableLogging( bool ) function.
+     
+     @return returns true if the parameter was updated, false otherwise
+     */
+    bool setErrorLoggingEnabled(const bool loggingEnabled);
+    
+    /**
+     This functions the GRT version number and revision as a string. If you do not want the revision number then set the returnRevision
      parameter to false.
      
      @param bool returnRevision: sets if the revision number should be added to the string that is returned. Default value is true.

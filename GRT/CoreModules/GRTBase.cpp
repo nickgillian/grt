@@ -81,4 +81,18 @@ const GRTBase* GRTBase::getGRTBasePointer() const{
     return this;
 }
 
+bool GRTBase::setInfoLoggingEnabled(const bool loggingEnabled){
+    infoLog.setEnableInstanceLogging( loggingEnabled );
+    return true;
+}
+    
+bool GRTBase::setWarningLoggingEnabled(const bool loggingEnabled){
+    warningLog.setEnableInstanceLogging( loggingEnabled );
+    return true;
+}
+    
+bool GRTBase::setErrorLoggingEnabled(const bool loggingEnabled){
+    errorLog.setEnableInstanceLogging( loggingEnabled );
+    return true;
+}
 
