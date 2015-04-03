@@ -26,8 +26,15 @@ $ cd tmp
 - use cmake to generate the makefile for your machine:
 
 ```
+$ cmake ..
+```
+
+- if you want to define the install prefix:
+
+```
 $ cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
 ```
+
 	
 - if you want to build the library as a static library (instead of shared), add the following option:
 
@@ -47,7 +54,7 @@ $ make -j 2
 $ sudo make install
 ```
 
-- pkgconfig
+- if you want to setup pkgconfig for Linux machines:
 
 ```
 $ pkg-config --cflags --libs grt
@@ -80,8 +87,6 @@ int main (int argc, const char * argv[])
     return EXIT_SUCCESS;
 }
 ```
-
-
 
 ##Contributors
 Thanks to:
