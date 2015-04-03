@@ -2,6 +2,13 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 3rd April 2015
+- **moved to C++11**. The toolkit has now moved to using C++11. This is to take advantage of the numerous updates in C++11, such as threading, smart pointers and lamda functions.
+- **added new ThreadPool class**. The ThreadPool class can be used as a base class for managing the number of threads used by other GRT classes. It also features a useful thread pool option for batch processing large analysis tasks.
+- **added instance enable/disable logging option**.  This lets you disable the logging for a specific GRT class, instead of having to disable the logging across all instances.  For example, to disable training messages for a KMeans instance called kmeans, use: 
+
+    kmeans.setTrainingLoggingEnabled( false );
+
 ## 19th February 2015
 - **merged cyberluke pull request**. This improves building the GRT on Windows, using MSVC compiler instead of mingw.
 - **allowNullGestureClass defaults to true**. The default value for the allowNullGestureClass parameter for all classification data structures has been changed to true. This enables you to use the null class label value of 0 in your datasets if needed.

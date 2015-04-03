@@ -163,5 +163,4 @@ protected:
 
 } //End of namespace GRT
 
-#endif //GRT_DECISION_TREE_DOT_PRODUCT_NODE_HEADER
-
+#endif //GRT_DECISION_TREE_CLUSTER_NODE_HEADER
