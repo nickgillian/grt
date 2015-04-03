@@ -4,8 +4,11 @@ This folder contains a CMakeLists.txt that can be used to generate a makefile fo
 ##Supported Operating Systems
 This CMakeLists file has been tested on Windows, Linux (Ubuntu 14.04), and OSX (10.9).
 
+##C++11
+As of GRT version 1.0 revision 03-04-15, the toolkit now uses C++11. You should therefore ensure you add C++11 support to any project using the GRT.
+
 ##Build Instructions
-Note, you will need to install make (http://www.gnu.org/software/make/) and cmake (http://www.cmake.org/). 
+Note, you will need to install make (http://www.gnu.org/software/make/) and cmake (http://www.cmake.org/) and a compiler that supports C++11 (such as g++ 4.7 and later).
 
 You can build the GRT as a shared library and compile the examples examples by:
 
@@ -67,7 +70,7 @@ After installing the GRT, you can build a new project and link against it by:
 
 ```
 $ g++ -c main.cpp -I/usr/local/include
-$ g++ main.o -o main -I/usr/local/include -L/usr/local/lib -lgrt
+$ g++ -std=c++11 main.o -o main -I/usr/local/include -L/usr/local/lib -lgrt
 	
 //Run the application
 $ ./main
