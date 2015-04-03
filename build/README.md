@@ -69,8 +69,8 @@ $ pkg-config --cflags --libs grt
 After installing the GRT, you can build a new project and link against it by:
 
 ```
-$ g++ -c main.cpp -I/usr/local/include
-$ g++ -std=c++11 main.o -o main -I/usr/local/include -L/usr/local/lib -lgrt
+$ g++ -std=c++11 -c main.cpp -I/usr/local/include
+$ g++ main.o -o main -I/usr/local/include -L/usr/local/lib -lgrt
 	
 //Run the application
 $ ./main
