@@ -975,6 +975,7 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
             errorLog << "test(const ClassificationData &testData) - Failed to update test metrics at test sample index: " << i << endl;
             return false;
         }
+        cout << "i: " << i << " class label: " << classLabel << " predictedClassLabel: " << predictedClassLabel << endl;
         
         //Keep track of the classification results encase the user needs them later
         testResults[i].setClassificationResult(i, classLabel, predictedClassLabel, getUnProcessedPredictedClassLabel(),getClassLikelihoods(), getClassDistances());
@@ -3304,29 +3305,25 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
     //Find the index of the classLabel
     UINT predictedClassLabelIndex =0;
     bool predictedClassLabelIndexFound = false;
-    if( predictedClassLabel != 0 ){
-        for(UINT k=0; k<getNumClassesInModel(); k++){
-            if( predictedClassLabel == classifier->getClassLabels()[k] ){
-                predictedClassLabelIndex = k;
-                predictedClassLabelIndexFound = true;
-                break;
-            }
+    for(UINT k=0; k<getNumClassesInModel(); k++){
+        if( predictedClassLabel == classifier->getClassLabels()[k] ){
+            predictedClassLabelIndex = k;
+            predictedClassLabelIndexFound = true;
+            break;
         }
+    }
         
-        if( !predictedClassLabelIndexFound ){
-            errorLog << "Failed to find class label index for label: " << predictedClassLabel << endl;
-            return false;
-        }
+    if( !predictedClassLabelIndexFound ){
+        errorLog << "Failed to find class label index for label: " << predictedClassLabel << endl;
+        return false;
     }
 
     //Find the index of the class label
     UINT actualClassLabelIndex = 0;
-    if( classLabel != 0 ){
-        for(UINT k=0; k<getNumClassesInModel(); k++){
-            if( classLabel == classifier->getClassLabels()[k] ){
-                actualClassLabelIndex = k;
-                break;
-            }
+    for(UINT k=0; k<getNumClassesInModel(); k++){
+        if( classLabel == classifier->getClassLabels()[k] ){
+             actualClassLabelIndex = k;
+             break;
         }
     }
 
@@ -3335,8 +3332,10 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
         testAccuracy++;
     }
 
+    const bool nullRejectionEnabled = classifier->getNullRejectionEnabled();
+
     //Update the precision
-    if( predictedClassLabel != 0 ){
+    if( predictedClassLabel != 0 || !nullRejectionEnabled ){
         if( classLabel == predictedClassLabel ){
             //Update the precision value
             testPrecision[ predictedClassLabelIndex ]++;
@@ -3346,7 +3345,7 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
     }
 
     //Update the recall
-    if( classLabel != 0 ){
+    if( classLabel != 0 || nullRejectionEnabled ){
         if( classLabel == predictedClassLabel ){
             //Update the recall value
             testRecall[ predictedClassLabelIndex ]++;
@@ -3356,19 +3355,19 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
     }
 
     //Update the rejection precision
-    if( predictedClassLabel == 0 ){
+    if( predictedClassLabel == 0 && nullRejectionEnabled ){
         if( classLabel == 0 ) testRejectionPrecision++;
         rejectionPrecisionCounter++;
     }
 
     //Update the rejection recall
-    if( classLabel == 0 ){
+    if( classLabel == 0 && nullRejectionEnabled ){
         if( predictedClassLabel == 0 ) testRejectionRecall++;
         rejectionRecallCounter++;
     }
 
     //Update the confusion matrix
-    if( classifier->getNullRejectionEnabled() ){
+    if( nullRejectionEnabled ){
         if( classLabel == 0 ) actualClassLabelIndex = 0;
         else actualClassLabelIndex++;
         if( predictedClassLabel == 0 ) predictedClassLabelIndex = 0;

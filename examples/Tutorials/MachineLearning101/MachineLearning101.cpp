@@ -42,7 +42,7 @@ int main (int argc, const char * argv[])
     ClassificationData trainingData;
     
     //Load the training dataset from a file, the file should be in the same directory as this program
-    if( !trainingData.loadDatasetFromFile("IrisData.grt") ){
+    if( !trainingData.load("IrisData.grt") ){
         cout << "Failed to load Iris data from file!\n";
         return EXIT_FAILURE;
     }
@@ -95,7 +95,7 @@ int main (int argc, const char * argv[])
     cout << endl;
     
     //Print the confusion matrix
-    Matrix< double > confusionMatrix = pipeline.getTestConfusionMatrix();
+    MatrixDouble confusionMatrix = pipeline.getTestConfusionMatrix();
     cout << "Confusion Matrix: \n";
     for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
         for(UINT j=0; j<confusionMatrix.getNumCols(); j++){
