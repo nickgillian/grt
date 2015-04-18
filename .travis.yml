@@ -3,7 +3,11 @@ compiler:
  - gcc
  - clang
 
-script: 
- - chmod +x build/run_build.sh
+before_script:
  - cd build
- - ./run_build.sh
+ - mkdir build
+ - cd build
+ - cmake ..
+
+script: make
+ 
