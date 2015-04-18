@@ -2,6 +2,10 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 18th April 2015
+- **removed boost dependancy for the GRT GUI**. You no longer need to install boost to build the GRT GUI. Instead of boost, the GUI now uses C++11 for threading and shared pointers.
+- **improved GRT GUI plots**. There are now additional options to control the data plots and you have more control over how fast the plots should be refreshed.
+
 ## 3rd April 2015
 - **updated version**: 03-04-15
 - **moved to C++11**. The toolkit has now moved to using C++11. This is to take advantage of the numerous updates in C++11, such as threading, smart pointers and lamda functions.
