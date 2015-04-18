@@ -638,8 +638,10 @@ bool MainWindow::initSettingsView(){
     ui->settingsView_grtVersion->setText( QString::fromStdString( GRT::GRTBase::getGRTVersion() ) );
 
     ui->settingsView_coreUpdateRate->setRange(0.0,1.0);
+    ui->settingsView_coreUpdateRate->setDecimals( 3 );
     ui->settingsView_coreUpdateRate->setValue( 1.0 / 100.0 );
     ui->settingsView_graphRefreshRate->setRange(0.0,1.0);
+    ui->settingsView_graphRefreshRate->setDecimals( 3 );
     ui->settingsView_graphRefreshRate->setValue( 1.0 / 100.0 );
 
     return true;
@@ -2145,7 +2147,7 @@ void MainWindow::pipelineTrainingFinished(const bool result){
 
     //qDebug() << "pipelineTrainingFinished(bool result)";
 
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
 
     if( !result ){
         QString infoText;
@@ -3599,11 +3601,13 @@ void MainWindow::openGRTDownload(){
 void MainWindow::updateCoreRefreshRate(const double rate){
     //Convert the millisecond rate to sleep time
     unsigned int sleepTime = (unsigned int)(rate * 1000.0);
+    if( sleepTime == 0 ) sleepTime = 1;
     core.setCoreSleepTime( sleepTime );
 }
 
 void MainWindow::updateMaximumGraphRefreshRate(const double framerate){
     TimeseriesGraph::setMaximumGraphRefreshRate( framerate );
+    BarGraph::setMaximumGraphRefreshRate( framerate );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -3671,30 +3675,30 @@ void MainWindow::updateTargetVector(const GRT::VectorDouble &targetVector){
 
 void MainWindow::notify(const GRT::TrainingLogMessage &log){
     std::string message = log.getProceedingText() + " " + log.getMessage();
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     updateTrainingToolLog( message );
 }
 
 void MainWindow::notify(const GRT::TestingLogMessage &log){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
     ui->trainingTool_results->append( QString::fromStdString( message ) );
 }
 
 void MainWindow::notify(const GRT::WarningLogMessage &log){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
     updateWarningText( message );
 }
 
 void MainWindow::notify(const GRT::ErrorLogMessage &log){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
     updateErrorText( message );
 }
 
 void MainWindow::notify(const GRT::InfoLogMessage &log){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
     updateInfoText( message );
 }

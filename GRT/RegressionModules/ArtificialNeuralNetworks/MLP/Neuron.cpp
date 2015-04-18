@@ -72,20 +72,21 @@ void Neuron::clear(){
 double Neuron::fire(const VectorDouble &x){
     
     double y = 0;
+    UINT i=0;
     
     switch( activationFunction ){
         case(LINEAR):
             y = bias;
-            for(UINT i=0; i<numInputs; i++){
+            for(i=0; i<numInputs; i++){
                 y += x[i] * weights[i];
             }
             break;
         case(SIGMOID):
             y = bias;
-            for(UINT i=0; i<numInputs; i++){
+            for(i=0; i<numInputs; i++){
                 y += x[i] * weights[i];
             }
-	
+            
             //Trick for stopping overflow
 			if( y < -45.0 ){ y = 0; }
 			else if( y > 45.0 ){ y = 1.0; }
@@ -95,7 +96,7 @@ double Neuron::fire(const VectorDouble &x){
             break;
         case(BIPOLAR_SIGMOID):
             y = bias;
-            for(UINT i=0; i<numInputs; i++){
+            for(i=0; i<numInputs; i++){
                 y += x[i] * weights[i];
             }
 	

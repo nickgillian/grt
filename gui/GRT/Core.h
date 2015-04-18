@@ -1,7 +1,7 @@
 #ifndef GRT_CORE_H
 #define GRT_CORE_H
 
-#define GRT_GUI_VERSION "0.1_17"
+#define GRT_GUI_VERSION "0.1_18"
 
 #include <QObject>
 #include "OSC/OSCServer.h"
@@ -16,7 +16,7 @@ class Core : public QObject, public GRT::Observer< GRT::TrainingResult >, public
 public:
     explicit Core(QObject *parent = 0);
 
-    ~Core();
+    virtual ~Core();
 
     bool start();
     bool stop();
@@ -158,8 +158,8 @@ protected:
     void sendStatusMessage( const int pipelineMode,const int trained,const int recording,const int numTrainingSamples,const int numClassesInTrainingData,const std::string infoMessage,const std::string version );
 
     //Core Stuff
-    boost::mutex mutex;
-    boost::shared_ptr< boost::thread > mainThread;
+    std::mutex mutex;
+    std::shared_ptr< std::thread > mainThread;
     bool coreRunning;
     bool stopMainThread;
     bool verbose;
@@ -173,7 +173,7 @@ protected:
     string outgoingOSCAddress;
     string incomingDataAddress;
     OSCServer oscServer;
-    boost::shared_ptr< UdpTransmitSocket > socket;
+    std::shared_ptr< UdpTransmitSocket > socket;
 
     //Data Stuff
     unsigned int coreSleepTime;

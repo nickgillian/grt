@@ -144,7 +144,7 @@ class MainWindow : public QMainWindow,
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    virtual ~MainWindow();
 
     unsigned int getCurrentView() const;
 
@@ -318,7 +318,7 @@ private:
     virtual void notify(const GRT::ErrorLogMessage &log);
     virtual void notify(const GRT::InfoLogMessage &log);
 
-    boost::mutex mutex;
+    std::mutex mutex;
     Ui::MainWindow *ui;
     QStandardItemModel *model;
     Core core;

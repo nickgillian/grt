@@ -4,7 +4,6 @@ OSCServer::OSCServer(unsigned int listenerPort,bool verbose){
     this->listenerPort = listenerPort;
     this->verbose = verbose;
     serverRunning = false;
-    oscSocket = NULL;
 }
 
 OSCServer::~OSCServer(){
@@ -25,7 +24,7 @@ bool OSCServer::start(){
         qDebug() << STRING_TO_QSTRING("OSCServer::start() - Starting OSC server...");
 
     try{
-        serverThread = new boost::thread( boost::bind( &OSCServer::mainThread, this) );
+        serverThread.reset( new std::thread( std::bind( &OSCServer::mainThread, this) ) );
     }catch( std::exception const &error ){
         QString qstr = "ERROR: OSCServer::start() - Failed to start server thread! Exception: ";
         qstr += error.what();
@@ -52,8 +51,7 @@ bool OSCServer::stop(){
     serverThread->join();
 
     //Clean up the OSC socket
-    delete oscSocket;
-    oscSocket = NULL;
+    oscSocket.reset();
 
     //Clear up any unused messages
     clearMessages();
@@ -62,28 +60,28 @@ bool OSCServer::stop(){
 }
 
 bool OSCServer::addMessaage( const OSCMessagePtr msg ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     messages.push( msg );
     return true;
 }
 
 bool OSCServer::getServerRunning(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return serverRunning;
 }
 
 bool OSCServer::getNewMessagesReceived(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return (messages.size()>0);
 }
 
 unsigned int OSCServer::getNumMessages(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return (unsigned int)messages.size();
 }
 
 OSCMessagePtr OSCServer::getNextMessage(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     OSCMessagePtr m;
     if( messages.size() > 0 ){
         m = messages.front();
@@ -108,13 +106,13 @@ void OSCServer::mainThread(){
 
     //Flag that the server is running
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         serverRunning = true;
     }
 
     //Start the OSC server
     try{
-        oscSocket = new UdpListeningReceiveSocket( IpEndpointName( IpEndpointName::ANY_ADDRESS, listenerPort), this );
+        oscSocket.reset( new UdpListeningReceiveSocket( IpEndpointName( IpEndpointName::ANY_ADDRESS, listenerPort), this ) );
 
         //This will run forever, until the AsynchronousBreak() function is called by the stop() method
         oscSocket->Run();
@@ -123,14 +121,14 @@ void OSCServer::mainThread(){
         QString qstr = "ERROR: OSCManager::mainThread() - Exception: ";
         qstr += error.what();
         qDebug() << qstr;
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         serverRunning = false;
         return;
     }
 
     //Flag that the server has stopped
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         serverRunning = false;
     }
 
@@ -153,7 +151,7 @@ void OSCServer::ProcessMessage(const osc::ReceivedMessage &m, const IpEndpointNa
 
     OSCMessagePtr msg( new OSCMessage(hostAddress, m) );
 
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
 
     messages.push( msg );
 }
