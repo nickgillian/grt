@@ -1,0 +1,9 @@
+language: cpp
+compiler:
+ - gcc
+ - clang
+
+script: 
+ - chmod +x build/run_build.sh
+ - cd build
+ - ./run_build.sh
