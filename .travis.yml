@@ -1,7 +1,7 @@
 language: cpp
 
 compiler:
- - gcc
+ - g++
  - clang
 
 before_script:
