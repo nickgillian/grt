@@ -74,10 +74,10 @@ public:
      Parses the command line arguments, storing any relevant results in the results buffer. The can then be accessed using the get(...) function.
 
      @param const int argc: the number of command line arguments
-     @param const char * argv[]: an array of arguments
+     @param char * argv[]: an array of arguments
      @return returns true if the command line was parsed succesfully, false otherwise
     */
-    bool parse(const int argc,const char * argv[] ){
+    bool parse(const int argc,char * argv[] ){
         
         results.clear();
         

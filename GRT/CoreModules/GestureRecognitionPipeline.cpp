@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "GestureRecognitionPipeline.h"
 
-namespace GRT{
+using namespace GRT;
 
 GestureRecognitionPipeline::GestureRecognitionPipeline(void)
 {
@@ -3334,6 +3334,8 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
 
     const bool nullRejectionEnabled = classifier->getNullRejectionEnabled();
 
+    if( nullRejectionEnabled == false ){
+
     //Update the precision
     if( predictedClassLabel != 0 || !nullRejectionEnabled ){
         if( classLabel == predictedClassLabel ){
@@ -3375,6 +3377,7 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
     }
     testConfusionMatrix[ actualClassLabelIndex  ][ predictedClassLabelIndex ]++;
     confusionMatrixCounter[ actualClassLabelIndex ]++;
+    }
     
     return true;
 }
@@ -3470,5 +3473,4 @@ UINT GestureRecognitionPipeline::getPipelineModeFromString(string pipelineModeAs
 	return PIPELINE_MODE_NOT_SET;
 }
 
-} //End of namespace GRT
 
