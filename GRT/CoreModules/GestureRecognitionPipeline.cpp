@@ -3336,47 +3336,66 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
 
     if( nullRejectionEnabled == false ){
 
-    //Update the precision
-    if( predictedClassLabel != 0 || !nullRejectionEnabled ){
+        //Update the precision
         if( classLabel == predictedClassLabel ){
             //Update the precision value
             testPrecision[ predictedClassLabelIndex ]++;
         }
         //Update the precision counter
         precisionCounter[ predictedClassLabelIndex ]++;
-    }
 
-    //Update the recall
-    if( classLabel != 0 || nullRejectionEnabled ){
+        //Update the recall
         if( classLabel == predictedClassLabel ){
             //Update the recall value
             testRecall[ predictedClassLabelIndex ]++;
         }
         //Update the recall counter
         recallCounter[ actualClassLabelIndex ]++;
-    }
 
-    //Update the rejection precision
-    if( predictedClassLabel == 0 && nullRejectionEnabled ){
-        if( classLabel == 0 ) testRejectionPrecision++;
-        rejectionPrecisionCounter++;
-    }
+        //Update the confusion matrix
+        testConfusionMatrix[ actualClassLabelIndex  ][ predictedClassLabelIndex ]++;
+        confusionMatrixCounter[ actualClassLabelIndex ]++;
 
-    //Update the rejection recall
-    if( classLabel == 0 && nullRejectionEnabled ){
-        if( predictedClassLabel == 0 ) testRejectionRecall++;
-        rejectionRecallCounter++;
-    }
+    }else{ //Null rejection is enabled
+        //Update the precision
+        if( predictedClassLabel != GRT_DEFAULT_NULL_CLASS_LABEL ){
+            if( classLabel == predictedClassLabel ){
+                //Update the precision value
+                testPrecision[ predictedClassLabelIndex ]++;
+            }
+            //Update the precision counter
+            precisionCounter[ predictedClassLabelIndex ]++;
+        }
 
-    //Update the confusion matrix
-    if( nullRejectionEnabled ){
-        if( classLabel == 0 ) actualClassLabelIndex = 0;
+        //Update the recall
+        if( classLabel != GRT_DEFAULT_NULL_CLASS_LABEL ){
+            if( classLabel == predictedClassLabel ){
+                //Update the recall value
+                testRecall[ predictedClassLabelIndex ]++;
+            }
+            //Update the recall counter
+            recallCounter[ actualClassLabelIndex ]++;
+        }
+
+        //Update the rejection precision
+        if( predictedClassLabel == GRT_DEFAULT_NULL_CLASS_LABEL ){
+            if( classLabel == GRT_DEFAULT_NULL_CLASS_LABEL ) testRejectionPrecision++;
+            rejectionPrecisionCounter++;
+        }
+
+        //Update the rejection recall
+        if( classLabel == GRT_DEFAULT_NULL_CLASS_LABEL ){
+            if( predictedClassLabel == GRT_DEFAULT_NULL_CLASS_LABEL ) testRejectionRecall++;
+            rejectionRecallCounter++;
+        }
+
+        //Update the confusion matrix
+        if( classLabel == GRT_DEFAULT_NULL_CLASS_LABEL ) actualClassLabelIndex = 0;
         else actualClassLabelIndex++;
-        if( predictedClassLabel == 0 ) predictedClassLabelIndex = 0;
+        if( predictedClassLabel == GRT_DEFAULT_NULL_CLASS_LABEL ) predictedClassLabelIndex = 0;
         else predictedClassLabelIndex++;
-    }
-    testConfusionMatrix[ actualClassLabelIndex  ][ predictedClassLabelIndex ]++;
-    confusionMatrixCounter[ actualClassLabelIndex ]++;
+        testConfusionMatrix[ actualClassLabelIndex  ][ predictedClassLabelIndex ]++;
+        confusionMatrixCounter[ actualClassLabelIndex ]++;
     }
     
     return true;

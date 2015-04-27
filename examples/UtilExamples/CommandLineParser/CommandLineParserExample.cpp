@@ -24,7 +24,7 @@ using namespace GRT;
 //Run this example with some command line options like:
 // ./CommandLineParserExample -i 5 -s hi
 
-int main(int argc, const char * argv[])
+int main(int argc, char * argv[])
 {
     //Create an instance of the parser
     CommandLineParser parser;
