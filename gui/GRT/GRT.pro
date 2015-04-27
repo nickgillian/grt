@@ -55,12 +55,6 @@ macx{
  #Flag that we want to use the GRT library
  USE_GRT_LIB = "true"
  #USE_GRT_SOURCE = "true"
-
- #Link against the main boost libraries
- LIBS += -lboost_thread-mt
- LIBS += -lboost_date_time-mt
- LIBS += -lboost_system-mt
- LIBS += -lboost_chrono-mt
 }
 
 #Linux pkgconfig
@@ -79,20 +73,12 @@ unix:!macx{
  #Flag that we want to use the GRT library
  #USE_GRT_LIB = "true"
  USE_GRT_SOURCE_CODE = "true"
-
- #Link against the main boost libraries
- LIBS += -lboost_thread
- LIBS += -lboost_date_time
- LIBS += -lboost_system
- LIBS += -lboost_chrono
 }
 
 #Windows Include
 win32{
  #Add the custom GRT and boost paths
  INCLUDEPATH += C:\grt
- INCLUDEPATH += C:\boost_1_57_0
- LIBS += -Lc:\boost_1_57_0\lib32-msvc-11.0\
 
  #Add the base oscpack directory
  INCLUDEPATH += OSC/oscpack/include
@@ -103,12 +89,6 @@ win32{
  #Link against the windows libraries needed for OSC networking
  LIBS += -lws2_32
  LIBS += -lwinmm
-
- #Include the boost libraries (if you are using a different version of boost, then you will need to edit these)
- LIBS += -lboost_thread-vc110-mt-1_57
- LIBS += -lboost_date_time-vc110-mt-1_57
- LIBS += -lboost_system-vc110-mt-1_57
- LIBS += -lboost_chrono-vc110-mt-1_57
 }
 
 #If USE_GRT_LIB is defined, then we add the prebuilt GRT lib

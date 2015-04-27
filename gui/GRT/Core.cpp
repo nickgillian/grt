@@ -62,7 +62,7 @@ bool Core::start(){
         qDebug() << STRING_TO_QSTRING("Core::start() - Starting main thread...");
 
     try{
-        mainThread.reset( new boost::thread( boost::bind( &Core::mainThreadFunction, this) ) );
+        mainThread.reset( new std::thread( std::bind( &Core::mainThreadFunction, this) ) );
     }catch( std::exception const &error ){
         QString qstr = "ERROR: Core::start() - Failed to start server thread! Exception: ";
         qstr += error.what();
@@ -92,7 +92,7 @@ bool Core::stop(){
 
     //Flag that the core should stop
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         stopMainThread = true;
     }
 
@@ -147,25 +147,25 @@ bool Core::resetOSCServer( const int incomingOSCDataPort ){
 }
 
 bool Core::addMessaage( const OSCMessagePtr msg ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     oscServer.addMessaage( msg );
     return true;
 }
 
 bool Core::setVersion( const std::string version ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     this->version = version;
     return true;
 }
 
 bool Core::setEnableOSCInput( const bool state ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     enableOSCInput = state;
     return true;
 }
 
 bool Core::setEnableOSCControlCommands( const bool state ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     enableOSCControlCommands = state;
     return true;
 }
@@ -173,7 +173,7 @@ bool Core::setEnableOSCControlCommands( const bool state ){
 bool Core::setPipelineMode( const unsigned int pipelineMode ){
     bool modeChanged = false;
     if( pipelineMode != this->pipelineMode ){
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         this->pipelineMode = pipelineMode;
         modeChanged = true;
     }
@@ -189,7 +189,7 @@ bool Core::setRecordingState( const bool state ){
     GRT::TimeSeriesClassificationSample timeseriesSample_;
 
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         recordTrainingData = state;
 
         switch( pipelineMode ){
@@ -229,7 +229,7 @@ bool Core::setRecordingState( const bool state ){
 bool Core::saveTrainingDatasetToFile( const std::string filename ){
     bool result = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
 
         switch( pipelineMode ){
             case CLASSIFICATION_MODE:
@@ -272,7 +272,7 @@ bool Core::loadTrainingDatasetFromFile( const std::string filename ){
     std::size_t found;
 
     {
-         boost::mutex::scoped_lock lock( mutex );
+         std::unique_lock< std::mutex > lock( mutex );
          unsigned int trainingDataSize = 0;
          tempPipelineMode = pipelineMode;
          switch( pipelineMode ){
@@ -294,8 +294,14 @@ bool Core::loadTrainingDatasetFromFile( const std::string filename ){
              case REGRESSION_MODE:
                  //Check to see if we should load the data from the default GRT fileformat or as a CSV file
                  found = filename.find( ".csv" );
-                 if ( found!=std::string::npos ) result = regressionTrainingData.loadDatasetFromFile( filename );
-                 else result = regressionTrainingData.loadDatasetFromCSVFile( filename, this->numInputDimensions, this->targetVectorSize );
+                 if ( found == std::string::npos ){
+                    qDebug() << "loading data from file!";
+                     result = regressionTrainingData.loadDatasetFromFile( filename );
+                 }
+                 else{
+                    qDebug() << "loading data from CSV file!";
+                     result = regressionTrainingData.loadDatasetFromCSVFile( filename, this->numInputDimensions, this->targetVectorSize );
+                 }
 
                  numTrainingSamples = regressionTrainingData.getNumSamples();
                  tempRegressionData = regressionTrainingData;
@@ -372,7 +378,7 @@ bool Core::loadTestDatasetFromFile( const std::string filename ){
     GRT::UnlabelledData tempClusterData;
 
     {
-         boost::mutex::scoped_lock lock( mutex );
+         std::unique_lock< std::mutex > lock( mutex );
 
          switch( pipelineMode ){
              case CLASSIFICATION_MODE:
@@ -454,7 +460,7 @@ void Core::clearTrainingData(){
     GRT::UnlabelledData tempClusterData;
 
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         switch( pipelineMode ){
             case CLASSIFICATION_MODE:
                 classificationTrainingData.clear();
@@ -507,42 +513,42 @@ void Core::clearTrainingData(){
 ///////////////////////////////////////////////////////////////////////////
 
 bool Core::getCoreRunning(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return coreRunning;
 }
 
 bool Core::getTrained(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getTrained();
 }
 
 bool Core::getTrainingInProcess(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return trainingThread.getTrainingInProcess();
 }
 
 bool Core::getRecordStatus(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return recordTrainingData;
 }
 
 unsigned int Core::getNumInputDimensions(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return numInputDimensions;
 }
 
 unsigned int Core::getPipelineMode(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipelineMode;
 }
 
 unsigned int Core::getTrainingClassLabel(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return trainingClassLabel;
 }
 
 unsigned int Core::getNumTrainingSamples(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTrainingData.getNumSamples();
@@ -564,7 +570,7 @@ unsigned int Core::getNumTrainingSamples(){
 }
 
 unsigned int Core::getNumTestSamples(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTestData.getNumSamples();
@@ -586,12 +592,12 @@ unsigned int Core::getNumTestSamples(){
 }
 
 unsigned int Core::getNumClasses(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getNumClasses();
 }
 
 unsigned int Core::getNumClassesInTrainingData(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTrainingData.getNumClasses();
@@ -614,92 +620,92 @@ unsigned int Core::getNumClassesInTrainingData(){
 }
 
 vector<unsigned int> Core::getClassLabels(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getClassLabels();
 }
 
 GRT::VectorDouble Core::getTargetVector(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return targetVector;
 }
 
 GRT::ClassificationData Core::getClassificationTrainingData(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return classificationTrainingData;
 }
 
 GRT::ClassificationData Core::getClassificationTestData(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return classificationTestData;
 }
 
 GRT::RegressionData Core::getRegressionTrainingData(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return regressionTrainingData;
 }
 
 GRT::RegressionData Core::getRegressionTestData(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return regressionTestData;
 }
 
 GRT::TimeSeriesClassificationData Core::getTimeSeriesClassificationTrainingData(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return timeseriesClassificationTrainingData;
 }
 
 GRT::TimeSeriesClassificationData Core::getTimeSeriesClassificationTestData(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return timeseriesClassificationTestData;
 }
 
 GRT::UnlabelledData Core::getClusterTrainingData(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return clusterTrainingData;
 }
 
 GRT::UnlabelledData Core::getClusterTestData(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return clusterTestData;
 }
 
 double Core::getTestAccuracy(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getTestAccuracy();
 }
 
 double Core::getCrossValidationAccuracy(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getCrossValidationAccuracy();
 }
 
 double Core::getTrainingRMSError(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getTrainingRMSError();
 }
 
 double Core::getTrainingSSError(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getTrainingSSError();
 }
 
 GRT::GestureRecognitionPipeline Core::getPipeline(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline;
 }
 
 GRT::TestResult Core::getTestResults(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getTestResults();
 }
 
 vector< GRT::TestResult > Core::getCrossValidationResults(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getCrossValidationResults();
 }
 
 std::string Core::getModelAsString(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return pipeline.getModelAsString();
 }
 
@@ -708,7 +714,7 @@ std::string Core::getModelAsString(){
 ///////////////////////////////////////////////////////////////////////////
 
 bool Core::setCoreSleepTime( const unsigned int coreSleepTime ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     this->coreSleepTime = coreSleepTime;
     return true;
 }
@@ -722,7 +728,7 @@ bool Core::setNumInputDimensions( const int numInputDimensions ){
     GRT::UnlabelledData tempClusterData;
 
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         this->numInputDimensions = (unsigned int)numInputDimensions;
         inputData.clear();
         inputData.resize( numInputDimensions, 0 );
@@ -792,7 +798,7 @@ bool Core::setTargetVectorSize( const int targetVectorSize_ ){
     GRT::LabelledRegressionData tempRegressionData;
 
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         targetVectorSize = (unsigned int)targetVectorSize_;
         targetVector.clear();
         targetVector.resize( targetVectorSize, 0 );
@@ -813,7 +819,7 @@ bool Core::setTargetVectorSize( const int targetVectorSize_ ){
 bool Core::setMainDataAddress( const std::string address ){
     bool addressUpdated = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         if( this->incomingDataAddress != address ){
             this->incomingDataAddress = address;
             addressUpdated = true;
@@ -826,7 +832,7 @@ bool Core::setMainDataAddress( const std::string address ){
 }
 
 bool Core::setDatasetName( const std::string datasetName ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTrainingData.setDatasetName( datasetName );
@@ -846,7 +852,7 @@ bool Core::setDatasetName( const std::string datasetName ){
 }
 
 bool Core::setDatasetInfoText( const std::string infoText ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTrainingData.setInfoText( infoText );
@@ -868,7 +874,7 @@ bool Core::setDatasetInfoText( const std::string infoText ){
 bool Core::setTrainingClassLabel( const int trainingClassLabel ){
     bool classLabelUpdated = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         if( (unsigned int)trainingClassLabel != this->trainingClassLabel ){
             this->trainingClassLabel = (unsigned int)trainingClassLabel;
             classLabelUpdated = true;
@@ -883,7 +889,7 @@ bool Core::setTrainingClassLabel( const int trainingClassLabel ){
 bool Core::removeAllPreProcessingModules(){
     bool result = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.removeAllPreProcessingModules();
     }
     emit pipelineConfigurationChanged();
@@ -893,7 +899,7 @@ bool Core::removeAllPreProcessingModules(){
 bool Core::removeAllPostProcessingModules(){
     bool result = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.removeAllPostProcessingModules();
     }
     emit pipelineConfigurationChanged();
@@ -903,7 +909,7 @@ bool Core::removeAllPostProcessingModules(){
 bool Core::setPreProcessing( const GRT::PreProcessing &preProcessing ){
     bool result = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.setPreProcessingModule( preProcessing );
     }
     emit pipelineConfigurationChanged();
@@ -913,7 +919,7 @@ bool Core::setPreProcessing( const GRT::PreProcessing &preProcessing ){
 bool Core::setFeatureExtraction( const GRT::FeatureExtraction &featureExtraction ){
     bool result = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.setFeatureExtractionModule( featureExtraction );
     }
     emit pipelineConfigurationChanged();
@@ -925,7 +931,7 @@ bool Core::setClassifier( const GRT::Classifier &classifier ){
     bool result = false;
     bool timeseriesCompatible = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.setClassifier( classifier );
         timeseriesCompatible = classifier.getTimeseriesCompatible();
 
@@ -952,7 +958,7 @@ bool Core::setRegressifier( const GRT::Regressifier &regressifier ){
 
     bool result = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.setRegressifier( regressifier );
 
         //Register the training results callback
@@ -977,7 +983,7 @@ bool Core::setClusterer( const GRT::Clusterer &clusterer ){
 
     bool result = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.setClusterer( clusterer );
 
         //Register the training results callback
@@ -1001,7 +1007,7 @@ bool Core::setClusterer( const GRT::Clusterer &clusterer ){
 bool Core::setPostProcessing( const GRT::PostProcessing &postProcessing ){
     bool result = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.setPostProcessingModule( postProcessing );
     }
     emit pipelineConfigurationChanged();
@@ -1010,7 +1016,7 @@ bool Core::setPostProcessing( const GRT::PostProcessing &postProcessing ){
 
 bool Core::setPipeline( const GRT::GestureRecognitionPipeline &pipeline ){
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         this->pipeline = pipeline;
     }
     emit pipelineConfigurationChanged();
@@ -1021,7 +1027,7 @@ bool Core::setTargetVector( const GRT::VectorDouble &targetVector_ ){
 
     bool emitTargetDataChanged = false;
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         if( targetVector_.size() == targetVectorSize ){
             targetVector = targetVector_;
             emitTargetDataChanged = true;
@@ -1040,7 +1046,7 @@ bool Core::savePipelineToFile( const std::string filename ){
     bool result = false;
 
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.save( filename );
     }
 
@@ -1056,7 +1062,7 @@ bool Core::loadPipelineFromFile( const std::string filename ){
     bool result = false;
 
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         result = pipeline.load( filename );
     }
 
@@ -1069,23 +1075,23 @@ bool Core::loadPipelineFromFile( const std::string filename ){
 }
 
 bool Core::setInfoMessage( const std::string infoMessage ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     this->infoMessage = infoMessage;
     return true;
 }
 
 std::string Core::getInfoMessage(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return infoMessage;
 }
 
 std::string Core::getVersion(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return version;
 }
 
 std::string Core::getIncomingDataAddress(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return incomingDataAddress;
 }
 
@@ -1119,7 +1125,7 @@ void Core::mainThreadFunction(){
 
     //Flag that the core is running
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         coreRunning = true;
         stopMainThread = false;
         coreSleepTime_ = coreSleepTime;
@@ -1160,11 +1166,11 @@ void Core::mainThreadFunction(){
         }
 
         //Let the thread sleep so we don't kill the CPU
-        boost::this_thread::sleep( boost::posix_time::milliseconds( coreSleepTime_ ) );
+        std::this_thread::sleep_for( std::chrono::milliseconds( coreSleepTime_ ) );
 
         //Check to see if we should stop the thread
         {
-            boost::mutex::scoped_lock lock( mutex );
+            std::unique_lock< std::mutex > lock( mutex );
             if( stopMainThread ){
                 keepRunning = false;
             }else{
@@ -1183,7 +1189,7 @@ void Core::mainThreadFunction(){
 
     //Flag that the core has stopped
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         coreRunning = false;
         stopMainThread = false;
     }
@@ -1201,7 +1207,7 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
 
     //Safetly get a copy of the varibles we need to check
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         allowOSCInput = enableOSCInput;
         allowOSCControlCommands = enableOSCControlCommands;
         dataAddress = incomingDataAddress;
@@ -1258,7 +1264,7 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
         GRT::VectorDouble newInputData_;
 
         {
-            boost::mutex::scoped_lock lock( mutex );
+            std::unique_lock< std::mutex > lock( mutex );
             if( m.getNumArgs() == numInputDimensions ){
 
                 newDataReceived = true;
@@ -1295,7 +1301,7 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
     if( m.getAddressPattern() == "/TrainingClassLabel" && allowOSCControlCommands ){
         if( m.getNumArgs() == 1 ){
             {
-                boost::mutex::scoped_lock lock( mutex );
+                std::unique_lock< std::mutex > lock( mutex );
                 trainingClassLabel = m[0].getInt();
             }
             emit trainingClassLabelChanged( m[0].getInt() );
@@ -1306,7 +1312,7 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
     if( m.getAddressPattern() == "/TargetVector" && allowOSCControlCommands ){
         if( m.getNumArgs() == targetVectorSize ){
             {
-                boost::mutex::scoped_lock lock( mutex );
+                std::unique_lock< std::mutex > lock( mutex );
                 for(unsigned int i=0; i<targetVectorSize; i++){
                     if( m[i].getIsFloat() ){ targetVector[i] = m[i].getFloat(); }
                     else if( m[i].getIsDouble() ){ targetVector[i] = m[i].getDouble(); }
@@ -1326,7 +1332,7 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
             setRecordingState( (m[0].getInt() == 1 ? true : false) );
             bool recordTrainingData_ = false;
             {
-                boost::mutex::scoped_lock lock( mutex );
+                std::unique_lock< std::mutex > lock( mutex );
                 recordTrainingData_ = recordTrainingData;
             }
             emit recordStatusChanged( recordTrainingData_ );
@@ -1407,7 +1413,7 @@ bool Core::processNewData(){
     GRT::VectorDouble newClusterSample;
 
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
 
         if( !newDataReceived ){
             return false;
@@ -1584,7 +1590,7 @@ bool Core::train(){
         return false;
     }
 
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
 
     //Launch a new training phase
     bool result = false;
@@ -1623,7 +1629,7 @@ bool Core::trainAndTestOnRandomSubset( const unsigned int randomTestSubsetPercen
         return false;
     }
 
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
 
     bool result = false;
     GRT::Trainer trainer;
@@ -1666,7 +1672,7 @@ bool Core::trainAndTestOnTestDataset(){
 
     if( getNumTestSamples() > 0 ){
 
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
 
         GRT::Trainer trainer;
 
@@ -1699,7 +1705,7 @@ bool Core::trainWithCrossValidation( const unsigned int numFolds ){
         return false;
     }
 
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
 
     bool result = false;
     GRT::Trainer trainer;
@@ -1727,7 +1733,7 @@ bool Core::trainWithCrossValidation( const unsigned int numFolds ){
 }
 
 bool Core::enablePrediction( const bool state ){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     predictionModeEnabled = state;
     return true;
 }

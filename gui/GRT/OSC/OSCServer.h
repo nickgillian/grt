@@ -4,10 +4,10 @@
 #include <QObject>
 #include <QDebug>
 
-#define BOOST_THREAD_USE_LIB
+#include <atomic>
+#include <thread>
+#include <memory>
 
-#include <boost/thread.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #if _MSC_VER >= 1600
     #include "OSCMessage.h"
 #else
@@ -48,9 +48,9 @@ protected:
     bool serverRunning;
     bool verbose;
     unsigned int listenerPort;
-    boost::mutex mutex;
-    boost::thread *serverThread;
-    UdpListeningReceiveSocket *oscSocket;
+    std::mutex mutex;
+    std::shared_ptr< std::thread > serverThread;
+    std::shared_ptr< UdpListeningReceiveSocket > oscSocket;
     std::queue< OSCMessagePtr > messages;
 
 };

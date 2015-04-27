@@ -34,7 +34,7 @@ bool TrainingThread::start(){
     }
 
     try{
-        mainThread.reset( new boost::thread( boost::bind( &TrainingThread::mainThreadFunction, this) ) );
+        mainThread.reset( new std::thread( std::bind( &TrainingThread::mainThreadFunction, this) ) );
     }catch( std::exception const &error ){
         QString qstr = "ERROR: Core::start() - Failed to start training thread! Exception: ";
         qstr += error.what();
@@ -65,7 +65,7 @@ bool TrainingThread::stop(){
 
     //Flag that the core should stop
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         stopMainThread = true;
     }
 
@@ -77,12 +77,12 @@ bool TrainingThread::stop(){
 }
 
 bool TrainingThread::getThreadRunning(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return threadRunning;
 }
 
 bool TrainingThread::getTrainingInProcess(){
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     return trainingInProcess;
 }
 
@@ -92,7 +92,7 @@ bool TrainingThread::startNewTraining(const GRT::Trainer &trainer ){
     if( getTrainingInProcess() ) return false;
 
     //Flag that a new training task should be started using the new trainer
-    boost::mutex::scoped_lock lock( mutex );
+    std::unique_lock< std::mutex > lock( mutex );
     this->startTraining = true;
     this->trainer = trainer;
 
@@ -103,7 +103,7 @@ void TrainingThread::mainThreadFunction(){
 
     //Flag that the core is running
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         threadRunning = true;
         stopMainThread = false;
         trainingInProcess = false;
@@ -121,7 +121,7 @@ void TrainingThread::mainThreadFunction(){
         bool runTraining = false;
 
         {
-            boost::mutex::scoped_lock lock( mutex );
+            std::unique_lock< std::mutex > lock( mutex );
             runTraining = startTraining;
             if( startTraining ){
                 startTraining = false;
@@ -137,7 +137,7 @@ void TrainingThread::mainThreadFunction(){
 
             //Flag that the training has stopped
             {
-                boost::mutex::scoped_lock lock( mutex );
+                std::unique_lock< std::mutex > lock( mutex );
                 trainingInProcess = false;
             }
 
@@ -150,7 +150,7 @@ void TrainingThread::mainThreadFunction(){
 
             GRT::GestureRecognitionPipeline tempPipeline;
             {
-                boost::mutex::scoped_lock lock( mutex );
+                std::unique_lock< std::mutex > lock( mutex );
                 tempPipeline = trainer.getPipeline();
             }
             emit pipelineUpdated( tempPipeline );
@@ -158,11 +158,11 @@ void TrainingThread::mainThreadFunction(){
         }
 
         //Let the thread sleep so we don't kill the CPU
-        boost::this_thread::sleep( boost::posix_time::milliseconds( DEFAULT_TRAINING_THREAD_SLEEP_TIME ) );
+        std::this_thread::sleep_for( std::chrono::milliseconds( DEFAULT_TRAINING_THREAD_SLEEP_TIME ) );
 
         //Check to see if we should stop the thread
         {
-            boost::mutex::scoped_lock lock( mutex );
+            std::unique_lock< std::mutex > lock( mutex );
             if( stopMainThread ){
                 keepRunning = false;
             }
@@ -171,7 +171,7 @@ void TrainingThread::mainThreadFunction(){
 
     //Flag that the core has stopped
     {
-        boost::mutex::scoped_lock lock( mutex );
+        std::unique_lock< std::mutex > lock( mutex );
         threadRunning = false;
         stopMainThread = false;
         trainingInProcess = false;

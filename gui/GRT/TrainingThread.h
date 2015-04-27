@@ -40,9 +40,9 @@ protected:
     void mainThreadFunction();
     bool train();
 
-    boost::mutex mutex;
-    boost::mutex trainingMutex;
-    boost::shared_ptr< boost::thread > mainThread;
+    std::mutex mutex;
+    std::mutex trainingMutex;
+    std::shared_ptr< std::thread > mainThread;
     bool threadRunning;
     bool stopMainThread;
     bool verbose;

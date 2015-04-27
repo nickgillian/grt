@@ -70,7 +70,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>7</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_11">
      <attribute name="title">
@@ -617,7 +617,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="page_24">
         <widget class="QGroupBox" name="groupBox_19">
