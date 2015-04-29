@@ -5,7 +5,6 @@
 #include "oscpack/include/osc/OscReceivedElements.h"
 #include "oscpack/include/osc/OscPacketListener.h"
 #include "oscpack/include/osc/OscHostEndianness.h"
-#include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -352,4 +351,4 @@ protected:
     std::string addressPattern;
     std::vector< OSCArgument > messageArguments;
 };
-typedef boost::shared_ptr< OSCMessage > OSCMessagePtr;
+typedef std::shared_ptr< OSCMessage > OSCMessagePtr;

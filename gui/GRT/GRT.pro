@@ -7,7 +7,6 @@
 #NOTE: Have a look at the GRT GUI README before attempting to build this project
 
 QT += core gui
-QT += webkitwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -265,7 +264,7 @@ SOURCES += main.cpp\
         timeseriesgraph.cpp \
         bargraph.cpp \
         versioninfo.cpp \
-    featureplot.cpp
+        featureplot.cpp
 
 HEADERS  += mainwindow.h \
         OSC/OSCMessage.h \
@@ -290,7 +289,7 @@ HEADERS  += mainwindow.h \
         timeseriesgraph.h \
         bargraph.h \
         versioninfo.h \
-    featureplot.h
+        featureplot.h
 
 FORMS += mainwindow.ui \
     timeseriesgraph.ui \

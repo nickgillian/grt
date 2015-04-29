@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <thread>
+#include <mutex>
 #include <memory>
 
 #if _MSC_VER >= 1600
