@@ -178,14 +178,16 @@ class PrincipalComponentAnalysis : public GRTBase{
      @return returns a matrix containing the raw eigen vectors
      */
     MatrixDouble getEigenVectors() const;
+
+    bool setModel( const VectorDouble &mean, const MatrixDouble &eigenvectors );
 	
 protected:
     bool computeFeatureVector_(const MatrixDouble &data,UINT analysisMode);
 
     bool trained;
     bool normData;
-	UINT numInputDimensions;
-	UINT numPrincipalComponents;
+    UINT numInputDimensions;
+    UINT numPrincipalComponents;
     double maxVariance;
     VectorDouble mean;
     VectorDouble stdDev;

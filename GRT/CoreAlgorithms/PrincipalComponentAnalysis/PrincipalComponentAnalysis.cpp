@@ -181,13 +181,14 @@ bool PrincipalComponentAnalysis::project(const MatrixDouble &data,MatrixDouble &
         warningLog << "project(const MatrixDouble &data,MatrixDouble &prjData) - The PrincipalComponentAnalysis module has not been trained!" << endl;
         return false;
     }
-	if( data.getNumCols() != numInputDimensions ){
+
+    if( data.getNumCols() != numInputDimensions ){
         warningLog << "project(const MatrixDouble &data,MatrixDouble &prjData) - The number of columns in the input vector (" << data.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << endl;
-		return false;
-	}
+        return false;
+    }
 	
-	MatrixDouble msData( data );
-	prjData.resize(data.getNumRows(),numPrincipalComponents);
+    MatrixDouble msData( data );
+    prjData.resize(data.getNumRows(),numPrincipalComponents);
 	
     if( normData ){
         //Mean subtract the data
@@ -201,16 +202,16 @@ bool PrincipalComponentAnalysis::project(const MatrixDouble &data,MatrixDouble &
                 msData[i][j] -= mean[j];
     }
 	
-	//Projected Data
-	for(UINT row=0; row<msData.getNumRows(); row++){//For each row in the final data
-		for(UINT i=0; i<numPrincipalComponents; i++){//For each PC
-         	prjData[row][i]=0;
-		 	for(UINT j=0; j<data.getNumCols(); j++)//For each feature
-			 	prjData[row][i] += msData[row][j] * eigenvectors[j][sortedEigenvalues[i].index];
-		}
-	}
+    //Projected Data
+    for(UINT row=0; row<msData.getNumRows(); row++){//For each row in the final data
+        for(UINT i=0; i<numPrincipalComponents; i++){//For each PC
+            prjData[row][i]=0;
+	    for(UINT j=0; j<data.getNumCols(); j++)//For each feature
+                prjData[row][i] += msData[row][j] * eigenvectors[j][sortedEigenvalues[i].index];
+        }
+    }
 	
-	return true;
+    return true;
 }
     
 bool PrincipalComponentAnalysis::project(const VectorDouble &data,VectorDouble &prjData){
@@ -221,10 +222,11 @@ bool PrincipalComponentAnalysis::project(const VectorDouble &data,VectorDouble &
         warningLog << "project(const VectorDouble &data,VectorDouble &prjData) - The PrincipalComponentAnalysis module has not been trained!" << endl;
         return false;
     }
-	if( N != numInputDimensions ){
+
+    if( N != numInputDimensions ){
         warningLog << "project(const VectorDouble &data,VectorDouble &prjData) - The size of the input vector (" << N << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << endl;
-		return false;
-	}
+        return false;
+    }
     
     VectorDouble msData = data;
     
@@ -277,5 +279,29 @@ bool PrincipalComponentAnalysis::print(string title) const{
 MatrixDouble PrincipalComponentAnalysis::getEigenVectors() const{
     return eigenvectors;
 }
+
+bool PrincipalComponentAnalysis::setModel( const VectorDouble &mean, const MatrixDouble &eigenvectors ){
+
+    if( (UINT)mean.size() != eigenvectors.getNumCols() ){
+        return false;
+    }
+
+    trained = true;
+    numInputDimensions = eigenvectors.getNumCols();
+    numPrincipalComponents = eigenvectors.getNumRows();
+    this->mean = mean;
+    stdDev.clear();
+    componentWeights.clear();
+    eigenvalues.clear();
+    sortedEigenvalues.clear();
+    this->eigenvectors = eigenvectors;
+    
+    UINT N = (UINT)topEigenvalues.size();
+    for(UINT i=0; i<N; i++){
+        sortedEigensvalues.push_back( IndexedDouble(i,0.0) );
+    }
+    return true;
+}
+
 
 }//End of namespace GRT
