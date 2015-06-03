@@ -296,9 +296,9 @@ bool PrincipalComponentAnalysis::setModel( const VectorDouble &mean, const Matri
     sortedEigenvalues.clear();
     this->eigenvectors = eigenvectors;
     
-    UINT N = (UINT)topEigenvalues.size();
-    for(UINT i=0; i<N; i++){
-        sortedEigensvalues.push_back( IndexedDouble(i,0.0) );
+    //The eigenvectors are already sorted, so the sorted eigenvalues just holds the default index
+    for(UINT i=0; i<numPrincipalComponents; i++){
+        sortedEigenvalues.push_back( IndexedDouble(i,0.0) );
     }
     return true;
 }
