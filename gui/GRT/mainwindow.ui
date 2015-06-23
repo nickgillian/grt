@@ -1356,7 +1356,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -1517,6 +1517,113 @@
          </property>
          <property name="text">
           <string>Y Axis Index:</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="tab_22">
+        <attribute name="title">
+         <string>Page</string>
+        </attribute>
+        <widget class="QCustomPlot" name="dataLabellingTool_timeseriesMode_timeseriesPlot" native="true">
+         <property name="geometry">
+          <rect>
+           <x>5</x>
+           <y>5</y>
+           <width>966</width>
+           <height>226</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="dataLabellingTool_timeseriesMode_timeseriesLength">
+         <property name="geometry">
+          <rect>
+           <x>515</x>
+           <y>240</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_195">
+         <property name="geometry">
+          <rect>
+           <x>390</x>
+           <y>240</y>
+           <width>121</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Timeseries Length:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_196">
+         <property name="geometry">
+          <rect>
+           <x>610</x>
+           <y>240</y>
+           <width>131</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Number of Samples:</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="dataLabellingTool_timeseriesMode_timeseriesIndex">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>240</y>
+           <width>101</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="dataLabellingTool_timeseriesMode_classLabel">
+         <property name="geometry">
+          <rect>
+           <x>290</x>
+           <y>240</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_193">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>240</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Timeseries:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_194">
+         <property name="geometry">
+          <rect>
+           <x>210</x>
+           <y>240</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Class Label:</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="dataLabellingTool_timeseriesMode_numSamples">
+         <property name="geometry">
+          <rect>
+           <x>745</x>
+           <y>240</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
          </property>
         </widget>
        </widget>

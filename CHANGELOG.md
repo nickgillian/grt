@@ -2,6 +2,10 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 23rd June 2015
+- **updated GUI version**: 0.1.18
+- **new GUI features**: added timeseries mode and new timeseries data graphs.
+
 ## 18th April 2015
 - **removed boost dependancy for the GRT GUI**. You no longer need to install boost to build the GRT GUI. Instead of boost, the GUI now uses C++11 for threading and shared pointers.
 - **improved GRT GUI plots**. There are now additional options to control the data plots and you have more control over how fast the plots should be refreshed.

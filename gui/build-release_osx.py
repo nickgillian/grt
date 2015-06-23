@@ -1,12 +1,13 @@
 ## BuildRelease_OSX.py
 # This python script builds the release version of the GRT GUI. It also runs the QT macdeploy tool which wraps up any libraries or external dependices needed for the
-# GUI within the application itself so the app can run on other OS X machines without having to install QT or boost.
+# GUI within the application itself so the app can run on other OS X machines without having to install QT or the GRT.
 # Before you run this script, you should open the GRT QT project file with QT creator and build the release application (this will generate a make file for your machine)
+# When setting up the build, you should set the name of the build directory to build-release
 # You can then use this script to build the deployment version which can be used on other machines
 # To use this script you should change the QT lib and bin paths to the locaction on your local machine
 # You can then build the release version by running this file from the terminal
 #You should run this script by passing in the qt bin directory as the first argument, for example:
-#python build-release_osx.py /Users/n.gillian/Qt/5.2.1/clang_64/bin/
+#python build-release_osx.py /Users/ngillian/Qt/5.4/clang_64/bin/
 
 import os
 import re
@@ -22,13 +23,6 @@ if( len( args ) < 1 ):
 
 #NOTE: on my machine, the qt bin directory is: "/Users/n.gillian/Qt/5.2.1/clang_64/bin/"
 macDeployDir = args[0]
-
-#Set the default boost lib directory
-boostLibDir = "/usr/local/lib/"
-
-#The user can set the second option to customize the boost lib directory
-if( len( args ) == 2 ):
-    boostLibDir = args[1]
 
 #Set the main directory
 mainDir = "build-release/"
@@ -57,19 +51,12 @@ print "Building application..."
 os.system( "make -C " + mainDir + " clean " )
 os.system( "make -C " + mainDir )
 
-#Hack to fix macdeployqt looking for boost libs in /usr/lib
-os.system( "cp -fv " + boostLibDir + "libboost_thread.dylib " + "/usr/lib/" )
-os.system( "cp -fv " + boostLibDir + "libboost_date_time.dylib " + "/usr/lib/" )
-os.system( "cp -fv " + boostLibDir + "libboost_system.dylib " + "/usr/lib/" )
-os.system( "cp -fv " + boostLibDir + "libboost_chrono.dylib " + "/usr/lib/" )
-os.system( "cp -fv " + "/usr/local/lib/" + "libgrt.dylib " + "/usr/lib/" )
+#Copy the GRT library into the GUI application for deployment
+#os.system( "cp -fv " + "/usr/local/lib/" + "libgrt.dylib " + "/usr/lib/" )
 
 #Run the mac deploy tool so the application can be run on other machines
 print "Running mac deployment..."
 os.system( macDeployDir + "macdeployqt" + " " + mainDir + "GRT.app" + " -verbose=1" )
-
-#Copy the extra libraries
-#os.system( "cp -fv /usr/local/lib/libgrt.dylib " + mainDir + "GRT.app/Contents/Frameworks/" )
 
 #Run the otool to make sure the libraries are now pointing to local copies
 os.system( "otool -L " + mainDir + "GRT.app/Contents/MacOS/GRT" )

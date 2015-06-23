@@ -212,6 +212,7 @@ private slots:
     void updateClassStatsGraph();
     void updatePCAProjectionGraph();
     void updateTimeseriesGraph();
+    void updateTimeseriesTrainingDataPlot();
     void generateFeaturePlot();
     void ctrlRShortcut();
     void ctrlSShortcut();

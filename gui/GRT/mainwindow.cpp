@@ -246,6 +246,10 @@ bool MainWindow::initDataLabellingToolView(){
     ui->dataLabellingTool_clusterMode_numInputDimensionsField->setReadOnly( true );
     ui->dataLabellingTool_clusterMode_numInputDimensionsField->setText( QString::number( 1 ) );
 
+    ui->dataLabellingTool_timeseriesMode_classLabel->setReadOnly( true );
+    ui->dataLabellingTool_timeseriesMode_timeseriesLength->setReadOnly( true );
+    ui->dataLabellingTool_timeseriesMode_numSamples->setReadOnly( true );
+
     //Set the graph titles (we need to do this here otherwise we get a new title each time the graph is drawn)
     QCustomPlot *plot;
 
@@ -344,7 +348,6 @@ bool MainWindow::initPipelineToolView(){
     ui->pipelineTool_deadZoneUpperLimitSpinBox->setValue( 1 );
     ui->pipelineTool_deadZoneLowerLimitSpinBox->setDecimals( 5 );
     ui->pipelineTool_deadZoneUpperLimitSpinBox->setDecimals( 5 );
-
 
     ////////////////////////////////////// Feature Extraction //////////////////////////////////////
 
@@ -696,6 +699,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->dataLabelingTool_trainingDataTab, SIGNAL(currentChanged(int)), this, SLOT(updateTrainingTabView(const int)));
     connect(ui->dataLabellingTool_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(handleDatasetClicked(const QModelIndex)));
     connect(ui->dataLabellingTool_featurePlotButton, SIGNAL(clicked()), this, SLOT(generateFeaturePlot()));
+    connect(ui->dataLabellingTool_timeseriesMode_timeseriesIndex,SIGNAL(valueChanged(int)),this,SLOT(updateTimeseriesTrainingDataPlot()));
 
     connect(ui->pipelineTool_infoButton, SIGNAL(clicked()), this, SLOT(showPipelineToolInfo()));
     connect(ui->pipelineTool_savePipelineButton, SIGNAL(clicked()), this, SLOT(savePipelineToFile()));
@@ -1094,6 +1098,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->dataLabelingTool_trainingDataTab->insertTab( 3, dataLabelingToolTabHistory[3], "PCA Projection" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 4, dataLabelingToolTabHistory[4], "Timeseries Graph" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 5, dataLabelingToolTabHistory[5], "Feature Plot" );
+
             ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
 
             //Add the tabs for classification
@@ -1147,6 +1152,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
 
             //Add the tabs for timeseries classification
             ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[6], "Timeseries Plot" );
 
             //Add the tabs for classification
             ui->trainingTool_resultsTab->insertTab( 0, trainingToolTabHistory[0], "Results" );
@@ -1641,7 +1647,7 @@ void MainWindow::updateDatasetInfoText(){
     }
 }
 
-void MainWindow::updateTrainingTabView(const int tabIndex){
+void MainWindow::updateTrainingTabView( const int tabIndex ){
 
     QString infoText;
 
@@ -1674,6 +1680,9 @@ void MainWindow::updateTrainingTabView(const int tabIndex){
         case Core::TIMESERIES_CLASSIFICATION_MODE:
             if( tabIndex == 0 ){
                 updateDatasetStatsView();
+            }
+            if( tabIndex == 1 ){
+                updateTimeseriesTrainingDataPlot();
             }
         break;
         case Core::CLUSTER_MODE:
@@ -1927,6 +1936,84 @@ void MainWindow::updateTimeseriesGraph(){
     plot->xAxis->setRange(0, graphWidth);
     plot->yAxis->setRange(minLabel, maxLabel);
     plot->replot();
+}
+
+void MainWindow::updateTimeseriesTrainingDataPlot(){
+
+    const unsigned int sampleIndex = ui->dataLabellingTool_timeseriesMode_timeseriesIndex->value();
+    GRT::TimeSeriesClassificationData data = core.getTimeSeriesClassificationTrainingData();
+    const unsigned int numSamples = data.getNumSamples();
+
+    //Update the timeseries index range
+    ui->dataLabellingTool_timeseriesMode_timeseriesIndex->setRange(0,numSamples>0?numSamples-1:0);
+
+    //Clear the plot
+    QCustomPlot *plot = ui->dataLabellingTool_timeseriesMode_timeseriesPlot;
+    plot->clearGraphs();
+
+    //Set the number of samples
+    ui->dataLabellingTool_timeseriesMode_numSamples->setText( QString::fromStdString( GRT::Util::toString( numSamples ) ) );
+
+    //If the number of samples is zero we have nothing to draw
+    if( numSamples == 0 ){
+        ui->dataLabellingTool_timeseriesMode_timeseriesIndex->setValue( 0 );
+        ui->dataLabellingTool_timeseriesMode_classLabel->setText( QString::fromStdString("0") );
+        ui->dataLabellingTool_timeseriesMode_timeseriesLength->setText( QString::fromStdString("0") );
+        return;
+    }
+
+    if( sampleIndex > numSamples ){
+        ui->dataLabellingTool_timeseriesMode_classLabel->setText( QString::fromStdString("0") );
+        ui->dataLabellingTool_timeseriesMode_timeseriesLength->setText( QString::fromStdString("0") );
+        return;
+    }
+
+    const GRT::TimeSeriesClassificationSample &sample = data[ sampleIndex ];
+    const unsigned int sampleLabel = sample.getClassLabel();
+    const unsigned int sampleLength = sample.getLength();
+    const unsigned int numDimensions = data.getNumDimensions();
+
+    //Update the GUI labels
+    ui->dataLabellingTool_timeseriesMode_classLabel->setText( QString::fromStdString( GRT::Util::toString( sampleLabel ) ) );
+    ui->dataLabellingTool_timeseriesMode_timeseriesLength->setText( QString::fromStdString( GRT::Util::toString( sampleLength ) ) );
+
+    //Get the data to plot
+    QVector< double > x( sampleLength );
+    vector< QVector<double> > y(numDimensions, QVector<double>(sampleLength) );
+    bool lockRanges = false;
+    double minRange = numeric_limits< double >::max();
+    double maxRange = numeric_limits< double >::min();
+    vector< Qt::GlobalColor > &colors = defaultGraphColors;
+
+    for (unsigned int i=0; i<sampleLength; i++){
+      x[i] = i;
+      for(unsigned int j=0; j<numDimensions; j++){
+          y[j][i] = sample[i][j];
+          if( !lockRanges ){
+            if( sample[i][j] < minRange ) minRange = sample[i][j];
+            else if( sample[i][j] > maxRange ) maxRange = sample[i][j];
+          }
+      }
+    }
+
+    //Create the graphs
+    for(unsigned int j=0; j<numDimensions; j++){
+        plot->addGraph();
+        plot->graph(j)->setPen( QPen( colors[j%colors.size()] ));
+        plot->graph(j)->setData(x, y[j]);
+    }
+
+    // give the axes some labels:
+    plot->xAxis->setLabel("Time");
+    plot->yAxis->setLabel("Data");
+    plot->yAxis->setAutoTickStep(false);
+    plot->yAxis->setTickStep( (maxRange-minRange) / 5 );
+
+    // set axes ranges, so we see all data:
+    plot->xAxis->setRange(0, sampleLength);
+    plot->yAxis->setRange(minRange, maxRange);
+    plot->replot();
+
 }
 
 void MainWindow::generateFeaturePlot(){
