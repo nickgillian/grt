@@ -13,7 +13,7 @@ http://www.nickgillian.com/wiki/pmwiki.php/GRT/GUIProcessing
 import oscP5.*;
 import netP5.*;
 
-//Set the pipeline mode (CLASSIFICATION_MODE or REGRESSION_MODE), the number of inputs and the number of outputs
+//Set the pipeline mode (CLASSIFICATION_MODE, REGRESSION_MODE, TIMESERIES_MODE or CLUSTER_MODE), the number of inputs and the number of outputs
 final int pipelineMode = GRT.CLASSIFICATION_MODE;
 final int numInputs = 2;
 final int numOutputs = 1;

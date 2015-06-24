@@ -1,6 +1,6 @@
 /**
 GRT
-Version: 1.2
+Version: 1.3
 Author: Nick Gillian
 
 Info: This class acts as an interface to the GRT GUI. It sends data and commands to the GUI via Open Sound Control (OSC). To use this
@@ -41,15 +41,18 @@ class GRT{
   public static final int CLASSIFICATION_MODE = 0;
   public static final int REGRESSION_MODE = 1;
   public static final int TIMESERIES_MODE = 2;
+  public static final int CLUSTER_MODE = 3;
   
   //Classifier Types
   public static final int ANBC = 0;
   public static final int ADABOOST = 1;
-  public static final int GMM = 2;
-  public static final int KNN = 3;
-  public static final int MINDIST = 4;
-  public static final int SOFTMAX = 5;
-  public static final int SVM = 6;
+  public static final int DECISION_TREE = 2;
+  public static final int GMM = 4;
+  public static final int KNN = 5;
+  public static final int MINDIST = 6;
+  public static final int RANDOM_FORESTS = 7;
+  public static final int SOFTMAX = 8;
+  public static final int SVM = 9;
   
   /**
    Default constructor
@@ -61,7 +64,7 @@ class GRT{
   /**
    Main constructor used to initialize the instance.
    
-   @param int pipelineMode: sets the mode that the pipeline will run in. This should be a valid pipeline mode, either CLASSIFICATION_MODE, REGRESSION_MODE, or TIMESERIES_MODE
+   @param int pipelineMode: sets the mode that the pipeline will run in. This should be a valid pipeline mode, either CLASSIFICATION_MODE, REGRESSION_MODE, TIMESERIES_MODE or CLUSTER_MODE
    @param int numInputs: sets the size of your data vector, this is the data that you will send to the GRT GUI
    @param int numOutputs: this parameter is only used for REGRESSION_MODE, in which case it sets the target vector size
    @param String grtIPAddress: the IP address of the machine running the GRT GUI. If it is running on the same machine as this Processing Sketch this should be "127.0.0.1"
@@ -77,7 +80,7 @@ class GRT{
    This function initalizes the GRT backend. It will set up any memory required for running the GRT backend and will then send a Setup message to the GRT GUI via OSC (if the
    sendSetupMessage parameter is true).
    
-   @param int pipelineMode: sets the mode that the pipeline will run in. This should be a valid pipeline mode, either CLASSIFICATION_MODE, REGRESSION_MODE, or TIMESERIES_MODE
+   @param int pipelineMode: sets the mode that the pipeline will run in. This should be a valid pipeline mode, either CLASSIFICATION_MODE, REGRESSION_MODE, TIMESERIES_MODE, or CLUSTER_MODE
    @param int numInputs: sets the size of your data vector, this is the data that you will send to the GRT GUI
    @param int numOutputs: this parameter is only used for REGRESSION_MODE, in which case it sets the target vector size
    @param String grtIPAddress: the IP address of the machine running the GRT GUI. If it is running on the same machine as this Processing Sketch this should be "127.0.0.1"
@@ -90,7 +93,7 @@ class GRT{
     
     initialized = false;
     
-    if( pipelineMode != CLASSIFICATION_MODE && pipelineMode != REGRESSION_MODE && pipelineMode != TIMESERIES_MODE ){
+    if( pipelineMode != CLASSIFICATION_MODE && pipelineMode != REGRESSION_MODE && pipelineMode != TIMESERIES_MODE && pipelineMode != CLUSTER_MODE ){
       return false;
     }
     
@@ -445,6 +448,9 @@ class GRT{
         case  TIMESERIES_MODE:
           text("Pipeline Mode: TIMESERIES", x, y);
         break;
+        case  CLUSTER_MODE:
+          text("Pipeline Mode: CLUSTER", x, y);
+        break;
       }
       y += spacer*2;
       
@@ -461,6 +467,9 @@ class GRT{
         break;
         case  TIMESERIES_MODE:
           text("GRT Pipeline Mode: TIMESERIES", x, y);
+        break;
+        case  CLUSTER_MODE:
+          text("GRT Pipeline Mode: CLUSTER", x, y);
         break;
       }
       y += spacer;
@@ -489,6 +498,8 @@ class GRT{
           text(targetVectorText, x, y);
         break;
         case  TIMESERIES_MODE:
+        break;
+        case CLUSTER_MODE:
         break;
       }
       y += spacer;
@@ -535,6 +546,8 @@ class GRT{
           y += spacer;
         break;
         case  TIMESERIES_MODE:
+        break;
+        case CLUSTER_MODE:
         break;
       }
      
