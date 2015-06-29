@@ -8,6 +8,7 @@ project(GRT C CXX)
 option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
 option(BUILD_STATIC_LIB "build-static-lib" OFF)
+option(EXCLUDE_FROM_INSTALL "exclude-from-install" OFF)
 
 #Setup if the library should be built as static or shared, default is SHARED
 if(BUILD_STATIC_LIB MATCHES ON)
@@ -176,18 +177,20 @@ add_library(grt ${LIB_BUILD_TYPE}
     ${GRT_HEADERS}
 )
 
-install(
-    TARGETS grt
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-)
+if(NOT EXCLUDE_FROM_INSTALL)
+	install(
+		TARGETS grt
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+	)
 
-install(
-    DIRECTORY "${GRT_SRC_DIR}/"
-    DESTINATION include/GRT
-    FILES_MATCHING PATTERN *.h
-)
+	install(
+		DIRECTORY "${GRT_SRC_DIR}/"
+		DESTINATION include/GRT
+		FILES_MATCHING PATTERN *.h
+	)
+endif()
 
 # GRT examples
 if( BUILD_EXAMPLES )
@@ -203,31 +206,33 @@ if( BUILD_EXAMPLES )
 	        )
 
 		include_directories(
-    			"${GRT_EXAMPLES_DIR}/.."
+    		"${GRT_EXAMPLES_DIR}/.."
 		)
 
 	        target_link_libraries(${_example_name}
 	            grt
 	        )
 
-	        install(
-	            TARGETS ${_example_name}
-	            RUNTIME DESTINATION ${GRT_EXAMPLES_OUTPUT_DIR}
-	        )
+			if(NOT EXCLUDE_FROM_INSTALL)
+				install(
+					TARGETS ${_example_name}
+					RUNTIME DESTINATION ${GRT_EXAMPLES_OUTPUT_DIR}
+				)
 
-	        string(REPLACE
-	            "Example"           # match string
-	            "TrainingData"      # replace string
-	            TRAINING_DATA       # output
-	            ${_example_name}    # input
-	        )
+				string(REPLACE
+					"Example"           # match string
+					"TrainingData"      # replace string
+					TRAINING_DATA       # output
+					${_example_name}    # input
+				)
 
-	        if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt")
-	            install(FILES
-	                "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt"
-	                DESTINATION ${GRT_EXAMPLES_OUTPUT_DIR}
-	            )
-	        endif()
+				if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt")
+					install(FILES
+						"${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt"
+						DESTINATION ${GRT_EXAMPLES_OUTPUT_DIR}
+					)
+				endif()
+			endif()
 	    endif()
 	endfunction()
 
@@ -264,7 +269,7 @@ if( BUILD_EXAMPLES )
 	endforeach()
 endif() #BUILD_EXAMPLES
 
-if(UNIX)
+if(UNIX AND NOT EXCLUDE_FROM_INSTALL)
     set(CMAKE_INSTALL_LIBDIR "lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Output directory for libraries")
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/grt.pc                         
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig                               
