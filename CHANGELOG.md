@@ -2,6 +2,9 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 2nd July 2015
+- **merged pull request from terziman**: Added option in CMakeLists to avoid creating install targets
+
 ## 23rd June 2015
 - **updated GUI version**: 0.1.18
 - **new GUI features**: added timeseries mode and new timeseries data graphs.
