@@ -2,6 +2,9 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 7th July 2015
+- **merged pull request from terziman**: Fixed ParticleFilter cast issue by resolving type
+
 ## 2nd July 2015
 - **merged pull request from terziman**: Added option in CMakeLists to avoid creating install targets
 
