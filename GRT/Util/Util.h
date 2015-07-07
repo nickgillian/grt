@@ -37,11 +37,13 @@
 #ifdef __GRT_OSX_BUILD__
 //Include any OSX specific headers
 #include <unistd.h>
+#include <dirent.h>
 #endif
 
 #ifdef __GRT_LINUX_BUILD__
 //Include any Linux specific headers
 #include <unistd.h>
+#include <dirent.h>
 #endif
 
 namespace GRT{
@@ -368,6 +370,20 @@ public:
      @return void
      */
     static void polarToCart(const double r,const double theta,double &x, double &y);
+
+    /**
+     @brief Parses a directory and returns a list of filenames in that directory that match the file type.
+     A wildcard (.*) can be used to indicate any file in the directory.  Multiple filetypes can be searched for by seperating
+     the file type via |. For example: *.csv|*.grt will return any CSV or GRT files in the directory.
+
+     @note only supported on OSX or Linux systems at this time.
+
+     @param const string directoryPath: the path of the directory you want to search (can be relative or absolute)
+     @param const string type: sets the file type that should be searched for (e.g. .csv)
+     @param vector< string > &filenames: will return a list of filenames found in the directory
+     @return returns true if the directory was parsed, false otherwise
+     */
+    bool parseDirectory( const std::string directoryPath, const std::string type, std::vector< std::string > &filenames );
     
     /**
     A list of operating systems.

@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "Util.h"
 
-using namespace GRT;
+namespace GRT {
     
 bool Util::sleep(const unsigned int &numMilliseconds){
     
@@ -309,17 +309,17 @@ unsigned int Util::getMax(const std::vector< unsigned int > &x){
 }
 
 unsigned int Util::getOS(){
-	#ifdef __GRT_OSX_BUILD__
-		return OS_OSX;
-	#endif
+#ifdef __GRT_OSX_BUILD__
+    return OS_OSX;
+#endif
 	
-	#ifdef __GRT_LINUX_BUILD__
-		return OS_LINUX;
-	#endif
+#ifdef __GRT_LINUX_BUILD__
+    return OS_LINUX;
+#endif
 	
-	#ifdef __GRT_WINDOWS_BUILD__
-		return OS_WINDOWS;
-	#endif
+#ifdef __GRT_WINDOWS_BUILD__
+    return OS_WINDOWS;
+#endif
 	
 	return OS_UNKNOWN;
 }
@@ -378,3 +378,65 @@ void Util::polarToCart(const double r,const double theta,double &x, double &y){
     x = r * cos(theta);
     y = r * sin(theta);
 }
+
+bool Util::parseDirectory( const std::string directoryPath, const std::string type, std::vector< std::string > &filenames ){
+
+    filenames.clear();
+
+#if defined( __GRT_WINDOWS_BUILD__ )
+    return false; //Windows not supported yet
+#endif
+
+#if defined( __GRT_OSX_BUILD__ ) || defined( __GRT_LINUX_BUILD__ )
+
+    std::vector< std::string > types; //Stores the file types 
+
+    //Parse out the types to search for, types should be seperated by |, e.g. .csv|.grt
+    std::string temp = "";
+    unsigned int i = 0;
+    while( i < type.length() ){
+        if( type[i] == '|' ){
+            types.push_back( temp );
+            temp = "";
+        }else{
+            temp += type[i];
+        }
+        i++;
+    }
+    unsigned int numTypes = (unsigned int)types.size();
+
+    //Search the directory for the files
+    DIR *dir;
+    struct dirent *ent;
+    bool matchFound = false;
+    std::string f = "";
+    if ((dir = opendir ( directoryPath.c_str() )) != NULL) {
+      while ((ent = readdir (dir)) != NULL) {
+          f = ent->d_name;
+          matchFound = false;
+          for(i=0; i<numTypes; i++){
+            if( f != "." && f != ".." ){
+                if( GRT::Util::stringEndsWith(f,types[i]) || types[i] == ".*" ){
+                    matchFound = true;
+                    break;
+                }
+            }
+          }
+          if( matchFound ){
+              filenames.push_back( directoryPath + "/" + ent->d_name );
+          }
+      }
+      closedir (dir);
+    } else {
+      //Failed to open directory
+      perror ("");
+      return false;
+    }
+
+#endif
+
+    return true;
+}
+
+} //End of GRT namespace
+
