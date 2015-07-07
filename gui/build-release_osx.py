@@ -52,7 +52,7 @@ os.system( "make -C " + mainDir + " clean " )
 os.system( "make -C " + mainDir )
 
 #Copy the GRT library into the GUI application for deployment
-#os.system( "cp -fv " + "/usr/local/lib/" + "libgrt.dylib " + "/usr/lib/" )
+os.system( "cp -fv " + "/usr/local/lib/" + "libgrt.dylib " + "/usr/lib/" )
 
 #Run the mac deploy tool so the application can be run on other machines
 print "Running mac deployment..."
