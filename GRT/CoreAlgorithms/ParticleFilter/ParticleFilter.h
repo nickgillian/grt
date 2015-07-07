@@ -780,7 +780,7 @@ protected:
         }
         
         //Resample the weights
-        const unsigned int numRandomParticles = round(numParticles/100.0*10.0);
+        const unsigned int numRandomParticles = (unsigned int) round(numParticles/100.0*10.0);
         for(unsigned int n=0; n<numParticles; n++){
             
             if( numParticles-n > numParticles-numRandomParticles){
