@@ -6,7 +6,7 @@ project(GRT C CXX)
 set(GRT_LIB_NAME grt)
 
 #set the main options
-option(BUILD_EXAMPLES “build-examples” OFF)
+option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
 option(BUILD_STATIC_LIB "build-static-lib" OFF)
