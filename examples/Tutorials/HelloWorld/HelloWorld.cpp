@@ -76,7 +76,7 @@ int main (int argc, const char * argv[])
     
     cout << "Precision: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        cout << "\t" << pipeline.getTestPrecision(  );
+        cout << "\t" << pipeline.getTestPrecision( classLabels[k] );
     }cout << endl;
     
     cout << "Recall: ";
