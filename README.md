@@ -16,6 +16,13 @@ Key things to know about the GRT:
 
 You can find out more about the GRT in our Journal of Machine Learning Research paper:  [grt.pdf](http://jmlr.csail.mit.edu/papers/volume15/gillian14a/gillian14a.pdf)
 
+##Core Resources
+* GRT Wiki: [http://www.nickgillian.com/wiki](http://www.nickgillian.com/wiki) - contains a large number of examples and tutorials.
+* GRT Forum: [http://www.nickgillian.com/forum](http://www.nickgillian.com/forum) - best place to ask questions.
+* GRT API Reference: [http://www.nickgillian.com/archive/wiki/grt/doxygen/index.html](http://www.nickgillian.com/archive/wiki/grt/doxygen/index.html)
+* GRT Source Code: [https://github.com/nickgillian/grt](https://github.com/nickgillian/grt)
+* GRT GUI Download: [http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
+
 ##GRT Architecture
 To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set 
 of core **modules** and a central **gesture recognition pipeline**.
