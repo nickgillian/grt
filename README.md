@@ -154,8 +154,8 @@ wide range of examples and references on the main GRT wiki:
 
 http://www.nickgillian.com/wiki/pmwiki.php?n=GRT.GestureRecognitionToolkit
 
-On UNIX platforms, an examples folder will automatically be generated in the build directory after you successfully build the main GRT library. Example applications can
-then be directly run from this example directory.  To run any of the examples, open terminal in the examples directory and run:
+If you build the GRT using CMake, an examples folder will automatically be generated in the build directory after you successfully build the main GRT library. Example applications can
+then be directly run from this example directory.  To run any of the examples, open terminal in the grt/build/examples directory and run:
 
     ./ExampleName
 
