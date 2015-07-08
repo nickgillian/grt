@@ -1,5 +1,4 @@
 /**
- @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
  
@@ -134,6 +133,16 @@ public:
      @return returns true if the model was loaded successfully, false otherwise
      */
     virtual bool loadModelFromFile(fstream &file);
+
+    /**
+     This function enables multiple random forest models to be merged together.  The model in forest will be combined
+     with this instance.  For example, if this instance has 10 trees, and the other forest has 15 trees, the resulting
+     model will have 25 trees.  Both forests must be trained and have the same number of inputs.
+     
+     @param const RandomForests &forest: another random forest instance that will be merged with this instance
+     @return returns true if the model was combined successfully, false otherwise
+     */
+    bool combineModels( const RandomForests &forest );
     
     /**
      Gets the number of trees in the random forest.
@@ -188,6 +197,14 @@ public:
      @return returns a pointer to a deep copy of the decision tree node
      */
     DecisionTreeNode* deepCopyDecisionTreeNode() const;
+
+    /**
+     Gets a pointer to the tree at the specific index in the forest. NULL will be returned if the model has not been trained or
+     the index is invalid.
+     
+     @return returns a pointer to the tree at the specific index
+     */
+    DecisionTreeNode* getTree( const UINT index ) const;
     
     /**
      Sets the number of trees in the forest.  Changing this value will clear any previously trained model.

@@ -509,6 +509,38 @@ bool RandomForests::loadModelFromFile(fstream &file){
     
     return true;
 }
+
+bool RandomForests::combineModels( const RandomForests &forest ){
+
+    if( !getTrained() ){
+        errorLog << "combineModels( const RandomForests &forest ) - This instance has not been trained!" << endl;
+        return false;
+    }
+
+    if( !forest.getTrained() ){
+        errorLog << "combineModels( const RandomForests &forest ) - This external forest instance has not been trained!" << endl;
+        return false;
+    }
+
+    if( this->getNumInputDimensions() != forest.getNumInputDimensions() ) {
+        errorLog << "combineModels( const RandomForests &forest ) - The number of input dimensions of the external forest (";
+        errorLog << forest.getNumInputDimensions() << ") does not match the number of input dimensions of this instance (";
+        errorLog << this->getNumInputDimensions() << ")!" << endl;
+        return false;
+    }
+
+    //Add the trees in the other forest to this model
+    DecisionTreeNode *node;
+    for(UINT i=0; i<forest.getForestSize(); i++){
+        node = forest.getTree(i);
+        if( node ){
+            this->forest.push_back( node->deepCopy() );
+            forestSize++;
+        }
+    }
+
+    return true;
+}
     
 UINT RandomForests::getForestSize()const{
     return forestSize;
@@ -545,6 +577,13 @@ DecisionTreeNode* RandomForests::deepCopyDecisionTreeNode() const{
     }
     
     return decisionTreeNode->deepCopy();
+}
+
+DecisionTreeNode* RandomForests::getTree( const UINT index ) const{
+
+    if( !trained || index >= forestSize ) return NULL;
+
+    return forest[ index ];
 }
     
 bool RandomForests::setForestSize(const UINT forestSize){
