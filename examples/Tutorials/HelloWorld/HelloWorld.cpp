@@ -38,7 +38,7 @@ int main (int argc, const char * argv[])
     
     //Partition the training data into a training dataset and a test dataset. 80 means that 80%
     //of the data will be used for the training data and 20% will be returned as the test dataset
-    ClassificationData testData = trainingData.partition(80);
+    ClassificationData testData = trainingData.partition( 80 );
     
     //Create a new Gesture Recognition Pipeline using an Adaptive Naive Bayes Classifier
     GestureRecognitionPipeline pipeline;
@@ -86,8 +86,7 @@ int main (int argc, const char * argv[])
     
     cout << "FMeasure: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        UINT classLabel = pipeline.getClassLabels()[k];
-        cout << "\t" << pipeline.getTestFMeasure(classLabel);
+        cout << "\t" << pipeline.getTestFMeasure( classLabels[k] );
     }cout << endl;
     
     MatrixDouble confusionMatrix = pipeline.getTestConfusionMatrix();
