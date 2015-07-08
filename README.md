@@ -17,8 +17,8 @@ Key things to know about the GRT:
 You can find out more about the GRT in our Journal of Machine Learning Research paper:  [grt.pdf](http://jmlr.csail.mit.edu/papers/volume15/gillian14a/gillian14a.pdf)
 
 ##Core Resources
-* GRT Wiki: [http://www.nickgillian.com/wiki](http://www.nickgillian.com/wiki) - contains a large number of examples and tutorials.
-* GRT Forum: [http://www.nickgillian.com/forum](http://www.nickgillian.com/forum) - best place to ask questions.
+* GRT Wiki: [http://www.nickgillian.com/wiki](http://www.nickgillian.com/wiki)
+* GRT Forum: [http://www.nickgillian.com/forum](http://www.nickgillian.com/forum)
 * GRT API Reference: [http://www.nickgillian.com/archive/wiki/grt/doxygen/index.html](http://www.nickgillian.com/archive/wiki/grt/doxygen/index.html)
 * GRT Source Code: [https://github.com/nickgillian/grt](https://github.com/nickgillian/grt)
 * GRT GUI Download: [http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
@@ -118,23 +118,22 @@ int main (int argc, const char * argv[])
 
     //Print some stats about the testing
     cout << "Test Accuracy: " << pipeline.getTestAccuracy() << endl;
+   
+    vector< UINT > classLabels = pipeline.getClassLabels();
 
     cout << "Precision: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        UINT classLabel = pipeline.getClassLabels()[k];
-        cout << "\t" << pipeline.getTestPrecision(classLabel);
+        cout << "\t" << pipeline.getTestPrecision( classLabels[k] );
     }cout << endl;
 
     cout << "Recall: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-         UINT classLabel = pipeline.getClassLabels()[k];
-         cout << "\t" << pipeline.getTestRecall(classLabel);
+         cout << "\t" << pipeline.getTestRecall( classLabels[k] );
     }cout << endl;
 
     cout << "FMeasure: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        UINT classLabel = pipeline.getClassLabels()[k];
-        cout << "\t" << pipeline.getTestFMeasure(classLabel);
+        cout << "\t" << pipeline.getTestFMeasure( classLabels[k] );
     }cout << endl;
 
     MatrixDouble confusionMatrix = pipeline.getTestConfusionMatrix();
@@ -154,6 +153,13 @@ You can find a large number of tutorials and examples in the examples folder.  Y
 wide range of examples and references on the main GRT wiki:
 
 http://www.nickgillian.com/wiki/pmwiki.php?n=GRT.GestureRecognitionToolkit
+
+On UNIX platforms, an examples folder will automatically be generated in the build directory after you successfully build the main GRT library. Example applications can
+then be directly run from this example directory.  To run any of the examples, open terminal in the examples directory and run:
+
+    ./ExampleName
+
+where *ExampleName* is the name of the example application you want to run.
 
 ##Forum
 
