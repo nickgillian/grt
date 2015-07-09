@@ -16,7 +16,7 @@ bool printUsage(){
     infoLog << "\t-m: sets the current application mode, can be: \n";
     infoLog << "\t\t[1] 'train-model': trains a random forest model, using a pre-recorded training dataset.\n";
     infoLog << "\t\t[2] 'combine-models': combines multiple random forest models into a single random forest model.\n";
-    infoLog << "\t\t[2] 'compute-weights': computes the feature weights for the random forest model and saves it to a file.\n";
+    infoLog << "\t\t[3] 'compute-weights': computes the feature weights for the random forest model and saves it to a file.\n";
     infoLog << "\t-f: sets the main filename. \n";
     infoLog << "\t\tIn 'train-model' mode, this sets the name of the file the training data will be loaded from.\n";
     infoLog << "\t\tIn 'combine-models' mode this sets the name of the file the combined model will be saved to.\n";
