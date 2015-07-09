@@ -16,9 +16,11 @@ bool printUsage(){
     infoLog << "\t-m: sets the current application mode, can be: \n";
     infoLog << "\t\t[1] 'train-model': trains a random forest model, using a pre-recorded training dataset.\n";
     infoLog << "\t\t[2] 'combine-models': combines multiple random forest models into a single random forest model.\n";
+    infoLog << "\t\t[2] 'compute-weights': computes the feature weights for the random forest model and saves it to a file.\n";
     infoLog << "\t-f: sets the main filename. \n";
     infoLog << "\t\tIn 'train-model' mode, this sets the name of the file the training data will be loaded from.\n";
     infoLog << "\t\tIn 'combine-models' mode this sets the name of the file the combined model will be saved to.\n";
+    infoLog << "\t\tIn 'compute-weights' mode this sets the name of the file the feature weights results will be saved to.\n";
     infoLog << "\t-d: sets the data directory containing the raw csv files that will be combined into the main dataset, only needed for 'combine-files' mode\n";
     infoLog << "\t\tIn 'combine-models' mode, this sets the data directory containing the random forest model files that will be combined into the main random forest model.\n";
     infoLog << "\t--model: sets the filename the random forests model will be saved to\n";
@@ -32,6 +34,7 @@ bool printUsage(){
 
 bool train( CommandLineParser &parser );
 bool combineModels( CommandLineParser &parser );
+bool computeFeatureWeights( CommandLineParser &parser );
 
 int main(int argc, char * argv[])
 {
@@ -88,6 +91,17 @@ int main(int argc, char * argv[])
             return EXIT_SUCCESS;
         }else{
             errorLog << "Failed to combine models!" << endl;
+            return EXIT_FAILURE;
+        }
+    }
+
+    //Compute feature weights
+    if( mode == "compute-weights" ){
+        if( computeFeatureWeights( parser ) ){
+            infoLog << "Feature Weights Computed" << endl;
+            return EXIT_SUCCESS;
+        }else{
+            errorLog << "Failed to compute feature weights!" << endl;
             return EXIT_FAILURE;
         }
     }
@@ -299,4 +313,72 @@ bool combineModels( CommandLineParser &parser ){
 
     return true;
 }
+
+bool computeFeatureWeights( CommandLineParser &parser ){
+
+    infoLog << "Computing feature weights..." << endl;
+
+    string resultsFilename = "";
+    string modelFilename = "";
+
+    //Get the model filename
+    if( !parser.get("model-filename",modelFilename) ){
+        errorLog << "Failed to parse filename from command line! You can set the model filename using the --model." << endl;
+        printUsage();
+        return false;
+    }
+
+    //Get the results filename
+    if( !parser.get("filename",resultsFilename) ){
+        errorLog << "Failed to parse results filename from command line! You can set the results filename using the -f." << endl;
+        printUsage();
+        return false;
+    }
+
+    //Load the model
+    GestureRecognitionPipeline pipeline;
+
+    if( !pipeline.load( modelFilename ) ){
+        errorLog << "Failed to load model from file: " << modelFilename << endl;
+        printUsage();
+        return false;
+    }
+
+    //Make sure the pipeline contains a random forest model and that it is trained
+    RandomForests *forest = pipeline.getClassifier< RandomForests >();
+
+    if( !forest ){
+        errorLog << "Model loaded, but the pipeline does not contain a RandomForests classifier!" << endl;
+        printUsage();
+        return false;
+    }
+
+    if( !forest->getTrained() ){
+        errorLog << "Model loaded, but the RandomForests classifier is not trained!" << endl;
+        printUsage();
+        return false;
+    }
+
+    //Compute the feature weights
+    VectorDouble weights = forest->getFeatureWeights();
+    if( weights.size() == 0 ){
+        errorLog << "Failed to compute feature weights!" << endl;
+        printUsage();
+        return false;
+    }
+
+    //Save the results to a file
+    fstream file;
+    file.open( resultsFilename.c_str(), fstream::out );
+    
+    const size_t N = weights.size();
+    for(unsigned int i=0; i<N; i++){
+        file << weights[i] << endl;
+    }
+    
+    file.close();
+
+    return true;
+}
+
 
