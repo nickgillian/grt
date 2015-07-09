@@ -54,7 +54,8 @@ bool DecisionTreeClusterNode::computeFeatureWeights( VectorDouble &weights ) con
         return true;
     }
     
-    if( ((UINT)weights.size()) >= featureIndex ){ //Feature index is out of bounds
+    if( featureIndex >= ((UINT)weights.size()) ){ //Feature index is out of bounds
+        warningLog << "computeFeatureWeights( VectorDouble &weights ) - Feature index is greater than weights vector size!" << endl;
         return false;
     }else{
         weights[ featureIndex ]++;
