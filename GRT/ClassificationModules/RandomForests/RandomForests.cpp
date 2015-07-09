@@ -593,7 +593,9 @@ VectorDouble RandomForests::getFeatureWeights( const bool normWeights ) const{
     VectorDouble weights( numInputDimensions, 0 );
 
     for(UINT i=0; i<forestSize; i++){
-        forest[i]->computeFeatureWeights( weights );
+        if( !forest[i]->computeFeatureWeights( weights ) ){
+            warningLog << "getFeatureWeights( const bool normWeights ) - Failed to compute weights for tree: " << i << endl;
+        }
     }
 
     //Normalize the weights
