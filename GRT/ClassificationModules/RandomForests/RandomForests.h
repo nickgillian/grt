@@ -190,13 +190,6 @@ public:
      @return returns the removeFeaturesAtEachSpilt parameter
      */
     bool getRemoveFeaturesAtEachSpilt() const;
-    
-    /**
-     Gets a pointer to the decision tree node. NULL will be returned if the decision tree node has not been set.
-     
-     @return returns a pointer to a deep copy of the decision tree node
-     */
-    DecisionTreeNode* deepCopyDecisionTreeNode() const;
 
     /**
      Gets a pointer to the tree at the specific index in the forest. NULL will be returned if the model has not been trained or
@@ -205,6 +198,27 @@ public:
      @return returns a pointer to the tree at the specific index
      */
     DecisionTreeNode* getTree( const UINT index ) const;
+
+    /**
+     Gets a pointer to the decision tree node. NULL will be returned if the decision tree node has not been set.
+     
+     @return returns a pointer to a deep copy of the decision tree node
+     */
+    DecisionTreeNode* deepCopyDecisionTreeNode() const;
+
+    /**
+     Returns a vector of weights reflecting the importance of each feature in the random forest model.  The size of the vector
+     will match the number of inputs (i.e. features) to the classifier.  The value in each element in the vector represents the 
+     weight (i.e. importance) of the corresponding feature.  A higher value represents a higher weight.
+
+     The vector will be empty if the model has not been trained.
+
+     @note This method only works with DecisionTreeNodes that support the getFeatureWeight() function. 
+     
+     @param const bool normWeights: if true, the weights will be normalized so they sum to 1.0
+     @return returns a pointer to a deep copy of the decision tree node
+     */
+    VectorDouble getFeatureWeights( const bool normWeights = true ) const;
     
     /**
      Sets the number of trees in the forest.  Changing this value will clear any previously trained model.

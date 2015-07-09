@@ -64,6 +64,15 @@ public:
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
     virtual bool predict(const VectorDouble &x,VectorDouble &y);
+
+    /**
+     This function recursively computes the weights of features used for classification nodes and stores the results in the weights vector.
+     This function should be overwritten by the inheriting class.
+  
+     @param VectorDouble &weights: the input vector that will be used to store the weights
+     @return returns true if the weights were updated, false otherwise
+     */
+    virtual bool computeFeatureWeights( VectorDouble &weights ) const;
     
     /**
      This functions cleans up any dynamic memory assigned by the node.

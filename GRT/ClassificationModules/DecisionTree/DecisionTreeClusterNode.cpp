@@ -48,6 +48,28 @@ bool DecisionTreeClusterNode::print() const{
     return false;
 }
 
+bool DecisionTreeClusterNode::computeFeatureWeights( VectorDouble &weights ) const{
+
+    if( isLeafNode ){ //If we reach a leaf node, no weight update needed
+        return true;
+    }
+    
+    if( ((UINT)weights.size()) >= featureIndex ){ //Feature index is out of bounds
+        return false;
+    }else{
+        weights[ featureIndex ]++;
+    }
+    
+    if( leftChild ){ //Recursively compute the weights for the left child
+        leftChild->computeFeatureWeights( weights );
+    }
+    if( rightChild ){ //Recursively compute the weights for the right child
+        rightChild->computeFeatureWeights( weights );
+    }
+
+    return true;
+}
+
 bool DecisionTreeClusterNode::getModel(ostream &stream) const{
 
     string tab = "";

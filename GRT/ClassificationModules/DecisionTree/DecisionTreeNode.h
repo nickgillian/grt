@@ -79,7 +79,7 @@ public:
      @return returns true if the best spliting algorithm found a split, false otherwise
      */
     virtual bool computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError );
-    
+
     /**
      This functions cleans up any dynamic memory assigned by the node.
      It will recursively clear the memory for the left and right child nodes.

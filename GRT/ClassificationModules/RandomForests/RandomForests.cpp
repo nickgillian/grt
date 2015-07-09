@@ -585,6 +585,30 @@ DecisionTreeNode* RandomForests::getTree( const UINT index ) const{
 
     return forest[ index ];
 }
+
+VectorDouble RandomForests::getFeatureWeights( const bool normWeights ) const{
+
+    if( !trained ) return VectorDouble();
+
+    VectorDouble weights( numInputDimensions, 0 );
+
+    for(UINT i=0; i<forestSize; i++){
+        forest[i]->computeFeatureWeights( weights );
+    }
+
+    //Normalize the weights
+    if( normWeights ){
+        double sum = Util::sum( weights );
+        if( sum > 0.0 ){
+            const double norm = 1.0 / sum;
+            for(UINT j=0; j<numInputDimensions; j++){
+                weights[j] *= norm;
+            }
+        }
+    }
+
+    return weights;
+}
     
 bool RandomForests::setForestSize(const UINT forestSize){
     if( forestSize > 0 ){
