@@ -27,8 +27,25 @@ int main(int argc, char * argv[])
     const string inputFilename = argv[1];
     const string outputFilename1 = argv[2];
     const string outputFilename2 = argv[3];
-    const unsigned int splitPercentage = 80;
-    const bool useStratifiedSampling = true;
+    unsigned int splitPercentage = 80;
+    bool useStratifiedSampling = true;
+
+    //Create an instance of the parser
+    CommandLineParser parser;
+
+    //Disable warning messages
+    parser.setWarningLoggingEnabled( false );
+
+    //Add some options and identifiers that can be used to get the results
+    parser.addOption( "--split-percentage", "split-percentage" );
+    parser.addOption( "--use-stratified-sampling", "stratified-sampling" );
+
+    //Parse the command line
+    parser.parse( argc, argv );
+
+    //Get the options
+    parser.get( "split-percentage", splitPercentage, (UINT)80 );
+    parser.get( "stratified-sampling", useStratifiedSampling, true );
 
     infoLog << "- Loading main dataset: " << inputFilename << endl;
 
