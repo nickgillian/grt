@@ -37,8 +37,8 @@ int main(int argc, char * argv[])
     parser.setWarningLoggingEnabled( false );
 
     //Add some options and identifiers that can be used to get the results
-    parser.addOption( "--split-percentage", "split-percentage" );
-    parser.addOption( "--use-stratified-sampling", "stratified-sampling" );
+    parser.addOption( "--split-perc", "split-percentage" );
+    parser.addOption( "--use-strat", "stratified-sampling" );
 
     //Parse the command line
     parser.parse( argc, argv );
