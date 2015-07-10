@@ -18,7 +18,7 @@ bool printUsage(){
 int main(int argc, char * argv[])
 {
 
-    if( argc != 4 ){
+    if( argc < 4 ){
         errorLog << "Not enough input arguments!" << endl;
         printUsage();
         return EXIT_FAILURE;
