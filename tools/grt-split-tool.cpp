@@ -64,7 +64,6 @@ int main(int argc, char * argv[])
     infoLog << "- Data split." << endl;
     infoLog << "- Main Dataset. Number of samples: " << data.getNumSamples() << endl;
     infoLog << "- Subset. Number of samples: " << subset.getNumSamples() << endl;
-    infoLog << endl;
 
     //Save the new datasets
     infoLog << "- Saving main dataset to file: " << outputFilename1 << endl;
