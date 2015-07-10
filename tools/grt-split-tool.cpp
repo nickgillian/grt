@@ -44,17 +44,19 @@ int main(int argc, char * argv[])
 
     ClassificationData subset = data.partition( splitPercentage, useStratifiedSampling );
 
-    infoLog << "- Data split. Stats:\n";
+    infoLog << "- Data split." << endl;
     infoLog << "- Main Dataset. Number of samples: " << data.getNumSamples() << endl;
     infoLog << "- Subset. Number of samples: " << subset.getNumSamples() << endl;
     infoLog << endl;
 
     //Save the new datasets
+    infoLog << "- Saving main dataset to file: " << outputFilename1 << endl;
     if( !data.save( outputFilename1 ) ){
         errorLog << "Failed to save output data: " << outputFilename1 << endl;
         return EXIT_FAILURE; 
     }
 
+    infoLog << "- Saving subset to file: " << outputFilename2 << endl;
     if( !subset.save( outputFilename2 ) ){
         errorLog << "Failed to save output data: " << outputFilename2 << endl;
         return EXIT_FAILURE; 
