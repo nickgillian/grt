@@ -79,6 +79,7 @@
 #include "CoreAlgorithms/PrincipalComponentAnalysis/PrincipalComponentAnalysis.h"
 #include "CoreAlgorithms/Tree/Tree.h"
 #include "CoreAlgorithms/MeanShift/MeanShift.h"
+#include "CoreAlgorithms/GridSearch/GridSearch.h"
 
 //Include the PreProcessing Modules
 #include "PreProcessingModules/Derivative.h"
