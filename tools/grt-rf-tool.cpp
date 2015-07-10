@@ -1,7 +1,6 @@
 /**
- @author  Nicholas Gillian <nick@nickgillian.com>
+ @author Nicholas Gillian <nick@nickgillian.com>
  @brief This file implements a basic tool for processing data files and training a random forest model.
- @date 7-July-2015
 */
 
 #include <GRT/GRT.h>

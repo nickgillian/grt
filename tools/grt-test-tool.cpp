@@ -1,7 +1,6 @@
 /**
  @author Nicholas Gillian <nick@nickgillian.com>
  @brief This file implements a basic tool for testing classification models.
- @date 10-July-2015
 */
 
 #include <GRT/GRT.h>
