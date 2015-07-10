@@ -28,6 +28,7 @@ bool printUsage(){
     infoLog << "\t--max-depth: sets the maximum depth the forest can reach, only used for 'train-model'\n";
     infoLog << "\t--min-node-size: sets the minimum number of training samples allowed per node, only used for 'train-model'\n";
     infoLog << "\t--num-splits: sets the number of random splits allowed per node, only used for 'train-model'\n";
+    infoLog << "\t--remove-features: sets if features should be removed at each split [1=true,0=false], only used for 'train-model'\n";
     infoLog << endl;
     return true;
 }
@@ -61,6 +62,7 @@ int main(int argc, char * argv[])
     parser.addOption( "--max-depth", "max-depth" );
     parser.addOption( "--min-node-size", "min-node-size" );
     parser.addOption( "--num-splits", "num-splits" );
+    parser.addOption( "--remove-features", "remove-features" );
 
     //Parse the command line
     parser.parse( argc, argv );
@@ -128,6 +130,8 @@ bool train( CommandLineParser &parser ){
     unsigned int defaultMaxDepth = 10;
     unsigned int defaultMinNodeSize = 50;
     unsigned int defaultNumSplits = 100;
+    bool removeFeatures = false;
+    bool defaultRemoveFeatures = false;
 
     //Get the filename
     if( !parser.get("filename",trainDatasetFilename) ){
@@ -150,6 +154,9 @@ bool train( CommandLineParser &parser ){
 
     //Get the number of random splits
     parser.get("num-splits",numSplits,defaultNumSplits);
+    
+    //Get the remove features
+    parser.get("remove-features",removeFeatures,defaultRemoveFeatures);
 
     //Load some training data to train the classifier
     ClassificationData trainingData;
@@ -180,7 +187,11 @@ bool train( CommandLineParser &parser ){
     //Set the minimum number of samples allowed per node
     forest.setMinNumSamplesPerNode( minNodeSize );
 
+    //Set the number of random splits used per node
     forest.setNumRandomSplits( numSplits );
+
+    //Set if selected features should be removed at each node
+    forest.setRemoveFeaturesAtEachSpilt( removeFeatures );
 
     //Add the classifier to a pipeline
     GestureRecognitionPipeline pipeline;
@@ -204,7 +215,6 @@ bool train( CommandLineParser &parser ){
     }else warningLog << "Failed to save model to file: " << modelFilename << endl;
 
     infoLog << "- TrainingTime: " << pipeline.getTrainingTime() << endl;
-    infoLog << "- NumThreads: " << ThreadPool::getThreadPoolSize() << endl;
 
     return true;
 }
