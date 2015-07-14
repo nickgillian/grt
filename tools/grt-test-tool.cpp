@@ -132,6 +132,34 @@ bool saveResults( const GestureRecognitionPipeline &pipeline, const string &file
 
     file << pipeline.getTestAccuracy() << endl;
 
+    vector< UINT > classLabels = pipeline.getClassLabels();
+
+    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
+        file << pipeline.getTestPrecision( classLabels[k] );
+        if( k+1 < pipeline.getNumClassesInModel() ) file << "\t";
+        else file << endl;
+    }
+
+    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
+        file << pipeline.getTestRecall( classLabels[k] );
+        if( k+1 < pipeline.getNumClassesInModel() ) file << "\t";
+        else file << endl;
+    }
+
+    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
+        file << pipeline.getTestFMeasure( classLabels[k] );
+        if( k+1 < pipeline.getNumClassesInModel() ) file << "\t";
+        else file << endl;
+    }
+
+    MatrixDouble confusionMatrix = pipeline.getTestConfusionMatrix();
+    for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
+        for(UINT j=0; j<confusionMatrix.getNumCols(); j++){
+            file << confusionMatrix[i][j];
+            if( j+1 < confusionMatrix.getNumCols() ) file << "\t";
+        }file << endl;
+    }
+
     file.close();
 
     infoLog << "Results saved." << endl;
