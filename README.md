@@ -6,7 +6,7 @@ Build Status:
 * Master branch: 
   * ![Master Build Status](https://travis-ci.org/nickgillian/grt.svg?branch=master)
 * Dev branch: 
-  *![Dev Build Status](https://travis-ci.org/nickgillian/grt.svg?branch=dev)
+  * ![Dev Build Status](https://travis-ci.org/nickgillian/grt.svg?branch=dev)
 
 Key things to know about the GRT:
 * The toolkit consists of two parts: a comprehensive **C++ API** and a front-end **graphical user interface (GUI)**. You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded here: [download GUI](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
