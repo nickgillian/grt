@@ -27,11 +27,12 @@ namespace GRT{
 //Register the DTW module with the Classifier base class
 RegisterClassifierModule< DTW > DTW::registerModule("DTW");
 
-DTW::DTW(bool useScaling,bool useNullRejection,double nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,double radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor)
+DTW::DTW(bool useScaling,bool useNullRejection,double nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,double radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,double nullRejectionLikelihoodThreshold)
 {
     this->useScaling=useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
+	this->nullRejectionLikelihoodThreshold = nullRejectionLikelihoodThreshold;
     this->rejectionMode = rejectionMode;
     this->constrainWarpingPath = constrainWarpingPath;
     this->radius = radius;
@@ -80,7 +81,6 @@ DTW& DTW::operator=(const DTW &rhs){
         this->warpPaths = rhs.warpPaths;
         this->continuousInputDataBuffer = rhs.continuousInputDataBuffer;
         this->numTemplates = rhs.numTemplates;
-        this->rejectionMode = rhs.rejectionMode;
         this->useSmoothing = rhs.useSmoothing;
         this->useZNormalisation = rhs.useZNormalisation;
         this->constrainZNorm = rhs.constrainZNorm;
@@ -94,6 +94,7 @@ DTW& DTW::operator=(const DTW &rhs){
         this->smoothingFactor = rhs.smoothingFactor;
         this->distanceMethod = rhs.distanceMethod;
         this->rejectionMode = rhs.rejectionMode;
+		this->nullRejectionLikelihoodThreshold = rhs.nullRejectionLikelihoodThreshold;
         this->averageTemplateLength = rhs.averageTemplateLength;
 
 	    //Copy the classifier variables
@@ -114,7 +115,6 @@ bool DTW::deepCopyFrom(const Classifier *classifier){
         this->warpPaths = ptr->warpPaths;
         this->continuousInputDataBuffer = ptr->continuousInputDataBuffer;
         this->numTemplates = ptr->numTemplates;
-        this->rejectionMode = ptr->rejectionMode;
         this->useSmoothing = ptr->useSmoothing;
         this->useZNormalisation = ptr->useZNormalisation;
         this->constrainZNorm = ptr->constrainZNorm;
@@ -128,6 +128,7 @@ bool DTW::deepCopyFrom(const Classifier *classifier){
         this->smoothingFactor = ptr->smoothingFactor;
         this->distanceMethod = ptr->distanceMethod;
         this->rejectionMode = ptr->rejectionMode;
+		this->nullRejectionLikelihoodThreshold = ptr->nullRejectionLikelihoodThreshold;
         this->averageTemplateLength = ptr->averageTemplateLength;
         
 	    //Copy the classifier variables
@@ -444,11 +445,11 @@ bool DTW::predict_(MatrixDouble &inputTimeSeries){
                 else predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
                 break;
             case CLASS_LIKELIHOODS:
-                if( maxLikelihood >= 0.99 )  predictedClassLabel = templatesBuffer[ maxLikelihoodIndex ].classLabel;
+                if( maxLikelihood >= nullRejectionLikelihoodThreshold)  predictedClassLabel = templatesBuffer[ maxLikelihoodIndex ].classLabel;
                 else predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
                 break;
             case THRESHOLDS_AND_LIKELIHOODS:
-                if( bestDistance <= nullRejectionThresholds[ closestTemplateIndex ] && maxLikelihood >= 0.99 )
+                if( bestDistance <= nullRejectionThresholds[ closestTemplateIndex ] && maxLikelihood >= nullRejectionLikelihoodThreshold)
                     predictedClassLabel = templatesBuffer[ closestTemplateIndex ].classLabel;
                 else predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
                 break;
@@ -1222,6 +1223,12 @@ bool DTW::setRejectionMode(UINT rejectionMode){
         return true;
     }
     return false;
+}
+
+bool DTW::setNullRejectionThreshold(double nullRejectionLikelihoodThreshold)
+{
+	this->nullRejectionLikelihoodThreshold = nullRejectionLikelihoodThreshold;
+	return true;
 }
     
 bool DTW::setOffsetTimeseriesUsingFirstSample(bool offsetUsingFirstSample){
