@@ -104,8 +104,9 @@ public:
      @param bool offsetUsingFirstSample: sets if each timeseries should be offset by the first sample in the timeseries. Default value = false
      @param bool useSmoothing: sets if the input timeseries should be smoothed (i.e. averaged and downsampled). Default value = false
      @param UINT smoothingFactor: controls the amount of downsampling if the useSmoothing parameter is set to true. Default value = 5
+	 @param double nullRejectionLikelihoodThreshold: set the null rejection threshold for likelihoods when CLASS_LIKELIHOODS or THRESHOLDS_AND_LIKELIHOODS modes are used for rejectionMode. Default value = 0.99
      */
-	DTW(bool useScaling=false,bool useNullRejection=false,double nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,double radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5);
+	DTW(bool useScaling=false,bool useNullRejection=false,double nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,double radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5, double nullRejectionLikelihoodThreshold = 0.99);
 	
     /**
      Default copy constructor
@@ -220,6 +221,13 @@ public:
      @return returns true if the rejection mode was updated successfully, false otherwise
      */
     bool setRejectionMode(UINT rejectionMode);
+
+	/**
+	Sets the rejection threshold for rejections based on class likelihood.
+
+	@return returns true if the rejection threshold was updated successfully, false otherwise
+	*/
+	bool setNullRejectionThreshold(double nullRejectionLikelihoodThreshold);
     
     /**
      Sets if each timeseries should be offset by the first sample in the timeseries.
@@ -366,7 +374,8 @@ protected:
     double              radius;
 	double 				trimThreshold;			//Sets the threshold under which training data should be trimmed (default 0.1)
 	double				maximumTrimPercentage;  //Sets the maximum amount of data that can be trimmed for each training sample (default 20)
-	
+	double				nullRejectionLikelihoodThreshold; //Sets the threshold for null rejection based on likelihoods
+
 	UINT				smoothingFactor;		//The smoothing factor if smoothing is used
 	UINT				distanceMethod;			//The distance method to be used (should be of enum DISTANCE_METHOD)
 	UINT				averageTemplateLength;	//The overall average template length (over all the templates)
