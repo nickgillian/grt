@@ -2,9 +2,7 @@
 
 The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, C++ machine learning library designed for real-time gesture recognition.
 
-You can find the official git repository for the GRT here: [https://github.com/nickgillian/grt](https://github.com/nickgillian/grt) 
-
-It is also mirrored on googlecode: [https://code.google.com/p/gesture-recognition-toolkit/](https://code.google.com/p/gesture-recognition-toolkit/) 
+Build Status: ![Build Status](https://travis-ci.org/nickgillian/grt.svg)
 
 Key things to know about the GRT:
 * The toolkit consists of two parts: a comprehensive **C++ API** and a front-end **graphical user interface (GUI)**. You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded here: [download GUI](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
