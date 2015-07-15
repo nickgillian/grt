@@ -14,7 +14,14 @@ Key things to know about the GRT:
 * The input to the GRT can be any *N*-dimensional floating-point vector - this means you can use the GRT with Cameras, Kinect, Leap Motion, accelerometers, or any other custom sensor you might have built
 * The toolkit reserves the class label value of zero as a special **null gesture** class label - you should therefore avoid using the gesture label of zero in your training data
 * Training data and models are saved as custom **.grt** files.  These consist of a simple header followed by the main dataset.  In addition to the grt files, you can also import/export data via CSV files by using the *.csv* file extension when saving/loading files
-* Almost all the GRT classes support the following functions: **predict( ... )**, **train( ... )**, **save( ... )**, **load( ... )**, **reset()** and **clear()**.  Functions with an underscore, such as **train_( ... )**, pass the input arguments as references and are therefore more efficient to use with very large datasets
+* Almost all the GRT classes support the following functions: 
+  * **predict( ... )**: uses the input data (...) and a pre-trained model to perform a prediction, such as classification or regression
+  * **train( ... )**: uses the input data (...) to train a new model that can then be used for real-time prediction
+  * **save( ... )**: saves a model or dataset to a file.  The file format can be a custom GRT file (.grt) or a CSV file (.csv)
+  * **load( ... )**: loads a pre-trained model or dataset from a file. The file format can be a custom GRT file (.grt) or a CSV file (.csv)
+  * **reset()**: resets a module, for example resetting a filter module would clear the values in it's history buffer and sets them to zero
+  * **clear()**: clears a module, removing all pre-trained models, weights, etc.. For example, clearing a filter module would delete the filter coefficients, history buffer, etc.
+* Functions with an underscore, such as **train_( ... )**, pass the input arguments as references and are therefore more efficient to use with very large datasets
 
 You can find out more about the GRT in our Journal of Machine Learning Research paper:  [grt.pdf](http://jmlr.csail.mit.edu/papers/volume15/gillian14a/gillian14a.pdf)
 
