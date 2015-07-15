@@ -3302,6 +3302,8 @@ void GestureRecognitionPipeline::deleteAllContextModules(){
     
 bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorDouble &precisionCounter,VectorDouble &recallCounter,double &rejectionPrecisionCounter,double &rejectionRecallCounter,VectorDouble &confusionMatrixCounter){
 
+	const bool nullRejectionEnabled = classifier->getNullRejectionEnabled();
+
     //Find the index of the classLabel
     UINT predictedClassLabelIndex =0;
     bool predictedClassLabelIndexFound = false;
@@ -3313,7 +3315,7 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
         }
     }
         
-    if( !predictedClassLabelIndexFound ){
+    if( !predictedClassLabelIndexFound && (nullRejectionEnabled == false || predictedClassLabel != GRT_DEFAULT_NULL_CLASS_LABEL) ){
         errorLog << "Failed to find class label index for label: " << predictedClassLabel << endl;
         return false;
     }
@@ -3331,8 +3333,6 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
     if( classLabel == predictedClassLabel ){
         testAccuracy++;
     }
-
-    const bool nullRejectionEnabled = classifier->getNullRejectionEnabled();
 
     if( nullRejectionEnabled == false ){
 
