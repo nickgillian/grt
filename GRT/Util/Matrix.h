@@ -471,6 +471,13 @@ public:
 		//If the number of columns has not been set, then we can not do anything
 		if( cols == 0 ) return false;
 		
+        // If capacity greater than rows, then we have no intention to alloc more
+        // memmory for the capacity right now.
+        // If capacity is 0, er, are you sure?
+        if (capacity <= 0 || capacity >= rows) {
+            return false;
+        }
+        
 		//Reserve the data and copy and existing data
         unsigned int i=0;
 		T* tmpDataPtr = new T[ capacity * cols ];
@@ -487,7 +494,8 @@ public:
         }
 
 		//Copy the existing data into the new memory
-		for(i=0; i<size; i++)
+        unsigned int temDataSize = capacity * cols;
+		for(i=0; i<temDataSize; i++)
 				tmpDataPtr[i] = dataPtr[i];
 
 		//Delete the original data and copy the pointer
@@ -496,14 +504,133 @@ public:
 		dataPtr = tmpDataPtr;
         rowPtr = tmpRowPtr;
 		
-		//Store the new capacity
-		this->capacity = capacity;
+        // Restore the new capacity and size
+        this->capacity = capacity;
+        rows = capacity;
         
         //Store the size
         size = rows * cols;
 		
 		return true;
 	}
+    
+    /**
+     This function reserves a consistent block of data that end of the Matrix,
+     so new rows can more effecitenly be pushed_back into the Matrix.
+     The capacity variable represents the number of rows you want to reserve,
+     based on the current number of columns.
+     
+     @param const unsigned int capacity: the new capacity value
+     @return returns true if the data was reserved, false otherwise
+    */
+    bool reserveLast(const unsigned int capacity){
+        
+        //If the number of columns has not been set, then we can not do anything
+        if( cols == 0 ) return false;
+        
+        // If capacity greater than rows, then we have no intention to alloc more
+        // memmory for the capacity right now.
+        // If capacity is 0, er, are you sure?
+        if (capacity <= 0 || capacity >= rows) {
+            return false;
+        }
+        
+        //Reserve the data and copy and existing data
+        unsigned int i = 0;
+        unsigned int temDataSize = capacity * cols;
+        T* tmpDataPtr = new T[ temDataSize ];
+        T** tmpRowPtr = new T*[ capacity ];
+        if( tmpDataPtr == NULL || tmpRowPtr == NULL ){
+            //If NULL then we have run out of memory
+            return false;
+        }
+        
+        //Setup the row pointers
+        unsigned int idx = (rows - capacity)*rows;
+        T *p = &(tmpDataPtr[idx]);
+        for(i=0; i<capacity; i++){
+            tmpRowPtr[i] = p;
+            p += cols;
+        }
+        
+        //Copy the existing data into the new memory
+        for(i=0; i<temDataSize; i++)
+            tmpDataPtr[i] = dataPtr[ idx+i ];
+        
+        //Delete the original data and copy the pointer
+        delete[] dataPtr;
+        delete[] rowPtr;
+        dataPtr = tmpDataPtr;
+        rowPtr = tmpRowPtr;
+        
+        // Restore the new capacity and size
+        this->capacity = capacity;
+        rows = capacity;
+        
+        //Store the size
+        size = rows * cols;
+        
+        return true;
+    }
+    
+    /**
+     This function trims a consistent block of data of the Matrix.
+     The length variable represents the number of rows you want to trim, based
+     on the current number of columns.
+     
+     @param const unsigned int length: the length of datas will be trimmed.
+     @return returns true if the data was trimmed, false otherwise.
+    */
+    bool trim(const unsigned int length) {
+        //If the number of columns has not been set, then we can not do anything
+        if( cols == 0 ) return false;
+        
+        // If length greater than rows, then we just clear the Matrix
+        if (length >= rows) {
+            clear();
+            return true;
+        }
+        
+        // If length is 0, er, are you sure?
+        if( length <= 0 ) return false;
+        
+        //Reserve the data and copy and existing data
+        unsigned int i = 0;
+        unsigned int capacity = rows - length;
+        unsigned int temDataSize = capacity * cols;
+        T* tmpDataPtr = new T[ temDataSize ];
+        T** tmpRowPtr = new T*[ capacity ];
+        if( tmpDataPtr == NULL || tmpRowPtr == NULL ){
+            //If NULL then we have run out of memory
+            return false;
+        }
+        
+        //Setup the row pointers
+        T *p = &(tmpDataPtr[0]);
+        for(i=0; i<capacity; i++){
+            tmpRowPtr[i] = p;
+            p += cols;
+        }
+        
+        //Copy the existing data into the new memory
+        for(i=0; i<temDataSize; i++)
+            tmpDataPtr[i] = dataPtr[i];
+        
+        //Delete the original data and copy the pointer
+        delete[] dataPtr;
+        delete[] rowPtr;
+        dataPtr = tmpDataPtr;
+        rowPtr = tmpRowPtr;
+        
+        // Restore the new capacity and size
+        this->capacity = capacity;
+        rows = capacity;
+        
+        //Store the size
+        size = rows * cols;
+        
+        return true;
+    }
 
     /**
      Cleans up any dynamic memory and sets the number of rows and columns in the matrix to zero
