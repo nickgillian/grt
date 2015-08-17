@@ -706,22 +706,31 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
 
     if( node == NULL )
         return NULL;
+
+    //Get the class probabilities
+    VectorDouble classProbs = trainingData.getClassProbabilities(); 
     
     //Set the parent
     node->initNode( parent, depth, nodeID );
     
     //If all the training data belongs to the same class or there are no features left then create a leaf node and return
     if( trainingData.getNumClasses() == 1 || features.size() == 0 || M < minNumSamplesPerNode || depth >= maxDepth ){
-        
+       
         //Set the node
-        node->setLeafNode( trainingData.getNumSamples(), trainingData.getClassProbabilities( classLabels ) );
+        node->setLeafNode( trainingData.getNumSamples(), classProbs );
         
         //Build the null cluster if null rejection is enabled
         if( useNullRejection ){
             nodeClusters[ nodeID ] = trainingData.getMean();
         }
         
-        Classifier::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << trainingData.getNumSamples() << endl;
+        Classifier::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << trainingData.getNumSamples();
+
+        Classifier::trainingLog << " Class Probabilities: ";
+        for(size_t k=0; k<classProbs.size(); k++){
+            Classifier::trainingLog << classProbs[k] << " ";
+        }
+        Classifier::trainingLog << endl;
         
         return node;
     }
@@ -735,7 +744,12 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
         return NULL;
     }
     
-    Classifier::trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " MinError: " << minError << endl;
+    Classifier::trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " MinError: " << minError;
+    Classifier::trainingLog << " Class Probabilities: ";
+    for(size_t k=0; k<classProbs.size(); k++){
+        Classifier::trainingLog << classProbs[k] << " ";
+    }
+    Classifier::trainingLog << endl;
     
     //Remove the selected feature so we will not use it again
     if( removeFeaturesAtEachSpilt ){
