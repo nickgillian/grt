@@ -176,7 +176,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
     for(UINT i=0; i<forestSize; i++){
         
         //Get a bootstrapped dataset
-        ClassificationData data = trainingData.getBootstrappedDataset();
+        ClassificationData data = trainingData.getBootstrappedDataset( true );
         
         DecisionTree tree;
         tree.setDecisionTreeNode( *decisionTreeNode );
