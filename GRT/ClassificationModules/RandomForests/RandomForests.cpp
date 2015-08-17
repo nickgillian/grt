@@ -176,8 +176,15 @@ bool RandomForests::train_(ClassificationData &trainingData){
     for(UINT i=0; i<forestSize; i++){
         
         //Get a bootstrapped dataset
-        ClassificationData data = trainingData.getBootstrappedDataset( true );
-        
+        ClassificationData data = trainingData.getBootstrappedDataset( trainingData.getNumSamples(), true );
+
+        std::vector< ClassTracker > tracker = data.getClassTracker();
+        infoLog << "- Num training samples: " << data.getNumSamples() << endl;
+        infoLog << "- Class stats: " << endl;
+        for(size_t i=0; i<tracker.size(); i++){
+            infoLog << "- class " << tracker[i].classLabel << " number of samples: " << tracker[i].counter << endl;
+        }
+     
         DecisionTree tree;
         tree.setDecisionTreeNode( *decisionTreeNode );
         tree.enableScaling( false ); //We have already scaled the training data so we do not need to scale it again
