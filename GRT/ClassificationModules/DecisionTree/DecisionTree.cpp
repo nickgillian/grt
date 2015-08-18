@@ -708,7 +708,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
         return NULL;
 
     //Get the class probabilities
-    VectorDouble classProbs = trainingData.getClassProbabilities(); 
+    VectorDouble classProbs = trainingData.getClassProbabilities( classLabels ); 
     
     //Set the parent
     node->initNode( parent, depth, nodeID );
