@@ -723,8 +723,14 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
         if( useNullRejection ){
             nodeClusters[ nodeID ] = trainingData.getMean();
         }
+     
+        string info = "Reached leaf node.";
+        if( trainingData.getNumClasses() == 1 ) info = "Reached pure leaf node.";
+        else if( features.size() == 0 ) info = "Reached leaf node, no remaining features.";
+        else if( M < minNumSamplesPerNode ) info = "Reached leaf node, hit min-samples-per-node limit.";
+        else if( depth >= maxDepth ) info = "Reached leaf node, max depth reached.";
         
-        Classifier::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << trainingData.getNumSamples();
+        Classifier::trainingLog << info << " Depth: " << depth << " NumSamples: " << trainingData.getNumSamples();
 
         Classifier::trainingLog << " Class Probabilities: ";
         for(size_t k=0; k<classProbs.size(); k++){
