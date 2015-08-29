@@ -1,3 +1,9 @@
+# Android port of the Gesture Recognition Toolkit
+
+as described [http://hollyhook.de/wp/grt-for-android/]
+extended and fixed
+
+
 # Gesture Recognition Toolkit (GRT)
 
 The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, C++ machine learning library designed for real-time gesture recognition.
