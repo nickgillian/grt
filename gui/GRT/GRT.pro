@@ -41,7 +41,6 @@ macx: TEMPLATE = app
 
 #OSX Include/Link
 macx{
- message("* macx")
  #Add the default include and lib directories (we assume boost and GRT are installed here)
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
@@ -58,7 +57,6 @@ macx{
 }
 
 android {
-    message("* Using settings for Android.")
     #Add the base oscpack directory
     INCLUDEPATH += OSC/oscpack/include
     USE_GRT_SOURCE_CODE = "true"
@@ -66,7 +64,6 @@ android {
 
 #Linux pkgconfig
 unix:!macx:!android{
- message("* unix:!macx")
  #Add the defauly include and lib directories (we assume boost and GRT are installed here)
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
@@ -101,14 +98,12 @@ win32{
 
 #If USE_GRT_LIB is defined, then we add the prebuilt GRT lib
 defined(USE_GRT_LIB,var){
- message("* Use Grt Lib")
  #Add the main GRT library, you should have already compiled and install this (using the main GRT cmake file)
  LIBS += -lgrt
 }
 
 #If USE_GRT_SOURCE_CODE is defined, then we add the GRT source code to the project
 defined(USE_GRT_SOURCE_CODE,var){
- message("* Use Grt source")
  #Include the main GRT header
  HEADERS += ../../GRT/GRT.h
 
@@ -256,7 +251,6 @@ defined(USE_GRT_SOURCE_CODE,var){
 
 #Add the custom networking code, based on the OS
 unix{
- message("* unix2")
  SOURCES += OSC/oscpack/include/ip/posix/UdpSocket.cpp
  SOURCES += OSC/oscpack/include/ip/posix/NetworkingUtils.cpp
 }
