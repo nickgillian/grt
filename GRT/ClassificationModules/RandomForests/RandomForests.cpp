@@ -175,9 +175,9 @@ bool RandomForests::train_(ClassificationData &trainingData){
     //Train the random forest
     for(UINT i=0; i<forestSize; i++){
         
-        //Get a bootstrapped dataset
-        ClassificationData data = trainingData.getBootstrappedDataset();
-        
+        //Get a balanced bootstrapped dataset
+        ClassificationData data = trainingData.getBootstrappedDataset( trainingData.getNumSamples(), true );
+ 
         DecisionTree tree;
         tree.setDecisionTreeNode( *decisionTreeNode );
         tree.enableScaling( false ); //We have already scaled the training data so we do not need to scale it again

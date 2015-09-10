@@ -167,10 +167,15 @@ bool train( CommandLineParser &parser ){
     }
 
     const unsigned int N = trainingData.getNumDimensions();
+    std::vector< ClassTracker > tracker = trainingData.getClassTracker();
     infoLog << "- Num training samples: " << trainingData.getNumSamples() << endl;
     infoLog << "- Num dimensions: " << N << endl;
     infoLog << "- Num classes: " << trainingData.getNumClasses() << endl;
-
+    infoLog << "- Class stats: " << endl;
+    for(size_t i=0; i<tracker.size(); i++){
+        infoLog << "- class " << tracker[i].classLabel << " number of samples: " << tracker[i].counter << endl;
+    }
+    
     //Create a new RandomForests instance
     RandomForests forest;
 
