@@ -75,7 +75,6 @@ int main (int argc, const char * argv[])
 	}
     
     //Print out the pca info
-    //Print our
     pca.print("PCA Info:");
     
     //Print the projected data
@@ -85,6 +84,21 @@ int main (int argc, const char * argv[])
 			cout << prjData[i][j] << "\t";
 		}cout << endl;
 	}
+
+	//Save the model to a file
+	if( !pca.save( "pca-model.grt" ) ){
+		cout << "ERROR: Failed to save model to file!\n";
+		return EXIT_FAILURE;
+	}
+
+	//Load the model from the file
+	if( !pca.load( "pca-model.grt" ) ){
+		cout << "ERROR: Failed to load model from file!\n";
+		return EXIT_FAILURE;
+	}
+
+	//Print out the pca info again to make sure it matches
+    pca.print("PCA Info:");
     
     return EXIT_SUCCESS;
 }

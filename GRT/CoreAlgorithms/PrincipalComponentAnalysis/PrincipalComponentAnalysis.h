@@ -44,11 +44,11 @@
 #define GRT_PRINCIPAL_COMPONENT_ANALYSIS_HEADER
 
 #include "../../Util/GRTCommon.h"
-#include "../../CoreModules/GRTBase.h"
+#include "../../CoreModules/MLBase.h"
 
 namespace GRT{
 	
-class PrincipalComponentAnalysis : public GRTBase{
+class PrincipalComponentAnalysis : public MLBase{
  public:
     /**
      Default constructor.
@@ -109,6 +109,22 @@ class PrincipalComponentAnalysis : public GRTBase{
      @return returns true if the projection was successful, false otherwise
      */
     bool project(const VectorDouble &data,VectorDouble &prjData);
+
+    /**
+     This saves the trained PCA model to a file.
+   
+     @param fstream &file: a reference to the file the model will be saved to
+     @return returns true if the model was saved successfully, false otherwise
+     */
+    virtual bool saveModelToFile(fstream &file) const;
+    
+    /**
+     This loads a trained PCA model from a file.
+     
+     @param fstream &file: a reference to the file the model will be loaded from
+     @return returns true if the model was loaded successfully, false otherwise
+     */
+    virtual bool loadModelFromFile(fstream &file);
 	
     /**
      Returns true if the module was trained.
@@ -184,9 +200,7 @@ class PrincipalComponentAnalysis : public GRTBase{
 protected:
     bool computeFeatureVector_(const MatrixDouble &data,UINT analysisMode);
 
-    bool trained;
     bool normData;
-    UINT numInputDimensions;
     UINT numPrincipalComponents;
     double maxVariance;
     VectorDouble mean;
@@ -195,9 +209,6 @@ protected:
     VectorDouble eigenvalues;
     vector< IndexedDouble > sortedEigenvalues;
     MatrixDouble eigenvectors;
-    
-    ErrorLog errorLog;
-    WarningLog warningLog;
 
     enum AnalysisMode{MAX_VARIANCE=0,MAX_NUM_PCS};
 	

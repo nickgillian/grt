@@ -250,6 +250,181 @@ bool PrincipalComponentAnalysis::project(const VectorDouble &data,VectorDouble &
     
     return true;
 }
+
+bool PrincipalComponentAnalysis::saveModelToFile(fstream &file) const {
+
+    //Write the header info
+    file << "GRT_PCA_MODEL_FILE_V1.0\n";
+
+    if( !MLBase::saveBaseSettingsToFile( file ) ) return false;
+
+    file << "NumPrincipalComponents: " << numPrincipalComponents << endl;
+    file << "NormData: " << normData << endl;
+    file << "MaxVariance: " << maxVariance << endl;
+
+    if( trained ){
+        file << "Mean: ";
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file << mean[i] << " ";
+        } 
+        file << endl;
+
+        file << "StdDev: ";
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file << stdDev[i] << " ";
+        } 
+        file << endl;
+
+        file << "ComponentWeights: ";
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file << componentWeights[i] << " ";
+        } 
+        file << endl;
+
+        file << "Eigenvalues: ";
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file << eigenvalues[i] << " ";
+        } 
+        file << endl;
+
+        file << "SortedEigenvalues: ";
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file << sortedEigenvalues[i].index << " ";
+            file << sortedEigenvalues[i].value << " ";
+        } 
+        file << endl;
+
+        file << "Eigenvectors: ";
+        file << eigenvectors.getNumRows() << " " << eigenvectors.getNumCols() << endl;
+        for(unsigned int i=0; i<eigenvectors.getNumRows(); i++){
+            for(unsigned int j=0; j<eigenvectors.getNumCols(); j++){
+                file << eigenvectors[i][j];
+                if( j+1 < eigenvectors.getNumCols() ) file << " ";
+                else file << endl;
+            }
+        } 
+        file << endl;
+    }
+
+    return true;
+}
+
+bool PrincipalComponentAnalysis::loadModelFromFile(fstream &file) {
+
+    std::string word;
+
+    //Read the header info
+    file >> word;
+    if(  word != "GRT_PCA_MODEL_FILE_V1.0" ){
+        return false;
+    }
+
+    if( !MLBase::loadBaseSettingsFromFile( file ) ) return false;
+
+    //Read the num components
+    file >> word;
+    if(  word != "NumPrincipalComponents:" ){
+        return false;
+    }
+    file >> numPrincipalComponents;
+
+    //Read the normData
+    file >> word;
+    if(  word != "NormData:" ){
+        return false;
+    }
+    file >> normData;
+
+    //Read the MaxVariance
+    file >> word;
+    if(  word != "MaxVariance:" ){
+        return false;
+    }
+    file >> maxVariance;
+
+    if( trained ){
+        //Read the mean vector
+        file >> word;
+        if(  word != "Mean:" ){
+            trained = false;
+            return false;
+        }
+        mean.resize( numInputDimensions );
+
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file >> mean[i];
+        } 
+
+        //Read the stddev vector
+        file >> word;
+        if(  word != "StdDev:" ){
+            trained = false;
+            return false;
+        }
+        stdDev.resize( numInputDimensions );
+
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file >> stdDev[i];
+        } 
+
+        //Read the ComponentWeights vector
+        file >> word;
+        if(  word != "ComponentWeights:" ){
+            trained = false;
+            return false;
+        }
+        componentWeights.resize( numInputDimensions );
+
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file >> componentWeights[i];
+        } 
+
+        //Read the Eigenvalues vector
+        file >> word;
+        if(  word != "Eigenvalues:" ){
+            trained = false;
+            return false;
+        }
+        eigenvalues.resize( numInputDimensions );
+
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file >> eigenvalues[i];
+        } 
+
+        //Read the SortedEigenvalues vector
+        file >> word;
+        if(  word != "SortedEigenvalues:" ){
+            trained = false;
+            return false;
+        }
+        sortedEigenvalues.resize( numInputDimensions );
+
+        for(unsigned int i=0; i<numInputDimensions; i++){
+            file >> sortedEigenvalues[i].index;
+            file >> sortedEigenvalues[i].value;
+        } 
+
+        //Read the Eigenvectors vector
+        file >> word;
+        if(  word != "Eigenvectors:" ){
+            trained = false;
+            return false;
+        }
+        UINT numRows;
+        UINT numCols;
+        file >> numRows;
+        file >> numCols;
+        eigenvectors.resize( numRows, numCols );
+
+        for(unsigned int i=0; i<eigenvectors.getNumRows(); i++){
+            for(unsigned int j=0; j<eigenvectors.getNumCols(); j++){
+                file >> eigenvectors[i][j];
+            }
+        } 
+    }
+
+    return true;
+}
     
 bool PrincipalComponentAnalysis::print(string title) const{
     
