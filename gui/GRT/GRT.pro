@@ -76,8 +76,8 @@ unix:!macx{
 
 #Windows Include
 win32{
- #Add the custom GRT and boost paths
- INCLUDEPATH += C:\grt
+ #Add the custom GRT paths
+ INCLUDEPATH += ../..
 
  #Add the base oscpack directory
  INCLUDEPATH += OSC/oscpack/include
@@ -108,6 +108,7 @@ defined(USE_GRT_SOURCE_CODE,var){
            ../../GRT/ClassificationModules/BAG/*.h \
            ../../GRT/ClassificationModules/DecisionTree/*.h \
            ../../GRT/ClassificationModules/DTW/*.h \
+           ../../GRT/ClassificationModules/FiniteStateMachine/*.h \
            ../../GRT/ClassificationModules/GMM/*.h \
            ../../GRT/ClassificationModules/HMM/*.h \
            ../../GRT/ClassificationModules/KNN/*.h \
@@ -121,7 +122,8 @@ defined(USE_GRT_SOURCE_CODE,var){
            ../../GRT/ClassificationModules/SwipeDetector/*.h
 
  #Add the GRT Clustering module headers
- HEADERS += ../../GRT/ClusteringModules/GaussianMixtureModels/*.h \
+ HEADERS += ../../GRT/ClusteringModules/ClusterTree/*.h \
+            ../../GRT/ClusteringModules/GaussianMixtureModels/*.h \
            ../../GRT/ClusteringModules/HierarchicalClustering/*.h \
            ../../GRT/ClusteringModules/KMeans/*.h \
            ../../GRT/ClusteringModules/SelfOrganizingMap/*.h
@@ -178,6 +180,7 @@ defined(USE_GRT_SOURCE_CODE,var){
            ../../GRT/ClassificationModules/BAG/*.cpp \
            ../../GRT/ClassificationModules/DecisionTree/*.cpp \
            ../../GRT/ClassificationModules/DTW/*.cpp \
+           ../../GRT/ClassificationModules/FiniteStateMachine/*.cpp \
            ../../GRT/ClassificationModules/GMM/*.cpp \
            ../../GRT/ClassificationModules/HMM/*.cpp \
            ../../GRT/ClassificationModules/KNN/*.cpp \
@@ -191,7 +194,8 @@ defined(USE_GRT_SOURCE_CODE,var){
            ../../GRT/ClassificationModules/SwipeDetector/*.cpp
 
  #Add the GRT Clustering modules to the source
- SOURCES += ../../GRT/ClusteringModules/GaussianMixtureModels/*.cpp \
+ SOURCES += ../../GRT/ClusteringModules/ClusterTree/*.cpp \
+            ../../GRT/ClusteringModules/GaussianMixtureModels/*.cpp \
            ../../GRT/ClusteringModules/HierarchicalClustering/*.cpp \
            ../../GRT/ClusteringModules/KMeans/*.cpp \
            ../../GRT/ClusteringModules/SelfOrganizingMap/*.cpp
