@@ -53,6 +53,16 @@ if(UNIX)
 
 endif()
 
+if(MINGW)
+    message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for Windows/MinGW")
+    configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
+
+    #Add C++11 and multithreading support
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
+endif()
+
 endif() #end of else(APPLE)
 
 #Set the main directory locations
