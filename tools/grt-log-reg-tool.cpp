@@ -107,7 +107,7 @@ bool train( CommandLineParser &parser ){
     infoLog << "- Num target dimensions: " << T << endl;
     
     //Create a new regression instance
-    LogisitcRegression regression;
+    LogisticRegression regression;
 
     regression.setMaxNumEpochs( 500 );
     regression.setMinChange( 1.0e-5 );
