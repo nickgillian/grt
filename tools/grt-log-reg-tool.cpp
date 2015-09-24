@@ -1,19 +1,19 @@
 /**
  @author Nicholas Gillian <nick@nickgillian.com>
- @brief This file implements a basic tool for processing data files and training a linear regression model.
+ @brief This file implements a basic tool for processing data files and training a logistic regression model.
 */
 
 #include <GRT/GRT.h>
 using namespace GRT;
 
-InfoLog infoLog("[grt-lin-reg-tool]");
-WarningLog warningLog("[WARNING grt-lin-reg-tool]");
-ErrorLog errorLog("[ERROR grt-lin-reg-tool]");
+InfoLog infoLog("[grt-log-reg-tool]");
+WarningLog warningLog("[WARNING grt-log-reg-tool]");
+ErrorLog errorLog("[ERROR grt-log-reg-tool]");
 
 bool printUsage(){
-    infoLog << "grt-lin-reg-tool [options]\n";
+    infoLog << "grt-log-reg-tool [options]\n";
     infoLog << "\t-m: sets the current application mode, can be: \n";
-    infoLog << "\t\t[1] 'train-model': trains a linear regression model, using a pre-recorded training dataset.\n";
+    infoLog << "\t\t[1] 'train-model': trains a regression model, using a pre-recorded training dataset.\n";
     infoLog << "\t-f: sets the main filename. \n";
     infoLog << "\t\tIn 'train-model' mode, this sets the name of the file the training data will be loaded from.\n";
     infoLog << "\t--model: sets the filename the regression model will be saved to\n";
@@ -107,7 +107,7 @@ bool train( CommandLineParser &parser ){
     infoLog << "- Num target dimensions: " << T << endl;
     
     //Create a new regression instance
-    LinearRegression regression;
+    LogisitcRegression regression;
 
     regression.setMaxNumEpochs( 500 );
     regression.setMinChange( 1.0e-5 );
