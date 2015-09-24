@@ -308,11 +308,11 @@ bool combineModels( CommandLineParser &parser ){
             infoLog << "- Combing model " << i+1 << " of " << numPipelines << " with main model..." << endl;
 
             RandomForests *f = pipelineBuffer[i]->getClassifier< RandomForests >();
-
+/*
             if( !mainForest->combineModels( *f ) ){
                 warningLog << "- WARNING: Failed to combine model " << i+1 << " with the main model!" << endl;
             }
-
+*/
         }
 
         if( mainPipeline->getTrained() ){
@@ -372,7 +372,7 @@ bool computeFeatureWeights( CommandLineParser &parser ){
         printUsage();
         return false;
     }
-
+/*
     //Compute the feature weights
     VectorDouble weights = forest->getFeatureWeights();
     if( weights.size() == 0 ){
@@ -391,7 +391,7 @@ bool computeFeatureWeights( CommandLineParser &parser ){
     }
     
     file.close();
-
+*/
     return true;
 }
 

@@ -1215,8 +1215,8 @@ vector<MinMax> ClassificationData::getRanges() const{
     //Otherwise return the min and max values for each column in the dataset
     if( totalNumSamples > 0 ){
         for(UINT j=0; j<numDimensions; j++){
-            ranges[j].minValue = data[0][0];
-            ranges[j].maxValue = data[0][0];
+            ranges[j].minValue = data[0][j];
+            ranges[j].maxValue = data[0][j];
             for(UINT i=0; i<totalNumSamples; i++){
                 if( data[i][j] < ranges[j].minValue ){ ranges[j].minValue = data[i][j]; }		//Search for the min value
                 else if( data[i][j] > ranges[j].maxValue ){ ranges[j].maxValue = data[i][j]; }	//Search for the max value

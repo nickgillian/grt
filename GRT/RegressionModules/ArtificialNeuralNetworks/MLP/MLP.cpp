@@ -421,13 +421,13 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     double bestRMSError = numeric_limits< double >::max();
     double bestAccuracy = 0;
     double delta = 0;
-	vector< UINT > indexList(M);
-	vector< vector< double > > tempTrainingErrorLog;
+    vector< UINT > indexList(M);
+    vector< vector< double > > tempTrainingErrorLog;
     TrainingResult result;
     trainingResults.reserve(M);
     
     //Reset the indexList, this is used to randomize the order of the training examples, if needed
-	for(UINT i=0; i<M; i++) indexList[i] = i;
+    for(UINT i=0; i<M; i++) indexList[i] = i;
 	
     for(UINT iter=0; iter<numRandomTrainingIterations; iter++){
         
@@ -435,7 +435,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
         keepTraining = true;
 		tempTrainingErrorLog.clear();
         
-		//Randomise the start values of the neurons
+	//Randomise the start values of the neurons
         init(numInputNeurons,numHiddenNeurons,numOutputNeurons,inputLayerActivationFunction,hiddenLayerActivationFunction,outputLayerActivationFunction);
         
         if( randomiseTrainingOrder ){
@@ -462,11 +462,12 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
                 
                 if( isNAN(backPropError) ){
                     keepTraining = false;
-                    errorLog << "train(LabelledRegressionData trainingData) - NaN found!" << endl;
+                    errorLog << "train(RegressionData trainingData) - NaN found!" << endl;
+ 		    return false;
                 }
                 
                 //Compute the error for the i'th example
-				if( classificationModeActive ){
+		if( classificationModeActive ){
                     VectorDouble y = feedforward(trainingExample);
                     
                     //Get the class label
@@ -502,22 +503,22 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             
             if( checkForNAN() ){
                 keepTraining = false;
-                errorLog << "train(LabelledRegressionData trainingData) - NaN found!" << endl;
+                errorLog << "train(RegressionData trainingData) - NaN found!" << endl;
                 break;
             }
             
             //Compute the error over all the training/validation examples
-			if( useValidationSet ){
+	    if( useValidationSet ){
                 trainingSetAccuracy = accuracy;
                 trainingSetTotalSquaredError = totalSquaredTrainingError;
-				accuracy = 0;
+		accuracy = 0;
                 totalSquaredTrainingError = 0;
                 
                 //Iterate over the validation samples
                 UINT numValidationSamples = validationData.getNumSamples();
-				for(UINT i=0; i<numValidationSamples; i++){
-					const VectorDouble &trainingExample = validationData[i].getInputVector();
-					const VectorDouble &targetVector = validationData[i].getTargetVector();
+		for(UINT i=0; i<numValidationSamples; i++){
+		    const VectorDouble &trainingExample = validationData[i].getInputVector();
+		    const VectorDouble &targetVector = validationData[i].getTargetVector();
                     
                     VectorDouble y = feedforward(trainingExample);
                     
@@ -603,7 +604,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             bestRMSError = rootMeanSquaredTrainingError;
             bestAccuracy = accuracy;
             bestNetwork = *this;
-			trainingErrorLog = tempTrainingErrorLog;
+	    trainingErrorLog = tempTrainingErrorLog;
         }
         
     }//End of For( numRandomTrainingIterations )
@@ -843,7 +844,7 @@ double MLP::back_prop(const VectorDouble &trainingExample,const VectorDouble &ta
     
     //Compute the error of the output layer: the derivative of the function times the error of the output
     for(UINT i=0; i<numOutputNeurons; i++){
-		deltaO[i] = outputLayer[i].getDerivative( outputNeuronsOutput[i] ) * (targetVector[i]-outputNeuronsOutput[i]);
+	deltaO[i] = outputLayer[i].getDerivative( outputNeuronsOutput[i] ) * (targetVector[i]-outputNeuronsOutput[i]);
     }
     
     //Compute the error of the hidden layer
@@ -852,60 +853,60 @@ double MLP::back_prop(const VectorDouble &trainingExample,const VectorDouble &ta
         for(UINT j=0; j<numOutputNeurons; j++){
             sum += outputLayer[j].weights[i] * deltaO[j];
         }
-		deltaH[i] = hiddenLayer[i].getDerivative( hiddenNeuronsOutput[i] ) * sum;
+	deltaH[i] = hiddenLayer[i].getDerivative( hiddenNeuronsOutput[i] ) * sum;
     }
     
     //Update the hidden weights: old hidden weights + (learningRate * inputToTheHiddenNeuron * deltaHidden )
     for(UINT i=0; i<numHiddenNeurons; i++){
         for(UINT j=0; j<numInputNeurons; j++){
-			//Compute the update
+	    //Compute the update
             update = alpha * (beta * hiddenLayer[i].previousUpdate[j] + (1.0 - beta) * inputNeuronsOuput[j] * deltaH[i]);
 
-			//Update the weights
-			hiddenLayer[i].weights[j] += update;
+	    //Update the weights
+	    hiddenLayer[i].weights[j] += update;
 
-			//Store the previous update
-			hiddenLayer[i].previousUpdate[j] = update; 
+	    //Store the previous update
+	    hiddenLayer[i].previousUpdate[j] = update; 
         }
     }
     
     //Update the output weights
     for(UINT i=0; i<numOutputNeurons; i++){
         for(UINT j=0; j<numHiddenNeurons; j++){
-			//Compute the update
+	    //Compute the update
             update = alpha * (beta * outputLayer[i].previousUpdate[j] + (1.0 - beta) * hiddenNeuronsOutput[j] * deltaO[i]);
 
-			//Update the weights
-			outputLayer[i].weights[j] += update;
+	    //Update the weights
+	    outputLayer[i].weights[j] += update;
 
-			//Store the update
-			outputLayer[i].previousUpdate[j] = update;
+	    //Store the update
+	    outputLayer[i].previousUpdate[j] = update;
 
         }
     }
     
     //Update the hidden bias
     for(UINT i=0; i<numHiddenNeurons; i++){
-		//Compute the update
-		update = alpha * (beta * hiddenLayer[i].previousBiasUpdate + (1.0 - beta) * deltaH[i]);
+	//Compute the update
+	update = alpha * (beta * hiddenLayer[i].previousBiasUpdate + (1.0 - beta) * deltaH[i]);
 
-		//Update the bias
+	//Update the bias
         hiddenLayer[i].bias += update;
 
-		//Store the update
-		hiddenLayer[i].previousBiasUpdate = update;
+	//Store the update
+	hiddenLayer[i].previousBiasUpdate = update;
     }
     
     //Update the output bias
     for(UINT i=0; i<numOutputNeurons; i++){
-		//Compute the update
-		update = alpha * (beta * outputLayer[i].previousBiasUpdate + (1.0 - beta) * deltaO[i]);
+	//Compute the update
+	update = alpha * (beta * outputLayer[i].previousBiasUpdate + (1.0 - beta) * deltaO[i]);
 
-		//Update the bias
+	//Update the bias
         outputLayer[i].bias += update;
 		
-		//Stire the update
-		outputLayer[i].previousBiasUpdate = update;
+	//Store the update
+	outputLayer[i].previousBiasUpdate = update;
     }
     
     //Compute the squared error between the output of the network and the target vector
