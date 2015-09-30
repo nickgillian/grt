@@ -649,6 +649,11 @@ bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename
         //Add the sample to the timeseries
         timeseries.push_back( sample );
     }
+	if ( timeseries.getSize() > 0 )
+        //Add the labelled sample to the dataset
+        if( !addSample(classLabel, timeseries) ){
+            warningLog << "loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex) - Could not add sample " << parser.getRowSize()-1 << " to the dataset!" << endl;
+        }
     
     return true;
 }

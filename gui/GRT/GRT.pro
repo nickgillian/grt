@@ -56,8 +56,14 @@ macx{
  #USE_GRT_SOURCE = "true"
 }
 
+android {
+    #Add the base oscpack directory
+    INCLUDEPATH += OSC/oscpack/include
+    USE_GRT_SOURCE_CODE = "true"
+}
+
 #Linux pkgconfig
-unix:!macx{
+unix:!macx:!android{
  #Add the defauly include and lib directories (we assume boost and GRT are installed here)
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
