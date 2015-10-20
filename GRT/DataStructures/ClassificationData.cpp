@@ -765,13 +765,7 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
         Random random;
         UINT randomIndex = 0;
         for(UINT i=0; i<totalNumSamples; i++) indexs[i] = i;
-        for(UINT x=0; x<totalNumSamples; x++){
-            //Pick a random index
-            randomIndex = random.getRandomNumberInt(0,totalNumSamples);
-
-            //Swap the indexs
-            SWAP(indexs[ x ],indexs[ randomIndex ]);
-        }
+        std::random_shuffle(indexs.begin(), indexs.end());
         
         //Reserve the memory
         trainingSet.reserve( numTrainingExamples );
@@ -1072,7 +1066,7 @@ ClassificationData ClassificationData::getBootstrappedDataset(UINT numSamples,bo
         UINT randomIndex;
         for(UINT i=0; i<numSamples; i++){
             randomIndex = rand.getRandomNumberInt(0, totalNumSamples);
-            newDataset.addSample(data[randomIndex].getClassLabel(), data[randomIndex].getSample());
+            newDataset.addSample( data[randomIndex].getClassLabel(), data[randomIndex].getSample() );
         }
     }
 

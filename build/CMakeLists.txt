@@ -178,9 +178,10 @@ include_directories(
     "${GRT_SRC_DIR}"
 )
 
-add_library(${GRT_LIB_NAME} ${LIB_BUILD_TYPE}
-    ${GRT_SRC}
-    ${GRT_HEADERS}
+add_library(${GRT_LIB_NAME} 
+            ${LIB_BUILD_TYPE}
+            ${GRT_SRC}
+            ${GRT_HEADERS}
 )
 
 if(NOT EXCLUDE_FROM_INSTALL)
@@ -240,12 +241,13 @@ if( BUILD_EXAMPLES )
 
             #If a data file exists for this example, copy it to the main examples directory after a successful build
             if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt")
-                add_custom_command(TARGET ${_example_name}
-  					   POST_BUILD
-                                  	   COMMAND ${CMAKE_COMMAND} -E copy 
-					   "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt" #copy target
-                                           "${GRT_EXAMPLES_OUTPUT_DIR}/${TRAINING_DATA}.grt"					 #copy destination
-					   COMMENT "Copying ${TRAINING_DATA}.grt to examples directory"
+                add_custom_command(
+                    TARGET ${_example_name}
+  					POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy 
+					"${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt" #copy target
+                    "${GRT_EXAMPLES_OUTPUT_DIR}/${TRAINING_DATA}.grt"					 #copy destination
+					COMMENT "Copying ${TRAINING_DATA}.grt to examples directory"
                 )
             endif()
 	    endif()
@@ -287,9 +289,7 @@ endif() #BUILD_EXAMPLES
 #GRT Tool
 if( BUILD_TOOLS )
     #Get a list of the tools
-    file(GLOB GRT_TOOLS
-        "${GRT_TOOLS_DIR}/*.cpp"
-    )
+    file(GLOB GRT_TOOLS "${GRT_TOOLS_DIR}/*.cpp")
 
     foreach(GRT_TOOL ${GRT_TOOLS})
         #Remove the file extension
@@ -301,7 +301,7 @@ if( BUILD_TOOLS )
         include_directories( "${GRT_EXAMPLES_DIR}/.." )
 
         #Link the tools against the GRT library
-        target_link_libraries (${EXE} ${GRT_LIB_NAME})
+        target_link_libraries(${EXE} ${GRT_LIB_NAME})
 
         install(
             TARGETS ${EXE}
