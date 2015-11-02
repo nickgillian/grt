@@ -383,7 +383,7 @@ public:
      @param vector< string > &filenames: will return a list of filenames found in the directory
      @return returns true if the directory was parsed, false otherwise
      */
-    bool parseDirectory( const std::string directoryPath, const std::string type, std::vector< std::string > &filenames );
+    static bool parseDirectory( const std::string directoryPath, const std::string type, std::vector< std::string > &filenames );
     
     /**
     A list of operating systems.

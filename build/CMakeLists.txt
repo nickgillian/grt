@@ -3,9 +3,11 @@ cmake_minimum_required(VERSION 2.8)
 project(GRT C CXX)
 
 # GRT library
+set(GRT_LIB_NAME grt)
 
 #set the main options
 option(BUILD_EXAMPLES “build-examples” ON)
+option(BUILD_TOOLS “build-tools” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
 option(BUILD_STATIC_LIB "build-static-lib" OFF)
 option(EXCLUDE_FROM_INSTALL "exclude-from-install" OFF)
@@ -76,6 +78,10 @@ set(GRT_EXAMPLES_DIR
 
 set(GRT_EXAMPLES_OUTPUT_DIR
     ${PROJECT_SOURCE_DIR}/examples
+)
+
+set(GRT_TOOLS_DIR
+    ${PROJECT_SOURCE_DIR}/../tools
 )
 
 #Add all the project files
@@ -182,14 +188,15 @@ include_directories(
     "${GRT_SRC_DIR}"
 )
 
-add_library(grt ${LIB_BUILD_TYPE}
-    ${GRT_SRC}
-    ${GRT_HEADERS}
+add_library(${GRT_LIB_NAME} 
+            ${LIB_BUILD_TYPE}
+            ${GRT_SRC}
+            ${GRT_HEADERS}
 )
 
 if(NOT EXCLUDE_FROM_INSTALL)
 	install(
-		TARGETS grt
+		TARGETS ${GRT_LIB_NAME}
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
@@ -213,47 +220,46 @@ if( BUILD_EXAMPLES )
 	    )
 
             #If there are source files for the example, then setup the example application
-	    if(sources)
-		#Add the example as a new executable application
+        if( sources )
+            #Add the example as a new executable application
 	        add_executable(${_example_name}
 	            ${sources}
 	        )
 
-		#Include the main GRT include directory
-		include_directories(
-    		    "${GRT_EXAMPLES_DIR}/.."
-		)
+            #Include the main GRT include directory
+            include_directories( "${GRT_EXAMPLES_DIR}/.." )
 
-		#Link against the main GRT library 
-	        target_link_libraries(${_example_name}
-	            grt
+            #Link against the main GRT library 
+            target_link_libraries(${_example_name}
+	            ${GRT_LIB_NAME}
 	        )
 
-		#Copy the example application to the main examples directory after a successful build
-		add_custom_command(TARGET ${_example_name}
-				   POST_BUILD
-                                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${_example_name}> ${GRT_EXAMPLES_OUTPUT_DIR}/${_example_name}
-				   COMMENT "Copying ${_example_name} to examples directory"
-		)
+            #Copy the example application to the main examples directory after a successful build
+            add_custom_command(TARGET ${_example_name}
+				                POST_BUILD
+                                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${_example_name}> ${GRT_EXAMPLES_OUTPUT_DIR}/${_example_name}
+				                COMMENT "Copying ${_example_name} to examples directory"
+            )
 
-		#Guess the training data name that we want to copy
-		string(REPLACE
-			"Example"           # match string
-			"TrainingData"      # replace string
-			TRAINING_DATA       # output
-			${_example_name}    # input
-		)
+            #Guess the training data name that we want to copy
+            string(REPLACE
+                "Example"           # match string
+                "TrainingData"      # replace string
+                TRAINING_DATA       # output
+                ${_example_name}    # input
+            )
 
-		#If a data file exists for this example, copy it to the main examples directory after a successful build
-		if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt")
-			add_custom_command(TARGET ${_example_name}
-  					   POST_BUILD
-                                  	   COMMAND ${CMAKE_COMMAND} -E copy 
-					   "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt" #copy target
-                                           "${GRT_EXAMPLES_OUTPUT_DIR}/${TRAINING_DATA}.grt"					 #copy destination
-					   COMMENT "Copying ${TRAINING_DATA}.grt to examples directory"
-			)
-		endif()
+            #If a data file exists for this example, copy it to the main examples directory after a successful build
+            if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt")
+                add_custom_command(
+                    TARGET ${_example_name}
+  					POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy 
+					"${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt" #copy target
+                    "${GRT_EXAMPLES_OUTPUT_DIR}/${TRAINING_DATA}.grt"					 #copy destination
+					COMMENT "Copying ${TRAINING_DATA}.grt to examples directory"
+                )
+            endif()
 	    endif()
 	endfunction()
 
@@ -290,9 +296,37 @@ if( BUILD_EXAMPLES )
 	endforeach()
 endif() #BUILD_EXAMPLES
 
+#GRT Tool
+if( BUILD_TOOLS )
+    #Get a list of the tools
+    file(GLOB GRT_TOOLS "${GRT_TOOLS_DIR}/*.cpp")
+
+    foreach(GRT_TOOL ${GRT_TOOLS})
+        #Remove the file extension
+        GET_FILENAME_COMPONENT(EXE ${GRT_TOOL} NAME_WE) 
+
+        #Add the application tools
+        add_executable (${EXE} ${GRT_TOOL})
+
+        include_directories( "${GRT_EXAMPLES_DIR}/.." )
+
+        #Link the tools against the GRT library
+        target_link_libraries(${EXE} ${GRT_LIB_NAME})
+
+        install(
+            TARGETS ${EXE}
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib
+        )
+    endforeach()
+
+endif() #BUILD_TOOLS
+
 if(UNIX AND NOT EXCLUDE_FROM_INSTALL)
     set(CMAKE_INSTALL_LIBDIR "lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Output directory for libraries")
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/grt.pc                         
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig                               
     )
 endif()
+

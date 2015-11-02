@@ -975,7 +975,7 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
             errorLog << "test(const ClassificationData &testData) - Failed to update test metrics at test sample index: " << i << endl;
             return false;
         }
-        cout << "i: " << i << " class label: " << classLabel << " predictedClassLabel: " << predictedClassLabel << endl;
+        //cout << "i: " << i << " class label: " << classLabel << " predictedClassLabel: " << predictedClassLabel << endl;
         
         //Keep track of the classification results encase the user needs them later
         testResults[i].setClassificationResult(i, classLabel, predictedClassLabel, getUnProcessedPredictedClassLabel(),getClassLikelihoods(), getClassDistances());
@@ -1122,8 +1122,8 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationDataStream &
     Timer timer;
     timer.start();
 
-	//Get a copy of the data so we can modify it
-	TimeSeriesClassificationDataStream data = testData;
+    //Get a copy of the data so we can modify it
+    TimeSeriesClassificationDataStream data = testData;
     
     //Run the test
     data.resetPlaybackIndex(0); //Make sure that the test data start at 0
@@ -2171,20 +2171,20 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
 	}
 	file >> trained;
     
-    	//Load the info
-    	file >> word;
-    	if( word != "Info:" ){
-        	errorLog << "loadPipelineFromFile(string filename) - Failed to read Info header" << endl;
-        	file.close();
-        	return false;
-    	}
-    	info = "";
-    	//Read the info text
-    	file >> word;
-    	while( word != "PreProcessingModuleDatatypes:" ){
-        	info += word;
-		file >> word;
-    	}
+	//Load the info
+	file >> word;
+	if( word != "Info:" ){
+    	errorLog << "loadPipelineFromFile(string filename) - Failed to read Info header" << endl;
+    	file.close();
+    	return false;
+	}
+	info = "";
+	//Read the info text
+	file >> word;
+	while( word != "PreProcessingModuleDatatypes:" ){
+    	info += word;
+	file >> word;
+	}
     
 	//Resize the modules
 	if( numPreprocessingModules > 0 ) preProcessingModules.resize(numPreprocessingModules,NULL);
@@ -2388,6 +2388,9 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const string &filename){
             }
         }
     }
+
+    //Flag that the pipeline is now initialized
+    initialized = true;
     
     return true;
 }

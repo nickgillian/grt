@@ -52,36 +52,35 @@ public:
      */
     ClassificationData(UINT numDimensions = 0,string datasetName = "NOT_SET",string infoText = "");
 
-	/**
+    /**
      Copy Constructor, copies the ClassificationData from the rhs instance to this instance
-     
      @param const ClassificationData &rhs: another instance of the ClassificationData class from which the data will be copied to this instance
-	*/
-	ClassificationData(const ClassificationData &rhs);
+    */
+    ClassificationData(const ClassificationData &rhs);
 
-	/**
+    /**
      Default Destructor
     */
-	virtual ~ClassificationData();
+    virtual ~ClassificationData();
 
-	/**
+    /**
      Sets the equals operator, copies the data from the rhs instance to this instance
      
      @param const ClassificationData &rhs: another instance of the ClassificationData class from which the data will be copied to this instance
      @return a reference to this instance of ClassificationData
-	*/
+    */
 	ClassificationData& operator=(const ClassificationData &rhs);
 
-	/**
+    /**
      Array Subscript Operator, returns the ClassificationSample at index i.  
      It is up to the user to ensure that i is within the range of [0 totalNumSamples-1]
 
      @param const UINT &i: the index of the training sample you want to access.  Must be within the range of [0 totalNumSamples-1]
      @return a reference to the i'th ClassificationSample
     */
-	inline ClassificationSample& operator[] (const UINT &i){
-		return data[i];
-	}
+    inline ClassificationSample& operator[] (const UINT &i){
+        return data[i];
+    }
 
     /**
      Const Array Subscript Operator, returns the ClassificationSample at index i.
@@ -94,10 +93,10 @@ public:
         return data[i];
     }
 
-	/**
+    /**
      Clears any previous training data and counters
     */
-	void clear();
+    void clear();
     
     /**
      Sets the number of dimensions in the training data. 
@@ -148,7 +147,7 @@ public:
      */
     bool setAllowNullGestureClass(bool allowNullGestureClass);
 
-	/**
+    /**
      Adds a new labelled sample to the dataset.  
      The dimensionality of the sample should match the number of dimensions in the ClassificationData.
      The class label should be greater than zero (as zero is used as the default null rejection class label).
@@ -157,13 +156,13 @@ public:
      @param const UINT VectorDouble &sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the ClassificationData
      @return true if the sample was correctly added to the dataset, false otherwise
     */
-	bool addSample(UINT classLabel,const VectorDouble &sample);
+    bool addSample(UINT classLabel,const VectorDouble &sample);
     
     /**
      Removes the training sample at the specific index from the dataset.
      
      @return true if the index is valid and the sample was removed, false otherwise
-     */
+    */
     bool removeSample( const UINT index );
     
     /**
@@ -171,15 +170,15 @@ public:
      
      @return true if the last sample was removed, false otherwise
      */
-	bool removeLastSample();
+    bool removeLastSample();
     
     /**
      Reserves that the vector capacity be at least enough to contain N elements.
      
      If N is greater than the current vector capacity, the function causes the container to reallocate its storage increasing its capacity to N (or greater).
      
-	 @param const UINT N: the new memory size
-	 @return true if the memory was reserved successfully, false otherwise
+     @param const UINT N: the new memory size
+     @return true if the memory was reserved successfully, false otherwise
      */
     bool reserve(const UINT N);
     
@@ -219,7 +218,7 @@ public:
      @param const UINT newClassLabel: the class label the samples will be relabelled with
      @return returns true if the samples were correctly relablled, false otherwise
      */
-	bool relabelAllSamplesWithClassLabel(const UINT oldClassLabel,const UINT newClassLabel);
+    bool relabelAllSamplesWithClassLabel(const UINT oldClassLabel,const UINT newClassLabel);
     
     /**
      Sets the external ranges of the dataset, also sets if the dataset should be scaled using these values.  
@@ -240,19 +239,19 @@ public:
      */
     bool enableExternalRangeScaling(const bool useExternalRanges);
 
-	/**
+    /**
      Scales the dataset to the new target range.
 
      @return true if the data was scaled correctly, false otherwise
     */
     bool scale(const double minTarget,const double maxTarget);
     
-	/**
+    /**
      Scales the dataset to the new target range, using the vector of ranges as the min and max source ranges.
 
      @return true if the data was scaled correctly, false otherwise
     */
-	bool scale(const vector<MinMax> &ranges,const double minTarget,const double maxTarget);
+    bool scale(const vector<MinMax> &ranges,const double minTarget,const double maxTarget);
 	
     /**
      Saves the classification data to a file.
@@ -274,7 +273,7 @@ public:
      */
     bool load(const string &filename);
     
-	/**
+    /**
      Saves the labelled classification data to a custom file format.
 
      @param const string &filename: the name of the file the data will be saved to
@@ -282,13 +281,13 @@ public:
     */
     bool saveDatasetToFile(const string &filename) const;
 	
-	/**
+    /**
      Loads the labelled classification data from a custom file format.
 
      @param const string &filename: the name of the file the data will be loaded from
      @return true if the data was loaded successfully, false otherwise
     */
-	bool loadDatasetFromFile(const string &filename);
+    bool loadDatasetFromFile(const string &filename);
     
     /**
      Saves the labelled classification data to a CSV file.
@@ -299,7 +298,7 @@ public:
      */
     bool saveDatasetToCSVFile(const string &filename) const;
 	
-	/**
+    /**
      Loads the labelled classification data from a CSV file.
      This assumes the data is formatted with each row representing a sample.
      The class label should be the first column followed by the sample data as the following N columns, where N is the number of dimensions in the data.
@@ -309,7 +308,7 @@ public:
      @param const UINT classLabelColumnIndex: the index of the column containing the class label. Default value = 0
      @return true if the data was loaded successfully, false otherwise
      */
-	bool loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex = 0);
+    bool loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex = 0);
     
     /**
      Prints the dataset info (such as its name and infoText) and the stats (such as the number of examples, number of dimensions, number of classes, etc.)
@@ -319,12 +318,12 @@ public:
      */
     bool printStats() const;
 
-	/**
+    /**
      Sorts the class labels (in the class tracker) in ascending order.
      
      @return returns true if the labels were sorted successfully, false otherwise
      */
-	bool sortClassLabels();
+    bool sortClassLabels();
     
     /**
      Adds the data in the labelledData set to the current instance of the ClassificationData.
@@ -344,7 +343,7 @@ public:
      @param const bool useStratifiedSampling: sets if the dataset should be broken into homogeneous groups first before randomly being spilt, default value is false
      @return a new ClassificationData instance, containing the remaining data not kept but this instance
      */
-	ClassificationData partition(const UINT partitionPercentage,const bool useStratifiedSampling = false);
+    ClassificationData partition(const UINT partitionPercentage,const bool useStratifiedSampling = false);
     
     /**
      This function prepares the dataset for k-fold cross validation and should be called prior to calling the getTrainingFold(UINT foldIndex) or getTestingFold(UINT foldIndex) functions.  It will spilt the dataset into K-folds, as long as K < M, where M is the number of samples in the dataset.
@@ -387,10 +386,11 @@ public:
      size of the bootstrapped dataset will match the size of the current dataset, otherwise the size of the bootstrapped
      dataset will match the numSamples parameter.
      
-     @param const UINT numSamples: the size of the bootstrapped dataset
+     @param UINT numSamples: the size of the bootstrapped dataset
+     @param bool balanceDataset: if true will use stratified sampling to balance the dataset returned, otherwise will use random sampling
      @return returns a bootstrapped ClassificationData
      */
-    ClassificationData getBootstrappedDataset(UINT numSamples=0) const;
+    ClassificationData getBootstrappedDataset(UINT numSamples=0, bool balanceDataset=false ) const;
     
 	/**
      Reformats the ClassificationData as LabelledRegressionData to enable regression algorithms like the MLP to be used as a classifier.

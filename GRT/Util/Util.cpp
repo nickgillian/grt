@@ -403,6 +403,7 @@ bool Util::parseDirectory( const std::string directoryPath, const std::string ty
         }
         i++;
     }
+    if( temp.length() > 0 ) types.push_back( temp );
     unsigned int numTypes = (unsigned int)types.size();
 
     //Search the directory for the files

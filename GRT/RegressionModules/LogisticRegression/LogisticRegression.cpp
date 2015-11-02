@@ -219,8 +219,9 @@ bool LogisticRegression::predict_(VectorDouble &inputVector){
     for(UINT j=0; j<numInputDimensions; j++){
         regressionData[0] += inputVector[j] * w[j];
     }
+    double sum = regressionData[0];
 	regressionData[0] = sigmoid( regressionData[0] );
-    
+    std::cout << "reg sum: " << sum << " sig: " << regressionData[0] << std::endl; 
     if( useScaling ){
         for(UINT n=0; n<numOutputDimensions; n++){
             regressionData[n] = scale(regressionData[n], 0, 1, targetVectorRanges[n].minValue, targetVectorRanges[n].maxValue);

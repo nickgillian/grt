@@ -765,13 +765,7 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
         Random random;
         UINT randomIndex = 0;
         for(UINT i=0; i<totalNumSamples; i++) indexs[i] = i;
-        for(UINT x=0; x<totalNumSamples; x++){
-            //Pick a random index
-            randomIndex = random.getRandomNumberInt(0,totalNumSamples);
-
-            //Swap the indexs
-            SWAP(indexs[ x ],indexs[ randomIndex ]);
-        }
+        std::random_shuffle(indexs.begin(), indexs.end());
         
         //Reserve the memory
         trainingSet.reserve( numTrainingExamples );
@@ -1024,7 +1018,7 @@ ClassificationData ClassificationData::getClassData(const UINT classLabel) const
     return classData;
 }
     
-ClassificationData ClassificationData::getBootstrappedDataset(UINT numSamples) const{
+ClassificationData ClassificationData::getBootstrappedDataset(UINT numSamples,bool balanceDataset) const{
     
     Random rand;
     ClassificationData newDataset;
@@ -1035,21 +1029,49 @@ ClassificationData ClassificationData::getBootstrappedDataset(UINT numSamples) c
     if( numSamples == 0 ) numSamples = totalNumSamples;
     
     newDataset.reserve( numSamples );
+
+    const UINT K = getNumClasses(); 
     
     //Add all the class labels to the new dataset to ensure the dataset has a list of all the labels
-    for(UINT k=0; k<getNumClasses(); k++){
+    for(UINT k=0; k<K; k++){
         newDataset.addClass( classTracker[k].classLabel );
     }
-    
-    //Randomly select the training samples to add to the new data set
-    UINT randomIndex;
-    for(UINT i=0; i<numSamples; i++){
-        randomIndex = rand.getRandomNumberInt(0, totalNumSamples);
-        newDataset.addSample(data[randomIndex].getClassLabel(), data[randomIndex].getSample());
+
+    if( balanceDataset ){
+        //Group the class indexs
+        std::vector< std::vector< UINT > > classIndexs( K );
+        for(UINT i=0; i<totalNumSamples; i++){
+            classIndexs[ getClassLabelIndexValue( data[i].getClassLabel() ) ].push_back( i );
+        }
+
+        //Get the class with the minimum number of examples
+        UINT numSamplesPerClass = (UINT)floor( numSamples / double(K) );
+
+        //Randomly select the training samples from each class
+        UINT classIndex = 0;
+        UINT classCounter = 0;
+        UINT randomIndex = 0;
+        for(UINT i=0; i<numSamples; i++){
+            randomIndex = rand.getRandomNumberInt(0, (UINT)classIndexs[ classIndex ].size() );
+            randomIndex = classIndexs[ classIndex ][ randomIndex ];
+            newDataset.addSample(data[ randomIndex ].getClassLabel(), data[ randomIndex ].getSample());
+            if( classCounter++ >= numSamplesPerClass && classIndex+1 < K ){
+                classCounter = 0;
+                classIndex++;
+            }
+        }
+
+    }else{
+        //Randomly select the training samples to add to the new data set
+        UINT randomIndex;
+        for(UINT i=0; i<numSamples; i++){
+            randomIndex = rand.getRandomNumberInt(0, totalNumSamples);
+            newDataset.addSample( data[randomIndex].getClassLabel(), data[randomIndex].getSample() );
+        }
     }
 
     //Sort the class labels so they are in order
-	newDataset.sortClassLabels();
+    newDataset.sortClassLabels();
     
     return newDataset;
 }
@@ -1187,8 +1209,8 @@ vector<MinMax> ClassificationData::getRanges() const{
     //Otherwise return the min and max values for each column in the dataset
     if( totalNumSamples > 0 ){
         for(UINT j=0; j<numDimensions; j++){
-            ranges[j].minValue = data[0][0];
-            ranges[j].maxValue = data[0][0];
+            ranges[j].minValue = data[0][j];
+            ranges[j].maxValue = data[0][j];
             for(UINT i=0; i<totalNumSamples; i++){
                 if( data[i][j] < ranges[j].minValue ){ ranges[j].minValue = data[i][j]; }		//Search for the min value
                 else if( data[i][j] > ranges[j].maxValue ){ ranges[j].maxValue = data[i][j]; }	//Search for the max value

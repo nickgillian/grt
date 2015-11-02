@@ -25,7 +25,7 @@ namespace GRT{
 //Register the RandomForests module with the Classifier base class
 RegisterClassifierModule< RandomForests >  RandomForests::registerModule("RandomForests");
 
-RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling)
+RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const double bootstrappedDatasetWeight)
 {
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->forestSize = forestSize;
@@ -35,6 +35,7 @@ RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT
     this->trainingMode = trainingMode;
     this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
     this->useScaling = useScaling;
+    this->bootstrappedDatasetWeight = bootstrappedDatasetWeight;
     classType = "RandomForests";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -95,6 +96,7 @@ RandomForests& RandomForests::operator=(const RandomForests &rhs){
             this->minNumSamplesPerNode = rhs.minNumSamplesPerNode;
             this->maxDepth = rhs.maxDepth;
             this->removeFeaturesAtEachSpilt = rhs.removeFeaturesAtEachSpilt;
+            this->bootstrappedDatasetWeight = rhs.bootstrappedDatasetWeight;
             this->trainingMode = rhs.trainingMode;
             
         }else errorLog << "deepCopyFrom(const Classifier *classifier) - Failed to copy base variables!" << endl;
@@ -124,7 +126,8 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
             
             if( ptr->getTrained() ){
                 //Deep copy the forest
-                for(UINT i=0; i<ptr->forest.size(); i++){
+                this->forest.reserve( ptr->forest.size() );
+                for(size_t i=0; i<ptr->forest.size(); i++){
                     this->forest.push_back( ptr->forest[i]->deepCopy() );
                 }
             }
@@ -134,6 +137,7 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
             this->minNumSamplesPerNode = ptr->minNumSamplesPerNode;
             this->maxDepth = ptr->maxDepth;
             this->removeFeaturesAtEachSpilt = ptr->removeFeaturesAtEachSpilt;
+            this->bootstrappedDatasetWeight = ptr->bootstrappedDatasetWeight;
             this->trainingMode = ptr->trainingMode;
             
             return true;
@@ -154,7 +158,12 @@ bool RandomForests::train_(ClassificationData &trainingData){
     const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
-        errorLog << "train_(ClassificationData &labelledTrainingData) - Training data has zero samples!" << endl;
+        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << endl;
+        return false;
+    }
+
+    if( bootstrappedDatasetWeight <= 0.0 || bootstrappedDatasetWeight > 1.0 ){
+        errorLog << "train_(ClassificationData &trainingData) - Bootstrapped Dataset Weight must be [> 0.0 and <= 1.0]" << endl;
         return false;
     }
     
@@ -173,11 +182,13 @@ bool RandomForests::train_(ClassificationData &trainingData){
     trained = true;
     
     //Train the random forest
+    forest.reserve( forestSize );
     for(UINT i=0; i<forestSize; i++){
         
-        //Get a bootstrapped dataset
-        ClassificationData data = trainingData.getBootstrappedDataset();
-        
+        //Get a balanced bootstrapped dataset
+        UINT datasetSize = (UINT)(trainingData.getNumSamples() * bootstrappedDatasetWeight);
+        ClassificationData data = trainingData.getBootstrappedDataset( datasetSize, true );
+ 
         DecisionTree tree;
         tree.setDecisionTreeNode( *decisionTreeNode );
         tree.enableScaling( false ); //We have already scaled the training data so we do not need to scale it again
@@ -188,7 +199,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
         tree.enableNullRejection( useNullRejection );
         tree.setRemoveFeaturesAtEachSpilt( removeFeaturesAtEachSpilt );
 
-	trainingLog << "Training forest " << i+1 << "/" << forestSize << "..." << endl;
+        trainingLog << "Training forest " << i+1 << "/" << forestSize << "..." << endl;
         
         //Train this tree
         if( !tree.train( data ) ){
@@ -246,8 +257,9 @@ bool RandomForests::predict_(VectorDouble &inputVector){
     //Use the class distances to estimate the class likelihoods
     bestDistance = 0;
     UINT bestIndex = 0;
+    double classNorm = 1.0 / double(forestSize);
     for(UINT k=0; k<numClasses; k++){
-        classLikelihoods[k] = classDistances[k] / double(forestSize);
+        classLikelihoods[k] = classDistances[k] * classNorm;
         
         if( classLikelihoods[k] > maxLikelihood ){
             maxLikelihood = classLikelihoods[k];
@@ -267,7 +279,7 @@ bool RandomForests::clear(){
     Classifier::clear();
     
     //Delete the forest
-    for(UINT i=0; i<forest.size(); i++){
+    for(size_t i=0; i<forest.size(); i++){
         if( forest[i] != NULL ){
             forest[i]->clear();
             delete forest[i];
@@ -462,6 +474,7 @@ bool RandomForests::loadModelFromFile(fstream &file){
         
         //Load each tree
         UINT treeIndex;
+        forest.reserve( forestSize );
         for(UINT i=0; i<forestSize; i++){
             
             file >> word;
@@ -509,6 +522,38 @@ bool RandomForests::loadModelFromFile(fstream &file){
     
     return true;
 }
+
+bool RandomForests::combineModels( const RandomForests &forest ){
+
+    if( !getTrained() ){
+        errorLog << "combineModels( const RandomForests &forest ) - This instance has not been trained!" << endl;
+        return false;
+    }
+
+    if( !forest.getTrained() ){
+        errorLog << "combineModels( const RandomForests &forest ) - This external forest instance has not been trained!" << endl;
+        return false;
+    }
+
+    if( this->getNumInputDimensions() != forest.getNumInputDimensions() ) {
+        errorLog << "combineModels( const RandomForests &forest ) - The number of input dimensions of the external forest (";
+        errorLog << forest.getNumInputDimensions() << ") does not match the number of input dimensions of this instance (";
+        errorLog << this->getNumInputDimensions() << ")!" << endl;
+        return false;
+    }
+
+    //Add the trees in the other forest to this model
+    DecisionTreeNode *node;
+    for(UINT i=0; i<forest.getForestSize(); i++){
+        node = forest.getTree(i);
+        if( node ){
+            this->forest.push_back( node->deepCopy() );
+            forestSize++;
+        }
+    }
+
+    return true;
+}
     
 UINT RandomForests::getForestSize()const{
     return forestSize;
@@ -534,6 +579,10 @@ bool RandomForests::getRemoveFeaturesAtEachSpilt() const {
     return removeFeaturesAtEachSpilt;
 }
 
+double RandomForests::getBootstrappedDatasetWeight() const {
+    return bootstrappedDatasetWeight;
+}
+
 const vector< DecisionTreeNode* > RandomForests::getForest() const {
     return forest;
 }
@@ -545,6 +594,39 @@ DecisionTreeNode* RandomForests::deepCopyDecisionTreeNode() const{
     }
     
     return decisionTreeNode->deepCopy();
+}
+
+DecisionTreeNode* RandomForests::getTree( const UINT index ) const{
+
+    if( !trained || index >= forestSize ) return NULL;
+
+    return forest[ index ];
+}
+
+VectorDouble RandomForests::getFeatureWeights( const bool normWeights ) const{
+
+    if( !trained ) return VectorDouble();
+
+    VectorDouble weights( numInputDimensions, 0 );
+
+    for(UINT i=0; i<forestSize; i++){
+        if( !forest[i]->computeFeatureWeights( weights ) ){
+            warningLog << "getFeatureWeights( const bool normWeights ) - Failed to compute weights for tree: " << i << endl;
+        }
+    }
+
+    //Normalize the weights
+    if( normWeights ){
+        double sum = Util::sum( weights );
+        if( sum > 0.0 ){
+            const double norm = 1.0 / sum;
+            for(UINT j=0; j<numInputDimensions; j++){
+                weights[j] *= norm;
+            }
+        }
+    }
+
+    return weights;
 }
     
 bool RandomForests::setForestSize(const UINT forestSize){
@@ -605,6 +687,17 @@ bool RandomForests::setDecisionTreeNode( const DecisionTreeNode &node ){
     this->decisionTreeNode = node.deepCopy();
     
     return true;
+}
+
+bool RandomForests::setBootstrappedDatasetWeight( const double bootstrappedDatasetWeight ){
+
+    if( bootstrappedDatasetWeight > 0.0 && bootstrappedDatasetWeight <= 1.0 ){
+        this->bootstrappedDatasetWeight = bootstrappedDatasetWeight;
+        return true;
+    }
+
+    warningLog << "setBootstrappedDatasetWeight(...) - Bad parameter, the weight must be > 0.0 and <= 1.0. Weight: " << bootstrappedDatasetWeight << endl;
+    return false;
 }
 
 } //End of namespace GRT

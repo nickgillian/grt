@@ -97,6 +97,10 @@ bool Node::clear(){
     return true;
 }
 
+bool Node::computeFeatureWeights( VectorDouble &weights ) const{
+    return false; //Base class always return false
+}
+
 bool Node::print() const{
     
     ostringstream stream;
