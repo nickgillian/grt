@@ -2,6 +2,9 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 2nd Novemeber 2015
+- **merged dev into master**: Added new tools directory with some command line tools for training/testing various pipelines. Updated DecisionTree logging functions.
+
 ## 7th July 2015
 - **merged pull request from terziman**: Fixed ParticleFilter cast issue by resolving type
 
