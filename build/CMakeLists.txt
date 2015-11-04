@@ -102,6 +102,7 @@ file(GLOB GRT_CLASSIFICATION_MODULES
     "${GRT_SRC_DIR}/ClassificationModules/AdaBoost/WeakClassifiers/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/ANBC/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/BAG/*.cpp"
+    "${GRT_SRC_DIR}/ClassificationModules/CNN/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/DecisionTree/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/DTW/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/FiniteStateMachine/*.cpp"
