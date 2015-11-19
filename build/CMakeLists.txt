@@ -313,12 +313,14 @@ if( BUILD_TOOLS )
         #Link the tools against the GRT library
         target_link_libraries(${EXE} ${GRT_LIB_NAME})
 
-        install(
-            TARGETS ${EXE}
-            RUNTIME DESTINATION bin
-            LIBRARY DESTINATION lib
-            ARCHIVE DESTINATION lib
-        )
+        if(NOT EXCLUDE_FROM_INSTALL)
+            install(
+                TARGETS ${EXE}
+                RUNTIME DESTINATION bin
+                LIBRARY DESTINATION lib
+                ARCHIVE DESTINATION lib
+            )
+        endif()
     endforeach()
 
 endif() #BUILD_TOOLS
