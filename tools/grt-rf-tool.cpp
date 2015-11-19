@@ -28,6 +28,7 @@ bool printUsage(){
     infoLog << "\t--min-node-size: sets the minimum number of training samples allowed per node, only used for 'train-model'\n";
     infoLog << "\t--num-splits: sets the number of random splits allowed per node, only used for 'train-model'\n";
     infoLog << "\t--remove-features: sets if features should be removed at each split [1=true,0=false], only used for 'train-model'\n";
+    infoLog << "\t--bootstrap-weight: sets the size of the dataset used to train each tree in the RF model, only used for 'train-model'\n";
     infoLog << endl;
     return true;
 }
@@ -62,6 +63,7 @@ int main(int argc, char * argv[])
     parser.addOption( "--min-node-size", "min-node-size" );
     parser.addOption( "--num-splits", "num-splits" );
     parser.addOption( "--remove-features", "remove-features" );
+    parser.addOption( "--bootstrap-weight", "bootstrap-weight" );
 
     //Parse the command line
     parser.parse( argc, argv );
@@ -131,6 +133,7 @@ bool train( CommandLineParser &parser ){
     unsigned int defaultNumSplits = 100;
     bool removeFeatures = false;
     bool defaultRemoveFeatures = false;
+    double bootstrapWeight = 0.0;
 
     //Get the filename
     if( !parser.get("filename",trainDatasetFilename) ){
@@ -156,6 +159,9 @@ bool train( CommandLineParser &parser ){
     
     //Get the remove features
     parser.get("remove-features",removeFeatures,defaultRemoveFeatures);
+   
+    //Get the bootstrap weight 
+    parser.get("bootstrap-weight",bootstrapWeight,0.5);
 
     //Load some training data to train the classifier
     ClassificationData trainingData;
@@ -196,6 +202,9 @@ bool train( CommandLineParser &parser ){
 
     //Set if selected features should be removed at each node
     forest.setRemoveFeaturesAtEachSpilt( removeFeatures );
+
+    //Set the bootstrap weight
+    forest.setBootstrappedDatasetWeight( bootstrapWeight );
 
     //Add the classifier to a pipeline
     GestureRecognitionPipeline pipeline;
