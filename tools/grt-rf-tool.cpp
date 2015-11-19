@@ -253,19 +253,21 @@ bool combineModels( CommandLineParser &parser ){
         return false;
     }
 
-    typedef std::shared_ptr<GestureRecognitionPipeline> GestureRecognitionPipelinePtr;
-    auto mainPipeline = std::make_shared<GestureRecognitionPipeline>();
-    RandomForests forest;
-    std::vector< GestureRecognitionPipelinePtr > pipelineBuffer;
-    unsigned int inputVectorSize = 0;
+    RandomForests forest; //Used to validate the random forest type
+    GestureRecognitionPipeline *mainPipeline = NULL; // Points to the first valid pipeline that all the models will be merged to
+    std::vector< GestureRecognitionPipeline* > pipelineBuffer; //Stores the pipeline for each file that is loaded
+    unsigned int inputVectorSize = 0; //Set to zero to mark we haven't loaded any models yet
     const unsigned int numFiles = (unsigned int)files.size();
     bool mainPipelineSet = false;
+    bool combineModelsSuccessful = false;
+
+    pipelineBuffer.reserve( numFiles );
     
     //Loop over the files, load them, and add valid random forest pipelines to the pipelineBuffer so they can be combined with the mainPipeline
     for(unsigned int i=0; i<numFiles; i++){
         infoLog << "- Loading model " << files[i] << ". File " << i+1 << " of " << numFiles << endl;
 
-        auto pipeline = std::make_shared< GestureRecognitionPipeline >();
+        GestureRecognitionPipeline *pipeline = new GestureRecognitionPipeline;
 
         if( pipeline->load( files[i] ) ){
 
@@ -308,24 +310,28 @@ bool combineModels( CommandLineParser &parser ){
             infoLog << "- Combing model " << i+1 << " of " << numPipelines << " with main model..." << endl;
 
             RandomForests *f = pipelineBuffer[i]->getClassifier< RandomForests >();
-/*
+
             if( !mainForest->combineModels( *f ) ){
                 warningLog << "- WARNING: Failed to combine model " << i+1 << " with the main model!" << endl;
             }
-*/
         }
 
         if( mainPipeline->getTrained() ){
             infoLog << "- Saving combined pipeline to file..." << endl;
-            return mainPipeline->save( modelFilename );
+            combineModelsSuccessful = mainPipeline->save( modelFilename );
         }
 
     }else{
         errorLog << "Failed to combined models, no models were loaded!" << endl;
-        return false;
     }
 
-    return true;
+    //Cleanup the pipeline buffer
+    for(size_t i=0; i<pipelineBuffer.size(); i++){
+        delete pipelineBuffer[i];
+        pipelineBuffer[i] = NULL;
+    }
+
+    return combineModelsSuccessful;
 }
 
 bool computeFeatureWeights( CommandLineParser &parser ){

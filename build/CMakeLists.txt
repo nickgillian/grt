@@ -9,23 +9,21 @@ set(GRT_LIB_NAME grt)
 option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
-option(BUILD_STATIC_LIB "build-static-lib" OFF)
 option(ENABLE_CXX11_SUPPORT "enable-c++11-support" ON)
 option(EXCLUDE_FROM_INSTALL "exclude-from-install" OFF)
 
-#Setup if the library should be built as static or shared, default is SHARED
-if(BUILD_STATIC_LIB MATCHES ON)
-	set(LIB_BUILD_TYPE STATIC)
-	set(LIB_BUILD_TYPE_INFO "static")
-	set(BUILD_SHARED_LIB OFF) #Make sure the shared lib is off
-endif()
+#Setup if the library should be built as static or shared, default is SHARED, turning shared off will make a static build
 if(BUILD_SHARED_LIB MATCHES ON)
 	set(LIB_BUILD_TYPE SHARED)
 	set(LIB_BUILD_TYPE_INFO "shared")
 	set(BUILD_STATIC_LIB OFF) #Make sure the static lib is off
+else() #setup for static build
+    set(LIB_BUILD_TYPE STATIC)
+    set(LIB_BUILD_TYPE_INFO "static")
+    set(BUILD_SHARED_LIB OFF) #Make sure the shared lib is off
 endif()
 
-#If C++11 is enabled, then define the relevant 
+#If C++11 is enabled, then define the relevant flag
 if( ENABLE_CXX11_SUPPORT MATCHES ON)
     add_definitions(-DGRT_CXX11_ENABLED)
 endif()
