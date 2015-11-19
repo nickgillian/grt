@@ -249,4 +249,4 @@ protected:
 
 }
 
-#endif //GRT_MEAN_SHIFT_HEADER
+#endif // header guard

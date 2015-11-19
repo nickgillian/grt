@@ -10,6 +10,7 @@ option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
 option(BUILD_STATIC_LIB "build-static-lib" OFF)
+option(ENABLE_CXX11_SUPPORT "enable-c++11-support" ON)
 option(EXCLUDE_FROM_INSTALL "exclude-from-install" OFF)
 
 #Setup if the library should be built as static or shared, default is SHARED
@@ -22,6 +23,11 @@ if(BUILD_SHARED_LIB MATCHES ON)
 	set(LIB_BUILD_TYPE SHARED)
 	set(LIB_BUILD_TYPE_INFO "shared")
 	set(BUILD_STATIC_LIB OFF) #Make sure the static lib is off
+endif()
+
+#If C++11 is enabled, then define the relevant 
+if( ENABLE_CXX11_SUPPORT MATCHES ON)
+    add_definitions(-DGRT_CXX11_ENABLED)
 endif()
 
 #Add any custom OS definitions
@@ -40,7 +46,9 @@ if(APPLE)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
 
     #Add C++11 and multithreading support
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+    if( ENABLE_CXX11_SUPPORT MATCHES ON )
+       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+    endif()
 else()
 	
 #Add any custom Linux definitions
@@ -51,7 +59,9 @@ if(UNIX)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
 
     #Add C++11 and multithreading support
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
+    if( ENABLE_CXX11_SUPPORT MATCHES ON )
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
+    endif()
 
 endif()
 
@@ -62,7 +72,9 @@ if(MINGW)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
 
     #Add C++11 and multithreading support
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
+    if( ENABLE_CXX11_SUPPORT MATCHES ON )
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
+    endif()
 endif()
 
 endif() #end of else(APPLE)
@@ -90,6 +102,7 @@ file(GLOB GRT_CLASSIFICATION_MODULES
     "${GRT_SRC_DIR}/ClassificationModules/AdaBoost/WeakClassifiers/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/ANBC/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/BAG/*.cpp"
+    "${GRT_SRC_DIR}/ClassificationModules/CNN/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/DecisionTree/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/DTW/*.cpp"
     "${GRT_SRC_DIR}/ClassificationModules/FiniteStateMachine/*.cpp"

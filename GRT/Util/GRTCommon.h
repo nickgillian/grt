@@ -38,8 +38,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <stddef.h>
 #include <cstddef>
+
+//Only include the C++ 11 code if C++11 support it is enabled
+#ifdef GRT_CXX11_ENABLED
 #include <atomic>
 #include <thread>
+#endif //GRT_CXX11_ENABLED
 
 //Include the main GRT version and typedef headers
 #include "GRTVersionInfo.h"
