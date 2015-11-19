@@ -19,7 +19,7 @@
  */
 
 /*
- This example demonstrates how to use the GridSearch module. 
+ This example demonstrates how to use the GridSearch module, this example requires the GRT to be built with C++ 11 support.
  */
 
 #include "GRT.h"
@@ -27,6 +27,8 @@ using namespace GRT;
 
 int main (int argc, const char * argv[])
 {
+
+#ifdef GRT_CXX11_ENABLED
 
     //Create a new classifier which we can tune using GridSearch
     GestureRecognitionPipeline pipeline;
@@ -42,10 +44,19 @@ int main (int argc, const char * argv[])
     //Setup grid search
     GridSearch< GestureRecognitionPipeline > gridSearch;
 
-    gridSearch.addParameter( std::bind( &RandomForests::setForestSize, rf, std::placeholders::_1 ), GridSearchRange<unsigned int>(1,100,5) );
-    gridSearch.addParameter( std::bind( &RandomForests::setMaxDepth, rf, std::placeholders::_1 ), GridSearchRange<unsigned int>(1,10,1) );
-    gridSearch.addParameter( std::bind( &RandomForests::setMinNumSamplesPerNode, rf, std::placeholders::_1 ), GridSearchRange<unsigned int>(100,1000,100) );
+    //Add the ranges that will be searched
+    GridSearchRange<unsigned int> forestSizeRange(1,100,5); //Range will iterate between 1 and 100 in steps of 5
+    GridSearchRange<unsigned int> maxDepthRange(1,10,1); //Max depth will iterate between 1 and 10 in steps of 1
+    GridSearchRange<unsigned int> minSamplesPerNodeRange(100,1000,100); //Min samples per node will iterate between 100 and 1000 in steps of 100
 
+    //Add the parameters we want to tune
+    gridSearch.addParameter( std::bind( &RandomForests::setForestSize, rf, std::placeholders::_1 ), forestSizeRange );
+    gridSearch.addParameter( std::bind( &RandomForests::setMaxDepth, rf, std::placeholders::_1 ), maxDepthRange );
+    gridSearch.addParameter( std::bind( &RandomForests::setMinNumSamplesPerNode, rf, std::placeholders::_1 ), minSamplesPerNodeRange );
+
+    //Setup the evaluation function that will be used to tune the parameters
+    //The evalution function must return the value that will be used for optimization
+    //For this grid search, we use the accuracy on the test dataset
     gridSearch.setEvaluationFunction( [&](){ 
         cout << "- forest size: " << rf->getForestSize() << endl;
         cout << "- max depth: " << rf->getMaxDepth() << endl;
@@ -55,14 +66,24 @@ int main (int argc, const char * argv[])
         return pipeline.getTestAccuracy(); 
     } );
     
+    //Start the search
     gridSearch.search();
 
+    //Get the search results
     double bestResult = gridSearch.getBestResult();
+
+    //Get the best pipeline
     pipeline = gridSearch.getBestModel();
+
+    //Get the random forest classifier from the pipeline and print the parameters we were tuning
     rf = pipeline.getClassifier< RandomForests >();
     cout << "Best Result: " << bestResult << endl;
     cout << "- forest size: " << rf->getForestSize() << endl;
     cout << "- max depth: " << rf->getMaxDepth() << endl;
-   
+
     return EXIT_SUCCESS;
+
+#endif // GRT_CXX11_ENABLED
+   
+    return EXIT_FAILURE;
 }

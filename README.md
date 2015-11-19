@@ -181,29 +181,11 @@ Read the readme file in the build folder to see how to build the GRT as a static
 
 ##Installing and using the GRT in your C++ projects
 
-To use the GRT you simply need to add all of the code contained in the GRT folder to your c++ project.  
-If you are using an IDE such as XCode or VisualStudio then you can either add the files in the GRT 
-folder to your project using "File -> Add Files to project", or in most IDEs you can simply drag the 
-GRT folder (from Finder or Windows Explorer) into your IDE which should add all of the files in the GRT 
-folder to your project.
+See the build directory for details on how to build, install, and use the GRT in your C++ projects.
 
-After you have added the code in the GRT folder to your project, you can now use any of the GRT 
-functions or classes by adding the following two lines of code to the top of any header file in your 
-project in which you want to use the GRT code:
+##Android port of the Gesture Recognition Toolkit
 
-    #include "GRT/GRT.h"
-    using namespace GRT;
-
-The first line of code above adds the main GRT header file (GRT.h) to your project, this header file 
-contains all of the GRT module header files which means you do not need to manually include any other 
-GRT header files.  The second line of code states that you are using the GRT namespace, this means
-that you don't have to write GRT::WhatEverClass every time you want to use a GRT class and can instead
-simply write WhatEverClass.
-
-Note that, depending on your IDE, you may have to specify the physical path that 
-you placed the GRT folder in on your hard drive, for instance you might have to write something like:
-
-    #include "/Users/Nick/Documents/gesture-recognition-toolkit/GRT/GRT.h"
+as described [http://hollyhook.de/wp/grt-for-android/] extended and fixed
 
 ##License
 
