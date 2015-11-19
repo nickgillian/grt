@@ -21,6 +21,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "Util.h"
 
 namespace GRT {
+
+bool Util::getCxx11Enabled(){
+    #ifdef GRT_CXX11_ENABLED
+        return true;
+    #else
+        return false;
+    #endif
+}
     
 bool Util::sleep(const unsigned int &numMilliseconds){
     

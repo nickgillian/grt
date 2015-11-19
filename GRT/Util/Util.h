@@ -59,6 +59,11 @@ public:
 	Default destructor.
 	*/
     ~Util(){}
+
+    /**
+    @return returns true if the GRT has been compiled with C++ 11 support, false otherwise 
+    */
+    static bool getCxx11Enabled();
     
 	/**
 	A cross platform function to cause a function to sleep for a set number of milliseconds.
