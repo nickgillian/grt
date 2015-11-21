@@ -1,6 +1,6 @@
 %module grt
 %{
-#include "GRT.h"
+#include "../GRT/GRT.h"
 %}
 
 %inline %{
@@ -14,13 +14,13 @@ using namespace GRT;
 
 // ———— Vector ————————————
 %template(VectorDoubleBase) std::vector<double>;
-%include "Util/GRTTypedefs.h"
+%include "../GRT/Util/GRTTypedefs.h"
 
 // ———— Matrix ———————————–
-%include "Util/Matrix.h"
+%include "../GRT/Util/Matrix.h"
 // instantiate Matrix, just to give SWIG something to do with it
 // %template(MatrixDoubleBase) GRT::Matrix<double>;
-// %include "Util/MatrixDouble.h"
+// %include "../GRT/Util/MatrixDouble.h"
 
 
 // ——————————————————-
@@ -28,6 +28,6 @@ using namespace GRT;
 * let swig generate the glue code for these. Here I selected only
 * those headers which are necessary for DTW, and their base classes
 */
-%include "DataStructures/TimeSeriesClassificationData.h"
-%include "CoreModules/Classifier.h"
-%include "ClassificationModules/DTW/DTW.h"
+%include "../GRT/DataStructures/TimeSeriesClassificationData.h"
+%include "../GRT/CoreModules/Classifier.h"
+%include "../GRT/ClassificationModules/DTW/DTW.h"

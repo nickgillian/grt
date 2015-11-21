@@ -2,6 +2,11 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 19th Novemeber 2015
+- **moved swig files from GRT directory to jni directory**: The .i files were causing some issues for non-swig users, so moving them to the JNI directory to clean things up, updated
+.i file paths accordingly.
+- **updated revision number**: 19-Nov-2015
+
 ## 2nd Novemeber 2015
 - **merged dev into master**: Added new tools directory with some command line tools for training/testing various pipelines. Updated DecisionTree logging functions.
 

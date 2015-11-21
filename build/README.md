@@ -5,7 +5,34 @@ This folder contains a CMakeLists.txt that can be used to generate a makefile fo
 This CMakeLists file has been tested on Windows, Linux (Ubuntu 14.04), and OSX (10.9).
 
 ##C++11
-As of GRT version 1.0 revision 03-04-15, the toolkit now uses C++11. You should therefore ensure you add C++11 support to any project using the GRT.
+The default build of the GRT uses C++11, you should therefore ensure you add C++11 support to any project using the GRT.
+
+If it is difficult to add C++11 to your setup, then you can still build the by disabling GRT C++11 functionality (note, this will limit the full functionality of the toolkit).
+
+To disable C++11 support, you can pass the following option to CMake when building the GRT:
+
+```
+$ cmake .. -DENABLE_CXX11_SUPPORT=OFF
+```
+
+If you want to enable C++11 support for the GRT, but are building the toolkit without using CMake, then you should define the following before including the main GRT header:
+
+```C++
+//Enable C++11 support
+#define GRT_CXX11_ENABLED
+
+//Include the main GRT header for the first time
+#include <GRT/GRT.h>
+using namespace GRT;
+
+int main (int argc, const char * argv[])
+{
+    //Call a C++ 11 function, this will be > 0 if C++11 is enabled
+    cout << "Thread pool size: " << ThreadPool::getThreadPoolSize() << endl;
+
+    return EXIT_SUCCESS;
+}
+```
 
 ##Build Instructions
 
@@ -42,7 +69,7 @@ $ cmake ..
 - if you want to build the library as a static library (instead of shared) and define a custom install prefix, then add the following options:
 
 ```
-$ cmake .. -DBUILD_STATIC_LIB=ON -DCMAKE_INSTALL_PREFIX=/usr/local
+$ cmake .. -DBUILD_SHARED_LIB=OFF -DCMAKE_INSTALL_PREFIX=/usr/local
 ```
 
 - compile the GRT library and examples (j controls the number of cores you want to use, N == the number of cores):
@@ -95,7 +122,7 @@ $ cmake ..
 - if you want to build the library as a static library (instead of shared) and define a custom install prefix, then add the following options:
 
 ```
-$ cmake .. -DBUILD_STATIC_LIB=ON -DCMAKE_INSTALL_PREFIX=/usr/local
+$ cmake .. -DBUILD_SHARED_LIB=OFF -DCMAKE_INSTALL_PREFIX=/usr/local
 ```
 
 - compile the GRT library and examples (j controls the number of cores you want to use, N == the number of cores):
@@ -161,7 +188,7 @@ $ cd tmp
 - use cmake to generate the Visual Studio project for your machine:
 
 ```
-$ cmake .. -DBUILD_STATIC_LIB=ON
+$ cmake .. -DBUILD_SHARED_LIB=OFF
 ```
 	
 - this will generate project files for all the GRT classes and examples in the temporary build directory
