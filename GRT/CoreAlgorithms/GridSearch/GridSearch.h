@@ -31,6 +31,8 @@
 #include "../../CoreModules/MLBase.h"
 #include "../../CoreModules/GestureRecognitionPipeline.h"
 
+#include <functional>
+
 namespace GRT {
 
 template< class T > 
