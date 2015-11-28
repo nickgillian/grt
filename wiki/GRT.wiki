@@ -1,5 +1,13 @@
 #summary Gesture Recognition Toolkit
 
-= Gesture Recognition Toolkit =
+# Gesture Recognition Toolkit
 
-You can find the main GRT wiki here: [http://www.nickgillian.com/wiki/pmwiki.php?n=GRT.GestureRecognitionToolkit Gesture Recognition Toolkit Wiki].
+**Welcome to the wiki page for the Gesture Recognition Toolkit. **
+
+The wiki is in the process of being migrated to github, the original version of the wiki can be found [here](http://www.nickgillian.com/wiki/pmwiki.php?n=GRT.GestureRecognitionToolkit).
+
+The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, C++ machine learning library that has been specifically designed for real-time gesture recognition.
+In addition to a comprehensive C++ API, the GRT now also includes an easy-to-use graphical user interface:
+
+![](images/grt_gui_image_1.png)
+

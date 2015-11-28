@@ -101,6 +101,10 @@ bool Node::computeFeatureWeights( VectorDouble &weights ) const{
     return false; //Base class always return false
 }
 
+bool Node::computeLeafNodeWeights( MatrixDouble &weights ) const{
+    return false; //Base class always return false
+}
+
 bool Node::print() const{
     
     ostringstream stream;

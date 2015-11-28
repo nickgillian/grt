@@ -28,6 +28,7 @@ bool printUsage(){
     infoLog << "\t--min-node-size: sets the minimum number of training samples allowed per node, only used for 'train-model'\n";
     infoLog << "\t--num-splits: sets the number of random splits allowed per node, only used for 'train-model'\n";
     infoLog << "\t--remove-features: sets if features should be removed at each split [1=true,0=false], only used for 'train-model'\n";
+    infoLog << "\t--combine-weights: 1/0 if true, then the random forest weights will be combined across all trees in the forest, only used for 'compute-weights' mode\n";
     infoLog << endl;
     return true;
 }
@@ -62,6 +63,7 @@ int main(int argc, char * argv[])
     parser.addOption( "--min-node-size", "min-node-size" );
     parser.addOption( "--num-splits", "num-splits" );
     parser.addOption( "--remove-features", "remove-features" );
+    parser.addOption( "--combine-weights", "combine-weights" );
 
     //Parse the command line
     parser.parse( argc, argv );
@@ -340,6 +342,7 @@ bool computeFeatureWeights( CommandLineParser &parser ){
 
     string resultsFilename = "";
     string modelFilename = "";
+    bool combineWeights = false;
 
     //Get the model filename
     if( !parser.get("model-filename",modelFilename) ){
@@ -354,6 +357,9 @@ bool computeFeatureWeights( CommandLineParser &parser ){
         printUsage();
         return false;
     }
+
+    //Get the results filename
+    parser.get("combine-weights",combineWeights,true);
 
     //Load the model
     GestureRecognitionPipeline pipeline;
@@ -378,26 +384,51 @@ bool computeFeatureWeights( CommandLineParser &parser ){
         printUsage();
         return false;
     }
-/*
-    //Compute the feature weights
-    VectorDouble weights = forest->getFeatureWeights();
-    if( weights.size() == 0 ){
-        errorLog << "Failed to compute feature weights!" << endl;
-        printUsage();
-        return false;
-    }
 
-    //Save the results to a file
-    fstream file;
-    file.open( resultsFilename.c_str(), fstream::out );
-    
-    const size_t N = weights.size();
-    for(unsigned int i=0; i<N; i++){
-        file << weights[i] << endl;
+    //Compute the feature weights
+    if( combineWeights ){
+        VectorDouble weights = forest->getFeatureWeights();
+        if( weights.size() == 0 ){
+            errorLog << "Failed to compute feature weights!" << endl;
+            printUsage();
+            return false;
+        }
+
+        //Save the results to a file
+        fstream file;
+        file.open( resultsFilename.c_str(), fstream::out );
+        
+        const size_t N = weights.size();
+        for(unsigned int i=0; i<N; i++){
+            file << weights[i] << endl;
+        }
+        
+        file.close();
+    }else{
+
+        double norm = 0.0;
+        const unsigned int K = forest->getForestSize();
+        const unsigned int N = forest->getNumInputDimensions();
+        VectorDouble tmp( N, 0.0 );
+        MatrixDouble weights(K,N);
+
+        for(unsigned int i=0; i<K; i++){
+
+            DecisionTreeNode *tree = forest->getTree(i);
+            tree->computeFeatureWeights( tmp );
+            norm = 1.0 / Util::sum( tmp );
+            for(unsigned int j=0; j<N; j++){
+                tmp[j] *= norm;
+                weights[i][j] = tmp[j];
+                tmp[j] = 0;
+            }
+        }
+
+        //Save the results to a file
+        weights.save( resultsFilename );
     }
     
-    file.close();
-*/
+
     return true;
 }
 
