@@ -87,6 +87,14 @@ public:
      @return returns true if the weights were updated, false otherwise
      */
     virtual bool computeFeatureWeights( VectorDouble &weights ) const;
+
+    /**
+     This function recursively computes the weights of features used for classification nodes and stores the results in the weights vector.
+  
+     @param VectorDouble &weights: the input vector that will be used to store the weights
+     @return returns true if the weights were updated, false otherwise
+     */
+    virtual bool computeLeafNodeWeights( MatrixDouble &weights ) const;
     
     /**
      This function adds the current model to the formatted stream.
