@@ -29,7 +29,7 @@
  
  This example shows you how to:
  - Create an initialize the KNN algorithm and set the number of neighbors to use for clasification
- - Load some LabelledClassificationData from a file and partition the training data into a training dataset and a test dataset
+ - Load some ClassificationData from a file and partition the training data into a training dataset and a test dataset
  - Train the KNN algorithm using the training dataset
  - Test the KNN algorithm using the test dataset
  - Manually compute the accuracy of the classifier
