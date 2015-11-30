@@ -35,4 +35,9 @@ bool InfoLog::registerObserver(Observer< InfoLogMessage > &observer){
     return true;
 }
 
+bool InfoLog::removeObserver(Observer< InfoLogMessage > &observer)
+{
+	return observerManager.removeObserver(observer);
+}
+
 } //End of namespace GRT

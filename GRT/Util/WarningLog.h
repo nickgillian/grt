@@ -77,6 +77,8 @@ public:
     
     static bool registerObserver(Observer< WarningLogMessage > &observer);
     
+	static bool removeObserver(Observer< WarningLogMessage > &observer);
+
 protected:
     virtual void triggerCallback( const std::string &message ) const{
         observerManager.notifyObservers( WarningLogMessage(proceedingText,message) );
