@@ -25,7 +25,7 @@
 
 namespace GRT {
 
-LUDecomposition::LUDecomposition(const MatrixDouble &a) : sing(false){
+LUDecomposition::LUDecomposition(const MatrixFloat &a) : sing(false){
     
     debugLog.setProceedingText("[DEBUG LUDecomposition]");
     errorLog.setProceedingText("[ERROR LUDecomposition]");
@@ -36,10 +36,10 @@ LUDecomposition::LUDecomposition(const MatrixDouble &a) : sing(false){
 	aref = a;
 	indx.resize( N );
 
-	const double TINY=1.0e-40;
+	const float_t TINY=1.0e-20;
 	unsigned int i,imax,j,k;
-	double big,temp;
-	VectorDouble vv(N);
+	float_t big,temp;
+	VectorFloat vv(N);
 	d=1.0;
     imax = 0;
 	for (i=0;i<N;i++) {
@@ -86,14 +86,14 @@ LUDecomposition::~LUDecomposition(){
 
 }
     
-bool LUDecomposition::solve_vector(const VectorDouble &b,VectorDouble &x)
+bool LUDecomposition::solve_vector(const VectorFloat &b,VectorFloat &x)
 {
 	int i=0,ii=0,ip=0,j=0; //This must be an int (as opposed to an UINT)
 	const int n = int(N);
-	double sum=0;
+	float_t sum=0;
     
 	if (b.size() != N || x.size() != N){
-        errorLog << "solve_vector(const VectorDouble &b,VectorDouble &x) - the size of the two vectors does not match!" << endl;
+        errorLog << "solve_vector(const VectorFloat &b,VectorFloat &x) - the size of the two vectors does not match!" << endl;
 		return false;
     }
 	for (i=0;i<n;i++) x[i] = b[i];
@@ -116,14 +116,14 @@ bool LUDecomposition::solve_vector(const VectorDouble &b,VectorDouble &x)
     return true;
 }
 
-bool LUDecomposition::solve(const MatrixDouble &b,MatrixDouble &x)
+bool LUDecomposition::solve(const MatrixFloat &b,MatrixFloat &x)
 {
 	unsigned int m=b.getNumCols();
 	if (b.getNumRows() != N || x.getNumRows() != N || b.getNumCols() != x.getNumCols() ){
-        errorLog << "solve(const MatrixDouble &b,MatrixDouble &x) - the size of the two matrices does not match!" << endl;
+        errorLog << "solve(const MatrixFloat &b,MatrixFloat &x) - the size of the two matrices does not match!" << endl;
 		return false;
     }
-	VectorDouble  xx(N);
+	VectorFloat  xx(N);
 	for (unsigned int j=0; j<m; j++) {
 		for(unsigned int i=0; i<N; i++) xx[i] = b[i][j];
 		solve_vector(xx,xx);
@@ -132,7 +132,7 @@ bool LUDecomposition::solve(const MatrixDouble &b,MatrixDouble &x)
     return true;
 }
     
-bool LUDecomposition::inverse(MatrixDouble &ainv)
+bool LUDecomposition::inverse(MatrixFloat &ainv)
 {
 	unsigned int i,j;
 	ainv.resize(N,N);
@@ -143,17 +143,17 @@ bool LUDecomposition::inverse(MatrixDouble &ainv)
 	return solve(ainv,ainv);
 }
     
-double LUDecomposition::det()
+float_t LUDecomposition::det()
 {
-	double dd = d;
+	float_t dd = d;
 	for (unsigned int i=0;i<N;i++) dd *= lu[i][i];
 	return dd;
 }
     
-bool LUDecomposition::mprove(const VectorDouble &b,VectorDouble &x)
+bool LUDecomposition::mprove(const VectorFloat &b,VectorFloat &x)
 {
 	unsigned int i,j;
-	VectorDouble r(N);
+	VectorFloat r(N);
 	for (i=0;i<N;i++) {
 		long double sdp = -b[i];
 		for (j=0;j<N;j++)
@@ -171,7 +171,7 @@ bool LUDecomposition::getIsSingular(){
 	return sing;
 }
 
-MatrixDouble LUDecomposition::getLU(){
+MatrixFloat LUDecomposition::getLU(){
 	return lu;
 }
     

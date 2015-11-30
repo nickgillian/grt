@@ -18,20 +18,15 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef GRT_MATRIX_float_t_HEADER
-#define GRT_MATRIX_float_t_HEADER
+#ifndef GRT_MATRIX_FLOAT_HEADER
+#define GRT_MATRIX_FLOAT_HEADER
 
+#include "GRTTypedefs.h"
 #include "Matrix.h"
 #include "MinMax.h"
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <cmath>
 #include "DebugLog.h"
 #include "ErrorLog.h"
 #include "WarningLog.h"
-#include "GRTTypedefs.h"
 #include "FileParser.h"
 #include "ErrorLog.h"
 

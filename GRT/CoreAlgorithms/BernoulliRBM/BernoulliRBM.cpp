@@ -3,7 +3,7 @@
 
 namespace GRT{
     
-BernoulliRBM::BernoulliRBM(const UINT numHiddenUnits,const UINT maxNumEpochs,const double learningRate,const double learningRateUpdate,const double momentum,const bool useScaling,const bool randomiseTrainingOrder){
+BernoulliRBM::BernoulliRBM(const UINT numHiddenUnits,const UINT maxNumEpochs,const float_t learningRate,const float_t learningRateUpdate,const float_t momentum,const bool useScaling,const bool randomiseTrainingOrder){
 
     this->numHiddenUnits = numHiddenUnits;
     this->maxNumEpochs = maxNumEpochs;
@@ -29,7 +29,7 @@ BernoulliRBM::~BernoulliRBM(){
     
 }
     
-bool BernoulliRBM::predict_(VectorDouble &inputData){
+bool BernoulliRBM::predict_(VectorFloat &inputData){
     
     if( !predict_(inputData,outputData) ){
         return false;
@@ -38,15 +38,15 @@ bool BernoulliRBM::predict_(VectorDouble &inputData){
     return true;
 }
     
-bool BernoulliRBM::predict_(VectorDouble &inputData,VectorDouble &outputData){
+bool BernoulliRBM::predict_(VectorFloat &inputData,VectorFloat &outputData){
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputData,VectorDouble &outputData) - Failed to run prediction - the model has not been trained." << endl;
+        errorLog << "predict_(VectorFloat &inputData,VectorFloat &outputData) - Failed to run prediction - the model has not been trained." << endl;
         return false;
     }
     
     if( inputData.size() != numVisibleUnits ){
-        errorLog << "predict_(VectorDouble &inputData,VectorDouble &outputData) - Failed to run prediction - the input data size (" << inputData.size() << ")";
+        errorLog << "predict_(VectorFloat &inputData,VectorFloat &outputData) - Failed to run prediction - the input data size (" << inputData.size() << ")";
         errorLog << " does not match the number of visible units (" << numVisibleUnits << "). " << endl;
         return false;
     }
@@ -63,7 +63,7 @@ bool BernoulliRBM::predict_(VectorDouble &inputData,VectorDouble &outputData){
     }
     
     //Propagate the data up through the RBM
-    double x = 0.0;
+    float_t x = 0.0;
     for(UINT i=0; i<numHiddenUnits; i++){
         for(UINT j=0; j<numVisibleUnits; j++) {
             x += weightsMatrix[i][j] * inputData[j];
@@ -74,29 +74,29 @@ bool BernoulliRBM::predict_(VectorDouble &inputData,VectorDouble &outputData){
     return true;
 }
     
-bool BernoulliRBM::predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex){
+bool BernoulliRBM::predict_(const MatrixFloat &inputData,MatrixFloat &outputData,const UINT rowIndex){
     
     if( !trained ){
-        errorLog << "predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex) - Failed to run prediction - the model has not been trained." << endl;
+        errorLog << "predict_(const MatrixFloat &inputData,MatrixFloat &outputData,const UINT rowIndex) - Failed to run prediction - the model has not been trained." << endl;
         return false;
     }
     
     if( inputData.getNumCols() != numVisibleUnits ){
-        errorLog << "predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex) -";
+        errorLog << "predict_(const MatrixFloat &inputData,MatrixFloat &outputData,const UINT rowIndex) -";
         errorLog << " Failed to run prediction - the number of columns in the input matrix (" << inputData.getNumCols() << ")";
         errorLog << " does not match the number of visible units (" << numVisibleUnits << ")." << endl;
         return false;
     }
     
     if( outputData.getNumCols() != numHiddenUnits ){
-        errorLog << "predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex) -";
+        errorLog << "predict_(const MatrixFloat &inputData,MatrixFloat &outputData,const UINT rowIndex) -";
         errorLog << " Failed to run prediction - the number of columns in the output matrix (" << outputData.getNumCols() << ")";
         errorLog << " does not match the number of hidden units (" << numHiddenUnits << ")." << endl;
         return false;
     }
     
     //Propagate the data up through the RBM
-    double x = 0.0;
+    float_t x = 0.0;
     for(UINT j=0; j<numHiddenUnits; j++){
         x = 0;
         for(UINT i=0; i<numVisibleUnits; i++) {
@@ -108,7 +108,7 @@ bool BernoulliRBM::predict_(const MatrixDouble &inputData,MatrixDouble &outputDa
     return true;
 }
 
-bool BernoulliRBM::train_(MatrixDouble &data){
+bool BernoulliRBM::train_(MatrixFloat &data){
     
     const UINT numTrainingSamples = data.getNumRows();
     numInputDimensions = data.getNumCols();
@@ -123,7 +123,7 @@ bool BernoulliRBM::train_(MatrixDouble &data){
         //Init the weights matrix
         weightsMatrix.resize(numHiddenUnits, numVisibleUnits);
         
-        double a = 1.0 / numVisibleUnits;
+        float_t a = 1.0 / numVisibleUnits;
         for(UINT i=0; i<numHiddenUnits; i++) {
             for(UINT j=0; j<numVisibleUnits; j++) {
                 weightsMatrix[i][j] = rand.getRandomNumberUniform(-a, a);
@@ -138,19 +138,19 @@ bool BernoulliRBM::train_(MatrixDouble &data){
         
     }else{
         if( weightsMatrix.getNumRows() != numHiddenUnits ){
-            errorLog << "train_(MatrixDouble &data) - Weights matrix row size does not match the number of hidden units!" << endl;
+            errorLog << "train_(MatrixFloat &data) - Weights matrix row size does not match the number of hidden units!" << endl;
             return false;
         }
         if( weightsMatrix.getNumCols() != numVisibleUnits ){
-            errorLog << "train_(MatrixDouble &data) - Weights matrix row size does not match the number of visible units!" << endl;
+            errorLog << "train_(MatrixFloat &data) - Weights matrix row size does not match the number of visible units!" << endl;
             return false;
         }
         if( visibleLayerBias.size() != numVisibleUnits ){
-            errorLog << "train_(MatrixDouble &data) - Visible layer bias size does not match the number of visible units!" << endl;
+            errorLog << "train_(MatrixFloat &data) - Visible layer bias size does not match the number of visible units!" << endl;
             return false;
         }
         if( hiddenLayerBias.size() != numHiddenUnits ){
-            errorLog << "train_(MatrixDouble &data) - Hidden layer bias size does not match the number of hidden units!" << endl;
+            errorLog << "train_(MatrixFloat &data) - Hidden layer bias size does not match the number of hidden units!" << endl;
             return false;
         }
     }
@@ -169,7 +169,7 @@ bool BernoulliRBM::train_(MatrixDouble &data){
     }
     
 
-    const UINT numBatches = static_cast<UINT>( ceil( double(numTrainingSamples)/batchSize ) );
+    const UINT numBatches = static_cast<UINT>( ceil( float_t(numTrainingSamples)/batchSize ) );
     
     //Setup the batch indexs
     vector< BatchIndexs > batchIndexs( numBatches );
@@ -192,30 +192,30 @@ bool BernoulliRBM::train_(MatrixDouble &data){
     
     Timer timer;
     UINT i,j,n,epoch,noChangeCounter = 0;
-    double startTime = 0;
-    double alpha = learningRate;
-    double error = 0;
-    double err = 0;
-    double delta = 0;
-    double lastError = 0;
+    float_t startTime = 0;
+    float_t alpha = learningRate;
+    float_t error = 0;
+    float_t err = 0;
+    float_t delta = 0;
+    float_t lastError = 0;
     vector< UINT > indexList(numTrainingSamples);
     TrainingResult trainingResult;
-    MatrixDouble wT( numVisibleUnits, numHiddenUnits );       //Stores a transposed copy of the weights vector
-    MatrixDouble vW( numHiddenUnits, numVisibleUnits );       //Stores the weight velocity updates
-    MatrixDouble tmpW( numHiddenUnits, numVisibleUnits );     //Stores the weight values that will be used to update the main weights matrix at each batch update
-    MatrixDouble v1( batchSize, numVisibleUnits );            //Stores the real batch data during a batch update
-    MatrixDouble v2( batchSize, numVisibleUnits );            //Stores the sampled batch data during a batch update
-    MatrixDouble h1( batchSize, numHiddenUnits );             //Stores the hidden states given v1 and the current weightsMatrix
-    MatrixDouble h2( batchSize, numHiddenUnits );             //Stores the sampled hidden states given v2 and the current weightsMatrix
-    MatrixDouble c1( numHiddenUnits, numVisibleUnits );       //Stores h1' * v1
-    MatrixDouble c2( numHiddenUnits, numVisibleUnits );       //Stores h2' * v2
-    MatrixDouble vDiff( batchSize, numVisibleUnits );         //Stores the difference between v1-v2
-    MatrixDouble hDiff( batchSize, numVisibleUnits );         //Stores the difference between h1-h2
-    MatrixDouble cDiff( numHiddenUnits, numVisibleUnits );    //Stores the difference between c1-c2
-    VectorDouble vDiffSum( numVisibleUnits );                 //Stores the column sum of vDiff
-    VectorDouble hDiffSum( numHiddenUnits );                  //Stores the column sum of hDiff
-    VectorDouble visibleLayerBiasVelocity( numVisibleUnits ); //Stores the velocity update of the visibleLayerBias
-    VectorDouble hiddenLayerBiasVelocity( numHiddenUnits );   //Stores the velocity update of the hiddenLayerBias
+    MatrixFloat wT( numVisibleUnits, numHiddenUnits );       //Stores a transposed copy of the weights vector
+    MatrixFloat vW( numHiddenUnits, numVisibleUnits );       //Stores the weight velocity updates
+    MatrixFloat tmpW( numHiddenUnits, numVisibleUnits );     //Stores the weight values that will be used to update the main weights matrix at each batch update
+    MatrixFloat v1( batchSize, numVisibleUnits );            //Stores the real batch data during a batch update
+    MatrixFloat v2( batchSize, numVisibleUnits );            //Stores the sampled batch data during a batch update
+    MatrixFloat h1( batchSize, numHiddenUnits );             //Stores the hidden states given v1 and the current weightsMatrix
+    MatrixFloat h2( batchSize, numHiddenUnits );             //Stores the sampled hidden states given v2 and the current weightsMatrix
+    MatrixFloat c1( numHiddenUnits, numVisibleUnits );       //Stores h1' * v1
+    MatrixFloat c2( numHiddenUnits, numVisibleUnits );       //Stores h2' * v2
+    MatrixFloat vDiff( batchSize, numVisibleUnits );         //Stores the difference between v1-v2
+    MatrixFloat hDiff( batchSize, numVisibleUnits );         //Stores the difference between h1-h2
+    MatrixFloat cDiff( numHiddenUnits, numVisibleUnits );    //Stores the difference between c1-c2
+    VectorFloat vDiffSum( numVisibleUnits );                 //Stores the column sum of vDiff
+    VectorFloat hDiffSum( numHiddenUnits );                  //Stores the column sum of hDiff
+    VectorFloat visibleLayerBiasVelocity( numVisibleUnits ); //Stores the velocity update of the visibleLayerBias
+    VectorFloat hiddenLayerBiasVelocity( numHiddenUnits );   //Stores the velocity update of the hiddenLayerBias
     
     //Set all the velocity weights to zero
     vW.setAllValues( 0 );
@@ -247,16 +247,16 @@ bool BernoulliRBM::train_(MatrixDouble &data){
             h2.resize( batchIndexs[k].batchSize, numHiddenUnits );
             
             //Setup the data pointers, using data pointers saves a few ms on large matrix updates
-            double **w_p = weightsMatrix.getDataPointer();
-            double **wT_p = wT.getDataPointer();
-            double **vW_p = vW.getDataPointer();
-            double **data_p = data.getDataPointer();
-            double **v1_p = v1.getDataPointer();
-            double **v2_p = v2.getDataPointer();
-            double **h1_p = h1.getDataPointer();
-            double **h2_p = h2.getDataPointer();
-            double *vlb_p = &visibleLayerBias[0];
-            double *hlb_p = &hiddenLayerBias[0];
+            float_t **w_p = weightsMatrix.getDataPointer();
+            float_t **wT_p = wT.getDataPointer();
+            float_t **vW_p = vW.getDataPointer();
+            float_t **data_p = data.getDataPointer();
+            float_t **v1_p = v1.getDataPointer();
+            float_t **v2_p = v2.getDataPointer();
+            float_t **h1_p = h1.getDataPointer();
+            float_t **h2_p = h2.getDataPointer();
+            float_t *vlb_p = &visibleLayerBias[0];
+            float_t *hlb_p = &hiddenLayerBias[0];
             
             //Get the batch data
             UINT index = 0;
@@ -671,11 +671,11 @@ UINT BernoulliRBM::getNumHiddenUnits() const{
     return numHiddenUnits;
 }
 
-const MatrixDouble& BernoulliRBM::getWeights() const{
+const MatrixFloat& BernoulliRBM::getWeights() const{
     return weightsMatrix;
 }
     
-VectorDouble BernoulliRBM::getOutputData()const{
+VectorFloat BernoulliRBM::getOutputData()const{
     return outputData;
 }
     
@@ -685,12 +685,12 @@ bool BernoulliRBM::setNumHiddenUnits(const UINT numHiddenUnits){
     return true;
 }
     
-bool BernoulliRBM::setMomentum(const double momentum){
+bool BernoulliRBM::setMomentum(const float_t momentum){
     this->momentum = momentum;
     return true;
 }
 
-bool BernoulliRBM::setLearningRateUpdate(const double learningRateUpdate){
+bool BernoulliRBM::setLearningRateUpdate(const float_t learningRateUpdate){
     this->learningRateUpdate = learningRateUpdate;
     return true;
 }

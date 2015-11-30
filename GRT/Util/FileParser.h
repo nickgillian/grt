@@ -28,7 +28,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <algorithm>    // copy
 #include <iterator>     // ostream_operator
 #include <sstream>
-#include "MatrixDouble.h"
+//#include "MatrixFloat.h"
 
 namespace GRT {
 

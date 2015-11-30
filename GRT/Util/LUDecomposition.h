@@ -23,30 +23,30 @@
 #ifndef GRT_LUDCMP_HEADER
 #define GRT_LUDCMP_HEADER
 
-#include "MatrixDouble.h"
+#include "MatrixFloat.h"
 
 namespace GRT {
     
 class LUDecomposition{
 	
 public:
-    LUDecomposition(const MatrixDouble &a);
+    LUDecomposition(const MatrixFloat &a);
 	~LUDecomposition();
-	bool solve_vector(const VectorDouble &b,VectorDouble &x);
-	bool solve(const MatrixDouble &b,MatrixDouble &x);
-	bool inverse(MatrixDouble &ainv);
-	double det();
-	bool mprove(const VectorDouble &b,VectorDouble &x);
+	bool solve_vector(const VectorFloat &b,VectorFloat &x);
+	bool solve(const MatrixFloat &b,MatrixFloat &x);
+	bool inverse(MatrixFloat &ainv);
+	float_t det();
+	bool mprove(const VectorFloat &b,VectorFloat &x);
 	bool getIsSingular();
-	MatrixDouble getLU();
+	MatrixFloat getLU();
 	
 private:
 	unsigned int N;
 	double d;
 	bool sing;
 	vector< int > indx;
-	MatrixDouble aref;
-	MatrixDouble lu;
+	MatrixFloat aref;
+	MatrixFloat lu;
     
     DebugLog debugLog;
     ErrorLog errorLog;

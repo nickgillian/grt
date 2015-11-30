@@ -10,7 +10,7 @@
 #define GRT_TEST_RESULT_HEADER
 
 #include "GRTTypedefs.h"
-#include "MatrixDouble.h"
+#include "MatrixFloat.h"
 
 namespace GRT {
 

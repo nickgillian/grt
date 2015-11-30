@@ -51,7 +51,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 //Include the common GRT classes
 #include "GRTException.h"
-#include "MatrixDouble.h"
+#include "MatrixFloat.h"
 #include "MinMax.h"
 #include "ClassTracker.h"
 #include "IndexedDouble.h"
@@ -78,9 +78,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "ThreadPool.h"
 
 #if _MSC_VER >= 1600
-    inline double round( double d ) {
-        return floor( d + 0.5 );
-    }
     inline float_t round( float_t d ) {
         return floor( d + 0.5 );
     }

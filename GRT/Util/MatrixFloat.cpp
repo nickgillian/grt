@@ -98,12 +98,6 @@ MatrixFloat& MatrixFloat::operator=(const vector< VectorFloat > &rhs){
     return *this;
 }
   
-    /*
-bool MatrixFloat::resize(const unsigned int rows,const unsigned int cols){
-    return Matrix< float_t >::resize(rows, cols);
-}
-     */
- 
 bool MatrixFloat::print(const string title) const {
     
     if( dataPtr == NULL ) return false;
@@ -359,13 +353,12 @@ bool MatrixFloat::add(const MatrixFloat &a,const MatrixFloat &b){
     UINT i,j;
     
     //Using direct pointers really helps speed up the computation time
-    float_t **pa = a.getDataPointer();
-    float_t **pb = b.getDataPointer();
+    float_t *pa = a.getData();
+    float_t *pb = b.getData();
     
-    for(i=0; i<M; i++){
-        for(j=0; j<N; j++){
-            dataPtr[i*cols+j] = pa[i][j] + pb[i][j];
-        }
+    const unsigned int size = M*N;
+    for(i=0; i<size; i++){
+        dataPtr[i] = pa[i] + pb[i];
     }
     
     return true;
@@ -388,12 +381,11 @@ bool MatrixFloat::subtract(const MatrixFloat &b){
     unsigned int i,j;
     
     //Using direct pointers really helps speed up the computation time
-    float_t **pb = b.getDataPointer();
+    float_t *pb = b.getData();
     
-    for(i=0; i<rows; i++){
-        for(j=0; j<cols; j++){
-            dataPtr[i*cols+j] -= pb[i][j];
-        }
+    const unsigned int size = rows*cols;
+    for(i=0; i<size; i++){
+        dataPtr[i] -= pb[i];
     }
     
     return true;
@@ -626,7 +618,7 @@ bool MatrixFloat::load(const string &filename,const char seperator){
         
         //Convert the string column values to float_t values
         for(unsigned int j=0; j<columnCounter; j++){
-            dataPtr[rowCounter*cols+j] = stringTofloat_t(vec[j]);
+            dataPtr[rowCounter*cols+j] = stringToFloat(vec[j]);
         }
         rowCounter++;
     }

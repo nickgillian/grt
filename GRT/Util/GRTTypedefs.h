@@ -35,12 +35,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace GRT {
 
 //Define any common GRT OS independent typedefs
+class MatrixFloat; //Forward declaration of MatrixFloat
 typedef double float_t; ///<This typedef is used to set floating-point precision throughout the GRT
 typedef std::vector< float_t > VectorFloat;
 typedef std::vector< double > VectorDouble;
-
-class MatrixDouble;
-typedef MatrixDouble MatrixFloat;
+typedef MatrixFloat MatrixDouble;
 	
 //Declare any common definitions that are not OS specific
 #ifndef PI

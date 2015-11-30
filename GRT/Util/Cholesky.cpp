@@ -33,7 +33,7 @@ Cholesky::Cholesky(){
 	N = 0;
 }
 
-Cholesky::Cholesky(Matrixfloat_t &a) : N(a.getNumRows()), el(a) {
+Cholesky::Cholesky(MatrixFloat &a) : N(a.getNumRows()), el(a) {
     
     debugLog.setProceedingText("[DEBUG LUdcmp]");
     errorLog.setProceedingText("[ERROR LUdcmp]");
@@ -116,7 +116,7 @@ bool Cholesky::elsolve(VectorFloat &b,VectorFloat &y){
     return true;
 }
 
-bool Cholesky::inverse(Matrixfloat_t &ainv){
+bool Cholesky::inverse(MatrixFloat &ainv){
 	int i,j,k;
 	const int n = int(N);
 	float_t sum = 0;

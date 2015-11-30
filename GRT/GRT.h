@@ -50,7 +50,7 @@
 #include "Util/GRTVersionInfo.h"
 #include "Util/GRTCommon.h"
 #include "Util/Matrix.h"
-#include "Util/MatrixDouble.h"
+#include "Util/MatrixFloat.h"
 #include "Util/RangeTracker.h"
 #include "Util/TrainingDataRecordingTimer.h"
 #include "Util/SVD.h"

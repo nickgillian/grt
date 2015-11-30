@@ -553,15 +553,24 @@ public:
     inline unsigned int getSize() const{ return size; }
     
     /**
-     Gets a pointer to the
+     Gets a pointer to the row buffer
      
-     @return returns the number of columns in the Matrix
+     @return returns the row pointer
      */
     T** getDataPointer() const{
         if( rowPtr == NULL ){
             throw Exception("Matrix::getDataPointer() - Matrix has not been initialized!");
         }
         return &(rowPtr[0]);
+    }
+
+    /**
+     Gets a pointer to the main data pointer
+     
+     @return returns a pointer to the raw data
+     */
+    T* getData() const {
+        return dataPtr;
     }
 
 protected:

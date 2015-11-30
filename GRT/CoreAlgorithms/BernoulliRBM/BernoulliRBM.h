@@ -33,7 +33,7 @@
 #ifndef GRT_BERNOULLI_RBM_HEADER
 #define GRT_BERNOULLI_RBM_HEADER
 
-#include "../../Util/MatrixDouble.h"
+#include "../../Util/MatrixFloat.h"
 #include "../../CoreModules/MLBase.h"
 
 namespace GRT{
@@ -41,50 +41,50 @@ namespace GRT{
 class BernoulliRBM : public MLBase{
 
 public:
-    BernoulliRBM(const UINT numHiddenUnits = 100,const UINT maxNumEpochs = 1000,const double learningRate = 1,const double learningRateUpdate = 1,const double momentum = 0.5,const bool useScaling = true,const bool randomiseTrainingOrder = true);
+    BernoulliRBM(const UINT numHiddenUnits = 100,const UINT maxNumEpochs = 1000,const float_t learningRate = 1,const float_t learningRateUpdate = 1,const float_t momentum = 0.5,const bool useScaling = true,const bool randomiseTrainingOrder = true);
   
     virtual ~BernoulliRBM();
     
     /**
-     This is the prediction interface for referenced VectorDouble data, it calls the main prediction interface below.
+     This is the prediction interface for referenced VectorFloat data, it calls the main prediction interface below.
      The RBM should be trained first before you use this function.
      The size of the input data must match the number of visible units.
      
-     @param VectorDouble &inputData: a reference to the input data that will be used to train the RBM model
+     @param VectorFloat &inputData: a reference to the input data that will be used to train the RBM model
      @return returns true if the prediction was successful, false otherwise
      */
-    bool predict_(VectorDouble &inputData);
+    bool predict_(VectorFloat &inputData);
     
     /**
-     This is the main prediction interface for referenced VectorDouble data.  It propagates the input data up through the RBM.  
+     This is the main prediction interface for referenced VectorFloat data.  It propagates the input data up through the RBM.  
      The RBM should be trained first before you use this function.  
      The size of the input data must match the number of visible units.
      
-     @param VectorDouble &inputData: a reference to the input data that will be used to train the RBM model
-     @param VectorDouble &outputData: a reference to the output data that will be used to train the RBM model
+     @param VectorFloat &inputData: a reference to the input data that will be used to train the RBM model
+     @param VectorFloat &outputData: a reference to the output data that will be used to train the RBM model
      @return returns true if the prediction was successful, false otherwise
      */
-    bool predict_(VectorDouble &inputData,VectorDouble &outputData);
+    bool predict_(VectorFloat &inputData,VectorFloat &outputData);
     
     /**
      This function is used during the training phase to propagate the input data up through the RBM, this gives P( h_j = 1 | input )
      If you are using this function then you should make sure the RBM is trained first before you use it.
      The size of the matrices must match the size of the model.
      
-     @param const MatrixDouble &inputData: a reference to the input data
-     @param MatrixDouble &outputData: a reference to the output data that will store the results of the propagation
+     @param const MatrixFloat &inputData: a reference to the input data
+     @param MatrixFloat &outputData: a reference to the output data that will store the results of the propagation
      @param const UINT rowIndex: the row in the inputData/outputData that should be used for the propagation
      @return returns true if the prediction was successful, false otherwise
      */
-    bool predict_(const MatrixDouble &inputData,MatrixDouble &outputData,const UINT rowIndex);
+    bool predict_(const MatrixFloat &inputData,MatrixFloat &outputData,const UINT rowIndex);
     
     /**
-     This is the main training interface for referenced MatrixDouble data.
+     This is the main training interface for referenced MatrixFloat data.
      
-     @param MatrixDouble &trainingData: a reference to the training data that will be used to train the RBM model
+     @param MatrixFloat &trainingData: a reference to the training data that will be used to train the RBM model
      @return returns true if the model was successfully trained, false otherwise
      */
-    virtual bool train_(MatrixDouble &data);
+    virtual bool train_(MatrixFloat &data);
     
     /**
      This function will reset the model (i.e. set all values back to default settings). If you want to completely clear the model
@@ -117,19 +117,19 @@ public:
      */
     virtual bool loadModelFromFile(fstream &file);
     
-    bool reconstruct(const VectorDouble &input,VectorDouble &output);
+    bool reconstruct(const VectorFloat &input,VectorFloat &output);
     
     virtual bool print() const;
     
     bool getRandomizeWeightsForTraining() const;
     UINT getNumVisibleUnits() const;
     UINT getNumHiddenUnits() const;
-    VectorDouble getOutputData() const;
-    const MatrixDouble& getWeights() const;
+    VectorFloat getOutputData() const;
+    const MatrixFloat& getWeights() const;
     
     bool setNumHiddenUnits(const UINT numHiddenUnits);
-    bool setMomentum(const double momentum);
-    bool setLearningRateUpdate(const double learningRateUpdate);
+    bool setMomentum(const float_t momentum);
+    bool setLearningRateUpdate(const float_t learningRateUpdate);
     bool setRandomizeWeightsForTraining(const bool randomizeWeightsForTraining);
     bool setBatchSize(const UINT batchSize);
     bool setBatchStepSize(const UINT batchStepSize);
@@ -145,11 +145,11 @@ public:
 protected:
     bool loadLegacyModelFromFile(fstream &file);
     
-    inline double sigmoid(const double &x) {
+    inline float_t sigmoid(const float_t &x) {
         return 1.0 / (1.0 + exp(-x));
     }
     
-    inline double sigmoidRandom(const double &x){
+    inline float_t sigmoidRandom(const float_t &x){
         return (1.0 / (1.0 + exp(-x)) > rand.getRandomNumberUniform(0.0,1.0)) ? 1.0 : 0.0;
     }
 
@@ -158,18 +158,18 @@ protected:
     UINT numHiddenUnits;
     UINT batchSize;
     UINT batchStepSize;
-    double momentum;
-    double learningRateUpdate;
-    MatrixDouble weightsMatrix;
-    VectorDouble visibleLayerBias;
-    VectorDouble hiddenLayerBias;
-    VectorDouble ph_mean;
-    VectorDouble ph_sample;
-    VectorDouble nv_means;
-    VectorDouble nv_samples;
-    VectorDouble nh_means;
-    VectorDouble nh_samples;
-    VectorDouble outputData;
+    float_t momentum;
+    float_t learningRateUpdate;
+    MatrixFloat weightsMatrix;
+    VectorFloat visibleLayerBias;
+    VectorFloat hiddenLayerBias;
+    VectorFloat ph_mean;
+    VectorFloat ph_sample;
+    VectorFloat nv_means;
+    VectorFloat nv_samples;
+    VectorFloat nh_means;
+    VectorFloat nh_samples;
+    VectorFloat outputData;
     vector<MinMax> ranges;
     Random rand;
     

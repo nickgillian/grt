@@ -22,7 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_EIGENVALUE_DECOMPOSITION_HEADER
 
 #include "GRTTypedefs.h"
-#include "MatrixDouble.h"
+#include "MatrixFloat.h"
 
 namespace GRT{
 
