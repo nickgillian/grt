@@ -18,8 +18,8 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef GRT_MATRIX_DOUBLE_HEADER
-#define GRT_MATRIX_DOUBLE_HEADER
+#ifndef GRT_MATRIX_float_t_HEADER
+#define GRT_MATRIX_float_t_HEADER
 
 #include "Matrix.h"
 #include "MinMax.h"
@@ -39,12 +39,12 @@ using namespace std;
 
 namespace GRT{
 
-class MatrixDouble : public Matrix<double>{
+class MatrixFloat : public Matrix< float_t >{
 public:
     /**
      Default Constructor
      */
-    MatrixDouble();
+    MatrixFloat();
     
     /**
      Constructor, sets the size of the matrix to [rows cols]
@@ -52,56 +52,56 @@ public:
      @param const UINT rows: sets the number of rows in the matrix, must be a value greater than zero
      @param const UINT cols: sets the number of columns in the matrix, must be a value greater than zero
      */
-    MatrixDouble(const unsigned int rows,const unsigned int cols);
+    MatrixFloat(const unsigned int rows,const unsigned int cols);
     
     /**
-     Copy Constructor, copies the values from the rhs MatrixDouble to this MatrixDouble instance
+     Copy Constructor, copies the values from the rhs MatrixFloat to this MatrixFloat instance
      
-     @param const MatrixDouble &rhs: the MatrixDouble from which the values will be copied
+     @param const MatrixFloat &rhs: the MatrixFloat from which the values will be copied
      */
-    MatrixDouble(const MatrixDouble &rhs);
+    MatrixFloat(const MatrixFloat &rhs);
     
     /**
-     Copy Constructor, copies the values from the rhs Matrix to this MatrixDouble instance
+     Copy Constructor, copies the values from the rhs Matrix to this MatrixFloat instance
      
-     @param const Matrix<double> &rhs: the Matrix from which the values will be copied
+     @param const Matrix< float_t > &rhs: the Matrix from which the values will be copied
      */
-    MatrixDouble(const Matrix<double> &rhs);
+    MatrixFloat(const Matrix< float_t > &rhs);
     
     /**
      Destructor, cleans up any memory
      */
-    virtual ~MatrixDouble();
+    virtual ~MatrixFloat();
     
     /**
-     Defines how the data from the rhs MatrixDouble should be copied to this MatrixDouble
+     Defines how the data from the rhs MatrixFloat should be copied to this MatrixFloat
      
-     @param const MatrixDouble &rhs: another instance of a MatrixDouble
-     @return returns a reference to this instance of the MatrixDouble
+     @param rhs: another instance of a MatrixFloat
+     @return returns a reference to this instance of the MatrixFloat
      */
-    MatrixDouble& operator=(const MatrixDouble &rhs);
+    MatrixFloat& operator=(const MatrixFloat &rhs);
     
     /**
-     Defines how the data from the rhs Matrix<double> should be copied to this MatrixDouble
+     Defines how the data from the rhs Matrix< float_t > should be copied to this MatrixFloat
      
-     @param const Matrix<double> &rhs: an instance of a Matrix<double>
-     @return returns a reference to this instance of the MatrixDouble
+     @param rhs: an instance of a Matrix< float_t >
+     @return returns a reference to this instance of the MatrixFloat
      */
-    MatrixDouble& operator=(const Matrix<double> &rhs);
+    MatrixFloat& operator=(const Matrix< float_t > &rhs);
     
     /**
-     Defines how the data from the rhs vector of VectorDoubles should be copied to this MatrixDouble
+     Defines how the data from the rhs vector of VectorFloats should be copied to this MatrixFloat
      
-     @param const vector< VectorDouble> &rhs: a vector of VectorDoubles
-     @return returns a reference to this instance of the MatrixDouble
+     @param rhs: a vector of VectorFloats
+     @return returns a reference to this instance of the MatrixFloat
      */
-    MatrixDouble& operator=(const vector< VectorDouble > &rhs);
+    MatrixFloat& operator=(const vector< VectorFloat > &rhs);
     
     /**
-     Resizes the MatrixDouble to the new size of [rows cols]
+     Resizes the MatrixFloat to the new size of [rows cols]
      
-     @param const UINT rows: the number of rows, must be greater than zero
-     @param const UINT cols: the number of columns, must be greater than zero
+     @param rows: the number of rows, must be greater than zero
+     @param cols: the number of columns, must be greater than zero
      @return returns true or false, indicating if the resize was successful
      */
     //virtual bool resize(const unsigned int rows,const unsigned int cols);
@@ -109,7 +109,7 @@ public:
     /**
      Saves the matrix to a CSV file.  This replaces the deprecated saveToCSVFile function.
      
-     @param const string &filename: the name of the CSV file
+     @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was saved successful
      */
     bool save(const string &filename) const;
@@ -120,7 +120,7 @@ public:
      
      This replaces the deprecated loadFromCSVFile function.
      
-     @param const string &filename: the name of the CSV file
+     @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was loaded successful
      */
     bool load(const string &filename,const char seperator = ',');
@@ -128,7 +128,7 @@ public:
     /**
      Saves the matrix to a CSV file.
      
-     @param const string &filename: the name of the CSV file
+     @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was saved successful
      */
     bool saveToCSVFile(const string &filename) const;
@@ -137,15 +137,15 @@ public:
      Loads a matrix from a CSV file. This assumes that the data has been saved as rows and columns in the CSV file
      and that there are an equal number of columns per row.
      
-     @param const string &filename: the name of the CSV file
+     @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was loaded successful
      */
     bool loadFromCSVFile(const string &filename,const char seperator = ',');
     
     /**
-     Prints the MatrixDouble contents to std::cout
+     Prints the MatrixFloat contents to std::cout
      
-     @param const string title: sets the title of the data that will be printed to std::cout
+     @param title: sets the title of the data that will be printed to std::cout
      @return returns true or false, indicating if the print was successful
      */
     bool print(const string title="") const;
@@ -162,137 +162,137 @@ public:
      
      @return returns true if the matrix was scaled, false otherwise
      */
-    bool scale(const double minTarget,const double maxTarget);
+    bool scale(const float_t minTarget,const float_t maxTarget);
     
     /**
      Scales the matrix to a new range given by the min and max targets using the ranges as the source ranges.
      
      @return returns true if the matrix was scaled, false otherwise
      */
-    bool scale(const vector< MinMax > &ranges,const double minTarget,const double maxTarget);
+    bool scale(const vector< MinMax > &ranges,const float_t minTarget,const float_t maxTarget);
     
     /**
      Normalizes each row in the matrix by subtracting the row mean and dividing by the row standard deviation.
      A small amount (alpha) is added to the standard deviation to stop the normalization from exploding.
      
-     @param const double alpha: a small value that will be added to the standard deviation
+     @param alpha: a small value that will be added to the standard deviation
      @return returns true if the matrix was normalized, false otherwise
      */
-    bool znorm(const double alpha = 0.001);
+    bool znorm(const float_t alpha = 0.001);
     
     /**
      Performs the multiplication of the data by the scalar value.
      
-     @return returns a new MatrixDouble with the results from the multiplcation
+     @return returns a new MatrixFloat with the results from the multiplcation
      */
-    MatrixDouble multiple(const double value) const;
+    MatrixFloat multiple(const float_t value) const;
     
     /**
      Performs the multiplcation of this matrix (a) by the vector b.
      This will return a new vector (c): c = a * b
      
-     @param const VectorDouble &b: the vector to multiple with this matrix
-     @return a VectorDouble with the results from the multiplcation
+     @param b: the vector to multiple with this matrix
+     @return a VectorFloat with the results from the multiplcation
      */
-    VectorDouble multiple(const VectorDouble &b) const;
+    VectorFloat multiple(const VectorFloat &b) const;
     
     /**
      Performs the multiplcation of this matrix (a) by the matrix b.
      This will return a new matrix (c): c = a * b
      
-     @param const MatrixDouble &b: the matrix to multiple with this matrix
-     @return a new MatrixDouble with the results from the multiplcation
+     @param b: the matrix to multiple with this matrix
+     @return a new MatrixFloat with the results from the multiplcation
      */
-    MatrixDouble multiple(const MatrixDouble &b) const;
+    MatrixFloat multiple(const MatrixFloat &b) const;
     
     /**
      Performs the multiplcation of the matrix a by the matrix b, directly storing the new data in the this matrix instance.
      This will resize the current matrix if needed.
      This makes this matrix c and gives: c = a * b, or if the aTransposed value is true: c = a' * b
      
-     @param const MatrixDouble &a: the matrix to multiple with b
-     @param const MatrixDouble &b: the matrix to multiple with a
-     @param const bool aTranspose: a flag to indicate if matrix a should be transposed
+     @param a: the matrix to multiple with b
+     @param b: the matrix to multiple with a
+     @param aTranspose: a flag to indicate if matrix a should be transposed
      @return true if the operation was completed successfully, false otherwise
      */
-    bool multiple(const MatrixDouble &a,const MatrixDouble &b,const bool aTranspose = false);
+    bool multiple(const MatrixFloat &a,const MatrixFloat &b,const bool aTranspose = false);
     
     /**
      Adds the input matrix data (b) to this matrix (a), giving: a = a + b.
      This rows and cols of b must match that of this matrix.
      
-     @param const MatrixDouble &a: the matrix to multiple with b
-     @param const MatrixDouble &b: the matrix to multiple with a
-     @param const bool aTranspose: a flag to indicate if matrix a should be transposed
+     @param a: the matrix to multiple with b
+     @param b: the matrix to multiple with a
+     @param aTranspose: a flag to indicate if matrix a should be transposed
      @return true if the operation was completed successfully, false otherwise
      */
-    bool add(const MatrixDouble &b);
+    bool add(const MatrixFloat &b);
     
     /**
      Adds the input matrix data (a) to the input matrix (b), storing the data in this matrix (c) giving: c = a + b.
      The rows and cols in a and b must match.
      This will resize the current matrix if needed.
      
-     @param const MatrixDouble &a: the matrix to add with b
-     @param const MatrixDouble &b: the matrix to add with a
+     @param a: the matrix to add with b
+     @param b: the matrix to add with a
      @return true if the operation was completed successfully, false otherwise
      */
-    bool add(const MatrixDouble &a,const MatrixDouble &b);
+    bool add(const MatrixFloat &a,const MatrixFloat &b);
     
     /**
      Subtracts the input matrix data (b) from this matrix (a), giving: a = a - b.
      This rows and cols of b must match that of this matrix.
      
-     @param const MatrixDouble &a: the matrix to subtract from this instance
+     @param a: the matrix to subtract from this instance
      @return true if the operation was completed successfully, false otherwise
      */
-    bool subtract(const MatrixDouble &b);
+    bool subtract(const MatrixFloat &b);
     
     /**
      Subtracts the input matrix data (b) from this matrix (a), giving (c): c = a - b.
      This rows and cols of b must match that of this matrix.
      This will resize the current matrix if needed.
      
-     @param const MatrixDouble &a: the matrix to subtract with b
-     @param const MatrixDouble &b: the matrix to subtract from a
+     @param a: the matrix to subtract with b
+     @param b: the matrix to subtract from a
      @return true if the operation was completed successfully, false otherwise
      */
-    bool subtract(const MatrixDouble &a,const MatrixDouble &b);
+    bool subtract(const MatrixFloat &a,const MatrixFloat &b);
     
     /**
      Gets the ranges min value throughout the entire matrix.
      
-     @return a double value containing the minimum matrix value
+     @return a float_t value containing the minimum matrix value
      */
-    double getMinValue() const;
+    float_t getMinValue() const;
     
     /**
      Gets the ranges max value throughout the entire matrix.
      
-     @return a double value containing the maximum matrix value
+     @return a float_t value containing the maximum matrix value
      */
-    double getMaxValue() const;
+    float_t getMaxValue() const;
     
     /**
-     Gets the mean of each column in the matrix and returns this as a VectorDouble.
+     Gets the mean of each column in the matrix and returns this as a VectorFloat.
      
-     @return a VectorDouble with the mean of each column
+     @return a VectorFloat with the mean of each column
      */
-    VectorDouble getMean() const;
+    VectorFloat getMean() const;
     
     /**
-     Gets the standard deviation of each column in the matrix and returns this as a VectorDouble.
+     Gets the standard deviation of each column in the matrix and returns this as a VectorFloat.
      
-     @return a VectorDouble with the standard deviation of each column
+     @return a VectorFloat with the standard deviation of each column
      */
-    VectorDouble getStdDev() const;
+    VectorFloat getStdDev() const;
     
     /**
-     Gets the covariance matrix of this matrix and returns this as a MatrixDouble.
+     Gets the covariance matrix of this matrix and returns this as a MatrixFloat.
      
-     @return a MatrixDouble with the covariance matrix of this matrix
+     @return a MatrixFloat with the covariance matrix of this matrix
      */
-    MatrixDouble getCovarianceMatrix() const;
+    MatrixFloat getCovarianceMatrix() const;
     
     /**
      Gets the ranges (min and max values) of each column in the matrix.
@@ -304,15 +304,15 @@ public:
     /**
      Gets the trace of this matrix.
      
-     @return the trace of this matrix as a double
+     @return the trace of this matrix as a float_t
      */
-    double getTrace() const;
+    float_t getTrace() const;
     
 protected:
     
-    double stringToDouble(const std::string &value){
+    float_t stringToFloat(const std::string &value){
         std::stringstream s( value );
-        double d;
+        float_t d;
         s >> d;
         return d;
     }
@@ -324,4 +324,4 @@ protected:
     
 } //End of namespace GRT
 
-#endif //GRT_MATRIX_DOUBLE_HEADER
+#endif //GRT_MATRIX_float_t_HEADER

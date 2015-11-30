@@ -18,48 +18,48 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "MatrixDouble.h"
+#include "MatrixFloat.h"
 
 namespace GRT{
    
-MatrixDouble::MatrixDouble(){
-    warningLog.setProceedingText("[WARNING MatrixDouble]");
-    errorLog.setProceedingText("[ERROR MatrixDouble]");
+MatrixFloat::MatrixFloat(){
+    warningLog.setProceedingText("[WARNING MatrixFloat]");
+    errorLog.setProceedingText("[ERROR MatrixFloat]");
     this->dataPtr = NULL;
     this->rows = 0;
     this->cols = 0;
 }
     
-MatrixDouble::MatrixDouble(const unsigned int rows,const unsigned int cols){
-    warningLog.setProceedingText("[WARNING MatrixDouble]");
-    errorLog.setProceedingText("[ERROR MatrixDouble]");
+MatrixFloat::MatrixFloat(const unsigned int rows,const unsigned int cols){
+    warningLog.setProceedingText("[WARNING MatrixFloat]");
+    errorLog.setProceedingText("[ERROR MatrixFloat]");
     this->dataPtr = NULL;
     if( rows > 0 && cols > 0 ){
         resize(rows, cols);
     }
 }
     
-MatrixDouble::MatrixDouble(const MatrixDouble &rhs){
-    warningLog.setProceedingText("[WARNING MatrixDouble]");
-    errorLog.setProceedingText("[ERROR MatrixDouble]");
+MatrixFloat::MatrixFloat(const MatrixFloat &rhs){
+    warningLog.setProceedingText("[WARNING MatrixFloat]");
+    errorLog.setProceedingText("[ERROR MatrixFloat]");
     this->dataPtr = NULL;
     this->rowPtr = NULL;
     this->copy( rhs );
 }
     
-MatrixDouble::MatrixDouble(const Matrix< double > &rhs){
-    warningLog.setProceedingText("[WARNING MatrixDouble]");
-    errorLog.setProceedingText("[ERROR MatrixDouble]");
+MatrixFloat::MatrixFloat(const Matrix< float_t > &rhs){
+    warningLog.setProceedingText("[WARNING MatrixFloat]");
+    errorLog.setProceedingText("[ERROR MatrixFloat]");
     this->dataPtr = NULL;
     this->rowPtr = NULL;
     this->copy( rhs );
 }
 
-MatrixDouble::~MatrixDouble(){
+MatrixFloat::~MatrixFloat(){
     clear();
 }
     
-MatrixDouble& MatrixDouble::operator=(const MatrixDouble &rhs){
+MatrixFloat& MatrixFloat::operator=(const MatrixFloat &rhs){
     if( this != &rhs ){
         this->clear();
         this->copy( rhs );
@@ -67,7 +67,7 @@ MatrixDouble& MatrixDouble::operator=(const MatrixDouble &rhs){
     return *this;
 }
     
-MatrixDouble& MatrixDouble::operator=(const Matrix< double > &rhs){
+MatrixFloat& MatrixFloat::operator=(const Matrix< float_t > &rhs){
     if( this != &rhs ){
         this->clear();
         this->copy( rhs );
@@ -75,7 +75,7 @@ MatrixDouble& MatrixDouble::operator=(const Matrix< double > &rhs){
     return *this;
 }
     
-MatrixDouble& MatrixDouble::operator=(const vector< VectorDouble > &rhs){
+MatrixFloat& MatrixFloat::operator=(const vector< VectorFloat > &rhs){
     
     clear();
     
@@ -99,12 +99,12 @@ MatrixDouble& MatrixDouble::operator=(const vector< VectorDouble > &rhs){
 }
   
     /*
-bool MatrixDouble::resize(const unsigned int rows,const unsigned int cols){
-    return Matrix<double>::resize(rows, cols);
+bool MatrixFloat::resize(const unsigned int rows,const unsigned int cols){
+    return Matrix< float_t >::resize(rows, cols);
 }
      */
  
-bool MatrixDouble::print(const string title) const {
+bool MatrixFloat::print(const string title) const {
     
     if( dataPtr == NULL ) return false;
     
@@ -121,11 +121,11 @@ bool MatrixDouble::print(const string title) const {
     return true;
 }
     
-bool MatrixDouble::transpose(){
+bool MatrixFloat::transpose(){
     
     if( dataPtr == NULL ) return false;
     
-    MatrixDouble temp(cols,rows);
+    MatrixFloat temp(cols,rows);
     for(unsigned int i=0; i<rows; i++){
         for(unsigned int j=0; j<cols; j++){
             temp[j][i] = dataPtr[i*cols+j];
@@ -137,7 +137,7 @@ bool MatrixDouble::transpose(){
     return true;
 }
     
-bool MatrixDouble::scale(const double minTarget,const double maxTarget){
+bool MatrixFloat::scale(const float_t minTarget,const float_t maxTarget){
     
     if( dataPtr == NULL ) return false;
     
@@ -146,7 +146,7 @@ bool MatrixDouble::scale(const double minTarget,const double maxTarget){
     return scale(ranges,minTarget,maxTarget);
 }
     
-bool MatrixDouble::scale(const vector< MinMax > &ranges,const double minTarget,const double maxTarget){
+bool MatrixFloat::scale(const vector< MinMax > &ranges,const float_t minTarget,const float_t maxTarget){
     if( dataPtr == NULL ) return false;
     
     if( ranges.size() != cols ){
@@ -162,11 +162,11 @@ bool MatrixDouble::scale(const vector< MinMax > &ranges,const double minTarget,c
     return true;
 }
     
-bool MatrixDouble::znorm(const double alpha){
+bool MatrixFloat::znorm(const float_t alpha){
     if( dataPtr == NULL ) return false;
     
     UINT i,j = 0;
-    double mean, std = 0;
+    float_t mean, std = 0;
     for(i=0; i<rows; i++){
         mean = 0;
         std = 0;
@@ -193,12 +193,12 @@ bool MatrixDouble::znorm(const double alpha){
     return true;
 }
     
-MatrixDouble MatrixDouble::multiple(const double value) const{
+MatrixFloat MatrixFloat::multiple(const float_t value) const{
     
-    if( dataPtr == NULL ) return MatrixDouble();
+    if( dataPtr == NULL ) return MatrixFloat();
     
-    MatrixDouble d(rows,cols);
-    double *d_p = &(d[0][0]);
+    MatrixFloat d(rows,cols);
+    float_t *d_p = &(d[0][0]);
     
     unsigned int i = 0;
     for(i=0; i<rows*cols; i++){
@@ -208,7 +208,7 @@ MatrixDouble MatrixDouble::multiple(const double value) const{
     return d;
 }
     
-VectorDouble MatrixDouble::multiple(const VectorDouble &b) const{
+VectorFloat MatrixFloat::multiple(const VectorFloat &b) const{
     
     const unsigned int M = rows;
     const unsigned int N = cols;
@@ -216,12 +216,12 @@ VectorDouble MatrixDouble::multiple(const VectorDouble &b) const{
     
     if( N != K ){
         warningLog << "multiple(vector b) - The size of b (" << b.size() << ") does not match the number of columns in this matrix (" << N << ")" << std::endl;
-        return VectorDouble();
+        return VectorFloat();
     }
     
-    VectorDouble c(M);
-    const double *pb = &b[0];
-    double *pc = &c[0];
+    VectorFloat c(M);
+    const float_t *pb = &b[0];
+    float_t *pc = &c[0];
     
     unsigned int i,j = 0;
     for(i=0; i<rows; i++){
@@ -234,7 +234,7 @@ VectorDouble MatrixDouble::multiple(const VectorDouble &b) const{
     return c;
 }
     
-MatrixDouble MatrixDouble::multiple(const MatrixDouble &b) const{
+MatrixFloat MatrixFloat::multiple(const MatrixFloat &b) const{
     
     const unsigned int M = rows;
     const unsigned int N = cols;
@@ -242,13 +242,13 @@ MatrixDouble MatrixDouble::multiple(const MatrixDouble &b) const{
     const unsigned int L = b.getNumCols();
     
     if( N != K ) {
-        errorLog << "multiple(MatrixDouble b) - The number of rows in b (" << K << ") does not match the number of columns in this matrix (" << N << ")" << std::endl;
-        return MatrixDouble();
+        errorLog << "multiple(MatrixFloat b) - The number of rows in b (" << K << ") does not match the number of columns in this matrix (" << N << ")" << std::endl;
+        return MatrixFloat();
     }
     
-    MatrixDouble c(M,L);
-    double **pb = b.getDataPointer();
-    double **pc = c.getDataPointer();
+    MatrixFloat c(M,L);
+    float_t **pb = b.getDataPointer();
+    float_t **pc = c.getDataPointer();
     
     unsigned int i,j,k = 0;
     for(i=0; i<M; i++){
@@ -263,7 +263,7 @@ MatrixDouble MatrixDouble::multiple(const MatrixDouble &b) const{
     return c;
 }
     
-bool MatrixDouble::multiple(const MatrixDouble &a,const MatrixDouble &b,const bool aTranspose){
+bool MatrixFloat::multiple(const MatrixFloat &a,const MatrixFloat &b,const bool aTranspose){
     
     const unsigned int M = !aTranspose ? a.getNumRows() : a.getNumCols();
     const unsigned int N = !aTranspose ? a.getNumCols() : a.getNumRows();
@@ -271,20 +271,20 @@ bool MatrixDouble::multiple(const MatrixDouble &a,const MatrixDouble &b,const bo
     const unsigned int L = b.getNumCols();
     
     if( N != K ) {
-        errorLog << "multiple(const MatrixDouble &a,const MatrixDouble &b,const bool aTranspose) - The number of rows in a (" << K << ") does not match the number of columns in matrix b (" << N << ")" << std::endl;
+        errorLog << "multiple(const MatrixFloat &a,const MatrixFloat &b,const bool aTranspose) - The number of rows in a (" << K << ") does not match the number of columns in matrix b (" << N << ")" << std::endl;
         return false;
     }
     
     if( !resize( M, L ) ){
-        errorLog << "multiple(const MatrixDouble &b,const MatrixDouble &c,const bool bTranspose) - Failed to resize matrix!" << endl;
+        errorLog << "multiple(const MatrixFloat &b,const MatrixFloat &c,const bool bTranspose) - Failed to resize matrix!" << endl;
         return false;
     }
     
     unsigned int i, j, k = 0;
     
     //Using direct pointers really helps speed up the computation time
-    double **pa = a.getDataPointer();
-    double **pb = b.getDataPointer();
+    float_t **pa = a.getDataPointer();
+    float_t **pb = b.getDataPointer();
     
     if( aTranspose ){
         
@@ -313,22 +313,22 @@ bool MatrixDouble::multiple(const MatrixDouble &a,const MatrixDouble &b,const bo
     return true;
 }
     
-bool MatrixDouble::add(const MatrixDouble &b){
+bool MatrixFloat::add(const MatrixFloat &b){
     
     if( b.getNumRows() != rows ){
-        errorLog << "add(const MatrixDouble &b) - Failed to add matrix! The rows do not match!" << endl;
+        errorLog << "add(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << endl;
         return false;
     }
     
     if( b.getNumCols() != cols ){
-        errorLog << "add(const MatrixDouble &b) - Failed to add matrix! The rows do not match!" << endl;
+        errorLog << "add(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << endl;
         return false;
     }
     
     unsigned int i = 0;
     
     //Using direct pointers really helps speed up the computation time
-    const double *p_b = &(b[0][0]);
+    const float_t *p_b = &(b[0][0]);
     
     for(i=0; i<rows*cols; i++){
         dataPtr[i] += p_b[i];
@@ -337,19 +337,19 @@ bool MatrixDouble::add(const MatrixDouble &b){
     return true;
 }
     
-bool MatrixDouble::add(const MatrixDouble &a,const MatrixDouble &b){
+bool MatrixFloat::add(const MatrixFloat &a,const MatrixFloat &b){
     
     const unsigned int M = a.getNumRows();
     const unsigned int N = a.getNumCols();
     
     if( M != b.getNumRows() ){
-        errorLog << "add(const MatrixDouble &a,const MatrixDouble &b) - Failed to add matrix! The rows do not match!";
+        errorLog << "add(const MatrixFloat &a,const MatrixFloat &b) - Failed to add matrix! The rows do not match!";
         errorLog << " a rows: " << M << " b rows: " << b.getNumRows() << endl;
         return false;
     }
     
     if( N != b.getNumCols() ){
-        errorLog << "add(const MatrixDouble &a,const MatrixDouble &b) - Failed to add matrix! The columns do not match!";
+        errorLog << "add(const MatrixFloat &a,const MatrixFloat &b) - Failed to add matrix! The columns do not match!";
         errorLog << " a cols: " << N << " b cols: " << b.getNumCols() << endl;
         return false;
     }
@@ -359,8 +359,8 @@ bool MatrixDouble::add(const MatrixDouble &a,const MatrixDouble &b){
     UINT i,j;
     
     //Using direct pointers really helps speed up the computation time
-    double **pa = a.getDataPointer();
-    double **pb = b.getDataPointer();
+    float_t **pa = a.getDataPointer();
+    float_t **pb = b.getDataPointer();
     
     for(i=0; i<M; i++){
         for(j=0; j<N; j++){
@@ -371,16 +371,16 @@ bool MatrixDouble::add(const MatrixDouble &a,const MatrixDouble &b){
     return true;
 }
     
-bool MatrixDouble::subtract(const MatrixDouble &b){
+bool MatrixFloat::subtract(const MatrixFloat &b){
     
     if( b.getNumRows() != rows ){
-        errorLog << "subtract(const MatrixDouble &b) - Failed to add matrix! The rows do not match!" << endl;
+        errorLog << "subtract(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << endl;
         errorLog << " rows: " << rows << " b rows: " << b.getNumRows() << endl;
         return false;
     }
     
     if( b.getNumCols() != cols ){
-        errorLog << "subtract(const MatrixDouble &b) - Failed to add matrix! The rows do not match!" << endl;
+        errorLog << "subtract(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << endl;
         errorLog << "  cols: " << cols << " b cols: " << b.getNumCols() << endl;
         return false;
     }
@@ -388,7 +388,7 @@ bool MatrixDouble::subtract(const MatrixDouble &b){
     unsigned int i,j;
     
     //Using direct pointers really helps speed up the computation time
-    double **pb = b.getDataPointer();
+    float_t **pb = b.getDataPointer();
     
     for(i=0; i<rows; i++){
         for(j=0; j<cols; j++){
@@ -399,19 +399,19 @@ bool MatrixDouble::subtract(const MatrixDouble &b){
     return true;
 }
     
-bool MatrixDouble::subtract(const MatrixDouble &a,const MatrixDouble &b){
+bool MatrixFloat::subtract(const MatrixFloat &a,const MatrixFloat &b){
     
     const unsigned int M = a.getNumRows();
     const unsigned int N = a.getNumCols();
     
     if( M != b.getNumRows() ){
-        errorLog << "subtract(const MatrixDouble &a,const MatrixDouble &b) - Failed to add matrix! The rows do not match!";
+        errorLog << "subtract(const MatrixFloat &a,const MatrixFloat &b) - Failed to add matrix! The rows do not match!";
         errorLog << " a rows: " << M << " b rows: " << b.getNumRows() << endl;
         return false;
     }
     
     if( N != b.getNumCols() ){
-        errorLog << "subtract(const MatrixDouble &a,const MatrixDouble &b) - Failed to add matrix! The columns do not match!";
+        errorLog << "subtract(const MatrixFloat &a,const MatrixFloat &b) - Failed to add matrix! The columns do not match!";
         errorLog << " a cols: " << N << " b cols: " << b.getNumCols() << endl;
         return false;
     }
@@ -421,8 +421,8 @@ bool MatrixDouble::subtract(const MatrixDouble &a,const MatrixDouble &b){
     UINT i,j;
     
     //Using direct pointers really helps speed up the computation time
-    double **pa = a.getDataPointer();
-    double **pb = b.getDataPointer();
+    float_t **pa = a.getDataPointer();
+    float_t **pb = b.getDataPointer();
     
     for(i=0; i<M; i++){
         for(j=0; j<N; j++){
@@ -433,55 +433,55 @@ bool MatrixDouble::subtract(const MatrixDouble &a,const MatrixDouble &b){
     return true;
 }
     
-double MatrixDouble::getMinValue() const{
-    double minValue = 99e+99;
+float_t MatrixFloat::getMinValue() const{
+    float_t minValue = 99e+99;
     for(unsigned int i=0; i<rows*cols; i++){
         if( dataPtr[i] < minValue ) minValue = dataPtr[i];
     }
     return minValue;
 }
 
-double MatrixDouble::getMaxValue() const{
-    double maxValue = 99e-99;
+float_t MatrixFloat::getMaxValue() const{
+    float_t maxValue = 99e-99;
     for(unsigned int i=0; i<rows*cols; i++){
         if( dataPtr[i] > maxValue ) maxValue = dataPtr[i];
     }
     return maxValue;
 }
     
-VectorDouble MatrixDouble::getMean() const{
+VectorFloat MatrixFloat::getMean() const{
     
-    VectorDouble mean(cols);
+    VectorFloat mean(cols);
     
     for(unsigned int c=0; c<cols; c++){
         mean[c] = 0;
         for(unsigned int r=0; r<rows; r++){
             mean[c] += dataPtr[r*cols+c];
         }
-        mean[c] /= double( rows );
+        mean[c] /= float_t( rows );
     }
     
     return mean;
 }
     
-VectorDouble MatrixDouble::getStdDev() const{
+VectorFloat MatrixFloat::getStdDev() const{
     
-    VectorDouble mean = getMean();
-	VectorDouble stdDev(cols,0);
+    VectorFloat mean = getMean();
+	VectorFloat stdDev(cols,0);
 	
 	for(unsigned int j=0; j<cols; j++){
 		for(unsigned int i=0; i<rows; i++){
 			stdDev[j] += (dataPtr[i*cols+j]-mean[j])*(dataPtr[i*cols+j]-mean[j]);
 		}
-		stdDev[j] = sqrt( stdDev[j] / double(rows-1) );
+		stdDev[j] = sqrt( stdDev[j] / float_t(rows-1) );
 	}
     return stdDev;
 }
 
-MatrixDouble MatrixDouble::getCovarianceMatrix() const{
+MatrixFloat MatrixFloat::getCovarianceMatrix() const{
     
-    vector<double> mean = getMean();
-    MatrixDouble covMatrix(cols,cols);
+    vector<float_t> mean = getMean();
+    MatrixFloat covMatrix(cols,cols);
     
     for(unsigned int j=0; j<cols; j++){
         for(unsigned int k=0; k<cols; k++){
@@ -489,14 +489,14 @@ MatrixDouble MatrixDouble::getCovarianceMatrix() const{
             for(unsigned int i=0; i<rows; i++){
                 covMatrix[j][k] += (dataPtr[i*cols+j]-mean[j]) * (dataPtr[i*cols+k]-mean[k]);
             }
-            covMatrix[j][k] /= double(rows-1);
+            covMatrix[j][k] /= float_t(rows-1);
         }
     }
     
     return covMatrix;
 }
     
-std::vector< MinMax > MatrixDouble::getRanges() const{
+std::vector< MinMax > MatrixFloat::getRanges() const{
     
     if( rows == 0 ) return std::vector< MinMax >();
     
@@ -509,8 +509,8 @@ std::vector< MinMax > MatrixDouble::getRanges() const{
     return ranges;
 }
     
-double MatrixDouble::getTrace() const{
-    double t = 0;
+float_t MatrixFloat::getTrace() const{
+    float_t t = 0;
     unsigned int K = (rows < cols ? rows : cols);
     for(unsigned int i=0; i < K; i++) {
         t += dataPtr[i*cols+i];
@@ -518,7 +518,7 @@ double MatrixDouble::getTrace() const{
     return t;
 }
   
-bool MatrixDouble::save(const string &filename) const{
+bool MatrixFloat::save(const string &filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -537,7 +537,7 @@ bool MatrixDouble::save(const string &filename) const{
     return true;
 }
     
-bool MatrixDouble::load(const string &filename,const char seperator){
+bool MatrixFloat::load(const string &filename,const char seperator){
     
     //Clear any previous data
     clear();
@@ -550,7 +550,7 @@ bool MatrixDouble::load(const string &filename,const char seperator){
     }
     
     vector< string > vec;
-    vector< double > row;
+    vector< float_t > row;
     string line;
     string columnString = "";
     const int sepValue = seperator;
@@ -624,9 +624,9 @@ bool MatrixDouble::load(const string &filename,const char seperator){
             }
         }
         
-        //Convert the string column values to double values
+        //Convert the string column values to float_t values
         for(unsigned int j=0; j<columnCounter; j++){
-            dataPtr[rowCounter*cols+j] = stringToDouble(vec[j]);
+            dataPtr[rowCounter*cols+j] = stringTofloat_t(vec[j]);
         }
         rowCounter++;
     }
@@ -637,11 +637,11 @@ bool MatrixDouble::load(const string &filename,const char seperator){
     return true;
 }
     
-bool MatrixDouble::saveToCSVFile(const string &filename) const{
+bool MatrixFloat::saveToCSVFile(const string &filename) const{
     return save( filename );
 }
     
-bool MatrixDouble::loadFromCSVFile(const string &filename,const char seperator){
+bool MatrixFloat::loadFromCSVFile(const string &filename,const char seperator){
     return load( filename, seperator );
 }
     
