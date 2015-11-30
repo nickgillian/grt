@@ -41,20 +41,20 @@ namespace GRT{
 
 class Timer{
 public:
-	/**
-	Default constructor. 
-	*/
+    /**
+     Default constructor. 
+    */
     Timer(){}
 
     /**
-	Default destructor.
+     Default destructor.
 	*/
     ~Timer(){}
 
     /**
-	Starts the timer. This starts the timer in NORMAL_MODE, in this mode the timer will run forever.
+     Starts the timer. This starts the timer in NORMAL_MODE, in this mode the timer will run forever.
 	
-	@return returns true if the timer was started successfully, false otherwise
+     @return returns true if the timer was started successfully, false otherwise
 	*/
     bool start(){
         startTime = getSystemTime();
@@ -64,11 +64,11 @@ public:
     }
 
     /**
-	Starts the timer. This starts the timer in COUNTDOWN_MODE, in this mode the timer will start at the specified countdown time and count down until it reaches zero.
-	At zero, the timer will set its state to timerRunning = false, however the timer will continue to countdown resulting in a negative query time.
+     Starts the timer. This starts the timer in COUNTDOWN_MODE, in this mode the timer will start at the specified countdown time and count down until it reaches zero.
+     At zero, the timer will set its state to timerRunning = false, however the timer will continue to countdown resulting in a negative query time.
 	
-	@param unsigned long countDownTime: sets the countdown time, this should be in milliseconds (i.e. start(5000) would start the timer with a countdown time of 5 seconds)
-	@return returns true if the timer was started successfully, false otherwise
+     @param countDownTime: sets the countdown time, this should be in milliseconds (i.e. start(5000) would start the timer with a countdown time of 5 seconds)
+     @return returns true if the timer was started successfully, false otherwise
 	*/
     bool start(unsigned long countDownTime){
         if( countDownTime > 0 ){
@@ -124,8 +124,8 @@ public:
      (so 0.5 is 500 milliseconds).
      
      @return returns the current time elapsed in seconds or 0 if the timer is not running
-     */
-    double getSeconds() const {
+    */
+    float_t getSeconds() const {
         if( !timerRunning ) return 0;
         return getMilliSeconds()/1000.0;
     }

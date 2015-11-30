@@ -20,7 +20,6 @@
   trimTimeSeries function will return false. Set the maximumTrimPercentage to 100 if you want the timeseries to always be trimmed.
  */
 
-
 /*
  GRT MIT License
  Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
@@ -53,50 +52,50 @@ public:
 
 	/**
      Default Constructor.
-    */
-    TimeSeriesClassificationSampleTrimmer(double trimThreshold=0.1,double maximumTrimPercentage=80);
+  */
+  TimeSeriesClassificationSampleTrimmer(float_t trimThreshold=0.1,float_t maximumTrimPercentage=80);
 
 	/**
-     Default Destructor
-    */
-	~TimeSeriesClassificationSampleTrimmer();
+    Default Destructor
+  */
+  ~TimeSeriesClassificationSampleTrimmer();
 
 	/**
-     Defines the equals operator. Copies the settings from the rhs instance to this instance
+   Defines the equals operator. Copies the settings from the rhs instance to this instance
 
-	@param const TimeSeriesClassificationSampleTrimmer &rhs: the instance from which the settings will be copied
-	@return returns a reference to this instance
-    */
+   @param rhs: the instance from which the settings will be copied
+   @return returns a reference to this instance
+  */
 	TimeSeriesClassificationSampleTrimmer& operator= (const TimeSeriesClassificationSampleTrimmer &rhs){
-		if( this != &rhs){
-            this->trimThreshold = rhs.trimThreshold;
-            this->maximumTrimPercentage = rhs.maximumTrimPercentage;
-            this->debugLog = rhs.debugLog;
-            this->warningLog = rhs.warningLog;
-            this->errorLog = rhs.errorLog;
-		}
-		return *this;
-	}
+    if( this != &rhs){
+      this->trimThreshold = rhs.trimThreshold;
+      this->maximumTrimPercentage = rhs.maximumTrimPercentage;
+      this->debugLog = rhs.debugLog;
+      this->warningLog = rhs.warningLog;
+      this->errorLog = rhs.errorLog;
+    }
+    return *this;
+  }
 
-    /**
-    The function attempts to detect and remove these static areas of data. This is done by computing the summed absolute energy of the 
-    timeseries data, normalizing the energy profile by the maximum energy value, and then searching for areas at the start and end of 
-    the timeseries that are below a specific trimthreshold (set by the user).
+  /**
+   The function attempts to detect and remove these static areas of data. This is done by computing the summed absolute energy of the 
+   timeseries data, normalizing the energy profile by the maximum energy value, and then searching for areas at the start and end of 
+   the timeseries that are below a specific trimthreshold (set by the user).
 	  
-	Any data that is below the trimthreshold will be removed, up until the first value that exceeds the threshold.  This search is
-	run both from the start of the timeseries (searching forward) and the end of the timeseries (searching backwards).  If the length
-	of the new timeseries is below the maximumTrimPercentage, then the timeseries will be trimmed and the trimTimeSeries function
-	will return true.  If the length of the new is above the maximumTrimPercentage, then the timeseries will not be trimmed and the
-    trimTimeSeries function will return false. Set the maximumTrimPercentage to 100 if you want the timeseries to always be trimmed.
+   Any data that is below the trimthreshold will be removed, up until the first value that exceeds the threshold.  This search is
+   run both from the start of the timeseries (searching forward) and the end of the timeseries (searching backwards).  If the length
+   of the new timeseries is below the maximumTrimPercentage, then the timeseries will be trimmed and the trimTimeSeries function
+   will return true.  If the length of the new is above the maximumTrimPercentage, then the timeseries will not be trimmed and the
+   trimTimeSeries function will return false. Set the maximumTrimPercentage to 100 if you want the timeseries to always be trimmed.
 
-	@param TimeSeriesClassificationSample &timeSeries: the timeseries to be trimmed (will be trimmed in place)
-	@return returns true if the timeseries was trimmed, false otherwise
-    */
-    bool trimTimeSeries(TimeSeriesClassificationSample &timeSeries);
+   @param timeSeries: the timeseries to be trimmed (will be trimmed in place)
+   @return returns true if the timeseries was trimmed, false otherwise
+  */
+  bool trimTimeSeries(TimeSeriesClassificationSample &timeSeries);
 
-private:
-    double trimThreshold;
-    double maximumTrimPercentage;
+protected:
+    float_t trimThreshold;
+    float_t maximumTrimPercentage;
     DebugLog debugLog;
     WarningLog warningLog;
     ErrorLog errorLog;

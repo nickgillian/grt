@@ -22,7 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace GRT{
 
-TimeSeriesClassificationSampleTrimmer::TimeSeriesClassificationSampleTrimmer(double trimThreshold,double maximumTrimPercentage){
+TimeSeriesClassificationSampleTrimmer::TimeSeriesClassificationSampleTrimmer(float_t trimThreshold,float_t maximumTrimPercentage){
     this->trimThreshold = trimThreshold;
     this->maximumTrimPercentage = maximumTrimPercentage;
     debugLog.setProceedingText("[DEBUG TimeSeriesTrimmer]");
@@ -48,7 +48,7 @@ bool TimeSeriesClassificationSampleTrimmer::trimTimeSeries(TimeSeriesClassificat
     }
     
     //Compute the energy of the time series
-    double maxValue = 0;
+    float_t maxValue = 0;
     VectorDouble x(M,0);
     
     for(UINT i=1; i<M; i++){
@@ -101,7 +101,7 @@ bool TimeSeriesClassificationSampleTrimmer::trimTimeSeries(TimeSeriesClassificat
     
     //Compute how long the new time series would be if we trimmed it
     UINT newM = lastIndex-firstIndex;
-    double trimPercentage = (double(newM) / double(M)) * 100.0;
+    float_t trimPercentage = (float_t(newM) / float_t(M)) * 100.0;
     
     if( 100 - trimPercentage <= maximumTrimPercentage ){
         

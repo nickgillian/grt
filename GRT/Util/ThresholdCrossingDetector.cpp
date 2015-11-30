@@ -22,7 +22,7 @@
 
 namespace GRT{
     
-ThresholdCrossingDetector::ThresholdCrossingDetector(UINT analysisMode,UINT thresholdCrossingMode,UINT detectionTimeoutMode,double lowerThreshold,double upperThreshold,double hysteresisThreshold,UINT searchWindowSize,UINT searchTimeoutDuration,UINT offsetFilterSize){
+ThresholdCrossingDetector::ThresholdCrossingDetector(UINT analysisMode,UINT thresholdCrossingMode,UINT detectionTimeoutMode,float_t lowerThreshold,float_t upperThreshold,float_t hysteresisThreshold,UINT searchWindowSize,UINT searchTimeoutDuration,UINT offsetFilterSize){
     
     this->analysisMode = analysisMode;
     this->thresholdCrossingMode = thresholdCrossingMode;
@@ -88,12 +88,12 @@ ThresholdCrossingDetector& ThresholdCrossingDetector::operator=(const ThresholdC
     return *this;
 }
 
-bool ThresholdCrossingDetector::update( const double x ){
+bool ThresholdCrossingDetector::update( const float_t x ){
 	
     thresholdCrossingDetected = false;
     
-    double deriv = derivative.computeDerivative( x );
-    double offset = movingAverageFilter.filter( x );
+    float_t deriv = derivative.computeDerivative( x );
+    float_t offset = movingAverageFilter.filter( x );
     
     //If the search is disabled then we stop here
     if( !enableSearch ){ return thresholdCrossingDetected; }
@@ -307,19 +307,19 @@ UINT ThresholdCrossingDetector::getSearchTimeoutDuration() const{
     return searchTimeoutDuration;
 }
     
-double ThresholdCrossingDetector::getAnalysisValue() const{
+float_t ThresholdCrossingDetector::getAnalysisValue() const{
     return analysisValue;
 }
     
-double ThresholdCrossingDetector::getUpperThreshold() const{
+float_t ThresholdCrossingDetector::getUpperThreshold() const{
     return upperThreshold;
 }
 
-double ThresholdCrossingDetector::getLowerThreshold() const{
+float_t ThresholdCrossingDetector::getLowerThreshold() const{
     return lowerThreshold;
 }
 
-double ThresholdCrossingDetector::getHysteresisThreshold() const{
+float_t ThresholdCrossingDetector::getHysteresisThreshold() const{
     return hysteresisThreshold;
 }
     
@@ -358,17 +358,17 @@ bool ThresholdCrossingDetector::setSearchTimeoutDuration(const UINT searchTimeou
     return reset();
 }
 
-bool ThresholdCrossingDetector::setLowerThreshold(const double lowerThreshold){ 
+bool ThresholdCrossingDetector::setLowerThreshold(const float_t lowerThreshold){ 
     this->lowerThreshold = lowerThreshold; 
     return reset();
 } 
 
-bool ThresholdCrossingDetector::setUpperThreshold(const double upperThreshold){ 
+bool ThresholdCrossingDetector::setUpperThreshold(const float_t upperThreshold){ 
     this->upperThreshold = upperThreshold; 
     return reset(); 
 }
     
-bool ThresholdCrossingDetector::setHysteresisThreshold(const double hysteresisThreshold){
+bool ThresholdCrossingDetector::setHysteresisThreshold(const float_t hysteresisThreshold){
     this->hysteresisThreshold = hysteresisThreshold;
     return reset();
 }
