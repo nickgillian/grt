@@ -37,7 +37,7 @@ bool WarningLog::registerObserver(Observer< WarningLogMessage > &observer){
 
 bool WarningLog::removeObserver(Observer< WarningLogMessage > &observer)
 {
-	return observerManager.removeObserver(observer);
+    return observerManager.removeObserver(observer);
 }
 
 } //End of namespace GRT

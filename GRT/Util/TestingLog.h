@@ -74,7 +74,7 @@ public:
     
     static bool registerObserver(Observer< TestingLogMessage > &observer);
 
-	static bool removeObserver(Observer< TestingLogMessage > &observer);
+    static bool removeObserver(Observer< TestingLogMessage > &observer);
     
 protected:
     virtual void triggerCallback( const std::string &message ) const{

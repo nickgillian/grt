@@ -37,7 +37,7 @@ bool TrainingLog::registerObserver(Observer< TrainingLogMessage > &observer){
 
 bool TrainingLog::removeObserver(Observer< TrainingLogMessage > &observer)
 {
-	return observerManager.removeObserver(observer);
+    return observerManager.removeObserver(observer);
 }
 
 }; //End of namespace GRT

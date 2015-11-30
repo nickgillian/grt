@@ -37,7 +37,7 @@ bool DebugLog::registerObserver(Observer< DebugLogMessage > &observer){
 
 bool DebugLog::removeObserver(Observer< DebugLogMessage > &observer)
 {
-	return observerManager.removeObserver(observer);
+    return observerManager.removeObserver(observer);
 }
 
 } //End of namespace GRT
