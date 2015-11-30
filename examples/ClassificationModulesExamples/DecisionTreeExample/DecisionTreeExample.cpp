@@ -39,17 +39,27 @@
  
  This example shows you how to:
  - Create and initialize the DecisionTree algorithm
- - Load some LabelledClassificationData from a file and partition the training data into a training dataset and a test dataset
+ - Load some ClassificationData from a file and partition the training data into a training dataset and a test dataset
  - Train a DecisionTree model using the training dataset
  - Test the DecisionTree model using the test dataset
  - Manually compute the accuracy of the classifier
+
+You should run this example with one argument pointing to the data you want to load. A good dataset to run this example is acc-orientation.grt, which can be found in the GRT data folder.
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
 
 int main(int argc, const char * argv[])
 {
+    //Parse the data filename from the argument list
+    if( argc != 2 ){
+        cout << "Error: failed to parse data filename from command line. You should run this example with one argument pointing to the data filename!\n";
+        return EXIT_FAILURE;
+    }
+    const string filename = argv[1];
+
     //Create a new DecisionTree instance
     DecisionTree dTree;
     
@@ -73,8 +83,8 @@ int main(int argc, const char * argv[])
     //Load some training data to train the classifier
     ClassificationData trainingData;
     
-    if( !trainingData.load("DecisionTreeTrainingData.grt") ){
-        cout << "Failed to load training data!\n";
+    if( !trainingData.load( filename ) ){
+        cout << "Failed to load training data: " << filename << endl;
         return EXIT_FAILURE;
     }
     
