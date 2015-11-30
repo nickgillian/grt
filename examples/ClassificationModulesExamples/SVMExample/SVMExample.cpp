@@ -69,9 +69,7 @@ int main (int argc, const char * argv[])
     ClassificationData testData = trainingData.partition( 80 );
     
     //Train the classifier
-    bool trainSuccess = svm.train( trainingData );
-    
-    if( !trainSuccess ){
+    if( !svm.train( trainingData ) ){
         cout << "Failed to train classifier!\n";
         return EXIT_FAILURE;
     }
