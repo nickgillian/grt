@@ -14,15 +14,7 @@
 
 //Include the GRTVersionInfo header to find which operating system we are building for
 #include "GRTVersionInfo.h"
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <fstream>
-#include <sstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits>
-#include <cmath>
+#include "GRTTypedefs.h"
 
 #ifdef __GRT_WINDOWS_BUILD__
 //Include any Windows specific headers
@@ -76,20 +68,20 @@ public:
     /**
      Performs minmax scaling. The input value (x) will be scaled from the source range to the target range.
      
-	 @param double x: the input value to be scaled
-	 @param const double minSource: the minimum source value (that x originates from)
-	 @param const double maxSource: the maximum source value (that x originates from)
-	 @param const double minTarget: the minimum target value (that x will be scaled to)
-	 @param const double maxTarget: the maximum target value (that x will be scaled to)
-     @param const bool constrain: if true, then the value will be constrained to the minSource and maxSource
+	 @param x: the input value to be scaled
+	 @param minSource: the minimum source value (that x originates from)
+	 @param maxSource: the maximum source value (that x originates from)
+	 @param minTarget: the minimum target value (that x will be scaled to)
+	 @param maxTarget: the maximum target value (that x will be scaled to)
+     @param constrain: if true, then the value will be constrained to the minSource and maxSource
 	 @return the scaled value
      */
-    static double scale(const double &x,const double &minSource,const double &maxSource,const double &minTarget,const double &maxTarget,const bool constrain=false);
+    static float_t scale(const float_t &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain=false);
 
     /**
     Converts an int to a string.
 
-    @param const int i: the value you want to convert to a string
+    @param i: the value you want to convert to a string
     @return std::string: the value as a string
 	*/
     static std::string intToString(const int &i);
@@ -97,7 +89,7 @@ public:
     /**
     Converts an unsigned int to a string.
 
-    @param const unsigned int i: the value you want to convert to a string
+    @param i: the value you want to convert to a string
     @return std::string: the value as a string
 	*/
     static std::string intToString(const unsigned int &i);
@@ -105,7 +97,7 @@ public:
     /**
     Converts an unsigned int to a string.
 
-    @param const unsigned int i: the value you want to convert to a string
+    @param i: the value you want to convert to a string
     @return std::string: the value as a string
 	*/
     static std::string toString(const int &i);
@@ -113,7 +105,7 @@ public:
 	/**
     Converts an unsigned int to a string.
 
-    @param const unsigned int i: the value you want to convert to a string
+    @param i: the value you want to convert to a string
 	@return std::string: the value as a string
 	*/
     static std::string toString(const unsigned int &i);
@@ -121,7 +113,7 @@ public:
     /**
     Converts a long to a string.
 
-    @param const long i: the value you want to convert to a string
+    @param i: the value you want to convert to a string
     @return std::string: the value as a string
     */
     static std::string toString(const long &i);
@@ -129,7 +121,7 @@ public:
     /**
     Converts an unsigned long to a string.
 
-    @param const unsigned long i: the value you want to convert to a string
+    @param i: the value you want to convert to a string
     @return std::string: the value as a string
     */
     static std::string toString(const unsigned long &i);
@@ -137,7 +129,7 @@ public:
     /**
      Converts an unsigned long long to a string.
      
-     @param const unsigned long long i: the value you want to convert to a string
+     @param i: the value you want to convert to a string
      @return std::string: the value as a string
      */
     static std::string toString(const unsigned long long &i);
@@ -145,15 +137,23 @@ public:
     /**
      Converts a boolean to a string.
      
-     @param const bool b: the value you want to convert to a string
+     @param b: the value you want to convert to a string
      @return std::string: the boolan as a string
      */
     static std::string toString(const bool &b);
+
+    /**
+    Converts a float to a string.
+
+    @param v: the value you want to convert to a string
+    @return std::string: the value as a string
+    */
+    static std::string toString(const float &v);
     
 	/**
     Converts a double to a string.
 
-    @param const double v: the value you want to convert to a string
+    @param v: the value you want to convert to a string
     @return std::string: the value as a string
 	*/
     static std::string toString(const double &v);
@@ -161,23 +161,15 @@ public:
     /**
     Converts a long double to a string.
 
-    @param const long double v: the value you want to convert to a string
+    @param v: the value you want to convert to a string
     @return std::string: the value as a string
     */
     static std::string toString(const long double &v);
 
-	/**
-    Converts a float to a string.
-
-    @param const float v: the value you want to convert to a string
-    @return std::string: the value as a string
-	*/
-    static std::string toString(const float &v);
-
     /**
     Converts a string to an int.
 
-    @param const std::string &s: the value you want to convert to an int
+    @param s: the value you want to convert to an int
 	@return int: the value as an int
 	*/
     static int stringToInt(const std::string &s);
@@ -185,15 +177,23 @@ public:
     /**
     Converts a string to a double.
 
-    @param const std::string &s: the value you want to convert to a double
-	@return double: the value as a double
+    @param s: the value you want to convert to a double
+	@return the value as a double
 	*/
     static double stringToDouble(const std::string &s);
+
+    /**
+    Converts a string to a float.
+
+    @param s: the value you want to convert to a float
+    @return the value as a float
+    */
+    static float_t stringToFloat(const std::string &s);
     
     /**
      Converts a string to a boolean. Any string that matches true, True, TRUE, t, T, or 1 will return true, anything else will return false.
      
-     @param const std::string &s: the value you want to convert to a bool
+     @param s: the value you want to convert to a bool
      @return bool: the value as a bool
      */
     static bool stringToBool(const std::string &s);
@@ -201,8 +201,8 @@ public:
     /**
      Checks if the string (str) ends with a specific ending (such as .csv).
      
-     @param const std::string &str: the string you want to query
-     @param const std::string &ending: the ending you want to search for
+     @param str: the string you want to query
+     @param ending: the ending you want to search for
      @return bool: returns true if the input string ends with the ending, false otherwise
      */
     static bool stringEndsWith(const std::string &str, const std::string &ending);
@@ -213,137 +213,137 @@ public:
      If the input value is above the maxValue then the output of the function will be the maxValue.
      Otherwise, the out of the function will be the input.
      
-     @param const double value: the input value that should be limited
-     @param const double minValue: the minimum value that should be limited
-     @param const double maxValue: the maximum value that should be limited
+     @param value: the input value that should be limited
+     @param minValue: the minimum value that should be limited
+     @param maxValue: the maximum value that should be limited
      @return the limited double input value
      */
-    static double limit(const double value,const double minValue,const double maxValue);
+    static float_t limit(const float_t value,const float_t minValue,const float_t maxValue);
 
     /**
     Computes the sum of the vector x.
 
-    @param const std::vector<double> &x: the vector of values you want to sum
+    @param x: the vector of values you want to sum
 	@return double: the sum of the input vector x
 	*/
-    static double sum(const std::vector<double> &x);
+    static float_t sum(const VectorFloat &x);
 
     /**
     Computes the dot product between the two input vectors. The two input vectors must have the same size.
 
-    @param const std::vector<double> &a: the first vector for the dot product
-    @param const std::vector<double> &a: the second vector for the dot product
+    @param a: the first vector for the dot product
+    @param a: the second vector for the dot product
 	@return double: the dot product between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
-    static double dotProduct(const std::vector<double> &a,const std::vector<double> &b);
+    static float_t dotProduct(const VectorFloat &a,const VectorFloat &b);
 
     /**
     Computes the euclidean distance between the two input vectors. The two input vectors must have the same size.
 
-    @param const std::vector<double> &a: the first vector for the euclidean distance
-    @param const std::vector<double> &a: the second vector for the euclidean distance
-	@return double: the euclidean distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
+    @param a: the first vector for the euclidean distance
+    @param a: the second vector for the euclidean distance
+	@return the euclidean distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
-    static double euclideanDistance(const std::vector<double> &a,const std::vector<double> &b);
+    static float_t euclideanDistance(const VectorFloat &a,const VectorFloat &b);
 
     /**
     Computes the manhattan distance between the two input vectors. The two input vectors must have the same size.
     The manhattan distance is also known as the L1 norm, taxicab distance, city block distance, or rectilinear distance.
 
-    @param const std::vector<double> &a: the first vector for the manhattan distance
-    @param const std::vector<double> &a: the second vector for the manhattan distance
-	@return double: the manhattan distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
+    @param a: the first vector for the manhattan distance
+    @param a: the second vector for the manhattan distance
+	@return the manhattan distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
-    static double manhattanDistance(const std::vector<double> &a,const std::vector<double> &b);
+    static float_t manhattanDistance(const VectorFloat &a,const VectorFloat &b);
 
     /**
     Computes the cosine distance between the two input vectors. The two input vectors must have the same size.
     The cosine distance can be used as a similarity measure, the distance ranges from −1 meaning exactly opposite, to 1 meaning exactly the same, 
     with 0 usually indicating independence, and in-between values indicating intermediate similarity or dissimilarity.
 
-    @param const std::vector<double> &a: the first vector for the cosine distance
-    @param const std::vector<double> &a: the second vector for the cosine distance
-	@return double: the cosine distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
+    @param a: the first vector for the cosine distance
+    @param a: the second vector for the cosine distance
+	@return the cosine distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
-    static double cosineDistance(const std::vector<double> &a,const std::vector<double> &b);
+    static float_t cosineDistance(const VectorFloat &a,const VectorFloat &b);
     
     /**
      Scales the vector from a source range to the new target range
      
-     @param double x: the input value to be scaled
-	 @param const double minSource: the minimum source value (that x originates from)
-	 @param const double maxSource: the maximum source value (that x originates from)
-	 @param const double minTarget: the minimum target value (that x will be scaled to)
-	 @param const double maxTarget: the maximum target value (that x will be scaled to)
-     @param const bool constrain: if true, then the value will be constrained to the minSource and maxSource
-     @return std::vector<double>: the scaled input vector
+     @param x: the input value to be scaled
+	 @param minSource: the minimum source value (that x originates from)
+	 @param maxSource: the maximum source value (that x originates from)
+	 @param minTarget: the minimum target value (that x will be scaled to)
+	 @param maxTarget: the maximum target value (that x will be scaled to)
+     @param constrain: if true, then the value will be constrained to the minSource and maxSource
+     @return the scaled input vector
      */
-	static std::vector<double> scale(const std::vector<double> &x,const double minSource,const double maxSource,const double minTarget=0,const double maxTarget=1,const bool constrain=false);
+	static VectorFloat scale(const VectorFloat &x,const float_t minSource,const float_t maxSource,const float_t minTarget=0,const float_t maxTarget=1,const bool constrain=false);
     
     /**
     Normalizes the input vector x so the sum is 1.
 
-    @param const std::vector<double> &x: the vector of values you want to normalize
-	@return std::vector<double>: the normalized input vector (the sum of which will be 1)
+    @param x: the vector of values you want to normalize
+	@return the normalized input vector (the sum of which should be 1)
 	*/
-	static std::vector<double> normalize(const std::vector<double> &x);
+	static VectorFloat normalize(const VectorFloat &x);
     
     /**
      Limits the input data x so each element is within the range [minValue maxValue]. 
      Returns a new vector with the limited data.
      
-     @param const std::vector<double> &x: the vector of values you want to limit
-     @param const minValue: the minimum value
-     @param const maxValue: the maximum value
-     @return std::vector<double>: the limited input vector
+     @param x: the vector of values you want to limit
+     @param minValue: the minimum value
+     @param maxValue: the maximum value
+     @return the limited input vector
      */
-	static std::vector<double> limit(const std::vector<double> &x,const double minValue,const double maxValue);
+	static VectorFloat limit(const VectorFloat &x,const float_t minValue,const float_t maxValue);
 	
 	/**
     Gets the minimum value in the input vector.
 
-    @param const std::vector<double> &x: the vector of values you want to find the minimum value for
-	@return double: the minimum value in the input vector, this will be INF if the input vector size is 0
+    @param x: the vector of values you want to find the minimum value for
+	@return the minimum value in the input vector, this will be INF if the input vector size is 0
 	*/
-    static double getMin(const std::vector< double > &x);
+    static float_t getMin(const VectorFloat &x);
     
     /**
      Gets the index of the minimum value in the input vector.
      
-     @param const std::vector<double> &x: the vector of values you want to find the minimum index value for
-     @return unsigned int: the index of the minimum value in the vector
+     @param x: the vector of values you want to find the minimum index value for
+     @return the index of the minimum value in the vector
      */
-    static unsigned int getMinIndex(const std::vector< double > &x);
+    static unsigned int getMinIndex(const VectorFloat &x);
 
     /**
     Gets the maximum value in the input vector.
 
-    @param const std::vector<double> &x: the vector of values you want to find the maximum value for
-	@return double: the maximum value in the input vector, this will be INF if the input vector size is 0
+    @param x: the vector of values you want to find the maximum value for
+	@return the maximum value in the input vector, this will be INF if the input vector size is 0
 	*/
-    static double getMax(const std::vector< double > &x);
+    static float_t getMax(const VectorFloat &x);
     
     /**
      Gets the index of the maximum value in the input vector.
      
-     @param const std::vector<double> &x: the vector of values you want to find the maximum index value for
-     @return unsigned int: the index of the maximum value in the vector
+     @param x: the vector of values you want to find the maximum index value for
+     @return the index of the maximum value in the vector
      */
-    static unsigned int getMaxIndex(const std::vector< double > &x);
+    static unsigned int getMaxIndex(const VectorFloat &x);
 
     /**
     Gets the minimum value in the input vector.
 
-    @param const std::vector<unsigned int> &x: the vector of values you want to find the minimum value for
-	@return unsigned int: the minimum value in the input vector, this will be INF if the input vector size is 0
+    @param x: the vector of values you want to find the minimum value for
+	@return the minimum value in the input vector, this will be INF if the input vector size is 0
 	*/
     static unsigned int getMin(const std::vector< unsigned int > &x);
 
     /**
     Gets the maximum value in the input vector.
 
-    @param const std::vector<unsigned int> &x: the vector of values you want to find the maximum value for
-	@return unsigned int: the maximum value in the input vector, this will be INF if the input vector size is 0
+    @param x: the vector of values you want to find the maximum value for
+	@return the maximum value in the input vector, this will be INF if the input vector size is 0
 	*/
     static unsigned int getMax(const std::vector< unsigned int > &x);
 
@@ -357,24 +357,24 @@ public:
     /**
      Converts the cartesian values {x y} into polar values {r theta}
      
-     @param const double x: the x cartesian value
-     @param const double y: the y cartesian value
-     @param double &r: the return radius value
-     @param double &theta: the return theta value
+     @param x: the x cartesian value
+     @param y: the y cartesian value
+     @param r: the return radius value
+     @param theta: the return theta value
      @return void
      */
-    static void cartToPolar(const double x,const double y,double &r, double &theta);
+    static void cartToPolar(const float_t x,const float_t y,float_t &r, float_t &theta);
     
     /**
      Converts the polar values {r theta} into the cartesian values {x y}.
      
-     @param const double r: the radius polar value
-     @param const double theta: the theta polar value
-     @param double &x: the return x value
-     @param double &y: the return y value
+     @param r: the radius polar value
+     @param theta: the theta polar value
+     @param x: the return x value
+     @param y: the return y value
      @return void
      */
-    static void polarToCart(const double r,const double theta,double &x, double &y);
+    static void polarToCart(const float_t r,const float_t theta,float_t &x, float_t &y);
 
     /**
      @brief Parses a directory and returns a list of filenames in that directory that match the file type.
@@ -383,9 +383,9 @@ public:
 
      @note only supported on OSX or Linux systems at this time.
 
-     @param const string directoryPath: the path of the directory you want to search (can be relative or absolute)
-     @param const string type: sets the file type that should be searched for (e.g. .csv)
-     @param vector< string > &filenames: will return a list of filenames found in the directory
+     @param directoryPath: the path of the directory you want to search (can be relative or absolute)
+     @param type: sets the file type that should be searched for (e.g. .csv)
+     @param filenames: will return a list of filenames found in the directory
      @return returns true if the directory was parsed, false otherwise
      */
     static bool parseDirectory( const std::string directoryPath, const std::string type, std::vector< std::string > &filenames );

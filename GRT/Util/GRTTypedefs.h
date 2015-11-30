@@ -22,9 +22,23 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_TYPEDEFS_HEADER
 
 #include "GRTVersionInfo.h"
+#include <iostream>
 #include <vector>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits>
+#include <cmath>
 
 namespace GRT {
+
+//Define any common GRT OS independent typedefs
+typedef double float_t; ///<This typedef is used to set floating-point precision throughout the GRT
+typedef std::vector< float_t > VectorFloat;
+typedef std::vector< double > VectorDouble;
+//typedef MatrixDouble MatrixFloat;
 	
 //Declare any common definitions that are not OS specific
 #ifndef PI
@@ -96,9 +110,6 @@ typedef unsigned int UINT;
 typedef signed int SINT;
 typedef unsigned long ULONG;
 #endif
-
-//Define any common GRT OS independent typedefs
-typedef std::vector< double > VectorDouble;
     
 //Declare typedefs for the legacy data types
 class ClassificationData;

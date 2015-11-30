@@ -91,7 +91,7 @@ public:
 
      @return returns the accuracy
      */
-    double getAccuracy() const{
+    float_t getAccuracy() const{
         return accuracy;
     }
     
@@ -101,7 +101,7 @@ public:
 
      @return returns the totalSquaredTrainingError
      */
-    double getTotalSquaredTrainingError() const{
+    float_t getTotalSquaredTrainingError() const{
         return totalSquaredTrainingError;
     }
     
@@ -111,7 +111,7 @@ public:
 
      @return returns the rootMeanSquaredTrainingError
      */
-    double getRootMeanSquaredTrainingError() const{
+    float_t getRootMeanSquaredTrainingError() const{
         return rootMeanSquaredTrainingError;
     }
     
@@ -127,12 +127,12 @@ public:
     /**
      Sets the training result for classification data. This will place the training mode into CLASSIFICATION_MODE.
 
-     @param unsigned int trainingIteration: the current training iteration (or epoch)
-     @param double accuracy: the accuracy for the current training iteration
-     @param MLBase *trainer: a pointer to the class used to generate the result
+     @param trainingIteration: the current training iteration (or epoch)
+     @param accuracy: the accuracy for the current training iteration
+     @param trainer: a pointer to the class used to generate the result
      @return returns true if the training result was set successfully
      */
-    bool setClassificationResult(unsigned int trainingIteration,double accuracy,MLBase *trainer){
+    bool setClassificationResult(unsigned int trainingIteration,float_t accuracy,MLBase *trainer){
         this->trainingMode = CLASSIFICATION_MODE;
         this->trainingIteration = trainingIteration;
         this->accuracy = accuracy;
@@ -143,13 +143,13 @@ public:
     /**
      Sets the training result for regression data. This will place the training mode into REGRESSION_MODE.
 
-     @param unsigned int trainingIteration: the current training iteration (or epoch)
-     @param double totalSquaredTrainingError: the total squared training error for the current iteration
-     @param double rootMeanSquaredTrainingError: the root mean squared training error for the current iteration
-     @param MLBase *trainer: a pointer to the class used to generate the result
+     @param trainingIteration: the current training iteration (or epoch)
+     @param totalSquaredTrainingError: the total squared training error for the current iteration
+     @param rootMeanSquaredTrainingError: the root mean squared training error for the current iteration
+     @param trainer: a pointer to the class used to generate the result
      @return returns true if the training result was set successfully
      */
-    bool setRegressionResult(unsigned int trainingIteration,double totalSquaredTrainingError,double rootMeanSquaredTrainingError,MLBase *trainer){
+    bool setRegressionResult(unsigned int trainingIteration,float_t totalSquaredTrainingError,float_t rootMeanSquaredTrainingError,MLBase *trainer){
         this->trainingMode = REGRESSION_MODE;
         this->trainingIteration = trainingIteration;
         this->totalSquaredTrainingError = totalSquaredTrainingError;
@@ -162,9 +162,9 @@ protected:
     
     unsigned int trainingMode;
     unsigned int trainingIteration;
-    double accuracy;
-    double totalSquaredTrainingError;
-    double rootMeanSquaredTrainingError;
+    float_t accuracy;
+    float_t totalSquaredTrainingError;
+    float_t rootMeanSquaredTrainingError;
     MLBase *trainer;
     
 public:
