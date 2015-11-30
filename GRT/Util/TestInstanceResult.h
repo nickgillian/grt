@@ -91,11 +91,11 @@ public:
     /**
      Sets the training result for classification data. This will place the training mode into CLASSIFICATION_MODE.
 
-     @param unsigned int trainingIteration: the current training iteration (or epoch)
-     @param double accuracy: the accuracy for the current training iteration
+     @param trainingIteration: the current training iteration (or epoch)
+     @param accuracy: the accuracy for the current training iteration
      @return returns true if the training result was set successfully
      */
-    bool setClassificationResult(const unsigned int testIteration,const unsigned int classLabel,const unsigned int predictedClassLabel,const unsigned int unProcessedPredictedClassLabel,const VectorDouble &classLikelihoods,const VectorDouble &classDistances){
+    bool setClassificationResult(const unsigned int testIteration,const unsigned int classLabel,const unsigned int predictedClassLabel,const unsigned int unProcessedPredictedClassLabel,const VectorFloat &classLikelihoods,const VectorFloat &classDistances){
 		this->testMode = CLASSIFICATION_MODE;
 		this->testIteration = testIteration;
 		this->classLabel = classLabel;
@@ -109,12 +109,12 @@ public:
     /**
      Sets the training result for regression data. This will place the training mode into REGRESSION_MODE.
 
-     @param unsigned int trainingIteration: the current training iteration (or epoch)
-     @param double totalSquaredTrainingError: the total squared training error for the current iteration
-     @param double rootMeanSquaredTrainingError: the root mean squared training error for the current iteration
+     @param trainingIteration: the current training iteration (or epoch)
+     @param totalSquaredTrainingError: the total squared training error for the current iteration
+     @param rootMeanSquaredTrainingError: the root mean squared training error for the current iteration
      @return returns true if the training result was set successfully
      */
-    bool setRegressionResult(const unsigned int testIteration,const VectorDouble &regressionData,const VectorDouble &targetData){
+    bool setRegressionResult(const unsigned int testIteration,const VectorFloat &regressionData,const VectorFloat &targetData){
         this->testMode = REGRESSION_MODE;
         this->testIteration = testIteration;
         this->regressionData = regressionData;
@@ -163,9 +163,9 @@ public:
 
      @return returns the maximum likelihood
      */
-    double getMaximumLikelihood() const{
-        double maxLikelihood = 0;
-        for(unsigned int i=0; i<classLikelihoods.size(); i++){
+    float_t getMaximumLikelihood() const{
+        float_t maxLikelihood = 0;
+        for(size_t i=0; i<classLikelihoods.size(); i++){
             if( classLikelihoods[i] > maxLikelihood ){
                 maxLikelihood = classLikelihoods[i];
             }
@@ -178,10 +178,10 @@ public:
      
      @return returns the squared error between the regression estimate and the target data
      */
-    double getSquaredError() const{
-        double sum = 0;
+    float_t getSquaredError() const{
+        float_t sum = 0;
         if( regressionData.size() != targetData.size() ) return 0;
-        for(unsigned int i=0; i<regressionData.size(); i++){
+        for(size_t i=0; i<regressionData.size(); i++){
             sum += (regressionData[i]-targetData[i])*(regressionData[i]-targetData[i]);
         }
         return sum;
@@ -193,10 +193,10 @@ protected:
 	unsigned int classLabel;
 	unsigned int predictedClassLabel;
 	unsigned int unProcessedPredictedClassLabel;
-	VectorDouble classLikelihoods;
-	VectorDouble classDistances;
-	VectorDouble regressionData;
-	VectorDouble targetData;
+	VectorFloat classLikelihoods;
+	VectorFloat classDistances;
+	VectorFloat regressionData;
+	VectorFloat targetData;
     
 public:
     

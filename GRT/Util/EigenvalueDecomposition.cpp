@@ -84,8 +84,8 @@ void EigenvalueDecomposition::tred2(){
     for(int i = n-1; i > 0; i--) {
         
         // Scale to avoid under/overflow.
-        double scale = 0.0;
-        double h = 0.0;
+        float_t scale = 0.0;
+        float_t h = 0.0;
         for (int k = 0; k < i; k++) {
             scale = scale + fabs(realEigenvalues[k]);
         }
@@ -103,8 +103,8 @@ void EigenvalueDecomposition::tred2(){
                 realEigenvalues[k] /= scale;
                 h += realEigenvalues[k] * realEigenvalues[k];
             }
-            double f = realEigenvalues[i-1];
-            double g = sqrt(h);
+            float_t f = realEigenvalues[i-1];
+            float_t g = sqrt(h);
             if (f > 0) {
                 g = -g;
             }
@@ -131,7 +131,7 @@ void EigenvalueDecomposition::tred2(){
                 complexEigenvalues[j] /= h;
                 f += complexEigenvalues[j] * realEigenvalues[j];
             }
-            double hh = f / (h + h);
+            float_t hh = f / (h + h);
             for (int j = 0; j < i; j++) {
                 complexEigenvalues[j] -= hh * realEigenvalues[j];
             }
@@ -152,13 +152,13 @@ void EigenvalueDecomposition::tred2(){
     for(int i = 0; i < n-1; i++) {
         eigenvectors[n-1][i] = eigenvectors[i][i];
         eigenvectors[i][i] = 1.0;
-        double h = realEigenvalues[i+1];
+        float_t h = realEigenvalues[i+1];
         if (h != 0.0) {
             for (int k = 0; k <= i; k++) {
                 realEigenvalues[k] = eigenvectors[k][i+1] / h;
             }
             for (int j = 0; j <= i; j++) {
-                double g = 0.0;
+                float_t g = 0.0;
                 for (int k = 0; k <= i; k++) {
                     g += eigenvectors[k][i+1] * eigenvectors[k][j];
                 }
@@ -188,9 +188,9 @@ void EigenvalueDecomposition::tql2(){
     }
     complexEigenvalues[n-1] = 0.0;
     
-    double f = 0.0;
-    double tst1 = 0.0;
-    double eps = pow(2.0,-52.0);
+    float_t f = 0.0;
+    float_t tst1 = 0.0;
+    float_t eps = pow(2.0,-52.0);
     for (int l = 0; l < n; l++) {
         
         // Find small subdiagonal element
@@ -210,16 +210,16 @@ void EigenvalueDecomposition::tql2(){
                 iter = iter + 1;  // (Could check iteration count here.)
                 
                 // Compute implicit shift
-                double g = realEigenvalues[l];
-                double p = (realEigenvalues[l+1] - g) / (2.0 * complexEigenvalues[l]);
-                double r = hypot(p,1.0);
+                float_t g = realEigenvalues[l];
+                float_t p = (realEigenvalues[l+1] - g) / (2.0 * complexEigenvalues[l]);
+                float_t r = hypot(p,1.0);
                 if (p < 0) {
                     r = -r;
                 }
                 realEigenvalues[l] = complexEigenvalues[l] / (p + r);
                 realEigenvalues[l+1] = complexEigenvalues[l] * (p + r);
-                double dl1 = realEigenvalues[l+1];
-                double h = g - realEigenvalues[l];
+                float_t dl1 = realEigenvalues[l+1];
+                float_t h = g - realEigenvalues[l];
                 for (int i = l+2; i < n; i++) {
                     realEigenvalues[i] -= h;
                 }
@@ -227,12 +227,12 @@ void EigenvalueDecomposition::tql2(){
                 
                 // Implicit QL transformation.
                 p = realEigenvalues[m];
-                double c = 1.0;
-                double c2 = c;
-                double c3 = c;
-                double el1 = complexEigenvalues[l+1];
-                double s = 0.0;
-                double s2 = 0.0;
+                float_t c = 1.0;
+                float_t c2 = c;
+                float_t c3 = c;
+                float_t el1 = complexEigenvalues[l+1];
+                float_t s = 0.0;
+                float_t s2 = 0.0;
                 for (int i = m-1; i >= l; i--) {
                     c3 = c2;
                     c2 = c;
@@ -267,7 +267,7 @@ void EigenvalueDecomposition::tql2(){
     // Sort eigenvalues and corresponding vectors.
     for(int i = 0; i < n-1; i++) {
         int k = i;
-        double p = realEigenvalues[i];
+        float_t p = realEigenvalues[i];
         for (int j = i+1; j < n; j++) {
             if(realEigenvalues[j] < p) {
                 k = j;
@@ -295,19 +295,19 @@ void EigenvalueDecomposition::orthes(){
     for(int m = low+1; m <= high-1; m++) {
         
         // Scale column.
-        double scale = 0.0;
+        float_t scale = 0.0;
         for (int i = m; i <= high; i++) {
             scale = scale + fabs(h[i][m-1]);
         }
         if (scale != 0.0) {
             
             // Compute Householder transformation.
-            double ht = 0.0;
+            float_t ht = 0.0;
             for(int i = high; i >= m; i--) {
                 ort[i] = h[i][m-1]/scale;
                 ht += ort[i] * ort[i];
             }
-            double g = sqrt( ht );
+            float_t g = sqrt( ht );
             if (ort[m] > 0) {
                 g = -g;
             }
@@ -317,7 +317,7 @@ void EigenvalueDecomposition::orthes(){
             // Apply Householder similarity transformation
             // H = (I-u*u'/h)*H*(I-u*u')/h)
             for (int j = m; j < n; j++) {
-                double f = 0.0;
+                float_t f = 0.0;
                 for (int i = high; i >= m; i--) {
                     f += ort[i]*h[i][j];
                 }
@@ -328,7 +328,7 @@ void EigenvalueDecomposition::orthes(){
             }
             
             for(int i = 0; i <= high; i++) {
-                double f = 0.0;
+                float_t f = 0.0;
                 for(int j = high; j >= m; j--) {
                     f += ort[j]*h[i][j];
                 }
@@ -355,7 +355,7 @@ void EigenvalueDecomposition::orthes(){
                 ort[i] = h[i][m-1];
             }
             for (int j = m; j <= high; j++) {
-                double g = 0.0;
+                float_t g = 0.0;
                 for (int i = m; i <= high; i++) {
                     g += ort[i] * eigenvectors[i][j];
                 }
@@ -377,12 +377,12 @@ void EigenvalueDecomposition::hqr2(){
     int n = nn-1;
     int low = 0;
     int high = nn-1;
-    double eps = pow(2.0,-52.0);
-    double exshift = 0.0;
-    double p=0,q=0,r=0,s=0,z=0,t,w,x,y;
+    float_t eps = pow(2.0,-52.0);
+    float_t exshift = 0.0;
+    float_t p=0,q=0,r=0,s=0,z=0,t,w,x,y;
     
     // Store roots isolated by balanc and compute matrix norm
-    double norm = 0.0;
+    float_t norm = 0.0;
     for(int i = 0; i < nn; i++) {
         if( (i < low) | (i > high) ){
             realEigenvalues[i] = h[i][i];
@@ -698,7 +698,7 @@ void EigenvalueDecomposition::hqr2(){
             h[n][n-1] = 0.0;
             h[n][n] = 1.0;
             for(int i = n-2; i >= 0; i--) {
-                double ra,sa,vr,vi;
+                float_t ra,sa,vr,vi;
                 ra = 0.0;
                 sa = 0.0;
                 for (int j = l; j <= n; j++) {
@@ -776,8 +776,8 @@ void EigenvalueDecomposition::hqr2(){
     return;
 }
     
-void EigenvalueDecomposition::cdiv(double xr, double xi, double yr, double yi){
-    double r,d;
+void EigenvalueDecomposition::cdiv(float_t xr, float_t xi, float_t yr, float_t yi){
+    float_t r,d;
     if(fabs(yr) > fabs(yi)){
         r = yi/yr;
         d = yr + r*yi;
@@ -792,9 +792,9 @@ void EigenvalueDecomposition::cdiv(double xr, double xi, double yr, double yi){
     return;
 }
     
-MatrixDouble EigenvalueDecomposition::getDiagonalEigenvalueMatrix(){
+MatrixFloat EigenvalueDecomposition::getDiagonalEigenvalueMatrix(){
     
-    MatrixDouble x(n,n);
+    MatrixFloat x(n,n);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             x[i][j] = 0.0;
@@ -809,11 +809,11 @@ MatrixDouble EigenvalueDecomposition::getDiagonalEigenvalueMatrix(){
     return x;
 }
 
-VectorDouble EigenvalueDecomposition::getRealEigenvalues(){
+VectorFloat EigenvalueDecomposition::getRealEigenvalues(){
     return realEigenvalues;
 }
     
-VectorDouble EigenvalueDecomposition::getComplexEigenvalues(){
+VectorFloat EigenvalueDecomposition::getComplexEigenvalues(){
     return complexEigenvalues;
 }
     

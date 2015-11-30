@@ -36,18 +36,18 @@ namespace GRT {
 class Cholesky{
 public:
 	Cholesky();
-	Cholesky(Matrix<double> &a);
-	bool solve(VectorDouble &b,VectorDouble &x);
-	bool elmult(VectorDouble &y,VectorDouble &b);
-	bool elsolve(VectorDouble &b,VectorDouble &y);
-	bool inverse(Matrix<double> &ainv);
-	double logdet();
+	Cholesky(MatrixFloat &a);
+	bool solve(VectorFloat &b,VectorFloat &x);
+	bool elmult(VectorFloat &y,VectorFloat &b);
+	bool elsolve(VectorFloat &b,VectorFloat &y);
+	bool inverse(MatrixFloat &ainv);
+	float_t logdet();
     
     bool getSuccess(){ return success; }
 
 	unsigned int N;
     bool success;
-	Matrix<double> el;
+	MatrixFloat el;
     
     DebugLog debugLog;
     ErrorLog errorLog;

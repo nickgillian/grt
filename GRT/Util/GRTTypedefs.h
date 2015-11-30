@@ -38,7 +38,9 @@ namespace GRT {
 typedef double float_t; ///<This typedef is used to set floating-point precision throughout the GRT
 typedef std::vector< float_t > VectorFloat;
 typedef std::vector< double > VectorDouble;
-//typedef MatrixDouble MatrixFloat;
+
+class MatrixDouble;
+typedef MatrixDouble MatrixFloat;
 	
 //Declare any common definitions that are not OS specific
 #ifndef PI

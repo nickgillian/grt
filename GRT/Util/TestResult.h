@@ -63,17 +63,17 @@ public:
     
     unsigned int numTrainingSamples;
     unsigned int numTestSamples;
-    double accuracy;
-    double rmsError;
-    double totalSquaredError;
-    double trainingTime;
-    double testTime;
-    double rejectionPrecision;
-    double rejectionRecall;
-    VectorDouble precision;
-    VectorDouble recall;
-    VectorDouble fMeasure;
-    MatrixDouble confusionMatrix;
+    float_t accuracy;
+    float_t rmsError;
+    float_t totalSquaredError;
+    float_t trainingTime;
+    float_t testTime;
+    float_t rejectionPrecision;
+    float_t rejectionRecall;
+    VectorFloat precision;
+    VectorFloat recall;
+    VectorFloat fMeasure;
+    MatrixFloat confusionMatrix;
 
 };
 

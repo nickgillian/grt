@@ -39,14 +39,14 @@ public:
      
      Initializes the ClassificationResult instance.
      
-     @param UINT classLabel: sets the class label corresponding to this instance. Default value = 0
-     @param UINT predictedClassLabel: sets the predicted class label corresponding to this instance. Default value = 0
-     @param UINT unprocessedPredictedClassLabel: sets the unprocessed predicted class label corresponding to this instance. Default value = 0
-     @param UINT maximumLikelihood: sets the maximum likelihood corresponding to this instance. Default value = 0
-     @param VectorDouble classLikelihoods: sets the class likelihoods corresponding to this instance. Default value = empty vector
-     @param VectorDouble classDistances: sets the class label corresponding to this instance. Default value = empty vector
+     @param classLabel: sets the class label corresponding to this instance. Default value = 0
+     @param predictedClassLabel: sets the predicted class label corresponding to this instance. Default value = 0
+     @param unprocessedPredictedClassLabel: sets the unprocessed predicted class label corresponding to this instance. Default value = 0
+     @param maximumLikelihood: sets the maximum likelihood corresponding to this instance. Default value = 0
+     @param classLikelihoods: sets the class likelihoods corresponding to this instance. Default value = empty vector
+     @param classDistances: sets the class label corresponding to this instance. Default value = empty vector
      */
-    ClassificationResult(UINT classLabel=0,UINT predictedClassLabel=0,UINT unprocessedPredictedClassLabel=0,double maximumLikelihood=0,VectorDouble classLikelihoods=VectorDouble(),VectorDouble classDistances = VectorDouble()){
+    ClassificationResult(UINT classLabel=0,UINT predictedClassLabel=0,UINT unprocessedPredictedClassLabel=0,float_t maximumLikelihood=0,VectorFloat classLikelihoods=VectorDouble(),VectorFloat classDistances = VectorFloat()){
         this->classLabel = classLabel;
         this->predictedClassLabel = predictedClassLabel;
         this->unprocessedPredictedClassLabel = unprocessedPredictedClassLabel;
@@ -60,7 +60,7 @@ public:
      
      Initializes this instance by copying the data from the rhs instance
      
-     @param const ClassificationResult &rhs: another instance of the ClassificationResult class
+     @param rhs: another instance of the ClassificationResult class
      */
     ClassificationResult(const ClassificationResult &rhs){
         this->classLabel = rhs.classLabel;
@@ -81,7 +81,7 @@ public:
     /**
      Defines the equals operator
      
-     @param const ClassificationResult &rhs: another instance of the ClassificationResult class
+     @param rhs: another instance of the ClassificationResult class
      @return returns a pointer to this instace
      */
     ClassificationResult operator=(const ClassificationResult &rhs){
@@ -101,7 +101,7 @@ public:
      
      @return returns true if the predicted class label matches the class label, false otherwise
      */
-    bool getCorrectPrediction(){
+    bool getCorrectPrediction() const {
         return( classLabel == predictedClassLabel);
     }
     
@@ -110,7 +110,7 @@ public:
      
      @return returns the class label
      */
-    UINT getClassLabel(){
+    UINT getClassLabel() const {
         return classLabel;
     }
     
@@ -120,7 +120,7 @@ public:
      
      @return returns the predicted class label
      */
-    UINT getPredictedClassLabel(){
+    UINT getPredictedClassLabel() const {
         return predictedClassLabel;
     }
     
@@ -130,7 +130,7 @@ public:
      
      @return returns the unprocessed predicted class label
      */
-    UINT getUnprocessedPredictedClassLabel(){
+    UINT getUnprocessedPredictedClassLabel() const {
         return unprocessedPredictedClassLabel;
     }
     
@@ -139,7 +139,7 @@ public:
      
      @return returns the maximum likelihood
      */
-    double getMaximumLikelihood(){
+    float_t getMaximumLikelihood() const {
         return maximumLikelihood;
     }
     
@@ -148,7 +148,7 @@ public:
      
      @return returns the vector of class likelihoods
      */
-    VectorDouble getClassLikelihoods(){
+    VectorFloat getClassLikelihoods() const {
         return classLikelihoods;
     }
     
@@ -157,16 +157,16 @@ public:
      
      @return returns the vector of class distances
      */
-    VectorDouble getClassDistances(){
+    VectorFloat getClassDistances() const {
         return classDistances;
     }
     
     UINT classLabel;
     UINT predictedClassLabel;
     UINT unprocessedPredictedClassLabel;
-    double maximumLikelihood;
-    VectorDouble classLikelihoods;
-    VectorDouble classDistances;
+    float_t maximumLikelihood;
+    VectorFloat classLikelihoods;
+    VectorFloat classDistances;
 };
 
 }//End of namespace GRT

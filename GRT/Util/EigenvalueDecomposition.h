@@ -21,6 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRT_EIGENVALUE_DECOMPOSITION_HEADER
 #define GRT_EIGENVALUE_DECOMPOSITION_HEADER
 
+#include "GRTTypedefs.h"
 #include "MatrixDouble.h"
 
 namespace GRT{
@@ -37,28 +38,28 @@ public:
      
      @return a MatrixDouble containing the eigenvector matrix
      */
-    MatrixDouble getEigenvectors(){ return eigenvectors; }
+    MatrixFloat getEigenvectors(){ return eigenvectors; }
     
     /**
      Returns the block diagonal eigenvalue matrix
      
      @return a MatrixDouble containing the diagonal eigenvalues
      */
-    MatrixDouble getDiagonalEigenvalueMatrix();
+    MatrixFloat getDiagonalEigenvalueMatrix();
     
     /**
      Return the real parts of the eigenvalues
      
-     @return a VectorDouble containing the real parts of the eigenvalues
+     @return a VectorFloat containing the real parts of the eigenvalues
      */
-    VectorDouble getRealEigenvalues();
+    VectorFloat getRealEigenvalues();
     
     /**
      Return the complex parts of the eigenvalues
      
-     @return a VectorDouble containing the complex parts of the eigenvalues
+     @return a VectorFloat containing the complex parts of the eigenvalues
      */
-    VectorDouble getComplexEigenvalues();
+    VectorFloat getComplexEigenvalues();
     
 protected:
     /**
@@ -100,7 +101,7 @@ protected:
     /**
       Complex scalar division.
      */
-    void cdiv(double xr, double xi, double yr, double yi);
+    void cdiv(float_t xr, float_t xi, float_t yr, float_t yi);
 
     template< class T >
     inline T findMax(const T &a,const T &b){
@@ -117,13 +118,13 @@ protected:
     
     int n;
     bool issymmetric;
-    double cdivr;
-    double cdivi;
-    MatrixDouble eigenvectors;
-    MatrixDouble h;
-    VectorDouble realEigenvalues;
-    VectorDouble complexEigenvalues;
-    VectorDouble ort;
+    float_t cdivr;
+    float_t cdivi;
+    MatrixFloat eigenvectors;
+    MatrixFloat h;
+    VectorFloat realEigenvalues;
+    VectorFloat complexEigenvalues;
+    VectorFloat ort;
     
     WarningLog warningLog;
     

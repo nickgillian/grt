@@ -81,6 +81,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     inline double round( double d ) {
         return floor( d + 0.5 );
     }
+    inline float_t round( float_t d ) {
+        return floor( d + 0.5 );
+    }
 #endif
 
 #endif //GRT_COMMON_HEADER
