@@ -51,7 +51,7 @@
 */
 
 //You might need to set the specific path of the GRT header relative to your project
-#include "GRT.h"
+#include <GRT/GRT.h>
 using namespace GRT;
 
 int main (int argc, const char * argv[])
