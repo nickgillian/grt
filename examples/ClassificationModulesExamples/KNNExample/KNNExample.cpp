@@ -60,7 +60,7 @@ int main (int argc, const char * argv[])
     ClassificationData trainingData;
     
     if( !trainingData.load( filename ) ){
-        cout << "Failed to load training data: " << filename endl;
+        cout << "Failed to load training data: " << filename << endl;
         return EXIT_FAILURE;
     }
     
