@@ -108,17 +108,17 @@ bool Clusterer::copyBaseVariables(const Clusterer *clusterer){
     return true;
 }
 
-bool Clusterer::train_(MatrixDouble &trainingData){
+bool Clusterer::train_(MatrixFloat &trainingData){
     return false;
 }
     
 bool Clusterer::train_(ClassificationData &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
     
 bool Clusterer::train_(UnlabelledData &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
     
@@ -234,19 +234,19 @@ UINT Clusterer::getNumClusters() const { return numClusters; }
 UINT Clusterer::getPredictedClusterLabel() const { return predictedClusterLabel; }
     
 
-double Clusterer::getMaximumLikelihood() const{
+float_t Clusterer::getMaximumLikelihood() const{
     return maxLikelihood;
 }
 
-double Clusterer::getBestDistance() const{
+float_t Clusterer::getBestDistance() const{
     return bestDistance;
 }
 
-VectorDouble Clusterer::getClusterLikelihoods() const{
+VectorFloat Clusterer::getClusterLikelihoods() const{
     return clusterLikelihoods;
 }
 
-VectorDouble Clusterer::getClusterDistances() const{
+VectorFloat Clusterer::getClusterDistances() const{
     return clusterDistances;
 }
     

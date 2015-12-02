@@ -654,4 +654,18 @@ MatrixDouble UnlabelledData::getDataAsMatrixDouble() const{
     return d;
 }
 
+MatrixFloat UnlabelledData::getDataAsMatrixFloat() const {
+    const UINT rows = getNumSamples();
+    const UINT cols = getNumDimensions();
+    MatrixFloat d(rows,cols);
+    
+    for(UINT i=0; i<rows; i++){
+        for(UINT j=0; j<cols; j++){
+            d[i][j] = data[i][j];
+        }
+    }
+    
+    return d;
+}
+
 }; //End of namespace GRT

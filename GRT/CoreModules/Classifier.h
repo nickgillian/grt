@@ -110,7 +110,7 @@ public:
      
      @return returns the current nullRejectionCoeff value
      */
-    double getNullRejectionCoeff() const;
+    float_t getNullRejectionCoeff() const;
     
     /**
      Returns the current maximumLikelihood value.
@@ -119,7 +119,7 @@ public:
      
      @return returns the current maximumLikelihood value
      */
-    double getMaximumLikelihood() const;
+    float_t getMaximumLikelihood() const;
     
     /**
      Returns the current bestDistance value.
@@ -128,14 +128,14 @@ public:
      
      @return returns the current bestDistance value
      */
-    double getBestDistance() const;
+    float_t getBestDistance() const;
     
     /**
 	 This function returns the estimated gesture phase from the most recent prediction.  This value is only relevant if the classifier supports timeseries classification.
      
-     @return double representing the gesture phase value from the most likely class from the most recent prediction
+     @return float_t representing the gesture phase value from the most likely class from the most recent prediction
      */
-    double getPhase() const;
+    float_t getPhase() const;
     
     /**
      Gets the number of classes in trained model.
@@ -148,7 +148,7 @@ public:
      Gets the index of the query classLabel in the classLabels vector. If the query classLabel does not exist in the classLabels vector
      then the function will return zero.
      
-     @param UINT classLabel: the query classLabel
+     @param classLabel: the query classLabel
      @return returns index of the query classLabel in the classLabels vector
      */
     UINT getClassLabelIndexValue(UINT classLabel) const;
@@ -166,7 +166,7 @@ public:
      
      @return returns a vector of the class likelihoods from the last prediction, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getClassLikelihoods() const;
+    VectorFloat getClassLikelihoods() const;
     
     /**
      Gets a vector of the class distances from the last prediction, this will be an N-dimensional vector, where N is the number of classes in the model.  
@@ -174,14 +174,14 @@ public:
      
      @return returns a vector of the class distances from the last prediction, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getClassDistances() const;
+    VectorFloat getClassDistances() const;
     
     /**
      Gets a vector containing the null rejection thresholds for each class, this will be an N-dimensional vector, where N is the number of classes in the model.  
      
      @return returns a vector containing the null rejection thresholds for each class, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getNullRejectionThresholds() const;
+    VectorFloat getNullRejectionThresholds() const;
     
     /**
      Gets a vector containing the label each class represents, this will be an N-dimensional vector, where N is the number of classes in the model. 
@@ -215,17 +215,17 @@ public:
      
      @return returns true if nullRejectionCoeff was updated successfully, false otherwise
      */
-    virtual bool setNullRejectionCoeff(double nullRejectionCoeff);
+    virtual bool setNullRejectionCoeff(float_t nullRejectionCoeff);
 
 	/**
      Manually sets the nullRejectionThresholds, these are the thresholds used for null rejection for each class.
 	 This needs to be called after the model has been trained. Calling the #setNullRejectionCoeff or #recomputeNullRejectionThresholds
 	 functions will override these values. The size of the newRejectionThresholds vector must match the number of classes in the model.
      
-	 @param VectorDouble newRejectionThresholds: the new rejection thresholds
+	 @param VectorFloat newRejectionThresholds: the new rejection thresholds
      @return returns true if nullRejectionThresholds were updated successfully, false otherwise
      */
-	virtual bool setNullRejectionThresholds(VectorDouble newRejectionThresholds);
+	virtual bool setNullRejectionThresholds(VectorFloat newRejectionThresholds);
     
     /**
      Recomputes the null rejection thresholds for each model.
@@ -313,13 +313,13 @@ protected:
     UINT numClasses;
     UINT predictedClassLabel;
     UINT classifierMode;
-    double nullRejectionCoeff;
-    double maxLikelihood;
-    double bestDistance;
-    double phase;
-    VectorDouble classLikelihoods;
-    VectorDouble classDistances;
-    VectorDouble nullRejectionThresholds;
+    float_t nullRejectionCoeff;
+    float_t maxLikelihood;
+    float_t bestDistance;
+    float_t phase;
+    VectorFloat classLikelihoods;
+    VectorFloat classDistances;
+    VectorFloat nullRejectionThresholds;
     vector< UINT > classLabels;
     vector<MinMax> ranges;
     

@@ -588,6 +588,14 @@ public:
      @return a MatrixDouble containing the data from the current dataset.
     */
     MatrixDouble getDataAsMatrixDouble() const;
+
+    /**
+     Gets the data as a MatrixFloat. This returns just the data, not the labels.
+     This will be an M by N MatrixFloat, where M is the number of samples and N is the number of dimensions.
+
+     @return a MatrixFloat containing the data from the current dataset.
+    */
+    MatrixFloat getDataAsMatrixFloat() const;
     
     /**
      Generates a labeled dataset that can be used for basic training/testing/validation for ClassificationData.
@@ -598,12 +606,12 @@ public:
      
      The dataset will be saved to the file specified by filename.
      
-     @param const std::string filename: the name of the file the dataset will be saved to
-     @param const UINT numSamples: the total number of samples in the dataset
-     @param const UINT numClasses: the number of classes in the dataset
-     @param const UINT numDimensions: the number of dimensions in the dataset
-     @param const double range: the range the data will be sampled from, range will be [-range range] for each dimension
-     @param const double sigma: the amount of Gaussian noise
+     @param filename: the name of the file the dataset will be saved to
+     @param numSamples: the total number of samples in the dataset
+     @param numClasses: the number of classes in the dataset
+     @param numDimensions: the number of dimensions in the dataset
+     @param range: the range the data will be sampled from, range will be [-range range] for each dimension
+     @param sigma: the amount of Gaussian noise
      @return returns true if the dataset was created successfully, false otherwise
      */
     static bool generateGaussDataset( const std::string filename, const UINT numSamples = 10000, const UINT numClasses = 10, const UINT numDimensions = 3, const double range = 10, const double sigma = 1 );

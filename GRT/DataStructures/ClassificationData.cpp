@@ -1465,6 +1465,20 @@ MatrixDouble ClassificationData::getDataAsMatrixDouble() const{
     return d;
 }
 
+MatrixFloat ClassificationData::getDataAsMatrixFloat() const {
+    const UINT M = getNumSamples();
+    const UINT N = getNumDimensions();
+    MatrixFloat d(M,N);
+
+    for(UINT i=0; i<M; i++){
+        for(UINT j=0; j<N; j++){
+            d[i][j] = data[i][j];
+        }
+    }
+
+    return d;
+}
+
 bool ClassificationData::generateGaussDataset( const std::string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions, const double range, const double sigma ){
     
     Random random;

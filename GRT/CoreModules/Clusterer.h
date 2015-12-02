@@ -52,39 +52,39 @@ public:
      This is the base deep copy function for the Clusterer modules. This function should be overwritten by the derived class.
      This deep copies the variables and models from the Clusterer pointer to this Clusterer instance.
      
-     @param const Clusterer *Clusterer: a pointer to the Clusterer base class, this should be pointing to another instance of a matching derived class
+     @param clusterer: a pointer to the Clusterer base class, this should be pointing to another instance of a matching derived class
      @return returns true if the clone was successfull, false otherwise (the Clusterer base class will always return flase)
      */
-    virtual bool deepCopyFrom(const Clusterer *Clusterer){ return false; }
+    virtual bool deepCopyFrom(const Clusterer *clusterer){ return false; }
     
     /**
      This copies the Clusterer base class variables from the Clusterer pointer to this instance.
      
-     @param const Clusterer *Clusterer: a pointer to a Clusterer from which the values will be copied to this instance
+     @param clusterer: a pointer to a Clusterer from which the values will be copied to this instance
      @return returns true if the copy was successfull, false otherwise
      */
-    bool copyBaseVariables(const Clusterer *Clusterer);
+    bool copyBaseVariables(const Clusterer *clusterer);
     
     /**
      This is the main interface for training the clusterer model.
      
-     @param MatrixDouble &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
-    virtual bool train_(MatrixDouble &trainingData);
+    virtual bool train_(MatrixFloat &trainingData);
     
     /**
-     Override the main ClassificationData train function to pass MatrixDouble data to the Clusterer train function.
+     Override the main ClassificationData train function to pass MatrixFloat data to the Clusterer train function.
      
-     @param ClassificationData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
     virtual bool train_(ClassificationData &trainingData);
     
     /**
-     Override the main UnlabelledData train function to pass MatrixDouble data to the Clusterer train function.
+     Override the main UnlabelledData train function to pass MatrixFloat data to the Clusterer train function.
      
-     @param UnlabelledData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
     virtual bool train_(UnlabelledData &trainingData);
@@ -133,7 +133,7 @@ public:
      
      @return returns the current maximumLikelihood value
      */
-    double getMaximumLikelihood() const;
+    float_t getMaximumLikelihood() const;
     
     /**
      Returns the current bestDistance value.
@@ -142,7 +142,7 @@ public:
      
      @return returns the current bestDistance value
      */
-    double getBestDistance() const;
+    float_t getBestDistance() const;
     
     /**
      Gets a vector of the cluster likelihoods from the last prediction, this will be an N-dimensional vector, where N is the number of clusters in the model.
@@ -150,7 +150,7 @@ public:
      
      @return returns a vector of the cluster likelihoods from the last prediction, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getClusterLikelihoods() const;
+    VectorFloat getClusterLikelihoods() const;
     
     /**
      Gets a vector of the cluster distances from the last prediction, this will be an N-dimensional vector, where N is the number of clusters in the model.
@@ -158,7 +158,7 @@ public:
      
      @return returns a vector of the cluster distances from the last prediction, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getClusterDistances() const;
+    VectorFloat getClusterDistances() const;
     
     /**
      Gets a vector of unsigned ints containing the label of each cluster, this will be an K-dimensional vector, where K is the number of clusters in the model.
@@ -179,7 +179,7 @@ public:
      This will clear any previous model.
      The number of clusters must be greater than zero.
      
-     @param UINT numClusters: the number of clusters, must be greater than zero
+     @param numClusters: the number of clusters, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
     bool setNumClusters(const UINT numClusters);
@@ -248,10 +248,10 @@ protected:
     string clustererType;
     UINT numClusters;                   ///< Number of clusters in the model
     UINT predictedClusterLabel;         ///< Stores the predicted cluster label from the most recent predict( )
-    double maxLikelihood;
-    double bestDistance;
-    VectorDouble clusterLikelihoods;
-    VectorDouble clusterDistances;
+    float_t maxLikelihood;
+    float_t bestDistance;
+    VectorFloat clusterLikelihoods;
+    VectorFloat clusterDistances;
     vector< UINT > clusterLabels;
     bool converged;
     vector<MinMax> ranges;

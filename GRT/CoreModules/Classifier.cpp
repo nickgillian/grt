@@ -168,20 +168,20 @@ bool Classifier::getNullRejectionEnabled() const{
     return useNullRejection; 
 }
 
-double Classifier::getNullRejectionCoeff() const{ 
+float_t Classifier::getNullRejectionCoeff() const{ 
     return nullRejectionCoeff; 
 }
     
-double Classifier::getMaximumLikelihood() const{ 
+float_t Classifier::getMaximumLikelihood() const{ 
     if( trained ) return maxLikelihood; 
     return DEFAULT_NULL_LIKELIHOOD_VALUE; 
 }
   
-double Classifier::getPhase() const{
+float_t Classifier::getPhase() const{
     return phase;
 }
     
-double Classifier::getBestDistance() const{ 
+float_t Classifier::getBestDistance() const{ 
     if( trained ) return bestDistance; 
     return DEFAULT_NULL_DISTANCE_VALUE; 
 }
@@ -203,19 +203,19 @@ UINT Classifier::getPredictedClassLabel() const{
     return 0; 
 }
 
-VectorDouble Classifier::getClassLikelihoods() const{ 
+VectorFloat Classifier::getClassLikelihoods() const{ 
     if( trained ) return classLikelihoods;
-    return VectorDouble(); 
+    return VectorFloat(); 
 }
 
-VectorDouble Classifier::getClassDistances() const{ 
+VectorFloat Classifier::getClassDistances() const{ 
     if( trained ) return classDistances; 
-    return VectorDouble(); 
+    return VectorFloat(); 
 }
 
-VectorDouble Classifier::getNullRejectionThresholds() const{ 
+VectorFloat Classifier::getNullRejectionThresholds() const{ 
     if( trained ) return nullRejectionThresholds;
-    return VectorDouble(); 
+    return VectorFloat(); 
 }
 
 vector< UINT > Classifier::getClassLabels() const{ 
@@ -231,7 +231,7 @@ bool Classifier::enableNullRejection(bool useNullRejection){
     return true;
 }
 
-bool Classifier::setNullRejectionCoeff(double nullRejectionCoeff){ 
+bool Classifier::setNullRejectionCoeff(float_t nullRejectionCoeff){ 
     if( nullRejectionCoeff > 0 ){ 
         this->nullRejectionCoeff = nullRejectionCoeff; 
         return true; 
@@ -239,7 +239,7 @@ bool Classifier::setNullRejectionCoeff(double nullRejectionCoeff){
     return false; 
 }
 
-bool Classifier::setNullRejectionThresholds(VectorDouble newRejectionThresholds){
+bool Classifier::setNullRejectionThresholds(VectorFloat newRejectionThresholds){
 	if( newRejectionThresholds.size() == getNumClasses() ){
 		nullRejectionThresholds = newRejectionThresholds;
 		return true;
