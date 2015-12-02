@@ -128,16 +128,16 @@ bool TimeSeriesClassificationData::setAllowNullGestureClass(const bool allowNull
     return true;
 }
 
-bool TimeSeriesClassificationData::addSample(const UINT classLabel,const MatrixDouble &trainingSample){
+bool TimeSeriesClassificationData::addSample(const UINT classLabel,const MatrixFloat &trainingSample){
 	
     if( trainingSample.getNumCols() != numDimensions ){
-        errorLog << "addSample(UINT classLabel, MatrixDouble trainingSample) - The dimensionality of the training sample (" << trainingSample.getNumCols() << ") does not match that of the dataset (" << numDimensions << ")" << endl;
+        errorLog << "addSample(UINT classLabel, MatrixFloat trainingSample) - The dimensionality of the training sample (" << trainingSample.getNumCols() << ") does not match that of the dataset (" << numDimensions << ")" << endl;
         return false;
     }
     
     //The class label must be greater than zero (as zero is used for the null rejection class label
     if( classLabel == GRT_DEFAULT_NULL_CLASS_LABEL && !allowNullGestureClass ){
-        errorLog << "addSample(UINT classLabel, MatrixDouble sample) - the class label can not be 0!" << endl;
+        errorLog << "addSample(UINT classLabel, MatrixFloat sample) - the class label can not be 0!" << endl;
         return false;
     }
 
@@ -283,12 +283,12 @@ bool TimeSeriesClassificationData::enableExternalRangeScaling(const bool useExte
     return false;
 }
 
-bool TimeSeriesClassificationData::scale(const double minTarget,const double maxTarget){
+bool TimeSeriesClassificationData::scale(const float_t minTarget,const float_t maxTarget){
     vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool TimeSeriesClassificationData::scale(const vector<MinMax> &ranges,const double minTarget,const double maxTarget){
+bool TimeSeriesClassificationData::scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
     if( ranges.size() != numDimensions ) return false;
 
     //Scale the training data
@@ -538,7 +538,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 		}
 
 		//Load the time series data
-		MatrixDouble trainingExample(timeSeriesLength,numDimensions);
+		MatrixFloat trainingExample(timeSeriesLength,numDimensions);
 		for(UINT i=0; i<timeSeriesLength; i++){
 			for(UINT j=0; j<numDimensions; j++){
 				file >> trainingExample[i][j];
@@ -619,8 +619,8 @@ bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename
     UINT classLabel = 0;
     UINT j = 0;
     UINT n = 0;
-    VectorDouble sample(numDimensions);
-    MatrixDouble timeseries;
+    VectorFloat sample(numDimensions);
+    MatrixFloat timeseries;
     for(UINT i=0; i<parser.getRowSize(); i++){
         
         sampleCounter = Util::stringToInt( parser[i][0] );
@@ -642,7 +642,7 @@ bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename
         j=0;
         n=2;
         while( j != numDimensions ){
-            sample[j++] = Util::stringToDouble( parser[i][n] );
+            sample[j++] = Util::stringToFloat( parser[i][n] );
             n++;
         }
         
@@ -742,7 +742,7 @@ TimeSeriesClassificationData TimeSeriesClassificationData::partition(const UINT 
 
         //Loop over each class and add the data to the trainingSet and testSet
         for(UINT k=0; k<getNumClasses(); k++){
-            UINT numTrainingExamples = (UINT) floor( double(classData[k].size()) / 100.0 * double(trainingSizePercentage) );
+            UINT numTrainingExamples = (UINT) floor( float_t(classData[k].size()) / 100.0 * float_t(trainingSizePercentage) );
 
             //Add the data to the training and test sets
             for(UINT i=0; i<numTrainingExamples; i++){
@@ -758,7 +758,7 @@ TimeSeriesClassificationData TimeSeriesClassificationData::partition(const UINT 
         totalNumSamples = trainingSet.getNumSamples();
     }else{
 
-        const UINT numTrainingExamples = (UINT) floor( double(totalNumSamples) / 100.0 * double(trainingSizePercentage) );
+        const UINT numTrainingExamples = (UINT) floor( float_t(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
         //Create the random partion indexs
         Random random;
         for(UINT i=0; i<totalNumSamples; i++) indexs[i] = i;
@@ -843,7 +843,7 @@ bool TimeSeriesClassificationData::spiltDataIntoKFolds(const UINT K,const bool u
     vector< UINT > indexs( totalNumSamples );
 
     //Work out how many samples are in each fold, the last fold might have more samples than the others
-    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/double(K) );
+    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/float_t(K) );
 
     //Resize the cross validation indexs buffer
     crossValidationIndexs.resize( K );
@@ -1059,7 +1059,7 @@ vector<MinMax> TimeSeriesClassificationData::getRanges() const {
     return ranges;
 }
     
-MatrixDouble TimeSeriesClassificationData::getDataAsMatrixDouble() const {
+MatrixFloat TimeSeriesClassificationData::getDataAsMatrixFloat() const {
     
     //Count how many samples are in the entire dataset
     UINT M = 0;
@@ -1068,10 +1068,10 @@ MatrixDouble TimeSeriesClassificationData::getDataAsMatrixDouble() const {
         M += data[x].getLength();
     }
     
-    if( M == 0 ) MatrixDouble();
+    if( M == 0 ) MatrixFloat();
     
     //Get all the data and concatenate it into 1 matrix
-    MatrixDouble matrixData(M,numDimensions);
+    MatrixFloat matrixData(M,numDimensions);
     for(UINT x=0; x<totalNumSamples; x++){
         for(UINT i=0; i<data[x].getLength(); i++){
             for(UINT j=0; j<numDimensions; j++){

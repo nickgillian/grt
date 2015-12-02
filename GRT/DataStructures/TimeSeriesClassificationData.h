@@ -156,10 +156,10 @@ public:
      The class label should be greater than zero (as zero is used as the default null rejection class label).
      
 	 @param const UINT classLabel: the class label of the corresponding sample
-     @param const MatrixDouble trainingSample: the new sample you want to add to the dataset.  The dimensionality of this sample (i.e. Matrix columns) should match the number of dimensions in the dataset, the rows of the Matrix represent time and do not have to be any specific length
+     @param const MatrixFloat trainingSample: the new sample you want to add to the dataset.  The dimensionality of this sample (i.e. Matrix columns) should match the number of dimensions in the dataset, the rows of the Matrix represent time and do not have to be any specific length
 	 @return true if the sample was correctly added to the dataset, false otherwise
      */
-	bool addSample(const UINT classLabel,const MatrixDouble &trainingSample);
+	bool addSample(const UINT classLabel,const MatrixFloat &trainingSample);
     
     /**
      Removes the last training sample added to the dataset.
@@ -207,21 +207,21 @@ public:
     /**
      Scales the dataset to the new target range.
      
-     @param const double minTarget: the minimum range you want to scale the data to
-     @param const double maxTarget: the maximum range you want to scale the data to
+     @param const float_t minTarget: the minimum range you want to scale the data to
+     @param const float_t maxTarget: the maximum range you want to scale the data to
 	 @return true if the data was scaled correctly, false otherwise
      */
-    bool scale(const double minTarget,const double maxTarget);
+    bool scale(const float_t minTarget,const float_t maxTarget);
     
 	/**
      Scales the dataset to the new target range, using the vector of ranges as the min and max source ranges.
      
      @param const vector<MinMax> &ranges: a vector of source ranges, should have the same dimensions as your data
-     @param const double minTarget: the minimum range you want to scale the data to
-     @param const double maxTarget: the maximum range you want to scale the data to
+     @param const float_t minTarget: the minimum range you want to scale the data to
+     @param const float_t maxTarget: the maximum range you want to scale the data to
 	 @return true if the data was scaled correctly, false otherwise
      */
-	bool scale(const vector<MinMax> &ranges,const double minTarget,const double maxTarget);
+	bool scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
     
     /**
      Saves the data to a file.
@@ -443,12 +443,12 @@ public:
 	vector< TimeSeriesClassificationSample > getClassificationData() const { return data; }
     
     /**
-     Gets the data as a MatrixDouble. This returns just the data, not the labels.
-     This will be an M by N MatrixDouble, where M is the number of samples and N is the number of dimensions.
+     Gets the data as a MatrixFloat. This returns just the data, not the labels.
+     This will be an M by N MatrixFloat, where M is the number of samples and N is the number of dimensions.
      
-     @return a MatrixDouble containing the data from the current dataset.
+     @return a MatrixFloat containing the data from the current dataset.
      */
-    MatrixDouble getDataAsMatrixDouble() const;
+    MatrixFloat getDataAsMatrixFloat() const;
     
 protected:
     

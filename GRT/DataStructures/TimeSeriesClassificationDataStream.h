@@ -45,16 +45,16 @@ public:
      Constructor, sets the name of the dataset and the number of dimensions of the training data.
      The name of the dataset should not contain any spaces.
 	 
-     @param UINT numDimensions: the number of dimensions of the training data, should be an unsigned integer greater than 0
-     @param string datasetName: the name of the dataset, should not contain any spaces
-     @param string infoText: some info about the data in this dataset, this can contain spaces
+     @param numDimensions: the number of dimensions of the training data, should be an unsigned integer greater than 0
+     @param datasetName: the name of the dataset, should not contain any spaces
+     @param infoText: some info about the data in this dataset, this can contain spaces
     */
 	TimeSeriesClassificationDataStream(const UINT numDimensions=0,const string datasetName = "NOT_SET",const string infoText = "");
     
     /**
      Copy Constructor, copies the TimeSeriesClassificationDataStream from the rhs instance to this instance
      
-	 @param const TimeSeriesClassificationDataStream &rhs: another instance of the TimeSeriesClassificationDataStream class from which the data will be copied to this instance
+	 @param rhs: another instance of the TimeSeriesClassificationDataStream class from which the data will be copied to this instance
      */
 	TimeSeriesClassificationDataStream(const TimeSeriesClassificationDataStream &rhs);
     
@@ -66,7 +66,7 @@ public:
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance
      
-	 @param const TimeSeriesClassificationDataStream &rhs: another instance of the TimeSeriesClassificationDataStream class from which the data will be copied to this instance
+	 @param rhs: another instance of the TimeSeriesClassificationDataStream class from which the data will be copied to this instance
 	 @return a reference to this instance of TimeSeriesClassificationDataStream
      */
 	TimeSeriesClassificationDataStream& operator= (const TimeSeriesClassificationDataStream &rhs);
@@ -75,7 +75,7 @@ public:
      Array Subscript Operator, returns the ClassificationSample at index i.
 	 It is up to the user to ensure that i is within the range of [0 totalNumSamples-1]
      
-	 @param const UINT &i: the index of the training sample you want to access.  Must be within the range of [0 totalNumSamples-1]
+	 @param i: the index of the training sample you want to access.  Must be within the range of [0 totalNumSamples-1]
      @return a reference to the i'th ClassificationSample
      */
 	inline ClassificationSample& operator[] (const UINT i){
@@ -94,7 +94,7 @@ public:
      This function needs to be called before any new samples can be added to the dataset, unless the numDimensions variable was set in the 
      constructor or some data was already loaded from a file
      
-	 @param const UINT numDimensions: the number of dimensions of the training data.  Must be an unsigned integer greater than zero
+	 @param numDimensions: the number of dimensions of the training data.  Must be an unsigned integer greater than zero
      @return true if the number of dimensions was correctly updated, false otherwise
      */
     bool setNumDimensions(const UINT numDimensions);
@@ -104,6 +104,7 @@ public:
      There should not be any spaces in the name.
      Will return true if the name is set, or false otherwise.
      
+     @param datasetName: the new dataset name
 	 @return returns true if the name is set, or false otherwise
      */
     bool setDatasetName(const string datasetName);
@@ -112,7 +113,7 @@ public:
      Sets the info string.
 	 This can be any string with information about how the training data was recorded for example.
      
-	 @param const string infoText: the infoText
+	 @param infoText: the infoText
      @return true if the infoText was correctly updated, false otherwise
      */
     bool setInfoText(const string infoText);
@@ -122,6 +123,8 @@ public:
      There should not be any spaces in the className.
      Will return true if the name is set, or false if the class label does not exist.
      
+     @param className: the new class name
+     @param classLabel: the class label for the corresponding class name
 	 @return returns true if the name is set, or false if the class label does not exist
      */
     bool setClassNameForCorrespondingClassLabel(const string className,const UINT classLabel);
@@ -131,11 +134,11 @@ public:
      The dimensionality of the sample should match the number of dimensions in the TimeSeriesClassificationDataStream.
      The class label can be zero (this should represent a null class).
      
-	 @param const UINT classLabel: the class label of the corresponding sample
-     @param const VectorDouble &sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the TimeSeriesClassificationDataStream
+	 @param classLabel: the class label of the corresponding sample
+     @param sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the TimeSeriesClassificationDataStream
 	 @return true if the sample was correctly added to the dataset, false otherwise
      */
-	bool addSample(const UINT classLabel,const VectorDouble &trainingSample);
+	bool addSample(const UINT classLabel,const VectorFloat &trainingSample);
     
     /**
      Removes the last training sample added to the dataset.
@@ -147,7 +150,7 @@ public:
     /**
      Deletes from the dataset all the samples with a specific class label.
      
-	 @param const UINT classLabel: the class label of the samples you wish to delete from the dataset
+	 @param classLabel: the class label of the samples you wish to delete from the dataset
 	 @return the number of samples deleted from the dataset
      */
 	UINT eraseAllSamplesWithClassLabel(const UINT classLabel);
@@ -155,8 +158,8 @@ public:
     /**
      Relabels all the samples with the class label A with the new class label B.
      
-	 @param const UINT oldClassLabel: the class label of the samples you want to relabel
-     @param const UINT newClassLabel: the class label the samples will be relabelled with
+	 @param oldClassLabel: the class label of the samples you want to relabel
+     @param newClassLabel: the class label the samples will be relabelled with
 	 @return returns true if the samples were correctly relablled, false otherwise
      */
 	bool relabelAllSamplesWithClassLabel(const UINT oldClassLabel,const UINT newClassLabel);
@@ -165,8 +168,8 @@ public:
      Sets the external ranges of the dataset, also sets if the dataset should be scaled using these values.  
      The dimensionality of the externalRanges vector should match the number of dimensions of this dataset.
      
-	 @param const vector< MinMax > &externalRanges: an N dimensional vector containing the min and max values of the expected ranges of the dataset.
-     @param const bool useExternalRanges: sets if these ranges should be used to scale the dataset, default value is false.
+	 @param externalRanges: an N dimensional vector containing the min and max values of the expected ranges of the dataset.
+     @param useExternalRanges: sets if these ranges should be used to scale the dataset, default value is false.
 	 @return returns true if the external ranges were set, false otherwise
      */
     bool setExternalRanges(const vector< MinMax > &externalRanges,const bool useExternalRanges = false);
@@ -175,7 +178,7 @@ public:
      Sets if the dataset should be scaled using an external range (if useExternalRanges == true) or the ranges of the dataset (if false).
      The external ranges need to be set FIRST before calling this function, otherwise it will return false.
      
-     @param bool useExternalRanges: sets if these ranges should be used to scale the dataset
+     @param useExternalRanges: sets if these ranges should be used to scale the dataset
 	 @return returns true if the useExternalRanges variable was set, false otherwise
      */
     bool enableExternalRangeScaling(const bool useExternalRanges);
@@ -183,26 +186,26 @@ public:
 	/**
      Scales the dataset to the new target range.  This function uses the minimum and maximum values of the current dataset as the source range.
      
-     @param const double minTarget: the minimum value of the target range
-     @param const double maxTarget: the maximum value of the target range
+     @param minTarget: the minimum value of the target range
+     @param maxTarget: the maximum value of the target range
 	 @return true if the data was scaled correctly, false otherwise
      */
-    bool scale(const double minTarget,const double maxTarget);
+    bool scale(const float_t minTarget,const float_t maxTarget);
     
 	/**
      Scales the dataset to the new target range, using the vector of ranges as the min and max source ranges.
      
-     @param const vector<MinMax> &ranges: the minimum and maximum values for the source range
-     @param const double minTarget: the minimum value of the target range
-     @param const double maxTarget: the maximum value of the target range
+     @param ranges: the minimum and maximum values for the source range
+     @param minTarget: the minimum value of the target range
+     @param maxTarget: the maximum value of the target range
 	 @return true if the data was scaled correctly, false otherwise
      */
-	bool scale(const vector<MinMax> &ranges,const double minTarget,const double maxTarget);
+	bool scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
     
     /**
      Sets the playback index to a specific index.  The index should be within the range [0 totalNumSamples-1].
      
-	 @param const UINT playbackIndex: the value you want to set the playback index to
+	 @param playbackIndex: the value you want to set the playback index to
 	 @return true if the playback index was set correctly, false otherwise
      */
     bool resetPlaybackIndex(const UINT playbackIndex);
@@ -218,7 +221,7 @@ public:
     /**
      Gets all the timeseries that have a specific class label.
      
-     @param const UINT classLabel: the class label of the timeseries you want to find
+     @param classLabel: the class label of the timeseries you want to find
 	 @return a TimeSeriesClassificationData dataset containing any timeseries that have the matching classlabel
      */
 	TimeSeriesClassificationData getAllTrainingExamplesWithClassLabel(const UINT classLabel) const;
@@ -228,7 +231,7 @@ public:
      If the file format ends in '.csv' then the data will be saved as comma-seperated-values, otherwise it will be saved
      to a custom GRT file (which contains the csv data with an additional header).
      
-     @param const string &filename: the name of the file the data will be saved to
+     @param filename: the name of the file the data will be saved to
      @return true if the data was saved successfully, false otherwise
      */
     bool save(const string &filename);
@@ -238,7 +241,7 @@ public:
      If the file format ends in '.csv' then the function will try and load the data from a csv format.  If this fails then it will
      try and load the data as a custom GRT file.
      
-     @param const string &filename: the name of the file the data will be loaded from
+     @param filename: the name of the file the data will be loaded from
      @return true if the data was loaded successfully, false otherwise
      */
     bool load(const string &filename);
@@ -246,7 +249,7 @@ public:
     /**
      Saves the labelled timeseries classification data to a custom file format.
      
-	 @param string filename: the name of the file the data will be saved to
+	 @param filename: the name of the file the data will be saved to
 	 @return true if the data was saved successfully, false otherwise
      */
 	bool saveDatasetToFile(const string &filename);
@@ -255,7 +258,7 @@ public:
      Saves the data to a CSV file.
      This will save the timeseries counter as the first column, the class label as the second column, and the sample data as the following N columns, where N is the number of dimensions in the data.  Each row will represent a sample.
      
-     @param const string &filename: the name of the file the data will be saved to
+     @param filename: the name of the file the data will be saved to
      @return true if the data was saved successfully, false otherwise
      */
     bool saveDatasetToCSVFile(const string &filename);
@@ -263,7 +266,7 @@ public:
     /**
      Loads the data from a custom file format.
      
-	 @param string filename: the name of the file the data will be loaded from
+	 @param filename: the name of the file the data will be loaded from
 	 @return true if the data was loaded successfully, false otherwise
      */
 	bool loadDatasetFromFile(const string &filename);
@@ -274,8 +277,8 @@ public:
      The class label should be the first column followed by the sample data as the following N columns, where N is the number of dimensions in the data.
      If the class label is not the first column, you should set the 2nd argument (UINT classLabelColumnIndex) to the column index that contains the class label.
      
-	 @param const string filename: the name of the file the data will be loaded from
-     @param const UINT classLabelColumnIndex: the index of the column containing the class label. Default value = 0
+	 @param filename: the name of the file the data will be loaded from
+     @param classLabelColumnIndex: the index of the column containing the class label. Default value = 0
 	 @return true if the data was loaded successfully, false otherwise
      */
 	bool loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex=0);
@@ -384,8 +387,8 @@ public:
      The startIndex and endIndex values must be valid (i.e. if the current dataset has 1000 samples then you can not have a startIndex
      or endIndex value that is greater or equal to 1000).
      
-     @param UINT startIndex: the index of the first value from the current dataset that you want to start the new subset from
-     @param UINT endIndex: the index of the last value from the current dataset that you want to end the new dataset at (inclusive)
+     @param startIndex: the index of the first value from the current dataset that you want to start the new subset from
+     @param endIndex: the index of the last value from the current dataset that you want to end the new dataset at (inclusive)
      @return returns a new TimeSeriesClassificationDataStream subset of the current dataset drawn from the startIndex and endIndex values
      */
     TimeSeriesClassificationDataStream getSubset(const UINT startIndex,const UINT endIndex) const;
@@ -411,24 +414,24 @@ public:
     ClassificationData getClassificationData( const bool includeNullGestures = false ) const;
     
     /**
-     This function segments a specific time series from the main data set and returns this as a MatrixDouble.
+     This function segments a specific time series from the main data set and returns this as a MatrixFloat.
      You should use one of the TimeSeriesPositionTracker elements from the timeSeriesPositionTracker vector to 
      indicate to the function which time series you want to retrieve.  You can get the TimeSeriesPositionTracker elements
      using the #getTimeSeriesPositionTracker() function.
      
-     The MatrixDouble will be empty if the trackerInfo indexs (the startIndex and the endIndex) are not valid.
+     The MatrixFloat will be empty if the trackerInfo indexs (the startIndex and the endIndex) are not valid.
      
      @return returns a new LabelledClassificationData built from the samples in this dataset.
      */
-    MatrixDouble getTimeSeriesData( const TimeSeriesPositionTracker &trackerInfo ) const;
+    MatrixFloat getTimeSeriesData( const TimeSeriesPositionTracker &trackerInfo ) const;
     
     /**
-     Gets all the data as a MatrixDouble. This returns just the data, not the labels.
-     This will be an M by N MatrixDouble, where M is the number of samples and N is the number of dimensions.
+     Gets all the data as a MatrixFloat. This returns just the data, not the labels.
+     This will be an M by N MatrixFloat, where M is the number of samples and N is the number of dimensions.
      
-     @return a MatrixDouble containing the data from the current dataset.
+     @return a MatrixFloat containing the data from the current dataset.
      */
-    MatrixDouble getDataAsMatrixDouble() const;
+    MatrixFloat getDataAsMatrixFloat() const;
     
     /**
      Gets the class labels in the current dataset.

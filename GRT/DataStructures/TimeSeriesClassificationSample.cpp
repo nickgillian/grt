@@ -25,7 +25,7 @@ namespace GRT{
 //Constructors and Destructors
 TimeSeriesClassificationSample::TimeSeriesClassificationSample():classLabel(0){};
 
-TimeSeriesClassificationSample::TimeSeriesClassificationSample(const UINT classLabel,const MatrixDouble &data){
+TimeSeriesClassificationSample::TimeSeriesClassificationSample(const UINT classLabel,const MatrixFloat &data){
 	this->classLabel = classLabel;
 	this->data = data;
 }
@@ -43,13 +43,13 @@ bool TimeSeriesClassificationSample::clear(){
     return true;
 }
 
-bool TimeSeriesClassificationSample::addSample(const UINT classLabel,const VectorDouble &sample){
+bool TimeSeriesClassificationSample::addSample(const UINT classLabel,const VectorFloat &sample){
     this->classLabel = classLabel;
     this->data.push_back( sample );
     return true;
 }
     
-bool TimeSeriesClassificationSample::setTrainingSample(const UINT classLabel,const MatrixDouble &data){
+bool TimeSeriesClassificationSample::setTrainingSample(const UINT classLabel,const MatrixFloat &data){
 	this->classLabel = classLabel;
 	this->data = data;
     return true;

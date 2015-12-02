@@ -124,10 +124,10 @@ bool TimeSeriesClassificationDataStream::setClassNameForCorrespondingClassLabel(
     return false;
 }
 
-bool TimeSeriesClassificationDataStream::addSample(const UINT classLabel,const VectorDouble &sample){
+bool TimeSeriesClassificationDataStream::addSample(const UINT classLabel,const VectorFloat &sample){
 
 	if( numDimensions != sample.size() ){
-		errorLog << "addSample(const UINT classLabel, vector<double> sample) - the size of the new sample (" << sample.size() << ") does not match the number of dimensions of the dataset (" << numDimensions << ")" << endl;
+		errorLog << "addSample(const UINT classLabel, VectorFloat sample) - the size of the new sample (" << sample.size() << ") does not match the number of dimensions of the dataset (" << numDimensions << ")" << endl;
         return false;
 	}
 
@@ -317,12 +317,12 @@ bool TimeSeriesClassificationDataStream::enableExternalRangeScaling(const bool u
     return false;
 }
 
-bool TimeSeriesClassificationDataStream::scale(const double minTarget,const double maxTarget){
+bool TimeSeriesClassificationDataStream::scale(const float_t minTarget,const float_t maxTarget){
     vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool TimeSeriesClassificationDataStream::scale(const vector<MinMax> &ranges,const double minTarget,const double maxTarget){
+bool TimeSeriesClassificationDataStream::scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
     if( ranges.size() != numDimensions ) return false;
     
     //Scale the training data
@@ -353,7 +353,7 @@ TimeSeriesClassificationData TimeSeriesClassificationDataStream::getAllTrainingE
 	TimeSeriesClassificationData classData(numDimensions);
 	for(UINT x=0; x<timeSeriesPositionTracker.size(); x++){
 		if( timeSeriesPositionTracker[x].getClassLabel() == classLabel && timeSeriesPositionTracker[x].getEndIndex() > 0){
-			Matrix<double> timeSeries;
+			Matrix<float_t> timeSeries;
 			for(UINT i=timeSeriesPositionTracker[x].getStartIndex(); i<timeSeriesPositionTracker[x].getEndIndex(); i++){
 				timeSeries.push_back( data[ i ].getSample() );
 			}
@@ -652,9 +652,9 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 	data.resize( totalNumSamples, ClassificationSample() );
 
 	//Load each sample
+    UINT classLabel = 0;
+    VectorFloat sample(numDimensions);
 	for(UINT i=0; i<totalNumSamples; i++){
-		UINT classLabel = 0;
-		vector<double> sample(numDimensions);
 
 		file >> classLabel;
 		for(UINT j=0; j<numDimensions; j++){
@@ -722,7 +722,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const string &fi
     UINT classLabel = 0;
     UINT j = 0;
     UINT n = 0;
-    VectorDouble sample(numDimensions);
+    VectorFloat sample(numDimensions);
     for(UINT i=0; i<parser.getRowSize(); i++){
         //Get the class label
         classLabel = Util::stringToInt( parser[i][classLabelColumnIndex] );
@@ -732,7 +732,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const string &fi
         n=0;
         while( j != numDimensions ){
             if( n != classLabelColumnIndex ){
-                sample[j++] = Util::stringToDouble( parser[i][n] );
+                sample[j++] = Util::stringToFloat( parser[i][n] );
             }
             n++;
         }
@@ -836,7 +836,7 @@ ClassificationData TimeSeriesClassificationDataStream::getClassificationData( co
     for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
         addSample = includeNullGestures ? true : timeSeriesPositionTracker[i].getClassLabel() != GRT_DEFAULT_NULL_CLASS_LABEL;
         if( addSample ){
-            MatrixDouble dataSegment = getTimeSeriesData( timeSeriesPositionTracker[i] );
+            MatrixFloat dataSegment = getTimeSeriesData( timeSeriesPositionTracker[i] );
             for(UINT j=0; j<dataSegment.getNumRows(); j++){
                 classificationData.addSample(timeSeriesPositionTracker[i].getClassLabel(), dataSegment.getRowVector(j) );
             }
@@ -846,11 +846,11 @@ ClassificationData TimeSeriesClassificationDataStream::getClassificationData( co
     return classificationData;
 }
     
-MatrixDouble TimeSeriesClassificationDataStream::getTimeSeriesData( const TimeSeriesPositionTracker &trackerInfo ) const {
+MatrixFloat TimeSeriesClassificationDataStream::getTimeSeriesData( const TimeSeriesPositionTracker &trackerInfo ) const {
     
     if( trackerInfo.getStartIndex() >= totalNumSamples || trackerInfo.getEndIndex() > totalNumSamples ){
         warningLog << "getTimeSeriesData(TimeSeriesPositionTracker trackerInfo) - Invalid tracker indexs!" << endl;
-        return MatrixDouble();
+        return MatrixFloat();
     }
 
     UINT startIndex = trackerInfo.getStartIndex();
@@ -858,7 +858,7 @@ MatrixDouble TimeSeriesClassificationDataStream::getTimeSeriesData( const TimeSe
     UINT M = endIndex > 0 ? trackerInfo.getLength() : totalNumSamples - startIndex;
     UINT N = getNumDimensions();
 
-    MatrixDouble tsData(M,N);
+    MatrixFloat tsData(M,N);
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<N; j++){
             tsData[i][j] = data[ i+startIndex ][j];
@@ -867,10 +867,10 @@ MatrixDouble TimeSeriesClassificationDataStream::getTimeSeriesData( const TimeSe
     return tsData;
 }
     
-MatrixDouble TimeSeriesClassificationDataStream::getDataAsMatrixDouble() const {
+MatrixFloat TimeSeriesClassificationDataStream::getDataAsMatrixFloat() const {
     UINT M = getNumSamples();
     UINT N = getNumDimensions();
-    MatrixDouble matrixData(M,N);
+    MatrixFloat matrixData(M,N);
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<N; j++){
             matrixData[i][j] = data[i][j];

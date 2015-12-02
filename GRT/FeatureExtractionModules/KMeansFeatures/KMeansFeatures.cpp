@@ -25,7 +25,7 @@ namespace GRT{
 //Register your module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< KMeansFeatures > KMeansFeatures::registerModule("KMeansFeatures");
     
-KMeansFeatures::KMeansFeatures(const vector< UINT > numClustersPerLayer,const double alpha,const bool useScaling){
+KMeansFeatures::KMeansFeatures(const vector< UINT > numClustersPerLayer,const float_t alpha,const bool useScaling){
     
     classType = "KMeansFeatures";
     featureExtractionType = classType;
@@ -89,9 +89,9 @@ bool KMeansFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
     return false;
 }
     
-bool KMeansFeatures::computeFeatures(const VectorDouble &inputVector){
+bool KMeansFeatures::computeFeatures(const VectorFloat &inputVector){
     
-    VectorDouble data( numInputDimensions );
+    VectorFloat data( numInputDimensions );
     
     //Scale the input data if needed, if not just copy it
     if( useScaling ){
@@ -107,7 +107,7 @@ bool KMeansFeatures::computeFeatures(const VectorDouble &inputVector){
     const UINT numLayers = getNumLayers();
     for(UINT layer=0; layer<numLayers; layer++){
         if( !projectDataThroughLayer(data, featureVector, layer) ){
-            errorLog << "computeFeatures(const VectorDouble &inputVector) - Failed to project data through layer: " << layer << endl;
+            errorLog << "computeFeatures(const VectorFloat &inputVector) - Failed to project data through layer: " << layer << endl;
             return false;
         }
         
@@ -328,29 +328,29 @@ bool KMeansFeatures::init( const vector< UINT > numClustersPerLayer ){
 }
     
 bool KMeansFeatures::train_(ClassificationData &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
     
 bool KMeansFeatures::train_(TimeSeriesClassificationData &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
    
 bool KMeansFeatures::train_(TimeSeriesClassificationDataStream &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
 
 bool KMeansFeatures::train_(UnlabelledData &trainingData){
-	MatrixDouble data = trainingData.getDataAsMatrixDouble();
+	MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
     
-bool KMeansFeatures::train_(MatrixDouble &trainingData){
+bool KMeansFeatures::train_(MatrixFloat &trainingData){
     
     if( !initialized ){
-        errorLog << "train_(MatrixDouble &trainingData) - The quantizer has not been initialized!" << endl;
+        errorLog << "train_(MatrixFloat &trainingData) - The quantizer has not been initialized!" << endl;
         return false;
     }
     
@@ -385,7 +385,7 @@ bool KMeansFeatures::train_(MatrixDouble &trainingData){
         
         trainingLog << "Layer " << k+1 << "/" << K << " NumClusters: " << numClustersPerLayer[k] << endl;
         if( !kmeans.train_( trainingData ) ){
-            errorLog << "train_(MatrixDouble &trainingData) - Failed to train kmeans model at layer: " << k << endl;
+            errorLog << "train_(MatrixFloat &trainingData) - Failed to train kmeans model at layer: " << k << endl;
             return false;
         }
         
@@ -394,9 +394,9 @@ bool KMeansFeatures::train_(MatrixDouble &trainingData){
         
         //Project the data through the current layer to use as training data for the next layer
         if( k+1 != K ){
-            MatrixDouble data( M, numClustersPerLayer[k] );
-            VectorDouble input( trainingData.getNumCols() );
-            VectorDouble output( data.getNumCols() );
+            MatrixFloat data( M, numClustersPerLayer[k] );
+            VectorFloat input( trainingData.getNumCols() );
+            VectorFloat output( data.getNumCols() );
             
             for(UINT i=0; i<M; i++){
                 
@@ -407,7 +407,7 @@ bool KMeansFeatures::train_(MatrixDouble &trainingData){
                 
                 //Project the sample through the current layer
                 if( !projectDataThroughLayer( input, output, k ) ){
-                    errorLog << "train_(MatrixDouble &trainingData) - Failed to project sample through layer: " << k << endl;
+                    errorLog << "train_(MatrixFloat &trainingData) - Failed to project sample through layer: " << k << endl;
                     return false;
                 }
                 
@@ -431,7 +431,7 @@ bool KMeansFeatures::train_(MatrixDouble &trainingData){
     return true;
 }
     
-bool KMeansFeatures::projectDataThroughLayer( const VectorDouble &input, VectorDouble &output, const UINT layer ){
+bool KMeansFeatures::projectDataThroughLayer( const VectorFloat &input, VectorFloat &output, const UINT layer ){
     
     if( layer >= clusters.size() ){
         errorLog << "projectDataThroughLayer(...) - Layer out of bounds! It should be less than: " << clusters.size() << endl;
@@ -452,8 +452,8 @@ bool KMeansFeatures::projectDataThroughLayer( const VectorDouble &input, VectorD
     }
     
     UINT i,j = 0;
-    //double gamma = 2.0*SQR(alpha);
-    //double gamma = 2.0*SQR( 1 );
+    //float_t gamma = 2.0*SQR(alpha);
+    //float_t gamma = 2.0*SQR( 1 );
     for(i=0; i<M; i++){
         output[i] = 0;
         for(j=0; j<N; j++){
@@ -483,7 +483,7 @@ UINT KMeansFeatures::getLayerSize(const UINT layerIndex) const{
     return numClustersPerLayer[layerIndex];
 }
     
-vector< MatrixDouble > KMeansFeatures::getClusters() const{
+vector< MatrixFloat > KMeansFeatures::getClusters() const{
     return clusters;
 }
     

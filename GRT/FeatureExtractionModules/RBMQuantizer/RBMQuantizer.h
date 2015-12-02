@@ -7,11 +7,11 @@
  This value will be between [0 K-1], where K is the number of clusters used to create the quantization model. 
  Before you use the SOMQuantizer, you need to train a quantization model. To do this, you select the number 
  of clusters you want your quantizer to have and then give it any training data in the following formats:
- - LabelledClassificationData
- - LabelledTimeSeriesClassificationData
- - LabelledContinuousTimeSeriesClassificationData
+ - ClassificationData
+ - TimeSeriesClassificationData
+ - TimeSeriesClassificationDataStream
  - UnlabelledClassificationData
- - MatrixDouble
+ - MatrixFloat
  */
 
 /**
@@ -90,10 +90,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This is where you should add your main feature extraction code.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @param const VectorFloat &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector);
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -180,26 +180,26 @@ public:
     /**
      Trains the quantization model using the training dataset.
      
-     @param MatrixDouble &trainingData: the training dataset that will be used to train the quantizer
+     @param MatrixFloat &trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
-    bool train_(MatrixDouble &trainingData);
+    bool train_(MatrixFloat &trainingData);
 
     /**
      Quantizes the input value using the quantization model. The quantization model must be trained first before you call this function.
      
-     @param const double inputValue: the value you want to quantize
+     @param const float_t inputValue: the value you want to quantize
      @return returns the quantized value
      */
-	UINT quantize(const double inputValue);
+	UINT quantize(const float_t inputValue);
 	
 	/**
      Quantizes the input value using the quantization model. The quantization model must be trained first before you call this function.
      
-     @param const VectorDouble &inputVector: the vector you want to quantize
+     @param const VectorFloat &inputVector: the vector you want to quantize
      @return returns the quantized value
      */
-	UINT quantize(const VectorDouble &inputVector);
+	UINT quantize(const VectorFloat &inputVector);
     
 	/**
      Gets if the quantization model has been trained.
@@ -225,9 +225,9 @@ public:
 	/**
      Gets the quantization distances from the most recent quantization.
      
-     @return returns a VectorDouble containing the quantization distances from the most recent quantization
+     @return returns a VectorFloat containing the quantization distances from the most recent quantization
      */
-	VectorDouble getQuantizationDistances() const;
+	VectorFloat getQuantizationDistances() const;
 	
 	/**
      Gets the RBM model.
@@ -252,7 +252,7 @@ public:
 protected:
     UINT numClusters;
     BernoulliRBM rbm;
-    VectorDouble quantizationDistances;
+    VectorFloat quantizationDistances;
     
     static RegisterFeatureExtractionModule< RBMQuantizer > registerModule;
 };

@@ -83,7 +83,7 @@ bool SOMQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     return false;
 }
     
-bool SOMQuantizer::computeFeatures(const VectorDouble &inputVector){
+bool SOMQuantizer::computeFeatures(const VectorFloat &inputVector){
     
 	//Run the quantize algorithm
 	quantize( inputVector );
@@ -234,32 +234,32 @@ bool SOMQuantizer::loadModelFromFile(fstream &file){
 }
     
 bool SOMQuantizer::train_(ClassificationData &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
     
 bool SOMQuantizer::train_(TimeSeriesClassificationData &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
    
 bool SOMQuantizer::train_(TimeSeriesClassificationDataStream &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
 
 bool SOMQuantizer::train_(UnlabelledData &trainingData){
-	MatrixDouble data = trainingData.getDataAsMatrixDouble();
+	MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
     
-bool SOMQuantizer::train_(MatrixDouble &trainingData){
+bool SOMQuantizer::train_(MatrixFloat &trainingData){
     
     //Clear any previous model
     clear();
     
     if( trainingData.getNumRows() == 0 ){
-        errorLog << "train_(MatrixDouble &trainingData) - Failed to train quantizer, the training data is empty!" << endl;
+        errorLog << "train_(MatrixFloat &trainingData) - Failed to train quantizer, the training data is empty!" << endl;
         return false;
     }
     
@@ -271,7 +271,7 @@ bool SOMQuantizer::train_(MatrixDouble &trainingData){
     som.setMaxNumEpochs( 1000 );
     
     if( !som.train_( trainingData ) ){
-        errorLog << "train(MatrixDouble &trainingData) - Failed to train quantizer!" << endl;
+        errorLog << "train(MatrixFloat &trainingData) - Failed to train quantizer!" << endl;
         return false;
     }
     
@@ -286,32 +286,32 @@ bool SOMQuantizer::train_(MatrixDouble &trainingData){
     return true;
 }
 
-UINT SOMQuantizer::quantize(const double inputValue){
-	return quantize( VectorDouble(1,inputValue) );
+UINT SOMQuantizer::quantize(const float_t inputValue){
+	return quantize( VectorFloat(1,inputValue) );
 }
 
-UINT SOMQuantizer::quantize(const VectorDouble &inputVector){
+UINT SOMQuantizer::quantize(const VectorFloat &inputVector){
 	
     if( !trained ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The quantizer model has not been trained!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The quantizer model has not been trained!" << endl;
         return 0;
     }
 
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
         return 0;
     }
 	
     //Pass the input data through the map
     if( !som.predict( inputVector ) ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - Failed to perform map!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Failed to perform map!" << endl;
         return 0;
     }
     quantizationDistances = som.getMappedData();
     
     //Search for the neuron with the maximum output
     UINT quantizedValue = 0;
-    double maxValue = 0;
+    float_t maxValue = 0;
     for(UINT k=0; k<numClusters; k++){
         if( quantizationDistances[k] > maxValue ){
             maxValue = quantizationDistances[k];
@@ -337,7 +337,7 @@ UINT SOMQuantizer::getQuantizedValue() const {
     return (trained ? static_cast<UINT>(featureVector[0]) : 0);
 }
 
-VectorDouble SOMQuantizer::getQuantizationDistances() const{
+VectorFloat SOMQuantizer::getQuantizationDistances() const{
     return quantizationDistances;
 }
 

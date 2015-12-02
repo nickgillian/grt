@@ -38,9 +38,9 @@ public:
     /**
      Constructor, sets the start index, end index and class label of the timeseries that is to be tracked.
 	 
-     @param UINT startIndex: the index that the tracked timeseries starts in a given dataset.  Default value is startIndex=0
-     @param UINT endIndex: the index that the tracked timeseries ends in a given dataset.  Default value is endIndex=0
-     @param UINT classLabel: the class label of the tracked timeseries.  Default value is classLabel=0
+     @param startIndex: the index that the tracked timeseries starts in a given dataset.  Default value is startIndex=0
+     @param endIndex: the index that the tracked timeseries ends in a given dataset.  Default value is endIndex=0
+     @param classLabel: the class label of the tracked timeseries.  Default value is classLabel=0
      */
 	TimeSeriesPositionTracker(UINT startIndex=0,UINT endIndex=0,UINT classLabel=0){
 		this->startIndex = startIndex;
@@ -51,7 +51,7 @@ public:
     /**
      Copy Constructor, copies the TimeSeriesPositionTracker from the rhs instance to this instance
      
-	 @param const TimeSeriesPositionTracker &rhs: another instance of the TimeSeriesPositionTracker class from which the data will be copied to this instance
+	 @param rhs: another instance of the TimeSeriesPositionTracker class from which the data will be copied to this instance
      */
 	TimeSeriesPositionTracker(const TimeSeriesPositionTracker &rhs){
 		this->startIndex = rhs.startIndex;
@@ -67,7 +67,7 @@ public:
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance
      
-	 @param const TimeSeriesPositionTracker &rhs: another instance of the TimeSeriesPositionTracker class from which the data will be copied to this instance
+	 @param rhs: another instance of the TimeSeriesPositionTracker class from which the data will be copied to this instance
 	 @return a reference to this instance of TimeSeriesPositionTracker
      */
 	TimeSeriesPositionTracker& operator= (const TimeSeriesPositionTracker &rhs){
@@ -83,9 +83,9 @@ public:
     /**
      Sets the tracker values
      
-	 @param UINT startIndex: the index that the tracked timeseries starts in a given dataset
-     @param UINT endIndex: the index that the tracked timeseries ends in a given dataset
-     @param UINT classLabel: the class label of the tracked timeseries
+	 @param startIndex: the index that the tracked timeseries starts in a given dataset
+     @param endIndex: the index that the tracked timeseries ends in a given dataset
+     @param classLabel: the class label of the tracked timeseries
 	 @return void
      */
 	void setTracker(UINT startIndex,UINT endIndex,UINT classLabel){
@@ -97,7 +97,7 @@ public:
     /**
      Sets the start index
      
-	 @param UINT startIndex: the index that the tracked timeseries starts in a given dataset
+	 @param startIndex: the index that the tracked timeseries starts in a given dataset
 	 @return void
      */
 	void setStartIndex(UINT startIndex){ this->startIndex = startIndex; }
@@ -105,7 +105,7 @@ public:
     /**
      Sets the end index
      
-	 @param UINT endIndex: the index that the tracked timeseries ends in a given dataset
+	 @param endIndex: the index that the tracked timeseries ends in a given dataset
 	 @return void
      */
 	void setEndIndex(UINT endIndex){ this->endIndex = endIndex; }
@@ -113,7 +113,7 @@ public:
     /**
      Sets the class label
      
-	 @param UINT classLabel: the class label of the tracked timeseries
+	 @param classLabel: the class label of the tracked timeseries
 	 @return void
      */
     void setClassLabel(UINT classLabel){ this->classLabel = classLabel; }

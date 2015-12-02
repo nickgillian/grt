@@ -83,7 +83,7 @@ bool KMeansQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     return false;
 }
     
-bool KMeansQuantizer::computeFeatures(const VectorDouble &inputVector){
+bool KMeansQuantizer::computeFeatures(const VectorFloat &inputVector){
     
 	//Run the quantize algorithm
 	quantize( inputVector );
@@ -209,26 +209,26 @@ bool KMeansQuantizer::loadModelFromFile(fstream &file){
 }
     
 bool KMeansQuantizer::train_(ClassificationData &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train( data );
 }
     
 bool KMeansQuantizer::train_(TimeSeriesClassificationData &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train( data );
 }
    
 bool KMeansQuantizer::train_(TimeSeriesClassificationDataStream &trainingData){
-    MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train( data );
 }
 
 bool KMeansQuantizer::train_(UnlabelledData &trainingData){
-	MatrixDouble data = trainingData.getDataAsMatrixDouble();
+	MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train( data );
 }
     
-bool KMeansQuantizer::train_(MatrixDouble &trainingData){
+bool KMeansQuantizer::train_(MatrixFloat &trainingData){
     
     //Clear any previous model
     clear();
@@ -242,7 +242,7 @@ bool KMeansQuantizer::train_(MatrixDouble &trainingData){
 	kmeans.setMaxNumEpochs( maxNumEpochs );
     
     if( !kmeans.train_(trainingData) ){
-        errorLog << "train_(MatrixDouble &trainingData) - Failed to train quantizer!" << endl;
+        errorLog << "train_(MatrixFloat &trainingData) - Failed to train quantizer!" << endl;
         return false;
     }
     
@@ -257,24 +257,24 @@ bool KMeansQuantizer::train_(MatrixDouble &trainingData){
     return true;
 }
 
-UINT KMeansQuantizer::quantize(double inputValue){
-	return quantize( VectorDouble(1,inputValue) );
+UINT KMeansQuantizer::quantize(float_t inputValue){
+	return quantize( VectorFloat(1,inputValue) );
 }
 
-UINT KMeansQuantizer::quantize(const VectorDouble &inputVector){
+UINT KMeansQuantizer::quantize(const VectorFloat &inputVector){
 	
     if( !trained ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The quantizer has not been trained!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The quantizer has not been trained!" << endl;
         return 0;
     }
 
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
         return 0;
     }
 
 	//Find the minimum cluster
-    double minDist = numeric_limits<double>::max();
+    float_t minDist = numeric_limits<float_t>::max();
     UINT quantizedValue = 0;
     
     for(UINT k=0; k<numClusters; k++){

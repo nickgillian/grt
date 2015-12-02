@@ -36,7 +36,7 @@ namespace GRT{
 class TimeSeriesClassificationSample{
 public:
 	TimeSeriesClassificationSample();
-	TimeSeriesClassificationSample(const UINT classLabel,const MatrixDouble &data);
+	TimeSeriesClassificationSample(const UINT classLabel,const MatrixFloat &data);
 	TimeSeriesClassificationSample(const TimeSeriesClassificationSample &rhs);
 	~TimeSeriesClassificationSample();
 
@@ -48,26 +48,26 @@ public:
 		return *this;
 	}
 
-	inline double* operator[] (const UINT &n){
+	inline float_t* operator[] (const UINT &n){
 		return data[n];
 	}
     
-    inline const double* operator[] (const UINT &n) const {
+    inline const float_t* operator[] (const UINT &n) const {
 		return data[n];
 	}
 
 	bool clear();
-    bool addSample(const UINT classLabel,const VectorDouble &sample);
-	bool setTrainingSample(const UINT classLabel,const MatrixDouble &data);
+    bool addSample(const UINT classLabel,const VectorFloat &sample);
+	bool setTrainingSample(const UINT classLabel,const MatrixFloat &data);
 	inline UINT getLength() const { return data.getNumRows(); }
     inline UINT getNumDimensions() const { return data.getNumCols(); }
     inline UINT getClassLabel() const { return classLabel; }
-    MatrixDouble &getData(){ return data; }
-    const MatrixDouble &getData() const { return data; }
+    MatrixFloat &getData(){ return data; }
+    const MatrixFloat &getData() const { return data; }
 
 protected:
 	UINT classLabel;
-	MatrixDouble data;
+	MatrixFloat data;
 };
 
 } //End of namespace GRT

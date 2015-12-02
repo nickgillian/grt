@@ -43,15 +43,15 @@ public:
     /**
      Default constructor. Initalizes the KMeansFeatures, setting the number of input dimensions and the number of clusters to use in the quantization model.
 	
-	@param UINT numDimensions: the number of dimensions in the input data
-    @param UINT numClusters: the number of quantization clusters
+	@param numDimensions: the number of dimensions in the input data
+    @param numClusters: the number of quantization clusters
      */
-    KMeansFeatures(const vector< UINT > numClustersPerLayer = vector< UINT >(1,100),const double alpha = 0.2,const bool useScaling = true);
+    KMeansFeatures(const vector< UINT > numClustersPerLayer = vector< UINT >(1,100),const float_t alpha = 0.2,const bool useScaling = true);
 	
     /**
      Copy constructor, copies the KMeansQuantizer from the rhs instance to this instance.
      
-     @param const KMeansFeatures &rhs: another instance of this class from which the data will be copied to this instance
+     @param rhs: another instance of this class from which the data will be copied to this instance
      */
     KMeansFeatures(const KMeansFeatures &rhs);
     
@@ -63,7 +63,7 @@ public:
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance.
      
-     @param const KMeansQuantizer &rhs: another instance of this class from which the data will be copied to this instance
+     @param rhs: another instance of this class from which the data will be copied to this instance
      @return a reference to this instance
      */
     KMeansFeatures& operator=(const KMeansFeatures &rhs);
@@ -73,7 +73,7 @@ public:
      This function is used to deep copy the values from the input pointer to this instance of the FeatureExtraction module.
      This function is called by the GestureRecognitionPipeline when the user adds a new FeatureExtraction module to the pipeleine.
      
-     @param const FeatureExtraction *featureExtraction: a pointer to another instance of this class, the values of that instance will be cloned to this instance
+     @param featureExtraction: a pointer to another instance of this class, the values of that instance will be cloned to this instance
      @return returns true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const FeatureExtraction *featureExtraction);
@@ -83,10 +83,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This is where you should add your main feature extraction code.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector);
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -100,7 +100,7 @@ public:
     /**
      This saves the feature extraction settings to a file.
      
-     @param const string filename: the filename to save the settings to
+     @param filename: the filename to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
     virtual bool saveModelToFile(string filename) const;
@@ -108,7 +108,7 @@ public:
     /**
      This saves the feature extraction settings to a file.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
     virtual bool loadModelFromFile(string filename);
@@ -118,7 +118,7 @@ public:
      This overrides the saveSettingsToFile function in the FeatureExtraction base class.
      You should add your own custom code to this function to define how your feature extraction module is saved to a file.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
     virtual bool saveModelToFile(fstream &file) const;
@@ -127,7 +127,7 @@ public:
      This loads the feature extraction settings from a file.
      This overrides the loadSettingsFromFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
     virtual bool loadModelFromFile(fstream &file);
@@ -135,7 +135,7 @@ public:
     /**
      Trains the quantization model using the training dataset.
      
-     @param ClassificationData &trainingData: the training dataset that will be used to train the quantizer
+     @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
     virtual bool train_(ClassificationData &trainingData);
@@ -143,7 +143,7 @@ public:
     /**
      Trains the quantization model using the training dataset.
      
-     @param TimeSeriesClassificationData &trainingData: the training dataset that will be used to train the quantizer
+     @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
     virtual bool train_(TimeSeriesClassificationData &trainingData);
@@ -151,7 +151,7 @@ public:
     /**
      Trains the quantization model using the training dataset.
      
-     @param TimeSeriesClassificationDataStream &trainingData: the training dataset that will be used to train the quantizer
+     @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
     virtual bool train_(TimeSeriesClassificationDataStream &trainingData);
@@ -159,7 +159,7 @@ public:
     /**
      Trains the quantization model using the training dataset.
      
-     @param UnlabelledData &trainingData: the training dataset that will be used to train the quantizer
+     @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
     virtual bool train_(UnlabelledData &trainingData);
@@ -167,20 +167,20 @@ public:
     /**
      Trains the quantization model using the training dataset.
      
-     @param MatrixDouble &trainingData: the training dataset that will be used to train the quantizer
+     @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
-    virtual bool train_(MatrixDouble &trainingData);
+    virtual bool train_(MatrixFloat &trainingData);
     
-    bool computeFeatures(VectorDouble &inputVector,VectorDouble &outputVector);
+    bool computeFeatures(VectorFloat &inputVector,VectorFloat &outputVector);
     
     bool init( const vector< UINT > numClustersPerLayer );
     
-    bool projectDataThroughLayer( const VectorDouble &input, VectorDouble &output, const UINT layer );
+    bool projectDataThroughLayer( const VectorFloat &input, VectorFloat &output, const UINT layer );
     
     UINT getNumLayers() const;
     UINT getLayerSize(const UINT layerIndex) const;
-    vector< MatrixDouble > getClusters() const;
+    vector< MatrixFloat > getClusters() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::train;
@@ -189,10 +189,10 @@ public:
     using MLBase::predict_;
     
 protected:
-    double alpha;
+    float_t alpha;
     vector< UINT > numClustersPerLayer;
     vector< MinMax > ranges;
-    vector< MatrixDouble > clusters;
+    vector< MatrixFloat > clusters;
     
     static RegisterFeatureExtractionModule< KMeansFeatures > registerModule;
 };
