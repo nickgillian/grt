@@ -56,13 +56,13 @@ Node::~Node(){
     clear();
 }
 
-bool Node::predict(const VectorDouble &x){
-    warningLog << "predict(const VectorDouble &x) - Base class not overwritten!" << endl;
+bool Node::predict(const VectorFloat &x){
+    warningLog << "predict(const VectorFloat &x) - Base class not overwritten!" << endl;
     return false;
 }
 
-bool Node::predict(const VectorDouble &x,VectorDouble &y){
-    warningLog << "predict(const VectorDouble &x) - Base class not overwritten!" << endl;
+bool Node::predict(const VectorFloat &x,VectorFloat &y){
+    warningLog << "predict(const VectorFloat &x) - Base class not overwritten!" << endl;
     return false;
 }
 
@@ -97,11 +97,11 @@ bool Node::clear(){
     return true;
 }
 
-bool Node::computeFeatureWeights( VectorDouble &weights ) const{
+bool Node::computeFeatureWeights( VectorFloat &weights ) const{
     return false; //Base class always return false
 }
 
-bool Node::computeLeafNodeWeights( MatrixDouble &weights ) const{
+bool Node::computeLeafNodeWeights( MatrixFloat &weights ) const{
     return false; //Base class always return false
 }
 

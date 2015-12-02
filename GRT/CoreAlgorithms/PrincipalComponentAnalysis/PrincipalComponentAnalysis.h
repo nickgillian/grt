@@ -67,48 +67,48 @@ class PrincipalComponentAnalysis : public MLBase{
      value. This should be a value between [0 1], the default value of 0.95 represents 95% of the variance in the 
      original dataset.
      
-     @param const MatrixDouble &data: a matrix containing the data from which the principal components will be computed. This should be an [M N] matrix, where M==samples and N==dimensions.
-     @param double maxVariance: sets the variance that should represented by the top K principal components. This should be a value between [0 1]. Default value=0.95
-     @param bool normData: sets if the data will be z-normalized before running the PCA algorithm. Default value=false
+     @param data: a matrix containing the data from which the principal components will be computed. This should be an [M N] matrix, where M==samples and N==dimensions.
+     @param maxVariance: sets the variance that should represented by the top K principal components. This should be a value between [0 1]. Default value=0.95
+     @param normData: sets if the data will be z-normalized before running the PCA algorithm. Default value=false
      @return returns true if the principal components of the input matrix could be computed, false otherwise
      value
      */
-    bool computeFeatureVector(const MatrixDouble &data,double maxVariance=0.95,bool normData=false);
+    bool computeFeatureVector(const MatrixFloat &data,float_t maxVariance=0.95,bool normData=false);
 
     /**
      Runs the principal component analysis algorithm on the input data and builds the resulting feature vector
      so new data can be projected onto the principal subspace (using the project function).  The number of principal
      components should be set be the user and must be less than or equal to the number of dimensions in the input data.
 
-     @param const MatrixDouble &data: a matrix containing the data from which the principal components will be computed. This should be an [M N] matrix, where M==samples and N==dimensions
-     @param UINT numPrincipalComponents: sets the number of principal components. This must be a value be less than or equal to the number of dimensions in the input data
-     @param bool normData: sets if the data will be z-normalized before running the PCA algorithm. Default value=false
+     @param data: a matrix containing the data from which the principal components will be computed. This should be an [M N] matrix, where M==samples and N==dimensions
+     @param numPrincipalComponents: sets the number of principal components. This must be a value be less than or equal to the number of dimensions in the input data
+     @param normData: sets if the data will be z-normalized before running the PCA algorithm. Default value=false
      @return returns true if the principal components of the input matrix could be computed, false otherwise
      value
      */
-    bool computeFeatureVector(const MatrixDouble &data,UINT numPrincipalComponents,bool normData=false);
+    bool computeFeatureVector(const MatrixFloat &data,UINT numPrincipalComponents,bool normData=false);
     
     /**
      Projects the input data matrix onto the principal subspace. The new projected data will be stored in the prjData 
      matrix. The computeFeatureVector function should have been called at least once before this function is called.
      The number of the columns in the data matrix must match the numInputDimensions parameter.  The function will return true if the projection was successful, false otherwise.
      
-     @param const MatrixDouble &data: The data that should be projected onto the principal subspace. This should be an [M N] matrix, where N must equal the numInputDimensions value (there are no restrictions on M).
-     @param MatrixDouble &prjData: A matrix into which the projected data will be stored. This matrix will be resized to [M K], where M is the number of rows in the data matrix and K is the numPrincipalComponents.
+     @param data: The data that should be projected onto the principal subspace. This should be an [M N] matrix, where N must equal the numInputDimensions value (there are no restrictions on M).
+     @param prjData: A matrix into which the projected data will be stored. This matrix will be resized to [M K], where M is the number of rows in the data matrix and K is the numPrincipalComponents.
      @return returns true if the projection was successful, false otherwise
      */
-    bool project(const MatrixDouble &data,MatrixDouble &prjData);
+    bool project(const MatrixFloat &data,MatrixFloat &prjData);
     
     /**
      Projects the input data vector onto the principal subspace. The new projected data will be stored in the prjData vector. 
      The computeFeatureVector function should have been called at least once before this function is called.
      The size of the data vector must match the numInputDimensions parameter.  The function will return true if the projection was successful, false otherwise.
      
-     @param const VectorDouble &data: The data that should be projected onto the principal subspace. This should be an N-dimensional vector, where N must equal the numInputDimensions value.
-     @param VectorDouble &prjData: A vector into which the projected data will be stored. This vector will be resized to K, where K is the numPrincipalComponents.
+     @param const data: The data that should be projected onto the principal subspace. This should be an N-dimensional vector, where N must equal the numInputDimensions value.
+     @param prjData: A vector into which the projected data will be stored. This vector will be resized to K, where K is the numPrincipalComponents.
      @return returns true if the projection was successful, false otherwise
      */
-    bool project(const VectorDouble &data,VectorDouble &prjData);
+    bool project(const VectorFloat &data,VectorFloat &prjData);
 
     /**
      This saves the trained PCA model to a file.
@@ -154,14 +154,14 @@ class PrincipalComponentAnalysis : public MLBase{
      Returns the maxVariance parameter, set by the user when the computeFeatureVector was called.
      returns the maxVariance parameter, set by the user when the computeFeatureVector was called
      */
-    double getMaxVariance() const { return maxVariance; }
+    float_t getMaxVariance() const { return maxVariance; }
     
     /**
      Returns the mean shift vector, computed during the computeFeatureVector function. New data will be subtracted
      by this value before it is projected onto the principal subspace.
      @return returns the mean shift vector, computed during the computeFeatureVector function
      */
-    VectorDouble getMeanVector() const { return mean; }
+    VectorFloat getMeanVector() const { return mean; }
     
     /**
      Returns the standard deviation vector that is used to normalize new data, this is computed during the 
@@ -169,19 +169,19 @@ class PrincipalComponentAnalysis : public MLBase{
      be z-normalized by this value before it is projected onto the principal subspace.
      @return returns the stdDev vector, computed during the computeFeatureVector function
      */
-    VectorDouble getStdDevVector() const { return stdDev; }
+    VectorFloat getStdDevVector() const { return stdDev; }
     
     /**
      Returns the weights for each principal component, these weights sum to 1.
      @return returns a vector of the weights for each principal component, these weights sum to 1
      */
-    VectorDouble getComponentWeights() const { return componentWeights; }
+    VectorFloat getComponentWeights() const { return componentWeights; }
     
     /**
      Returns the raw eigen values (these are not sorted).
      @return returns a vector of the raw eigen values
      */
-    VectorDouble getEigenValues() const { return eigenvalues; }
+    VectorFloat getEigenValues() const { return eigenvalues; }
     
     /**
      A helper function that prints the PCA info. If the user sets the title string, then this will be written in
@@ -193,22 +193,22 @@ class PrincipalComponentAnalysis : public MLBase{
      Returns a matrix containing the eigen vectors.
      @return returns a matrix containing the raw eigen vectors
      */
-    MatrixDouble getEigenVectors() const;
+    MatrixFloat getEigenVectors() const;
 
-    bool setModel( const VectorDouble &mean, const MatrixDouble &eigenvectors );
+    bool setModel( const VectorFloat &mean, const MatrixFloat &eigenvectors );
 	
 protected:
-    bool computeFeatureVector_(const MatrixDouble &data,UINT analysisMode);
+    bool computeFeatureVector_(const MatrixFloat &data,UINT analysisMode);
 
     bool normData;
     UINT numPrincipalComponents;
-    double maxVariance;
-    VectorDouble mean;
-    VectorDouble stdDev;
-    VectorDouble componentWeights;
-    VectorDouble eigenvalues;
+    float_t maxVariance;
+    VectorFloat mean;
+    VectorFloat stdDev;
+    VectorFloat componentWeights;
+    VectorFloat eigenvalues;
     vector< IndexedDouble > sortedEigenvalues;
-    MatrixDouble eigenvectors;
+    MatrixFloat eigenvectors;
 
     enum AnalysisMode{MAX_VARIANCE=0,MAX_NUM_PCS};
 	

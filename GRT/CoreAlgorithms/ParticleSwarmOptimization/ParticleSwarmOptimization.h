@@ -62,7 +62,7 @@ public:
     /**
      Provides direct access to the i'th particle. It is up to the user to ensure that i is within the range [0 numParticles-1].
      
-     @param const unsigned int &index: the index of the particle you want to access
+     @param index: the index of the particle you want to access
      @return returns a reference to the i'th particle
      */
     PARTICLE_TYPE& operator[](const unsigned int &index){
@@ -78,14 +78,14 @@ public:
      
      After you call this function, you can call the search() function to run the actual search. You can reset the particles at any time using the reset() function.
      
-     @param const unsigned int numParticles: the number of particles that will be used for the search
-     @param const unsigned int K: the size of the particles state vector
-     @param const vector< double > &xMin: the minimum range of the x state vector (i.e. the space that should be searched)
-     @param const vector< double > &xMax: the maximum range of the x state vector (i.e. the space that should be searched)
-     @param const vector< double > &propagationModel: the propagation model used for each particle, this is normally just gaussian noise (see above)
+     @param numParticles: the number of particles that will be used for the search
+     @param K: the size of the particles state vector
+     @param xMin: the minimum range of the x state vector (i.e. the space that should be searched)
+     @param xMax: the maximum range of the x state vector (i.e. the space that should be searched)
+     @param propagationModel: the propagation model used for each particle, this is normally just gaussian noise (see above)
      @return returns true if the PSO algorithm was initialized successfully, false otherwise
      */
-    virtual bool init(const unsigned int numParticles,const unsigned int K,const vector<double> &xMin,const vector<double> &xMax,const vector< double > &propagationModel){
+    virtual bool init(const unsigned int numParticles,const unsigned int K,const VectorFloat &xMin,const VectorFloat &xMax,const VectorFloat &propagationModel){
         
         initialized = false;
         
@@ -163,9 +163,9 @@ public:
         
         unsigned int iterCounter = 0;
         unsigned int numIterNoChangeCounter = 0;
-        double currentMaxima = 0;
-        double lastMaxima = 0;
-        double delta = 0;
+        float_t currentMaxima = 0;
+        float_t lastMaxima = 0;
+        float_t delta = 0;
         bool keepSearching = true;
         
         //Decrement the global best cost
@@ -203,17 +203,17 @@ public:
      Performs one iteration of the search.  Normally, you do not call this function directly but instead call the main search() function.
      You need to initialize the PSO algorithm first before you can use this function.
      
-     @param OBSERVATION_TYPE &observation: a reference to the observation data used for the search
+     @param observation: a reference to the observation data used for the search
      @return returns true if the search ran successfully, false otherwise
      */
-    virtual double searchIteration(OBSERVATION_TYPE &observation){
+    virtual float_t searchIteration(OBSERVATION_TYPE &observation){
         
         if( !initialized ) return 0;
         
         unsigned int index = 0;
         unsigned int bestIndex = 0;
-        double currentBestMaxima = 0;
-        double epsilon = 0;
+        float_t currentBestMaxima = 0;
+        float_t epsilon = 0;
         typename vector< PARTICLE_TYPE >::iterator pIter;
         
         //Compute the cost for each particle, tracking the best cost of all the particles in the swarm
@@ -248,10 +248,10 @@ public:
     /**
      Updates the propagation model. You need to initialize the PSO algorithm first before you can use this function.
      
-     const vector< double > &propagationModel: the new propagation model
+     const propagationModel: the new propagation model
      @return returns true if the propagationModel was updated successfully, false otherwise
      */
-    bool setPropagationModel( const vector< double > &propagationModel ){
+    bool setPropagationModel( const VectorFloat &propagationModel ){
         
         if( !initialized ) return false;
         
@@ -262,17 +262,17 @@ public:
 
     bool initialized;   ///< A flag to indicate if the PSO algorithm has been initialized
     unsigned int K;     ///< The size of the particles state vector
-    double minImprovement;
+    float_t minImprovement;
     unsigned int maxIter;
     unsigned int maxNumIterNoChange;
-    double globalBestCost;  ///< The current global best cost over all the particles
-    vector< double > finalX;  ///< The final estimate
-    vector< double > globalBestX;   ///< The state vector of the particle with the best cost
-    vector< double > xMin;  ///< The minimum range of the state space
-    vector< double > xMax;  ///< The maximum range of the state space
-    vector< double > propagationModel;  ///<The propagation model used to update each particle
+    float_t globalBestCost;  ///< The current global best cost over all the particles
+    VectorFloat finalX;  ///< The final estimate
+    VectorFloat globalBestX;   ///< The state vector of the particle with the best cost
+    VectorFloat xMin;  ///< The minimum range of the state space
+    VectorFloat xMax;  ///< The maximum range of the state space
+    VectorFloat propagationModel;  ///<The propagation model used to update each particle
     vector< PARTICLE_TYPE > particles;  ///< A vector containing all the particles used for the search
-    vector< vector< double > > globalBestXHistory;  ///< A buffer to keep track of the search history
+    vector< VectorFloat > globalBestXHistory;  ///< A buffer to keep track of the search history
     vector< vector< PARTICLE_TYPE > > iterHistory;  ///< A buffer to keep track of the search history
     
     InfoLog infoLog;

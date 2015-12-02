@@ -50,31 +50,38 @@ public:
      This function predicts if the input is greater than or equal to the nodes threshold.
      This function should be overwritten by the inheriting class.
      
-     @param const VectorDouble &x: the input vector that will be used for the prediction
+     @param x: the input vector that will be used for the prediction
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x);
+    virtual bool predict(const VectorFloat &x);
     
     /**
      This function recursively predicts if the probability of the input vector.  
      This function should be overwritten by the inheriting class.
   
-     @param const VectorDouble &x: the input vector that will be used for the prediction
-     @param VectorDouble &y: a reference to a vector that will store the results
+     @param x: the input vector that will be used for the prediction
+     @param y: a reference to a vector that will store the results
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &y);
+    virtual bool predict(const VectorFloat &x,VectorFloat &y);
 
     /**
      This function recursively computes the weights of features used for classification nodes and stores the results in the weights vector.
      This function should be overwritten by the inheriting class.
   
-     @param VectorDouble &weights: the input vector that will be used to store the weights
+     @param weights: the input vector that will be used to store the weights
      @return returns true if the weights were updated, false otherwise
      */
-    virtual bool computeFeatureWeights( VectorDouble &weights ) const;
+    virtual bool computeFeatureWeights( VectorFloat &weights ) const;
 
-    virtual bool computeLeafNodeWeights( MatrixDouble &weights ) const;
+    /**
+     This function recursively computes the weights of features used for classification nodes and stores the results in the weights vector.
+     This function should be overwritten by the inheriting class.
+  
+     @param weights: the input matrix that will be used to store the weights, rows represent classes, columns represent features
+     @return returns true if the weights were updated, false otherwise
+     */
+    virtual bool computeLeafNodeWeights( MatrixFloat &weights ) const;
     
     /**
      This functions cleans up any dynamic memory assigned by the node.

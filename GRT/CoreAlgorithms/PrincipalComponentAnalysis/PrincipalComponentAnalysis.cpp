@@ -43,17 +43,17 @@ PrincipalComponentAnalysis::~PrincipalComponentAnalysis(){
 	
 }
 
-bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixDouble &data,double maxVariance,bool normData){
+bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixFloat &data,double maxVariance,bool normData){
     trained = false;
     this->maxVariance = maxVariance;
     this->normData = normData;
     return computeFeatureVector_(data,MAX_VARIANCE);
 }
 
-bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixDouble &data,UINT numPrincipalComponents,bool normData){
+bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixFloat &data,UINT numPrincipalComponents,bool normData){
     trained = false;
     if( numPrincipalComponents > data.getNumCols() ){
-        errorLog << "computeFeatureVector(const MatrixDouble &data,UINT numPrincipalComponents,bool normData) - The number of principal components (";
+        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT numPrincipalComponents,bool normData) - The number of principal components (";
         errorLog << numPrincipalComponents << ") is greater than the number of columns in your data (" << data.getNumCols() << ")" << endl;
         return false;
     }
@@ -62,14 +62,14 @@ bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixDouble &data,U
     return computeFeatureVector_(data,MAX_NUM_PCS);
 }
 
-bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixDouble &data,const UINT analysisMode){
+bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,const UINT analysisMode){
 
     trained = false;
     const UINT M = data.getNumRows();
     const UINT N = data.getNumCols();
     this->numInputDimensions = N;
 
-    MatrixDouble msData( M, N );
+    MatrixFloat msData( M, N );
 
     //Compute the mean and standard deviation of the input data
     mean = data.getMean();
@@ -89,7 +89,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixDouble &data,
     }
 
     //Get the covariance matrix
-    MatrixDouble cov = msData.getCovarianceMatrix();
+    MatrixFloat cov = msData.getCovarianceMatrix();
 
     //Use Eigen Value Decomposition to find eigenvectors of the covariance matrix
     EigenvalueDecomposition eig;
@@ -100,7 +100,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixDouble &data,
         componentWeights.clear();
         sortedEigenvalues.clear();
         eigenvectors.clear();
-        errorLog << "computeFeatureVector(const MatrixDouble &data,UINT analysisMode) - Failed to decompose input matrix!" << endl;
+        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT analysisMode) - Failed to decompose input matrix!" << endl;
         return false;
     }
 
@@ -115,13 +115,13 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixDouble &data,
     }
 
     //Sort the eigenvalues and compute the component weights
-    double sum = 0;
+    float_t sum = 0;
     UINT componentIndex = 0;
     sortedEigenvalues.clear();
     componentWeights.resize(N,0);
 
     while( true ){
-        double maxValue = 0;
+        float_t maxValue = 0;
         UINT index = 0;
         for(UINT i=0; i<eigenvalues.size(); i++){
             if( eigenvalues[i] > maxValue ){
@@ -138,7 +138,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixDouble &data,
         eigenvalues[ index ] = 0; //Set the maxValue to zero so it won't be used again
     }
 
-    double cumulativeVariance = 0;
+    float_t cumulativeVariance = 0;
     switch( analysisMode ){
         case MAX_VARIANCE:
             //Normalize the component weights and workout how many components we need to use to reach the maxVariance
@@ -162,7 +162,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixDouble &data,
             }
         break;
         default:
-        errorLog << "computeFeatureVector(const MatrixDouble &data,UINT analysisMode) - Unknown analysis mode!" << endl;
+        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT analysisMode) - Unknown analysis mode!" << endl;
         break;
     }
     
@@ -175,19 +175,19 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixDouble &data,
     return true;
 }
 
-bool PrincipalComponentAnalysis::project(const MatrixDouble &data,MatrixDouble &prjData){
+bool PrincipalComponentAnalysis::project(const MatrixFloat &data,MatrixFloat &prjData){
 	
     if( !trained ){
-        warningLog << "project(const MatrixDouble &data,MatrixDouble &prjData) - The PrincipalComponentAnalysis module has not been trained!" << endl;
+        warningLog << "project(const MatrixFloat &data,MatrixFloat &prjData) - The PrincipalComponentAnalysis module has not been trained!" << endl;
         return false;
     }
 
     if( data.getNumCols() != numInputDimensions ){
-        warningLog << "project(const MatrixDouble &data,MatrixDouble &prjData) - The number of columns in the input vector (" << data.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << endl;
+        warningLog << "project(const MatrixFloat &data,MatrixFloat &prjData) - The number of columns in the input vector (" << data.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << endl;
         return false;
     }
 	
-    MatrixDouble msData( data );
+    MatrixFloat msData( data );
     prjData.resize(data.getNumRows(),numPrincipalComponents);
 	
     if( normData ){
@@ -214,21 +214,21 @@ bool PrincipalComponentAnalysis::project(const MatrixDouble &data,MatrixDouble &
     return true;
 }
     
-bool PrincipalComponentAnalysis::project(const VectorDouble &data,VectorDouble &prjData){
+bool PrincipalComponentAnalysis::project(const VectorFloat &data,VectorFloat &prjData){
     
     const unsigned int N = (unsigned int)data.size();
     
     if( !trained ){
-        warningLog << "project(const VectorDouble &data,VectorDouble &prjData) - The PrincipalComponentAnalysis module has not been trained!" << endl;
+        warningLog << "project(const VectorFloat &data,VectorFloat &prjData) - The PrincipalComponentAnalysis module has not been trained!" << endl;
         return false;
     }
 
     if( N != numInputDimensions ){
-        warningLog << "project(const VectorDouble &data,VectorDouble &prjData) - The size of the input vector (" << N << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << endl;
+        warningLog << "project(const VectorFloat &data,VectorFloat &prjData) - The size of the input vector (" << N << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << endl;
         return false;
     }
     
-    VectorDouble msData = data;
+    VectorFloat msData = data;
     
     if( normData ){
         //Mean subtract the data
@@ -451,11 +451,11 @@ bool PrincipalComponentAnalysis::print(string title) const{
     return true;
 }
     
-MatrixDouble PrincipalComponentAnalysis::getEigenVectors() const{
+MatrixFloat PrincipalComponentAnalysis::getEigenVectors() const{
     return eigenvectors;
 }
 
-bool PrincipalComponentAnalysis::setModel( const VectorDouble &mean, const MatrixDouble &eigenvectors ){
+bool PrincipalComponentAnalysis::setModel( const VectorFloat &mean, const MatrixFloat &eigenvectors ){
 
     if( (UINT)mean.size() != eigenvectors.getNumCols() ){
         return false;
