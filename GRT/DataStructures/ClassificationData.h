@@ -153,10 +153,10 @@ public:
      The class label should be greater than zero (as zero is used as the default null rejection class label).
 
      @param UINT classLabel: the class label of the corresponding sample
-     @param const UINT VectorDouble &sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the ClassificationData
+     @param const UINT VectorFloat &sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the ClassificationData
      @return true if the sample was correctly added to the dataset, false otherwise
     */
-    bool addSample(UINT classLabel,const VectorDouble &sample);
+    bool addSample(UINT classLabel,const VectorFloat &sample);
     
     /**
      Removes the training sample at the specific index from the dataset.
@@ -512,18 +512,18 @@ public:
 
      @param const UINT classLabel: the class label of the class you want to compute the histogram data for
      @param const UINT numBins: the number of bins in the histogram
-     @return a MatrixDouble of histogram data where each row represents a dimension and each column represents a histogram bin
+     @return a MatrixFloat of histogram data where each row represents a dimension and each column represents a histogram bin
     */
-    MatrixDouble getClassHistogramData(const UINT classLabel,const UINT numBins) const;
+    MatrixFloat getClassHistogramData(const UINT classLabel,const UINT numBins) const;
 
     /**
      Computes a histogram for each class in the dataset.
 
      @param const UINT numBins: the number of bins in the histogram
-     @return a vector of MatrixDouble, each element represents a class and is a MatrixDouble of histogram data where each row
+     @return a vector of MatrixFloat, each element represents a class and is a MatrixFloat of histogram data where each row
                represents a dimension and each column represents a histogram bin
     */
-    vector< MatrixDouble > getHistogramData(const UINT numBins) const;
+    vector< MatrixFloat > getHistogramData(const UINT numBins) const;
     
 	/**
      Gets the classification data.
@@ -532,46 +532,46 @@ public:
     */
 	vector< ClassificationSample > getClassificationData() const{ return data; }
     
-    VectorDouble getClassProbabilities() const;
+    VectorFloat getClassProbabilities() const;
     
-    VectorDouble getClassProbabilities( const vector< UINT > &classLabels ) const;
+    VectorFloat getClassProbabilities( const vector< UINT > &classLabels ) const;
 
     /**
      Gets the mean values across all classes in the dataset.
      
      @return a vector containing the mean values across the entire dataset.
     */
-    VectorDouble getMean() const;
+    VectorFloat getMean() const;
 	
 	/**
      Gets the standard deviation values across all classes in the dataset.
      
      @return a vector containing the standard deviation values across all classes in the dataset.
     */
-    VectorDouble getStdDev() const;
+    VectorFloat getStdDev() const;
 
 	/**
      Gets the mean values for each class in the dataset. This is returned in an [K N] matrix, where K is the number of classes
      in the dataset and N is the number of dimensions in the dataset.
      
-     @return a MatrixDouble with the mean values for each class in the dataset
+     @return a MatrixFloat with the mean values for each class in the dataset
     */
-    MatrixDouble getClassMean() const;
+    MatrixFloat getClassMean() const;
 	
 	/**
      Gets the standard deviation values for each class in the dataset. This is returned in an [K N] matrix, where K is the number of classes
      in the dataset and N is the number of dimensions in the dataset.
      
-     @return a MatrixDouble with the standard deviation values for each class in the dataset
+     @return a MatrixFloat with the standard deviation values for each class in the dataset
     */
-    MatrixDouble getClassStdDev() const;
+    MatrixFloat getClassStdDev() const;
 	
 	/**
      Gets the covariance matrix across all the classes in the dataset. This is returned in an [N N] matrix, where N is the number of dimensions in the dataset.
      
-     @return a MatrixDouble with the covariance values for the dataset
+     @return a MatrixFloat with the covariance values for the dataset
     */
-    MatrixDouble getCovarianceMatrix() const;
+    MatrixFloat getCovarianceMatrix() const;
 
     /**
      Gets the indexes for all the samples in the current dataset belonging to the classLabel.

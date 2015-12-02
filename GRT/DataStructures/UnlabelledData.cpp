@@ -98,7 +98,7 @@ bool UnlabelledData::setInfoText(const string infoText){
     return true;
 }
 
-bool UnlabelledData::addSample(const VectorDouble &sample){
+bool UnlabelledData::addSample(const VectorFloat &sample){
     
 	if( sample.size() != numDimensions ) return false;
 
@@ -161,12 +161,12 @@ bool UnlabelledData::enableExternalRangeScaling(const bool useExternalRanges){
     return false;
 }
 
-bool UnlabelledData::scale(const double minTarget,const double maxTarget){
+bool UnlabelledData::scale(const float_t minTarget,const float_t maxTarget){
     vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool UnlabelledData::scale(const vector<MinMax> &ranges,const double minTarget,const double maxTarget){
+bool UnlabelledData::scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
     if( ranges.size() != numDimensions ) return false;
 
     //Scale the training data
@@ -326,7 +326,7 @@ bool UnlabelledData::loadDatasetFromFile(const string &filename){
 		file.close();
 		return false;
 	}
-	data.resize( totalNumSamples, VectorDouble(numDimensions) );
+	data.resize( totalNumSamples, VectorFloat(numDimensions) );
 
 	for(UINT i=0; i<totalNumSamples; i++){
 		for(UINT j=0; j<numDimensions; j++){
@@ -394,12 +394,12 @@ bool UnlabelledData::loadDatasetFromCSVFile(const string &filename){
     //Reserve the data so we do not have to continually resize the memory
     data.reserve( rows );
 
-    VectorDouble sample(numDimensions);
+    VectorFloat sample(numDimensions);
     for(UINT i=0; i<rows; i++){
         
         //Get the input vector
         for(UINT j=0; j<numDimensions; j++){
-            sample[j] = Util::stringToDouble( parser[i][j] );
+            sample[j] = Util::stringToFloat( parser[i][j] );
         }
         
         //Add the labelled sample to the dataset
@@ -422,7 +422,7 @@ UnlabelledData UnlabelledData::partition(const UINT trainingSizePercentage){
     crossValidationSetup = false;
     crossValidationIndexs.clear();
 
-	const UINT numTrainingExamples = (UINT) floor( double(totalNumSamples) / 100.0 * double(trainingSizePercentage) );
+	const UINT numTrainingExamples = (UINT) floor( float_t(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
 
 	UnlabelledData trainingSet(numDimensions);
 	UnlabelledData testSet(numDimensions);
@@ -500,7 +500,7 @@ bool UnlabelledData::spiltDataIntoKFolds(const UINT K){
     vector< UINT > indexs( totalNumSamples );
 
     //Work out how many samples are in each fold, the last fold might have more samples than the others
-    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/double(K) );
+    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/float_t(K) );
 
     //Add the random indexs to each fold
     crossValidationIndexs.resize(K);
@@ -636,7 +636,7 @@ vector<MinMax> UnlabelledData::getRanges() const{
     return ranges;
 }
     
-vector< VectorDouble > UnlabelledData::getData() const{
+vector< VectorFloat > UnlabelledData::getData() const{
     return data;
 }
 

@@ -75,7 +75,7 @@ public:
 	 @param i: the index of the training sample you want to access.  Must be within the range of [0 totalNumSamples-1]
      @return the i'th row vector
     */
-	inline VectorDouble& operator[] (const UINT &i){
+	inline VectorFloat& operator[] (const UINT &i){
 		return data[i];
 	}
     
@@ -86,7 +86,7 @@ public:
 	 @param i: the index of the training sample you want to access.  Must be within the range of [0 totalNumSamples-1]
      @return the i'th row vector
      */
-	const inline VectorDouble& operator[] (const UINT &i) const{
+	const inline VectorFloat& operator[] (const UINT &i) const{
 		return data[i];
 	}
 
@@ -133,7 +133,7 @@ public:
      @param sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the UnlabelledData
 	 @return true if the sample was correctly added to the dataset, false otherwise
     */
-	bool addSample(const VectorDouble &sample);
+	bool addSample(const VectorFloat &sample);
     
     /**
      Removes the last training sample added to the dataset.
@@ -178,7 +178,7 @@ public:
      @param maxTarget: the maximum target range for scaling
 	 @return true if the data was scaled correctly, false otherwise
     */
-    bool scale(const double minTarget,const double maxTarget);
+    bool scale(const float_t minTarget,const float_t maxTarget);
     
 	/**
      Scales the dataset to the new target range, using the vector of ranges as the min and max source ranges.
@@ -188,7 +188,7 @@ public:
      @param maxTarget: the maximum target range for scaling
 	 @return true if the data was scaled correctly, false otherwise
     */
-	bool scale(const vector<MinMax> &ranges,const double minTarget,const double maxTarget);
+	bool scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
     
     /**
      Saves the data to a file.
@@ -334,11 +334,11 @@ public:
 	vector<MinMax> getRanges() const;
     
     /**
-     Gets the unlabeled classification data as a vector of VectorDoubles.
+     Gets the unlabeled classification data as a vector of VectorFloats.
      
-	 @return a vector< VectorDouble > containing the UnlabeledClassificationSamples
+	 @return a vector< VectorFloat > containing the UnlabeledClassificationSamples
      */
-	vector< VectorDouble > getData() const;
+	vector< VectorFloat > getData() const;
     
 	/**
      Gets the unlabeled classification data as a MatrixDouble.
@@ -364,7 +364,7 @@ private:
     bool useExternalRanges;                                 ///< A flag to show if the dataset should be scaled using the externalRanges values
     vector< MinMax > externalRanges;                        ///< A vector containing a set of externalRanges set by the user
 	
-	vector< VectorDouble > data;                            ///< The unlabeled classification data
+	vector< VectorFloat > data;                            ///< The unlabeled classification data
     vector< vector< UINT > >    crossValidationIndexs;      ///< A vector to hold the indexs of the dataset for the cross validation
     
     DebugLog debugLog;                                      ///< Default debugging log
