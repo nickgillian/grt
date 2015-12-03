@@ -616,12 +616,44 @@ VectorDouble RandomForests::getFeatureWeights( const bool normWeights ) const{
     }
 
     //Normalize the weights
-    if( normWeights ){
+    if( normWeights  ){
         double sum = Util::sum( weights );
         if( sum > 0.0 ){
             const double norm = 1.0 / sum;
             for(UINT j=0; j<numInputDimensions; j++){
                 weights[j] *= norm;
+            }
+        }
+    }
+
+    return weights;
+}
+
+MatrixDouble RandomForests::getLeafNodeFeatureWeights( const bool normWeights ) const{
+
+    if( !trained ) return MatrixDouble();
+
+    MatrixDouble weights( getNumClasses(), numInputDimensions );
+    weights.setAllValues(0.0);
+
+    for(UINT i=0; i<forestSize; i++){
+        if( !forest[i]->computeLeafNodeWeights( weights ) ){
+            warningLog << "computeLeafNodeWeights( const bool normWeights ) - Failed to compute leaf node weights for tree: " << i << endl;
+        }
+    }
+
+    //Normalize the weights
+    if( normWeights  ){
+        for(UINT j=0; j<weights.getNumCols(); j++){
+            double sum = 0.0;
+            for(UINT i=0; i<weights.getNumRows(); i++){
+                sum += weights[i][j];
+            }
+            if( sum != 0.0 ){
+                const double norm = 1.0 / sum;
+                for(UINT i=0; i<weights.getNumRows(); i++){
+                    weights[i][j] *= norm;
+                }
             }
         }
     }

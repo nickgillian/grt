@@ -73,6 +73,8 @@ public:
      @return returns true if the weights were updated, false otherwise
      */
     virtual bool computeFeatureWeights( VectorDouble &weights ) const;
+
+    virtual bool computeLeafNodeWeights( MatrixDouble &weights ) const;
     
     /**
      This functions cleans up any dynamic memory assigned by the node.

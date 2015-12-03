@@ -2,7 +2,38 @@
 
 This directory contains a number of datasets that can be used to test and explore the GRT.
 
+## Accelerometer Orientation
+
+- **Info**: This file contains a recording of 5 tilt gestures captured from the accelerometer sensor of a WiiMote.  Each of the 5 gestures consist of a different tilt position.
+
+- **NumberOfClasses**: 5
+
+- **Number of dimensions**: 3
+
+- **Number of samples in dataset**: 1526
+
+- **Filename**: acc-orientation.grt
+
+- **Source**: Recorded using the acceleromer in a WiMote.
+
+- **Format**: Classification Data, formated as a GRT Classification Data file.
+
+- **Class Labels**:
+	1. tilt orientation 1
+	2. tilt orientation 2
+	3. tilt orientation 3
+	4. tilt orientation 4
+	5. tilt orientation 5
+
+- **Features**:
+	1. raw accelerometer x data
+	2. raw accelerometer y data
+	3. raw accelerometer z data
+
 ## Wine
+
+- **Info**: Exact details of the dataset can be found on the UCI website http://archive.ics.uci.edu/ml/datasets/Wine, the dataset has not been modified from the
+version on the website.
 
 - **Source**: The original version of this dataset can be found on the UCI machine learning repository: http://archive.ics.uci.edu/ml/datasets/Wine
 
@@ -27,9 +58,6 @@ This directory contains a number of datasets that can be used to test and explor
 	11. Hue 
 	12. OD280/OD315 of diluted wines 
 	13. Proline 
-
-- **Info**: Exact details of the dataset can be found on the UCI website http://archive.ics.uci.edu/ml/datasets/Wine, the dataset has not been modified from the
-version on the website.
 
 
 
