@@ -959,7 +959,7 @@ VectorDouble MLP::feedforward(VectorDouble trainingExample){
     
 }
 
-void MLP::feedforward(const VectorDouble &trainingExample,VectorDouble &inputNeuronsOuput,VectorDouble &hiddenNeuronsOutput,VectorDouble &outputNeuronsOutput){
+void MLP::feedforward(const VectorDouble &data,VectorDouble &inputNeuronsOuput,VectorDouble &hiddenNeuronsOutput,VectorDouble &outputNeuronsOutput){
     
     if( inputNeuronsOuput.size() != numInputNeurons ) inputNeuronsOuput.resize(numInputNeurons,0);
     if( hiddenNeuronsOutput.size() != numHiddenNeurons ) hiddenNeuronsOutput.resize(numHiddenNeurons,0);
@@ -968,7 +968,7 @@ void MLP::feedforward(const VectorDouble &trainingExample,VectorDouble &inputNeu
     //Input layer
 	VectorDouble input(1);
     for(UINT i=0; i<numInputNeurons; i++){
-        input[0] = trainingExample[i];
+        input[0] = data[i];
         inputNeuronsOuput[i] = inputLayer[i].fire( input );
     }
     
@@ -1018,23 +1018,27 @@ void MLP::printNetwork() const{
 
 bool MLP::checkForNAN() const{
     
+    UINT N = 0;
     for(UINT i=0; i<numInputNeurons; i++){
         if( isNAN(inputLayer[i].bias) ) return true;
-        for(UINT j=0; j<inputLayer[i].weights.size(); j++){
+        N = (UINT)inputLayer[i].weights.size();
+        for(UINT j=0; j<N; j++){
             if( isNAN(inputLayer[i].weights[j]) ) return true;
         }
     }
     
     for(UINT i=0; i<numHiddenNeurons; i++){
         if( isNAN(hiddenLayer[i].bias) ) return true;
-        for(UINT j=0; j<hiddenLayer[i].weights.size(); j++){
+        N = (UINT)hiddenLayer[i].weights.size();
+        for(UINT j=0; j<N; j++){
             if( isNAN(hiddenLayer[i].weights[j]) ) return true;
         }
     }
     
     for(UINT i=0; i<numOutputNeurons; i++){
         if( isNAN(outputLayer[i].bias) ) return true;
-        for(UINT j=0; j<outputLayer[i].weights.size(); j++){
+        N = (UINT)outputLayer[i].weights.size();
+        for(UINT j=0; j<N; j++){
             if( isNAN(outputLayer[i].weights[j]) ) return true;
         }
     }
