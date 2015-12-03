@@ -92,6 +92,7 @@
 #include "PreProcessingModules/DoubleMovingAverageFilter.h"
 #include "PreProcessingModules/SavitzkyGolayFilter.h"
 #include "PreProcessingModules/DeadZone.h"
+#include "PreProcessingModules/WeightedAverageFilter.h"
 
 //Include the FeatureExtraction Modules
 #include "FeatureExtractionModules/ZeroCrossingCounter/ZeroCrossingCounter.h"
