@@ -148,7 +148,7 @@ bool MultidimensionalRegression::train_(RegressionData &trainingData){
         data.setInputAndTargetDimensions(N, 1);
         
         for(UINT i=0; i<M; i++){
-            if( !data.addSample(trainingData[i].getInputVector(), VectorDouble(1,trainingData[i].getTargetVector()[k]) ) ){
+            if( !data.addSample(trainingData[i].getInputVector(), VectorFloat(1,trainingData[i].getTargetVector()[k]) ) ){
                 errorLog << "train_(RegressionData &trainingData) - Failed to add sample to dataset for regression module " << k << endl;
                 return false;
             }
@@ -166,17 +166,17 @@ bool MultidimensionalRegression::train_(RegressionData &trainingData){
     return trained;
 }
 
-bool MultidimensionalRegression::predict_(VectorDouble &inputVector){
+bool MultidimensionalRegression::predict_(VectorFloat &inputVector){
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << endl;
+        errorLog << "predict_(VectorFloat &inputVector) - Model Not Trained!" << endl;
         return false;
     }
     
     if( !trained ) return false;
     
 	if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << int( inputVector.size() ) << ") does not match the num features in the model (" << numInputDimensions << endl;
+        errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << int( inputVector.size() ) << ") does not match the num features in the model (" << numInputDimensions << endl;
 		return false;
 	}
     
@@ -188,7 +188,7 @@ bool MultidimensionalRegression::predict_(VectorDouble &inputVector){
     
     for(UINT n=0; n<numOutputDimensions; n++){
         if( !regressionModules[ n ]->predict( inputVector ) ){
-            errorLog << "predict_(VectorDouble &inputVector) - Failed to predict for regression module " << n << endl;
+            errorLog << "predict_(VectorFloat &inputVector) - Failed to predict for regression module " << n << endl;
         }
         regressionData[ n ] = regressionModules[ n ]->getRegressionData()[0];
     }

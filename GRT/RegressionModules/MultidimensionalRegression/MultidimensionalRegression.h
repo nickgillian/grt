@@ -89,10 +89,10 @@ public:
      This performs the regression by mapping the inputVector using the current Multidimensional Regression model.
      This overrides the predict function in the ML base class.
      
-     @param VectorDouble &inputVector: the input vector to classify
+     @param VectorFloat &inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This saves the trained Multidimensional Regression model to a file.

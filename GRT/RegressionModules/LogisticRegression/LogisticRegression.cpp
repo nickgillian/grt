@@ -115,9 +115,9 @@ bool LogisticRegression::train_(RegressionData &trainingData){
         w[j] = rand.getRandomNumberUniform(-0.1,0.1);
     }
 
-    double error = 0;
-    double lastSquaredError = 0;
-    double delta = 0;
+    float_t error = 0;
+    float_t lastSquaredError = 0;
+    float_t delta = 0;
     UINT iter = 0;
     bool keepTraining = true;
     Random random;
@@ -144,9 +144,9 @@ bool LogisticRegression::train_(RegressionData &trainingData){
             UINT i = randomTrainingOrder[m];
             
             //Compute the error, given the current weights
-            VectorDouble x = trainingData[i].getInputVector();
-            VectorDouble y = trainingData[i].getTargetVector();
-            double h = w0;
+            VectorFloat x = trainingData[i].getInputVector();
+            VectorFloat y = trainingData[i].getTargetVector();
+            float_t h = w0;
             for(UINT j=0; j<N; j++){
                 h += x[j] * w[j];
             }
@@ -179,7 +179,7 @@ bool LogisticRegression::train_(RegressionData &trainingData){
         }
         
         //Store the training results
-        rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / double(M) );
+        rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / float_t(M) );
         result.setRegressionResult(iter,totalSquaredTrainingError,rootMeanSquaredTrainingError,this);
         trainingResults.push_back( result );
         
@@ -195,17 +195,17 @@ bool LogisticRegression::train_(RegressionData &trainingData){
     return trained;
 }
 
-bool LogisticRegression::predict_(VectorDouble &inputVector){
+bool LogisticRegression::predict_(VectorFloat &inputVector){
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << endl;
+        errorLog << "predict_(VectorFloat &inputVector) - Model Not Trained!" << endl;
         return false;
     }
     
     if( !trained ) return false;
     
 	if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << int(inputVector.size()) << ") does not match the num features in the model (" << numInputDimensions << endl;
+        errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << int(inputVector.size()) << ") does not match the num features in the model (" << numInputDimensions << endl;
 		return false;
 	}
     
@@ -219,7 +219,7 @@ bool LogisticRegression::predict_(VectorDouble &inputVector){
     for(UINT j=0; j<numInputDimensions; j++){
         regressionData[0] += inputVector[j] * w[j];
     }
-    double sum = regressionData[0];
+    float_t sum = regressionData[0];
 	regressionData[0] = sigmoid( regressionData[0] );
     std::cout << "reg sum: " << sum << " sig: " << regressionData[0] << std::endl; 
     if( useScaling ){
@@ -324,7 +324,7 @@ bool LogisticRegression::setMaxNumIterations(const UINT maxNumIterations){
 return setMaxNumEpochs( maxNumIterations );
 }
 
-double LogisticRegression::sigmoid(const double x) const{
+float_t LogisticRegression::sigmoid(const float_t x) const{
 	return 1.0 / (1 + exp(-x));
 }
     

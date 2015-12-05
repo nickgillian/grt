@@ -61,10 +61,10 @@ public:
      NOTE: The threshold and featureIndex should be set first BEFORE this function is called. The threshold and featureIndex can be set by
      training the node through the DecisionTree class.
      
-     @param const VectorDouble &x: the input vector that will be used for the prediction
+     @param x: the input vector that will be used for the prediction
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x){
+    virtual bool predict(const VectorFloat &x){
         if( x[ featureIndex ] >= threshold ) return true;
         return false;
     }
@@ -78,11 +78,11 @@ public:
      NOTE: The threshold, featureIndex and classProbabilities should be set first BEFORE this function is called. The threshold, featureIndex 
      and classProbabilities can be set by training the node through the DecisionTree class.
      
-     @param const VectorDouble &x: the input vector that will be used for the prediction
-     @param VectorDouble &classLikelihoods: a reference to a vector that will store the class probabilities
+     @param x: the input vector that will be used for the prediction
+     @param classLikelihoods: a reference to a vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &y){
+    virtual bool predict(const VectorFloat &x,VectorFloat &y){
         
         if( isLeafNode ){
             y = this->regressionData;
@@ -198,13 +198,13 @@ public:
     /**
      This function sets the Decision Tree Node.
      
-     @param const UINT nodeSize: sets the node size, this is the number of training samples at that node
-     @param const UINT featureIndex: sets the index of the feature that should be used for the threshold spilt
-     @param const double threshold: set the threshold value used for the spilt
-     @param const VectorDouble &regressionData: the regression data at this node
+     @param nodeSize: sets the node size, this is the number of training samples at that node
+     @param featureIndex: sets the index of the feature that should be used for the threshold spilt
+     @param threshold: set the threshold value used for the spilt
+     @param regressionData: the regression data at this node
      @return returns true if the node was set, false otherwise
      */
-    bool set(const UINT nodeSize,const UINT featureIndex,const double threshold,const VectorDouble &regressionData){
+    bool set(const UINT nodeSize,const UINT featureIndex,const float_t threshold,const VectorFloat &regressionData){
         this->nodeSize = nodeSize;
         this->featureIndex = featureIndex;
         this->threshold = threshold;
@@ -217,7 +217,7 @@ protected:
      This saves the ClusterTreeNode custom parameters to a file. It will be called automatically by the Node base class
      if the saveToFile function is called.
      
-     @param fstream &file: a reference to the file the parameters will be saved to
+     @param file: a reference to the file the parameters will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool saveParametersToFile(fstream &file) const{
@@ -245,7 +245,7 @@ protected:
     /**
      This loads the ClusterTreeNode parameters from a file.
      
-     @param fstream &file: a reference to the file the parameters will be loaded from
+     @param file: a reference to the file the parameters will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
     virtual bool loadParametersFromFile(fstream &file){
@@ -303,8 +303,8 @@ protected:
     
     UINT nodeSize;
     UINT featureIndex;
-    double threshold;
-    VectorDouble regressionData;
+    float_t threshold;
+    VectorFloat regressionData;
     
     static RegisterNode< RegressionTreeNode > registerModule;
 };

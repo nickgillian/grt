@@ -527,10 +527,10 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
                 //Iterate over the validation samples
                 UINT numValidationSamples = validationData.getNumSamples();
                 for(UINT i=0; i<numValidationSamples; i++){
-                    const VectorFloat &trainingExample = validationData[i].getInputVector();
+                    const VectorFloat &inputVector = validationData[i].getInputVector();
                     const VectorFloat &targetVector = validationData[i].getTargetVector();
                     
-                    y = feedforward( trainingExample );
+                    y = feedforward( inputVector );
                     
                     if( classificationModeActive ){
                         //Get the class label
@@ -632,53 +632,56 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     trainingError = bestAccuracy;
     
     //Compute the rejection threshold
-    float_t averageValue = 0;
-    VectorFloat classificationPredictions;
-    
-    for(UINT i=0; i<numTestingExamples; i++){
-        VectorFloat inputVector = useValidationSet ? validationData[i].getInputVector() : trainingData[i].getInputVector();
-        VectorFloat targetVector = useValidationSet ? validationData[i].getTargetVector() : trainingData[i].getTargetVector();
+    if( useNullRejection ){
+
+        float_t averageValue = 0;
+        VectorFloat classificationPredictions, inputVector, targetVector;
         
-        //Make the prediction
-        y = feedforward( inputVector );
-        
-        //Get the class label
-        float_t bestValue = targetVector[0];
-        UINT bestIndex = 0;
-        for(UINT i=1; i<targetVector.size(); i++){
-            if( targetVector[i] > bestValue ){
-                bestValue = targetVector[i];
-                bestIndex = i;
+        for(UINT i=0; i<numTestingExamples; i++){
+            inputVector = useValidationSet ? validationData[i].getInputVector() : trainingData[i].getInputVector();
+            targetVector = useValidationSet ? validationData[i].getTargetVector() : trainingData[i].getTargetVector();
+            
+            //Make the prediction
+            y = feedforward( inputVector );
+            
+            //Get the class label
+            bestValue = targetVector[0];
+            bestIndex = 0;
+            for(UINT i=1; i<targetVector.size(); i++){
+                if( targetVector[i] > bestValue ){
+                    bestValue = targetVector[i];
+                    bestIndex = i;
+                }
+            }
+            classLabel = bestIndex + 1;
+            
+            //Get the predicted class label
+            bestValue = y[0];
+            bestIndex = 0;
+            for(UINT i=1; i<y.size(); i++){
+                if( y[i] > bestValue ){
+                    bestValue = y[i];
+                    bestIndex = i;
+                }
+            }
+            predictedClassLabel = bestIndex+1;
+            
+            //Only add the max value if the prediction is correct
+            if( classLabel == predictedClassLabel ){
+                classificationPredictions.push_back( bestValue );
+                averageValue += bestValue;
             }
         }
-        UINT classLabel = bestIndex + 1;
         
-        //Get the predicted class label
-        bestValue = y[0];
-        bestIndex = 0;
-        for(UINT i=1; i<y.size(); i++){
-            if( y[i] > bestValue ){
-                bestValue = y[i];
-                bestIndex = i;
-            }
+        averageValue /= float_t(classificationPredictions.size());
+        float_t stdDev = 0;
+        for(UINT i=0; i<classificationPredictions.size(); i++){
+            stdDev += SQR(classificationPredictions[i]-averageValue);
         }
-        predictedClassLabel = bestIndex+1;
+        stdDev = sqrt( stdDev / float_t(classificationPredictions.size()-1) );
         
-        //Only add the max value if the prediction is correct
-        if( classLabel == predictedClassLabel ){
-            classificationPredictions.push_back( bestValue );
-            averageValue += bestValue;
-        }
+        nullRejectionThreshold = averageValue-(stdDev*nullRejectionCoeff);
     }
-    
-    averageValue /= float_t(classificationPredictions.size());
-    float_t stdDev = 0;
-    for(UINT i=0; i<classificationPredictions.size(); i++){
-        stdDev += SQR(classificationPredictions[i]-averageValue);
-    }
-    stdDev = sqrt( stdDev / float_t(classificationPredictions.size()-1) );
-    
-    nullRejectionThreshold = averageValue-(stdDev*nullRejectionCoeff);
     
     //Return true to flag that the model was trained OK
     return true;

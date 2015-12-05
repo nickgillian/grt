@@ -42,7 +42,7 @@
  This example shows you how to:
  - Create an initialize the Multidimensional Regression algorithm
  - Create a new instance of a GestureRecognitionPipeline and add the regression instance to the pipeline
- - Load some LabelledRegressionData from a file
+ - Load some RegressionData from a file
  - Train the Multidimensional Regression algorithm using the training dataset
  - Test the Multidimensional Regression algorithm using the test dataset
 */
@@ -52,6 +52,14 @@ using namespace GRT;
 
 int main (int argc, const char * argv[])
 {
+    //Parse the data filename from the argument list
+    if( argc != 3 ){
+        cout << "Error: failed to parse data filename from command line. You should run this example with two arguments for the training and test datasets filenames\n";
+        return EXIT_FAILURE;
+    }
+    const string trainingDataFilename = argv[1];
+    const string testDataFilename = argv[2];
+
     //Turn on the training log so we can print the training status of the MultidimensionalRegression to the screen
     TrainingLog::enableLogging( true );
     
@@ -59,13 +67,13 @@ int main (int argc, const char * argv[])
     RegressionData trainingData;
     RegressionData testData;
     
-    if( !trainingData.loadDatasetFromFile("MultidimensionalRegressionTrainingData.grt") ){
-        cout << "ERROR: Failed to load training data!\n";
+    if( !trainingData.load( trainingDataFilename ) ){
+        cout << "ERROR: Failed to load training data: " << trainingDataFilename << endl;
         return EXIT_FAILURE;
     }
     
-    if( !testData.loadDatasetFromFile("MultidimensionalRegressionTestData.grt") ){
-        cout << "ERROR: Failed to load test data!\n";
+    if( !testData.load( testDataFilename ) ){
+        cout << "ERROR: Failed to load test data: " << testDataFilename << endl;
         return EXIT_FAILURE;
     }
     
@@ -128,10 +136,12 @@ int main (int argc, const char * argv[])
     //Run back over the test data again and output the results to a file
     fstream file;
     file.open("MultidimensionalRegressionResultsData.csv", fstream::out);
+
+    VectorFloat inputVector, targetVector, outputVector;
     
     for(UINT i=0; i<testData.getNumSamples(); i++){
-        vector< double > inputVector = testData[i].getInputVector();
-        vector< double > targetVector = testData[i].getTargetVector();
+        inputVector = testData[i].getInputVector();
+        targetVector = testData[i].getTargetVector();
         
         //Map the input vector using the trained regression model
         if( !pipeline.predict( inputVector ) ){
@@ -140,7 +150,7 @@ int main (int argc, const char * argv[])
         }
         
         //Get the mapped regression data
-        vector< double > outputVector = pipeline.getRegressionData();
+        outputVector = pipeline.getRegressionData();
         
         //Write the mapped value and also the target value to the file
         for(UINT j=0; j<outputVector.size(); j++){
