@@ -42,15 +42,15 @@ public:
     
     bool init(const UINT numInputs,const UINT actvationFunction);
     void clear();
-    double fire(const VectorDouble &x);
-	double getDerivative(const double &y);
+    float_t fire(const VectorFloat &x);
+	float_t getDerivative(const float_t &y);
     static bool validateActivationFunction(const UINT actvationFunction);
     
-	double gamma;
-    double bias;
-    double previousBiasUpdate;
-    VectorDouble weights;
-	VectorDouble previousUpdate;
+	float_t gamma;
+    float_t bias;
+    float_t previousBiasUpdate;
+    VectorFloat weights;
+	VectorFloat previousUpdate;
     UINT numInputs;
     UINT activationFunction;
     
