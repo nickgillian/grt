@@ -21,6 +21,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "MLP.h"
 
 namespace GRT{
+
+const float_t MLP_NEURON_MIN_TARGET = -1.0;
+const float_t MLP_NEURON_MAX_TARGET = 1.0;
     
 //Register the MLP module with the Regressifier base class
 RegisterRegressifierModule< MLP > MLP::registerModule("MLP");
@@ -356,10 +359,10 @@ bool MLP::trainModel(RegressionData &trainingData){
 		targetVectorRanges = trainingData.getTargetRanges();
 
 		//Now scale the training data and the validation data if required
-		trainingData.scale(inputVectorRanges,targetVectorRanges,0.0,1.0);
+		trainingData.scale(inputVectorRanges,targetVectorRanges,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
         
 		if( useValidationSet ){
-			validationData.scale(inputVectorRanges,targetVectorRanges,0.0,1.0);
+			validationData.scale(inputVectorRanges,targetVectorRanges,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
 		}
 	}
     //If scaling is enabled then the training and validation data will be scaled - so turn it off so the we do not need to scale the data again
@@ -404,15 +407,17 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
 	const UINT numTestingExamples = useValidationSet ? validationData.getNumSamples() : M;
     
     //Setup the training loop
-    bool keepTraining = true;
-    UINT epoch = 0;
-    float_t alpha = learningRate;
-	float_t beta = momentum;
-    UINT bestIter = 0;
     MLP bestNetwork;
     totalSquaredTrainingError = 0;
     rootMeanSquaredTrainingError = 0;
     trainingError = 0;
+    bool keepTraining = true;
+    UINT epoch = 0;
+    UINT bestIter = 0;
+    UINT bestIndex = 0;
+    UINT classLabel = 0;
+    float_t alpha = learningRate;
+    float_t beta = momentum;
     float_t error = 0;
     float_t lastError = 0;
     float_t accuracy = 0;
@@ -423,6 +428,9 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     float_t bestRMSError = numeric_limits< float_t >::max();
     float_t bestAccuracy = 0;
     float_t delta = 0;
+    float_t backPropError = 0;
+    float_t bestValue = 0;
+    VectorFloat y;
     vector< UINT > indexList(M);
     vector< vector< float_t > > tempTrainingErrorLog;
     TrainingResult result;
@@ -437,7 +445,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
         keepTraining = true;
 		tempTrainingErrorLog.clear();
         
-	//Randomise the start values of the neurons
+        //Randomise the start values of the neurons
         init(numInputNeurons,numHiddenNeurons,numOutputNeurons,inputLayerActivationFunction,hiddenLayerActivationFunction,outputLayerActivationFunction);
         
         if( randomiseTrainingOrder ){
@@ -458,30 +466,30 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
                 const VectorFloat &targetVector = trainingData[ indexList[i] ].getTargetVector();
                 
                 //Perform the back propagation
-                float_t backPropError = back_prop(trainingExample,targetVector,alpha,beta);
+                backPropError = back_prop(trainingExample,targetVector,alpha,beta);
                 
                 //debugLog << "i: " << i << " backPropError: " << backPropError << endl;
                 
                 if( isNAN(backPropError) ){
                     keepTraining = false;
                     errorLog << "train(RegressionData trainingData) - NaN found!" << endl;
- 		    return false;
+                    return false;
                 }
                 
                 //Compute the error for the i'th example
-		if( classificationModeActive ){
-                    VectorFloat y = feedforward(trainingExample);
+                if( classificationModeActive ){
+                    y = feedforward( trainingExample );
                     
                     //Get the class label
-                    float_t bestValue = targetVector[0];
-                    UINT bestIndex = 0;
+                    bestValue = targetVector[0];
+                    bestIndex = 0;
                     for(UINT i=1; i<targetVector.size(); i++){
                         if( targetVector[i] > bestValue ){
                             bestValue = targetVector[i];
                             bestIndex = i;
                         }
                     }
-                    UINT classLabel = bestIndex + 1;
+                    classLabel = bestIndex + 1;
                     
                     //Get the predicted class label
                     bestValue = y[0];
@@ -513,28 +521,28 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
 	    if( useValidationSet ){
                 trainingSetAccuracy = accuracy;
                 trainingSetTotalSquaredError = totalSquaredTrainingError;
-		accuracy = 0;
+                accuracy = 0;
                 totalSquaredTrainingError = 0;
                 
                 //Iterate over the validation samples
                 UINT numValidationSamples = validationData.getNumSamples();
-		for(UINT i=0; i<numValidationSamples; i++){
-		    const VectorFloat &trainingExample = validationData[i].getInputVector();
-		    const VectorFloat &targetVector = validationData[i].getTargetVector();
+                for(UINT i=0; i<numValidationSamples; i++){
+                    const VectorFloat &trainingExample = validationData[i].getInputVector();
+                    const VectorFloat &targetVector = validationData[i].getTargetVector();
                     
-                    VectorFloat y = feedforward(trainingExample);
+                    y = feedforward( trainingExample );
                     
                     if( classificationModeActive ){
                         //Get the class label
-                        float_t bestValue = targetVector[0];
-                        UINT bestIndex = 0;
+                        bestValue = targetVector[0];
+                        bestIndex = 0;
                         for(UINT i=1; i<numInputNeurons; i++){
                             if( targetVector[i] > bestValue ){
                                 bestValue = targetVector[i];
                                 bestIndex = i;
                             }
                         }
-                        UINT classLabel = bestIndex + 1;
+                        classLabel = bestIndex + 1;
                         
                         //Get the predicted class label
                         bestValue = y[0];
@@ -606,7 +614,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             bestRMSError = rootMeanSquaredTrainingError;
             bestAccuracy = accuracy;
             bestNetwork = *this;
-	    trainingErrorLog = tempTrainingErrorLog;
+            trainingErrorLog = tempTrainingErrorLog;
         }
         
     }//End of For( numRandomTrainingIterations )
@@ -632,7 +640,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
         VectorFloat targetVector = useValidationSet ? validationData[i].getTargetVector() : trainingData[i].getTargetVector();
         
         //Make the prediction
-        VectorFloat y = feedforward(inputVector);
+        y = feedforward( inputVector );
         
         //Get the class label
         float_t bestValue = targetVector[0];
@@ -840,75 +848,80 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
 float_t MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targetVector,const float_t alpha,const float_t beta){
         
     float_t update = 0;
+    float_t sum = 0;
+    float_t omBeta = 1.0 - beta;
         
     //Forward propagation
     feedforward(trainingExample,inputNeuronsOuput,hiddenNeuronsOutput,outputNeuronsOutput);
     
     //Compute the error of the output layer: the derivative of the function times the error of the output
     for(UINT i=0; i<numOutputNeurons; i++){
-	deltaO[i] = outputLayer[i].getDerivative( outputNeuronsOutput[i] ) * (targetVector[i]-outputNeuronsOutput[i]);
+        deltaO[i] = outputLayer[i].getDerivative( outputNeuronsOutput[i] ) * (targetVector[i]-outputNeuronsOutput[i]);
     }
     
     //Compute the error of the hidden layer
     for(UINT i=0; i<numHiddenNeurons; i++){
-        float_t sum = 0;
+        sum = 0;
         for(UINT j=0; j<numOutputNeurons; j++){
             sum += outputLayer[j].weights[i] * deltaO[j];
         }
-	deltaH[i] = hiddenLayer[i].getDerivative( hiddenNeuronsOutput[i] ) * sum;
+        deltaH[i] = hiddenLayer[i].getDerivative( hiddenNeuronsOutput[i] ) * sum;
     }
     
     //Update the hidden weights: old hidden weights + (learningRate * inputToTheHiddenNeuron * deltaHidden )
     for(UINT i=0; i<numHiddenNeurons; i++){
         for(UINT j=0; j<numInputNeurons; j++){
-	    //Compute the update
-            update = alpha * (beta * hiddenLayer[i].previousUpdate[j] + (1.0 - beta) * inputNeuronsOuput[j] * deltaH[i]);
+            //Compute the update
+            //update = alpha * ((beta * hiddenLayer[i].previousUpdate[j]) + (omBeta * inputNeuronsOuput[j])) * deltaH[i];
+            update = alpha * inputNeuronsOuput[j] * deltaH[i];
 
-	    //Update the weights
-	    hiddenLayer[i].weights[j] += update;
+            //Update the weights
+            hiddenLayer[i].weights[j] += update;
 
-	    //Store the previous update
-	    hiddenLayer[i].previousUpdate[j] = update; 
+            //Store the previous update
+            hiddenLayer[i].previousUpdate[j] = update; 
         }
     }
     
     //Update the output weights
     for(UINT i=0; i<numOutputNeurons; i++){
         for(UINT j=0; j<numHiddenNeurons; j++){
-	    //Compute the update
-            update = alpha * (beta * outputLayer[i].previousUpdate[j] + (1.0 - beta) * hiddenNeuronsOutput[j] * deltaO[i]);
+            //Compute the update
+            //update = alpha * ((beta * outputLayer[i].previousUpdate[j]) + (omBeta * hiddenNeuronsOutput[j])) * deltaO[i];
+            update = alpha * hiddenNeuronsOutput[j] * deltaO[i];
 
-	    //Update the weights
-	    outputLayer[i].weights[j] += update;
+            //Update the weights
+            outputLayer[i].weights[j] += update;
 
-	    //Store the update
-	    outputLayer[i].previousUpdate[j] = update;
-
+            //Store the update
+            outputLayer[i].previousUpdate[j] = update;
         }
     }
     
     //Update the hidden bias
     for(UINT i=0; i<numHiddenNeurons; i++){
-	//Compute the update
-	update = alpha * (beta * hiddenLayer[i].previousBiasUpdate + (1.0 - beta) * deltaH[i]);
+        //Compute the update
+        //update = alpha * ((beta * hiddenLayer[i].previousBiasUpdate) + (omBeta * deltaH[i]));
+        update = alpha * deltaH[i];
 
-	//Update the bias
+        //Update the bias
         hiddenLayer[i].bias += update;
 
-	//Store the update
-	hiddenLayer[i].previousBiasUpdate = update;
+        //Store the update
+        hiddenLayer[i].previousBiasUpdate = update;
     }
     
     //Update the output bias
     for(UINT i=0; i<numOutputNeurons; i++){
-	//Compute the update
-	update = alpha * (beta * outputLayer[i].previousBiasUpdate + (1.0 - beta) * deltaO[i]);
+        //Compute the update
+        //update = alpha * (beta * outputLayer[i].previousBiasUpdate) + (omBeta * deltaO[i]);
+        update = alpha * deltaO[i];
 
-	//Update the bias
+        //Update the bias
         outputLayer[i].bias += update;
 		
-	//Store the update
-	outputLayer[i].previousBiasUpdate = update;
+        //Store the update
+        outputLayer[i].previousBiasUpdate = update;
     }
     
     //Compute the squared error between the output of the network and the target vector
@@ -929,7 +942,7 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
 	//Scale the input vector if required
 	if( useScaling ){
 		for(UINT i=0; i<numInputNeurons; i++){
-			trainingExample[i] = scale(trainingExample[i],inputVectorRanges[i].minValue,inputVectorRanges[i].maxValue,0.0,1.0);
+			trainingExample[i] = scale(trainingExample[i],inputVectorRanges[i].minValue,inputVectorRanges[i].maxValue,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
 		}
 	}
     
@@ -952,8 +965,8 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
 
 	//Scale the output vector if required
 	if( useScaling ){
-		for(unsigned int i=0; i<numOutputNeurons; i++){
-			outputNeuronsOutput[i] = scale(outputNeuronsOutput[i],0.0,1.0,targetVectorRanges[i].minValue,targetVectorRanges[i].maxValue);
+		for(UINT i=0; i<numOutputNeurons; i++){
+			outputNeuronsOutput[i] = scale(outputNeuronsOutput[i],MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET,targetVectorRanges[i].minValue,targetVectorRanges[i].maxValue);
 		}
 	}
     
