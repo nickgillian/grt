@@ -3,7 +3,7 @@
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
  
- @brief The class implements a low pass filter.
+ @brief The class implements a low pass filter, this is based on an Exponential moving average filter: https://en.wikipedia.org/wiki/Exponential_smoothing
  
  @example PreprocessingModulesExamples/LowPassFilterExample/LowPassFilterExample.cpp
  */

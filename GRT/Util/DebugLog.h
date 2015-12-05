@@ -71,6 +71,8 @@ public:
     static bool enableLogging(bool loggingEnabled);
 
     static bool registerObserver(Observer< DebugLogMessage > &observer);
+
+    static bool removeObserver(Observer< DebugLogMessage > &observer);
     
 protected:
     virtual void triggerCallback( const std::string &message ) const{

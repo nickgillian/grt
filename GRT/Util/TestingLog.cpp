@@ -35,4 +35,9 @@ bool TestingLog::registerObserver(Observer< TestingLogMessage > &observer){
     return true;
 }
 
+bool TestingLog::removeObserver(Observer< TestingLogMessage > &observer)
+{
+    return observerManager.removeObserver(observer);
+}
+
 } //End of namespace GRT

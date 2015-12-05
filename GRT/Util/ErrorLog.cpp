@@ -35,4 +35,9 @@ bool ErrorLog::registerObserver(Observer< ErrorLogMessage > &observer){
     return true;
 }
 
+bool ErrorLog::removeObserver(Observer< ErrorLogMessage > &observer)
+{
+    return observerManager.removeObserver(observer);
+}
+
 } //End of namespace GRT
