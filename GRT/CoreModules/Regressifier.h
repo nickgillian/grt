@@ -97,7 +97,7 @@ public:
      
      @return returns a vector containing the regression data output by the regression algorithm, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getRegressionData() const;
+    VectorFloat getRegressionData() const;
     
     /**
      Returns the ranges of the input (i.e. feature) data.
@@ -175,7 +175,7 @@ protected:
     bool loadBaseSettingsFromFile(fstream &file);
 
     string regressifierType;
-    VectorDouble regressionData;
+    VectorFloat regressionData;
     vector< MinMax > inputVectorRanges;
 	vector< MinMax > targetVectorRanges;
     

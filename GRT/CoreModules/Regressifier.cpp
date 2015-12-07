@@ -112,11 +112,11 @@ string Regressifier::getRegressifierType() const{
     return regressifierType; 
 }
     
-VectorDouble Regressifier::getRegressionData() const{ 
+VectorFloat Regressifier::getRegressionData() const{ 
     if( trained ){ 
         return regressionData; 
     } 
-    return VectorDouble(); 
+    return VectorFloat(); 
 }
     
 vector< MinMax > Regressifier::getInputRanges() const{

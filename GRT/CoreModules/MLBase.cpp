@@ -97,21 +97,21 @@ bool MLBase::train(UnlabelledData trainingData){ return train_( trainingData ); 
 
 bool MLBase::train_(UnlabelledData &trainingData){ return false; }
 
-bool MLBase::train(MatrixDouble data){ return train_( data ); }
+bool MLBase::train(MatrixFloat data){ return train_( data ); }
 
-bool MLBase::train_(MatrixDouble &data){ return false; }
+bool MLBase::train_(MatrixFloat &data){ return false; }
 
-bool MLBase::predict(VectorDouble inputVector){ return predict_( inputVector ); }
+bool MLBase::predict(VectorFloat inputVector){ return predict_( inputVector ); }
     
-bool MLBase::predict_(VectorDouble &inputVector){ return false; }
+bool MLBase::predict_(VectorFloat &inputVector){ return false; }
 
-bool MLBase::predict(MatrixDouble inputMatrix){ return predict_( inputMatrix ); }
+bool MLBase::predict(MatrixFloat inputMatrix){ return predict_( inputMatrix ); }
     
-bool MLBase::predict_(MatrixDouble &inputMatrix){ return false; }
+bool MLBase::predict_(MatrixFloat &inputMatrix){ return false; }
 
-bool MLBase::map(VectorDouble inputVector){ return map_( inputVector ); }
+bool MLBase::map(VectorFloat inputVector){ return map_( inputVector ); }
 
-bool MLBase::map_(VectorDouble &inputVector){ return false; }
+bool MLBase::map_(VectorFloat &inputVector){ return false; }
 
 bool MLBase::reset(){ return true; }
 
@@ -208,15 +208,15 @@ UINT MLBase::getValidationSetSize() const{
     return validationSetSize;
 }
     
-double MLBase::getLearningRate() const{
+float_t MLBase::getLearningRate() const{
     return learningRate;
 }
 
-double MLBase::getRootMeanSquaredTrainingError() const{
+float_t MLBase::getRootMeanSquaredTrainingError() const{
     return rootMeanSquaredTrainingError;
 }
 
-double MLBase::getTotalSquaredTrainingError() const{
+float_t MLBase::getTotalSquaredTrainingError() const{
     return totalSquaredTrainingError;
 }
 
@@ -248,16 +248,16 @@ bool MLBase::setMinNumEpochs(const UINT minNumEpochs){
     return true;
 }
 
-bool MLBase::setMinChange(const double minChange){
+bool MLBase::setMinChange(const float_t minChange){
     if( minChange < 0 ){
-        warningLog << "setMinChange(const double minChange) - The minChange must be greater than or equal to 0!" << endl;
+        warningLog << "setMinChange(const float_t minChange) - The minChange must be greater than or equal to 0!" << endl;
         return false;
     }
     this->minChange = minChange;
     return true;
 }
     
-bool MLBase::setLearningRate(double learningRate){
+bool MLBase::setLearningRate(float_t learningRate){
     if( learningRate > 0 ){
         this->learningRate = learningRate;
         return true;

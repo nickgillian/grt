@@ -83,7 +83,7 @@ public:
     /**
      This copies all the MLBase variables from the instance mlBaseA to the instance mlBaseA.
      
-     @param const MLBase *mlBase: a pointer to a MLBase class from which the values will be copied to the instance that calls the function
+     @param mlBase: a pointer to a MLBase class from which the values will be copied to the instance that calls the function
      @return returns true if the copy was successfull, false otherwise
      */
     bool copyMLBaseVariables(const MLBase *mlBase);
@@ -92,7 +92,7 @@ public:
      This is the main training interface for ClassificationData.
      By default it will call the train_ function, unless it is overwritten by the derived class.
      
-     @param ClassificationData trainingData: the training data that will be used to train the ML model
+     @param trainingData: the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
     virtual bool train(ClassificationData trainingData);
@@ -100,7 +100,7 @@ public:
     /**
      This is the main training interface for referenced ClassificationData. This should be overwritten by the derived class.
      
-     @param ClassificationData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
     virtual bool train_(ClassificationData &trainingData);
@@ -109,7 +109,7 @@ public:
      This is the main training interface for regression data.
      By default it will call the train_ function, unless it is overwritten by the derived class.
      
-     @param RegressionData trainingData: the training data that will be used to train a new regression model
+     @param trainingData: the training data that will be used to train a new regression model
      @return returns true if a new regression model was trained, false otherwise
      */
     virtual bool train(RegressionData trainingData);
@@ -117,7 +117,7 @@ public:
     /**
      This is the main training interface for all the regression algorithms. This should be overwritten by the derived class.
      
-     @param RegressionData trainingData: the training data that will be used to train a new regression model
+     @param trainingData: the training data that will be used to train a new regression model
      @return returns true if a new regression model was trained, false otherwise
      */
     virtual bool train_(RegressionData &trainingData);
@@ -126,7 +126,7 @@ public:
      This is the main training interface for TimeSeriesClassificationData.
      By default it will call the train_ function, unless it is overwritten by the derived class.
      
-     @param TimeSeriesClassificationData trainingData: the training data that will be used to train the ML model
+     @param trainingData: the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
     virtual bool train(TimeSeriesClassificationData trainingData);
@@ -134,7 +134,7 @@ public:
     /**
      This is the main training interface for referenced TimeSeriesClassificationData. This should be overwritten by the derived class.
      
-     @param TimeSeriesClassificationData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
     virtual bool train_(TimeSeriesClassificationData &trainingData);
@@ -143,7 +143,7 @@ public:
      This is the main training interface for TimeSeriesClassificationDataStream.
      By default it will call the train_ function, unless it is overwritten by the derived class.
      
-     @param TimeSeriesClassificationDataStream trainingData: the training data that will be used to train the ML model
+     @param trainingData: the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
     virtual bool train(TimeSeriesClassificationDataStream trainingData);
@@ -151,7 +151,7 @@ public:
     /**
      This is the main training interface for referenced TimeSeriesClassificationDataStream. This should be overwritten by the derived class.
      
-     @param TimeSeriesClassificationDataStream &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
     virtual bool train_(TimeSeriesClassificationDataStream &trainingData);
@@ -160,7 +160,7 @@ public:
      This is the main training interface for UnlabelledData.
      By default it will call the train_ function, unless it is overwritten by the derived class.
      
-     @param UnlabelledData trainingData: the training data that will be used to train the ML model
+     @param trainingData: the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
     virtual bool train(UnlabelledData trainingData);
@@ -168,78 +168,78 @@ public:
     /**
      This is the main training interface for referenced UnlabelledData. This should be overwritten by the derived class.
      
-     @param UnlabelledData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
     virtual bool train_(UnlabelledData &trainingData);
     
     /**
-     This is the main training interface for MatrixDouble data. 
+     This is the main training interface for MatrixFloat data. 
      By default it will call the train_ function, unless it is overwritten by the derived class.
      
-     @param MatrixDouble trainingData: the training data that will be used to train the ML model
+     @param trainingData: the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
-    virtual bool train(MatrixDouble data);
+    virtual bool train(MatrixFloat data);
     
     /**
-     This is the main training interface for referenced MatrixDouble data. This should be overwritten by the derived class.
+     This is the main training interface for referenced MatrixFloat data. This should be overwritten by the derived class.
      
-     @param MatrixDouble &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
-    virtual bool train_(MatrixDouble &data);
+    virtual bool train_(MatrixFloat &data);
 
     /**
      This is the main prediction interface for all the GRT machine learning algorithms.
      By defaut it will call the predict_ function, unless it is overwritten by the derived class.
      
-     @param VectorDouble inputVector: the new input vector for prediction
+     @param inputVector: the new input vector for prediction
      @return returns true if the prediction was completed succesfully, false otherwise (the base class always returns false)
      */
-    virtual bool predict(VectorDouble inputVector);
+    virtual bool predict(VectorFloat inputVector);
     
     /**
      This is the main prediction interface for all the GRT machine learning algorithms. This should be overwritten by the derived class.
      
-     @param VectorDouble &inputVector: a reference to the input vector for prediction
+     @param inputVector: a reference to the input vector for prediction
      @return returns true if the prediction was completed succesfully, false otherwise (the base class always returns false)
      */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This is the prediction interface for time series data.
      By defaut it will call the predict_ function, unless it is overwritten by the derived class.
      
-     @param MatrixDouble inputMatrix: the new input matrix for prediction
+     @param inputMatrix: the new input matrix for prediction
      @return returns true if the prediction was completed succesfully, false otherwise (the base class always returns false)
      */
-    virtual bool predict(MatrixDouble inputMatrix);
+    virtual bool predict(MatrixFloat inputMatrix);
     
     /**
      This is the prediction interface for time series data. This should be overwritten by the derived class.
      
-     @param MatrixDouble inputMatrix: a reference to the new input matrix for prediction
+     @param inputMatrix: a reference to the new input matrix for prediction
      @return returns true if the prediction was completed succesfully, false otherwise (the base class always returns false)
      */
-    virtual bool predict_(MatrixDouble &inputMatrix);
+    virtual bool predict_(MatrixFloat &inputMatrix);
     
     /**
      This is the main mapping interface for all the GRT machine learning algorithms.
      By defaut it will call the map_ function, unless it is overwritten by the derived class.
      
-     @param VectorDouble inputVector: the input vector for mapping/regression
+     @param inputVector: the input vector for mapping/regression
      @return returns true if the mapping was completed succesfully, false otherwise (the base class always returns false)
      */
-    virtual bool map(VectorDouble inputVector);
+    virtual bool map(VectorFloat inputVector);
     
     /**
      This is the main mapping interface by reference for all the GRT machine learning algorithms. This should be overwritten by the derived class.
      
-     @param VectorDouble &inputVector: a reference to the input vector for mapping/regression
+     @param inputVector: a reference to the input vector for mapping/regression
      @return returns true if the mapping was completed succesfully, false otherwise (the base class always returns false)
      */
-    virtual bool map_(VectorDouble &inputVector);
+    virtual bool map_(VectorFloat &inputVector);
     
     /**
      This is the main reset interface for all the GRT machine learning algorithms.
@@ -269,7 +269,7 @@ public:
     /**
      This saves the model to a file, it calls the saveModelToFile(string filename) function unless it is overwritten by the derived class.
      
-     @param const string filename: the name of the file to save the model to
+     @param filename: the name of the file to save the model to
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool save(const string filename) const;
@@ -277,7 +277,7 @@ public:
     /**
      This saves the model to a file, it calls the loadModelFromFile(string filename) function unless it is overwritten by the derived class.
      
-     @param const string filename: the name of the file to save the model to
+     @param filename: the name of the file to save the model to
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool load(const string filename);
@@ -285,7 +285,7 @@ public:
     /**
      This saves the trained model to a file, it calls the saveModelToFile(fstream &file) function unless it is overwritten by the derived class.
      
-     @param string filename: the name of the file to save the model to
+     @param the name of the file to save the model to
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool saveModelToFile(string filename) const;
@@ -294,7 +294,7 @@ public:
      This saves the trained model to a file.
      This function should be overwritten by the derived class.
      
-     @param fstream &file: a reference to the file the model will be saved to
+     @param file: a reference to the file the model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
     virtual bool saveModelToFile(fstream &file) const;
@@ -302,7 +302,7 @@ public:
     /**
      This loads a trained model from a file, it calls the loadModelFromFile(fstream &file) function unless it is overwritten by the derived class.
      
-     @param string filename: the name of the file to load the model from
+     @param filename: the name of the file to load the model from
      @return returns true if the model was loaded successfully, false otherwise
      */
     virtual bool loadModelFromFile(string filename);
@@ -311,7 +311,7 @@ public:
      This loads a trained model from a file.
      This function should be overwritten by the derived class.
      
-     @param fstream &file: a reference to the file the model will be loaded from
+     @param file: a reference to the file the model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
     virtual bool loadModelFromFile(fstream &file);
@@ -320,7 +320,7 @@ public:
      This function adds the current model to the formatted stream.
      This function should be overwritten by the derived class.
      
-     @param ostream &file: a reference to the stream the model will be added to
+     @param file: a reference to the stream the model will be added to
      @return returns true if the model was added successfully, false otherwise
      */
     virtual bool getModel(ostream &stream) const;
@@ -328,15 +328,15 @@ public:
     /**
      Scales the input value x (which should be in the range [minSource maxSource]) to a value in the new target range of [minTarget maxTarget].
      
-     @param const double &x: the value that should be scaled
-     @param const double &minSource: the minimum range that x originates from
-     @param const double &maxSource: the maximum range that x originates from
-     @param const double &minTarget: the minimum range that x should be scaled to
-     @param const double &maxTarget: the maximum range that x should be scaled to
-     @param const bool constrain: sets if the scaled value should be constrained to the target range
+     @param x: the value that should be scaled
+     @param minSource: the minimum range that x originates from
+     @param maxSource: the maximum range that x originates from
+     @param minTarget: the minimum range that x should be scaled to
+     @param maxTarget: the maximum range that x should be scaled to
+     @param constrain: sets if the scaled value should be constrained to the target range
      @return returns a new value that has been scaled based on the input parameters
      */
-    double inline scale(const double &x,const double &minSource,const double &maxSource,const double &minTarget,const double &maxTarget,const bool constrain=false){
+    float_t inline scale(const float_t &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain=false){
         if( constrain ){
             if( x <= minSource ) return minTarget;
             if( x >= maxSource ) return maxTarget;
@@ -418,28 +418,28 @@ public:
      
      @return returns the minimum change value
      */
-	double getMinChange() const;
+	float_t getMinChange() const;
     
     /**
      Gets the current learningRate value, this is value used to update the weights at each step of a learning algorithm such as stochastic gradient descent.
      
      @return returns the current learningRate value
      */
-    double getLearningRate() const;
+    float_t getLearningRate() const;
     
     /**
      Gets the root mean squared error on the training data during the training phase.
      
      @return returns the RMS error (on the training data during the training phase)
      */
-    double getRootMeanSquaredTrainingError() const;
+    float_t getRootMeanSquaredTrainingError() const;
     
     /**
      Gets the total squared error on the training data during the training phase.
      
      @return returns the total squared error (on the training data during the training phase)
      */
-    double getTotalSquaredTrainingError() const;
+    float_t getTotalSquaredTrainingError() const;
     
     /**
      Returns true if a validation set should be used for training. If true, then the training dataset will be partitioned into a smaller training dataset
@@ -513,7 +513,7 @@ public:
      Sets the maximum number of epochs (a complete iteration of all training samples) that can be run during the training phase.
      The maxNumIterations value must be greater than zero.
      
-     @param const UINT maxNumIterations: the maximum number of iterations value, must be greater than zero
+     @param maxNumIterations: the maximum number of iterations value, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
     bool setMaxNumEpochs(const UINT maxNumEpochs);
@@ -521,7 +521,7 @@ public:
     /**
      Sets the minimum number of epochs (a complete iteration of all training samples) that can elapse with no change between two training epochs.
      
-     @param const UINT minNumEpochs: the minimum number of epochs that can elapse with no change between two training epochs
+     @param minNumEpochs: the minimum number of epochs that can elapse with no change between two training epochs
      @return returns true if the value was updated successfully, false otherwise
      */
     bool setMinNumEpochs(const UINT minNumEpochs);
@@ -530,26 +530,26 @@ public:
      Sets the minimum change that must be achieved between two training epochs for the training to continue.
      The minChange value must be greater than zero.
      
-     @param const double minChange: the minimum change value, must be greater than zero
+     @param minChange: the minimum change value, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
-    bool setMinChange(const double minChange);
+    bool setMinChange(const float_t minChange);
     
     /**
      Sets the learningRate. This is used to update the weights at each step of learning algorithms such as stochastic gradient descent.
      The learningRate value must be greater than zero.
      
-     @param double learningRate: the learningRate value used during the training phase, must be greater than zero
+     @param learningRate: the learningRate value used during the training phase, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
-    bool setLearningRate(double learningRate);
+    bool setLearningRate(float_t learningRate);
     
     /**
      Sets the size of the validation set used by some learning algorithms for training. This value represents the percentage of the main
      dataset that will be used for training.  For example, if the validationSetSize parameter is 20 then 20% of the training data will be
      used for a validation set leaving 80% of the original data to train the model.
      
-     @param const UINT validationSetSize: the new validation set size (as a percentage)
+     @param validationSetSize: the new validation set size (as a percentage)
      @return returns true if the validationSetSize parameter was updated, false otherwise
      */
     bool setUseValidationSet(const bool useValidationSet);
@@ -559,7 +559,7 @@ public:
      dataset that will be used for training.  For example, if the validationSetSize parameter is 20 then 20% of the training data will be 
      used for a validation set leaving 80% of the original data to train the model.
      
-     @param const UINT validationSetSize: the new validation set size (as a percentage)
+     @param validationSetSize: the new validation set size (as a percentage)
      @return returns true if the validationSetSize parameter was updated, false otherwise
      */
     bool setValidationSetSize(const UINT validationSetSize);
@@ -568,6 +568,7 @@ public:
      Sets if the order of the training dataset should be randomized at each epoch of training.
      Randomizing the order of the training dataset stops a learning algorithm from focusing too much on the first few examples in the dataset.
      
+     @param randomiseTrainingOrder: if true then the order in which training samples are supplied to a learning algorithm will be randomised
      @return returns true if the parameter was updated, false otherwise
      */
     bool setRandomiseTrainingOrder(const bool randomiseTrainingOrder);
@@ -576,6 +577,7 @@ public:
      Sets if training logging is enabled/disabled for this specific ML instance.
      If you want to enable/disable training logging globally, then you should use the TrainingLog::enableLogging( bool ) function.
      
+     @param loggingEnabled: if true then training logging will be enabled, if false then training logging will be disabled
      @return returns true if the parameter was updated, false otherwise
      */
     bool setTrainingLoggingEnabled(const bool loggingEnabled);
@@ -583,6 +585,7 @@ public:
     /**
      Registers the observer with the training result observer manager. The observer will then be notified when any new training result is computed.
      
+     @param observer: the observer you want to register with the learning algorithm
      @return returns true the observer was added, false otherwise
      */
     bool registerTrainingResultsObserver( Observer< TrainingResult > &observer );
@@ -590,6 +593,7 @@ public:
     /**
      Registers the observer with the test result observer manager. The observer will then be notified when any new test result is computed.
      
+     @param observer: the observer you want to register with the learning algorithm
      @return returns true the observer was added, false otherwise
      */
     bool registerTestResultsObserver( Observer< TestInstanceResult > &observer );
@@ -597,6 +601,7 @@ public:
     /**
      Removes the observer from the training result observer manager.
      
+     @param observer: the observer you want to remove from the learning algorithm
      @return returns true if the observer was removed, false otherwise
      */
     bool removeTrainingResultsObserver( const Observer< TrainingResult > &observer );
@@ -604,6 +609,7 @@ public:
     /**
      Removes the observer from the test result observer manager.
      
+     @param observer: the observer you want to remove from the learning algorithm
      @return returns true if the observer was removed, false otherwise
      */
     bool removeTestResultsObserver( const Observer< TestInstanceResult > &observer );
@@ -625,6 +631,7 @@ public:
     /**
      Notifies all observers that have subscribed to the training results observer manager.
      
+     @param data: stores the training results data for the current update
      @return returns true if all the observers were notified, false otherwise
      */
     bool notifyTrainingResultsObservers( const TrainingResult &data );
@@ -632,6 +639,7 @@ public:
     /**
      Notifies all observers that have subscribed to the test results observer manager.
      
+     @param data: stores the test results data for the current update
      @return returns true if all the observers were notified, false otherwise
      */
     bool notifyTestResultsObservers( const TestInstanceResult &data );
@@ -682,10 +690,10 @@ protected:
     UINT minNumEpochs;
     UINT maxNumEpochs;
     UINT validationSetSize;
-    double learningRate;
-    double minChange;
-    double rootMeanSquaredTrainingError;
-    double totalSquaredTrainingError;
+    float_t learningRate;
+    float_t minChange;
+    float_t rootMeanSquaredTrainingError;
+    float_t totalSquaredTrainingError;
     bool useValidationSet;
     bool randomiseTrainingOrder;
     Random random;

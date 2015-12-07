@@ -30,7 +30,7 @@
  This example shows you how to:
  - Create an initialize the LogisticRegression algorithm for regression
  - Create a new instance of a GestureRecognitionPipeline and add the regression instance to the pipeline
- - Load some LabelledRegressionData from a file
+ - Load some RegressionData from a file
  - Train a LogisticRegression model using the training dataset
  - Test the LogisticRegression model using the test dataset
  - Save the output of the LogisticRegression algorithm to a file
