@@ -154,7 +154,7 @@ public:
     const GRTBase* getGRTBasePointer() const;
 
 protected:
-    inline double SQR(const double &x) const{ return x*x; }
+    inline float_t SQR(const float_t &x) const{ return x*x; }
 
     string classType;
     DebugLog debugLog;

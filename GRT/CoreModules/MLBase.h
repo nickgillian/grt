@@ -663,7 +663,7 @@ public:
      
      @return returns a vector of TrainingResult instances containing the training results from the most recent training phase
      */
-    vector< TrainingResult > getTrainingResults() const;
+    std::vector< TrainingResult > getTrainingResults() const;
 
 protected:
     
@@ -697,7 +697,7 @@ protected:
     bool useValidationSet;
     bool randomiseTrainingOrder;
     Random random;
-    vector< TrainingResult > trainingResults;
+    std::vector< TrainingResult > trainingResults;
     TrainingResultsObserverManager trainingResultsObserverManager;
     TestResultsObserverManager testResultsObserverManager;
     

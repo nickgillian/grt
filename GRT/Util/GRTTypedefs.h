@@ -32,14 +32,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <limits>
 #include <cmath>
 
-namespace GRT {
+#define GRT_BEGIN_NAMESPACE namespace GRT {
+#define GRT_END_NAMESPACE }
+
+GRT_BEGIN_NAMESPACE
 
 //Define any common GRT OS independent typedefs
 class MatrixFloat; //Forward declaration of MatrixFloat
 typedef double float_t; ///<This typedef is used to set floating-point precision throughout the GRT
 typedef std::vector< float_t > VectorFloat;
-typedef std::vector< double > VectorDouble;
-typedef MatrixFloat MatrixDouble;
 	
 //Declare any common definitions that are not OS specific
 #ifndef PI
@@ -121,6 +122,9 @@ typedef ClassificationData LabelledClassificationData;
 typedef RegressionData LabelledRegressionData;
 typedef TimeSeriesClassificationData LabelledTimeSeriesClassificationData;
 typedef UnlabelledData UnlabelledClassificationData;
-}
+typedef std::vector< double > VectorDouble;
+typedef MatrixFloat MatrixDouble;
+
+GRT_END_NAMESPACE
 
 #endif //GRT_TYPEDEFS_HEADER

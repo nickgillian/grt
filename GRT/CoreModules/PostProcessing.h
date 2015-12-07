@@ -67,10 +67,10 @@ public:
     /**
      This is the main processing interface for all the post processing modules and should be overwritten by the inheriting class.
      
-     @param const VectorDouble &inputVector: a vector containing the data that should be processed
+     @param const VectorFloat &inputVector: a vector containing the data that should be processed
      @return returns true if the post processing was successfull, false otherwise
      */
-    virtual bool process(const VectorDouble &inputVector){ return false; }
+    virtual bool process(const VectorFloat &inputVector){ return false; }
     
     /**
      This function is called by the GestureRecognitionPipeline's reset function and will reset the PostProcessing module.
@@ -173,9 +173,9 @@ public:
 	bool getIsPostProcessingOutputModeClassLikelihoods() const;
     
     /**
-     @return returns a VectorDouble containing the most recent processed data
+     @return returns a VectorFloat containing the most recent processed data
      */
-	VectorDouble getProcessedData() const;
+	VectorFloat getProcessedData() const;
     
     /**
      This typedef defines a map between a string and a PostProcessing pointer.
@@ -225,7 +225,7 @@ protected:
     bool initialized;
     UINT postProcessingInputMode;
     UINT postProcessingOutputMode;
-    VectorDouble processedData;
+    VectorFloat processedData;
     
     static StringPostProcessingMap *getMap() {
         if( !stringPostProcessingMap ){ stringPostProcessingMap = new StringPostProcessingMap; } 

@@ -332,7 +332,7 @@ const MLBase* MLBase::getMLBasePointer() const{
     return this;
 }
 
-vector< TrainingResult > MLBase::getTrainingResults() const{
+std::vector< TrainingResult > MLBase::getTrainingResults() const{
     return trainingResults;
 }
 

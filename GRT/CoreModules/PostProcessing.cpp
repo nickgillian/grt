@@ -209,7 +209,7 @@ bool PostProcessing::getIsPostProcessingOutputModeClassLikelihoods() const{
     return postProcessingOutputMode==OUTPUT_MODE_CLASS_LIKELIHOODS; 
 }
     
-vector< double > PostProcessing::getProcessedData() const{ 
+vector< float_t > PostProcessing::getProcessedData() const{ 
     return processedData; 
 }
 

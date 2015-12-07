@@ -204,7 +204,7 @@ bool PreProcessing::getInitialized() const{
     return initialized; 
 }
     
-VectorDouble PreProcessing::getProcessedData() const{ 
+VectorFloat PreProcessing::getProcessedData() const{ 
     return processedData; 
 }
 

@@ -81,7 +81,7 @@ public:
         return true;
     }
 
-    virtual bool process(VectorDouble inputVector){ return false; }
+    virtual bool process(VectorFloat inputVector){ return false; }
 
     virtual bool reset(){ return false; }
     
@@ -93,7 +93,7 @@ public:
 	UINT getNumOutputDimensions() const { return numOutputDimensions; }
 	bool getInitialized() const { return initialized; }
 	bool getOK() const { return okToContinue; }
-	VectorDouble getProcessedData() const { return data; }
+	VectorFloat getProcessedData() const { return data; }
     
     /**
      Defines a map between a string (which will contain the name of the context module, such as Gate) and a function returns a new instance of that context
@@ -140,7 +140,7 @@ protected:
     string contextType;
     bool initialized;
     bool okToContinue;
-    VectorDouble data;
+    VectorFloat data;
 
 	static StringContextMap *getMap(){
         if( !stringContextMap ){ stringContextMap = new StringContextMap; }

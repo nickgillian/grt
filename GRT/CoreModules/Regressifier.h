@@ -57,7 +57,7 @@ public:
      This is the base deep copy function for the Regressifier modules. This function should be overwritten by the derived class.
      This deep copies the variables and models from the regressifier pointer to this regressifier instance.
      
-     @param const Regressifier *regressifier: a pointer to the Regressifier base class, this should be pointing to another instance of a matching derived class
+     @param regressifier: a pointer to the Regressifier base class, this should be pointing to another instance of a matching derived class
      @return returns true if the deep copy was successfull, false otherwise (the Regressifier base class will always return false)
      */
     virtual bool deepCopyFrom(const Regressifier *regressifier){ return false; }
@@ -65,7 +65,7 @@ public:
 	/**
      This copies the Regressifier variables from the regressifier pointer to this instance.
      
-     @param const Regressifier *regressifier: a pointer to a regressifier from which the values will be copied to this instance
+     @param regressifier: a pointer to a regressifier from which the values will be copied to this instance
      @return returns true if the copy was successfull, false otherwise
      */
     bool copyBaseVariables(const Regressifier *regressifier);
@@ -121,7 +121,7 @@ public:
     /**
      Creates a new regressifier instance based on the input string (which should contain the name of a valid regressifier such as LinearRegression).
      
-     @param string const &regressifierType: the name of the regressifier
+     @param egressifierType: the name of the regressifier
      @return Regressifier*: a pointer to the new instance of the regressifier
      */
     static Regressifier* createInstanceFromString(string const &regressifierType);

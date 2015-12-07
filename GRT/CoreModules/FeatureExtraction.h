@@ -68,10 +68,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function should be overwritten by the derived class.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed
+     @param const VectorFloat &inputVector: the inputVector that should be processed
      @return returns true if the data was processed, false otherwise (the base class always returns false)
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector){ return false; }
+    virtual bool computeFeatures(const VectorFloat &inputVector){ return false; }
     
     /**
      This function is called by the GestureRecognitionPipeline's reset function.
@@ -146,7 +146,7 @@ public:
      
      @return returns the current feature vector, this vector will be empty if the module has not been initialized
      */
-    VectorDouble getFeatureVector() const;
+    VectorFloat getFeatureVector() const;
     
     /**
      Defines a map between a string (which will contain the name of the featureExtraction module, such as FFT) and a function returns a new instance of that featureExtraction
@@ -196,7 +196,7 @@ protected:
     string featureExtractionType;
     bool initialized;
     bool featureDataReady;
-    VectorDouble featureVector;
+    VectorFloat featureVector;
     
     static StringFeatureExtractionMap *getMap() {
         if( !stringFeatureExtractionMap ){ stringFeatureExtractionMap = new StringFeatureExtractionMap; } 

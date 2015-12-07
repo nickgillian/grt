@@ -35,6 +35,7 @@
 #ifndef GRT_GESTURE_RECOGNITION_PIPELINE_HEADER
 #define GRT_GESTURE_RECOGNITION_PIPELINE_HEADER
 
+#include "../Util/GRTCommon.h"
 #include "PreProcessing.h"
 #include "FeatureExtraction.h"
 #include "Classifier.h"
@@ -46,7 +47,7 @@
 #include "../Util/ClassificationResult.h"
 #include "../Util/TestResult.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 #define INSERT_AT_END_INDEX 99999
 
@@ -202,19 +203,19 @@ public:
      This function is the main interface for all predictions using the gesture recognition pipeline.  You can use this function for both classification
      and regression.  You should only call this function if you  have trained the pipeline.  The input vector should be the same size as your training data.
 
-     @param const VectorDouble &inputVector: the input data that will be passed through the pipeline for classification or regression
+     @param const VectorFloat &inputVector: the input data that will be passed through the pipeline for classification or regression
      @return bool returns true if the prediction was successful, false otherwise
 	*/
-    bool predict(const VectorDouble &inputVector);
+    bool predict(const VectorFloat &inputVector);
     
     /**
      This function is an interface for predictions using timeseries or Matrix data.
      You should only call this function if you  have trained the pipeline.  The input matrix should have the same number of columns as your training data.
      
-     @param const MatrixDouble &inputMatrix: the input atrix that will be passed through the pipeline for classification
+     @param const MatrixFloat &inputMatrix: the input atrix that will be passed through the pipeline for classification
      @return bool returns true if the prediction was successful, false otherwise
      */
-    bool predict(const MatrixDouble &inputMatrix);
+    bool predict(const MatrixFloat &inputMatrix);
 
     /**
      This function is now depreciated, you should use the predict function instead.
@@ -222,10 +223,10 @@ public:
      This function used to be the main interface for all regression using the gesture recognition pipeline.  
      You should only call this function if you  have trained the pipeline.  The input vector should be the same size as your training data.
 
-     @param const VectorDouble &inputVector: the input data that will be passed through the pipeline for regression
+     @param const VectorFloat &inputVector: the input data that will be passed through the pipeline for regression
      @return bool returns true if the regression was successful, false otherwise
 	*/
-    bool map(const VectorDouble &inputVector);
+    bool map(const VectorFloat &inputVector);
     
     /**
      This function is the main interface for resetting the entire gesture recognition pipeline.  This function will call reset on all the modules in 
@@ -279,11 +280,11 @@ public:
 
      After calling this function, you can access the preprocessed results via the getPreProcessedData() or getFeatureExtractionData() functions.
 
-     @param: VectorDouble inputVector: the input data that should be processed
+     @param: VectorFloat inputVector: the input data that should be processed
      @param: bool computeFeatures: sets if just the preprocessing modules should be used (false), or both the preprocessing and feature extraction modules should be used (true)
      @return bool returns true if the data was passed through the preprocessing modules successful, false otherwise
 	*/
-    bool preProcessData(VectorDouble inputVector,bool computeFeatures = true);
+    bool preProcessData(VectorFloat inputVector,bool computeFeatures = true);
     
     /**
     This function returns true if the pipeline has been initialized.  The pipeline is initialized if either a classifier or regressifier module has been set at the core of the pipeline.
@@ -462,125 +463,125 @@ public:
     /**
 	 This function returns the maximum likelihood value from the most likely class from the most recent prediction.  This value is only relevant when the pipeline is in prediction mode.
 	
-	@return double representing the maximum likelihood value from the most likely class from the most recent prediction.
+	@return float_t representing the maximum likelihood value from the most likely class from the most recent prediction.
 	*/
-    double getMaximumLikelihood() const;
+    float_t getMaximumLikelihood() const;
     
     /**
 	 This function returns the estimated gesture phase from the most recent prediction.  This value is only relevant when the pipeline is in timeseries classification mode.
      
-     @return double representing the gesture phase value from the most likely class from the most recent prediction.
+     @return float_t representing the gesture phase value from the most likely class from the most recent prediction.
      */
-    double getPhase() const;
+    float_t getPhase() const;
 
     /**
 	 This function returns the cross validation value from the most recent cross validation test.  If the pipeline is in prediction mode, then the cross
      validation accuracy will be the average accuracy across each fold of testing. If the pipeline is in regression mode, then the cross validation 
      accuracy will be the average RMS error across each fold of testing.
 	
-	@return double representing the cross validation value from the most recent cross validation test.
+	@return float_t representing the cross validation value from the most recent cross validation test.
 	*/
-    double getCrossValidationAccuracy() const;
+    float_t getCrossValidationAccuracy() const;
 
     /**
 	 This function returns the accuracy value from the most recent test.  This will be a value between [0 100]. This value is only relevant when the pipeline is in prediction mode.
 	
-	@return double representing the accuracy value from the most recent test.
+	@return float_t representing the accuracy value from the most recent test.
 	*/
-    double getTestAccuracy() const;
+    float_t getTestAccuracy() const;
 
     /**
 	 This function returns the root mean squared error value from the most recent test.  This value is only relevant when the pipeline is in regression mode.
 	
-	@return double representing the root mean squared error value from the most recent test.
+	@return float_t representing the root mean squared error value from the most recent test.
 	*/
-    double getTestRMSError() const;
+    float_t getTestRMSError() const;
 
     /**
      This function returns the total squared error value from the most recent test.  This value is only relevant when the pipeline is in regression mode.
 
-    @return double representing the total squared error value from the most recent test.
+    @return float_t representing the total squared error value from the most recent test.
     */
-    double getTestSSError() const;
+    float_t getTestSSError() const;
 
     /**
 	 This function returns the f-measure from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
 	 If the classLabel is not valid then the function will return -1.
 	
     @param const UINT classLabel: the label of the class you want to get the test fMeasure value for
-	@return double representing the f-measure from the most recent test for the class with the matching classLabel.
+	@return float_t representing the f-measure from the most recent test for the class with the matching classLabel.
 	*/
-    double getTestFMeasure(const UINT classLabel) const;
+    float_t getTestFMeasure(const UINT classLabel) const;
 
     /**
 	 This function returns the precision from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
 	 If the classLabel is not valid then the function will return -1. 
 	
     @param const UINT classLabel: the label of the class you want to get the test precision value for
-	@return double representing the precision from the most recent test for the class with the matching classLabel.
+	@return float_t representing the precision from the most recent test for the class with the matching classLabel.
 	*/
-    double getTestPrecision(const UINT classLabel) const;
+    float_t getTestPrecision(const UINT classLabel) const;
 
     /**
 	 This function returns the recall from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
 	 If the classLabel is not valid then the function will return -1.
 	
     @param const UINT classLabel: the label of the class you want to get the test recall value for
-	@return double representing the recall from the most recent test for the class with the matching classLabel.
+	@return float_t representing the recall from the most recent test for the class with the matching classLabel.
 	*/
-    double getTestRecall(const UINT classLabel) const;
+    float_t getTestRecall(const UINT classLabel) const;
 
     /**
 	 This function returns the precision for any null examples in your dataset (examples with the class label of 0) from the most recent test.  
 	 This value is only relevant when the pipeline is in classification mode.
 	
-	@return double representing the precision for any null examples in your dataset.
+	@return float_t representing the precision for any null examples in your dataset.
 	*/
-    double getTestRejectionPrecision() const;
+    float_t getTestRejectionPrecision() const;
 
     /**
 	 This function returns the recall for any null examples in your dataset (examples with the class label of 0) from the most recent test.  
 	 This value is only relevant when the pipeline is in classification mode.
 	
-	@return double representing the recall for any null examples in your dataset.
+	@return float_t representing the recall for any null examples in your dataset.
 	*/
-    double getTestRejectionRecall() const;
+    float_t getTestRejectionRecall() const;
 
     /**
 	 This function returns the total test time (in milliseconds) for the most recent test.
 	
-	@return double representing the total test time (in milliseconds) for the most recent test.
+	@return float_t representing the total test time (in milliseconds) for the most recent test.
 	*/
-    double getTestTime() const;
+    float_t getTestTime() const;
 
     /**
 	 This function returns the total training time (in milliseconds) for the most recent training.
 	
-	@return double representing the total training time (in milliseconds) for the most recent training.
+	@return float_t representing the total training time (in milliseconds) for the most recent training.
 	*/
-    double getTrainingTime() const;
+    float_t getTrainingTime() const;
 
     /**
      This function returns the root mean squared error value from the most recent training.  This value is only relevant when the pipeline is in regression mode.
 
-    @return double representing the root mean squared error value from the most recent training.
+    @return float_t representing the root mean squared error value from the most recent training.
     */
-    double getTrainingRMSError() const;
+    float_t getTrainingRMSError() const;
 
     /**
      This function returns the total squared error value from the most recent training.  This value is only relevant when the pipeline is in regression mode.
 
-    @return double representing the total squared error value from the most recent training.
+    @return float_t representing the total squared error value from the most recent training.
     */
-    double getTrainingSSError() const;
+    float_t getTrainingSSError() const;
 
     /**
 	 This function returns the confusion matrix for the most recent round of testing.  If null rejection is enabled then the first row and column of the confusion matrix will
 	 represent the null class (class label 0).
 	
-	@return MatrixDouble representing the confusion matrix for the most recent round of testing.
+	@return MatrixFloat representing the confusion matrix for the most recent round of testing.
 	*/
-    MatrixDouble getTestConfusionMatrix() const;
+    MatrixFloat getTestConfusionMatrix() const;
     
     /**
      This function returns all the results from the most recent round of testing.
@@ -597,7 +598,7 @@ public:
      
      @return returns a vector of the precision results for each class from the last prediction, an empty vector will be returned if the model has not been tested
      */
-    VectorDouble getTestPrecision() const;
+    VectorFloat getTestPrecision() const;
     
     /**
      Gets a vector of the recall results for each class from the most recent round of testing.
@@ -605,7 +606,7 @@ public:
      
      @return returns a vector of the recall results for each class from the last prediction, an empty vector will be returned if the model has not been tested
      */
-    VectorDouble getTestRecall() const;
+    VectorFloat getTestRecall() const;
     
     /**
      Gets a vector of the fMeasure results for each class from the most recent round of testing.
@@ -613,7 +614,7 @@ public:
      
      @return returns a vector of the fMeasure results for each class from the last prediction, an empty vector will be returned if the model has not been tested
      */
-    VectorDouble getTestFMeasure() const;
+    VectorFloat getTestFMeasure() const;
 
     /**
      Gets a vector of the class likelihoods from the last prediction, this will be an N-dimensional vector, where N is the number of classes in the model.  
@@ -621,7 +622,7 @@ public:
      
      @return returns a vector of the class likelihoods from the last prediction, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getClassLikelihoods() const;
+    VectorFloat getClassLikelihoods() const;
 
     /**
      Gets a vector of the class distances from the last prediction, this will be an N-dimensional vector, where N is the number of classes in the model.  
@@ -629,35 +630,35 @@ public:
      
      @return returns a vector of the class distances from the last prediction, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getClassDistances() const;
+    VectorFloat getClassDistances() const;
 
     /**
      Gets a vector containing the null rejection thresholds for each class, this will be an N-dimensional vector, where N is the number of classes in the model.  
      
      @return returns a vector containing the null rejection thresholds for each class, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getNullRejectionThresholds() const;
+    VectorFloat getNullRejectionThresholds() const;
 
     /**
      Gets a vector containing the regression data output by the pipeline, this will be an M-dimensional vector, where M is the number of output dimensions in the model.  
      
      @return returns a vector containing the regression data output by the pipeline, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getRegressionData() const;
+    VectorFloat getRegressionData() const;
 
     /**
      Gets a vector containing the regression data output by the regression algorithm, this will be an M-dimensional vector, where M is the number of output dimensions in the model.  
      
      @return returns a vector containing the regression data output by the regression algorithm, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getUnProcessedRegressionData() const;
+    VectorFloat getUnProcessedRegressionData() const;
 
     /**
      Gets a vector containing the output of the last preprocessing module, this will be an M-dimensional vector, where M is the output size of the last preprocessing module.  
      
      @return returns a vector containing the output of the last preprocessing module, an empty vector will be returned if there are no preprocessing modules.
      */
-    VectorDouble getPreProcessedData() const;
+    VectorFloat getPreProcessedData() const;
 
     /**
      Gets a vector containing the output of the preprocessing module at index X, this will be an M-dimensional vector, where M is the output size of the preprocessing module.  
@@ -665,14 +666,14 @@ public:
      @param UINT moduleIndex: the index of the pre processing module you want
      @return returns a vector containing the output of the preprocessing module at index X, an empty vector will be returned if there is no preprocessing module at that index.
      */
-    VectorDouble getPreProcessedData(UINT moduleIndex) const;
+    VectorFloat getPreProcessedData(UINT moduleIndex) const;
 
     /**
      Gets a vector containing the output of the last feature extraction module, this will be an M-dimensional vector, where M is the output size of the last feature extraction module.  
      
      @return returns a vector containing the output of the last feature extraction module, an empty vector will be returned if there are no feature extraction modules.
      */
-    VectorDouble getFeatureExtractionData() const;
+    VectorFloat getFeatureExtractionData() const;
 
     /**
      Gets a vector containing the output of the feature extraction module at index X, this will be an M-dimensional vector, where M is the output size of the feature extraction module.  
@@ -680,7 +681,7 @@ public:
      @param const UINT moduleIndex: the index of the feature extraction module you want
      @return returns a vector containing the output of the feature extraction module at index X, an empty vector will be returned if there is no feature extraction module at that index.
      */
-    VectorDouble getFeatureExtractionData(const UINT moduleIndex) const;
+    VectorFloat getFeatureExtractionData(const UINT moduleIndex) const;
 
     /**
      Gets a vector containing the label each class represents, this will be an N-dimensional vector, where N is the number of classes in the model. 
@@ -688,21 +689,21 @@ public:
      
      @return returns a vector containing the class labels for each class, an empty vector will be returned if the model has not been trained
      */
-    vector< UINT > getClassLabels() const;
+    std::vector< UINT > getClassLabels() const;
 
     /**
      Gets a vector containing the results from the most recent test.  Each element in the vector represents the results for the corresponding test sample.  
      
      @return returns a vector containing the test instance results from the most recent test, an empty vector will be returned if no test has been run.
      */
-    vector< TestInstanceResult > getTestInstanceResults() const;
+    std::vector< TestInstanceResult > getTestInstanceResults() const;
 
     /**
      Gets a vector containing the results from the most recent cross validation test.  Each element in the vector represents one fold of cross validation training.
 
      @return returns a vector containing the results from the most recent cross validation test, an empty vector will be returned if no test has been run.
      */
-    vector< TestResult > getCrossValidationResults() const;
+    std::vector< TestResult > getCrossValidationResults() const;
 
     /**
      Gets a pointer to the preprocessing module at the specific moduleIndex.
@@ -1102,9 +1103,9 @@ public:
     bool setInfo(const string info);
 
 protected:
-    bool predict_classifier(const VectorDouble &inputVector);
-    bool predict_regressifier(const VectorDouble &inputVector);
-    bool predict_clusterer(const VectorDouble &inputVector);
+    bool predict_classifier(const VectorFloat &inputVector);
+    bool predict_regressifier(const VectorFloat &inputVector);
+    bool predict_clusterer(const VectorFloat &inputVector);
     void deleteAllPreProcessingModules();
     void deleteAllFeatureExtractionModules();
     void deleteClassifier();
@@ -1112,8 +1113,8 @@ protected:
     void deleteClusterer();
     void deleteAllPostProcessingModules();
     void deleteAllContextModules();
-    bool updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorDouble &precisionCounter,VectorDouble &recallCounter,double &rejectionPrecisionCounter,double &rejectionRecallCounter,VectorDouble &confusionMatrixCounter);
-    bool computeTestMetrics(VectorDouble &precisionCounter,VectorDouble &recallCounter,double &rejectionPrecisionCounter,double &rejectionRecallCounter,VectorDouble &confusionMatrixCounter,const UINT numTestSamples);
+    bool updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorFloat &precisionCounter,VectorFloat &recallCounter,float_t &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter);
+    bool computeTestMetrics(VectorFloat &precisionCounter,VectorFloat &recallCounter,float_t &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter,const UINT numTestSamples);
     
     bool initialized;
     bool trained;
@@ -1126,28 +1127,28 @@ protected:
     UINT predictionModuleIndex;
     UINT numTrainingSamples;
     UINT numTestSamples;
-    double testAccuracy;
-    double testRMSError;
-    double testSquaredError;
-    double testTime;
-    double trainingTime;
-    VectorDouble testFMeasure;
-    VectorDouble testPrecision;
-    VectorDouble testRecall;
-    VectorDouble regressionData;
-    double testRejectionPrecision;
-    double testRejectionRecall;
-    MatrixDouble testConfusionMatrix;
-    vector< TestResult > crossValidationResults;
-    vector< TestInstanceResult > testResults;
+    float_t testAccuracy;
+    float_t testRMSError;
+    float_t testSquaredError;
+    float_t testTime;
+    float_t trainingTime;
+    VectorFloat testFMeasure;
+    VectorFloat testPrecision;
+    VectorFloat testRecall;
+    VectorFloat regressionData;
+    float_t testRejectionPrecision;
+    float_t testRejectionRecall;
+    MatrixFloat testConfusionMatrix;
+    std::vector< TestResult > crossValidationResults;
+    std::vector< TestInstanceResult > testResults;
     
-    vector< PreProcessing* > preProcessingModules;
-    vector< FeatureExtraction* > featureExtractionModules;
+    std::vector< PreProcessing* > preProcessingModules;
+    std::vector< FeatureExtraction* > featureExtractionModules;
     Classifier *classifier;
     Regressifier *regressifier;
     Clusterer *clusterer;
-    vector< PostProcessing* > postProcessingModules;
-    vector< vector< Context* > > contextModules;
+    std::vector< PostProcessing* > postProcessingModules;
+    std::vector< vector< Context* > > contextModules;
     
     enum PipelineModes{PIPELINE_MODE_NOT_SET=0,CLASSIFICATION_MODE,REGRESSION_MODE,CLUSTER_MODE};
     
@@ -1156,7 +1157,7 @@ public:
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_GESTURE_RECOGNITION_PIPELINE_HEADER
 

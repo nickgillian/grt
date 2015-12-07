@@ -178,7 +178,7 @@ bool FeatureExtraction::getFeatureDataReady() const{
     return featureDataReady;
 }
 
-VectorDouble FeatureExtraction::getFeatureVector() const{ 
+VectorFloat FeatureExtraction::getFeatureVector() const{ 
     return featureVector; 
 }
     
