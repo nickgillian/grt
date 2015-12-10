@@ -25,7 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <string.h>
 #include "Util.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class Log{
 public:
@@ -272,6 +272,6 @@ protected:
     bool writeProceedingText;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_LOG_HEADER

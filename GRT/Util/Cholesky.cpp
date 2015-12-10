@@ -23,7 +23,7 @@
 
 #include "Cholesky.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 Cholesky::Cholesky(){
 	debugLog.setProceedingText("[DEBUG LUdcmp]");
@@ -141,4 +141,4 @@ float_t Cholesky::logdet(){
 	return 2.*sum;
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE

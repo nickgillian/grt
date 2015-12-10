@@ -310,7 +310,7 @@ public:
      
      @return returns a vector of VectorDoubles containing the current data in the DTW circular buffer
      */
-    vector< VectorDouble > getInputDataBuffer(){ return continuousInputDataBuffer.getDataAsVector(); }
+    vector< VectorDouble > getInputDataBuffer(){ return continuousInputDataBuffer.getData(); }
 
     /**
      Gets the distances matrices from the last prediction.  Each element in the vector represents the distance matrices for each corresponding class.

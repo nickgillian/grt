@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "InfoLog.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 bool InfoLog::infoLoggingEnabled = true;
 ObserverManager< InfoLogMessage > InfoLog::observerManager;
@@ -40,4 +40,4 @@ bool InfoLog::removeObserver(Observer< InfoLogMessage > &observer)
     return observerManager.removeObserver(observer);
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE

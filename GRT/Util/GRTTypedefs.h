@@ -112,6 +112,24 @@ typedef unsigned int UINT;
 typedef signed int SINT;
 typedef unsigned long ULONG;
 #endif
+
+// Cross-platform deprecation warning, based on openFrameworks OF_DEPRECATED
+#ifdef __GNUC__
+// clang also has this defined. deprecated(message) is only for gcc>=4.5
+#if (__GNUC__ >= 4) && (__GNUC_MINOR__ >= 5)
+#define GRT_DEPRECATED_MSG(message, func) func __attribute__ ((deprecated(message)))
+#else
+#define GRT_DEPRECATED_MSG(message, func) func __attribute__ ((deprecated))
+#endif
+#define GRT_DEPRECATED(func) func __attribute__ ((deprecated))
+#elif defined(_MSC_VER)
+#define GRT_DEPRECATED_MSG(message, func) __declspec(deprecated(message)) func
+#define GRT_DEPRECATED(func) __declspec(deprecated) func
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#define GRT_DEPRECATED_MSG(message, func) func
+#define GRT_DEPRECATED(func) func
+#endif
     
 //Declare typedefs for the legacy data types
 class ClassificationData;

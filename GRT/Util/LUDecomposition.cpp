@@ -23,7 +23,7 @@
 
 #include "LUDecomposition.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 LUDecomposition::LUDecomposition(const MatrixFloat &a) : sing(false){
     
@@ -175,4 +175,4 @@ MatrixFloat LUDecomposition::getLU(){
 	return lu;
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

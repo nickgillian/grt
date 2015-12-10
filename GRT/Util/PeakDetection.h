@@ -64,7 +64,7 @@ public:
     CircularBuffer< double > firstDerivBuffer;
     CircularBuffer< double > secondDerivBuffer;
     CircularBuffer< unsigned int > peakTypesBuffer;
-    vector< PeakInfo > peakInfo;
+    std::vector< PeakInfo > peakInfo;
     PeakInfo globalMaximaPeakInfo;
     PeakInfo globalMinimaPeakInfo;
     

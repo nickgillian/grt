@@ -35,10 +35,10 @@
 #define GRT_CIRCULAR_BUFFER_HEADER
 #include <iostream>
 #include <vector>
+#include "GRTTypedefs.h"
 #include "ErrorLog.h"
-using namespace std;
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 template <class T>
 class CircularBuffer{
@@ -213,7 +213,7 @@ class CircularBuffer{
     bool push_back(const T &value){
         
         if( !bufferInit ){
-            errorLog << "Can't push_back value to circular buffer as the buffer has not been initialized!" << endl;
+            errorLog << "Can't push_back value to circular buffer as the buffer has not been initialized!" << std::endl;
             return false;
         }
     
@@ -277,19 +277,34 @@ class CircularBuffer{
     }
     
     /**
+     @deprecated This function is now deprecated, you should use getData instead!
      Gets all the data in the buffer as a std::vector.
      
      @return returns a vector will all the data in the buffer
      */
-    vector< T > getDataAsVector() const{
+    GRT_DEPRECATED_MSG("Use getData() instead!", std::vector< T > getDataAsVector() const );
+
+    /**
+     Gets the data in the CircularBuffer's internal buffer as a std::vector.  The argument, rawBuffer, controls if the function
+     returns (if rawBuffer = true ) the entire contents of the internal buffer (with unsorted values and a constant size regardless on whether it is filled),
+     or the current contents of the Circular Buffer in order from oldest to newest (if rawBuffer = false).
+     
+     @return returns a std::vector with the data in the buffer
+     */
+    std::vector< T > getData( const bool rawBuffer = false ) const{
         if( bufferInit ){
-            vector< T > data( bufferSize );
-            for(unsigned int i=0; i<bufferSize; i++){
-                data[i] = (*this)[i];
+
+            if( rawBuffer ){
+                return buffer; //Here we return the entire data buffer
+            }else{ //Here we return only valid elements and in order from oldest to newest
+                std::vector< T > data( numValuesInBuffer );
+                for(unsigned int i=0; i<numValuesInBuffer; i++){
+                    data[i] = (*this)[i]; //Gets the ordered element
+                }
+                return data;
             }
-            return data;
         }
-        return vector< T >();
+        return std::vector< T >();
     }
     
     /**
@@ -334,22 +349,30 @@ class CircularBuffer{
      */
     unsigned int getWritePointerPosition() const { return bufferInit ? writePtr : 0; }
     
+    /**
+     Returns the most recent value added to the buffer.
+     
+     @return returns the most recent value added to the buffer
+     */
     T getBack() const {
         if( !bufferInit ) return T();
         return buffer[ (readPtr + numValuesInBuffer - 1) % bufferSize ];
     }
     
 protected:
+    bool bufferInit;
     unsigned int bufferSize;
     unsigned int numValuesInBuffer;
     unsigned int readPtr;
     unsigned int writePtr;
-    vector< T > buffer;
-    bool bufferInit;
+    std::vector< T > buffer;
     
     ErrorLog errorLog;
 };
 
-}//End of namespace GRT
+//Deprecated function
+template< class T > std::vector< T > CircularBuffer< T >::getDataAsVector() const{ return getData(); };
+
+GRT_END_NAMESPACE
 
 #endif //GRT_CIRCULAR_BUFFER_HEADER

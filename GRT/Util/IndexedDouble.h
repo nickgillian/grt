@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRT_INDEXED_DOUBLE_HEADER
 #define GRT_INDEXED_DOUBLE_HEADER
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class IndexedDouble{
 public:
@@ -67,6 +67,6 @@ public:
     double value;
 };
 
-}; //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_INDEXED_DOUBLE_HEADER

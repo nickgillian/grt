@@ -25,7 +25,7 @@
 
 #include "MatrixFloat.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
     
 class LUDecomposition{
 	
@@ -42,9 +42,9 @@ public:
 	
 private:
 	unsigned int N;
-	double d;
+	float_t d;
 	bool sing;
-	vector< int > indx;
+	std::vector< int > indx;
 	MatrixFloat aref;
 	MatrixFloat lu;
     
@@ -53,6 +53,6 @@ private:
     WarningLog warningLog;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_LUDCMP_HEADER

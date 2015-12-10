@@ -24,7 +24,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <iostream>
 #include <exception>
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
+
 class Exception : public std::exception
 {
 public:
@@ -45,6 +46,6 @@ protected:
     std::string error;
 };
     
-}
+GRT_END_NAMESPACE
 
 #endif //GRT_EXCEPTION_HEADER

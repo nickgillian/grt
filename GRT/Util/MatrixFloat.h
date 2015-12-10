@@ -30,9 +30,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "FileParser.h"
 #include "ErrorLog.h"
 
-using namespace std;
-
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class MatrixFloat : public Matrix< float_t >{
 public:
@@ -317,6 +315,6 @@ protected:
     
 };
     
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MATRIX_float_t_HEADER

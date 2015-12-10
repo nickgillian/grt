@@ -31,7 +31,7 @@
 #define GRT_CHOLESKY_HEADER
 #include "GRTCommon.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 class Cholesky{
 public:
@@ -55,6 +55,6 @@ public:
 
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_CHOLESKY_HEADER

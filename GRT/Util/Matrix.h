@@ -36,7 +36,7 @@
 #include "GRTException.h"
 #include "ErrorLog.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 template <class T> class Matrix{
 public:
@@ -585,6 +585,6 @@ protected:
 
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MATRIX_HEADER
