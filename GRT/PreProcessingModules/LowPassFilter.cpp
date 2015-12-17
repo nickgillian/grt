@@ -268,8 +268,9 @@ VectorDouble LowPassFilter::filter(const VectorDouble &x){
         return VectorDouble();
     }
     
+    //Exponential moving average filter: lastOutput*alpha + (1.0f-alpha)*input;
     for(UINT n=0; n<numInputDimensions; n++){
-        processedData[n] = (x[n] * filterFactor) + (yy[n] * (1.0 - filterFactor)) * gain;
+        processedData[n] = (yy[n] * filterFactor) + (x[n] * (1.0 - filterFactor)) * gain;
         yy[n] = processedData[n];
     }
     return processedData;

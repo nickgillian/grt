@@ -71,6 +71,44 @@ bool DecisionTreeClusterNode::computeFeatureWeights( VectorDouble &weights ) con
     return true;
 }
 
+bool DecisionTreeClusterNode::computeLeafNodeWeights( MatrixDouble &weights ) const{
+
+    if( isLeafNode ){ //If we reach a leaf node, there is nothing to do
+        return true;
+    }
+
+    if( featureIndex >= weights.getNumCols() ){ //Feature index is out of bounds
+        warningLog << "computeFeatureWeights( VectorDouble &weights ) - Feature index is greater than weights vector size!" << endl;
+        return false;
+    }
+
+    if( leftChild ){ //Recursively compute the weights for the left child until we reach the node above a leaf node
+        if( leftChild->getIsLeafNode() ){
+            if( (UINT)(classProbabilities.size()) != weights.getNumRows() ){
+                warningLog << "computeFeatureWeights( VectorDouble &weights ) - The number of rows in the weights matrix does not match the class probabilities vector size!" << endl;
+                return false;
+            }
+            for(size_t i=0; i<classProbabilities.size(); i++){
+                weights[ i ][ featureIndex ] += classProbabilities[ i ];
+            }
+            
+        } leftChild->computeLeafNodeWeights( weights );
+    }
+    if( rightChild ){ //Recursively compute the weights for the right child until we reach the node above a leaf node
+        if( rightChild->getIsLeafNode() ){
+            if( (UINT)(classProbabilities.size()) != weights.getNumRows() ){
+                warningLog << "computeFeatureWeights( VectorDouble &weights ) - The number of rows in the weights matrix does not match the class probabilities vector size!" << endl;
+                return false;
+            }
+            for(size_t i=0; i<classProbabilities.size(); i++){
+                weights[ i ][ featureIndex ] += classProbabilities[ i ];
+            }
+        } rightChild->computeLeafNodeWeights( weights );
+    }
+
+    return true;
+}
+
 bool DecisionTreeClusterNode::getModel(ostream &stream) const{
 
     string tab = "";
