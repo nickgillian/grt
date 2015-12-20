@@ -35,7 +35,7 @@
 
 #include "../../CoreModules/Regressifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class LogisticRegression : public Regressifier
 {
@@ -94,7 +94,7 @@ public:
      @param file: a reference to the file the Logistic Regression model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained Logistic Regression model from a file.
@@ -103,7 +103,7 @@ public:
      @param file: a reference to the file the Logistic Regression model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      Gets the current maxNumIterations value, this is the maximum number of iterations that can be run during the training phase.
@@ -116,7 +116,7 @@ public:
      Sets the maximum number of iterations that can be run during the training phase.
      The maxNumIterations value must be greater than zero.
      
-     @param UINT maxNumIterations: the maximum number of iterations value, must be greater than zero
+     @param maxNumIterations: the maximum number of iterations value, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
     bool setMaxNumIterations(UINT maxNumIterations);
@@ -127,14 +127,14 @@ public:
 
 protected:
 	inline float_t sigmoid(const float_t x) const;
-    bool loadLegacyModelFromFile( fstream &file );
+    bool loadLegacyModelFromFile( std::fstream &file );
 	
     float_t w0; ///<The bias
     VectorFloat w; ///<The weights vector
     static RegisterRegressifierModule< LogisticRegression > registerModule;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_LOGISTIC_REGRESSION_HEADER
 

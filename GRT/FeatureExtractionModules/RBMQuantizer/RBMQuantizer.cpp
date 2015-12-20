@@ -74,7 +74,7 @@ bool RBMQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << endl;
+    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -111,7 +111,7 @@ bool RBMQuantizer::clear(){
     return true;
 }
     
-bool RBMQuantizer::saveModelToFile(string filename) const{
+bool RBMQuantizer::saveModelToFile( std::string filename ) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -125,7 +125,7 @@ bool RBMQuantizer::saveModelToFile(string filename) const{
     return true;
 }
 
-bool RBMQuantizer::loadModelFromFile(string filename){
+bool RBMQuantizer::loadModelFromFile( std::string filename ){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
@@ -140,28 +140,28 @@ bool RBMQuantizer::loadModelFromFile(string filename){
     return true;
 }
 
-bool RBMQuantizer::saveModelToFile(fstream &file) const{
+bool RBMQuantizer::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //Write the header
-    file << "RBM_QUANTIZER_FILE_V1.0" << endl;
+    file << "RBM_QUANTIZER_FILE_V1.0" << std::endl;
 	
     //Save the base feature extraction settings to the file
     if( !saveFeatureExtractionSettingsToFile( file ) ){
-        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
         return false;
     }
     
-    file << "QuantizerTrained: " << trained << endl;
-    file << "NumClusters: " << numClusters << endl;
+    file << "QuantizerTrained: " << trained << std::endl;
+    file << "NumClusters: " << numClusters << std::endl;
     
     if( trained ){
         if( !rbm.saveModelToFile( file ) ){
-            errorLog << "saveModelToFile(fstream &file) - Failed to save RBM settings to file!" << endl;
+            errorLog << "saveModelToFile(fstream &file) - Failed to save RBM settings to file!" << std::endl;
             return false;
         }
     }
@@ -169,48 +169,48 @@ bool RBMQuantizer::saveModelToFile(fstream &file) const{
     return true;
 }
 
-bool RBMQuantizer::loadModelFromFile(fstream &file){
+bool RBMQuantizer::loadModelFromFile( std::fstream &file ){
     
     //Clear any previous model
     clear();
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //First, you should read and validate the header
     file >> word;
     if( word != "RBM_QUANTIZER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;
     }
     
     //Second, you should load the base feature extraction settings to the file
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
-        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if( word != "QuantizerTrained:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load QuantizerTrained!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to load QuantizerTrained!" << std::endl;
         return false;
     }
     file >> trained;
     
     file >> word;
     if( word != "NumClusters:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load NumClusters!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to load NumClusters!" << std::endl;
         return false;
     }
     file >> numClusters;
     
     if( trained ){
         if( !rbm.loadModelFromFile( file ) ){
-            errorLog << "loadModelFromFile(fstream &file) - Failed to load SelfOrganizingMap settings from file!" << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Failed to load SelfOrganizingMap settings from file!" << std::endl;
             return false;
         }
         initialized = true;
@@ -247,7 +247,7 @@ bool RBMQuantizer::train_(MatrixFloat &trainingData){
     clear();
     
     if( trainingData.getNumRows() == 0 ){
-        errorLog << "train_(MatrixFloat &trainingData) - Failed to train quantizer, the training data is empty!" << endl;
+        errorLog << "train_(MatrixFloat &trainingData) - Failed to train quantizer, the training data is empty!" << std::endl;
         return false;
     }
     
@@ -259,7 +259,7 @@ bool RBMQuantizer::train_(MatrixFloat &trainingData){
     rbm.setMinChange( minChange );
     
     if( !rbm.train_( trainingData ) ){
-        errorLog << "train_(MatrixFloat &trainingData) - Failed to train quantizer!" << endl;
+        errorLog << "train_(MatrixFloat &trainingData) - Failed to train quantizer!" << std::endl;
         return false;
     }
     
@@ -281,17 +281,17 @@ UINT RBMQuantizer::quantize(const float_t inputValue){
 UINT RBMQuantizer::quantize(const VectorFloat &inputVector){
 	
     if( !trained ){
-        errorLog << "quantize(const VectorFloat &inputVector) - The quantizer model has not been trained!" << endl;
+        errorLog << "quantize(const VectorFloat &inputVector) - The quantizer model has not been trained!" << std::endl;
         return 0;
     }
 
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "quantize(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "quantize(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return 0;
     }
 	
     if( !rbm.predict( inputVector ) ){
-        errorLog << "quantize(const VectorFloat &inputVector) - Failed to quantize input!" << endl;
+        errorLog << "quantize(const VectorFloat &inputVector) - Failed to quantize input!" << std::endl;
         return 0;
     }
     

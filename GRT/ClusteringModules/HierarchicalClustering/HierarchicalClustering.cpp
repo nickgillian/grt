@@ -163,7 +163,7 @@ bool HierarchicalClustering::train_(MatrixFloat &data){
     //Build the distance matrix
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<M; j++){
-            if( i== j ) distanceMatrix[i][j] = grt_numeric_limits_max< float_t >();
+            if( i== j ) distanceMatrix[i][j] = grt_numeric_limits< float_t >::max();
             else{
                 distanceMatrix[i][j] = squaredEuclideanDistance(data[i], data[j]);
             }
@@ -196,7 +196,7 @@ bool HierarchicalClustering::train_(MatrixFloat &data){
     while( keepClustering ){
         
         //Find the closest two clusters within the cluster data
-        float_t minDist = grt_numeric_limits_max< float_t >();
+        float_t minDist = grt_numeric_limits< float_t >::max();
         Vector< Vector< UINT > > clusterPairs;
         UINT K = (UINT)clusterData.size();
         for(UINT i=0; i<K; i++){
@@ -217,7 +217,7 @@ bool HierarchicalClustering::train_(MatrixFloat &data){
             }
         }
         
-        if( minDist == grt_numeric_limits_max< float_t >() ){
+        if( minDist == grt_numeric_limits< float_t >::max() ){
             keepClustering = false;
             warningLog << "train_(MatrixFloat &data) - Failed to find any cluster at level: " << level << std::endl;
             return false;
@@ -339,7 +339,7 @@ float_t HierarchicalClustering::squaredEuclideanDistance(const float_t *a,const 
     
 float_t HierarchicalClustering::computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB ){
     
-    float_t minDist = grt_numeric_limits_max< float_t >();
+    float_t minDist = grt_numeric_limits< float_t >::max();
     const UINT numSamplesA = clusterA.getNumSamplesInCluster();
     const UINT numSamplesB = clusterB.getNumSamplesInCluster();
     

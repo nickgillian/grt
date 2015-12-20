@@ -132,14 +132,14 @@ bool SavitzkyGolayFilter::reset(){
     return false;
 }
     
-bool SavitzkyGolayFilter::saveModelToFile(string filename) const{
+bool SavitzkyGolayFilter::saveModelToFile( std::string filename ) const{
     
     if( !initialized ){
         errorLog << "saveModelToFile(string filename) - The HighPassFilter has not been initialized" << std::endl;
         return false;
     }
     
-    std::std::fstream file; 
+    std::fstream file; 
     file.open(filename.c_str(), std::ios::out);
     
     if( !saveModelToFile( file ) ){
@@ -172,9 +172,9 @@ bool SavitzkyGolayFilter::saveModelToFile(std::fstream &file) const{
     return true;
 }
 
-bool SavitzkyGolayFilter::loadModelFromFile(string filename){
+bool SavitzkyGolayFilter::loadModelFromFile( std::string filename ){
     
-    std::std::fstream file; 
+    std::fstream file; 
     file.open(filename.c_str(), std::ios::in);
     
     if( !loadModelFromFile( file ) ){

@@ -54,7 +54,7 @@ PostProcessing::~PostProcessing(void){
 bool PostProcessing::copyBaseVariables(const PostProcessing *postProcessingModule){
     
     if( postProcessingModule == NULL ){
-        errorLog << "copyBaseVariables(const PostProcessing *postProcessingModule) - postProcessingModule pointer is NULL!" << endl;
+        errorLog << "copyBaseVariables(const PostProcessing *postProcessingModule) - postProcessingModule pointer is NULL!" << std::endl;
         return false;
     }
     
@@ -78,7 +78,7 @@ bool PostProcessing::copyBaseVariables(const PostProcessing *postProcessingModul
 bool PostProcessing::init(){
     
     if( numOutputDimensions == 0 ){
-        errorLog << "init() - Failed to init module, the number of output dimensions is zero!" << endl;
+        errorLog << "init() - Failed to init module, the number of output dimensions is zero!" << std::endl;
         initialized = false;
         return false;
     }
@@ -147,7 +147,7 @@ bool PostProcessing::loadPostProcessingSettingsFromFile(std::fstream &file){
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load if the filter has been initialized
     file >> word;
@@ -170,7 +170,7 @@ PostProcessing* PostProcessing::createNewInstance() const{
     return createInstanceFromString(postProcessingType);
 }
 
-string PostProcessing::getPostProcessingType() const{ 
+std::string PostProcessing::getPostProcessingType() const{ 
     return postProcessingType;
 }
     

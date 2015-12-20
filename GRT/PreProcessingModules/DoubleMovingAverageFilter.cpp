@@ -120,14 +120,14 @@ bool DoubleMovingAverageFilter::reset(){
     return false;
 }
     
-bool DoubleMovingAverageFilter::saveModelToFile(string filename) const{
+bool DoubleMovingAverageFilter::saveModelToFile( std::string filename ) const{
     
     if( !initialized ){
         errorLog << "saveModelToFile(string filename) - The DoubleMovingAverageFilter has not been initialized" << std::endl;
         return false;
     }
     
-    std::std::fstream file; 
+    std::fstream file; 
     file.open(filename.c_str(), std::ios::out);
     
     if( !saveModelToFile( file ) ){
@@ -156,9 +156,9 @@ bool DoubleMovingAverageFilter::saveModelToFile(std::fstream &file) const{
     return true;
 }
 
-bool DoubleMovingAverageFilter::loadModelFromFile(string filename){
+bool DoubleMovingAverageFilter::loadModelFromFile( std::string filename ){
     
-    std::std::fstream file; 
+    std::fstream file; 
     file.open(filename.c_str(), std::ios::in);
     
     if( !loadModelFromFile( file ) ){
@@ -172,14 +172,14 @@ bool DoubleMovingAverageFilter::loadModelFromFile(string filename){
     return true;
 }
 
-bool DoubleMovingAverageFilter::loadModelFromFile(std::fstream &file){
+bool DoubleMovingAverageFilter::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
         errorLog << "loadModelFromFile(std::fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
@@ -265,7 +265,7 @@ float_t DoubleMovingAverageFilter::filter(const float_t x){
     
     VectorFloat y = filter(VectorFloat(1,x));
     
-    if( y.size() == 0 ) return 0;
+    if( y.getSize() == 0 ) return 0;
     return y[0];
 }
     
@@ -277,7 +277,7 @@ VectorFloat DoubleMovingAverageFilter::filter(const VectorFloat &x){
         return VectorFloat();
     }
     
-    if( x.size() != numInputDimensions ){
+    if( x.getSize() != numInputDimensions ){
         errorLog << "filter(const VectorFloat &x) - The size of the input vector (" << x.getSize() << ") does not match that of the number of dimensions of the filter (" << numInputDimensions << ")!" << std::endl;
         return VectorFloat();
     }
@@ -293,7 +293,8 @@ VectorFloat DoubleMovingAverageFilter::filter(const VectorFloat &x){
     if( yy.size() == 0 ) return y;
     
     //Account for the filter lag
-    for(UINT i=0; i<y.getSize(); i++){
+    const UINT N = y.getSize();
+    for(UINT i=0; i<N; i++){
         yy[i] = y[i] + (y[i] - yy[i]); 
         processedData[i] = yy[i];
     }

@@ -54,8 +54,8 @@ const Classifier* Classifier::getClassifierPointer() const{
     return this;
 }
 
-Vector< string > Classifier::getRegisteredClassifiers(){
-	Vector< string > registeredClassifiers;
+Vector< std::string > Classifier::getRegisteredClassifiers(){
+	Vector< std::string > registeredClassifiers;
 	
 	StringClassifierMap::iterator iter = getMap()->begin();
 	while( iter != getMap()->end() ){
@@ -157,7 +157,7 @@ bool Classifier::clear(){
     return true;
 }
 
-string Classifier::getClassifierType() const{
+std::string Classifier::getClassifierType() const{
     return classifierType; 
 }
     

@@ -215,7 +215,7 @@ template< typename T >  PreProcessing *newPreProcessingModuleInstance() { return
 template< typename T > 
 class RegisterPreProcessingModule : PreProcessing { 
 public:
-    RegisterPreProcessingModule( std::string const &newPreProcessingModuleName ) { 
+    RegisterPreProcessingModule( const std::string &newPreProcessingModuleName ) { 
         getMap()->insert( std::pair< std::string, PreProcessing*(*)() >(newPreProcessingModuleName, &newPreProcessingModuleInstance< T > ) );
     }
 };

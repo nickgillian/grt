@@ -81,7 +81,7 @@ bool TimeDomainFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << endl;
+    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -89,12 +89,12 @@ bool TimeDomainFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction
 bool TimeDomainFeatures::computeFeatures(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -110,7 +110,7 @@ bool TimeDomainFeatures::reset(){
     return false;
 }
     
-bool TimeDomainFeatures::saveModelToFile(string filename) const{
+bool TimeDomainFeatures::saveModelToFile( std::string filename ) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -124,7 +124,7 @@ bool TimeDomainFeatures::saveModelToFile(string filename) const{
     return true;
 }
 
-bool TimeDomainFeatures::loadModelFromFile(string filename){
+bool TimeDomainFeatures::loadModelFromFile( std::string filename ){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
@@ -139,60 +139,60 @@ bool TimeDomainFeatures::loadModelFromFile(string filename){
     return true;
 }
 
-bool TimeDomainFeatures::saveModelToFile(fstream &file) const{
+bool TimeDomainFeatures::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //Write the file header
-    file << "GRT_TIME_DOMAIN_FEATURES_FILE_V1.0" << endl;	
+    file << "GRT_TIME_DOMAIN_FEATURES_FILE_V1.0" << std::endl;	
     
     //Save the base settings to the file
     if( !saveFeatureExtractionSettingsToFile( file ) ){
-        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
         return false;
     }
     
     //Write the time domain settings to the file
-    file << "BufferLength: " << bufferLength << endl;
-    file << "NumFrames: " << numFrames << endl;
-    file << "OffsetInput: " << offsetInput << endl;
-    file << "UseMean: " << useMean << endl;
-    file << "UseStdDev: " << useStdDev << endl;
-    file << "UseEuclideanNorm: " << useEuclideanNorm << endl;
-    file << "UseRMS: " << useRMS << endl;
+    file << "BufferLength: " << bufferLength << std::endl;
+    file << "NumFrames: " << numFrames << std::endl;
+    file << "OffsetInput: " << offsetInput << std::endl;
+    file << "UseMean: " << useMean << std::endl;
+    file << "UseStdDev: " << useStdDev << std::endl;
+    file << "UseEuclideanNorm: " << useEuclideanNorm << std::endl;
+    file << "UseRMS: " << useRMS << std::endl;
     
     return true;
 }
 
-bool TimeDomainFeatures::loadModelFromFile(fstream &file){
+bool TimeDomainFeatures::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_TIME_DOMAIN_FEATURES_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
-        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
         return false;
     }
     
     //Load the BufferLength
     file >> word;
     if( word != "BufferLength:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read BufferLength header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read BufferLength header!" << std::endl;
         return false;     
     }
     file >> bufferLength;
@@ -200,7 +200,7 @@ bool TimeDomainFeatures::loadModelFromFile(fstream &file){
     //Load the NumFrames
     file >> word;
     if( word != "NumFrames:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumFrames header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumFrames header!" << std::endl;
         return false;     
     }
     file >> numFrames;
@@ -208,7 +208,7 @@ bool TimeDomainFeatures::loadModelFromFile(fstream &file){
     //Load the OffsetInput
     file >> word;
     if( word != "OffsetInput:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read OffsetInput header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read OffsetInput header!" << std::endl;
         return false;     
     }
     file >> offsetInput;
@@ -216,7 +216,7 @@ bool TimeDomainFeatures::loadModelFromFile(fstream &file){
     //Load the UseMean
     file >> word;
     if( word != "UseMean:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseMean header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseMean header!" << std::endl;
         return false;     
     }
     file >> useMean;
@@ -224,7 +224,7 @@ bool TimeDomainFeatures::loadModelFromFile(fstream &file){
     //Load the UseStdDev
     file >> word;
     if( word != "UseStdDev:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseStdDev header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseStdDev header!" << std::endl;
         return false;     
     }
     file >> useStdDev;
@@ -232,7 +232,7 @@ bool TimeDomainFeatures::loadModelFromFile(fstream &file){
     //Load the UseEuclideanNorm
     file >> word;
     if( word != "UseEuclideanNorm:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseEuclideanNorm header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseEuclideanNorm header!" << std::endl;
         return false;     
     }
     file >> useEuclideanNorm;
@@ -240,7 +240,7 @@ bool TimeDomainFeatures::loadModelFromFile(fstream &file){
     //Load the UseRMS
     file >> word;
     if( word != "UseRMS:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseRMS header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseRMS header!" << std::endl;
         return false;
     }
     file >> useRMS;
@@ -254,11 +254,11 @@ bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimension
     initialized = false;
     
     if( numFrames > bufferLength ){
-        errorLog << "init(...) - The number of numFrames parameter can not be larger than the buffer length parameter!" << endl;
+        errorLog << "init(...) - The number of numFrames parameter can not be larger than the buffer length parameter!" << std::endl;
         return false;
     }
     if( bufferLength % numFrames != 0 ){
-        errorLog << "init(...) - The buffer length parameter must be divisible with no remainders by the number of numFrames parameter!" << endl;
+        errorLog << "init(...) - The buffer length parameter must be divisible with no remainders by the number of numFrames parameter!" << std::endl;
         return false;
     }
     
@@ -287,7 +287,7 @@ bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimension
         numOutputDimensions += numInputDimensions*numFrames;
     }
     if( numOutputDimensions == 0 ){
-        errorLog << "init(...) - The numOutputDimensions is zero!" << endl;
+        errorLog << "init(...) - The numOutputDimensions is zero!" << std::endl;
         return false;
     }
     
@@ -311,12 +311,12 @@ VectorFloat TimeDomainFeatures::update(float_t x){
 VectorFloat TimeDomainFeatures::update(const VectorFloat &x){
     
     if( !initialized ){
-        errorLog << "update(const VectorFloat &x) - Not Initialized!" << endl;
+        errorLog << "update(const VectorFloat &x) - Not Initialized!" << std::endl;
         return VectorFloat();
     }
     
-    if( x.size() != numInputDimensions ){
-        errorLog << "update(const VectorFloat &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
+    if( x.getSize() != numInputDimensions ){
+        errorLog << "update(const VectorFloat &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.getSize() << ")!" << std::endl;
         return VectorFloat();
     }
     

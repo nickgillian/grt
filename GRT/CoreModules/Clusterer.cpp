@@ -256,7 +256,7 @@ Vector< UINT > Clusterer::getClusterLabels() const{
     return clusterLabels;
 }
 
-string Clusterer::getClustererType() const{ return clustererType; }
+std::string Clusterer::getClustererType() const{ return clustererType; }
     
 const Clusterer& Clusterer::getBaseClusterer() const{
     return *this;

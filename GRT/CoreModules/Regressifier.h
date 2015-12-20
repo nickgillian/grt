@@ -35,7 +35,7 @@
 #include "../DataStructures/ClassificationData.h"
 #include "../DataStructures/TimeSeriesClassificationData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 #define DEFAULT_NULL_LIKELIHOOD_VALUE 0
 #define DEFAULT_NULL_DISTANCE_VALUE 0
@@ -90,41 +90,41 @@ public:
      
      @return returns the regressifier type as a string
      */
-    string getRegressifierType() const;
+    std::string getRegressifierType() const;
     
     /**
-     Gets a vector containing the regression data output by the regression algorithm, this will be an M-dimensional vector, where M is the number of output dimensions in the model.  
+     Gets a Vector containing the regression data output by the regression algorithm, this will be an M-dimensional Vector, where M is the number of output dimensions in the model.  
      
-     @return returns a vector containing the regression data output by the regression algorithm, an empty vector will be returned if the model has not been trained
+     @return returns a Vector containing the regression data output by the regression algorithm, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getRegressionData() const;
     
     /**
      Returns the ranges of the input (i.e. feature) data.
      
-     @return returns a vector of MinMax values representing the ranges of the input data
+     @return returns a Vector of MinMax values representing the ranges of the input data
      */
-	vector< MinMax > getInputRanges() const;
+	Vector< MinMax > getInputRanges() const;
     
     /**
      Returns the ranges of the output (i.e. target) data.
      
-     @return returns a vector of MinMax values representing the ranges of the target data
+     @return returns a Vector of MinMax values representing the ranges of the target data
      */
-	vector< MinMax > getOutputRanges() const;
+	Vector< MinMax > getOutputRanges() const;
     
     /**
      Defines a map between a string (which will contain the name of the regressifier, such as LinearRegression) and a function returns a new instance of that regressifier
      */
-    typedef std::map< string, Regressifier*(*)() > StringRegressifierMap;
+    typedef std::map< std::string, Regressifier*(*)() > StringRegressifierMap;
 
     /**
      Creates a new regressifier instance based on the input string (which should contain the name of a valid regressifier such as LinearRegression).
      
-     @param egressifierType: the name of the regressifier
+     @param regressifierType: the name of the regressifier
      @return Regressifier*: a pointer to the new instance of the regressifier
      */
-    static Regressifier* createInstanceFromString(string const &regressifierType);
+    static Regressifier* createInstanceFromString( const std::string &regressifierType );
 
     /**
      Creates a new regressifier instance based on the current regressifierType string value.
@@ -150,11 +150,11 @@ public:
     const Regressifier& getBaseRegressifier() const;
     
     /**
-     Returns a vector of the names of all regressifiers that have been registered with the base regressifier.
+     Returns a Vector of the names of all regressifiers that have been registered with the base regressifier.
      
-     @return vector< string >: a vector containing the names of the regressifiers that have been registered with the base regressifier
+     @return Vector< string >: a Vector containing the names of the regressifiers that have been registered with the base regressifier
      */
-	static vector< string > getRegisteredRegressifiers();
+	static Vector< std::string > getRegisteredRegressifiers();
 	
 	//Tell the compiler we are explicitly using the following classes from the base class (this stops hidden overloaded virtual function warnings)
     using MLBase::train;
@@ -165,19 +165,19 @@ protected:
      
      @return returns true if the base settings were saved, false otherwise
      */
-    bool saveBaseSettingsToFile(fstream &file) const;
+    bool saveBaseSettingsToFile( std::fstream &file ) const;
     
     /**
      Loads the core base settings from a file.
      
      @return returns true if the base settings were loaded, false otherwise
      */
-    bool loadBaseSettingsFromFile(fstream &file);
+    bool loadBaseSettingsFromFile( std::fstream &file );
 
-    string regressifierType;
+    std::string regressifierType;
     VectorFloat regressionData;
-    vector< MinMax > inputVectorRanges;
-	vector< MinMax > targetVectorRanges;
+    Vector< MinMax > inputVectorRanges;
+	Vector< MinMax > targetVectorRanges;
     
     static StringRegressifierMap *getMap() {
         if( !stringRegressifierMap ){ stringRegressifierMap = new StringRegressifierMap; } 
@@ -196,12 +196,12 @@ template< typename T >  Regressifier *newRegressionModuleInstance() { return new
 template< typename T > 
 class RegisterRegressifierModule : public Regressifier { 
 public:
-    RegisterRegressifierModule(string const &newRegresionModuleName) { 
-        getMap()->insert( std::pair<string, Regressifier*(*)()>(newRegresionModuleName, &newRegressionModuleInstance< T > ) );
+    RegisterRegressifierModule( const std::string &newRegresionModuleName ) { 
+        getMap()->insert( std::pair< std::string, Regressifier*(*)() >(newRegresionModuleName, &newRegressionModuleInstance< T > ) );
     }
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_REGRESSIFIER_HEADER
 

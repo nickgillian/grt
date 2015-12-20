@@ -54,7 +54,7 @@ public:
     /**
      Copy constructor, copies the MovementTrajectoryFeatures from the rhs instance to this instance.
      
-     @param const MovementTrajectoryFeatures &rhs: another instance of the MovementTrajectoryFeatures class from which the data will be copied to this instance
+     @param rhs: another instance of the MovementTrajectoryFeatures class from which the data will be copied to this instance
      */
     MovementTrajectoryFeatures(const MovementTrajectoryFeatures &rhs);
     
@@ -66,7 +66,7 @@ public:
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance.
      
-     @param const MovementTrajectoryFeatures &rhs: another instance of the MovementTrajectoryFeatures class from which the data will be copied to this instance
+     @param rhs: another instance of the MovementTrajectoryFeatures class from which the data will be copied to this instance
      @return a reference to this instance of MovementTrajectoryFeatures
      */
     MovementTrajectoryFeatures& operator=(const MovementTrajectoryFeatures &rhs);
@@ -76,7 +76,7 @@ public:
      This function is used to deep copy the values from the input pointer to this instance of the FeatureExtraction module.
      This function is called by the GestureRecognitionPipeline when the user adds a new FeatureExtraction module to the pipeline.
      
-     @param FeatureExtraction *featureExtraction: a pointer to another instance of a MovementTrajectoryFeatures, the values of that instance will be cloned to this instance
+     @param featureExtraction: a pointer to another instance of a MovementTrajectoryFeatures, the values of that instance will be cloned to this instance
      @return returns true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const FeatureExtraction *featureExtraction);
@@ -86,7 +86,7 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the MovementTrajectoryFeatures's update function.
      
-     @param const vector< float_t > &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
     virtual bool computeFeatures(const VectorFloat &inputVector);
@@ -103,36 +103,36 @@ public:
     /**
      This saves the feature extraction settings to a file.
      
-     @param const string filename: the filename to save the settings to
+     @param filename: the filename to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(string filename) const;
+    virtual bool saveModelToFile( std::string filename ) const;
     
     /**
      This saves the feature extraction settings to a file.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool loadModelFromFile( std::string filename );
     
     /**
      This saves the feature extraction settings to a file.
      This overrides the saveSettingsToFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads the feature extraction settings from a file.
      This overrides the loadSettingsFromFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
 
     /**
      Initializes the MovementTrajectoryFeatures
@@ -142,7 +142,7 @@ public:
     /**
      Computes the features from the input, this should only be called if the dimensionality of this instance was set to 1.
      
-     @param float_t x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
+     @param x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
 	 @return a vector containing the features, an empty vector will be returned if the features were not computed
      */
 	VectorFloat update(float_t x);
@@ -150,7 +150,7 @@ public:
     /**
      Computes the features from the input, the dimensionality of x should match that of this instance.
      
-     @param const VectorFloat &x: a vector containing the values to be processed, must be the same size as the numInputDimensions
+     @param x: a vector containing the values to be processed, must be the same size as the numInputDimensions
 	 @return a vector containing the features, an empty vector will be returned if the features were not computed
      */
     VectorFloat update(const VectorFloat &x);

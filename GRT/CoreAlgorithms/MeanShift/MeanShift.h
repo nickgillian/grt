@@ -52,7 +52,7 @@ public:
         
     }
     
-    bool search( const VectorFloat &meanStart, const vector< VectorFloat > &points, const float_t searchRadius, const float_t sigma = 20.0 ){
+    bool search( const VectorFloat &meanStart, const Vector< VectorFloat > &points, const float_t searchRadius, const float_t sigma = 20.0 ){
         
         //clear the results from any previous search
         clear();
@@ -103,26 +103,26 @@ public:
                 
                 mean[j] = numer[j] / denom[j];
                 
-                change += SQR( mean[j] - lastMean[j] );
+                change += grt_sqr( mean[j] - lastMean[j] );
                 
                 lastMean[j] = mean[j];
             }
-            change = sqrt( change );
+            change = grt_sqrt( change );
             
             trainingLog << "iteration: " << iteration;
             trainingLog << " mean: ";
             for(unsigned int j=0; j<numDimensions; j++){
                 trainingLog << mean[j] << " ";
             }
-            trainingLog << " change: " << change << endl;
+            trainingLog << " change: " << change << std::endl;
             
             if( change < minChange ){
-                trainingLog << "min changed limit reached - stopping search" << endl;
+                trainingLog << "min changed limit reached - stopping search" << std::endl;
                 break;
             }
             
             if( ++iteration >= maxNumEpochs ){
-                trainingLog << "max number of iterations reached - stopping search." << endl;
+                trainingLog << "max number of iterations reached - stopping search." << std::endl;
                 break;
             }
             
@@ -138,15 +138,15 @@ public:
     }
     
     float_t gaussKernel( const float_t &x, const float_t &mu, const float_t gamma ){
-        return exp( gamma * SQR(x-mu) );
+        return exp( gamma * grt_sqr(x-mu) );
     }
     
     float_t gaussKernel( const VectorFloat &x, const VectorFloat &mu, const float_t gamma ){
         
         float_t y = 0;
-        const size_t N = x.size();
-        for(size_t i=0; i<N; i++){
-            y += SQR(x[i]-mu[i]);
+        const UINT N = x.getSize();
+        for(UINT i=0; i<N; i++){
+            y += grt_sqr(x[i]-mu[i]);
         }
         return exp( gamma * y );
     }
@@ -154,9 +154,9 @@ public:
     float_t euclideanDist( const VectorFloat &x, const VectorFloat &y ){
         
         float_t z = 0;
-        const size_t N = x.size();
-        for(size_t i=0; i<N; i++){
-            z += SQR(x[i]-y[i]);
+        const UINT N = x.getSize();
+        for(UINT i=0; i<N; i++){
+            z += grt_sqr(x[i]-y[i]);
         }
         return sqrt( z );
         

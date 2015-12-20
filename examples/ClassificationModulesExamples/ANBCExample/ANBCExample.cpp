@@ -47,6 +47,8 @@ You should run this example with one argument pointing to the data you want to l
 //You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
+using GRT::float_t;
 
 int main (int argc, const char * argv[])
 {

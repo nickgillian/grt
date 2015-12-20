@@ -33,7 +33,7 @@
 
 #include <functional>
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 template< class T > 
 class GridSearchRange {
@@ -132,8 +132,8 @@ public:
     
     bool search( ){
         
-        if( params.size() == 0 ){
-            warningLog << "No parameters to search! Add some parameters!" << endl;
+        if( params.getSize() == 0 ){
+            warningLog << "No parameters to search! Add some parameters!" << std::endl;
             return false;
         }
 
@@ -142,15 +142,15 @@ public:
                 bestResult = 0;
             break;
             case MinValueSearch:
-                bestResult = numeric_limits< float_t >::max();
+                bestResult = grt_numeric_limits< float_t >::max();
             break;
             default:
-               errorLog << "recursive_search( unsigned int paramIndex ) - Unknown eval type!" << endl;
+               errorLog << "recursive_search( unsigned int paramIndex ) - Unknown eval type!" << std::endl;
                return false;
             break; 
         }
 
-        if( params.size() == 0 ) return false;
+        if( params.getSize() == 0 ) return false;
         unsigned int paramIndex = 0;
         return recursive_search( paramIndex );
     }
@@ -174,9 +174,9 @@ protected:
 
     bool recursive_search( unsigned int paramIndex ){
         
-        const unsigned int numParams = (UINT)params.size();
+        const unsigned int numParams = params.getSize();
         if( paramIndex >= numParams ){
-            errorLog << "recursive_search( unsigned int paramIndex ) - Param Index out of bounds!" << endl;
+            errorLog << "recursive_search( unsigned int paramIndex ) - Param Index out of bounds!" << std::endl;
             return false;
         }
 
@@ -211,7 +211,7 @@ protected:
                         }
                     break;
                     default:
-                        errorLog << "recursive_search( unsigned int paramIndex ) - Unknown eval type!" << endl;
+                        errorLog << "recursive_search( unsigned int paramIndex ) - Unknown eval type!" << std::endl;
                         return false;
                     break; 
                 }
@@ -229,9 +229,9 @@ protected:
     }
 
     bool recursive_reset( unsigned int paramIndex ){
-        const unsigned int numParams = (UINT)params.size();
+        const unsigned int numParams = params.getSize();
         if( paramIndex >= numParams ){
-            errorLog << "recursive_reset( unsigned int paramIndex ) - Param Index out of bounds!" << endl;
+            errorLog << "recursive_reset( unsigned int paramIndex ) - Param Index out of bounds!" << std::endl;
             return false;
         }
 
@@ -241,7 +241,7 @@ protected:
         return params[ paramIndex ].reset();
     }
 
-    std::vector< GridSearchParam<unsigned int> > params;
+    Vector< GridSearchParam<unsigned int> > params;
     std::function< float_t () >  evalFunc; 
     SearchType evalType;
     float_t bestResult;
@@ -249,6 +249,6 @@ protected:
     T bestModel;
 };
 
-}
+GRT_END_NAMESPACE
 
 #endif // header guard

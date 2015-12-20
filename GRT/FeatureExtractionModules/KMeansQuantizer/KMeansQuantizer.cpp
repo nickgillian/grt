@@ -274,7 +274,7 @@ UINT KMeansQuantizer::quantize(const VectorFloat &inputVector){
     }
 
 	//Find the minimum cluster
-    float_t minDist = grt_numeric_limits_max< float_t >();
+    float_t minDist = grt_numeric_limits< float_t >::max();
     UINT quantizedValue = 0;
     
     for(UINT k=0; k<numClusters; k++){

@@ -80,7 +80,7 @@ public:
      This operator allows you to directly access each individual in the population. The user must ensure that index is a valid number
      in the range of [0 populationSize-1].
      
-     @param const UINT index: the index of the individual you want to access
+     @param index: the index of the individual you want to access
      @return returns a reference to the individual in the population at the specific index
      */
     INDIVIDUAL& operator[](const UINT &index){
@@ -91,8 +91,8 @@ public:
      This function initalizes the population, setting each individual's genes to a random value in the range [0.0 1.0].
      Both the populationSize and geneSize parameters must be greater than zero.
      
-     @param const UINT populationSize: the number of individuals in the population
-     @param const UINT geneSize: the number of elements in each individuals gene
+     @param populationSize: the number of individuals in the population
+     @param geneSize: the number of elements in each individuals gene
      @return returns true if the population was initalized, false otherwise
      */
     virtual bool initPopulation(const UINT populationSize,const UINT geneSize){
@@ -225,7 +225,7 @@ public:
         }
         
         if( accumSumLookup[populationSize-1] == 0 ){
-            warningLog << "evolvePopulation() - The accum sum is zero!" << endl;
+            warningLog << "evolvePopulation() - The accum sum is zero!" << std::endl;
         }
         
         //Reset the population iterator
@@ -314,7 +314,7 @@ public:
         
         UINT M = trainingData.getNumRows();
         float_t error = 0;
-        float_t minError = numeric_limits< float_t >::max();
+        float_t minError = grt_numeric_limits< float_t >::max();
         
         for(UINT i=0; i<M; i++){
             error = 0;
@@ -365,7 +365,7 @@ public:
             
             //Perform the selection
             if( !evolvePopulation() ){
-                errorLog << "Failed to evolve population" << endl;
+                errorLog << "Failed to evolve population" << std::endl;
                 return false;
             }
             
@@ -377,17 +377,17 @@ public:
             float_t delta = fabs( bestIndividualFitness-lastBestFitness );
             lastBestFitness = bestIndividualFitness;
             
-            trainingLog << "Iteration: " << currentIteration << "\tBestFitness: " << bestIndividualFitness << "\tBestIndex: " << bestIndividualIndex << "\tDelta: " << delta << "\tNumIterationsNoChange: " << numIterationsNoChange << endl;
+            trainingLog << "Iteration: " << currentIteration << "\tBestFitness: " << bestIndividualFitness << "\tBestIndex: " << bestIndividualIndex << "\tDelta: " << delta << "\tNumIterationsNoChange: " << numIterationsNoChange << std::endl;
             
             if( currentIteration >= maxIteration ){
                 keepTraining = false;
-                trainingLog << "Max Iteration Reached!" << endl;
+                trainingLog << "Max Iteration Reached!" << std::endl;
             }
             
             if( delta <= minChange ){
                 if( ++numIterationsNoChange >= minNumIterationsNoChange ){
                     keepTraining = false;
-                    trainingLog << "Min Changed Reached!" << endl;
+                    trainingLog << "Min Changed Reached!" << std::endl;
                 }
             }else{
                 numIterationsNoChange = 0;
@@ -395,7 +395,7 @@ public:
             
             if( customConvergenceCheck() ){
                 keepTraining = false;
-                trainingLog << "Custom Convergance Triggered!" << endl;
+                trainingLog << "Custom Convergance Triggered!" << std::endl;
             }
             
             //Update the iteration
@@ -504,11 +504,11 @@ public:
     virtual bool printBest() const{
         if( !initialized ) return false;
         
-		cout << "BestIndividual: ";
+		std::cout << "BestIndividual: ";
 		for(UINT i=0; i<geneSize; i++){
-			cout << population[ bestIndividualIndex ].gene[i] << "\t";
+			std::cout << population[ bestIndividualIndex ].gene[i] << "\t";
 		}
-		cout << endl;
+		std::cout << std::endl;
         return true;
     }
     

@@ -74,7 +74,7 @@ bool MovementIndex::deepCopyFrom(const FeatureExtraction *featureExtraction){
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << endl;
+    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -82,12 +82,12 @@ bool MovementIndex::deepCopyFrom(const FeatureExtraction *featureExtraction){
 bool MovementIndex::computeFeatures(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -103,7 +103,7 @@ bool MovementIndex::reset(){
     return false;
 }
     
-bool MovementIndex::saveModelToFile(string filename) const{
+bool MovementIndex::saveModelToFile( std::string filename ) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -117,7 +117,7 @@ bool MovementIndex::saveModelToFile(string filename) const{
     return true;
 }
 
-bool MovementIndex::loadModelFromFile(string filename){
+bool MovementIndex::loadModelFromFile( std::string filename ){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
@@ -132,54 +132,54 @@ bool MovementIndex::loadModelFromFile(string filename){
     return true;
 }
 
-bool MovementIndex::saveModelToFile(fstream &file) const{
+bool MovementIndex::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //Write the file header
-    file << "GRT_MOVEMENT_INDEX_FILE_V1.0" << endl;	
+    file << "GRT_MOVEMENT_INDEX_FILE_V1.0" << std::endl;	
     
     //Save the base settings to the file
     if( !saveFeatureExtractionSettingsToFile( file ) ){
-        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
         return false;
     }
     
     //Write the movement index settings to the file
-    file << "BufferLength: " << bufferLength << endl;
+    file << "BufferLength: " << bufferLength << std::endl;
     
     return true;
 }
 
-bool MovementIndex::loadModelFromFile(fstream &file){
+bool MovementIndex::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_MOVEMENT_INDEX_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
-        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
         return false;
     }
     
     //Load the BufferLength
     file >> word;
     if( word != "BufferLength:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read BufferLength header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read BufferLength header!" << std::endl;
         return false;     
     }
     file >> bufferLength;
@@ -193,12 +193,12 @@ bool MovementIndex::init(UINT bufferLength,UINT numDimensions){
     initialized = false;
     
     if( bufferLength == 0 ){
-        errorLog << "init(...) - The number of bufferLength must be greater than zero!" << endl;
+        errorLog << "init(...) - The number of bufferLength must be greater than zero!" << std::endl;
         return false;
     }
     
     if( numDimensions == 0 ){
-        errorLog << "init(...) - The number of dimensions must be greater than zero!" << endl;
+        errorLog << "init(...) - The number of dimensions must be greater than zero!" << std::endl;
         return false;
     }
     
@@ -228,12 +228,12 @@ VectorFloat MovementIndex::update(const VectorFloat &x){
     
 #ifdef GRT_SAFE_CHECKING
     if( !initialized ){
-        errorLog << "update(const VectorFloat &x) - Not Initialized!" << endl;
+        errorLog << "update(const VectorFloat &x) - Not Initialized!" << std::endl;
         return VectorFloat();
     }
     
-    if( x.size() != numInputDimensions ){
-        errorLog << "update(const VectorFloat &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
+    if( x.getSize() != numInputDimensions ){
+        errorLog << "update(const VectorFloat &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.getSize() << ")!" << std::endl;
         return VectorFloat();
     }
 #endif
@@ -244,7 +244,7 @@ VectorFloat MovementIndex::update(const VectorFloat &x){
     //Only flag that the feature data is ready if the trajectory data is full
     if( !dataBuffer.getBufferFilled() ){
         featureDataReady = false;
-        for(UINT i=0; i<featureVector.size(); i++){
+        for(UINT i=0; i<featureVector.getSize(); i++){
             featureVector[i] = 0;
         }
         return featureVector;
@@ -264,9 +264,9 @@ VectorFloat MovementIndex::update(const VectorFloat &x){
     for(UINT j=0; j<numInputDimensions; j++){
         featureVector[j] = 0;
         for(UINT i=0; i<dataBuffer.getSize(); i++){
-            featureVector[j] += SQR( dataBuffer[i][j] - mu[j] );
+            featureVector[j] += grt_sqr( dataBuffer[i][j] - mu[j] );
         }
-        featureVector[j] = sqrt( featureVector[j]/float_t(dataBuffer.getSize()) );
+        featureVector[j] = grt_sqrt( featureVector[j]/float_t(dataBuffer.getSize()) );
     }
     
     return featureVector;

@@ -121,7 +121,7 @@ bool DecisionTreeClusterNode::getModel( std::ostream &stream ) const{
     stream << " isLeafNode: " << isLeafNode << std::endl;
 
     stream << tab << "ClassProbabilities: ";
-    for(UINT i=0; i<classProbabilities.size(); i++){
+    for(UINT i=0; i<classProbabilities.getSize(); i++){
         stream << classProbabilities[i] << "\t";
     }
     stream << std::endl;
@@ -210,7 +210,7 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
 
     if( N == 0 ) return false;
 
-    minError = grt_numeric_limits_max< float_t >();
+    minError = grt_numeric_limits< float_t >::max();
     Random random;
     UINT bestFeatureIndex = 0;
     float_t bestThreshold = 0;

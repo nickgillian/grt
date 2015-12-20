@@ -201,7 +201,7 @@ public:
     
     /**
      This function is the main interface for all predictions using the gesture recognition pipeline.  You can use this function for both classification
-     and regression.  You should only call this function if you  have trained the pipeline.  The input vector should be the same size as your training data.
+     and regression.  You should only call this function if you  have trained the pipeline.  The input Vector should be the same size as your training data.
 
      @param inputVector: the input data that will be passed through the pipeline for classification or regression
      @return bool returns true if the prediction was successful, false otherwise
@@ -221,7 +221,7 @@ public:
      This function is now depreciated, you should use the predict function instead.
 
      This function used to be the main interface for all regression using the gesture recognition pipeline.  
-     You should only call this function if you  have trained the pipeline.  The input vector should be the same size as your training data.
+     You should only call this function if you  have trained the pipeline.  The input Vector should be the same size as your training data.
 
      @param inputVector: the input data that will be passed through the pipeline for regression
      @return bool returns true if the regression was successful, false otherwise
@@ -271,7 +271,7 @@ public:
     bool loadPipelineFromFile(const std::string &filename);
     
     /**
-     This function will pass the input vector through any preprocessing or feature extraction modules added to the pipeline.  This function
+     This function will pass the input Vector through any preprocessing or feature extraction modules added to the pipeline.  This function
      can be useful for testing and validating a preprocessing or feature extraction module, without having to acutally train a classification or
      regression module.  The second parameter controls if any feature extraction module should be used.  If set to true then both preprocessing and
      feature extraction modules will be used, if false then just preprocessing modules will be used.
@@ -371,17 +371,17 @@ public:
     bool getIsPipelineInRegressionMode() const;
     
     /**
-	 This function returns the size of the expected input vector to the pipeline.  This size comes from the size of the training data used to train the pipeline.
+	 This function returns the size of the expected input Vector to the pipeline.  This size comes from the size of the training data used to train the pipeline.
 	
-	@return UINT representing the size of the input vector to the pipeline.
+	@return UINT representing the size of the input Vector to the pipeline.
 	*/
     UINT getInputVectorDimensionsSize() const;
 
     /**
-	 This function returns the size of the expected output vector from the pipeline.  This size comes from the size of the training data used to train the pipeline.
+	 This function returns the size of the expected output Vector from the pipeline.  This size comes from the size of the training data used to train the pipeline.
 	 This is only relevant when the pipeline is in regression mode.
 	
-	@return UINT representing the size of the output vector from the pipeline.
+	@return UINT representing the size of the output Vector from the pipeline.
 	*/
     UINT getOutputVectorDimensionsSize() const;
 
@@ -593,115 +593,115 @@ public:
     TestResult getTestResults() const;
     
     /**
-     Gets a vector of the precision results for each class from the most recent round of testing.  
-     This will be a K-dimensional vector, where K is the number of classes in the model.
+     Gets a Vector of the precision results for each class from the most recent round of testing.  
+     This will be a K-dimensional Vector, where K is the number of classes in the model.
      
-     @return returns a vector of the precision results for each class from the last prediction, an empty vector will be returned if the model has not been tested
+     @return returns a Vector of the precision results for each class from the last prediction, an empty Vector will be returned if the model has not been tested
      */
     VectorFloat getTestPrecision() const;
     
     /**
-     Gets a vector of the recall results for each class from the most recent round of testing.
-     This will be a K-dimensional vector, where K is the number of classes in the model.
+     Gets a Vector of the recall results for each class from the most recent round of testing.
+     This will be a K-dimensional Vector, where K is the number of classes in the model.
      
-     @return returns a vector of the recall results for each class from the last prediction, an empty vector will be returned if the model has not been tested
+     @return returns a Vector of the recall results for each class from the last prediction, an empty Vector will be returned if the model has not been tested
      */
     VectorFloat getTestRecall() const;
     
     /**
-     Gets a vector of the fMeasure results for each class from the most recent round of testing.
-     This will be a K-dimensional vector, where K is the number of classes in the model.
+     Gets a Vector of the fMeasure results for each class from the most recent round of testing.
+     This will be a K-dimensional Vector, where K is the number of classes in the model.
      
-     @return returns a vector of the fMeasure results for each class from the last prediction, an empty vector will be returned if the model has not been tested
+     @return returns a Vector of the fMeasure results for each class from the last prediction, an empty Vector will be returned if the model has not been tested
      */
     VectorFloat getTestFMeasure() const;
 
     /**
-     Gets a vector of the class likelihoods from the last prediction, this will be an N-dimensional vector, where N is the number of classes in the model.  
+     Gets a Vector of the class likelihoods from the last prediction, this will be an N-dimensional Vector, where N is the number of classes in the model.  
      The exact form of these likelihoods depends on the classification algorithm.
      
-     @return returns a vector of the class likelihoods from the last prediction, an empty vector will be returned if the model has not been trained
+     @return returns a Vector of the class likelihoods from the last prediction, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getClassLikelihoods() const;
 
     /**
-     Gets a vector of the class distances from the last prediction, this will be an N-dimensional vector, where N is the number of classes in the model.  
+     Gets a Vector of the class distances from the last prediction, this will be an N-dimensional Vector, where N is the number of classes in the model.  
      The exact form of these distances depends on the classification algorithm.
      
-     @return returns a vector of the class distances from the last prediction, an empty vector will be returned if the model has not been trained
+     @return returns a Vector of the class distances from the last prediction, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getClassDistances() const;
 
     /**
-     Gets a vector containing the null rejection thresholds for each class, this will be an N-dimensional vector, where N is the number of classes in the model.  
+     Gets a Vector containing the null rejection thresholds for each class, this will be an N-dimensional Vector, where N is the number of classes in the model.  
      
-     @return returns a vector containing the null rejection thresholds for each class, an empty vector will be returned if the model has not been trained
+     @return returns a Vector containing the null rejection thresholds for each class, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getNullRejectionThresholds() const;
 
     /**
-     Gets a vector containing the regression data output by the pipeline, this will be an M-dimensional vector, where M is the number of output dimensions in the model.  
+     Gets a Vector containing the regression data output by the pipeline, this will be an M-dimensional Vector, where M is the number of output dimensions in the model.  
      
-     @return returns a vector containing the regression data output by the pipeline, an empty vector will be returned if the model has not been trained
+     @return returns a Vector containing the regression data output by the pipeline, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getRegressionData() const;
 
     /**
-     Gets a vector containing the regression data output by the regression algorithm, this will be an M-dimensional vector, where M is the number of output dimensions in the model.  
+     Gets a Vector containing the regression data output by the regression algorithm, this will be an M-dimensional Vector, where M is the number of output dimensions in the model.  
      
-     @return returns a vector containing the regression data output by the regression algorithm, an empty vector will be returned if the model has not been trained
+     @return returns a Vector containing the regression data output by the regression algorithm, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getUnProcessedRegressionData() const;
 
     /**
-     Gets a vector containing the output of the last preprocessing module, this will be an M-dimensional vector, where M is the output size of the last preprocessing module.  
+     Gets a Vector containing the output of the last preprocessing module, this will be an M-dimensional Vector, where M is the output size of the last preprocessing module.  
      
-     @return returns a vector containing the output of the last preprocessing module, an empty vector will be returned if there are no preprocessing modules.
+     @return returns a Vector containing the output of the last preprocessing module, an empty Vector will be returned if there are no preprocessing modules.
      */
     VectorFloat getPreProcessedData() const;
 
     /**
-     Gets a vector containing the output of the preprocessing module at index X, this will be an M-dimensional vector, where M is the output size of the preprocessing module.  
+     Gets a Vector containing the output of the preprocessing module at index X, this will be an M-dimensional Vector, where M is the output size of the preprocessing module.  
      
      @param UINT moduleIndex: the index of the pre processing module you want
-     @return returns a vector containing the output of the preprocessing module at index X, an empty vector will be returned if there is no preprocessing module at that index.
+     @return returns a Vector containing the output of the preprocessing module at index X, an empty Vector will be returned if there is no preprocessing module at that index.
      */
     VectorFloat getPreProcessedData(UINT moduleIndex) const;
 
     /**
-     Gets a vector containing the output of the last feature extraction module, this will be an M-dimensional vector, where M is the output size of the last feature extraction module.  
+     Gets a Vector containing the output of the last feature extraction module, this will be an M-dimensional Vector, where M is the output size of the last feature extraction module.  
      
-     @return returns a vector containing the output of the last feature extraction module, an empty vector will be returned if there are no feature extraction modules.
+     @return returns a Vector containing the output of the last feature extraction module, an empty Vector will be returned if there are no feature extraction modules.
      */
     VectorFloat getFeatureExtractionData() const;
 
     /**
-     Gets a vector containing the output of the feature extraction module at index X, this will be an M-dimensional vector, where M is the output size of the feature extraction module.  
+     Gets a Vector containing the output of the feature extraction module at index X, this will be an M-dimensional Vector, where M is the output size of the feature extraction module.  
      
      @param const UINT moduleIndex: the index of the feature extraction module you want
-     @return returns a vector containing the output of the feature extraction module at index X, an empty vector will be returned if there is no feature extraction module at that index.
+     @return returns a Vector containing the output of the feature extraction module at index X, an empty Vector will be returned if there is no feature extraction module at that index.
      */
     VectorFloat getFeatureExtractionData(const UINT moduleIndex) const;
 
     /**
-     Gets a vector containing the label each class represents, this will be an N-dimensional vector, where N is the number of classes in the model. 
+     Gets a Vector containing the label each class represents, this will be an N-dimensional Vector, where N is the number of classes in the model. 
      This is useful if the model was trained with non-monotonically class labels (i.e. class labels such as [1, 3, 6, 9, 12] instead of [1, 2, 3, 4, 5]).
      
-     @return returns a vector containing the class labels for each class, an empty vector will be returned if the model has not been trained
+     @return returns a Vector containing the class labels for each class, an empty Vector will be returned if the model has not been trained
      */
     Vector< UINT > getClassLabels() const;
 
     /**
-     Gets a vector containing the results from the most recent test.  Each element in the vector represents the results for the corresponding test sample.  
+     Gets a Vector containing the results from the most recent test.  Each element in the Vector represents the results for the corresponding test sample.  
      
-     @return returns a vector containing the test instance results from the most recent test, an empty vector will be returned if no test has been run.
+     @return returns a Vector containing the test instance results from the most recent test, an empty Vector will be returned if no test has been run.
      */
     Vector< TestInstanceResult > getTestInstanceResults() const;
 
     /**
-     Gets a vector containing the results from the most recent cross validation test.  Each element in the vector represents one fold of cross validation training.
+     Gets a Vector containing the results from the most recent cross validation test.  Each element in the Vector represents one fold of cross validation training.
 
-     @return returns a vector containing the results from the most recent cross validation test, an empty vector will be returned if no test has been run.
+     @return returns a Vector containing the results from the most recent cross validation test, an empty Vector will be returned if no test has been run.
      */
     Vector< TestResult > getCrossValidationResults() const;
 
@@ -1100,7 +1100,7 @@ public:
      Sets the pipeline's info text.
       @return returns true if the info text was updated successfully, false otherwise
      */
-    bool setInfo(const string info);
+    bool setInfo(const std::string &info);
 
 protected:
     bool predict_classifier(const VectorFloat &inputVector);
@@ -1148,7 +1148,7 @@ protected:
     Regressifier *regressifier;
     Clusterer *clusterer;
     Vector< PostProcessing* > postProcessingModules;
-    Vector< vector< Context* > > contextModules;
+    Vector< Vector< Context* > > contextModules;
     
     enum PipelineModes{PIPELINE_MODE_NOT_SET=0,CLASSIFICATION_MODE,REGRESSION_MODE,CLUSTER_MODE};
     

@@ -20,7 +20,7 @@
 
 #include "ClassLabelChangeFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the ClassLabelChangeFilter module with the PostProcessing base class
 RegisterPostProcessingModule< ClassLabelChangeFilter > ClassLabelChangeFilter::registerModule("ClassLabelChangeFilter");
@@ -94,12 +94,12 @@ bool ClassLabelChangeFilter::deepCopyFrom(const PostProcessing *postProcessing){
 bool ClassLabelChangeFilter::process(const VectorDouble &inputVector){
     
     if( !initialized ){
-        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -140,10 +140,10 @@ UINT ClassLabelChangeFilter::filter(UINT predictedClassLabel){
 	return GRT_DEFAULT_NULL_CLASS_LABEL;
 }
     
-bool ClassLabelChangeFilter::saveModelToFile(string filename) const{
+bool ClassLabelChangeFilter::saveModelToFile( std::string filename ) const{
     
     if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The ClassLabelChangeFilter has not been initialized" << endl;
+        errorLog << "saveModelToFile(string filename) - The ClassLabelChangeFilter has not been initialized" << std::endl;
         return false;
     }
     
@@ -160,21 +160,21 @@ bool ClassLabelChangeFilter::saveModelToFile(string filename) const{
     return true;
 }
 
-bool ClassLabelChangeFilter::saveModelToFile(fstream &file) const{
+bool ClassLabelChangeFilter::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_CLASS_LABEL_CHANGE_FILTER_FILE_V1.0" << endl;
-    file << "NumInputDimensions: " << numInputDimensions << endl;
-    file << "NumOutputDimensions: " << numOutputDimensions << endl;
+    file << "GRT_CLASS_LABEL_CHANGE_FILTER_FILE_V1.0" << std::endl;
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
+    file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
     
     return true;
 }
 
-bool ClassLabelChangeFilter::loadModelFromFile(string filename){
+bool ClassLabelChangeFilter::loadModelFromFile( std::string filename ){
     
     std::fstream file; 
     file.open(filename.c_str(), std::ios::in);
@@ -189,26 +189,26 @@ bool ClassLabelChangeFilter::loadModelFromFile(string filename){
     return true;
 }
 
-bool ClassLabelChangeFilter::loadModelFromFile(fstream &file){
+bool ClassLabelChangeFilter::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_CLASS_LABEL_CHANGE_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
         return false;     
     }
     file >> numInputDimensions;
@@ -216,7 +216,7 @@ bool ClassLabelChangeFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
         return false;     
     }
     file >> numOutputDimensions;
@@ -229,4 +229,4 @@ bool ClassLabelChangeFilter::getChange(){
     return labelChanged;
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE

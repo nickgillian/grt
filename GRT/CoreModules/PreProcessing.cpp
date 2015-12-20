@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 PreProcessing::StringPreProcessingMap* PreProcessing::stringPreProcessingMap = NULL;
 UINT PreProcessing::numPreProcessingInstances = 0;
     
-PreProcessing* PreProcessing::createInstanceFromString(string const &preProcessingType){
+PreProcessing* PreProcessing::createInstanceFromString( const std::string &preProcessingType ){
     
     StringPreProcessingMap::iterator iter = getMap()->find( preProcessingType );
     if( iter == getMap()->end() ){
@@ -106,7 +106,7 @@ bool PreProcessing::init(){
     return true;
 }
 
-bool PreProcessing::saveModelToFile(string filename) const{
+bool PreProcessing::saveModelToFile( std::string filename ) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -120,7 +120,7 @@ bool PreProcessing::saveModelToFile(string filename) const{
     return true;
 }
 
-bool PreProcessing::loadModelFromFile(string filename){
+bool PreProcessing::loadModelFromFile( std::string filename ){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);

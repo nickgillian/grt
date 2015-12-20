@@ -20,7 +20,7 @@
 
 #include "SOMQuantizer.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register your module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< SOMQuantizer > SOMQuantizer::registerModule("SOMQuantizer");
@@ -78,7 +78,7 @@ bool SOMQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << endl;
+    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -115,7 +115,7 @@ bool SOMQuantizer::clear(){
     return true;
 }
     
-bool SOMQuantizer::saveModelToFile(string filename) const{
+bool SOMQuantizer::saveModelToFile( std::string filename ) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -129,7 +129,7 @@ bool SOMQuantizer::saveModelToFile(string filename) const{
     return true;
 }
 
-bool SOMQuantizer::loadModelFromFile(string filename){
+bool SOMQuantizer::loadModelFromFile( std::string filename ){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
@@ -144,29 +144,29 @@ bool SOMQuantizer::loadModelFromFile(string filename){
     return true;
 }
 
-bool SOMQuantizer::saveModelToFile(fstream &file) const{
+bool SOMQuantizer::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //First, you should add a header (with no spaces) e.g.
-    file << "SOM_QUANTIZER_FILE_V1.0" << endl;
+    file << "SOM_QUANTIZER_FILE_V1.0" << std::endl;
 	
     //Second, you should save the base feature extraction settings to the file
     if( !saveFeatureExtractionSettingsToFile( file ) ){
-        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
         return false;
     }
     
-    file << "QuantizerTrained: " << trained << endl;
-    file << "NumClusters: " << numClusters << endl;
+    file << "QuantizerTrained: " << trained << std::endl;
+    file << "NumClusters: " << numClusters << std::endl;
     
     if( trained ){
         file << "SOM: \n";
         if( !som.saveModelToFile( file ) ){
-            errorLog << "saveModelToFile(fstream &file) - Failed to save SelfOrganizingMap settings to file!" << endl;
+            errorLog << "saveModelToFile(fstream &file) - Failed to save SelfOrganizingMap settings to file!" << std::endl;
             return false;
         }
     }
@@ -174,41 +174,41 @@ bool SOMQuantizer::saveModelToFile(fstream &file) const{
     return true;
 }
 
-bool SOMQuantizer::loadModelFromFile(fstream &file){
+bool SOMQuantizer::loadModelFromFile( std::fstream &file ){
     
     //Clear any previous model
     clear();
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //First, you should read and validate the header
     file >> word;
     if( word != "SOM_QUANTIZER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;
     }
     
     //Second, you should load the base feature extraction settings to the file
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
-        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if( word != "QuantizerTrained:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load QuantizerTrained!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to load QuantizerTrained!" << std::endl;
         return false;
     }
     file >> trained;
     
     file >> word;
     if( word != "NumClusters:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load NumClusters!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to load NumClusters!" << std::endl;
         return false;
     }
     file >> numClusters;
@@ -216,12 +216,12 @@ bool SOMQuantizer::loadModelFromFile(fstream &file){
     if( trained ){
         file >> word;
         if( word != "SOM:" ){
-            errorLog << "loadModelFromFile(fstream &file) - Failed to load SOM!" << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Failed to load SOM!" << std::endl;
             return false;
         }
         
         if( !som.loadModelFromFile( file ) ){
-            errorLog << "loadModelFromFile(fstream &file) - Failed to load SelfOrganizingMap settings from file!" << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Failed to load SelfOrganizingMap settings from file!" << std::endl;
             return false;
         }
         
@@ -259,7 +259,7 @@ bool SOMQuantizer::train_(MatrixFloat &trainingData){
     clear();
     
     if( trainingData.getNumRows() == 0 ){
-        errorLog << "train_(MatrixFloat &trainingData) - Failed to train quantizer, the training data is empty!" << endl;
+        errorLog << "train_(MatrixFloat &trainingData) - Failed to train quantizer, the training data is empty!" << std::endl;
         return false;
     }
     
@@ -271,7 +271,7 @@ bool SOMQuantizer::train_(MatrixFloat &trainingData){
     som.setMaxNumEpochs( 1000 );
     
     if( !som.train_( trainingData ) ){
-        errorLog << "train(MatrixFloat &trainingData) - Failed to train quantizer!" << endl;
+        errorLog << "train(MatrixFloat &trainingData) - Failed to train quantizer!" << std::endl;
         return false;
     }
     
@@ -293,18 +293,18 @@ UINT SOMQuantizer::quantize(const float_t inputValue){
 UINT SOMQuantizer::quantize(const VectorFloat &inputVector){
 	
     if( !trained ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The quantizer model has not been trained!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The quantizer model has not been trained!" << std::endl;
         return 0;
     }
 
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return 0;
     }
 	
     //Pass the input data through the map
     if( !som.predict( inputVector ) ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - Failed to perform map!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Failed to perform map!" << std::endl;
         return 0;
     }
     quantizationDistances = som.getMappedData();
@@ -350,5 +350,5 @@ bool SOMQuantizer::setNumClusters(const UINT numClusters){
     this->numClusters = numClusters;
     return true;
 }
-    
-}//End of namespace GRT
+
+GRT_END_NAMESPACE

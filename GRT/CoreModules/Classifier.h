@@ -321,7 +321,7 @@ protected:
     VectorFloat classDistances;
     VectorFloat nullRejectionThresholds;
     Vector< UINT > classLabels;
-    Vector<MinMax> ranges;
+    Vector< MinMax > ranges;
     
     static StringClassifierMap *getMap() {
         if( !stringClassifierMap ){ stringClassifierMap = new StringClassifierMap; } 

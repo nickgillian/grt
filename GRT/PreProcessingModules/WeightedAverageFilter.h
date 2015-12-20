@@ -97,28 +97,10 @@ public:
      This saves the current settings of the WeightedAverageFilter to a file.
      This overrides the saveModelToFile function in the PreProcessing base class.
      
-     @param filename: the name of the file to save the settings to
-     @return returns true if the model was saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(string filename) const;
-    
-    /**
-     This saves the current settings of the WeightedAverageFilter to a file.
-     This overrides the saveModelToFile function in the PreProcessing base class.
-     
      @param file: a reference to the file the settings will be saved to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
-    
-    /**
-     This loads the WeightedAverageFilter settings from a file.
-     This overrides the loadModelFromFile function in the PreProcessing base class.
-     
-     @param filename: the name of the file to load the settings from
-     @return returns true if the settings were loaded successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads the WeightedAverageFilter settings from a file.
@@ -127,7 +109,7 @@ public:
      @param file: a reference to the file to load the settings from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      Initializes the filter, setting the filter size and dimensionality of the data it will filter.
@@ -166,6 +148,9 @@ public:
      @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
     VectorFloat getFilteredData() const { return processedData; }
+
+    using PreProcessing::saveModelToFile;
+    using PreProcessing::loadModelFromFile;
     
 protected:
     UINT filterSize;                                        ///< The size of the filter

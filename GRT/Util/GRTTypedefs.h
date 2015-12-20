@@ -61,8 +61,12 @@ template<class T> inline T SIGN(const T &a, const T &b) {return (b >= 0 ? (a >= 
 
 template<class T> inline void grt_swap(T &a,T &b) { T temp(a); a = b; b = temp; }
 
-template<class T> inline T grt_numeric_limits_min() { return std::numeric_limits< T >::min(); }
-template<class T> inline T grt_numeric_limits_max() { return std::numeric_limits< T >::max(); }
+template< class T >
+class grt_numeric_limits{
+public:
+    static T min() { return std::numeric_limits< T >::min(); }
+    static T max() { return std::numeric_limits< T >::min(); }
+};
 
 inline float_t grt_sqr( const float &x ){ return x*x; }
 

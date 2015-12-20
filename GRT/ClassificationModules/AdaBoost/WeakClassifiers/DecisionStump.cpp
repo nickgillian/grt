@@ -95,7 +95,7 @@ bool DecisionStump::train(ClassificationData &trainingData, VectorFloat &weights
     const UINT M = trainingData.getNumSamples();
     UINT bestFeatureIndex = 0;
     Vector< MinMax > ranges = trainingData.getRanges();
-    float_t minError = grt_numeric_limits_max< float_t >();
+    float_t minError = grt_numeric_limits< float_t >::max();
     float_t minRange = 0;
     float_t maxRange = 0;
     float_t step = 0;

@@ -158,7 +158,7 @@ bool Softmax::predict_(VectorFloat &inputVector){
     
     //Loop over each class and compute the likelihood of the input data coming from class k. Pick the class with the highest likelihood
     float_t sum = 0;
-    float_t bestEstimate = -grt_numeric_limits_max< float_t >();
+    float_t bestEstimate = -grt_numeric_limits< float_t >::max();
     UINT bestIndex = 0;
     for(UINT k=0; k<numClasses; k++){
         float_t estimate = models[k].compute( inputVector );

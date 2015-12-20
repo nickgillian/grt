@@ -134,7 +134,7 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits_max< float_t >();
+    minError = grt_numeric_limits< float_t >::max();
     UINT bestFeatureIndex = 0;
     float_t bestThreshold = 0;
     float_t error = 0;
@@ -214,7 +214,7 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &num
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits_max< float_t >();
+    minError = grt_numeric_limits< float_t >::max();
     UINT bestFeatureIndex = 0;
     float_t bestThreshold = 0;
     float_t error = 0;

@@ -195,7 +195,7 @@ bool GestureRecognitionPipeline::train(const ClassificationData &trainingData){
     //Reset all the modules
     reset();
     
-    //Set the input vector dimension size
+    //Set the input Vector dimension size
     inputVectorDimensions = trainingData.getNumDimensions();
     
     //Pass the training data through any pre-processing or feature extraction units
@@ -374,7 +374,7 @@ bool GestureRecognitionPipeline::train( const TimeSeriesClassificationData &trai
     Timer timer;
     timer.start();
     
-    //Set the input vector dimension size of the pipeline
+    //Set the input Vector dimension size of the pipeline
     inputVectorDimensions = trainingData.getNumDimensions();
    
     TimeSeriesClassificationData processedTrainingData( trainingData.getNumDimensions() );
@@ -493,7 +493,7 @@ bool GestureRecognitionPipeline::train( const TimeSeriesClassificationData &trai
                         return false;
                     }
                     
-                    //Overwrite the input vector with the features so this can either be input to the next feature module 
+                    //Overwrite the input Vector with the features so this can either be input to the next feature module 
                     //or converted to the LabelledClassificationData format
                     inputVector = featureExtractionModules[moduleIndex]->getFeatureVector();
                     featureDataReady = featureExtractionModules[moduleIndex]->getFeatureDataReady();
@@ -506,7 +506,7 @@ bool GestureRecognitionPipeline::train( const TimeSeriesClassificationData &trai
                     
                     if( classifier->getTimeseriesCompatible() ){
                         if( !featureData.push_back( inputVector ) ){
-                            errorLog << "train(TimeSeriesClassificationData trainingData) - Failed To add feature vector to feature data matrix! FeatureExtractionModuleIndex: " << std::endl;
+                            errorLog << "train(TimeSeriesClassificationData trainingData) - Failed To add feature Vector to feature data matrix! FeatureExtractionModuleIndex: " << std::endl;
                             return false;
                         }
                     }else classificationData.addSample(classLabel, inputVector);
@@ -515,7 +515,7 @@ bool GestureRecognitionPipeline::train( const TimeSeriesClassificationData &trai
             }else{
                 if( classifier->getTimeseriesCompatible() ){
                     if( !featureData.push_back( inputVector ) ){
-                        errorLog << "train(TimeSeriesClassificationData trainingData) - Failed To add feature vector to feature data matrix! FeatureExtractionModuleIndex: " << std::endl;
+                        errorLog << "train(TimeSeriesClassificationData trainingData) - Failed To add feature Vector to feature data matrix! FeatureExtractionModuleIndex: " << std::endl;
                         return false;
                     }
                 }
@@ -629,7 +629,7 @@ bool GestureRecognitionPipeline::train(const RegressionData &trainingData){
     Timer timer;
     timer.start();
     
-    //Set the input vector dimension size
+    //Set the input Vector dimension size
     inputVectorDimensions = trainingData.getNumInputDimensions();
     
     //Pass the training data through any pre-processing or feature extraction units
@@ -797,7 +797,7 @@ bool GestureRecognitionPipeline::train(const UnlabelledData &trainingData){
     //Reset all the modules
     reset();
     
-    //Set the input vector dimension size
+    //Set the input Vector dimension size
     inputVectorDimensions = trainingData.getNumDimensions();
     
     //Pass the training data through any pre-processing or feature extraction units
@@ -892,9 +892,9 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
         return false;
     }
     
-    //Make sure the dimensionality of the test data matches the input vector's dimensions
+    //Make sure the dimensionality of the test data matches the input Vector's dimensions
     if( testData.getNumDimensions() != inputVectorDimensions ){
-        errorLog << "test(const ClassificationData &testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
+        errorLog << "test(const ClassificationData &testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
         return false;
     }
     
@@ -943,7 +943,7 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
     testConfusionMatrix.resize(confusionMatrixSize, confusionMatrixSize);
     testConfusionMatrix.setAllValues(0);
     
-    //Resize the precision and recall vectors
+    //Resize the precision and recall Vectors
     testPrecision.clear();
     testRecall.clear();
     testFMeasure.clear();
@@ -1005,9 +1005,9 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationData &testDa
         return false;
     }
     
-    //Make sure the dimensionality of the test data matches the input vector's dimensions
+    //Make sure the dimensionality of the test data matches the input Vector's dimensions
     if( testData.getNumDimensions() != inputVectorDimensions ){
-        errorLog << "test(const TimeSeriesClassificationData &testData) - The dimensionality of the test data (" << testData.getNumDimensions() << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
+        errorLog << "test(const TimeSeriesClassificationData &testData) - The dimensionality of the test data (" << testData.getNumDimensions() << ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
         return false;
     }
     
@@ -1031,7 +1031,7 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationData &testDa
     testConfusionMatrix.resize(confusionMatrixSize,confusionMatrixSize);
     testConfusionMatrix.setAllValues(0);
     
-    //Resize the precision and recall vectors
+    //Resize the precision and recall Vectors
     testPrecision.resize(K, 0);
     testRecall.resize(K, 0);
     testFMeasure.resize(K, 0);
@@ -1084,9 +1084,9 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationDataStream &
         return false;
     }
     
-    //Make sure the dimensionality of the test data matches the input vector's dimensions
+    //Make sure the dimensionality of the test data matches the input Vector's dimensions
     if( testData.getNumDimensions() != inputVectorDimensions ){
-        errorLog << "test(const TimeSeriesClassificationDataStream &testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
+        errorLog << "test(const TimeSeriesClassificationDataStream &testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
         return false;
     }
     
@@ -1109,12 +1109,12 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationDataStream &
     testConfusionMatrix.resize(confusionMatrixSize,confusionMatrixSize);
     testConfusionMatrix.setAllValues(0);
     
-    //Resize the precision and recall vectors
+    //Resize the precision and recall Vectors
     testPrecision.resize(getNumClassesInModel(), 0);
     testRecall.resize(getNumClassesInModel(), 0);
     testFMeasure.resize(getNumClassesInModel(), 0);
     
-    //Resize the classification results vector
+    //Resize the classification results Vector
     testResults.resize(testData.getNumSamples());
     numTestSamples = testData.getNumSamples();
     
@@ -1188,9 +1188,9 @@ bool GestureRecognitionPipeline::test(const RegressionData &testData){
         return false;
     }
     
-    //Make sure the dimensionality of the test data matches the input vector's dimensions
+    //Make sure the dimensionality of the test data matches the input Vector's dimensions
     if( testData.getNumInputDimensions() != inputVectorDimensions ){
-        errorLog << "test(const RegressionData &testData) - The dimensionality of the test data (" << testData.getNumInputDimensions() << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
+        errorLog << "test(const RegressionData &testData) - The dimensionality of the test data (" << testData.getNumInputDimensions() << ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
         return false;
     }
     
@@ -1223,7 +1223,7 @@ bool GestureRecognitionPipeline::test(const RegressionData &testData){
         
         //Pass the test sample through the pipeline
         if( !map( inputVector ) ){
-            errorLog <<  "test(const RegressionData &testData) - Failed to map input vector!" << std::endl;
+            errorLog <<  "test(const RegressionData &testData) - Failed to map input Vector!" << std::endl;
             return false;
         }
         
@@ -1259,9 +1259,9 @@ bool GestureRecognitionPipeline::predict(const VectorFloat &inputVector){
         return false;
     }
     
-    //Make sure the dimensionality of the input vector matches the inputVectorDimensions
+    //Make sure the dimensionality of the input Vector matches the inputVectorDimensions
     if( inputVector.size() != inputVectorDimensions ){
-        errorLog << "predict(const VectorFloat &inputVector) - The dimensionality of the input vector (" << int(inputVector.size()) << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
+        errorLog << "predict(const VectorFloat &inputVector) - The dimensionality of the input Vector (" << int(inputVector.size()) << ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
         return false;
     }
 
@@ -1291,7 +1291,7 @@ bool GestureRecognitionPipeline::predict(const MatrixFloat &input){
     
     //Make sure the dimensionality of the input matrix matches the inputVectorDimensions
     if( input.getNumCols() != inputVectorDimensions ){
-        errorLog << "predict(const MatrixFloat &inputMatrix) - The dimensionality of the input matrix (" << input.getNumCols() << ") does not match that of the input vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
+        errorLog << "predict(const MatrixFloat &inputMatrix) - The dimensionality of the input matrix (" << input.getNumCols() << ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
         return false;
     }
 
@@ -1383,7 +1383,7 @@ bool GestureRecognitionPipeline::predict(const MatrixFloat &input){
                 
                 //Verify that the input size is OK
                 if( data.size() != postProcessingModules[moduleIndex]->getNumInputDimensions() ){
-                    errorLog << "predict(const MatrixFloat &inputMatrix) - The size of the data vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
+                    errorLog << "predict(const MatrixFloat &inputMatrix) - The size of the data Vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
                     return false;
                 }
                 
@@ -1404,7 +1404,7 @@ bool GestureRecognitionPipeline::predict(const MatrixFloat &input){
                 
                 //Verify that the output size is OK
                 if( data.size() != 1 ){
-                    errorLog << "predict(const MatrixFloat &inputMatrix) - The size of the processed data vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << std::endl;
+                    errorLog << "predict(const MatrixFloat &inputMatrix) - The size of the processed data Vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << std::endl;
                     return false;
                 }
                 
@@ -1542,7 +1542,7 @@ bool GestureRecognitionPipeline::predict_classifier(const VectorFloat &input){
                 
                 //Verify that the input size is OK
                 if( data.size() != postProcessingModules[moduleIndex]->getNumInputDimensions() ){
-                    errorLog << "predict_classifier(VectorFloat inputVector) - The size of the data vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
+                    errorLog << "predict_classifier(VectorFloat inputVector) - The size of the data Vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
                     return false;
                 }
                 
@@ -1563,7 +1563,7 @@ bool GestureRecognitionPipeline::predict_classifier(const VectorFloat &input){
                 
                 //Verify that the output size is OK
                 if( data.size() != 1 ){
-                    errorLog << "predict_classifier(VectorFloat inputVector) - The size of the processed data vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << std::endl;
+                    errorLog << "predict_classifier(VectorFloat inputVector) - The size of the processed data Vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << std::endl;
                     return false;
                 }
                 
@@ -1699,7 +1699,7 @@ bool GestureRecognitionPipeline::predict_regressifier(const VectorFloat &input){
           
         for(UINT moduleIndex=0; moduleIndex<postProcessingModules.size(); moduleIndex++){
             if( regressionData.size() != postProcessingModules[moduleIndex]->getNumInputDimensions() ){
-                errorLog << "predict_regressifier(VectorFloat inputVector) - The size of the regression vector (" << int(regressionData.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
+                errorLog << "predict_regressifier(VectorFloat inputVector) - The size of the regression Vector (" << int(regressionData.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
                 return false;
             }
             
@@ -1847,7 +1847,7 @@ bool GestureRecognitionPipeline::predict_clusterer(const VectorFloat &input){
                 
                 //Verify that the input size is OK
                 if( data.size() != postProcessingModules[moduleIndex]->getNumInputDimensions() ){
-                    errorLog << "predict_clusterer(VectorFloat inputVector) - The size of the data vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
+                    errorLog << "predict_clusterer(VectorFloat inputVector) - The size of the data Vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
                     return false;
                 }
                 
@@ -1868,7 +1868,7 @@ bool GestureRecognitionPipeline::predict_clusterer(const VectorFloat &input){
                 
                 //Verify that the output size is OK
                 if( data.size() != 1 ){
-                    errorLog << "predict_clusterer(VectorFloat inputVector) - The size of the processed data vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << std::endl;
+                    errorLog << "predict_clusterer(VectorFloat inputVector) - The size of the processed data Vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << std::endl;
                     return false;
                 }
                 
@@ -2362,7 +2362,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const std::string &filenam
     //Close the file
     file.close();
     
-    //Set the expected input vector size
+    //Set the expected input Vector size
     inputVectorDimensions = 0;
     
     if( numPreprocessingModules > 0 ){
@@ -2401,7 +2401,7 @@ bool GestureRecognitionPipeline::preProcessData(VectorFloat inputVector,bool com
         for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
             
             if( inputVector.size() != preProcessingModules[ moduleIndex ]->getNumInputDimensions() ){
-                errorLog << "preProcessData(VectorFloat inputVector) - The size of the input vector (" << preProcessingModules[ moduleIndex ]->getNumInputDimensions() << ") does not match that of the PreProcessing Module at moduleIndex: " << moduleIndex << std::endl;
+                errorLog << "preProcessData(VectorFloat inputVector) - The size of the input Vector (" << preProcessingModules[ moduleIndex ]->getNumInputDimensions() << ") does not match that of the PreProcessing Module at moduleIndex: " << moduleIndex << std::endl;
                 return false;
             }
             
@@ -2417,7 +2417,7 @@ bool GestureRecognitionPipeline::preProcessData(VectorFloat inputVector,bool com
     if( getIsFeatureExtractionSet() && computeFeatures ){
         for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
             if( inputVector.size() != featureExtractionModules[ moduleIndex ]->getNumInputDimensions() ){
-                errorLog << "preProcessData(VectorFloat inputVector) - The size of the input vector (" << featureExtractionModules[ moduleIndex ]->getNumInputDimensions() << ") does not match that of the FeatureExtraction Module at moduleIndex: " << moduleIndex << std::endl;
+                errorLog << "preProcessData(VectorFloat inputVector) - The size of the input Vector (" << featureExtractionModules[ moduleIndex ]->getNumInputDimensions() << ") does not match that of the FeatureExtraction Module at moduleIndex: " << moduleIndex << std::endl;
                 return false;
             }
             
@@ -3110,7 +3110,7 @@ bool GestureRecognitionPipeline::removeAllPreProcessingModules(){
     
 bool GestureRecognitionPipeline::removePreProcessingModule(UINT moduleIndex){
     if( moduleIndex >= preProcessingModules.size() ){
-        errorLog << "removePreProcessingModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the preProcessingModules vector is " << int(preProcessingModules.size()) << std::endl;
+        errorLog << "removePreProcessingModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the preProcessingModules Vector is " << int(preProcessingModules.size()) << std::endl;
         return false;
     }
     
@@ -3132,7 +3132,7 @@ bool GestureRecognitionPipeline::removeAllFeatureExtractionModules(){
         
 bool GestureRecognitionPipeline::removeFeatureExtractionModule(UINT moduleIndex){
     if( moduleIndex >= featureExtractionModules.size() ){
-        errorLog << "removeFeatureExtractionModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the featureExtractionModules vector is " << int(featureExtractionModules.size()) << std::endl;
+        errorLog << "removeFeatureExtractionModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the featureExtractionModules Vector is " << int(featureExtractionModules.size()) << std::endl;
         return false;
     }
     
@@ -3154,7 +3154,7 @@ bool GestureRecognitionPipeline::removeAllPostProcessingModules(){
 
 bool GestureRecognitionPipeline::removePostProcessingModule(UINT moduleIndex){
     if( moduleIndex >= postProcessingModules.size() ){
-        errorLog << "removePostProcessingModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the postProcessingModules vector is " << int(postProcessingModules.size()) << std::endl;
+        errorLog << "removePostProcessingModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the postProcessingModules Vector is " << int(postProcessingModules.size()) << std::endl;
         return false;
     }
     
@@ -3176,7 +3176,7 @@ bool GestureRecognitionPipeline::removeContextModule(UINT contextLevel,UINT modu
     }
     
     if( moduleIndex >= contextModules[contextLevel].size() ){
-        errorLog << "removePostProcessingModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the contextModules vector at context level " << " is " << int(contextModules[contextLevel].size()) << std::endl;
+        errorLog << "removePostProcessingModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the contextModules Vector at context level " << " is " << int(contextModules[contextLevel].size()) << std::endl;
         return false;
     }
     
@@ -3224,7 +3224,7 @@ bool GestureRecognitionPipeline::clearTestResults(){
     return true;
 }
     
-bool GestureRecognitionPipeline::setInfo(const string info){
+bool GestureRecognitionPipeline::setInfo(const std::string &info){
     this->info = info;
     return true;
 }
@@ -3434,7 +3434,7 @@ bool GestureRecognitionPipeline::computeTestMetrics(VectorFloat &precisionCounte
     return true;
 }
     
-string GestureRecognitionPipeline::getModelAsString() const{
+std::string GestureRecognitionPipeline::getModelAsString() const{
     std::string model = "";
     
     switch( pipelineMode ){

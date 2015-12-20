@@ -38,7 +38,7 @@
 #include "../Util/GRTCommon.h"
 #include "../CoreModules/PostProcessing.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class ClassLabelAndTimer{
 public:
@@ -70,8 +70,6 @@ protected:
     Timer timer;
 };
     
-    
-    
 class ClassLabelTimeoutFilter : public PostProcessing{
 public:
     /**
@@ -91,8 +89,8 @@ public:
      mode was activated with the class label of 1, and then class 2 was input into the class label filter, then the
      debounce mode would be reset to class 2, even if the timeoutDuration for class 1 had not expired.
      
-     @param unsigned long timeoutDuration: sets the timeoutDuration value (in milliseconds). Default value timeoutDuration=1000
-     @param UINT filterMode: sets the filterMode parameter. Default value filterMode=ALL_CLASS_LABELS
+     @param timeoutDuration: sets the timeoutDuration value (in milliseconds). Default value timeoutDuration=1000
+     @param filterMode: sets the filterMode parameter. Default value filterMode=ALL_CLASS_LABELS
      */
     ClassLabelTimeoutFilter(unsigned long timeoutDuration = 1000,UINT filterMode = ALL_CLASS_LABELS);
     
@@ -101,7 +99,7 @@ public:
      
      Copies the values from the rhs ClassLabelTimeoutFilter to this instance of the ClassLabelTimeoutFilter.
      
-     @param const ClassLabelTimeoutFilter &rhs: the rhs from which the values will be copied to this this instance of the ClassLabelTimeoutFilter
+     @param rhs: the rhs from which the values will be copied to this this instance of the ClassLabelTimeoutFilter
      */
     ClassLabelTimeoutFilter(const ClassLabelTimeoutFilter &rhs);
     
@@ -113,7 +111,7 @@ public:
     /**
      Assigns the equals operator setting how the values from the rhs instance will be copied to this instance.
      
-     @param const ClassLabelTimeoutFilter &rhs: the rhs instance from which the values will be copied to this this instance of the ClassLabelTimeoutFilter
+     @param rhs: the rhs instance from which the values will be copied to this this instance of the ClassLabelTimeoutFilter
      @return returns a reference to this instance of the ClassLabelTimeoutFilter
      */
     ClassLabelTimeoutFilter& operator=(const ClassLabelTimeoutFilter &rhs);
@@ -123,7 +121,7 @@ public:
      This function is used to deep copy the values from the input pointer to this instance of the PostProcessing module.
      This function is called by the GestureRecognitionPipeline when the user adds a new PostProcessing module to the pipeline.
      
-     @param const PostProcessing *postProcessing: a pointer to another instance of a ClassLabelTimeoutFilter, the values of that instance will be cloned to this instance
+     @param postProcessing: a pointer to another instance of a ClassLabelTimeoutFilter, the values of that instance will be cloned to this instance
 	 @return true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const PostProcessing *postProcessing);
@@ -133,7 +131,7 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the ClassLabelTimeoutFilter's filter(...) function.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  This should be a 1-dimensional vector containing a predicted class label
+     @param inputVector: the inputVector that should be processed.  This should be a 1-dimensional vector containing a predicted class label
 	 @return true if the data was processed, false otherwise
      */
     virtual bool process(const VectorDouble &inputVector);
@@ -151,43 +149,43 @@ public:
      This saves the post processing settings to a file.
      This overrides the saveSettingsToFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to save the settings to
+     @param filename: the name of the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(string filename) const;
+    virtual bool saveModelToFile( std::string filename ) const;
     
     /**
      This saves the post processing settings to a file.
      This overrides the saveSettingsToFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to save the settings to
+     @param filename: the name of the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads the post processing  settings from a file.
      This overrides the loadSettingsFromFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to load the settings from
+     @param filename: the name of the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool loadModelFromFile( std::string filename );
     
     /**
      This loads the post processing settings from a file.
      This overrides the loadSettingsFromFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to load the settings from
+     @param filename: the name of the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
 
     /**
      This function initializes the ClassLabelTimeoutFilter.
      
-     @param double timeoutDuration: sets the timeoutDuration value (in milliseconds)
-     @param UINT filterMode: sets the filterMode parameter
+     @param timeoutDuration: sets the timeoutDuration value (in milliseconds)
+     @param filterMode: sets the filterMode parameter
      @return returns true if the ClassLabelTimeoutFilter was initialized, false otherwise
      */
     bool init(unsigned long timeoutDuration,UINT filterMode = ALL_CLASS_LABELS); 
@@ -195,7 +193,7 @@ public:
     /**
      This is the main filter function which filters the input predictedClassLabel.
      
-     @param UINT predictedClassLabel: the predictedClassLabel which should be filtered
+     @param predictedClassLabel: the predictedClassLabel which should be filtered
      return returns the filtered class label
      */
 	UINT filter(UINT predictedClassLabel);
@@ -223,7 +221,7 @@ public:
      the default null rejection class label (i.e. a label with the class value of 0).  If the Class Label Filter 
      has been initialized then the module will be reset.
      
-     @param double timeoutDuration: the new timeoutDuration parameter
+     @param timeoutDuration: the new timeoutDuration parameter
      @return returns true if the timeoutDuration parameter was updated, false otherwise
      */
     bool setTimeoutDuration(unsigned long timeoutDuration);
@@ -244,7 +242,7 @@ public:
      debounce mode would be reset to class 2, even if the timeoutDuration for class 1 had not expired.  If the Class Label 
      Filter has been initialized then the module will be reset.
      
-     @param UINT filterMode: the new filterMode parameter
+     @param filterMode: the new filterMode parameter
      @return returns true if the filterMode parameter was updated, false otherwise
      */
     bool setFilterMode(UINT filterMode);
@@ -255,11 +253,11 @@ protected:
     UINT filteredClassLabel;
     UINT filterMode;
     unsigned long timeoutDuration;
-    vector< ClassLabelAndTimer > classLabelTimers;
+    Vector< ClassLabelAndTimer > classLabelTimers;
     
     static RegisterPostProcessingModule< ClassLabelTimeoutFilter > registerModule;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_CLASS_LABEL_TIMEOUT_FILTER_HEADER

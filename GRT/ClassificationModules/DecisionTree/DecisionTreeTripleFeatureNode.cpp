@@ -157,7 +157,7 @@ bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSt
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits_max< float_t >();
+    minError = grt_numeric_limits< float_t >::max();
     Random random;
     UINT bestFeatureIndexA = 0;
     UINT bestFeatureIndexB = 0;

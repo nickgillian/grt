@@ -139,13 +139,13 @@ bool RadialBasisFunction::train(ClassificationData &trainingData, VectorFloat &w
     //STEP 2: Estimate the best value for alpha
     float_t step = (maxAlphaSearchRange-minAlphaSearchRange)/numSteps;
     float_t bestAlpha = 0;
-    float_t minError = grt_numeric_limits_max< float_t >();
+    float_t minError = grt_numeric_limits< float_t >::max();
     
     alpha = minAlphaSearchRange;
     while( alpha <= maxAlphaSearchRange ){
         
         //Update gamma (this is used in the rbf function)
-        gamma = -1.0/(2.0*SQR(alpha));
+        gamma = -1.0/(2.0*grt_sqr(alpha));
         
         //Compute the weighted error over all the training samples given the current alpha value
         float_t error = 0;
@@ -173,7 +173,7 @@ bool RadialBasisFunction::train(ClassificationData &trainingData, VectorFloat &w
     }
     
     alpha = bestAlpha;
-    gamma = -1.0/(2.0*SQR(alpha));
+    gamma = -1.0/(2.0*grt_sqr(alpha));
     trained = true;
     
     std::cout << "BestAlpha: " << bestAlpha << " Error: " << minError << std::endl;

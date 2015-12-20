@@ -23,7 +23,7 @@
 
 #include "../../Util/GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 template <class OBSERVATION_TYPE>
 class PSOParticle{
@@ -39,9 +39,9 @@ public:
     /**
      This constructor attempts to initialize the particle, see the init function for more info.
      
-     @param K: the size of the particle state vector, must be greater than zero
-     @param xMin: the minimum range of the x state vector (i.e. the space that should be searched)
-     @param xMax: the maximum range of the x state vector (i.e. the space that should be searched)
+     @param K: the size of the particle state Vector, must be greater than zero
+     @param xMin: the minimum range of the x state Vector (i.e. the space that should be searched)
+     @param xMax: the maximum range of the x state Vector (i.e. the space that should be searched)
      */
     PSOParticle(const unsigned int K,const VectorFloat &xMin,const VectorFloat &xMax){
         init(K,xMin,xMax);
@@ -89,9 +89,9 @@ public:
     /**
      Initializes the PSOParticle. The size of xMin and xMax must match K.
      
-     @param K: the size of the particle state vector, must be greater than zero
-     @param xMin: the minimum range of the x state vector (i.e. the space that should be searched)
-     @param xMax: the maximum range of the x state vector (i.e. the space that should be searched)
+     @param K: the size of the particle state Vector, must be greater than zero
+     @param xMin: the minimum range of the x state Vector (i.e. the space that should be searched)
+     @param xMax: the maximum range of the x state Vector (i.e. the space that should be searched)
      @return returns true if the particle was initialized, false otherwise
      */
     virtual bool init(const unsigned int K,const VectorFloat &xMin,const VectorFloat &xMax){
@@ -113,17 +113,17 @@ public:
         
         initialized = true;
         
-        //Reset the state vector
+        //Reset the state Vector
         return reset();
     }
     
     /**
      Propogates the particle, using the model.  The default model used here is Gaussian Noise, in that case the propagation model
-     will be a K dimensional vector, with each of the k values represen representing sigma for each dimension (it is assumed mu = 0).
+     will be a K dimensional Vector, with each of the k values represen representing sigma for each dimension (it is assumed mu = 0).
      
      If you override this function then you can define your own model.
      
-     @param model: the propagation model, this should be a K*2 dimensional vector
+     @param model: the propagation model, this should be a K*2 dimensional Vector
      @return returns true if the particle was propagated, false otherwise
      */
     virtual bool propagate(const VectorFloat &model){
@@ -144,9 +144,9 @@ public:
     }
     
     /**
-     Update the particle, using the globalBest state vector across all particles.
+     Update the particle, using the globalBest state Vector across all particles.
      
-     @param globalBestX: the globe best state vector across all particles
+     @param globalBestX: the globe best state Vector across all particles
      @return returns true if the particle was updated, false otherwise
      */
     virtual bool update(const VectorFloat &globalBestX){
@@ -181,7 +181,7 @@ public:
     
     /**
      This function is used to evaluate the fitness of each particle. This function uses the squared distance between the estimated
-     state vector and the observation, the observation must therefore have a length of K.
+     state Vector and the observation, the observation must therefore have a length of K.
      
      For most cases, you will need to override this function and replace the evaluation code with your own.
      
@@ -210,7 +210,7 @@ public:
     }
     
     /**
-     Resets the particles state vector with random uniform noise.
+     Resets the particles state Vector with random uniform noise.
      
      @return returns true if the particle was reset, false otherwise
      */
@@ -223,7 +223,7 @@ public:
             v[k] = random.getRandomNumberUniform(-1.0,1);
         }
         
-        //Set the local best state vector to the current x state vector
+        //Set the local best state Vector to the current x state Vector
         localBestX = x;
         localBestCost = 0;
         
@@ -288,7 +288,7 @@ public:
 
 };
 
-}
+GRT_END_NAMESPACE
 
 #endif //GRT_PSO_PARTICLE_HEADER
 

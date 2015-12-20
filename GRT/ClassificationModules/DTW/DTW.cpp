@@ -640,7 +640,7 @@ float_t DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,M
             if( j==0 ) i--;
             else{
                 //Find the minimum cell to move to
-                v = grt_numeric_limits_max< float_t >();
+                v = grt_numeric_limits< float_t >::max();
                 index = 0;
                 if( distanceMatrix[i-1][j] < v ){ v = distanceMatrix[i-1][j]; index = 1; }
                 if( distanceMatrix[i][j-1] < v ){ v = distanceMatrix[i][j-1]; index = 2; }
@@ -743,7 +743,7 @@ float_t DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
             float_t contribDist1 = d(m-1,n-1,distanceMatrix,M,N);
             float_t contribDist2 = d(m-1,n,distanceMatrix,M,N);
             float_t contribDist3 = d(m,n-1,distanceMatrix,M,N);
-            float_t minValue = grt_numeric_limits_max< float_t >();
+            float_t minValue = grt_numeric_limits< float_t >::max();
             int index = 0;
             if( contribDist1 < minValue ){ minValue = contribDist1; index = 1; }
 			if( contribDist2 < minValue ){ minValue = contribDist2; index = 2; }

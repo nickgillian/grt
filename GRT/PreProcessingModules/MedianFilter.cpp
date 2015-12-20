@@ -260,8 +260,8 @@ VectorFloat MedianFilter::filter(const VectorFloat &x){
         return VectorFloat();
     }
     
-    if( x.size() != numInputDimensions ){
-        errorLog << "filter(const VectorFloat &x) - The size of the input vector (" << x.size() << ") does not match that of the number of dimensions of the filter (" << numInputDimensions << ")!" << std::endl;
+    if( x.getSize() != numInputDimensions ){
+        errorLog << "filter(const VectorFloat &x) - The size of the input Vector (" << x.getSize() << ") does not match that of the number of dimensions of the filter (" << numInputDimensions << ")!" << std::endl;
         return VectorFloat();
     }
     
@@ -289,7 +289,7 @@ VectorFloat MedianFilter::filter(const VectorFloat &x){
 Vector< VectorFloat > MedianFilter::getDataBuffer() const {
     
     if( !initialized ){
-        return vector< VectorFloat >();
+        return Vector< VectorFloat >();
     }
     
     Vector< VectorFloat > data(numInputDimensions,VectorFloat(inputSampleCounter));

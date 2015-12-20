@@ -20,7 +20,7 @@
 
 #include "ClassLabelTimeoutFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the ClassLabelTimeoutFilter module with the PostProcessing base class
 RegisterPostProcessingModule< ClassLabelTimeoutFilter > ClassLabelTimeoutFilter::registerModule("ClassLabelTimeoutFilter");
@@ -99,12 +99,12 @@ bool ClassLabelTimeoutFilter::process(const VectorDouble &inputVector){
     
 #ifdef GRT_SAFE_CHECKING
     if( !initialized ){
-        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
 #endif
@@ -127,7 +127,7 @@ bool ClassLabelTimeoutFilter::init(unsigned long timeoutDuration,UINT filterMode
     initialized = false;
     
     if( filterMode != ALL_CLASS_LABELS && filterMode != INDEPENDENT_CLASS_LABELS ){
-        errorLog << "init(double timeoutDuration,UINT filterMode) - Unkown filter mode!" << endl;
+        errorLog << "init(double timeoutDuration,UINT filterMode) - Unkown filter mode!" << std::endl;
         return false;
     }
     
@@ -148,7 +148,7 @@ UINT ClassLabelTimeoutFilter::filter(UINT predictedClassLabel){
     }
     
     bool matchFound = false;
-    vector< ClassLabelAndTimer >::iterator iter;
+    Vector< ClassLabelAndTimer >::iterator iter;
     
     switch( filterMode ){
         case ALL_CLASS_LABELS:
@@ -219,7 +219,7 @@ UINT ClassLabelTimeoutFilter::filter(UINT predictedClassLabel){
     
 bool ClassLabelTimeoutFilter::isTimeoutActive(){
 
-    for(UINT i=0; i<classLabelTimers.size(); i++){
+    for(UINT i=0; i<classLabelTimers.getSize(); i++){
         if( classLabelTimers[i].timerReached() ){
             return true;
         }
@@ -228,10 +228,10 @@ bool ClassLabelTimeoutFilter::isTimeoutActive(){
     return false;
 }
     
-bool ClassLabelTimeoutFilter::saveModelToFile(string filename) const{
+bool ClassLabelTimeoutFilter::saveModelToFile( std::string filename ) const{
     
     if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The ClassLabelTimeoutFilter has not been initialized" << endl;
+        errorLog << "saveModelToFile(string filename) - The ClassLabelTimeoutFilter has not been initialized" << std::endl;
         return false;
     }
     
@@ -248,23 +248,23 @@ bool ClassLabelTimeoutFilter::saveModelToFile(string filename) const{
     return true;
 }
 
-bool ClassLabelTimeoutFilter::saveModelToFile(fstream &file) const{
+bool ClassLabelTimeoutFilter::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_CLASS_LABEL_TIMEOUT_FILTER_FILE_V1.0" << endl;
-    file << "NumInputDimensions: " << numInputDimensions << endl;
-    file << "NumOutputDimensions: " << numOutputDimensions << endl;
-    file << "FilterMode: " << filterMode << endl;
-    file << "TimeoutDuration: " << timeoutDuration << endl;	
+    file << "GRT_CLASS_LABEL_TIMEOUT_FILTER_FILE_V1.0" << std::endl;
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
+    file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
+    file << "FilterMode: " << filterMode << std::endl;
+    file << "TimeoutDuration: " << timeoutDuration << std::endl;	
     
     return true;
 }
 
-bool ClassLabelTimeoutFilter::loadModelFromFile(string filename){
+bool ClassLabelTimeoutFilter::loadModelFromFile( std::string filename ){
     
     std::fstream file; 
     file.open(filename.c_str(), std::ios::in);
@@ -280,26 +280,26 @@ bool ClassLabelTimeoutFilter::loadModelFromFile(string filename){
     return true;
 }
 
-bool ClassLabelTimeoutFilter::loadModelFromFile(fstream &file){
+bool ClassLabelTimeoutFilter::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_CLASS_LABEL_TIMEOUT_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
         return false;     
     }
     file >> numInputDimensions;
@@ -307,7 +307,7 @@ bool ClassLabelTimeoutFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
         return false;     
     }
     file >> numOutputDimensions;
@@ -315,14 +315,14 @@ bool ClassLabelTimeoutFilter::loadModelFromFile(fstream &file){
     //Load the filterMode
     file >> word;
     if( word != "FilterMode:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterMode header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterMode header!" << std::endl;
         return false;     
     }
     file >> filterMode;
     
     file >> word;
     if( word != "TimeoutDuration:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read TimeoutDuration header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read TimeoutDuration header!" << std::endl;
         return false;     
     }
     file >> timeoutDuration;
@@ -348,4 +348,4 @@ bool ClassLabelTimeoutFilter::setFilterMode(UINT filterMode){
     return true;
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE

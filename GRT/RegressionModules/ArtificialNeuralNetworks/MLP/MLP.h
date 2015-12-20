@@ -120,7 +120,7 @@ public:
      @param file: a reference to the file the MLP model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained MLP model from a file.
@@ -129,7 +129,7 @@ public:
      @param file: a reference to the file the MLP model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      Returns the number of classes in the MLP model if the MLP is in classification mode.
@@ -196,7 +196,7 @@ public:
      @param activationFunction: the activation function you want to convert to a string
      @return returns a string representation of the activation function, returns UNKNOWN if the activation function is invalid
      */
-	string activationFunctionToString(const UINT activationFunction) const;
+	std::string activationFunctionToString(const UINT activationFunction) const;
     
     /**
      Gets the activation function value from a string.
@@ -204,7 +204,7 @@ public:
      @param activationName: the activation function as a string
      @return returns an UINT activation function
      */
-	UINT activationFunctionFromString(const string activationName) const;
+	UINT activationFunctionFromString(const std::string activationName) const;
     
     /**
      Validates if the activationFunction is valid.
@@ -497,7 +497,7 @@ protected:
     
     bool trainOnlineGradientDescentRegression(const RegressionData &trainingData,const RegressionData &validationData);
     
-    bool loadLegacyModelFromFile( fstream &file );
+    bool loadLegacyModelFromFile( std::fstream &file );
     
     /**
      Performs one round of back propagation, using the training example and target Vector

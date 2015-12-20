@@ -174,7 +174,7 @@ bool MLBase::loadModelFromFile(std::fstream &file){ return false; }
 bool MLBase::getModel(std::ostream &stream) const { return true; }
     
 std::string MLBase::getModelAsString() const{
-    std::ostd::stringstream stream;
+    std::stringstream stream;
     if( getModel( stream ) ){
         return stream.str();
     }
@@ -336,7 +336,7 @@ std::vector< TrainingResult > MLBase::getTrainingResults() const{
     return trainingResults;
 }
 
-bool MLBase::saveBaseSettingsToFile(fstream &file) const{
+bool MLBase::saveBaseSettingsToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
         errorLog << "saveBaseSettingsToFile(fstream &file) - The file is not open!" << std::endl;
@@ -359,7 +359,7 @@ bool MLBase::saveBaseSettingsToFile(fstream &file) const{
     return true;
 }
 
-bool MLBase::loadBaseSettingsFromFile(fstream &file){
+bool MLBase::loadBaseSettingsFromFile( std::fstream &file ){
     
     //Clear any previous setup
     clear();

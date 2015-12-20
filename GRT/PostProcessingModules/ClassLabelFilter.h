@@ -36,7 +36,7 @@
 #include "../Util/GRTCommon.h"
 #include "../CoreModules/PostProcessing.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class ClassLabelFilter : public PostProcessing{
 public:
@@ -48,8 +48,8 @@ public:
      instances for any class label in the buffer is less than the minimum count parameter then the Class Label Filter will 
      output the default null rejection class label of 0.
      
-     @param UINT minimumCount: sets the minimumCount value. Default value minimumCount=1
-     @param UINT bufferSize: sets the size of the class labels buffer. Default value bufferSize=1
+     @param minimumCount: sets the minimumCount value. Default value minimumCount=1
+     @param bufferSize: sets the size of the class labels buffer. Default value bufferSize=1
      */
     ClassLabelFilter(UINT minimumCount = 1,UINT bufferSize = 1);
     
@@ -58,7 +58,7 @@ public:
      
      Copies the values from the rhs ClassLabelFilter to this instance of the ClassLabelFilter.
      
-     @param const ClassLabelFilter &rhs: the rhs from which the values will be copied to this this instance of the ClassLabelFilter.
+     @param rhs: the rhs from which the values will be copied to this this instance of the ClassLabelFilter.
      */
     ClassLabelFilter(const ClassLabelFilter &rhs);
     
@@ -70,7 +70,7 @@ public:
     /**
      Assigns the equals operator setting how the values from the rhs instance will be copied to this instance.
      
-     @param const ClassLabelFilter &rhs: the rhs instance from which the values will be copied to this this instance of the ClassLabelFilter
+     @param rhs: the rhs instance from which the values will be copied to this this instance of the ClassLabelFilter
      @return returns a reference to this instance of the ClassLabelFilter
      */
     ClassLabelFilter& operator=(const ClassLabelFilter &rhs);
@@ -80,7 +80,7 @@ public:
      This function is used to deep copy the values from the input pointer to this instance of the PostProcessing module.
      This function is called by the GestureRecognitionPipeline when the user adds a new PostProcessing module to the pipeline.
      
-     @param const PostProcessing *postProcessing: a pointer to another instance of a ClassLabelFilter, the values of that instance will be cloned to this instance
+     @param postProcessing: a pointer to another instance of a ClassLabelFilter, the values of that instance will be cloned to this instance
 	 @return true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const PostProcessing *postProcessing);
@@ -90,7 +90,7 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the ClassLabelFilter's filter(...) function.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  This should be a 1-dimensional vector containing a predicted class label
+     @param inputVector: the inputVector that should be processed.  This should be a 1-dimensional vector containing a predicted class label
 	 @return true if the data was processed, false otherwise
      */
     virtual bool process(const VectorDouble &inputVector);
@@ -108,43 +108,43 @@ public:
      This saves the post processing settings to a file.
      This overrides the saveSettingsToFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to save the settings to
+     @param filename: the name of the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(string filename) const;
+    virtual bool saveModelToFile( std::string filename ) const;
     
     /**
      This saves the post processing settings to a file.
      This overrides the saveSettingsToFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to save the settings to
+     @param filename: the name of the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads the post processing  settings from a file.
      This overrides the loadSettingsFromFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to load the settings from
+     @param filename: the name of the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool loadModelFromFile( std::string filename );
     
     /**
      This loads the post processing settings from a file.
      This overrides the loadSettingsFromFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to load the settings from
+     @param filename: the name of the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This function initializes the ClassLabelFilter.
      
-     @param UINT minimumCount: sets the minimumCount value
-     @param UINT bufferSize: sets the size of the class labels buffer
+     @param minimumCount: sets the minimumCount value
+     @param bufferSize: sets the size of the class labels buffer
      @return returns true if the ClassLabelFilter was initialized, false otherwise
      */
     bool init(UINT minimumCount,UINT bufferSize); 
@@ -152,7 +152,7 @@ public:
     /**
      This is the main filter function which filters the input predictedClassLabel.
      
-     @param UINT predictedClassLabel: the predictedClassLabel which should be filtered
+     @param predictedClassLabel: the predictedClassLabel which should be filtered
      return returns the filtered class label
      */
     UINT filter(UINT predictedClassLabel);
@@ -170,7 +170,7 @@ public:
      The minimumCount parameter controls how many class labels need to be present in the class labels buffer for that class label to be output by 
      the filter.  If the Class Label Filter has been initialized then the module will be reset.
      
-     @param UINT minimumCount: the new minimumCount parameter
+     @param minimumCount: the new minimumCount parameter
      @return returns true if the minimumCount parameter was updated, false otherwise
      */
     bool setMinimumCount(UINT minimumCount);
@@ -180,7 +180,7 @@ public:
      
      The bufferSize parameter controls the size of the class labels buffer. If the Class Label Filter has been initialized then the module will be reset.
      
-     @param UINT bufferSize: the new bufferSize parameter
+     @param bufferSize: the new bufferSize parameter
      @return returns true if the bufferSize parameter was updated, false otherwise
      */
     bool setBufferSize(UINT bufferSize);
@@ -194,6 +194,6 @@ protected:
     static RegisterPostProcessingModule< ClassLabelFilter > registerModule;
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_CLASS_LABEL_FILTER_HEADER

@@ -20,7 +20,7 @@
 
 #include "ClassLabelFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the ClassLabelFilter module with the PostProcessing base class
 RegisterPostProcessingModule< ClassLabelFilter > ClassLabelFilter::registerModule("ClassLabelFilter");
@@ -100,12 +100,12 @@ bool ClassLabelFilter::deepCopyFrom(const PostProcessing *postProcessing){
 bool ClassLabelFilter::process(const VectorDouble &inputVector){
     
     if( !initialized ){
-        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -130,17 +130,17 @@ bool ClassLabelFilter::init(UINT minimumCount,UINT bufferSize){
     initialized = false;
     
     if( minimumCount < 1 ){
-        errorLog << "init(UINT minimumCount,UINT bufferSize) - MinimumCount must be greater than or equal to 1!" << endl;
+        errorLog << "init(UINT minimumCount,UINT bufferSize) - MinimumCount must be greater than or equal to 1!" << std::endl;
         return false;
     }
     
     if( bufferSize < 1 ){
-        errorLog << "init(UINT minimumCount,UINT bufferSize) - BufferSize must be greater than or equal to 1!" << endl;
+        errorLog << "init(UINT minimumCount,UINT bufferSize) - BufferSize must be greater than or equal to 1!" << std::endl;
         return false;
     }
     
     if( bufferSize < minimumCount ){
-        errorLog << "init(UINT minimumCount,UINT bufferSize) - The buffer size must be greater than or equal to the minimum count!" << endl;
+        errorLog << "init(UINT minimumCount,UINT bufferSize) - The buffer size must be greater than or equal to the minimum count!" << std::endl;
         return false;
     }
     
@@ -155,7 +155,7 @@ bool ClassLabelFilter::init(UINT minimumCount,UINT bufferSize){
 UINT ClassLabelFilter::filter(UINT predictedClassLabel){
     
     if( !initialized ){
-        errorLog << "filter(UINT predictedClassLabel) - The filter has not been initialized!" << endl;
+        errorLog << "filter(UINT predictedClassLabel) - The filter has not been initialized!" << std::endl;
         filteredClassLabel = 0;
         return 0;
     }
@@ -164,7 +164,7 @@ UINT ClassLabelFilter::filter(UINT predictedClassLabel){
     buffer.push_back( predictedClassLabel );
     
     //Count the class values in the buffer, automatically start with the first value in the buffer
-    vector< ClassTracker > classTracker( 1, ClassTracker( buffer[0], 1 ) );
+    Vector< ClassTracker > classTracker( 1, ClassTracker( buffer[0], 1 ) );
     
     UINT maxCount = classTracker[0].counter;
     UINT maxClass = classTracker[0].classLabel;
@@ -205,10 +205,10 @@ UINT ClassLabelFilter::filter(UINT predictedClassLabel){
     return filteredClassLabel;
 }
     
-bool ClassLabelFilter::saveModelToFile(string filename) const{
+bool ClassLabelFilter::saveModelToFile( std::string filename ) const{
     
     if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The ClassLabelFilter has not been initialized" << endl;
+        errorLog << "saveModelToFile(string filename) - The ClassLabelFilter has not been initialized" << std::endl;
         return false;
     }
     
@@ -225,23 +225,23 @@ bool ClassLabelFilter::saveModelToFile(string filename) const{
     return true;
 }
 
-bool ClassLabelFilter::saveModelToFile(fstream &file) const{
+bool ClassLabelFilter::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_CLASS_LABEL_FILTER_FILE_V1.0" << endl;
-    file << "NumInputDimensions: " << numInputDimensions << endl;
-    file << "NumOutputDimensions: " << numOutputDimensions << endl;
-    file << "MinimumCount: " << minimumCount << endl;
-    file << "BufferSize: " << bufferSize << endl;	
+    file << "GRT_CLASS_LABEL_FILTER_FILE_V1.0" << std::endl;
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
+    file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
+    file << "MinimumCount: " << minimumCount << std::endl;
+    file << "BufferSize: " << bufferSize << std::endl;	
     
     return true;
 }
 
-bool ClassLabelFilter::loadModelFromFile(string filename){
+bool ClassLabelFilter::loadModelFromFile( std::string filename ){
     
     std::fstream file; 
     file.open(filename.c_str(), std::ios::in);
@@ -257,26 +257,26 @@ bool ClassLabelFilter::loadModelFromFile(string filename){
     return true;
 }
 
-bool ClassLabelFilter::loadModelFromFile(fstream &file){
+bool ClassLabelFilter::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_CLASS_LABEL_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
         return false;     
     }
     file >> numInputDimensions;
@@ -284,7 +284,7 @@ bool ClassLabelFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
         return false;     
     }
     file >> numOutputDimensions;
@@ -292,14 +292,14 @@ bool ClassLabelFilter::loadModelFromFile(fstream &file){
     //Load the minimumCount
     file >> word;
     if( word != "MinimumCount:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read MinimumCount header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read MinimumCount header!" << std::endl;
         return false;     
     }
     file >> minimumCount;
     
     file >> word;
     if( word != "BufferSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read BufferSize header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read BufferSize header!" << std::endl;
         return false;     
     }
     file >> bufferSize;
@@ -324,4 +324,4 @@ bool ClassLabelFilter::setBufferSize(UINT bufferSize){
     return true;
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

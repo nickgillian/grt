@@ -87,7 +87,7 @@ bool WeightedAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
 	return true;
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << endl;
+    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -96,12 +96,12 @@ bool WeightedAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
 bool WeightedAverageFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "process(const VectorFloat &inputVector) - The filter has not been initialized!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The filter has not been initialized!" << std::endl;
         return false;
     }
 
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -116,80 +116,44 @@ bool WeightedAverageFilter::reset(){
     if( initialized ) return init(filterSize,numInputDimensions);
     return false;
 }
-    
-bool WeightedAverageFilter::saveModelToFile(string filename) const{
-    
-    if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The WeightedAverageFilter has not been initialized" << endl;
-        return false;
-    }
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool WeightedAverageFilter::saveModelToFile(fstream &file) const{
+bool WeightedAverageFilter::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_MOVING_AVERAGE_FILTER_FILE_V1.0" << endl;
+    file << "GRT_MOVING_AVERAGE_FILTER_FILE_V1.0" << std::endl;
     
-    file << "NumInputDimensions: " << numInputDimensions << endl;
-    file << "NumOutputDimensions: " << numOutputDimensions << endl;
-    file << "FilterSize: " << filterSize << endl;
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
+    file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
+    file << "FilterSize: " << filterSize << std::endl;
     
     return true;
 }
 
-bool WeightedAverageFilter::loadModelFromFile(string filename){
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        initialized = false;
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool WeightedAverageFilter::loadModelFromFile(fstream &file){
+bool WeightedAverageFilter::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_MOVING_AVERAGE_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
         return false;     
     }
     file >> numInputDimensions;
@@ -197,7 +161,7 @@ bool WeightedAverageFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
         return false;     
     }
     file >> numOutputDimensions;
@@ -205,7 +169,7 @@ bool WeightedAverageFilter::loadModelFromFile(fstream &file){
     //Load the filter factor
     file >> word;
     if( word != "FilterSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterSize header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterSize header!" << std::endl;
         return false;     
     }
     file >> filterSize;
@@ -221,12 +185,12 @@ bool WeightedAverageFilter::init(UINT filterSize,UINT numDimensions){
     inputSampleCounter = 0;
     
     if( filterSize == 0 ){
-        errorLog << "init(UINT filterSize,UINT numDimensions) - Filter size can not be zero!" << endl;
+        errorLog << "init(UINT filterSize,UINT numDimensions) - Filter size can not be zero!" << std::endl;
         return false;
     }
     
     if( numDimensions == 0 ){
-        errorLog << "init(UINT filterSize,UINT numDimensions) - The number of dimensions must be greater than zero!" << endl;
+        errorLog << "init(UINT filterSize,UINT numDimensions) - The number of dimensions must be greater than zero!" << std::endl;
         return false;
     }
     
@@ -246,7 +210,7 @@ bool WeightedAverageFilter::init(UINT filterSize,UINT numDimensions){
     }
 
     if( !initialized ){
-        errorLog << "init(UINT filterSize,UINT numDimensions) - Failed to resize dataBuffer!" << endl;
+        errorLog << "init(UINT filterSize,UINT numDimensions) - Failed to resize dataBuffer!" << std::endl;
     }
     
     return initialized;
@@ -256,7 +220,7 @@ float_t WeightedAverageFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const float_t x) - The filter has not been initialized!" << endl;
+        errorLog << "filter(const float_t x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
@@ -270,12 +234,12 @@ VectorFloat WeightedAverageFilter::filter(const VectorFloat &x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const VectorFloat &x) - The filter has not been initialized!" << endl;
+        errorLog << "filter(const VectorFloat &x) - The filter has not been initialized!" << std::endl;
         return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "filter(const VectorFloat &x) - The size of the input vector (" << x.size() << ") does not match that of the number of dimensions of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "filter(const VectorFloat &x) - The size of the input vector (" << x.size() << ") does not match that of the number of dimensions of the filter (" << numInputDimensions << ")!" << std::endl;
         return VectorFloat();
     }
     

@@ -1129,7 +1129,7 @@ UnlabelledData ClassificationData::reformatAsUnlabelledData() const{
 }
 
 UINT ClassificationData::getMinimumClassLabel() const{
-    UINT minClassLabel = grt_numeric_limits_max< UINT >();
+    UINT minClassLabel = grt_numeric_limits< UINT >::max();
 
     for(UINT i=0; i<classTracker.getSize(); i++){
         if( classTracker[i].classLabel < minClassLabel ){

@@ -521,7 +521,7 @@ bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainin
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits_max< float_t >();
+    minError = grt_numeric_limits< float_t >::max();
     UINT bestFeatureIndex = 0;
     UINT groupID = 0;
     float_t bestThreshold = 0;
@@ -601,7 +601,7 @@ bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingDa
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits_max< float_t >();
+    minError = grt_numeric_limits< float_t >::max();
     UINT bestFeatureIndex = 0;
     UINT groupID = 0;
     float_t bestThreshold = 0;

@@ -227,7 +227,7 @@ bool SelfOrganizingMap::train_( MatrixFloat &data ){
             
             //Find the best matching unit
             float_t dist = 0;
-            float_t bestDist = grt_numeric_limits_max< float_t >();
+            float_t bestDist = grt_numeric_limits< float_t >::max();
             UINT bestIndex = 0;
             for(UINT j=0; j<numClusters; j++){
                 dist = neurons[j].getSquaredWeightDistance( trainingSample );

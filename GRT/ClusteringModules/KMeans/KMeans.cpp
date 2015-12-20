@@ -217,7 +217,7 @@ bool KMeans::predict_(VectorFloat &inputVector){
     float_t sum = 0;
     float_t dist = 0;
 	UINT minIndex = 0;
-	bestDistance = grt_numeric_limits_max< float_t >();
+	bestDistance = grt_numeric_limits< float_t >::max();
 	predictedClusterLabel = 0;
 	maxLikelihood = 0;
 	if( clusterLikelihoods.getSize() != numClusters )

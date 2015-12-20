@@ -35,7 +35,7 @@
 #include "../Util/GRTCommon.h"
 #include "../CoreModules/PostProcessing.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class ClassLabelChangeFilter : public PostProcessing{
 public:
@@ -49,7 +49,7 @@ public:
      
      Copies the values from the rhs ClassLabelChangeFilter to this instance of the ClassLabelChangeFilter.
      
-     @param const ClassLabelChangeFilter &rhs: the rhs from which the values will be copied to this this instance of the ClassLabelChangeFilter
+     @param rhs: the rhs from which the values will be copied to this this instance of the ClassLabelChangeFilter
      */
     ClassLabelChangeFilter(const ClassLabelChangeFilter &rhs);
     
@@ -61,7 +61,7 @@ public:
     /**
      Assigns the equals operator setting how the values from the rhs instance will be copied to this instance.
      
-     @param const ClassLabelChangeFilter &rhs: the rhs instance from which the values will be copied to this this instance of the ClassLabelChangeFilter
+     @param rhs: the rhs instance from which the values will be copied to this this instance of the ClassLabelChangeFilter
      @return returns a reference to this instance of the ClassLabelChangeFilter
      */
     ClassLabelChangeFilter& operator=(const ClassLabelChangeFilter &rhs);
@@ -71,7 +71,7 @@ public:
      This function is used to deep copy the values from the input pointer to this instance of the PostProcessing module.
      This function is called by the GestureRecognitionPipeline when the user adds a new PostProcessing module to the pipeline.
      
-     @param const PostProcessing *postProcessing: a pointer to another instance of a ClassLabelChangeFilter, the values of that instance will be cloned to this instance
+     @param postProcessing: a pointer to another instance of a ClassLabelChangeFilter, the values of that instance will be cloned to this instance
 	 @return true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const PostProcessing *postProcessing);
@@ -81,7 +81,7 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the ClassLabelChangeFilter's filter(...) function.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  This should be a 1-dimensional vector containing a predicted class label
+     @param inputVector: the inputVector that should be processed.  This should be a 1-dimensional vector containing a predicted class label
 	 @return true if the data was processed, false otherwise
      */
     virtual bool process(const VectorDouble &inputVector);
@@ -99,37 +99,37 @@ public:
      This saves the post processing settings to a file.
      This overrides the saveSettingsToFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to save the settings to
+     @param filename: the name of the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(string filename) const;
+    virtual bool saveModelToFile( std::string filename ) const;
     
     /**
      This saves the post processing settings to a file.
      This overrides the saveSettingsToFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to save the settings to
+     @param filename: the name of the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads the post processing  settings from a file.
      This overrides the loadSettingsFromFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to load the settings from
+     @param filename: the name of the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool loadModelFromFile( std::string filename );
     
     /**
      This loads the post processing settings from a file.
      This overrides the loadSettingsFromFile function in the PostProcessing base class.
      
-     @param string filename: the name of the file to load the settings from
+     @param filename: the name of the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
 
     /**
      This function initializes the ClassLabelChangeFilter.
@@ -141,7 +141,7 @@ public:
     /**
      This is the main filter function which filters the input predictedClassLabel.
      
-     @param UINT predictedClassLabel: the predictedClassLabel which should be filtered
+     @param predictedClassLabel: the predictedClassLabel which should be filtered
      return returns the filtered class label
      */
 	UINT filter(UINT predictedClassLabel);
@@ -167,6 +167,6 @@ protected:
     static RegisterPostProcessingModule< ClassLabelChangeFilter > registerModule;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_CLASS_LABEL_CHANGE_FILTER_HEADER

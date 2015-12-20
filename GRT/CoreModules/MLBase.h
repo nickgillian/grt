@@ -672,14 +672,14 @@ protected:
      
      @return returns true if the base settings were saved, false otherwise
      */
-    bool saveBaseSettingsToFile(std::fstream &file) const;
+    bool saveBaseSettingsToFile( std::fstream &file ) const;
     
     /**
      Loads the core base settings from a file.
      
      @return returns true if the base settings were loaded, false otherwise
      */
-    bool loadBaseSettingsFromFile(std::fstream &file);
+    bool loadBaseSettingsFromFile( std::fstream &file );
     
     bool trained;
     bool useScaling;

@@ -35,7 +35,7 @@
 #include "../../CoreAlgorithms/Tree/Tree.h"
 #include "RegressionTreeNode.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class RegressionTree : public Tree, public Regressifier
 {
@@ -95,7 +95,7 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Regressifier base class.
      
-     @param inputVector: the input vector to predict
+     @param inputVector: the input Vector to predict
      @return returns true if the prediction was performed, false otherwise
     */
     virtual bool predict_(VectorFloat &inputVector);
@@ -122,7 +122,7 @@ public:
      @param file: a reference to the file the RegressionTree model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained RegressionTree model from a file.
@@ -131,7 +131,7 @@ public:
      @param file: a reference to the file the RegressionTree model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
 
     /**
      Deep copies the regression tree, returning a pointer to the new regression tree.
@@ -174,17 +174,17 @@ public:
 protected:
     float_t minRMSErrorPerNode;
     
-    RegressionTreeNode* buildTree( const RegressionData &trainingData, RegressionTreeNode *parent, vector< UINT > features, UINT nodeID );
-    bool computeBestSpilt( const RegressionData &trainingData, const vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError );
-    bool computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError );
-    //bool computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, float_t &threshold, float_t &minError );
+    RegressionTreeNode* buildTree( const RegressionData &trainingData, RegressionTreeNode *parent, Vector< UINT > features, UINT nodeID );
+    bool computeBestSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError );
+    bool computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError );
+    //bool computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &threshold, float_t &minError );
     bool computeNodeRegressionData( const RegressionData &trainingData, VectorFloat &regressionData );
 
     static RegisterRegressifierModule< RegressionTree > registerModule;
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_REGRESSION_TREE_HEADER
 

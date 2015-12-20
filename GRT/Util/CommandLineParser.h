@@ -111,7 +111,7 @@ public:
         
         if( it == results.end() ){
             value = defaultValue;
-            warningLog << "get(const std::string &id,T &value) - Failed to find id: " << id << endl;
+            warningLog << "get(const std::string &id,T &value) - Failed to find id: " << id << std::endl;
             return false;
         }
         
@@ -122,7 +122,7 @@ public:
             return true;
         }catch( ... ){
             value = defaultValue;
-            warningLog << "get(const std::string &id,T &value) - Can not parse type: " << typeid( value ).name() << endl;
+            warningLog << "get(const std::string &id,T &value) - Can not parse type: " << typeid( value ).name() << std::endl;
         }
 
         return false;
@@ -142,7 +142,7 @@ public:
         it = results.find( id );
         
         if( it == results.end() ){
-            warningLog << "validate(const std::string ) - Failed to find id: " << id << endl;
+            warningLog << "validate(const std::string ) - Failed to find id: " << id << std::endl;
             return false;
         }
         
