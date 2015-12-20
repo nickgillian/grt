@@ -36,7 +36,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "WarningLog.h"
 #include "ErrorLog.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class CommandLineParser {
 public:
@@ -192,6 +192,6 @@ protected:
 
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_COMMAND_LINE_PARSER_HEADER

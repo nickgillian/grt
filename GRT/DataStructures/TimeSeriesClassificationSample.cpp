@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "TimeSeriesClassificationSample.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 //Constructors and Destructors
 TimeSeriesClassificationSample::TimeSeriesClassificationSample():classLabel(0){};
@@ -55,4 +55,4 @@ bool TimeSeriesClassificationSample::setTrainingSample(const UINT classLabel,con
     return true;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE

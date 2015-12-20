@@ -9,8 +9,8 @@
 #ifndef GRT_TEST_RESULT_HEADER
 #define GRT_TEST_RESULT_HEADER
 
-#include "GRTTypedefs.h"
-#include "MatrixFloat.h"
+#include "../DataStructures/VectorFloat.h"
+#include "../DataStructures/MatrixFloat.h"
 
 namespace GRT {
 

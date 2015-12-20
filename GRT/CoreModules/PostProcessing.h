@@ -33,7 +33,7 @@
 
 #include "MLBase.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class PostProcessing : public MLBase
 {
@@ -51,7 +51,7 @@ public:
     /**
      This is the base deepCopyFrom function for the PostProcessing modules. This function should be overwritten by the derived class.
      
-     @param const PostProcessing *postProcessing: a pointer to the PostProcessing base class, this should be pointing to another instance of a matching derived class
+     @param postProcessing: a pointer to the PostProcessing base class, this should be pointing to another instance of a matching derived class
      @return returns true if the deep copy was successfull, false otherwise (the PostProcessing base class will always return flase)
      */
 	virtual bool deepCopyFrom(const PostProcessing *postProcessing){ return false; }
@@ -59,7 +59,7 @@ public:
     /**
      This copies the PostProcessing variables from postProcessingModule to the instance that calls the function.
      
-     @param const PostProcessing *postProcessingModule: a pointer to a post processing module from which the values will be copied
+     @param postProcessingModule: a pointer to a post processing module from which the values will be copied
      @return returns true if the copy was successfull, false otherwise
      */
 	bool copyBaseVariables(const PostProcessing *postProcessingModule);
@@ -67,7 +67,7 @@ public:
     /**
      This is the main processing interface for all the post processing modules and should be overwritten by the inheriting class.
      
-     @param const VectorFloat &inputVector: a vector containing the data that should be processed
+     @param inputVector: a vector containing the data that should be processed
      @return returns true if the post processing was successfull, false otherwise
      */
     virtual bool process(const VectorFloat &inputVector){ return false; }
@@ -84,42 +84,42 @@ public:
      This saves the post processing settings to a file.
      This function should be overwritten by the derived class.
      
-     @param const string filename: the filename to save the settings to
+     @param filename: the filename to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(string filename) const;
+    virtual bool saveModelToFile(std::string filename) const;
     
     /**
      This saves the post processing settings to a file.
      This function should be overwritten by the derived class.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool loadModelFromFile(std::string filename);
     
     /**
      This saves the post processing settings to a file.
      This function should be overwritten by the derived class.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise (the base class always returns false)
      */
-    virtual bool saveModelToFile(fstream &file) const{ return false; }
+    virtual bool saveModelToFile(std::fstream &file) const{ return false; }
     
     /**
      This loads the post processing settings from a file.
      This function should be overwritten by the derived class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise (the base class always returns false)
      */
-    virtual bool loadModelFromFile(fstream &file){ return false; }
+    virtual bool loadModelFromFile(std::fstream &file){ return false; }
 	
     /**
      @return returns the post processing type as a string, e.g. ClassLabelTimeoutFilter
      */
-	string getPostProcessingType() const;
+	std::string getPostProcessingType() const;
     
     /**
      @return returns the post processing input mode, this will be one of the PostprocessingInputModes enums
@@ -180,15 +180,15 @@ public:
     /**
      This typedef defines a map between a string and a PostProcessing pointer.
      */
-	typedef std::map< string, PostProcessing*(*)() > StringPostProcessingMap;
+	typedef std::map< std::string, PostProcessing*(*)() > StringPostProcessingMap;
     
     /**
      This static function will dynamically create a new PostProcessing instance from a string.
      
-     @param string const &postProcessingType: the name of the PostProcessing class you want to dynamically create
+     @param postProcessingType: the name of the PostProcessing class you want to dynamically create
      @return a pointer to the new PostProcessing instance that was created
      */
-    static PostProcessing* createInstanceFromString(string const &postProcessingType);
+    static PostProcessing* createInstanceFromString(std::string const &postProcessingType);
     
     /**
      This static function will dynamically create a new PostProcessing instance based on the type of this instance
@@ -212,16 +212,16 @@ protected:
      
      @return returns true if the base settings were saved, false otherwise
      */
-    bool savePostProcessingSettingsToFile(fstream &file) const;
+    bool savePostProcessingSettingsToFile(std::fstream &file) const;
     
     /**
      Loads the core postprocessing settings from a file.
      
      @return returns true if the base settings were loaded, false otherwise
      */
-    bool loadPostProcessingSettingsFromFile(fstream &file);
+    bool loadPostProcessingSettingsFromFile(std::fstream &file);
 
-    string postProcessingType;
+    std::string postProcessingType;
     bool initialized;
     UINT postProcessingInputMode;
     UINT postProcessingOutputMode;
@@ -235,7 +235,6 @@ protected:
 private:
     static StringPostProcessingMap *stringPostProcessingMap;
     static UINT numPostProcessingInstances;
-
 };
 
 //These two functions/classes are used to register any new PostProcessing Module with the PostProcessing base class
@@ -244,12 +243,12 @@ template< typename T >  PostProcessing *newPostProcessingModuleInstance() { retu
 template< typename T > 
 class RegisterPostProcessingModule : PostProcessing { 
 public:
-    RegisterPostProcessingModule(string const &newPostProcessingModuleName) { 
-        getMap()->insert( std::pair<string, PostProcessing*(*)()>(newPostProcessingModuleName, &newPostProcessingModuleInstance< T > ) );
+    RegisterPostProcessingModule( std::string const &newPostProcessingModuleName ) { 
+        getMap()->insert( std::pair< std::string, PostProcessing*(*)() >(newPostProcessingModuleName, &newPostProcessingModuleInstance< T > ) );
     }
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_POST_PROCESSING_HEADER
 

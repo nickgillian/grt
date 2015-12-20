@@ -30,7 +30,7 @@
 #define GRT_CLASSIFICATION_RESULT_HEADER
 #include "GRTCommon.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 class ClassificationResult{
 public:
@@ -169,6 +169,6 @@ public:
     VectorFloat classDistances;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_CLASSIFICATION_RESULT_HEADER

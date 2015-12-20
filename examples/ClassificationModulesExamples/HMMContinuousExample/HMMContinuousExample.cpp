@@ -100,8 +100,8 @@ int main(int argc, const char * argv[]){
     }
 
     //Compute the accuracy of the HMM models using the test data
-    double numCorrect = 0;
-    double numTests = 0;
+    float_t numCorrect = 0;
+    float_t numTests = 0;
     for(UINT i=0; i<testData.getNumSamples(); i++){
         
         UINT classLabel = testData[i].getClassLabel();

@@ -20,12 +20,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "RandomForests.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 //Register the RandomForests module with the Classifier base class
 RegisterClassifierModule< RandomForests >  RandomForests::registerModule("RandomForests");
 
-RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const double bootstrappedDatasetWeight)
+RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const float_t bootstrappedDatasetWeight)
 {
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->forestSize = forestSize;
@@ -99,7 +99,7 @@ RandomForests& RandomForests::operator=(const RandomForests &rhs){
             this->bootstrappedDatasetWeight = rhs.bootstrappedDatasetWeight;
             this->trainingMode = rhs.trainingMode;
             
-        }else errorLog << "deepCopyFrom(const Classifier *classifier) - Failed to copy base variables!" << endl;
+        }else errorLog << "deepCopyFrom(const Classifier *classifier) - Failed to copy base variables!" << std::endl;
 	}
 	return *this;
 }
@@ -143,7 +143,7 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
             return true;
         }
         
-        errorLog << "deepCopyFrom(const Classifier *classifier) - Failed to copy base variables!" << endl;
+        errorLog << "deepCopyFrom(const Classifier *classifier) - Failed to copy base variables!" << std::endl;
     }
     return false;
 }
@@ -158,12 +158,12 @@ bool RandomForests::train_(ClassificationData &trainingData){
     const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
-        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << endl;
+        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
 
     if( bootstrappedDatasetWeight <= 0.0 || bootstrappedDatasetWeight > 1.0 ){
-        errorLog << "train_(ClassificationData &trainingData) - Bootstrapped Dataset Weight must be [> 0.0 and <= 1.0]" << endl;
+        errorLog << "train_(ClassificationData &trainingData) - Bootstrapped Dataset Weight must be [> 0.0 and <= 1.0]" << std::endl;
         return false;
     }
     
@@ -199,11 +199,11 @@ bool RandomForests::train_(ClassificationData &trainingData){
         tree.enableNullRejection( useNullRejection );
         tree.setRemoveFeaturesAtEachSpilt( removeFeaturesAtEachSpilt );
 
-        trainingLog << "Training forest " << i+1 << "/" << forestSize << "..." << endl;
+        trainingLog << "Training forest " << i+1 << "/" << forestSize << "..." << std::endl;
         
         //Train this tree
         if( !tree.train( data ) ){
-            errorLog << "train_(ClassificationData &labelledTrainingData) - Failed to train tree at forest index: " << i << endl;
+            errorLog << "train_(ClassificationData &labelledTrainingData) - Failed to train tree at forest index: " << i << std::endl;
             clear();
             return false;
         }
@@ -221,23 +221,23 @@ bool RandomForests::predict_(VectorDouble &inputVector){
     maxLikelihood = 0;
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << endl;
+        errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << std::endl;
         return false;
     }
     
-	if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
+	if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "predict_(VectorDouble &inputVector) - The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
 		return false;
 	}
     
     if( useScaling ){
         for(UINT n=0; n<numInputDimensions; n++){
-            inputVector[n] = scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0, 1);
+            inputVector[n] = grt_scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0.0, 1.0);
         }
     }
     
-    if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
-    if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
+    if( classLikelihoods.getSize() != numClasses ) classLikelihoods.resize(numClasses,0);
+    if( classDistances.getSize() != numClasses ) classDistances.resize(numClasses,0);
     
     std::fill(classDistances.begin(),classDistances.end(),0);
     
@@ -245,7 +245,7 @@ bool RandomForests::predict_(VectorDouble &inputVector){
     VectorDouble y;
     for(UINT i=0; i<forestSize; i++){
         if( !forest[i]->predict(inputVector, y) ){
-            errorLog << "predict_(VectorDouble &inputVector) - Tree " << i << " failed prediction!" << endl;
+            errorLog << "predict_(VectorDouble &inputVector) - Tree " << i << " failed prediction!" << std::endl;
             return false;
         }
         
@@ -257,7 +257,7 @@ bool RandomForests::predict_(VectorDouble &inputVector){
     //Use the class distances to estimate the class likelihoods
     bestDistance = 0;
     UINT bestIndex = 0;
-    double classNorm = 1.0 / double(forestSize);
+    float_t classNorm = 1.0 / float_t(forestSize);
     for(UINT k=0; k<numClasses; k++){
         classLikelihoods[k] = classDistances[k] * classNorm;
         
@@ -279,7 +279,7 @@ bool RandomForests::clear(){
     Classifier::clear();
     
     //Delete the forest
-    for(size_t i=0; i<forest.size(); i++){
+    for(UINT i=0; i<forest.getSize(); i++){
         if( forest[i] != NULL ){
             forest[i]->clear();
             delete forest[i];
@@ -293,19 +293,19 @@ bool RandomForests::clear(){
 
 bool RandomForests::print() const{
     
-    cout << "RandomForest\n";
-    cout << "ForestSize: " << forestSize << endl;
-    cout << "NumSplittingSteps: " << numRandomSplits << endl;
-    cout << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
-    cout << "MaxDepth: " << maxDepth << endl;
-    cout << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << endl;
-    cout << "TrainingMode: " << trainingMode << endl;
-    cout << "ForestBuilt: " << (trained ? 1 : 0) << endl;
+    std::cout << "RandomForest\n";
+    std::cout << "ForestSize: " << forestSize << std::endl;
+    std::cout << "NumSplittingSteps: " << numRandomSplits << std::endl;
+    std::cout << "MinNumSamplesPerNode: " << minNumSamplesPerNode << std::endl;
+    std::cout << "MaxDepth: " << maxDepth << std::endl;
+    std::cout << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << std::endl;
+    std::cout << "TrainingMode: " << trainingMode << std::endl;
+    std::cout << "ForestBuilt: " << (trained ? 1 : 0) << std::endl;
     
     if( trained ){
-        cout << "Forest:\n";
+        std::cout << "Forest:\n";
         for(UINT i=0; i<forestSize; i++){
-            cout << "Tree: " << i+1 << endl;
+            std::cout << "Tree: " << i+1 << std::endl;
             forest[i]->print();
         }
     }
@@ -313,11 +313,11 @@ bool RandomForests::print() const{
     return true;
 }
 
-bool RandomForests::saveModelToFile(fstream &file) const{
+bool RandomForests::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open())
 	{
-		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
+		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
 		return false;
 	}
     
@@ -326,35 +326,35 @@ bool RandomForests::saveModelToFile(fstream &file) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
 		return false;
     }
     
     if( decisionTreeNode != NULL ){
-        file << "DecisionTreeNodeType: " << decisionTreeNode->getNodeType() << endl;
+        file << "DecisionTreeNodeType: " << decisionTreeNode->getNodeType() << std::endl;
         if( !decisionTreeNode->saveToFile( file ) ){
-            Classifier::errorLog <<"saveModelToFile(fstream &file) - Failed to save decisionTreeNode settings to file!" << endl;
+            Classifier::errorLog <<"saveModelToFile(fstream &file) - Failed to save decisionTreeNode settings to file!" << std::endl;
             return false;
         }
     }else{
-        file << "DecisionTreeNodeType: " << "NULL" << endl;
+        file << "DecisionTreeNodeType: " << "NULL" << std::endl;
     }
     
-    file << "ForestSize: " << forestSize << endl;
-    file << "NumSplittingSteps: " << numRandomSplits << endl;
-    file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
-    file << "MaxDepth: " << maxDepth << endl;
-    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << endl;
-    file << "TrainingMode: " << trainingMode << endl;
-    file << "ForestBuilt: " << (trained ? 1 : 0) << endl;
+    file << "ForestSize: " << forestSize << std::endl;
+    file << "NumSplittingSteps: " << numRandomSplits << std::endl;
+    file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << std::endl;
+    file << "MaxDepth: " << maxDepth << std::endl;
+    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << std::endl;
+    file << "TrainingMode: " << trainingMode << std::endl;
+    file << "ForestBuilt: " << (trained ? 1 : 0) << std::endl;
     
     if( trained ){
         file << "Forest:\n";
         for(UINT i=0; i<forestSize; i++){
-            file << "Tree: " << i+1 << endl;
-            file << "TreeNodeType: " << forest[i]->getNodeType() << endl;
+            file << "Tree: " << i+1 << std::endl;
+            file << "TreeNodeType: " << forest[i]->getNodeType() << std::endl;
             if( !forest[i]->saveToFile( file ) ){
-                errorLog << "saveModelToFile(fstream &file) - Failed to save tree " << i << " to file!" << endl;
+                errorLog << "saveModelToFile(fstream &file) - Failed to save tree " << i << " to file!" << std::endl;
                 return false;
             }
         }
@@ -363,13 +363,13 @@ bool RandomForests::saveModelToFile(fstream &file) const{
     return true;
 }
     
-bool RandomForests::loadModelFromFile(fstream &file){
+bool RandomForests::loadModelFromFile( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -380,19 +380,19 @@ bool RandomForests::loadModelFromFile(fstream &file){
     
     //Find the file type header
     if(word != "GRT_RANDOM_FOREST_MODEL_FILE_V1.0"){
-        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "DecisionTreeNodeType:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the DecisionTreeNodeType!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the DecisionTreeNodeType!" << std::endl;
         return false;
     }
     file >> treeNodeType;
@@ -402,64 +402,64 @@ bool RandomForests::loadModelFromFile(fstream &file){
         decisionTreeNode = dynamic_cast< DecisionTreeNode* >( DecisionTreeNode::createInstanceFromString( treeNodeType ) );
         
         if( decisionTreeNode == NULL ){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not create new DecisionTreeNode from type: " << treeNodeType << endl;
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not create new DecisionTreeNode from type: " << treeNodeType << std::endl;
             return false;
         }
         
         if( !decisionTreeNode->loadFromFile( file ) ){
-            Classifier::errorLog <<"loadModelFromFile(fstream &file) - Failed to load decisionTreeNode settings from file!" << endl;
+            Classifier::errorLog <<"loadModelFromFile(fstream &file) - Failed to load decisionTreeNode settings from file!" << std::endl;
             return false;
         }
     }else{
-        Classifier::errorLog <<"loadModelFromFile(fstream &file) - Failed to load decisionTreeNode! DecisionTreeNodeType is NULL!" << endl;
+        Classifier::errorLog <<"loadModelFromFile(fstream &file) - Failed to load decisionTreeNode! DecisionTreeNodeType is NULL!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "ForestSize:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the ForestSize!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find the ForestSize!" << std::endl;
         return false;
     }
     file >> forestSize;
     
     file >> word;
     if(word != "NumSplittingSteps:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << std::endl;
         return false;
     }
     file >> numRandomSplits;
     
     file >> word;
     if(word != "MinNumSamplesPerNode:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
         return false;
     }
     file >> minNumSamplesPerNode;
     
     file >> word;
     if(word != "MaxDepth:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << std::endl;
         return false;
     }
     file >> maxDepth;
     
     file >> word;
     if(word != "RemoveFeaturesAtEachSpilt:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
     file >> removeFeaturesAtEachSpilt;
     
     file >> word;
     if(word != "TrainingMode:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
     file >> trainingMode;
     
     file >> word;
     if(word != "ForestBuilt:"){
-        errorLog << "loadModelFromFile(string filename) - Could not find the ForestBuilt!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find the ForestBuilt!" << std::endl;
         return false;
     }
     file >> trained;
@@ -468,7 +468,7 @@ bool RandomForests::loadModelFromFile(fstream &file){
         //Find the forest header
         file >> word;
         if(word != "Forest:"){
-            errorLog << "loadModelFromFile(string filename) - Could not find the Forest!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not find the Forest!" << std::endl;
             return false;
         }
         
@@ -479,23 +479,23 @@ bool RandomForests::loadModelFromFile(fstream &file){
             
             file >> word;
             if(word != "Tree:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find the Tree Header!" << endl;
-                cout << "WORD: " << word << endl;
-                cout << "Tree i: " << i << endl;
+                errorLog << "loadModelFromFile(string filename) - Could not find the Tree Header!" << std::endl;
+                std::cout << "WORD: " << word << std::endl;
+                std::cout << "Tree i: " << i << std::endl;
                 return false;
             }
             file >> treeIndex;
             
             if( treeIndex != i+1 ){
-                errorLog << "loadModelFromFile(string filename) - Incorrect tree index: " << treeIndex << endl;
+                errorLog << "loadModelFromFile(string filename) - Incorrect tree index: " << treeIndex << std::endl;
                 return false;
             }
             
             file >> word;
             if(word != "TreeNodeType:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find the TreeNodeType!" << endl;
-                cout << "WORD: " << word << endl;
-                cout << "i: " << i << endl;
+                errorLog << "loadModelFromFile(string filename) - Could not find the TreeNodeType!" << std::endl;
+                std::cout << "WORD: " << word << std::endl;
+                std::cout << "i: " << i << std::endl;
                 return false;
             }
             file >> treeNodeType;
@@ -504,14 +504,14 @@ bool RandomForests::loadModelFromFile(fstream &file){
             DecisionTreeNode *tree = dynamic_cast< DecisionTreeNode* >( DecisionTreeNode::createInstanceFromString( treeNodeType ) );
             
             if( tree == NULL ){
-                errorLog << "loadModelFromFile(fstream &file) - Failed to create new Tree!" << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Failed to create new Tree!" << std::endl;
                 return false;
             }
             
             //Load the tree from the file
             tree->setParent( NULL );
             if( !tree->loadFromFile( file ) ){
-                errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
                 return false;
             }
             
@@ -526,19 +526,19 @@ bool RandomForests::loadModelFromFile(fstream &file){
 bool RandomForests::combineModels( const RandomForests &forest ){
 
     if( !getTrained() ){
-        errorLog << "combineModels( const RandomForests &forest ) - This instance has not been trained!" << endl;
+        errorLog << "combineModels( const RandomForests &forest ) - This instance has not been trained!" << std::endl;
         return false;
     }
 
     if( !forest.getTrained() ){
-        errorLog << "combineModels( const RandomForests &forest ) - This external forest instance has not been trained!" << endl;
+        errorLog << "combineModels( const RandomForests &forest ) - This external forest instance has not been trained!" << std::endl;
         return false;
     }
 
     if( this->getNumInputDimensions() != forest.getNumInputDimensions() ) {
         errorLog << "combineModels( const RandomForests &forest ) - The number of input dimensions of the external forest (";
         errorLog << forest.getNumInputDimensions() << ") does not match the number of input dimensions of this instance (";
-        errorLog << this->getNumInputDimensions() << ")!" << endl;
+        errorLog << this->getNumInputDimensions() << ")!" << std::endl;
         return false;
     }
 
@@ -579,11 +579,11 @@ bool RandomForests::getRemoveFeaturesAtEachSpilt() const {
     return removeFeaturesAtEachSpilt;
 }
 
-double RandomForests::getBootstrappedDatasetWeight() const {
+float_t RandomForests::getBootstrappedDatasetWeight() const {
     return bootstrappedDatasetWeight;
 }
 
-const vector< DecisionTreeNode* > RandomForests::getForest() const {
+const Vector< DecisionTreeNode* > RandomForests::getForest() const {
     return forest;
 }
     
@@ -611,15 +611,15 @@ VectorDouble RandomForests::getFeatureWeights( const bool normWeights ) const{
 
     for(UINT i=0; i<forestSize; i++){
         if( !forest[i]->computeFeatureWeights( weights ) ){
-            warningLog << "getFeatureWeights( const bool normWeights ) - Failed to compute weights for tree: " << i << endl;
+            warningLog << "getFeatureWeights( const bool normWeights ) - Failed to compute weights for tree: " << i << std::endl;
         }
     }
 
     //Normalize the weights
     if( normWeights  ){
-        double sum = Util::sum( weights );
+        float_t sum = Util::sum( weights );
         if( sum > 0.0 ){
-            const double norm = 1.0 / sum;
+            const float_t norm = 1.0 / sum;
             for(UINT j=0; j<numInputDimensions; j++){
                 weights[j] *= norm;
             }
@@ -638,19 +638,19 @@ MatrixDouble RandomForests::getLeafNodeFeatureWeights( const bool normWeights ) 
 
     for(UINT i=0; i<forestSize; i++){
         if( !forest[i]->computeLeafNodeWeights( weights ) ){
-            warningLog << "computeLeafNodeWeights( const bool normWeights ) - Failed to compute leaf node weights for tree: " << i << endl;
+            warningLog << "computeLeafNodeWeights( const bool normWeights ) - Failed to compute leaf node weights for tree: " << i << std::endl;
         }
     }
 
     //Normalize the weights
     if( normWeights  ){
         for(UINT j=0; j<weights.getNumCols(); j++){
-            double sum = 0.0;
+            float_t sum = 0.0;
             for(UINT i=0; i<weights.getNumRows(); i++){
                 sum += weights[i][j];
             }
             if( sum != 0.0 ){
-                const double norm = 1.0 / sum;
+                const float_t norm = 1.0 / sum;
                 for(UINT i=0; i<weights.getNumRows(); i++){
                     weights[i][j] *= norm;
                 }
@@ -706,7 +706,7 @@ bool RandomForests::setTrainingMode(const UINT trainingMode){
         return true;
     }
     
-    warningLog << "setTrainingMode(const UINT mode) - Unknown training mode!" << endl;
+    warningLog << "setTrainingMode(const UINT mode) - Unknown training mode!" << std::endl;
     return false;
 }
     
@@ -721,16 +721,16 @@ bool RandomForests::setDecisionTreeNode( const DecisionTreeNode &node ){
     return true;
 }
 
-bool RandomForests::setBootstrappedDatasetWeight( const double bootstrappedDatasetWeight ){
+bool RandomForests::setBootstrappedDatasetWeight( const float_t bootstrappedDatasetWeight ){
 
     if( bootstrappedDatasetWeight > 0.0 && bootstrappedDatasetWeight <= 1.0 ){
         this->bootstrappedDatasetWeight = bootstrappedDatasetWeight;
         return true;
     }
 
-    warningLog << "setBootstrappedDatasetWeight(...) - Bad parameter, the weight must be > 0.0 and <= 1.0. Weight: " << bootstrappedDatasetWeight << endl;
+    warningLog << "setBootstrappedDatasetWeight(...) - Bad parameter, the weight must be > 0.0 and <= 1.0. Weight: " << bootstrappedDatasetWeight << std::endl;
     return false;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

@@ -36,7 +36,7 @@
 #include "ClassificationData.h"
 #include "TimeSeriesClassificationData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class TimeSeriesClassificationDataStream{
 public:
@@ -49,7 +49,7 @@ public:
      @param datasetName: the name of the dataset, should not contain any spaces
      @param infoText: some info about the data in this dataset, this can contain spaces
     */
-	TimeSeriesClassificationDataStream(const UINT numDimensions=0,const string datasetName = "NOT_SET",const string infoText = "");
+	TimeSeriesClassificationDataStream(const UINT numDimensions=0,const std::string datasetName = "NOT_SET",const std::string infoText = "");
     
     /**
      Copy Constructor, copies the TimeSeriesClassificationDataStream from the rhs instance to this instance
@@ -107,16 +107,16 @@ public:
      @param datasetName: the new dataset name
 	 @return returns true if the name is set, or false otherwise
      */
-    bool setDatasetName(const string datasetName);
+    bool setDatasetName(const std::string datasetName);
     
     /**
-     Sets the info string.
-	 This can be any string with information about how the training data was recorded for example.
+     Sets the info std::string.
+	 This can be any std::string with information about how the training data was recorded for example.
      
 	 @param infoText: the infoText
      @return true if the infoText was correctly updated, false otherwise
      */
-    bool setInfoText(const string infoText);
+    bool setInfoText(const std::string infoText);
     
     /**
      Sets the name of the class with the given class label.  
@@ -127,7 +127,7 @@ public:
      @param classLabel: the class label for the corresponding class name
 	 @return returns true if the name is set, or false if the class label does not exist
      */
-    bool setClassNameForCorrespondingClassLabel(const string className,const UINT classLabel);
+    bool setClassNameForCorrespondingClassLabel(const std::string className,const UINT classLabel);
     
     /**
      Adds a new labelled sample to the dataset.  
@@ -166,13 +166,13 @@ public:
     
     /**
      Sets the external ranges of the dataset, also sets if the dataset should be scaled using these values.  
-     The dimensionality of the externalRanges vector should match the number of dimensions of this dataset.
+     The dimensionality of the externalRanges Vector should match the number of dimensions of this dataset.
      
-	 @param externalRanges: an N dimensional vector containing the min and max values of the expected ranges of the dataset.
+	 @param externalRanges: an N dimensional Vector containing the min and max values of the expected ranges of the dataset.
      @param useExternalRanges: sets if these ranges should be used to scale the dataset, default value is false.
 	 @return returns true if the external ranges were set, false otherwise
      */
-    bool setExternalRanges(const vector< MinMax > &externalRanges,const bool useExternalRanges = false);
+    bool setExternalRanges(const Vector< MinMax > &externalRanges,const bool useExternalRanges = false);
     
     /**
      Sets if the dataset should be scaled using an external range (if useExternalRanges == true) or the ranges of the dataset (if false).
@@ -193,14 +193,14 @@ public:
     bool scale(const float_t minTarget,const float_t maxTarget);
     
 	/**
-     Scales the dataset to the new target range, using the vector of ranges as the min and max source ranges.
+     Scales the dataset to the new target range, using the Vector of ranges as the min and max source ranges.
      
      @param ranges: the minimum and maximum values for the source range
      @param minTarget: the minimum value of the target range
      @param maxTarget: the maximum value of the target range
 	 @return true if the data was scaled correctly, false otherwise
      */
-	bool scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
+	bool scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
     
     /**
      Sets the playback index to a specific index.  The index should be within the range [0 totalNumSamples-1].
@@ -234,7 +234,7 @@ public:
      @param filename: the name of the file the data will be saved to
      @return true if the data was saved successfully, false otherwise
      */
-    bool save(const string &filename);
+    bool save(const std::string &filename);
     
     /**
      Load the data from a file.
@@ -244,7 +244,7 @@ public:
      @param filename: the name of the file the data will be loaded from
      @return true if the data was loaded successfully, false otherwise
      */
-    bool load(const string &filename);
+    bool load(const std::string &filename);
 
     /**
      Saves the labelled timeseries classification data to a custom file format.
@@ -252,7 +252,7 @@ public:
 	 @param filename: the name of the file the data will be saved to
 	 @return true if the data was saved successfully, false otherwise
      */
-	bool saveDatasetToFile(const string &filename);
+	bool saveDatasetToFile(const std::string &filename);
     
     /**
      Saves the data to a CSV file.
@@ -261,7 +261,7 @@ public:
      @param filename: the name of the file the data will be saved to
      @return true if the data was saved successfully, false otherwise
      */
-    bool saveDatasetToCSVFile(const string &filename);
+    bool saveDatasetToCSVFile(const std::string &filename);
     
     /**
      Loads the data from a custom file format.
@@ -269,7 +269,7 @@ public:
 	 @param filename: the name of the file the data will be loaded from
 	 @return true if the data was loaded successfully, false otherwise
      */
-	bool loadDatasetFromFile(const string &filename);
+	bool loadDatasetFromFile(const std::string &filename);
     
     /**
      Loads the labelled timeseries classification data from a CSV file.
@@ -281,7 +281,7 @@ public:
      @param classLabelColumnIndex: the index of the column containing the class label. Default value = 0
 	 @return true if the data was loaded successfully, false otherwise
      */
-	bool loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex=0);
+	bool loadDatasetFromCSVFile(const std::string &filename,const UINT classLabelColumnIndex=0);
     
     /**
      Prints the dataset info (such as its name and infoText) and the stats (such as the number of examples, number of dimensions, number of classes, etc.)
@@ -296,14 +296,14 @@ public:
      
 	 @return returns the name of the dataset
      */
-    string getDatasetName() const { return datasetName; }
+    std::string getDatasetName() const { return datasetName; }
     
     /**
      Gets the infotext for the dataset
      
 	 @return returns the infotext of the dataset
      */
-    string getInfoText() const { return infoText; }
+    std::string getInfoText() const { return infoText; }
     
 	/**
      Gets the number of dimensions of the labelled classification data.
@@ -348,39 +348,39 @@ public:
     UINT getClassLabelIndexValue(const UINT classLabel) const;
     
     /**
-     Gets the name of the class with a given class label.  If the class label does not exist then the string "CLASS_LABEL_NOT_FOUND" will be returned.
+     Gets the name of the class with a given class label.  If the class label does not exist then the std::string "CLASS_LABEL_NOT_FOUND" will be returned.
      
-	 @return a string containing the name of the given class label or the string "CLASS_LABEL_NOT_FOUND" if the class label does not exist
+	 @return a std::string containing the name of the given class label or the std::string "CLASS_LABEL_NOT_FOUND" if the class label does not exist
      */
-    string getClassNameForCorrespondingClassLabel(const UINT classLabel);
+    std::string getClassNameForCorrespondingClassLabel(const UINT classLabel);
     
 	/**
      Gets the ranges of the classification data.
      
-	 @return a vector of minimum and maximum values for each dimension of the data
+	 @return a Vector of minimum and maximum values for each dimension of the data
      */
-	vector<MinMax> getRanges() const;
+	Vector<MinMax> getRanges() const;
     
 	/**
      Gets the class tracker for each class in the dataset.
      
-	 @return a vector of ClassTracker, one for each class in the dataset
+	 @return a Vector of ClassTracker, one for each class in the dataset
      */
-    vector< ClassTracker > getClassTracker() const { return classTracker; }
+    Vector< ClassTracker > getClassTracker() const { return classTracker; }
     
     /**
-     Gets the timeseries position tracker, a vector of TimeSeriesPositionTracker which indicate the start and end position of each time series in the dataset.
+     Gets the timeseries position tracker, a Vector of TimeSeriesPositionTracker which indicate the start and end position of each time series in the dataset.
      
-	 @return a vector of TimeSeriesPositionTracker, one for each timeseries in the dataset
+	 @return a Vector of TimeSeriesPositionTracker, one for each timeseries in the dataset
      */
-    vector< TimeSeriesPositionTracker > getTimeSeriesPositionTracker() const { return timeSeriesPositionTracker; }
+    Vector< TimeSeriesPositionTracker > getTimeSeriesPositionTracker() const { return timeSeriesPositionTracker; }
     
 	/**
-     Gets the classification data as a vector of ClassificationSample.
+     Gets the classification data as a Vector of ClassificationSample.
      
-	 @return a vector of ClassificationSamples
+	 @return a Vector of ClassificationSamples
      */
-	vector< ClassificationSample > getClassificationSamples() const { return data; }
+	Vector< ClassificationSample > getClassificationSamples() const { return data; }
     
     /**
      Gets a new TimeSeriesClassificationDataStream dataset drawn from the startIndex and endIndex values.
@@ -415,7 +415,7 @@ public:
     
     /**
      This function segments a specific time series from the main data set and returns this as a MatrixFloat.
-     You should use one of the TimeSeriesPositionTracker elements from the timeSeriesPositionTracker vector to 
+     You should use one of the TimeSeriesPositionTracker elements from the timeSeriesPositionTracker Vector to 
      indicate to the function which time series you want to retrieve.  You can get the TimeSeriesPositionTracker elements
      using the #getTimeSeriesPositionTracker() function.
      
@@ -436,30 +436,30 @@ public:
     /**
      Gets the class labels in the current dataset.
      
-     @return a vector containing the class labels from the current dataset.
+     @return a Vector containing the class labels from the current dataset.
      */
-    vector< UINT > getClassLabels() const;
+    Vector< UINT > getClassLabels() const;
 
 protected:
-    string datasetName;                                     ///< The name of the dataset
-    string infoText;                                        ///< Some infoText about the dataset
+    std::string datasetName;                                     ///< The name of the dataset
+    std::string infoText;                                        ///< Some infoText about the dataset
 	UINT numDimensions;										///< The number of dimensions in the dataset
 	UINT totalNumSamples;
 	UINT lastClassID;
     UINT playbackIndex;
 	bool trackingClass;
     bool useExternalRanges;                                 ///< A flag to show if the dataset should be scaled using the externalRanges values
-    vector< MinMax > externalRanges;                        ///< A vector containing a set of externalRanges set by the user
-	vector< ClassTracker > classTracker;
-	vector< ClassificationSample > data;
-	vector< TimeSeriesPositionTracker > timeSeriesPositionTracker;
+    Vector< MinMax > externalRanges;                        ///< A Vector containing a set of externalRanges set by the user
+	Vector< ClassTracker > classTracker;
+	Vector< ClassificationSample > data;
+	Vector< TimeSeriesPositionTracker > timeSeriesPositionTracker;
     
     DebugLog debugLog;                                      ///< Default debugging log
     ErrorLog errorLog;                                      ///< Default error log
     WarningLog warningLog;                                  ///< Default warning log
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TIME_SERIES_CLASSIFICATION_DATA_STREAM_HEADER
 

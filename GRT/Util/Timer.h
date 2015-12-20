@@ -21,7 +21,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRT_TIMER_HEADER
 #define GRT_TIMER_HEADER
 
-#include "../Util/GRTVersionInfo.h"
+#include "GRTVersionInfo.h"
+#include "GRTTypedefs.h"
 
 //Include the platform specific time headers
 #if defined(__GRT_WINDOWS_BUILD__)
@@ -37,7 +38,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     #include <sys/time.h>
 #endif
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class Timer{
 public:
@@ -191,7 +192,6 @@ protected:
 
 };
 
-}; //End of namespace GRT
-
+GRT_END_NAMESPACE
 
 #endif //GRT_TIMER_HEADER

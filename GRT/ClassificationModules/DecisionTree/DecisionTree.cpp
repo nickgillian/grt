@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "DecisionTree.h"
 
-using namespace GRT;
+GRT_BEGIN_NAMESPACE
 
 //Register the DecisionTree module with the Classifier base class
 RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule("DecisionTree");
@@ -143,7 +143,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     clear();
     
     if( decisionTreeNode == NULL ){
-        Classifier::errorLog << "train_(ClassificationData &trainingData) - The decision tree node has not been set! You must set this first before training a model." << endl;
+        Classifier::errorLog << "train_(ClassificationData &trainingData) - The decision tree node has not been set! You must set this first before training a model." << std::endl;
         return false;
     }
     
@@ -152,7 +152,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
-        Classifier::errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << endl;
+        Classifier::errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
     
@@ -174,7 +174,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     }
     
     //Setup the valid features - at this point all features can be used
-    vector< UINT > features(N);
+    Vector< UINT > features(N);
     for(UINT i=0; i<N; i++){
         features[i] = i;
     }
@@ -185,7 +185,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     
     if( tree == NULL ){
         clear();
-        Classifier::errorLog << "train_(ClassificationData &trainingData) - Failed to build tree!" << endl;
+        Classifier::errorLog << "train_(ClassificationData &trainingData) - Failed to build tree!" << std::endl;
         return false;
     }
     
@@ -194,16 +194,16 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     
     //Compute the null rejection thresholds if null rejection is enabled
     if( useNullRejection ){
-        VectorDouble classLikelihoods( numClasses );
-        vector< UINT > predictions(M);
-        VectorDouble distances(M);
-        VectorDouble classCounter( numClasses, 0 );
+        VectorFloat classLikelihoods( numClasses );
+        Vector< UINT > predictions(M);
+        VectorFloat distances(M);
+        VectorFloat classCounter( numClasses, 0 );
         
         //Run over the training dataset and compute the distance between each training sample and the predicted node cluster
         for(UINT i=0; i<M; i++){
             //Run the prediction for this sample
             if( !tree->predict( trainingDataCopy[i].getSample(), classLikelihoods ) ){
-                Classifier::errorLog << "predict_(VectorDouble &inputVector) - Failed to predict!" << endl;
+                Classifier::errorLog << "predict_(VectorFloat &inputVector) - Failed to predict!" << std::endl;
                 return false;
             }
             
@@ -243,31 +243,31 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     return true;
 }
 
-bool DecisionTree::predict_(VectorDouble &inputVector){
+bool DecisionTree::predict_(VectorFloat &inputVector){
     
     predictedClassLabel = 0;
 	maxLikelihood = 0;
     
     //Validate the input is OK and the model is trained properly
     if( !trained ){
-        Classifier::errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << endl;
+        Classifier::errorLog << "predict_(VectorFloat &inputVector) - Model Not Trained!" << std::endl;
         return false;
     }
     
     if( tree == NULL ){
-        Classifier::errorLog << "predict_(VectorDouble &inputVector) - DecisionTree pointer is null!" << endl;
+        Classifier::errorLog << "predict_(VectorFloat &inputVector) - DecisionTree pointer is null!" << std::endl;
         return false;
     }
     
-	if( inputVector.size() != numInputDimensions ){
-        Classifier::errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
+	if( inputVector.getSize() != numInputDimensions ){
+        Classifier::errorLog << "predict_(VectorFloat &inputVector) - The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
 		return false;
 	}
     
     //Scale the input data if needed
     if( useScaling ){
         for(UINT n=0; n<numInputDimensions; n++){
-            inputVector[n] = scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0, 1);
+            inputVector[n] = grt_scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0.0, 1.0);
         }
     }
     
@@ -276,7 +276,7 @@ bool DecisionTree::predict_(VectorDouble &inputVector){
     
     //Run the decision tree prediction
     if( !tree->predict( inputVector, classLikelihoods ) ){
-        Classifier::errorLog << "predict_(VectorDouble &inputVector) - Failed to predict!" << endl;
+        Classifier::errorLog << "predict_(VectorFloat &inputVector) - Failed to predict!" << std::endl;
         return false;
     }
     
@@ -295,10 +295,10 @@ bool DecisionTree::predict_(VectorDouble &inputVector){
     if( useNullRejection ){
         
         //Get the distance between the input and the leaf mean
-        double leafDistance = getNodeDistance( inputVector, tree->getPredictedNodeID() );
+        float_t leafDistance = getNodeDistance( inputVector, tree->getPredictedNodeID() );
         
         if( grt_isnan(leafDistance) ){
-            Classifier::errorLog << "predict_(VectorDouble &inputVector) - Failed to match leaf node ID to compute node distance!" << endl;
+            Classifier::errorLog << "predict_(VectorFloat &inputVector) - Failed to match leaf node ID to compute node distance!" << std::endl;
             return false;
         }
 
@@ -342,12 +342,12 @@ bool DecisionTree::clear(){
 bool DecisionTree::recomputeNullRejectionThresholds(){
     
     if( !trained ){
-        Classifier::warningLog << "recomputeNullRejectionThresholds() - Failed to recompute null rejection thresholds, the model has not been trained!" << endl;
+        Classifier::warningLog << "recomputeNullRejectionThresholds() - Failed to recompute null rejection thresholds, the model has not been trained!" << std::endl;
         return false;
     }
 
     if( !useNullRejection ){
-        Classifier::warningLog << "recomputeNullRejectionThresholds() - Failed to recompute null rejection thresholds, null rejection is not enabled!" << endl;
+        Classifier::warningLog << "recomputeNullRejectionThresholds() - Failed to recompute null rejection thresholds, null rejection is not enabled!" << std::endl;
         return false;
     }
     
@@ -361,11 +361,11 @@ bool DecisionTree::recomputeNullRejectionThresholds(){
     return true;
 }
     
-bool DecisionTree::saveModelToFile(fstream &file) const{
+bool DecisionTree::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open())
 	{
-		Classifier::errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
+		Classifier::errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
 		return false;
 	}
     
@@ -374,31 +374,31 @@ bool DecisionTree::saveModelToFile(fstream &file) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        Classifier::errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        Classifier::errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
 		return false;
     }
     
     if( decisionTreeNode != NULL ){
-        file << "DecisionTreeNodeType: " << decisionTreeNode->getNodeType() << endl;
+        file << "DecisionTreeNodeType: " << decisionTreeNode->getNodeType() << std::endl;
         if( !decisionTreeNode->saveToFile( file ) ){
-            Classifier::errorLog <<"saveModelToFile(fstream &file) - Failed to save decisionTreeNode settings to file!" << endl;
+            Classifier::errorLog <<"saveModelToFile(fstream &file) - Failed to save decisionTreeNode settings to file!" << std::endl;
             return false;
         }
     }else{
-        file << "DecisionTreeNodeType: " << "NULL" << endl;
+        file << "DecisionTreeNodeType: " << "NULL" << std::endl;
     }
     
-    file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << endl;
-    file << "MaxDepth: " << maxDepth << endl;
-    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << endl;
-    file << "TrainingMode: " << trainingMode << endl;
-    file << "NumSplittingSteps: " << numSplittingSteps << endl;
-    file << "TreeBuilt: " << (tree != NULL ? 1 : 0) << endl;
+    file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << std::endl;
+    file << "MaxDepth: " << maxDepth << std::endl;
+    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << std::endl;
+    file << "TrainingMode: " << trainingMode << std::endl;
+    file << "NumSplittingSteps: " << numSplittingSteps << std::endl;
+    file << "TreeBuilt: " << (tree != NULL ? 1 : 0) << std::endl;
     
     if( tree != NULL ){
         file << "Tree:\n";
         if( !tree->saveToFile( file ) ){
-            Classifier::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << endl;
+            Classifier::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << std::endl;
             return false;
         }
         
@@ -409,18 +409,18 @@ bool DecisionTree::saveModelToFile(fstream &file) const{
             for(UINT k=0; k<numClasses; k++){
                 file << " " << classClusterMean[k];
             }
-            file << endl;
+            file << std::endl;
             
             file << "ClassClusterStdDev:";
             for(UINT k=0; k<numClasses; k++){
                 file << " " << classClusterStdDev[k];
             }
-            file << endl;
+            file << std::endl;
             
-            file << "NumNodes: " << nodeClusters.size() << endl;
+            file << "NumNodes: " << nodeClusters.size() << std::endl;
             file << "NodeClusters:\n";
             
-            std::map< UINT, VectorDouble >::const_iterator iter = nodeClusters.begin();
+            std::map< UINT, VectorFloat >::const_iterator iter = nodeClusters.begin();
             
             while( iter != nodeClusters.end() ){
                 
@@ -431,7 +431,7 @@ bool DecisionTree::saveModelToFile(fstream &file) const{
                 for(UINT j=0; j<numInputDimensions; j++){
                     file << " " << iter->second[j];
                 }
-                file << endl;
+                file << std::endl;
                 
                 iter++;
             }
@@ -442,7 +442,7 @@ bool DecisionTree::saveModelToFile(fstream &file) const{
     return true;
 }
     
-bool DecisionTree::loadModelFromFile(fstream &file){
+bool DecisionTree::loadModelFromFile( std::fstream &file ){
     
     clear();
     
@@ -453,7 +453,7 @@ bool DecisionTree::loadModelFromFile(fstream &file){
     
     if( !file.is_open() )
     {
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -475,19 +475,19 @@ bool DecisionTree::loadModelFromFile(fstream &file){
     
     //Find the file type header
     if( word != "GRT_DECISION_TREE_MODEL_FILE_V4.0" ){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "DecisionTreeNodeType:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the DecisionTreeNodeType!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the DecisionTreeNodeType!" << std::endl;
         return false;
     }
     file >> word;
@@ -497,57 +497,57 @@ bool DecisionTree::loadModelFromFile(fstream &file){
         decisionTreeNode = dynamic_cast< DecisionTreeNode* >( DecisionTreeNode::createInstanceFromString( word ) );
 
         if( decisionTreeNode == NULL ){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not create new DecisionTreeNode from type: " << word << endl;
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not create new DecisionTreeNode from type: " << word << std::endl;
             return false;
         }
         
         if( !decisionTreeNode->loadFromFile( file ) ){
-            Classifier::errorLog <<"loadModelFromFile(fstream &file) - Failed to load decisionTreeNode settings from file!" << endl;
+            Classifier::errorLog <<"loadModelFromFile(fstream &file) - Failed to load decisionTreeNode settings from file!" << std::endl;
             return false;
         }
     }else{
-        Classifier::errorLog <<"loadModelFromFile(fstream &file) - Failed to load decisionTreeNode! DecisionTreeNodeType is NULL!" << endl;
+        Classifier::errorLog <<"loadModelFromFile(fstream &file) - Failed to load decisionTreeNode! DecisionTreeNodeType is NULL!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "MinNumSamplesPerNode:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
         return false;
     }
     file >> minNumSamplesPerNode;
     
     file >> word;
     if(word != "MaxDepth:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << std::endl;
         return false;
     }
     file >> maxDepth;
     
     file >> word;
     if(word != "RemoveFeaturesAtEachSpilt:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
     file >> removeFeaturesAtEachSpilt;
     
     file >> word;
     if(word != "TrainingMode:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
     file >> trainingMode;
     
     file >> word;
     if(word != "NumSplittingSteps:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << std::endl;
         return false;
     }
     file >> numSplittingSteps;
     
     file >> word;
     if(word != "TreeBuilt:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << std::endl;
         return false;
     }
     file >> trained;
@@ -555,7 +555,7 @@ bool DecisionTree::loadModelFromFile(fstream &file){
     if( trained ){
         file >> word;
         if(word != "Tree:"){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << endl;
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << std::endl;
             return false;
         }
     
@@ -564,14 +564,14 @@ bool DecisionTree::loadModelFromFile(fstream &file){
         
         if( tree == NULL ){
             clear();
-            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new DecisionTreeNode!" << endl;
+            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new DecisionTreeNode!" << std::endl;
             return false;
         }
         
         tree->setParent( NULL );
         if( !tree->loadFromFile( file ) ){
             clear();
-            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
+            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
         }
         
@@ -584,7 +584,7 @@ bool DecisionTree::loadModelFromFile(fstream &file){
             
             file >> word;
             if(word != "ClassClusterMean:"){
-                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterMean header!" << endl;
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterMean header!" << std::endl;
                 return false;
             }
             for(UINT k=0; k<numClasses; k++){
@@ -593,7 +593,7 @@ bool DecisionTree::loadModelFromFile(fstream &file){
             
             file >> word;
             if(word != "ClassClusterStdDev:"){
-                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterStdDev header!" << endl;
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterStdDev header!" << std::endl;
                 return false;
             }
             for(UINT k=0; k<numClasses; k++){
@@ -602,19 +602,19 @@ bool DecisionTree::loadModelFromFile(fstream &file){
             
             file >> word;
             if(word != "NumNodes:"){
-                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumNodes header!" << endl;
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumNodes header!" << std::endl;
                 return false;
             }
             file >> numNodes;
             
             file >> word;
             if(word != "NodeClusters:"){
-                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NodeClusters header!" << endl;
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NodeClusters header!" << std::endl;
                 return false;
             }
             
             UINT nodeID = 0;
-            VectorDouble cluster( numInputDimensions );
+            VectorFloat cluster( numInputDimensions );
             for(UINT i=0; i<numNodes; i++){
                 
                 //load the nodeID
@@ -642,7 +642,7 @@ bool DecisionTree::loadModelFromFile(fstream &file){
     return true;
 }
     
-bool DecisionTree::getModel(ostream &stream) const{
+bool DecisionTree::getModel( std::ostream &stream ) const{
     
     if( tree != NULL )
         return tree->getModel( stream );
@@ -683,7 +683,7 @@ bool DecisionTree::setDecisionTreeNode( const DecisionTreeNode &node ){
     return true;
 }
     
-DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,DecisionTreeNode *parent,vector< UINT > features,const vector< UINT > &classLabels, UINT nodeID){
+DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,DecisionTreeNode *parent,Vector< UINT > features,const Vector< UINT > &classLabels, UINT nodeID){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = trainingData.getNumDimensions();
@@ -708,7 +708,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
         return NULL;
 
     //Get the class probabilities
-    VectorDouble classProbs = trainingData.getClassProbabilities( classLabels ); 
+    VectorFloat classProbs = trainingData.getClassProbabilities( classLabels ); 
     
     //Set the parent
     node->initNode( parent, depth, nodeID );
@@ -724,7 +724,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
             nodeClusters[ nodeID ] = trainingData.getMean();
         }
      
-        string info = "Reached leaf node.";
+        std::string info = "Reached leaf node.";
         if( trainingData.getNumClasses() == 1 ) info = "Reached pure leaf node.";
         else if( features.size() == 0 ) info = "Reached leaf node, no remaining features.";
         else if( M < minNumSamplesPerNode ) info = "Reached leaf node, hit min-samples-per-node limit.";
@@ -733,17 +733,17 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
         Classifier::trainingLog << info << " Depth: " << depth << " NumSamples: " << trainingData.getNumSamples();
 
         Classifier::trainingLog << " Class Probabilities: ";
-        for(size_t k=0; k<classProbs.size(); k++){
+        for(UINT k=0; k<classProbs.getSize(); k++){
             Classifier::trainingLog << classProbs[k] << " ";
         }
-        Classifier::trainingLog << endl;
+        Classifier::trainingLog << std::endl;
         
         return node;
     }
     
     //Compute the best spilt point
     UINT featureIndex = 0;
-    double minError = 0;
+    float_t minError = 0;
     
     if( !node->computeBestSpilt( trainingMode, numSplittingSteps, trainingData, features, classLabels, featureIndex, minError ) ){
         delete node;
@@ -755,7 +755,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     for(size_t k=0; k<classProbs.size(); k++){
         Classifier::trainingLog << classProbs[k] << " ";
     }
-    Classifier::trainingLog << endl;
+    Classifier::trainingLog << std::endl;
     
     //Remove the selected feature so we will not use it again
     if( removeFeaturesAtEachSpilt ){
@@ -801,10 +801,10 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     return node;
 }
     
-double DecisionTree::getNodeDistance( const VectorDouble &x, const UINT nodeID ){
+float_t DecisionTree::getNodeDistance( const VectorFloat &x, const UINT nodeID ){
     
     //Use the node ID to find the node cluster
-    std::map< UINT,VectorDouble >::iterator iter = nodeClusters.find( nodeID );
+    std::map< UINT,VectorFloat >::iterator iter = nodeClusters.find( nodeID );
     
     //If we failed to find a match, return NAN
     if( iter == nodeClusters.end() ) return NAN;
@@ -813,9 +813,9 @@ double DecisionTree::getNodeDistance( const VectorDouble &x, const UINT nodeID )
     return getNodeDistance( x, iter->second );
 }
     
-double DecisionTree::getNodeDistance( const VectorDouble &x, const VectorDouble &y ){
+float_t DecisionTree::getNodeDistance( const VectorFloat &x, const VectorFloat &y ){
     
-    double distance = 0;
+    float_t distance = 0;
     const size_t N = x.size();
     
     for(size_t i=0; i<N; i++){
@@ -826,34 +826,34 @@ double DecisionTree::getNodeDistance( const VectorDouble &x, const VectorDouble 
     return distance;
 }
     
-bool DecisionTree::loadLegacyModelFromFile_v1( fstream &file ){
+bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
     
-    string word;
+    std::string word;
     
     file >> word;
     if(word != "NumFeatures:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find NumFeatures!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find NumFeatures!" << std::endl;
         return false;
     }
     file >> numInputDimensions;
     
     file >> word;
     if(word != "NumClasses:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find NumClasses!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find NumClasses!" << std::endl;
         return false;
     }
     file >> numClasses;
     
     file >> word;
     if(word != "UseScaling:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find UseScaling!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find UseScaling!" << std::endl;
         return false;
     }
     file >> useScaling;
     
     file >> word;
     if(word != "UseNullRejection:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find UseNullRejection!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find UseNullRejection!" << std::endl;
         return false;
     }
     file >> useNullRejection;
@@ -865,7 +865,7 @@ bool DecisionTree::loadLegacyModelFromFile_v1( fstream &file ){
         
         file >> word;
         if(word != "Ranges:"){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Ranges!" << endl;
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Ranges!" << std::endl;
             return false;
         }
         for(UINT n=0; n<ranges.size(); n++){
@@ -876,42 +876,42 @@ bool DecisionTree::loadLegacyModelFromFile_v1( fstream &file ){
     
     file >> word;
     if(word != "NumSplittingSteps:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << std::endl;
         return false;
     }
     file >> numSplittingSteps;
     
     file >> word;
     if(word != "MinNumSamplesPerNode:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
         return false;
     }
     file >> minNumSamplesPerNode;
     
     file >> word;
     if(word != "MaxDepth:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << std::endl;
         return false;
     }
     file >> maxDepth;
     
     file >> word;
     if(word != "RemoveFeaturesAtEachSpilt:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
     file >> removeFeaturesAtEachSpilt;
     
     file >> word;
     if(word != "TrainingMode:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
     file >> trainingMode;
     
     file >> word;
     if(word != "TreeBuilt:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << std::endl;
         return false;
     }
     file >> trained;
@@ -919,7 +919,7 @@ bool DecisionTree::loadLegacyModelFromFile_v1( fstream &file ){
     if( trained ){
         file >> word;
         if(word != "Tree:"){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << endl;
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << std::endl;
             return false;
         }
         
@@ -928,14 +928,14 @@ bool DecisionTree::loadLegacyModelFromFile_v1( fstream &file ){
         
         if( tree == NULL ){
             clear();
-            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new DecisionTreeNode!" << endl;
+            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new DecisionTreeNode!" << std::endl;
             return false;
         }
         
         tree->setParent( NULL );
         if( !tree->loadFromFile( file ) ){
             clear();
-            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
+            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
         }
     }
@@ -943,54 +943,54 @@ bool DecisionTree::loadLegacyModelFromFile_v1( fstream &file ){
     return true;
 }
     
-bool DecisionTree::loadLegacyModelFromFile_v2( fstream &file ){
+bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
         
-    string word;
+    std::string word;
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "NumSplittingSteps:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << std::endl;
         return false;
     }
     file >> numSplittingSteps;
     
     file >> word;
     if(word != "MinNumSamplesPerNode:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
         return false;
     }
     file >> minNumSamplesPerNode;
     
     file >> word;
     if(word != "MaxDepth:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << std::endl;
         return false;
     }
     file >> maxDepth;
     
     file >> word;
     if(word != "RemoveFeaturesAtEachSpilt:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
     file >> removeFeaturesAtEachSpilt;
     
     file >> word;
     if(word != "TrainingMode:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
     file >> trainingMode;
     
     file >> word;
     if(word != "TreeBuilt:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << std::endl;
         return false;
     }
     file >> trained;
@@ -998,7 +998,7 @@ bool DecisionTree::loadLegacyModelFromFile_v2( fstream &file ){
     if( trained ){
         file >> word;
         if(word != "Tree:"){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << endl;
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << std::endl;
             return false;
         }
         
@@ -1007,14 +1007,14 @@ bool DecisionTree::loadLegacyModelFromFile_v2( fstream &file ){
         
         if( tree == NULL ){
             clear();
-            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new DecisionTreeNode!" << endl;
+            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new DecisionTreeNode!" << std::endl;
             return false;
         }
         
         tree->setParent( NULL );
         if( !tree->loadFromFile( file ) ){
             clear();
-            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
+            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
         }
         
@@ -1031,54 +1031,54 @@ bool DecisionTree::loadLegacyModelFromFile_v2( fstream &file ){
     return true;
 }
     
-bool DecisionTree::loadLegacyModelFromFile_v3( fstream &file ){
+bool DecisionTree::loadLegacyModelFromFile_v3( std::fstream &file ){
     
-    string word;
+    std::string word;
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "NumSplittingSteps:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << std::endl;
         return false;
     }
     file >> numSplittingSteps;
     
     file >> word;
     if(word != "MinNumSamplesPerNode:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
         return false;
     }
     file >> minNumSamplesPerNode;
     
     file >> word;
     if(word != "MaxDepth:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << std::endl;
         return false;
     }
     file >> maxDepth;
     
     file >> word;
     if(word != "RemoveFeaturesAtEachSpilt:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
     file >> removeFeaturesAtEachSpilt;
     
     file >> word;
     if(word != "TrainingMode:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
     file >> trainingMode;
     
     file >> word;
     if(word != "TreeBuilt:"){
-        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << endl;
+        Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << std::endl;
         return false;
     }
     file >> trained;
@@ -1086,7 +1086,7 @@ bool DecisionTree::loadLegacyModelFromFile_v3( fstream &file ){
     if( trained ){
         file >> word;
         if(word != "Tree:"){
-            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << endl;
+            Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << std::endl;
             return false;
         }
         
@@ -1095,14 +1095,14 @@ bool DecisionTree::loadLegacyModelFromFile_v3( fstream &file ){
         
         if( tree == NULL ){
             clear();
-            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new DecisionTreeNode!" << endl;
+            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new DecisionTreeNode!" << std::endl;
             return false;
         }
         
         tree->setParent( NULL );
         if( !tree->loadFromFile( file ) ){
             clear();
-            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << endl;
+            Classifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
         }
         
@@ -1115,7 +1115,7 @@ bool DecisionTree::loadLegacyModelFromFile_v3( fstream &file ){
             
             file >> word;
             if(word != "ClassClusterMean:"){
-                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterMean header!" << endl;
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterMean header!" << std::endl;
                 return false;
             }
             for(UINT k=0; k<numClasses; k++){
@@ -1124,7 +1124,7 @@ bool DecisionTree::loadLegacyModelFromFile_v3( fstream &file ){
             
             file >> word;
             if(word != "ClassClusterStdDev:"){
-                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterStdDev header!" << endl;
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the ClassClusterStdDev header!" << std::endl;
                 return false;
             }
             for(UINT k=0; k<numClasses; k++){
@@ -1133,19 +1133,19 @@ bool DecisionTree::loadLegacyModelFromFile_v3( fstream &file ){
             
             file >> word;
             if(word != "NumNodes:"){
-                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumNodes header!" << endl;
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumNodes header!" << std::endl;
                 return false;
             }
             file >> numNodes;
             
             file >> word;
             if(word != "NodeClusters:"){
-                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NodeClusters header!" << endl;
+                Classifier::errorLog << "loadModelFromFile(string filename) - Could not find the NodeClusters header!" << std::endl;
                 return false;
             }
             
             UINT nodeID = 0;
-            VectorDouble cluster( numInputDimensions );
+            VectorFloat cluster( numInputDimensions );
             for(UINT i=0; i<numNodes; i++){
                 
                 //load the nodeID
@@ -1172,4 +1172,6 @@ bool DecisionTree::loadLegacyModelFromFile_v3( fstream &file ){
     
     return true;
 }
+
+GRT_END_NAMESPACE
 

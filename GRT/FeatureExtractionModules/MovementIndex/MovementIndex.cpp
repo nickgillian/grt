@@ -20,7 +20,7 @@
 
 #include "MovementIndex.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the MovementIndex module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< MovementIndex > MovementIndex::registerModule("MovementIndex");
@@ -79,15 +79,15 @@ bool MovementIndex::deepCopyFrom(const FeatureExtraction *featureExtraction){
     return false;
 }
     
-bool MovementIndex::computeFeatures(const VectorDouble &inputVector){
+bool MovementIndex::computeFeatures(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
         return false;
     }
     
@@ -211,7 +211,7 @@ bool MovementIndex::init(UINT bufferLength,UINT numDimensions){
     featureVector.resize(numInputDimensions);
     
     //Resize the raw trajectory data buffer
-    dataBuffer.resize( bufferLength, vector< double >(numInputDimensions,0) );
+    dataBuffer.resize( bufferLength, VectorFloat(numInputDimensions,0) );
 
     //Flag that the zero crossing counter has been initialized
     initialized = true;
@@ -220,21 +220,21 @@ bool MovementIndex::init(UINT bufferLength,UINT numDimensions){
 }
 
 
-vector< double > MovementIndex::update(double x){
-	return update(vector<double>(1,x));
+VectorFloat MovementIndex::update(float_t x){
+	return update(VectorFloat(1,x));
 }
     
-vector< double > MovementIndex::update(const vector< double > &x){
+VectorFloat MovementIndex::update(const VectorFloat &x){
     
 #ifdef GRT_SAFE_CHECKING
     if( !initialized ){
-        errorLog << "update(const vector< double > &x) - Not Initialized!" << endl;
-        return vector<double>();
+        errorLog << "update(const VectorFloat &x) - Not Initialized!" << endl;
+        return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "update(const vector< double > &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
-        return vector<double>();
+        errorLog << "update(const VectorFloat &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
+        return VectorFloat();
     }
 #endif
     
@@ -251,14 +251,14 @@ vector< double > MovementIndex::update(const vector< double > &x){
     }else featureDataReady = true;
     
     //Compute the movement index (which is the RMS error)
-    vector< double > mu(numInputDimensions,0);
+    VectorFloat mu(numInputDimensions,0);
     
     //Compute mu
     for(UINT j=0; j<numInputDimensions; j++){
         for(UINT i=0; i<dataBuffer.getSize(); i++){
             mu[j] += dataBuffer[i][j];
         }
-        mu[j] /= double(dataBuffer.getSize());
+        mu[j] /= float_t(dataBuffer.getSize());
     }
     
     for(UINT j=0; j<numInputDimensions; j++){
@@ -266,17 +266,17 @@ vector< double > MovementIndex::update(const vector< double > &x){
         for(UINT i=0; i<dataBuffer.getSize(); i++){
             featureVector[j] += SQR( dataBuffer[i][j] - mu[j] );
         }
-        featureVector[j] = sqrt( featureVector[j]/double(dataBuffer.getSize()) );
+        featureVector[j] = sqrt( featureVector[j]/float_t(dataBuffer.getSize()) );
     }
     
     return featureVector;
 }
     
-CircularBuffer< vector< double > > MovementIndex::getData(){
+CircularBuffer< VectorFloat > MovementIndex::getData(){
     if( initialized ){
         return dataBuffer;
     }
-    return CircularBuffer< vector<double > >();
+    return CircularBuffer< VectorFloat >();
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

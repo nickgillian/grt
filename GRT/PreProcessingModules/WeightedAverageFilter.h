@@ -32,7 +32,7 @@
 
 #include "../CoreModules/PreProcessing.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class WeightedAverageFilter : public PreProcessing {
 public:
@@ -82,7 +82,7 @@ public:
      @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the PreProcessing module
      @return true if the data was processed, false otherwise
     */
-    virtual bool process(const VectorDouble &inputVector);
+    virtual bool process(const VectorFloat &inputVector);
     
     /**
      Sets the PreProcessing reset function, overwriting the base PreProcessing function.
@@ -144,7 +144,7 @@ public:
      @param x: the value to filter, this should only be called if the dimensionality of the filter was set to 1
      @return the filtered value.  Zero will be returned if the value was not filtered
     */
-    double filter(const double x);
+    float_t filter(const float_t x);
     
     /**
      Filters the input, the dimensionality of the input vector should match that of the filter.
@@ -152,7 +152,7 @@ public:
      @param x: the values to filter, the dimensionality of the input vector should match that of the filter
      @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
-    VectorDouble filter(const VectorDouble &x);
+    VectorFloat filter(const VectorFloat &x);
 
     /**
      Gets the current filter size.
@@ -165,16 +165,16 @@ public:
      Returns the last value(s) that were filtered.
      @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
-    VectorDouble getFilteredData() const { return processedData; }
+    VectorFloat getFilteredData() const { return processedData; }
     
 protected:
     UINT filterSize;                                        ///< The size of the filter
     UINT inputSampleCounter;                                ///< A counter to keep track of the number of input samples
-    CircularBuffer< VectorDouble > dataBuffer;              ///< A buffer to store the previous N values, N = filterSize
-    VectorDouble weights;                                   ///< Stores the weights for each sample in the buffer, the size of this vector will match the filterSize
+    CircularBuffer< VectorFloat > dataBuffer;              ///< A buffer to store the previous N values, N = filterSize
+    VectorFloat weights;                                   ///< Stores the weights for each sample in the buffer, the size of this vector will match the filterSize
     static RegisterPreProcessingModule< WeightedAverageFilter > registerModule;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MOVING_AVERAGE_FILTER_HEADER

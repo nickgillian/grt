@@ -42,7 +42,7 @@
 #include "ANBC_Model.h"
 #include "../../CoreModules/Classifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 #define MIN_SCALE_VALUE 1.0e-10
 #define MAX_SCALE_VALUE 1
@@ -53,9 +53,9 @@ public:
     /**
      Default Constructor
      
-     @param bool useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
-     @param bool useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the top K datum is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
-     @param double nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 10.0
+     @param useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
+     @param useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the top K datum is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
+     @param nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 10.0
      */
 	ANBC(bool useScaling=false,bool useNullRejection=false,double nullRejectionCoeff=10.0);
     
@@ -74,7 +74,7 @@ public:
     /**
      Defines how the data from the rhs ANBC should be copied to this ANBC
      
-     @param const ANBC &rhs: another instance of a ANBC
+     @param rhs: another instance of a ANBC
      @return returns a pointer to this instance of the ANBC
      */
 	ANBC &operator=(const ANBC &rhs);
@@ -83,7 +83,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.  
      It clones the data from the Base Class Classifier pointer (which should be pointing to an ANBC instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another ANBC instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another ANBC instance
      @return returns true if the clone was successfull, false otherwise
     */
 	virtual bool deepCopyFrom(const Classifier *classifier);
@@ -92,7 +92,7 @@ public:
      This trains the ANBC model, using the labelled classification data.
      This overrides the train function in the Classifier base class.
      
-     @param ClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the ANBC model was trained, false otherwise
     */
     virtual bool train_(ClassificationData &trainingData);
@@ -101,10 +101,10 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This resets the ANBC classifier.
@@ -125,19 +125,19 @@ public:
      This saves the trained ANBC model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the ANBC model will be saved to
+     @param file: a reference to the file the ANBC model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained ANBC model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the ANBC model will be loaded from
+     @param file: a reference to the file the ANBC model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This recomputes the null rejection thresholds for each of the classes in the ANBC model.
@@ -153,14 +153,14 @@ public:
      
      @return returns a vector containing the null rejection thresholds for each class, an empty vector will be returned if the model has not been trained
      */
-    VectorDouble getNullRejectionThresholds() const;
+    VectorFloat getNullRejectionThresholds() const;
     
     /**
      Returns the ANBC models for each of the classes.
      
      @return returns a vector of the ANBC models for each of the classes
     */
-    vector< ANBC_Model > getModels(){ return models; }
+    Vector< ANBC_Model > getModels(){ return models; }
     
     //Setters
     /**
@@ -197,15 +197,15 @@ public:
     using MLBase::predict_;
 
 protected:
-    bool loadLegacyModelFromFile( fstream &file );
+    bool loadLegacyModelFromFile( std::fstream &file );
     
     bool weightsDataSet;                  //A flag to indicate if the user has manually set the weights buffer
     ClassificationData weightsData;       //The weights of each feature for each class for training the algorithm
-	vector< ANBC_Model > models;          //A buffer to hold all the models
+	Vector< ANBC_Model > models;          //A buffer to hold all the models
     
     static RegisterClassifierModule< ANBC > registerModule;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif // GRT_WEAK_CLASSIFIER_HEADER

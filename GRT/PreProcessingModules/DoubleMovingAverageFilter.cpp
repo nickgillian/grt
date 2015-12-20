@@ -23,13 +23,13 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  
  @section DESCRIPTION
- The DoubleMovingAverageFilter implements a low pass double moving average filter.
+ The DoubleMovingAverageFilter implements a low pass float_t moving average filter.
  
  */
 
 #include "DoubleMovingAverageFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the DoubleMovingAverageFilter module with the PreProcessing base class
 RegisterPreProcessingModule< DoubleMovingAverageFilter > DoubleMovingAverageFilter::registerModule("DoubleMovingAverageFilter");
@@ -91,21 +91,21 @@ bool DoubleMovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing)
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << endl;
+    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
 
     
-bool DoubleMovingAverageFilter::process(const VectorDouble &inputVector){
+bool DoubleMovingAverageFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "process(const VectorDouble &inputVector) - The filter has not been initialized!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The filter has not been initialized!" << std::endl;
         return false;
     }
 
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -123,11 +123,11 @@ bool DoubleMovingAverageFilter::reset(){
 bool DoubleMovingAverageFilter::saveModelToFile(string filename) const{
     
     if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The DoubleMovingAverageFilter has not been initialized" << endl;
+        errorLog << "saveModelToFile(string filename) - The DoubleMovingAverageFilter has not been initialized" << std::endl;
         return false;
     }
     
-    std::fstream file; 
+    std::std::fstream file; 
     file.open(filename.c_str(), std::ios::out);
     
     if( !saveModelToFile( file ) ){
@@ -140,25 +140,25 @@ bool DoubleMovingAverageFilter::saveModelToFile(string filename) const{
     return true;
 }
     
-bool DoubleMovingAverageFilter::saveModelToFile(fstream &file) const{
+bool DoubleMovingAverageFilter::saveModelToFile(std::fstream &file) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(std::fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_DOUBLE_MOVING_AVERAGE_FILTER_FILE_V1.0" << endl;
+    file << "GRT_DOUBLE_MOVING_AVERAGE_FILTER_FILE_V1.0" << std::endl;
     
-    file << "NumInputDimensions: " << numInputDimensions << endl;
-    file << "NumOutputDimensions: " << numOutputDimensions << endl;
-    file << "FilterSize: " << filterSize << endl;
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
+    file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
+    file << "FilterSize: " << filterSize << std::endl;
     
     return true;
 }
 
 bool DoubleMovingAverageFilter::loadModelFromFile(string filename){
     
-    std::fstream file; 
+    std::std::fstream file; 
     file.open(filename.c_str(), std::ios::in);
     
     if( !loadModelFromFile( file ) ){
@@ -172,10 +172,10 @@ bool DoubleMovingAverageFilter::loadModelFromFile(string filename){
     return true;
 }
 
-bool DoubleMovingAverageFilter::loadModelFromFile(fstream &file){
+bool DoubleMovingAverageFilter::loadModelFromFile(std::fstream &file){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -185,14 +185,14 @@ bool DoubleMovingAverageFilter::loadModelFromFile(fstream &file){
     file >> word;
     
     if( word != "GRT_DOUBLE_MOVING_AVERAGE_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
         return false;     
     }
     file >> numInputDimensions;
@@ -200,7 +200,7 @@ bool DoubleMovingAverageFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
         return false;     
     }
     file >> numOutputDimensions;
@@ -208,7 +208,7 @@ bool DoubleMovingAverageFilter::loadModelFromFile(fstream &file){
     //Load the filter size
     file >> word;
     if( word != "FilterSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterSize header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read FilterSize header!" << std::endl;
         return false;     
     }
     file >> filterSize;
@@ -223,12 +223,12 @@ bool DoubleMovingAverageFilter::init(UINT filterSize,UINT numDimensions){
     initialized = false;
     
     if( filterSize == 0 ){
-        errorLog << "init(UINT filterSize,UINT numDimensions) - Filter size can not be zero!" << endl;
+        errorLog << "init(UINT filterSize,UINT numDimensions) - Filter size can not be zero!" << std::endl;
         return false;
     }
     
     if( numDimensions == 0 ){
-        errorLog << "init(UINT filterSize,UINT numDimensions) - The number of dimensions must be greater than zero!" << endl;
+        errorLog << "init(UINT filterSize,UINT numDimensions) - The number of dimensions must be greater than zero!" << std::endl;
         return false;
     }
     
@@ -240,12 +240,12 @@ bool DoubleMovingAverageFilter::init(UINT filterSize,UINT numDimensions){
     processedData.resize(numDimensions,0 );
     
     if( !filter1.init(filterSize, numDimensions) ){
-        errorLog << "init(UINT filterSize,UINT numDimensions) - Failed to initialize filter 1!" << endl;
+        errorLog << "init(UINT filterSize,UINT numDimensions) - Failed to initialize filter 1!" << std::endl;
         return false;
     }
     
     if( !filter2.init(filterSize, numDimensions) ){
-        errorLog << "init(UINT filterSize,UINT numDimensions) - Failed to initialize filter 1!" << endl;
+        errorLog << "init(UINT filterSize,UINT numDimensions) - Failed to initialize filter 1!" << std::endl;
         return false;
     }
     
@@ -255,45 +255,45 @@ bool DoubleMovingAverageFilter::init(UINT filterSize,UINT numDimensions){
     return true;
 }
 
-double DoubleMovingAverageFilter::filter(const double x){
+float_t DoubleMovingAverageFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const double x) - The filter has not been initialized!" << endl;
+        errorLog << "filter(const float_t x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
-    VectorDouble y = filter(VectorDouble(1,x));
+    VectorFloat y = filter(VectorFloat(1,x));
     
     if( y.size() == 0 ) return 0;
     return y[0];
 }
     
-VectorDouble DoubleMovingAverageFilter::filter(const VectorDouble &x){
+VectorFloat DoubleMovingAverageFilter::filter(const VectorFloat &x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const VectorDouble &x) - The filter has not been initialized!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - The filter has not been initialized!" << std::endl;
+        return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "filter(const VectorDouble &x) - The size of the input vector (" << x.size() << ") does not match that of the number of dimensions of the filter (" << numInputDimensions << ")!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - The size of the input vector (" << x.getSize() << ") does not match that of the number of dimensions of the filter (" << numInputDimensions << ")!" << std::endl;
+        return VectorFloat();
     }
     
     //Perform the first filter
-    VectorDouble y = filter1.filter( x );
+    VectorFloat y = filter1.filter( x );
     
     if( y.size() == 0 ) return y;
     
     //Perform the second filter
-    VectorDouble yy = filter2.filter( y );
+    VectorFloat yy = filter2.filter( y );
     
     if( yy.size() == 0 ) return y;
     
     //Account for the filter lag
-    for(UINT i=0; i<y.size(); i++){
+    for(UINT i=0; i<y.getSize(); i++){
         yy[i] = y[i] + (y[i] - yy[i]); 
         processedData[i] = yy[i];
     }
@@ -301,4 +301,4 @@ VectorDouble DoubleMovingAverageFilter::filter(const VectorDouble &x){
     return yy;
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE

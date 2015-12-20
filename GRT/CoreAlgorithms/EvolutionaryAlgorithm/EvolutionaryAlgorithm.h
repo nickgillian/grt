@@ -35,7 +35,7 @@
 
 #include "Individual.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 template <typename INDIVIDUAL>
 class EvolutionaryAlgorithm : public GRTBase{
@@ -120,9 +120,9 @@ public:
         //Init each individual
         UINT i = 0;
         UINT index = 0;
-        typename vector< INDIVIDUAL >::iterator populationIter = population.begin();
-        vector< IndexedDouble >::iterator weightsIter = populationWeights.begin();
-        vector< float_t >::iterator geneIter;
+        typename Vector< INDIVIDUAL >::iterator populationIter = population.begin();
+        Vector< IndexedDouble >::iterator weightsIter = populationWeights.begin();
+        VectorFloat::iterator geneIter;
         
         while( populationIter != population.end() ){
             populationIter->fitness = 0;
@@ -165,8 +165,8 @@ public:
         
         if( !initialized ) return false;
         
-        typename vector< INDIVIDUAL >::iterator populationIter = population.begin();
-        vector< IndexedDouble >::iterator weightsIter = populationWeights.begin();
+        typename Vector< INDIVIDUAL >::iterator populationIter = population.begin();
+        Vector< IndexedDouble >::iterator weightsIter = populationWeights.begin();
         
         while( populationIter != population.end() ){
             //Compute the fitness of the current individual
@@ -202,8 +202,8 @@ public:
         UINT mom = 0;
         UINT dad = 0;
         UINT crossOverPoint = 0;
-        typename vector< INDIVIDUAL >::iterator populationIter = population.begin();
-        vector< IndexedDouble >::iterator weightsIter = populationWeights.begin();
+        typename Vector< INDIVIDUAL >::iterator populationIter = population.begin();
+        Vector< IndexedDouble >::iterator weightsIter = populationWeights.begin();
         
         //Get the current weights values
         weightsIter = populationWeights.begin();
@@ -419,7 +419,7 @@ public:
         return initialized;
     }
     
-    vector< INDIVIDUAL > getPopulation() const{
+    Vector< INDIVIDUAL > getPopulation() const{
         return population;
     }
     
@@ -468,7 +468,7 @@ public:
         return true;
     }
     
-    virtual bool setPopulation( const vector< INDIVIDUAL > &newPopulation ){
+    virtual bool setPopulation( const Vector< INDIVIDUAL > &newPopulation ){
         
         if( newPopulation.size() == 0 ) return false;
         
@@ -478,9 +478,9 @@ public:
         accumSumLookup.resize( populationSize );
         
         UINT index = 0;
-        typename vector< INDIVIDUAL >::iterator populationIter = population.begin();
-        vector< IndexedDouble >::iterator weightsIter = populationWeights.begin();
-        vector< float_t >::iterator geneIter;
+        typename Vector< INDIVIDUAL >::iterator populationIter = population.begin();
+        Vector< IndexedDouble >::iterator weightsIter = populationWeights.begin();
+        VectorFloat::iterator geneIter;
     
         while( populationIter != population.end() ){
             weightsIter->value = populationIter->fitness;
@@ -529,14 +529,14 @@ public:
     float_t minChange;
     float_t baiseCoeff;
     Random rand;
-    vector< INDIVIDUAL > population;
-    vector< INDIVIDUAL > parents;
-    vector< IndexedDouble > populationWeights;
-    vector< vector< INDIVIDUAL > > populationHistory;
-    vector< IndexedDouble > fitnessHistory;
-    vector< float_t > accumSumLookup;
+    Vector< INDIVIDUAL > population;
+    Vector< INDIVIDUAL > parents;
+    Vector< IndexedDouble > populationWeights;
+    Vector< Vector< INDIVIDUAL > > populationHistory;
+    Vector< IndexedDouble > fitnessHistory;
+    VectorFloat accumSumLookup;
 };
     
-}
+GRT_END_NAMESPACE
 
 #endif //GRT_EVOLUTIONARY_ALGORITHM_HEADER

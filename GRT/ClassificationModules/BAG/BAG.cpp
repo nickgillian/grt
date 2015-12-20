@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "BAG.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 //Register the BAG module with the Classifier base class
 RegisterClassifierModule< BAG >  BAG::registerModule("BAG");
@@ -105,7 +105,7 @@ bool BAG::train_(ClassificationData &trainingData){
     const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
-        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << endl;
+        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
     
@@ -120,16 +120,16 @@ bool BAG::train_(ClassificationData &trainingData){
         trainingData.scale(0, 1);
     }
     
-    UINT ensembleSize = (UINT)ensemble.size();
+    UINT ensembleSize = ensemble.getSize();
     
     if( ensembleSize == 0 ){
-        errorLog << "train_(ClassificationData &trainingData) - The ensemble size is zero! You need to add some classifiers to the ensemble first." << endl;
+        errorLog << "train_(ClassificationData &trainingData) - The ensemble size is zero! You need to add some classifiers to the ensemble first." << std::endl;
         return false;
     }
     
     for(UINT i=0; i<ensembleSize; i++){
         if( ensemble[i] == NULL ){
-            errorLog << "train_(ClassificationData &trainingData) - The classifier at ensemble index " << i << " has not been set!" << endl;
+            errorLog << "train_(ClassificationData &trainingData) - The classifier at ensemble index " << i << " has not been set!" << std::endl;
             return false;
         }
     }
@@ -138,11 +138,11 @@ bool BAG::train_(ClassificationData &trainingData){
     for(UINT i=0; i<ensembleSize; i++){
         ClassificationData boostedDataset = trainingData.getBootstrappedDataset();
         
-        trainingLog << "Training ensemble " << i+1 << ". Ensemble type: " << ensemble[i]->getClassType() << endl;
+        trainingLog << "Training ensemble " << i+1 << ". Ensemble type: " << ensemble[i]->getClassType() << std::endl;
         
         //Train the classifier with the bootstrapped dataset
         if( !ensemble[i]->train( boostedDataset ) ){
-            errorLog << "train_(ClassificationData &trainingData) - The classifier at ensemble index " << i << " failed training!" << endl;
+            errorLog << "train_(ClassificationData &trainingData) - The classifier at ensemble index " << i << " failed training!" << std::endl;
             return false;
         }
     }
@@ -156,10 +156,10 @@ bool BAG::train_(ClassificationData &trainingData){
     return trained;
 }
 
-bool BAG::predict_(VectorDouble &inputVector){
+bool BAG::predict_(VectorFloat &inputVector){
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << endl;
+        errorLog << "predict_(VectorFloat &inputVector) - Model Not Trained!" << std::endl;
         return false;
     }
     
@@ -168,8 +168,8 @@ bool BAG::predict_(VectorDouble &inputVector){
     
     if( !trained ) return false;
     
-	if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
+	if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "predict_(VectorFloat &inputVector) - The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
 		return false;
 	}
     
@@ -179,8 +179,8 @@ bool BAG::predict_(VectorDouble &inputVector){
         }
     }
     
-    if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses);
-    if( classDistances.size() != numClasses ) classDistances.resize(numClasses);
+    if( classLikelihoods.getSize() != numClasses ) classLikelihoods.resize(numClasses);
+    if( classDistances.getSize() != numClasses ) classDistances.resize(numClasses);
     
     //Reset the likelihoods and distances
     for(UINT k=0; k<numClasses; k++){
@@ -189,12 +189,12 @@ bool BAG::predict_(VectorDouble &inputVector){
     }
     
     //Run the prediction for each classifier
-    double sum = 0;
-    UINT ensembleSize = (UINT)ensemble.size();
+    float_t sum = 0;
+    UINT ensembleSize = ensemble.getSize();
     for(UINT i=0; i<ensembleSize; i++){
         
         if( !ensemble[i]->predict(inputVector) ){
-            errorLog << "predict_(VectorDouble &inputVector) - The " << i << " classifier in the ensemble failed prediction!" << endl;
+            errorLog << "predict_(VectorFloat &inputVector) - The " << i << " classifier in the ensemble failed prediction!" << std::endl;
             return false;
         }
         
@@ -205,7 +205,7 @@ bool BAG::predict_(VectorDouble &inputVector){
     }
     
     //Set the predicted class label as the most common class
-    double maxCount = 0;
+    float_t maxCount = 0;
     UINT maxIndex = 0;
     for(UINT i=0; i<numClasses; i++){
         if( classLikelihoods[i] > maxCount ){
@@ -213,7 +213,7 @@ bool BAG::predict_(VectorDouble &inputVector){
             maxCount = classLikelihoods[i];
         }
         classLikelihoods[i] /= sum;
-        classDistances[i] /= double(ensembleSize);
+        classDistances[i] /= float_t(ensembleSize);
     }
     
     predictedClassLabel = classLabels[ maxIndex ];
@@ -225,7 +225,7 @@ bool BAG::predict_(VectorDouble &inputVector){
 bool BAG::reset(){
     
     //Reset all the classifiers
-    for(UINT i=0; i<ensemble.size(); i++){
+    for(UINT i=0; i<ensemble.getSize(); i++){
         if( ensemble[i] != NULL ){
             ensemble[i]->reset();
         }
@@ -240,7 +240,7 @@ bool BAG::clear(){
     Classifier::clear();
     
     //Clear all the classifiers, but do not remove the ensemble
-    for(UINT i=0; i<ensemble.size(); i++){
+    for(UINT i=0; i<ensemble.getSize(); i++){
         if( ensemble[i] != NULL ){
             ensemble[i]->clear();
         }
@@ -249,11 +249,11 @@ bool BAG::clear(){
     return true;
 }
     
-bool BAG::saveModelToFile(fstream &file) const{
+bool BAG::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open())
 	{
-		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
+		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
 		return false;
 	}
     
@@ -264,13 +264,13 @@ bool BAG::saveModelToFile(fstream &file) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
 		return false;
     }
     
     if( trained ){
     
-        file << "EnsembleSize: " << ensembleSize << endl;
+        file << "EnsembleSize: " << ensembleSize << std::endl;
         
         if( getEnsembleSize() > 0 ){
             
@@ -285,14 +285,14 @@ bool BAG::saveModelToFile(fstream &file) const{
             //Save the classifier types
             file << "ClassifierTypes: ";
             for(UINT i=0; i<getEnsembleSize(); i++){
-                file << ensemble[i]->getClassifierType() << endl;
+                file << ensemble[i]->getClassifierType() << std::endl;
             }
             
             //Save the ensemble
             file << "Ensemble: \n";
             for(UINT i=0; i<getEnsembleSize(); i++){
                 if( !ensemble[i]->saveModelToFile( file ) ){
-                    errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier " << i << " to file!" << endl;
+                    errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier " << i << " to file!" << std::endl;
                     return false;
                 }
             }
@@ -305,14 +305,14 @@ bool BAG::saveModelToFile(fstream &file) const{
     return true;
 }
     
-bool BAG::loadModelFromFile(fstream &file){
+bool BAG::loadModelFromFile( std::fstream &file ){
     
     clear();
     UINT ensembleSize = 0;
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -326,13 +326,13 @@ bool BAG::loadModelFromFile(fstream &file){
     
     //Find the file type header
     if(word != "GRT_BAG_MODEL_FILE_V2.0"){
-        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
@@ -341,7 +341,7 @@ bool BAG::loadModelFromFile(fstream &file){
         //Load the ensemble size
         file >> word;
         if(word != "EnsembleSize:"){
-            errorLog << "loadModelFromFile(string filename) - Could not find the EnsembleSize!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not find the EnsembleSize!" << std::endl;
             return false;
         }
         file >> ensembleSize;
@@ -351,7 +351,7 @@ bool BAG::loadModelFromFile(fstream &file){
         
         file >> word;
         if(word != "Weights:"){
-            errorLog << "loadModelFromFile(string filename) - Could not find the Weights!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not find the Weights!" << std::endl;
             return false;
         }
         for(UINT i=0; i<ensembleSize; i++){
@@ -359,11 +359,11 @@ bool BAG::loadModelFromFile(fstream &file){
         }
         
         //Load the classifier types
-        vector< string > classifierTypes( ensembleSize );
+        Vector< std::string > classifierTypes( ensembleSize );
         
         file >> word;
         if(word != "ClassifierTypes:"){
-            errorLog << "loadModelFromFile(string filename) - Could not find the ClassifierTypes!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not find the ClassifierTypes!" << std::endl;
             return false;
         }
         for(UINT i=0; i<ensembleSize; i++){
@@ -373,7 +373,7 @@ bool BAG::loadModelFromFile(fstream &file){
         //Load the ensemble
         file >> word;
         if(word != "Ensemble:"){
-            errorLog << "loadModelFromFile(string filename) - Could not find the Ensemble!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not find the Ensemble!" << std::endl;
             return false;
         }
         ensemble.resize(ensembleSize,NULL);
@@ -381,13 +381,13 @@ bool BAG::loadModelFromFile(fstream &file){
             ensemble[i] = createInstanceFromString( classifierTypes[i] );
             
             if( ensemble[i] == NULL ){
-                errorLog << "loadModelFromFile(string filename) - Could not create a new classifier instance from the classifierType: " << classifierTypes[i] << endl;
+                errorLog << "loadModelFromFile(string filename) - Could not create a new classifier instance from the classifierType: " << classifierTypes[i] << std::endl;
                 clearEnsemble();
                 return false;
             }
             
             if( !ensemble[i]->loadModelFromFile( file ) ){
-                errorLog << "loadModelFromFile(string filename) - Failed to load ensemble classifier: " << i << endl;
+                errorLog << "loadModelFromFile(string filename) - Failed to load ensemble classifier: " << i << std::endl;
                 clearEnsemble();
                 return false;
             }
@@ -407,18 +407,18 @@ bool BAG::loadModelFromFile(fstream &file){
 }
     
 UINT BAG::getEnsembleSize() const{
-    return (UINT)ensemble.size();
+    return ensemble.getSize();
 }
     
-VectorDouble BAG::getEnsembleWeights() const{
+VectorFloat BAG::getEnsembleWeights() const{
     return weights;
 }
     
-const vector< Classifier* > BAG::getEnsemble() const{
+const Vector< Classifier* > BAG::getEnsemble() const{
     return ensemble;
 }
     
-bool BAG::addClassifierToEnsemble(const Classifier &classifier,double weight){
+bool BAG::addClassifierToEnsemble(const Classifier &classifier,float_t weight){
     
     trained = false;
     
@@ -453,7 +453,7 @@ bool BAG::clearEnsemble(){
     return true;
 }
     
-bool BAG::setWeights(const VectorDouble &weights){
+bool BAG::setWeights(const VectorFloat &weights){
     
     if( this->weights.size() != weights.size() ){
         return false;
@@ -462,12 +462,12 @@ bool BAG::setWeights(const VectorDouble &weights){
     return true;
 }
     
-    bool BAG::loadLegacyModelFromFile( fstream &file ){
-        
-        string word;
-        
-        return true;
-    }
+bool BAG::loadLegacyModelFromFile( std::fstream &file ){
+    
+    std::string word;
+    
+    return true;
+}
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

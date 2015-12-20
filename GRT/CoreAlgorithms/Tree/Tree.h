@@ -33,7 +33,7 @@
 
 #include "Node.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class Tree : public GRTBase
 {
@@ -41,11 +41,11 @@ public:
     /**
      Default Constructor
 
-     @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node. Default value = 100
-     @param UINT minNumSamplesPerNode: sets the minimum number of samples that are allowed per node, if the number of samples is below that, the node will become a leafNode.  Default value = 5
-     @param UINT maxDepth: sets the maximum depth of the tree. Default value = 10
-     @param bool removeFeaturesAtEachSpilt: sets if a feature is removed at each spilt so it can not be used again. Default value = false
-     @param UINT trainingMode: sets the training mode, this should be one of the TrainingMode enums. Default value = BEST_ITERATIVE_SPILT
+     @param numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node. Default value = 100
+     @param minNumSamplesPerNode: sets the minimum number of samples that are allowed per node, if the number of samples is below that, the node will become a leafNode.  Default value = 5
+     @param maxDepth: sets the maximum depth of the tree. Default value = 10
+     @param removeFeaturesAtEachSpilt: sets if a feature is removed at each spilt so it can not be used again. Default value = false
+     @param trainingMode: sets the training mode, this should be one of the TrainingMode enums. Default value = BEST_ITERATIVE_SPILT
      */
 	Tree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT);
     
@@ -73,10 +73,10 @@ public:
      This function adds the current model to the formatted stream.
      This function should be overwritten by the derived class.
      
-     @param ostream &file: a reference to the stream the model will be added to
+     @param file: a reference to the stream the model will be added to
      @return returns true if the model was added successfully, false otherwise
      */
-    virtual bool getModel(ostream &stream) const;
+    virtual bool getModel( std::ostream &stream ) const;
     
     /**
      Deep copies the tree, returning a pointer to the new tree.
@@ -157,7 +157,7 @@ public:
      A higher value will increase the chances of building a better model, but will take longer to train the model.
      Value must be larger than zero.
      
-     @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
+     @param numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
      @return returns true if the parameter was set, false otherwise
      */
     bool setNumSplittingSteps(const UINT numSplittingSteps);
@@ -167,7 +167,7 @@ public:
      become a leaf node.
      Value must be larger than zero.
      
-     @param UINT minNumSamplesPerNode: the minimum number of samples that are allowed per node
+     @param minNumSamplesPerNode: the minimum number of samples that are allowed per node
      @return returns true if the parameter was set, false otherwise
      */
     bool setMinNumSamplesPerNode(const UINT minNumSamplesPerNode);
@@ -176,7 +176,7 @@ public:
      Sets the maximum depth of the tree, any node that reaches this depth will automatically become a leaf node.
      Value must be larger than zero.
      
-     @param UINT maxDepth: the maximum depth of the tree
+     @param maxDepth: the maximum depth of the tree
      @return returns true if the parameter was set, false otherwise
      */
     bool setMaxDepth(const UINT maxDepth);
@@ -186,7 +186,7 @@ public:
      removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
      be used, regardless of how many times it has been used again.
      
-     @param bool removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
+     @param removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
      @return returns true if the parameter was set, false otherwise
      */
     bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
@@ -205,7 +205,7 @@ public:
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TREE_HEADER
 

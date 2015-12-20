@@ -20,13 +20,13 @@
 
 #include "KMeans.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the KMeans class with the Clusterer base class
 RegisterClustererModule< KMeans > KMeans::registerModule("KMeans");
 
 //Constructor,destructor
-KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const double minChange,const bool computeTheta){
+KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const float_t minChange,const bool computeTheta){
     
     this->numClusters = numClusters;
     this->minNumEpochs = minNumEpochs;
@@ -123,7 +123,7 @@ bool KMeans::deepCopyFrom(const Clusterer *clusterer){
 bool KMeans::train_(ClassificationData &trainingData){
 	
 	if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train_(ClassificationData &trainingData) - The training data is empty!" << endl;
+        errorLog << "train_(ClassificationData &trainingData) - The training data is empty!" << std::endl;
 		return false;
 	}
 	
@@ -133,7 +133,7 @@ bool KMeans::train_(ClassificationData &trainingData){
     //Convert the labelled training data to a training matrix
 	UINT M = trainingData.getNumSamples();
     UINT N = trainingData.getNumDimensions();
-    MatrixDouble data(M,N);
+    MatrixFloat data(M,N);
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<N; j++){
             data[i][j] = trainingData[i][j];
@@ -149,7 +149,7 @@ bool KMeans::train_(UnlabelledData &trainingData){
     //Convert the training data into one matrix
 	UINT M = trainingData.getNumSamples();
     UINT N = trainingData.getNumDimensions();
-    MatrixDouble data(M,N);
+    MatrixFloat data(M,N);
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<N; j++){
             data[i][j] = trainingData[i][j];
@@ -159,17 +159,17 @@ bool KMeans::train_(UnlabelledData &trainingData){
 	return train_(data);
 }
 
-bool KMeans::train_(MatrixDouble &data){
+bool KMeans::train_(MatrixFloat &data){
 	
 	trained = false;
 	
 	if( numClusters == 0 ){
-        errorLog << "train_(MatrixDouble &data) - Failed to train model. NumClusters is zero!" << endl;
+        errorLog << "train_(MatrixFloat &data) - Failed to train model. NumClusters is zero!" << std::endl;
 		return false;
 	}
     
     if( data.getNumRows() == 0 || data.getNumCols() == 0 ){
-        errorLog << "train_(MatrixDouble &data) - The number of rows or columns in the data is zero!" << endl;
+        errorLog << "train_(MatrixFloat &data) - The number of rows or columns in the data is zero!" << std::endl;
 		return false;
 	}
     
@@ -182,7 +182,7 @@ bool KMeans::train_(MatrixDouble &data){
 
 	//Randomly pick k data points as the starting clusters
 	Random random;
-	vector< UINT > randIndexs(numTrainingSamples);
+	Vector< UINT > randIndexs(numTrainingSamples);
 	for(UINT i=0; i<numTrainingSamples; i++) randIndexs[i] = i;
     std::random_shuffle(randIndexs.begin(), randIndexs.end());
 
@@ -196,13 +196,13 @@ bool KMeans::train_(MatrixDouble &data){
 	return trainModel( data );
 }
     
-bool KMeans::predict_(VectorDouble &inputVector){
+bool KMeans::predict_(VectorFloat &inputVector){
     
     if( !trained ){
         return false;
 	}
 	
-	if( inputVector.size() != numInputDimensions ){
+	if( inputVector.getSize() != numInputDimensions ){
 		return false;
 	}
     
@@ -212,17 +212,17 @@ bool KMeans::predict_(VectorDouble &inputVector){
         }
     }
 	
-    const double sigma = 1.0;
-    const double gamma = 1.0 / (2*SQR(sigma));
-    double sum = 0;
-    double dist = 0;
+    const float_t sigma = 1.0;
+    const float_t gamma = 1.0 / (2*SQR(sigma));
+    float_t sum = 0;
+    float_t dist = 0;
 	UINT minIndex = 0;
-	bestDistance = numeric_limits<double>::max();
+	bestDistance = grt_numeric_limits_max< float_t >();
 	predictedClusterLabel = 0;
 	maxLikelihood = 0;
-	if( clusterLikelihoods.size() != numClusters )
+	if( clusterLikelihoods.getSize() != numClusters )
         clusterLikelihoods.resize( numClusters );
-    if( clusterDistances.size() != numClusters )
+    if( clusterDistances.getSize() != numClusters )
         clusterDistances.resize( numClusters );
 	
 	for(UINT i=0; i<numClusters; i++){
@@ -230,11 +230,11 @@ bool KMeans::predict_(VectorDouble &inputVector){
         //We don't need to compute the sqrt as it works without it and is faster
 		dist = 0;
 		for(UINT j=0; j<numInputDimensions; j++){
-			dist += SQR( inputVector[j]-clusters[i][j] );
+			dist += grt_sqr( inputVector[j]-clusters[i][j] );
 		}
     
         clusterDistances[i] = dist;
-        clusterLikelihoods[i] = exp( - SQR(gamma * dist) ); //1.0/(1.0+dist); //This will give us a value close to 1 for a dist of 0, and a value closer to 0 when the dist is large
+        clusterLikelihoods[i] = exp( - grt_sqr(gamma * dist) ); //1.0/(1.0+dist); //This will give us a value close to 1 for a dist of 0, and a value closer to 0 when the dist is large
         
 		sum += clusterLikelihoods[i];
         
@@ -255,20 +255,20 @@ bool KMeans::predict_(VectorDouble &inputVector){
     return true;
 }
 
-bool KMeans::trainModel(MatrixDouble &data){
+bool KMeans::trainModel(MatrixFloat &data){
     
     if( numClusters == 0 ){
-        errorLog << "trainModel(MatrixDouble &data) - Failed to train model. NumClusters is zero!" << endl;
+        errorLog << "trainModel(MatrixFloat &data) - Failed to train model. NumClusters is zero!" << std::endl;
 		return false;
 	}
     
     if( clusters.getNumRows() != numClusters ){
-        errorLog << "trainModel(MatrixDouble &data) - Failed to train model. The number of rows in the cluster matrix does not match the number of clusters! You should need to initalize the clusters matrix first before calling this function!" << endl;
+        errorLog << "trainModel(MatrixFloat &data) - Failed to train model. The number of rows in the cluster matrix does not match the number of clusters! You should need to initalize the clusters matrix first before calling this function!" << std::endl;
 		return false;
 	}
     
     if( clusters.getNumCols() != numInputDimensions ){
-        errorLog << "trainModel(MatrixDouble &data) - Failed to train model. The number of columns in the cluster matrix does not match the number of input dimensions! You should need to initalize the clusters matrix first before calling this function!" << endl;
+        errorLog << "trainModel(MatrixFloat &data) - Failed to train model. The number of columns in the cluster matrix does not match the number of input dimensions! You should need to initalize the clusters matrix first before calling this function!" << std::endl;
 		return false;
 	}
 
@@ -276,10 +276,10 @@ bool KMeans::trainModel(MatrixDouble &data){
 	UINT currentIter = 0;
     UINT numChanged = 0;
 	bool keepTraining = true;
-    double theta = 0;
-    double lastTheta = 0;
-    double delta = 0;
-    double startTime = 0;
+    float_t theta = 0;
+    float_t lastTheta = 0;
+    float_t delta = 0;
+    float_t startTime = 0;
     thetaTracker.clear();
     finalTheta = 0;
     numTrainingIterationsToConverge = 0;
@@ -292,7 +292,7 @@ bool KMeans::trainModel(MatrixDouble &data){
         data.scale(0,1);
     }
 
-    //Init the assign and count vectors
+    //Init the assign and count Vectors
     //Assign is set to K+1 so that the nChanged values in the eStep at the first iteration will be updated correctly
     for(UINT m=0; m<numTrainingSamples; m++) assign[m] = numClusters+1;
 	for(UINT k=0; k<numClusters; k++) count[k] = 0;
@@ -326,9 +326,9 @@ bool KMeans::trainModel(MatrixDouble &data){
         
         trainingLog << "Epoch: " << currentIter << "/" << maxNumEpochs;
         trainingLog << " Epoch time: " << (timer.getMilliSeconds()-startTime)/1000.0 << " seconds";
-        trainingLog << " Theta: " << theta << " Delta: " << delta << endl;
+        trainingLog << " Theta: " << theta << " Delta: " << delta << std::endl;
 	}
-    trainingLog << "Model Trained at epoch: " << currentIter << " with a theta value of: " << theta << endl;
+    trainingLog << "Model Trained at epoch: " << currentIter << " with a theta value of: " << theta << std::endl;
 
     finalTheta = theta;
     numTrainingIterationsToConverge = currentIter;
@@ -345,9 +345,9 @@ bool KMeans::trainModel(MatrixDouble &data){
 	return true;
 }
 
-UINT KMeans::estep(const MatrixDouble &data) {
+UINT KMeans::estep(const MatrixFloat &data) {
 		UINT k,m,n,kmin;
-		double dmin,d;
+		float_t dmin,d;
 		nchg = 0;
 		kmin = 0;
 
@@ -372,7 +372,7 @@ UINT KMeans::estep(const MatrixDouble &data) {
 		return nchg;
 }
 
-void KMeans::mstep(const MatrixDouble &data) {
+void KMeans::mstep(const MatrixFloat &data) {
     UINT n,k,m;
 
     //Reset means to zero
@@ -388,16 +388,16 @@ void KMeans::mstep(const MatrixDouble &data) {
     for (k=0; k < numClusters; k++) {
         if (count[k] > 0){
             for (n=0; n < numInputDimensions; n++){
-                clusters[k][n] /= double(count[k]);
+                clusters[k][n] /= float_t(count[k]);
             }
         }
     }
 }
 
-double KMeans::calculateTheta(const MatrixDouble &data){
+float_t KMeans::calculateTheta(const MatrixFloat &data){
 
-	double theta = 0;
-    double sum = 0;
+	float_t theta = 0;
+    float_t sum = 0;
     UINT m,n,k = 0;
 	for(m=0; m < numTrainingSamples; m++){
 		k = assign[m];
@@ -413,17 +413,17 @@ double KMeans::calculateTheta(const MatrixDouble &data){
 
 }
 
-bool KMeans::saveModelToFile(fstream &file) const{
+bool KMeans::saveModelToFile( std::fstream &file ) const{
 
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - Failed to save model, file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - Failed to save model, file is not open!" << std::endl;
         return false;
     }
 
     file << "GRT_KMEANS_MODEL_FILE_V1.0\n";
     
     if( !saveClustererSettingsToFile( file ) ){
-        errorLog << "saveModelToFile(fstream &file) - Failed to save clusterer settings to file!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - Failed to save clusterer settings to file!" << std::endl;
         return false;
     }
     
@@ -433,7 +433,7 @@ bool KMeans::saveModelToFile(fstream &file) const{
         for(UINT k=0; k<numClusters; k++){
            for(UINT n=0; n<numInputDimensions; n++){
                 file << clusters[k][n] << "\t";
-           }file << endl;
+           }file << std::endl;
         }
     }
 
@@ -441,24 +441,24 @@ bool KMeans::saveModelToFile(fstream &file) const{
 
 }
 
-bool KMeans::loadModelFromFile(fstream &file){
+bool KMeans::loadModelFromFile( std::fstream &file ){
 
     //Clear any previous model
     clear();
     
     if(!file.is_open()){
-        errorLog << "loadModelFromFile(string filename) - Failed to open file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to open file!" << std::endl;
         return false;
     }
 
-    string word;
+    std::string word;
     file >> word;
     if( word != "GRT_KMEANS_MODEL_FILE_V1.0" ){
 	   return false;
     }
     
     if( !loadClustererSettingsFromFile( file ) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to open file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to open file!" << std::endl;
         return false;
     }
 
@@ -514,7 +514,7 @@ bool KMeans::setComputeTheta(const bool computeTheta){
     return true;
 }
     
-bool KMeans::setClusters(const MatrixDouble &clusters){
+bool KMeans::setClusters(const MatrixFloat &clusters){
     clear();
     numClusters = clusters.getNumRows();
     numInputDimensions = clusters.getNumCols();
@@ -522,5 +522,5 @@ bool KMeans::setClusters(const MatrixDouble &clusters){
     return true;
 }
 
+GRT_END_NAMESPACE
 
-}//End of namespace GRT

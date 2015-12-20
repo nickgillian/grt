@@ -33,7 +33,7 @@
 #include "../../CoreModules/Clusterer.h"
 #include "../../Util/Random.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class GaussNeuron{
 public:
@@ -47,11 +47,11 @@ public:
         
     }
     
-    double& operator[](const UINT index){
+    float_t& operator[](const UINT index){
         return weights[ index ];
     }
     
-    bool init(const UINT numInputs,const double sigma = 2.0){
+    bool init(const UINT numInputs,const float_t sigma = 2.0){
         
         this->numInputs = numInputs;
         this->sigma = sigma;
@@ -84,9 +84,9 @@ public:
         return initialized;
     }
     
-    double getWeightDistance( const VectorDouble &x ) const {
+    float_t getWeightDistance( const VectorFloat &x ) const {
         
-        double dist = 0;
+        float_t dist = 0;
         
         for(UINT i=0; i<numInputs; i++){
             dist += x[i]- weights[i];
@@ -95,28 +95,28 @@ public:
         return dist;
     }
     
-    double getSquaredWeightDistance( const VectorDouble &x ) const {
+    float_t getSquaredWeightDistance( const VectorFloat &x ) const {
         
-        double dist = 0;
+        float_t dist = 0;
         
         for(UINT i=0; i<numInputs; i++){
-            dist += SQR( x[i]- weights[i] );
+            dist += grt_sqr( x[i]- weights[i] );
         }
         
         return dist;
     }
     
-    double fire( const VectorDouble &x ) const {
-        double y = 0;
+    float_t fire( const VectorFloat &x ) const {
+        float_t y = 0;
         
         for(UINT i=0; i<numInputs; i++){
-            y += SQR( x[i]- weights[i] );
+            y += grt_sqr( x[i]- weights[i] );
         }
         
-        return exp( - (y/(2*SQR(sigma))) );
+        return exp( - (y/(2*grt_sqr(sigma))) );
     }
     
-    bool saveNeuronToFile(fstream &file) const {
+    bool saveNeuronToFile( std::fstream &file ) const {
         
         if( !file.is_open() ){
             return false;
@@ -127,19 +127,19 @@ public:
         }
         
         file << "GAUSS_NEURON\n";
-        file << "NumInputs: " << numInputs << endl;
+        file << "NumInputs: " << numInputs << std::endl;
         file << "Weights: ";
         for(UINT i=0; i<numInputs; i++){
             file << weights[i];
             if( i < numInputs-1 ) file << "\t";
         }
-        file << endl;
-        file << "Sigma: " << sigma << endl;
+        file << std::endl;
+        file << "Sigma: " << sigma << std::endl;
         
         return true;
     }
     
-    bool loadNeuronFromFile(fstream &file){
+    bool loadNeuronFromFile( std::fstream &file ){
         
         if( !file.is_open() ){
             return false;
@@ -147,7 +147,7 @@ public:
     
         clear();
         
-        string word;
+        std::string word;
         
         //Read the header
         file >> word;
@@ -162,7 +162,7 @@ public:
         }
         file >> numInputs;
         
-        //Resize the weight vector
+        //Resize the weight Vector
         weights.resize( numInputs );
         
         //Read the weights header
@@ -189,8 +189,8 @@ public:
     }
 
     UINT numInputs;
-    VectorDouble weights;
-    double sigma;
+    VectorFloat weights;
+    float_t sigma;
     bool initialized;
 };
 
@@ -200,12 +200,12 @@ public:
 	/**
      Default Constructor.
      */
-	SelfOrganizingMap(const UINT networkSize = 20, const UINT networkTypology = RANDOM_NETWORK, const UINT maxNumEpochs = 1000,const double alphaStart = 0.8, const double alphaEnd = 0.1);
+	SelfOrganizingMap(const UINT networkSize = 20, const UINT networkTypology = RANDOM_NETWORK, const UINT maxNumEpochs = 1000,const float_t alphaStart = 0.8, const float_t alphaEnd = 0.1);
     
     /**
      Defines how the data from the rhs SelfOrganizingMap should be copied to this SelfOrganizingMap
      
-     @param const SelfOrganizingMap &rhs: another instance of a SelfOrganizingMap
+     @param rhs: another instance of a SelfOrganizingMap
      @return returns a reference to this instance of the SelfOrganizingMap
      */
     SelfOrganizingMap(const SelfOrganizingMap &rhs);
@@ -218,7 +218,7 @@ public:
     /**
      Defines how the data from the rhs SelfOrganizingMap should be copied to this SelfOrganizingMap
      
-     @param const SelfOrganizingMap &rhs: another instance of a SelfOrganizingMap
+     @param rhs: another instance of a SelfOrganizingMap
      @return returns a reference to this instance of the SelfOrganizingMap
      */
     SelfOrganizingMap &operator=(const SelfOrganizingMap &rhs);
@@ -227,7 +227,7 @@ public:
      This deep copies the variables and models from the Clusterer pointer to this SelfOrganizingMap instance.
      This overrides the base deep copy function for the Clusterer modules.
      
-     @param const Clusterer *clusterer: a pointer to the Clusterer base class, this should be pointing to another SelfOrganizingMap instance
+     @param clusterer: a pointer to the Clusterer base class, this should be pointing to another SelfOrganizingMap instance
      @return returns true if the clone was successfull, false otherwise (the Clusterer base class will always return flase)
      */
     virtual bool deepCopyFrom(const Clusterer *clusterer);
@@ -248,18 +248,18 @@ public:
     virtual bool clear();
     
     /**
-     This is the main training interface for referenced MatrixDouble data. It overrides the train_ function in the ML base class.
+     This is the main training interface for referenced MatrixFloat data. It overrides the train_ function in the ML base class.
      This function runs the main training algorithm and is called by all the other train and train_ functions.
      
-     @param MatrixDouble &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
-    virtual bool train_(MatrixDouble &data);
+    virtual bool train_(MatrixFloat &trainingData);
     
     /**
      This is the main training interface for reference ClassificationData data. It overrides the train_ function in the ML base class.
      
-     @param ClassificationData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
     virtual bool train_(ClassificationData &trainingData);
@@ -267,45 +267,45 @@ public:
     /**
      This is the main training interface for reference UnlabelledData data. It overrides the trainInplace function in the ML base class.
      
-     @param UnlabelledData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
 	virtual bool train_(UnlabelledData &trainingData);
     
     /**
-     This function maps the input vector x by reference through the self organizing map. 
+     This function maps the input Vector x by reference through the self organizing map. 
      The function will return true if the mapping was successful.
      The mapped data can then be accessed via the getMappedData function. 
      You need to train the SOM model before you can use this function.
      Because the data is mapped by reference, the x input data might be modified by the map (if it has to scale the input data for example).
      
-     @param VectorDouble &inputVector: the input vector for mapping
+     @param x: the input Vector for mapping
      @return returns true if the mapping was completed succesfully, false otherwise
      */
-    virtual bool map_( VectorDouble &x );
+    virtual bool map_( VectorFloat &x );
     
     /**
      This saves the trained SOM model to a file.
      This overrides the saveModelToFile function in the base class.
      
-     @param fstream &file: a reference to the file the SOM model will be saved to
+     @param file: a reference to the file the SOM model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained SOM model from a file.
      This overrides the loadModelFromFile function in the base class.
      
-     @param fstream &file: a reference to the file the SOM model will be loaded from
+     @param file: a reference to the file the SOM model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This function validates the network typology to ensure it is one of the NetworkTypology enums.
      
-     @param const UINT networkTypology: the network typology you want to test
+     @param networkTypology: the network typology you want to test
      @return returns true if the network typology is valid, false otherwise
      */
     bool validateNetworkTypology( const UINT networkTypology );
@@ -318,25 +318,25 @@ public:
      */
     UINT getNetworkSize() const;
     
-    double getAlphaStart() const;
+    float_t getAlphaStart() const;
     
-    double getAlphaEnd() const;
+    float_t getAlphaEnd() const;
     
-    VectorDouble getMappedData() const;
+    VectorFloat getMappedData() const;
     
-    vector< GaussNeuron > getNeurons() const;
+    Vector< GaussNeuron > getNeurons() const;
     
-    const vector< GaussNeuron > &getNeuronsRef() const;
+    const Vector< GaussNeuron > &getNeuronsRef() const;
     
-    MatrixDouble getNetworkWeights() const;
+    MatrixFloat getNetworkWeights() const;
     
     bool setNetworkSize( const UINT networkSize );
     
     bool setNetworkTypology( const UINT networkTypology );
     
-    bool setAlphaStart( const double alphaStart );
+    bool setAlphaStart( const float_t alphaStart );
     
-    bool setAlphaEnd( const double alphaEnd );
+    bool setAlphaEnd( const float_t alphaEnd );
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -344,11 +344,11 @@ public:
     
 protected:
     UINT networkTypology;
-    double alphaStart;
-    double alphaEnd;
-    VectorDouble mappedData;
-    vector< GaussNeuron > neurons;
-    MatrixDouble networkWeights;
+    float_t alphaStart;
+    float_t alphaEnd;
+    VectorFloat mappedData;
+    Vector< GaussNeuron > neurons;
+    MatrixFloat networkWeights;
     
 private:
     static RegisterClustererModule< SelfOrganizingMap > registerModule;
@@ -359,6 +359,6 @@ public:
 		
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_SELF_ORGANIZING_MAP_HEADER

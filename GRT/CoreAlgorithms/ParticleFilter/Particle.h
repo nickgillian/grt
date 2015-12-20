@@ -21,7 +21,9 @@
 #ifndef GRT_PARTICLE_HEADER
 #define GRT_PARTICLE_HEADER
 
-namespace GRT{
+#include "../../Util/GRTTypedefs.h"
+
+GRT_BEGIN_NAMESPACE
 
 class Particle{
 public:
@@ -47,14 +49,14 @@ public:
         return *this;
     }
     
-    double& operator[](const unsigned int &i){
+    float_t& operator[](const unsigned int &i){
         return x[i];
     }
     
-    double w;
-    VectorDouble x;
+    float_t w;
+    VectorFloat x;
 };
 
-}
+GRT_END_NAMESPACE
 
 #endif //GRT_PARTICLE_HEADER

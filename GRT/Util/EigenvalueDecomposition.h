@@ -22,9 +22,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_EIGENVALUE_DECOMPOSITION_HEADER
 
 #include "GRTTypedefs.h"
-#include "MatrixFloat.h"
+#include "../DataStructures/VectorFloat.h"
+#include "../DataStructures/MatrixFloat.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class EigenvalueDecomposition {
 public:
@@ -130,6 +131,6 @@ protected:
     
 };
     
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_EIGENVALUE_DECOMPOSITION_HEADER

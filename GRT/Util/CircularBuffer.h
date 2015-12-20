@@ -291,20 +291,20 @@ class CircularBuffer{
      
      @return returns a std::vector with the data in the buffer
      */
-    std::vector< T > getData( const bool rawBuffer = false ) const{
+    Vector< T > getData( const bool rawBuffer = false ) const{
         if( bufferInit ){
 
             if( rawBuffer ){
                 return buffer; //Here we return the entire data buffer
             }else{ //Here we return only valid elements and in order from oldest to newest
-                std::vector< T > data( numValuesInBuffer );
+                Vector< T > data( numValuesInBuffer );
                 for(unsigned int i=0; i<numValuesInBuffer; i++){
                     data[i] = (*this)[i]; //Gets the ordered element
                 }
                 return data;
             }
         }
-        return std::vector< T >();
+        return Vector< T >();
     }
     
     /**
@@ -365,7 +365,7 @@ protected:
     unsigned int numValuesInBuffer;
     unsigned int readPtr;
     unsigned int writePtr;
-    std::vector< T > buffer;
+    Vector< T > buffer;
     
     ErrorLog errorLog;
 };

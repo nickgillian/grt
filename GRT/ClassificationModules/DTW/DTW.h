@@ -46,11 +46,11 @@
 #include "../../CoreModules/Classifier.h"
 #include "../../Util/TimeSeriesClassificationSampleTrimmer.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class IndexDist{
 public:
-    IndexDist(int x=0,int y=0,double dist=0){
+    IndexDist(int x=0,int y=0,float_t dist=0){
         this->x = x;
         this->y = y;
         this->dist = dist;
@@ -67,7 +67,7 @@ public:
 
 	int x;
 	int y;
-    double dist;
+    float_t dist;
 };
 
 ///////////////// DTW Template /////////////////
@@ -82,9 +82,9 @@ public:
 	~DTWTemplate(){};
 
     UINT classLabel;                    //The class that this template belongs to
-	MatrixDouble timeSeries;            //The raw time series
-	double trainingMu;                  //The mean distance value of the training data with the trained template 
-	double trainingSigma;               //The sigma of the distance value of the training data with the trained template 
+	MatrixFloat timeSeries;            //The raw time series
+	float_t trainingMu;                  //The mean distance value of the training data with the trained template 
+	float_t trainingSigma;               //The sigma of the distance value of the training data with the trained template 
 	UINT averageTemplateLength;          //The average length of the examples used to train this template
 };
 
@@ -95,25 +95,25 @@ public:
     /**
      Default Constructor
      
-     @param bool useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
-     @param bool useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the closest template is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
-     @param double nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 3.0
-     @param UINT rejectionMode: sets the method used for null rejection. The options are TEMPLATE_THRESHOLDS, CLASS_LIKELIHOODS or THRESHOLDS_AND_LIKELIHOODS.  Default = TEMPLATE_THRESHOLDS
-     @param bool dtwConstrain: sets if the DTW warping path should be constrained within a specific distance from the main radius of the cost matrix.  Default value = true
-     @param double radius: controls the radius of the warping path, which is used if the dtwConstrain is set to true. Should be a value between [0 1]. Default value = 0.2
-     @param bool offsetUsingFirstSample: sets if each timeseries should be offset by the first sample in the timeseries. Default value = false
-     @param bool useSmoothing: sets if the input timeseries should be smoothed (i.e. averaged and downsampled). Default value = false
-     @param UINT smoothingFactor: controls the amount of downsampling if the useSmoothing parameter is set to true. Default value = 5
-	 @param double nullRejectionLikelihoodThreshold: set the null rejection threshold for likelihoods when CLASS_LIKELIHOODS or THRESHOLDS_AND_LIKELIHOODS modes are used for rejectionMode. Default value = 0.99
+     @param useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
+     @param useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the closest template is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
+     @param nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 3.0
+     @param rejectionMode: sets the method used for null rejection. The options are TEMPLATE_THRESHOLDS, CLASS_LIKELIHOODS or THRESHOLDS_AND_LIKELIHOODS.  Default = TEMPLATE_THRESHOLDS
+     @param dtwConstrain: sets if the DTW warping path should be constrained within a specific distance from the main radius of the cost matrix.  Default value = true
+     @param radius: controls the radius of the warping path, which is used if the dtwConstrain is set to true. Should be a value between [0 1]. Default value = 0.2
+     @param offsetUsingFirstSample: sets if each timeseries should be offset by the first sample in the timeseries. Default value = false
+     @param useSmoothing: sets if the input timeseries should be smoothed (i.e. averaged and downsampled). Default value = false
+     @param smoothingFactor: controls the amount of downsampling if the useSmoothing parameter is set to true. Default value = 5
+	 @param nullRejectionLikelihoodThreshold: set the null rejection threshold for likelihoods when CLASS_LIKELIHOODS or THRESHOLDS_AND_LIKELIHOODS modes are used for rejectionMode. Default value = 0.99
      */
-	DTW(bool useScaling=false,bool useNullRejection=false,double nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,double radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5, double nullRejectionLikelihoodThreshold = 0.99);
+	DTW(bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,float_t radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5, float_t nullRejectionLikelihoodThreshold = 0.99);
 	
     /**
      Default copy constructor
      
      Defines how the data from the rhs DTW should be copied to this DTW
      
-     @param const DTW &rhs: another instance of a DTW
+     @param rhs: another instance of a DTW
      */
 	DTW(const DTW &rhs);
 	
@@ -125,7 +125,7 @@ public:
     /**
      Defines how the data from the rhs DTW should be copied to this DTW
      
-     @param const DTW &rhs: another instance of a DTW
+     @param rhs: another instance of a DTW
      @return returns a pointer to this instance of the DTW
      */
 	DTW& operator=(const DTW &rhs);
@@ -134,7 +134,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.
      It clones the data from the Base Class Classifier pointer (which should be pointing to an DTW instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another DTW instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another DTW instance
      @return returns true if the clone was successfull, false otherwise
      */
 	virtual bool deepCopyFrom(const Classifier *classifier);
@@ -143,7 +143,7 @@ public:
      This trains the DTW model, using the labelled timeseries classification data.
      This overrides the train function in the Classifier base class.
      
-     @param TimeSeriesClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the DTW model was trained, false otherwise
      */
     virtual bool train_(TimeSeriesClassificationData &trainingData);
@@ -152,19 +152,19 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
      */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This predicts the class of the timeseries.
      This overrides the predict function in the Classifier base class.
      
-     @param MatrixDouble timeSeries: the input timeseries to classify
+     @param timeSeries: the input timeseries to classify
      @return returns true if the prediction was performed, false otherwise
      */
-    virtual bool predict_(MatrixDouble &timeSeries);
+    virtual bool predict_(MatrixFloat &timeSeries);
     
     /**
      This resets the DTW classifier.
@@ -185,23 +185,23 @@ public:
      This saves the trained DTW model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the DTW model will be saved to
+     @param file: a reference to the file the DTW model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained DTW model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the DTW model will be loaded from
+     @param file: a reference to the file the DTW model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This recomputes the null rejection thresholds for each of the classes in the DTW model.
-     This will be called automatically if the setGamma(double gamma) function is called.
+     This will be called automatically if the setGamma(float_t gamma) function is called.
      The DTW model needs to be trained first before this function can be called.
      
      @return returns true if the null rejection thresholds were updated successfully, false otherwise
@@ -227,14 +227,14 @@ public:
 
 	@return returns true if the rejection threshold was updated successfully, false otherwise
 	*/
-	bool setNullRejectionThreshold(double nullRejectionLikelihoodThreshold);
+	bool setNullRejectionThreshold(float_t nullRejectionLikelihoodThreshold);
     
     /**
      Sets if each timeseries should be offset by the first sample in the timeseries.
      This can help the DTW algorithm be more invariant to the position a gesture is performed without having to normalize the data.
      You shoud call this function before training the algorithm.
      
-     @param bool offsetUsingFirstSample: sets if each timeseries should be offset by the first sample in the timeseries
+     @param offsetUsingFirstSample: sets if each timeseries should be offset by the first sample in the timeseries
      @return returns true if the offsetUsingFirstSample parameter was updated successfully, false otherwise
      */
     bool setOffsetTimeseriesUsingFirstSample(bool offsetUsingFirstSample);
@@ -242,7 +242,7 @@ public:
     /**
      Sets if the warping path should be constrained to within a specific radius from the main diagonal of the cost matrix.
      
-     @param bool constrain: if true then the warping path should be constrained
+     @param constrain: if true then the warping path should be constrained
      @return returns true if the constrain parameter was updated successfully, false otherwise
      */
     bool setContrainWarpingPath(bool constrain);
@@ -252,10 +252,10 @@ public:
      This is only used if the #constrainWarpingPath parameter is set to true.
      The radius should be a value between [0 1].
      
-     @param double radius: the new warping radius (should be between [0 1]
+     @param radius: the new warping radius (should be between [0 1]
      @return returns true if the warping radius parameter was updated successfully, false otherwise
      */
-    bool setWarpingRadius(double radius);
+    bool setWarpingRadius(float_t radius);
 
     /**
      Gets the rejection mode used for null rejection. The rejection mode will be one of the RejectionModes enums.
@@ -267,8 +267,8 @@ public:
     /**
      Sets if z-normalization should be used for both training and realtime prediction.  This should be called before training the templates.
      
-     @param bool useZNormalization: if true then the data will be z-normalized before both training and prediction
-     @param bool constrainZNorm: if true then the data will only be z-normalized if the std-dev of the data is below a specific threshold
+     @param useZNormalization: if true then the data will be z-normalized before both training and prediction
+     @param constrainZNorm: if true then the data will only be z-normalized if the std-dev of the data is below a specific threshold
      @return returns true if z-normalization was updated successfully, false otherwise
      */
 	bool enableZNormalization(bool useZNormalization,bool constrainZNorm = true);
@@ -284,47 +284,47 @@ public:
      added to the modified (trimmed) training dataset. If any sample exceeds the maximumTrimPercentage then a warning message will be 
      displayed via the DTW trainingLog (unless the trainingLog's logging has been disabled).
      
-     @param bool trimTrainingData: if true, then the training examples will be trimmed prior to training the DTW templates
-     @param double trimThreshold: the trimThreshold sets the threshold at which the data should be trimmed. This should be in a range of [0 1]
-     @param double maximumTrimPercentage: this sets the maximum amount of data that can be trimmed for one example. This should be in the range of [0 100]
+     @param trimTrainingData: if true, then the training examples will be trimmed prior to training the DTW templates
+     @param trimThreshold: the trimThreshold sets the threshold at which the data should be trimmed. This should be in a range of [0 1]
+     @param maximumTrimPercentage: this sets the maximum amount of data that can be trimmed for one example. This should be in the range of [0 100]
      @return returns true if the trimTrainingData parameters were updated successfully, false otherwise
      */
-	bool enableTrimTrainingData(bool trimTrainingData,double trimThreshold,double maximumTrimPercentage);
+	bool enableTrimTrainingData(bool trimTrainingData,float_t trimThreshold,float_t maximumTrimPercentage);
     
     /**
      Gets the DTW models.
      
      @return returns a vector of DTW templates, or an empty vector if no model has been trained.
      */
-    vector< DTWTemplate > getModels(){ return templatesBuffer; }
+    Vector< DTWTemplate > getModels(){ return templatesBuffer; }
 
     /**
      Sets the DTW models, overwriting any previous models. The size of the new templates vector must match the size of the old templates buffer.
      
      @return returns true if the templates were updated, false otherwise
      */
-	bool setModels( vector< DTWTemplate > newTemplates );
+	bool setModels( Vector< DTWTemplate > newTemplates );
 
     /**
      Gets the current data in the DTW circular buffer.
      
-     @return returns a vector of VectorDoubles containing the current data in the DTW circular buffer
+     @return returns a vector of VectorFloats containing the current data in the DTW circular buffer
      */
-    vector< VectorDouble > getInputDataBuffer(){ return continuousInputDataBuffer.getData(); }
+    Vector< VectorFloat > getInputDataBuffer(){ return continuousInputDataBuffer.getData(); }
 
     /**
      Gets the distances matrices from the last prediction.  Each element in the vector represents the distance matrices for each corresponding class.
      
-     @return returns a vector of MatrixDouble containing the distance matrices from the last prediction, or an empty vector if no prediction has been made
+     @return returns a vector of MatrixFloat containing the distance matrices from the last prediction, or an empty vector if no prediction has been made
      */
-    vector< MatrixDouble > getDistanceMatrices(){ return distanceMatrices; }
+    Vector< MatrixFloat > getDistanceMatrices(){ return distanceMatrices; }
 
     /**
      Gets the warping paths from the last prediction.  Each element in the vector represents the warping path for each corresponding class.
      
      @return returns a vector of vectors containing the warping paths from the last prediction, or an empty vector if no prediction has been made
      */
-    vector< vector< IndexDist > > getWarpingPaths(){ return warpPaths; }
+    Vector< Vector< IndexDist > > getWarpingPaths(){ return warpPaths; }
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -337,28 +337,28 @@ private:
 	bool train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dtwTemplate,UINT &bestIndex);
 
 	//The actual DTW function
-	double computeDistance(MatrixDouble &timeSeriesA,MatrixDouble &timeSeriesB,MatrixDouble &distanceMatrix,vector< IndexDist > &warpPath);
-    double d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N);
-	double inline MIN_(double a,double b, double c);
+	float_t computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,MatrixFloat &distanceMatrix,Vector< IndexDist > &warpPath);
+    float_t d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N);
+	float_t inline MIN_(float_t a,float_t b, float_t c);
 
 	//Private Scaling and Utility Functions
 	void scaleData(TimeSeriesClassificationData &trainingData);
-	void scaleData(MatrixDouble &data,MatrixDouble &scaledData);
+	void scaleData(MatrixFloat &data,MatrixFloat &scaledData);
 	void znormData(TimeSeriesClassificationData &trainingData);
-	void znormData(MatrixDouble &data,MatrixDouble &normData);
-	void smoothData(VectorDouble &data,UINT smoothFactor,VectorDouble &resultsData);
-	void smoothData(MatrixDouble &data,UINT smoothFactor,MatrixDouble &resultsData);
-    void offsetTimeseries(MatrixDouble &timeseries);
+	void znormData(MatrixFloat &data,MatrixFloat &normData);
+	void smoothData(VectorFloat &data,UINT smoothFactor,VectorFloat &resultsData);
+	void smoothData(MatrixFloat &data,UINT smoothFactor,MatrixFloat &resultsData);
+    void offsetTimeseries(MatrixFloat &timeseries);
     
     static RegisterClassifierModule< DTW > registerModule;
 
 protected:
-    bool loadLegacyModelFromFile( fstream &file );
+    bool loadLegacyModelFromFile( std::fstream &file );
     
-	vector< DTWTemplate > templatesBuffer;		//A buffer to store the templates for each time series
-    vector< MatrixDouble > distanceMatrices;
-    vector< vector< IndexDist > > warpPaths;
-    CircularBuffer< VectorDouble > continuousInputDataBuffer;
+	Vector< DTWTemplate > templatesBuffer;		//A buffer to store the templates for each time series
+    Vector< MatrixFloat > distanceMatrices;
+    Vector< Vector< IndexDist > > warpPaths;
+    CircularBuffer< VectorFloat > continuousInputDataBuffer;
 	UINT				numTemplates;			//The number of templates in our buffer
     UINT                rejectionMode;          //The rejection mode used to reject null gestures during the prediction phase
 
@@ -370,11 +370,11 @@ protected:
 	bool				constrainWarpingPath;	//A flag to check if we need to constrain the dtw cost matrix and search
     bool                trimTrainingData;       //A flag to check if we need to trim the training data first before training
 
-	double				zNormConstrainThreshold;//The threshold value to be used if constrainZNorm is turned on
-    double              radius;
-	double 				trimThreshold;			//Sets the threshold under which training data should be trimmed (default 0.1)
-	double				maximumTrimPercentage;  //Sets the maximum amount of data that can be trimmed for each training sample (default 20)
-	double				nullRejectionLikelihoodThreshold; //Sets the threshold for null rejection based on likelihoods
+	float_t				zNormConstrainThreshold;//The threshold value to be used if constrainZNorm is turned on
+    float_t              radius;
+	float_t 				trimThreshold;			//Sets the threshold under which training data should be trimmed (default 0.1)
+	float_t				maximumTrimPercentage;  //Sets the maximum amount of data that can be trimmed for each training sample (default 20)
+	float_t				nullRejectionLikelihoodThreshold; //Sets the threshold for null rejection based on likelihoods
 
 	UINT				smoothingFactor;		//The smoothing factor if smoothing is used
 	UINT				distanceMethod;			//The distance method to be used (should be of enum DISTANCE_METHOD)
@@ -386,6 +386,6 @@ public:
 
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_DTW_HEADER

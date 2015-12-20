@@ -48,7 +48,7 @@ LUDecomposition::LUDecomposition(const MatrixFloat &a) : sing(false){
 			if ((temp=fabs( lu[i][j] )) > big) big=temp;
 		if (big == 0.0){
             sing = true;
-            errorLog << "Error in LUDecomposition constructor, big == 0.0" << endl;
+            errorLog << "Error in LUDecomposition constructor, big == 0.0" << std::endl;
             return;
 		}
 		vv[i] = 1.0/big;
@@ -93,7 +93,7 @@ bool LUDecomposition::solve_vector(const VectorFloat &b,VectorFloat &x)
 	float_t sum=0;
     
 	if (b.size() != N || x.size() != N){
-        errorLog << "solve_vector(const VectorFloat &b,VectorFloat &x) - the size of the two vectors does not match!" << endl;
+        errorLog << "solve_vector(const VectorFloat &b,VectorFloat &x) - the size of the two vectors does not match!" << std::endl;
 		return false;
     }
 	for (i=0;i<n;i++) x[i] = b[i];
@@ -120,7 +120,7 @@ bool LUDecomposition::solve(const MatrixFloat &b,MatrixFloat &x)
 {
 	unsigned int m=b.getNumCols();
 	if (b.getNumRows() != N || x.getNumRows() != N || b.getNumCols() != x.getNumCols() ){
-        errorLog << "solve(const MatrixFloat &b,MatrixFloat &x) - the size of the two matrices does not match!" << endl;
+        errorLog << "solve(const MatrixFloat &b,MatrixFloat &x) - the size of the two matrices does not match!" << std::endl;
 		return false;
     }
 	VectorFloat  xx(N);
@@ -157,7 +157,7 @@ bool LUDecomposition::mprove(const VectorFloat &b,VectorFloat &x)
 	for (i=0;i<N;i++) {
 		long double sdp = -b[i];
 		for (j=0;j<N;j++)
-			sdp += (long double) aref[i][j] * (long double)x[j];
+			sdp += (long_float_t) aref[i][j] * (long_float_t)x[j];
 		r[i]=sdp;
 	}
 	if( !solve_vector(r,r) ){

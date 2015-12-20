@@ -28,11 +28,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <algorithm>    // copy
 #include <iterator>     // ostream_operator
 #include <sstream>
-//#include "MatrixFloat.h"
+#include "../DataStructures/Vector.h"
 
-namespace GRT {
-
-using namespace std;
+GRT_BEGIN_NAMESPACE
 
 class FileParser{
 public:
@@ -42,15 +40,15 @@ public:
     ~FileParser(){
     }
     
-    vector< string >& operator[](const unsigned int &index){
+    Vector< std::string >& operator[](const unsigned int &index){
         return fileContents[index];
     }
     
-    bool parseCSVFile(string filename,bool removeNewLineCharacter=true){
+    bool parseCSVFile(std::string filename,bool removeNewLineCharacter=true){
         return parseFile(filename,removeNewLineCharacter,',');
     }
     
-    bool parseTSVFile(string filename,bool removeNewLineCharacter=true){
+    bool parseTSVFile(std::string filename,bool removeNewLineCharacter=true){
         return parseFile(filename,removeNewLineCharacter,'\t');
     }
   
@@ -70,7 +68,7 @@ public:
 	  return columnSize;
     }
   
-    vector< vector< string > > getFileContents(){
+    Vector< Vector< std::string > > getFileContents(){
 	  return fileContents;
     }
     
@@ -82,10 +80,10 @@ public:
         return true;
     }
     
-    static bool parseColumn( const string &row, vector< string > &cols, const char seperator = ',' ){
+    static bool parseColumn( const std::string &row, Vector< std::string > &cols, const char seperator = ',' ){
         
         cols.clear();
-        string columnString = "";
+        std::string columnString = "";
         const int sepValue = seperator;
         const unsigned int N = (unsigned int)row.length();
         for(unsigned int i=0; i<N; i++){
@@ -113,26 +111,26 @@ public:
   
 protected:
     
-    bool parseFile(string filename,bool removeNewLineCharacter,const char seperator){
+    bool parseFile(std::string filename,bool removeNewLineCharacter,const char seperator){
         
         //Clear any previous data
         clear();
         
-        ifstream file( filename.c_str(), ifstream::in );
+        std::ifstream file( filename.c_str(), std::ifstream::in );
         if ( !file.is_open() ){
-            warningLog << "parseFile(...) - Failed to open file: " << filename << endl;
+            warningLog << "parseFile(...) - Failed to open file: " << filename << std::endl;
             return false;
         }
         
-        vector< string > vec;
-        string line;
+        Vector< std::string > vec;
+        std::string line;
         
         //Loop over each line of data and parse the contents
         while ( getline(file,line) )
         {
             if( !parseColumn(line, vec,seperator) ){
                 clear();
-                warningLog << "parseFile(...) - Failed to parse column!" << endl;
+                warningLog << "parseFile(...) - Failed to parse column!" << std::endl;
                 file.close();
                 return false;
             }
@@ -159,10 +157,10 @@ protected:
     bool consistentColumnSize;
     unsigned int columnSize;
     WarningLog warningLog;
-    vector< vector< string > > fileContents;
+    Vector< Vector< std::string > > fileContents;
 
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_FILE_PARSER_HEADER

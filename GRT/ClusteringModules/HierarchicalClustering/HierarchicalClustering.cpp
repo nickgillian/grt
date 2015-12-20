@@ -20,7 +20,7 @@
 
 #include "HierarchicalClustering.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the HierarchicalClustering class with the Clusterer base class
 RegisterClustererModule< HierarchicalClustering > HierarchicalClustering::registerModule("HierarchicalClustering");
@@ -113,7 +113,7 @@ bool HierarchicalClustering::train_(ClassificationData &trainingData){
 	M = trainingData.getNumSamples();
     N = trainingData.getNumDimensions();
 
-    MatrixDouble data(M,N);
+    MatrixFloat data(M,N);
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<N; j++){
             data[i][j] = trainingData[i][j];
@@ -133,7 +133,7 @@ bool HierarchicalClustering::train_(UnlabelledData &trainingData){
 	M = trainingData.getNumSamples();
     N = trainingData.getNumDimensions();
 
-    MatrixDouble data(M,N);
+    MatrixFloat data(M,N);
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<N; j++){
             data[i][j] = trainingData[i][j];
@@ -143,7 +143,7 @@ bool HierarchicalClustering::train_(UnlabelledData &trainingData){
 	return train( data );
 }
 
-bool HierarchicalClustering::train_(MatrixDouble &data){
+bool HierarchicalClustering::train_(MatrixFloat &data){
 	
 	trained = false;
     clusters.clear();
@@ -163,7 +163,7 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
     //Build the distance matrix
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<M; j++){
-            if( i== j ) distanceMatrix[i][j] = numeric_limits<double>::max();
+            if( i== j ) distanceMatrix[i][j] = grt_numeric_limits_max< float_t >();
             else{
                 distanceMatrix[i][j] = squaredEuclideanDistance(data[i], data[j]);
             }
@@ -172,13 +172,13 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
 
     //Build the initial clusters, at the start each sample gets its own cluster
     UINT uniqueClusterID = 0;
-    vector< ClusterInfo > clusterData(M);
+    Vector< ClusterInfo > clusterData(M);
     for(UINT i=0; i<M; i++){
         clusterData[i].uniqueClusterID = uniqueClusterID++;
         clusterData[i].addSampleToCluster(i);
     }
     
-    trainingLog << "Starting clustering..." << endl;
+    trainingLog << "Starting clustering..." << std::endl;
     
     //Create the first cluster level, each sample is it's own cluster
     UINT level = 0;
@@ -196,17 +196,17 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
     while( keepClustering ){
         
         //Find the closest two clusters within the cluster data
-        double minDist = numeric_limits<double>::max();
-        vector< vector< UINT > > clusterPairs;
+        float_t minDist = grt_numeric_limits_max< float_t >();
+        Vector< Vector< UINT > > clusterPairs;
         UINT K = (UINT)clusterData.size();
         for(UINT i=0; i<K; i++){
             for(UINT j=0; j<K; j++){
                 if( i != j ){
-                    double dist = computeClusterDistance( clusterData[i], clusterData[j]  );
+                    float_t dist = computeClusterDistance( clusterData[i], clusterData[j]  );
              
                     if( dist < minDist ){
                         minDist = dist;
-                        vector< UINT > clusterPair(2);
+                        Vector< UINT > clusterPair(2);
                         clusterPair[0] = i;
                         clusterPair[1] = j;
                         clusterPairs.clear();
@@ -217,9 +217,9 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
             }
         }
         
-        if( minDist == numeric_limits<double>::max() ){
+        if( minDist == grt_numeric_limits_max< float_t >() ){
             keepClustering = false;
-            warningLog << "train_(MatrixDouble &data) - Failed to find any cluster at level: " << level << endl;
+            warningLog << "train_(MatrixFloat &data) - Failed to find any cluster at level: " << level << std::endl;
             return false;
         }else{
         
@@ -231,7 +231,7 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
             ClusterInfo newCluster;
             newCluster.uniqueClusterID = uniqueClusterID++;
             
-            const UINT numClusterPairs = (UINT)clusterPairs.size();
+            const UINT numClusterPairs = clusterPairs.getSize();
             
             for(UINT k=0; k<numClusterPairs; k++){
                 //Add all the samples in the first cluster to the new cluster
@@ -255,7 +255,7 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
                 UINT idA = clusterData[ clusterPairs[k][0] ].getUniqueClusterID();
                 UINT idB = clusterData[ clusterPairs[k][1] ].getUniqueClusterID();
                 UINT numRemoved = 0;
-                vector< ClusterInfo >::iterator iter = clusterData.begin();
+                Vector< ClusterInfo >::iterator iter = clusterData.begin();
                 while( iter != clusterData.end() ){
                     if( iter->getUniqueClusterID() == idA || iter->getUniqueClusterID() == idB ){
                         iter = clusterData.erase( iter );
@@ -285,7 +285,7 @@ bool HierarchicalClustering::train_(MatrixDouble &data){
             keepClustering = false;
         }
         
-        trainingLog << "Cluster level: " << level << " Number of clusters: " << clusters.back().getNumClusters() << endl;
+        trainingLog << "Cluster level: " << level << " Number of clusters: " << clusters.back().getNumClusters() << std::endl;
     }
     
     //Flag that the model is trained
@@ -306,41 +306,40 @@ bool HierarchicalClustering::printModel(){
     
     UINT K = (UINT)clusters.size();
     
-    cout << "Hierarchical Clustering Model\n\n";
+    std::cout << "Hierarchical Clustering Model\n\n";
     for(UINT k=0; k<K; k++){
         UINT numClusters = clusters[k].getNumClusters();
         UINT numSamples = 0;
         for(UINT i=0; i<numClusters; i++){
             numSamples += clusters[k][i].getNumSamplesInCluster();
-            
         }
         
-        cout << "Level: " << clusters[k].level << "\tNumClusters: " << numClusters << "\tNumSamples: " << numSamples << endl;
+        std::cout << "Level: " << clusters[k].level << "\tNumClusters: " << numClusters << "\tNumSamples: " << numSamples << std::endl;
         for(UINT i=0; i<numClusters; i++){
-            cout << "ClusterVariance: " << clusters[k][i].clusterVariance << endl;
-            cout << "Indexs: ";
+             std::cout << "ClusterVariance: " << clusters[k][i].clusterVariance << std::endl;
+             std::cout << "Indexs: ";
             UINT numSamplesInCluster = clusters[k][i].getNumSamplesInCluster();
             for(UINT j=0; j<numSamplesInCluster; j++){
-                cout << clusters[k][i][j] << "\t";
+                 std::cout << clusters[k][i][j] << "\t";
             }
-            cout << endl;
+             std::cout << std::endl;
         }
     }
-    
+
     return true;
 }
     
-double HierarchicalClustering::squaredEuclideanDistance(const double *a,const double *b){
-    double dist = 0;
+float_t HierarchicalClustering::squaredEuclideanDistance(const float_t *a,const float_t *b){
+    float_t dist = 0;
     for(UINT i=0; i<N; i++){
         dist += SQR( a[i] - b[i] );
     }
     return dist;
 }
     
-double HierarchicalClustering::computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB ){
+float_t HierarchicalClustering::computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB ){
     
-    double minDist = numeric_limits<double>::max();
+    float_t minDist = grt_numeric_limits_max< float_t >();
     const UINT numSamplesA = clusterA.getNumSamplesInCluster();
     const UINT numSamplesB = clusterB.getNumSamplesInCluster();
     
@@ -356,10 +355,10 @@ double HierarchicalClustering::computeClusterDistance( const ClusterInfo &cluste
     return minDist;
 }
     
-double HierarchicalClustering::computeClusterVariance( const ClusterInfo &cluster, const MatrixDouble &data ){
+float_t HierarchicalClustering::computeClusterVariance( const ClusterInfo &cluster, const MatrixFloat &data ){
     
-    VectorDouble mean(N,0);
-    VectorDouble std(N,0);
+    VectorFloat mean(N,0);
+    VectorFloat std(N,0);
     
     //Compute the mean
     UINT numSamples = cluster.getNumSamplesInCluster();
@@ -368,46 +367,46 @@ double HierarchicalClustering::computeClusterVariance( const ClusterInfo &cluste
             UINT index = cluster[i];
             mean[j] += data[ index ][j];
         }
-        mean[j] /= double( numSamples );
+        mean[j] /= float_t( numSamples );
     }
     
     //Compute the std dev
     for(UINT j=0; j<N; j++){
         for(UINT i=0; i<numSamples; i++){
-            std[j] += SQR( data[ cluster[i] ][j] - mean[j] );
+            std[j] += grt_sqr( data[ cluster[i] ][j] - mean[j] );
         }
-        std[j] = sqrt( std[j] / double( numSamples-1 ) );
+        std[j] = grt_sqrt( std[j] / float_t( numSamples-1 ) );
     }
     
-    double variance = 0;
+    float_t variance = 0;
     for(UINT j=0; j<N; j++){
         variance += std[j];
     }
     return variance/N;
 }
 
-bool HierarchicalClustering::saveModelToFile(fstream &file) const{
+bool HierarchicalClustering::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(string filename) - Failed to open file!" << endl;
+        errorLog << "saveModelToFile(string filename) - Failed to open file!" << std::endl;
         return false;
     }
     
     file << "GRT_HIERARCHICAL_CLUSTERING_FILE_V1.0\n";
     
     if( !saveClustererSettingsToFile( file ) ){
-        errorLog << "saveModelToFile(fstream &file) - Failed to save cluster settings to file!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - Failed to save cluster settings to file!" << std::endl;
         return false;
     }
     
     if( trained ){
-        file << "M: " << M << endl;
-        file << "N: " << N << endl;
-        file << "NumLevels: " << clusters.size() << endl;
+        file << "M: " << M << std::endl;
+        file << "N: " << N << std::endl;
+        file << "NumLevels: " << clusters.getSize() << std::endl;
         
-        for(UINT i=0; i<clusters.size(); i++){
-            file << "Level: " << clusters[i].getLevel() << endl;
-            file << "NumClusters: " << clusters[i].getNumClusters() << endl;
+        for(UINT i=0; i<clusters.getSize(); i++){
+            file << "Level: " << clusters[i].getLevel() << std::endl;
+            file << "NumClusters: " << clusters[i].getNumClusters() << std::endl;
         }
     }
     
@@ -415,9 +414,9 @@ bool HierarchicalClustering::saveModelToFile(fstream &file) const{
     
 }
 
-bool HierarchicalClustering::loadModelFromFile(fstream &file){
+bool HierarchicalClustering::loadModelFromFile( std::fstream &file ){
     
-    string word;
+    std::string word;
     
     //Clear any previous model
     clear();
@@ -428,12 +427,11 @@ bool HierarchicalClustering::loadModelFromFile(fstream &file){
     }
     
     if( !loadClustererSettingsFromFile( file ) ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load cluster settings from file!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to load cluster settings from file!" << std::endl;
         return false;
     }
         
     return true;
 }
 
-
-}//End of namespace GRT
+GRT_END_NAMESPACE

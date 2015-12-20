@@ -35,11 +35,11 @@
 #include "../../Util/GRTCommon.h"
 #include "../../CoreModules/MLBase.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 class ContinuousHiddenMarkovModel : public MLBase {
 public:
-	ContinuousHiddenMarkovModel(const UINT downsampleFactor = 5,const UINT delta = 1,const bool autoEstimateSigma = true,const double sigma = 10.0);
+	ContinuousHiddenMarkovModel(const UINT downsampleFactor = 5,const UINT delta = 1,const bool autoEstimateSigma = true,const float_t sigma = 10.0);
     
     ContinuousHiddenMarkovModel(const ContinuousHiddenMarkovModel &rhs);
     
@@ -47,8 +47,8 @@ public:
     
     ContinuousHiddenMarkovModel& operator=(const ContinuousHiddenMarkovModel &rhs);
     
-    virtual bool predict_(VectorDouble &x);
-    virtual bool predict_(MatrixDouble &obs);
+    virtual bool predict_(VectorFloat &x);
+    virtual bool predict_(MatrixFloat &obs);
     
     virtual bool train_(TimeSeriesClassificationSample &trainingData);
     
@@ -72,18 +72,18 @@ public:
     /**
      This saves the trained model to a file.
      
-     @param fstream &file: a reference to the file the model will be saved to
+     @param file: a reference to the file the model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained model from a file.
      
-     @param fstream &file: a reference to the file the model will be loaded from
+     @param file: a reference to the file the model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     virtual bool print() const;
     
@@ -91,13 +91,13 @@ public:
     
     UINT getClassLabel() const { return classLabel; }
     
-    double getLoglikelihood() const { return loglikelihood; }
+    float_t getLoglikelihood() const { return loglikelihood; }
     
-    double getPhase() const { return phase; }
+    float_t getPhase() const { return phase; }
     
-    vector< UINT > getEstimatedStates() const { return estimatedStates; }
+    Vector< UINT > getEstimatedStates() const { return estimatedStates; }
     
-    MatrixDouble getAlpha() const { return alpha; }
+    MatrixFloat getAlpha() const { return alpha; }
     
     bool setDownsampleFactor(const UINT downsampleFactor);
     
@@ -125,38 +125,38 @@ public:
      */
     bool setDelta(const UINT delta);
     
-    bool setSigma(const double sigma);
+    bool setSigma(const float_t sigma);
     
     bool setAutoEstimateSigma(const bool autoEstimateSigma);
     
 protected:
     
-    double gauss( const MatrixDouble &x, const MatrixDouble &y, const MatrixDouble &sigma, const unsigned int i,const unsigned int j,const unsigned int N );
+    float_t gauss( const MatrixFloat &x, const MatrixFloat &y, const MatrixFloat &sigma, const unsigned int i,const unsigned int j,const unsigned int N );
     
     UINT downsampleFactor;
 	UINT numStates;             ///<The number of states for this model
     UINT classLabel;            ///<The class label associated with this model
     UINT timeseriesLength;      ///<The length of the training timeseries
     bool autoEstimateSigma;
-    double sigma;
-    double phase;
-	MatrixDouble a;             ///<The transitions probability matrix
-	MatrixDouble b;             ///<The emissions probability matrix
-	VectorDouble pi;            ///<The state start probability vector
-    MatrixDouble alpha;
-    VectorDouble c;
-    CircularBuffer< VectorDouble > observationSequence; ///<A buffer to store data for realtime prediction
-    MatrixDouble obsSequence;
-    vector< UINT > estimatedStates; ///<The estimated states for prediction
-    MatrixDouble sigmaStates; ///<The sigma value for each state
+    float_t sigma;
+    float_t phase;
+	MatrixFloat a;             ///<The transitions probability matrix
+	MatrixFloat b;             ///<The emissions probability matrix
+	VectorFloat pi;            ///<The state start probability vector
+    MatrixFloat alpha;
+    VectorFloat c;
+    CircularBuffer< VectorFloat > observationSequence; ///<A buffer to store data for realtime prediction
+    MatrixFloat obsSequence;
+    Vector< UINT > estimatedStates; ///<The estimated states for prediction
+    MatrixFloat sigmaStates; ///<The sigma value for each state
 
 	UINT modelType;         ///<The model type (LEFTRIGHT, or ERGODIC)
 	UINT delta;				///<The number of states a model can move to in a LEFTRIGHT model
-	double loglikelihood;	///<The log likelihood of an observation sequence given the modal, calculated by the forward method
-	double cThreshold;		///<The classification threshold for this model
+	float_t loglikelihood;	///<The log likelihood of an observation sequence given the modal, calculated by the forward method
+	float_t cThreshold;		///<The classification threshold for this model
     
 };
 
-}//end of namespace GRT
+GRT_END_NAMESPACE
 
 #endif

@@ -23,7 +23,8 @@
 #ifndef GRT_LUDCMP_HEADER
 #define GRT_LUDCMP_HEADER
 
-#include "MatrixFloat.h"
+#include "../DataStructures/VectorFloat.h"
+#include "../DataStructures/MatrixFloat.h"
 
 GRT_BEGIN_NAMESPACE
     
@@ -44,7 +45,7 @@ private:
 	unsigned int N;
 	float_t d;
 	bool sing;
-	std::vector< int > indx;
+	Vector< int > indx;
 	MatrixFloat aref;
 	MatrixFloat lu;
     

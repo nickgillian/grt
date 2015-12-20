@@ -20,12 +20,12 @@
 
 #include "ParticleClassifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the ParticleClassifier module with the Classifier base class
 RegisterClassifierModule< ParticleClassifier > ParticleClassifier::registerModule("ParticleClassifier");
 
-ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const double sensorNoise,const double transitionSigma,const double phaseSigma,const double velocitySigma )
+ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const float_t sensorNoise,const float_t transitionSigma,const float_t phaseSigma,const float_t velocitySigma )
 {
     this->numParticles = numParticles;
     this->sensorNoise = sensorNoise;
@@ -119,12 +119,12 @@ bool ParticleClassifier::train_(TimeSeriesClassificationData &trainingData){
 bool ParticleClassifier::predict_( VectorDouble &inputVector ){
 
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - The model has not been trained!" << endl;
+        errorLog << "predict_(VectorDouble &inputVector) - The model has not been trained!" << std::endl;
         return false;
     }
     
     if( numInputDimensions != inputVector.size() ){
-        errorLog << "predict_(VectorDouble &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.size() << endl;
+        errorLog << "predict_(VectorDouble &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.size() << std::endl;
         return false;
     }
     
@@ -198,30 +198,26 @@ bool ParticleClassifier::reset(){
     return true;
 }
     
-bool ParticleClassifier::saveModelToFile(fstream &file) const{
+bool ParticleClassifier::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
-    
-    
-    
+
     return true;
 }
     
-bool ParticleClassifier::loadModelFromFile(fstream &file){
+bool ParticleClassifier::loadModelFromFile( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
-    
-    
     
     //Flag that the model is trained
     trained = true;
@@ -235,7 +231,7 @@ bool ParticleClassifier::loadModelFromFile(fstream &file){
     return true;
 }
     
-const vector< ParticleClassifierGestureTemplate >& ParticleClassifier::getGestureTemplates() const{
+const Vector< ParticleClassifierGestureTemplate >& ParticleClassifier::getGestureTemplates() const{
     return particleFilter.gestureTemplates;
 }
     
@@ -247,14 +243,14 @@ VectorDouble ParticleClassifier::getStateEstimation() const{
     return particleFilter.getStateEstimation();
 }
     
-double ParticleClassifier::getPhase() const{
+float_t ParticleClassifier::getPhase() const{
     if( trained ){
         return particleFilter.getStateEstimation()[1];
     }
     return 0;
 }
 
-double ParticleClassifier::getVelocity() const{
+float_t ParticleClassifier::getVelocity() const{
     if( trained ){
         return particleFilter.getStateEstimation()[2];
     }
@@ -306,6 +302,4 @@ bool ParticleClassifier::setVelocitySigma(const unsigned int velocitySigma){
     return true;
 }
     
-
-} //End of namespace GRT
-
+GRT_END_NAMESPACE

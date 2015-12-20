@@ -25,7 +25,7 @@
 
 #include "PrincipalComponentAnalysis.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 PrincipalComponentAnalysis::PrincipalComponentAnalysis(){
     trained = false;
@@ -54,7 +54,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixFloat &data,UI
     trained = false;
     if( numPrincipalComponents > data.getNumCols() ){
         errorLog << "computeFeatureVector(const MatrixFloat &data,UINT numPrincipalComponents,bool normData) - The number of principal components (";
-        errorLog << numPrincipalComponents << ") is greater than the number of columns in your data (" << data.getNumCols() << ")" << endl;
+        errorLog << numPrincipalComponents << ") is greater than the number of columns in your data (" << data.getNumCols() << ")" << std::endl;
         return false;
     }
     this->numPrincipalComponents = numPrincipalComponents;
@@ -100,7 +100,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,c
         componentWeights.clear();
         sortedEigenvalues.clear();
         eigenvectors.clear();
-        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT analysisMode) - Failed to decompose input matrix!" << endl;
+        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT analysisMode) - Failed to decompose input matrix!" << std::endl;
         return false;
     }
 
@@ -162,7 +162,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,c
             }
         break;
         default:
-        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT analysisMode) - Unknown analysis mode!" << endl;
+        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT analysisMode) - Unknown analysis mode!" << std::endl;
         break;
     }
     
@@ -178,12 +178,12 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,c
 bool PrincipalComponentAnalysis::project(const MatrixFloat &data,MatrixFloat &prjData){
 	
     if( !trained ){
-        warningLog << "project(const MatrixFloat &data,MatrixFloat &prjData) - The PrincipalComponentAnalysis module has not been trained!" << endl;
+        warningLog << "project(const MatrixFloat &data,MatrixFloat &prjData) - The PrincipalComponentAnalysis module has not been trained!" << std::endl;
         return false;
     }
 
     if( data.getNumCols() != numInputDimensions ){
-        warningLog << "project(const MatrixFloat &data,MatrixFloat &prjData) - The number of columns in the input vector (" << data.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << endl;
+        warningLog << "project(const MatrixFloat &data,MatrixFloat &prjData) - The number of columns in the input vector (" << data.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
 	
@@ -219,12 +219,12 @@ bool PrincipalComponentAnalysis::project(const VectorFloat &data,VectorFloat &pr
     const unsigned int N = (unsigned int)data.size();
     
     if( !trained ){
-        warningLog << "project(const VectorFloat &data,VectorFloat &prjData) - The PrincipalComponentAnalysis module has not been trained!" << endl;
+        warningLog << "project(const VectorFloat &data,VectorFloat &prjData) - The PrincipalComponentAnalysis module has not been trained!" << std::endl;
         return false;
     }
 
     if( N != numInputDimensions ){
-        warningLog << "project(const VectorFloat &data,VectorFloat &prjData) - The size of the input vector (" << N << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << endl;
+        warningLog << "project(const VectorFloat &data,VectorFloat &prjData) - The size of the input vector (" << N << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -251,65 +251,65 @@ bool PrincipalComponentAnalysis::project(const VectorFloat &data,VectorFloat &pr
     return true;
 }
 
-bool PrincipalComponentAnalysis::saveModelToFile(fstream &file) const {
+bool PrincipalComponentAnalysis::saveModelToFile( std::fstream &file ) const {
 
     //Write the header info
     file << "GRT_PCA_MODEL_FILE_V1.0\n";
 
     if( !MLBase::saveBaseSettingsToFile( file ) ) return false;
 
-    file << "NumPrincipalComponents: " << numPrincipalComponents << endl;
-    file << "NormData: " << normData << endl;
-    file << "MaxVariance: " << maxVariance << endl;
+    file << "NumPrincipalComponents: " << numPrincipalComponents << std::endl;
+    file << "NormData: " << normData << std::endl;
+    file << "MaxVariance: " << maxVariance << std::endl;
 
     if( trained ){
         file << "Mean: ";
         for(unsigned int i=0; i<numInputDimensions; i++){
             file << mean[i] << " ";
         } 
-        file << endl;
+        file << std::endl;
 
         file << "StdDev: ";
         for(unsigned int i=0; i<numInputDimensions; i++){
             file << stdDev[i] << " ";
         } 
-        file << endl;
+        file << std::endl;
 
         file << "ComponentWeights: ";
         for(unsigned int i=0; i<numInputDimensions; i++){
             file << componentWeights[i] << " ";
         } 
-        file << endl;
+        file << std::endl;
 
         file << "Eigenvalues: ";
         for(unsigned int i=0; i<numInputDimensions; i++){
             file << eigenvalues[i] << " ";
         } 
-        file << endl;
+        file << std::endl;
 
         file << "SortedEigenvalues: ";
         for(unsigned int i=0; i<numInputDimensions; i++){
             file << sortedEigenvalues[i].index << " ";
             file << sortedEigenvalues[i].value << " ";
         } 
-        file << endl;
+        file << std::endl;
 
         file << "Eigenvectors: ";
-        file << eigenvectors.getNumRows() << " " << eigenvectors.getNumCols() << endl;
+        file << eigenvectors.getNumRows() << " " << eigenvectors.getNumCols() << std::endl;
         for(unsigned int i=0; i<eigenvectors.getNumRows(); i++){
             for(unsigned int j=0; j<eigenvectors.getNumCols(); j++){
                 file << eigenvectors[i][j];
                 if( j+1 < eigenvectors.getNumCols() ) file << " ";
-                else file << endl;
+                else file << std::endl;
             }
         } 
-        file << endl;
+        file << std::endl;
     }
 
     return true;
 }
 
-bool PrincipalComponentAnalysis::loadModelFromFile(fstream &file) {
+bool PrincipalComponentAnalysis::loadModelFromFile( std::fstream &file ) {
 
     std::string word;
 
@@ -426,26 +426,26 @@ bool PrincipalComponentAnalysis::loadModelFromFile(fstream &file) {
     return true;
 }
     
-bool PrincipalComponentAnalysis::print(string title) const{
+bool PrincipalComponentAnalysis::print( std::string title ) const{
     
     if( title != "" ){
-        cout << title << endl;
+        std::cout << title << std::endl;
     }
     if( !trained ){
-        cout << "Not Trained!\n";
+        std::cout << "Not Trained!\n";
         return false;
     }
-    cout << "NumInputDimensions: " << numInputDimensions << " NumPrincipalComponents: " << numPrincipalComponents << endl;
-    cout << "ComponentWeights: ";
+    std::cout << "NumInputDimensions: " << numInputDimensions << " NumPrincipalComponents: " << numPrincipalComponents << std::endl;
+    std::cout << "ComponentWeights: ";
     for(UINT k=0; k<componentWeights.size(); k++){
-        cout << "\t" << componentWeights[k];
+        std::cout << "\t" << componentWeights[k];
     }
-    cout << endl;
-    cout << "SortedEigenValues: ";
+    std::cout << std::endl;
+    std::cout << "SortedEigenValues: ";
     for(UINT k=0; k<sortedEigenvalues.size(); k++){
-        cout << "\t" << sortedEigenvalues[k].value;
+        std::cout << "\t" << sortedEigenvalues[k].value;
     }
-    cout << endl;
+    std::cout << std::endl;
     eigenvectors.print("Eigenvectors:");
     
     return true;
@@ -478,5 +478,4 @@ bool PrincipalComponentAnalysis::setModel( const VectorFloat &mean, const Matrix
     return true;
 }
 
-
-}//End of namespace GRT
+GRT_END_NAMESPACE

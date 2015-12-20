@@ -38,7 +38,7 @@
 #include "../DataStructures/TimeSeriesClassificationData.h"
 #include "../DataStructures/TimeSeriesClassificationDataStream.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 #define DEFAULT_NULL_LIKELIHOOD_VALUE 0
 #define DEFAULT_NULL_DISTANCE_VALUE 0
@@ -267,20 +267,20 @@ public:
     virtual bool print() const;
     
     /**
-     This saves the model to a file, it calls the saveModelToFile(string filename) function unless it is overwritten by the derived class.
+     This saves the model to a file, it calls the saveModelToFile(std::string filename) function unless it is overwritten by the derived class.
      
      @param filename: the name of the file to save the model to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool save(const string filename) const;
+    virtual bool save(const std::string filename) const;
     
     /**
-     This saves the model to a file, it calls the loadModelFromFile(string filename) function unless it is overwritten by the derived class.
+     This saves the model to a file, it calls the loadModelFromFile(std::string filename) function unless it is overwritten by the derived class.
      
      @param filename: the name of the file to save the model to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool load(const string filename);
+    virtual bool load(const std::string filename);
     
     /**
      This saves the trained model to a file, it calls the saveModelToFile(fstream &file) function unless it is overwritten by the derived class.
@@ -288,7 +288,7 @@ public:
      @param the name of the file to save the model to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(string filename) const;
+    virtual bool saveModelToFile(std::string filename) const;
     
     /**
      This saves the trained model to a file.
@@ -297,7 +297,7 @@ public:
      @param file: a reference to the file the model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile(std::fstream &file) const;
     
     /**
      This loads a trained model from a file, it calls the loadModelFromFile(fstream &file) function unless it is overwritten by the derived class.
@@ -305,7 +305,7 @@ public:
      @param filename: the name of the file to load the model from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool loadModelFromFile(std::string filename);
     
     /**
      This loads a trained model from a file.
@@ -314,7 +314,7 @@ public:
      @param file: a reference to the file the model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile(std::fstream &file);
     
     /**
      This function adds the current model to the formatted stream.
@@ -323,7 +323,7 @@ public:
      @param file: a reference to the stream the model will be added to
      @return returns true if the model was added successfully, false otherwise
      */
-    virtual bool getModel(ostream &stream) const;
+    virtual bool getModel(std::ostream &stream) const;
     
     /**
      Scales the input value x (which should be in the range [minSource maxSource]) to a value in the new target range of [minTarget maxTarget].
@@ -346,11 +346,11 @@ public:
     }
     
     /**
-     Gets the current model and settings as a string.
+     Gets the current model and settings as a std::string.
      
-     @return returns a string containing the model
+     @return returns a std::string containing the model
      */
-    virtual string getModelAsString() const;
+    virtual std::string getModelAsString() const;
 
     /**
      Gets the current ML base type.
@@ -672,14 +672,14 @@ protected:
      
      @return returns true if the base settings were saved, false otherwise
      */
-    bool saveBaseSettingsToFile(fstream &file) const;
+    bool saveBaseSettingsToFile(std::fstream &file) const;
     
     /**
      Loads the core base settings from a file.
      
      @return returns true if the base settings were loaded, false otherwise
      */
-    bool loadBaseSettingsFromFile(fstream &file);
+    bool loadBaseSettingsFromFile(std::fstream &file);
     
     bool trained;
     bool useScaling;
@@ -706,6 +706,6 @@ public:
     enum BaseTypes{BASE_TYPE_NOT_SET=0,CLASSIFIER,REGRESSIFIER,CLUSTERER};
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MLBASE_HEADER

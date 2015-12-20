@@ -35,7 +35,7 @@
 #include "Particle.h"
 #include "../../Util/GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 template<class PARTICLE,class SENSOR_DATA>
 class ParticleFilter{
@@ -154,18 +154,18 @@ public:
     }
     
     /**
-     Initializes the particles.  The size of the init model sets the number of dimensions in the state vector.  The size of the process
-     noise and measurement noise vectors can be different, depending on the exact problem you are using the ParticleFilter to solve.
+     Initializes the particles.  The size of the init model sets the number of dimensions in the state Vector.  The size of the process
+     noise and measurement noise Vectors can be different, depending on the exact problem you are using the ParticleFilter to solve.
      */
-    virtual bool init(const unsigned int numParticles,const vector< VectorDouble > &initModel,const VectorDouble &processNoise,const VectorDouble &measurementNoise){
+    virtual bool init(const unsigned int numParticles,const Vector< VectorFloat > &initModel,const VectorFloat &processNoise,const VectorFloat &measurementNoise){
         
         //Clear any previous setup
         clear();
         
-        //Check to make sure each vector in the initModel has 2 dimensions, these are min and max or mu and sigma depening on the init mode
+        //Check to make sure each Vector in the initModel has 2 dimensions, these are min and max or mu and sigma depening on the init mode
         for(unsigned int i=0; i<initModel.size(); i++){
             if( initModel[i].size() != 2 ){
-                errorLog << "ERROR: The " << i << " dimension of the initModel does not have 2 dimensions!" << endl;
+                errorLog << "ERROR: The " << i << " dimension of the initModel does not have 2 dimensions!" << std::endl;
                 return false;
             }
         }
@@ -178,7 +178,7 @@ public:
         initialized = true;
         
         if( !initParticles( numParticles ) ){
-            errorLog << "ERROR: Failed to init particles!" << endl;
+            errorLog << "ERROR: Failed to init particles!" << std::endl;
             clear();
             return false;
         }
@@ -224,22 +224,22 @@ public:
     virtual bool filter(SENSOR_DATA &data){
         
         if( !initialized ){
-            errorLog << "ERROR: The particle filter has not been initialized!" << endl;
+            errorLog << "ERROR: The particle filter has not been initialized!" << std::endl;
             return false;
         }
 
         if( !preFilterUpdate( data ) ){
-            errorLog << "ERROR: Failed to complete preFilterUpdate!" << endl;
+            errorLog << "ERROR: Failed to complete preFilterUpdate!" << std::endl;
             return false;
         }
         
         unsigned int i = 0;
-        typename vector< PARTICLE >::iterator iter;
+        typename Vector< PARTICLE >::iterator iter;
         
         //The main particle prediction loop
         for( iter = particles.begin(), i = 0; iter != particles.end(); ++iter, i++ ){
             if( !predict( *iter ) ){
-                errorLog << "ERROR: Particle " << i << " failed prediction!" << endl;
+                errorLog << "ERROR: Particle " << i << " failed prediction!" << std::endl;
                 return false;
             }
         }
@@ -247,7 +247,7 @@ public:
         //The main particle update loop
         for( iter = particles.begin(), i = 0; iter != particles.end(); ++iter, i++ ){
             if( !update( *iter, data ) ){
-                errorLog << "ERROR: Particle " << i << " failed update!" << endl;
+                errorLog << "ERROR: Particle " << i << " failed update!" << std::endl;
                 return false;
             }
         }
@@ -255,14 +255,14 @@ public:
         //Normalize the particle weights so they sum to 1
         if( normWeights ){
             if( !normalizeWeights() ){
-                errorLog << "ERROR: Failed to normalize particle weights! " << endl;
+                errorLog << "ERROR: Failed to normalize particle weights! " << std::endl;
                 return false;
             }
         }
         
         //Compute the final state estimate
         if( !computeEstimate() ){
-            errorLog << "ERROR: Failed to compute the final estimat!" << endl;
+            errorLog << "ERROR: Failed to compute the final estimat!" << std::endl;
             return false;
         }
         
@@ -271,13 +271,13 @@ public:
         
             //Resample the particles
             if( !resample() ){
-                errorLog << "ERROR: Failed to resample particles!" << endl;
+                errorLog << "ERROR: Failed to resample particles!" << std::endl;
                 return false;
             }
         }
 
         if( !postFilterUpdate( data ) ){
-            errorLog << "ERROR: Failed to complete postFilterUpdate!" << endl;
+            errorLog << "ERROR: Failed to complete postFilterUpdate!" << std::endl;
             return false;
         }
         
@@ -323,7 +323,7 @@ public:
                         particles[i].x[j] = initModel[j][0] + rand.getRandomNumberGauss(0,initModel[j][1]);
                         break;
                     default:
-                        errorLog << "ERROR: Unknown initMode!" << endl;
+                        errorLog << "ERROR: Unknown initMode!" << std::endl;
                         return false;
                         break;
                 }
@@ -351,9 +351,9 @@ public:
     }
     
     /**
-     Gets the number of dimensions in the state vector.
+     Gets the number of dimensions in the state Vector.
      
-     @return returns the number of dimensions in the state vector the filter is initialized, zero otherwise
+     @return returns the number of dimensions in the state Vector the filter is initialized, zero otherwise
      */
     unsigned int getStateVectorSize() const{
         return initialized ? stateVectorSize : 0;
@@ -388,56 +388,56 @@ public:
     
     /**
      Gets how sure the particle filter is about the estimated state.
-     This will be a double in the range of [0 1] (or INF if the likelihood is INF).
+     This will be a float_t in the range of [0 1] (or INF if the likelihood is INF).
      
-     @return returns a double representing the estimation likelihood
+     @return returns a float_t representing the estimation likelihood
      */
-    double getEstimationLikelihood() const{
+    float_t getEstimationLikelihood() const{
         return estimationLikelihood;
     }
     
     /**
      Gets this sum of all the weights. This is the value that is used to normalize the weights.
      
-     @return returns a double representing the sum of all the weights
+     @return returns a float_t representing the sum of all the weights
      */
-    double getWeightSum() const {
+    float_t getWeightSum() const {
         return wNorm;
     }
     
     /**
-     Gets the current state estimation vector.
+     Gets the current state estimation Vector.
      
-     @return returns a double vector containing the current state estimation
+     @return returns a VectorFloat containing the current state estimation
      */
-    VectorDouble getStateEstimation() const{
+    VectorFloat getStateEstimation() const{
         return x;
     }
     
     /**
-     The function returns the current vector of particles. These are the particles that have been resampled.
+     The function returns the current Vector of particles. These are the particles that have been resampled.
      
-     @return returns a vector with the current particles
+     @return returns a Vector with the current particles
      */
-    vector< PARTICLE > getParticles(){
+    Vector< PARTICLE > getParticles(){
         return (&particles == &particleDistributionA ? particleDistributionA : particleDistributionB);
     }
     
     /**
-     The function returns the vector of particles before they were resampled.
+     The function returns the Vector of particles before they were resampled.
      
-     @return returns a vector with the old particles (i.e. before they were resampled
+     @return returns a Vector with the old particles (i.e. before they were resampled
      */
-    vector< PARTICLE > getOldParticles(){
+    Vector< PARTICLE > getOldParticles(){
         return (&particles == &particleDistributionA ? particleDistributionB : particleDistributionA);
     }
     
     /**
-     Gets the process noise vector.
+     Gets the process noise Vector.
      
-     @return returns a double vector containing the process noise
+     @return returns a float_t Vector containing the process noise
      */
-    VectorDouble setProcessNoise() const{
+    VectorFloat setProcessNoise() const{
         return processNoise;
     }
     
@@ -468,10 +468,10 @@ public:
      The particles will be resampled if the wNorm value is less than the resampleThreshold.
      The resampleThreshold should be in the range [0 1], normally something like: 1.0e-20 works well.
      
-     @param const double resampleThreshold: the new resampleThreshold
+     @param const float_t resampleThreshold: the new resampleThreshold
      @return returns true if the parameter was successfully updated, false otherwise
      */
-    bool setResampleThreshold(const double resampleThreshold){
+    bool setResampleThreshold(const float_t resampleThreshold){
         this->resampleThreshold = resampleThreshold;
         return true;
     }
@@ -511,12 +511,12 @@ public:
      Sets the init model. This is the noise model that is used for the initial starting guess when the user calls the #initParticles(UINT numParticles)
      function.
      
-     The new init model vector size must match the size of the current init model vector.
+     The new init model Vector size must match the size of the current init model Vector.
      
-     @param const vector< VectorDouble > initModel: a vector containing the new init model for the particle filter
+     @param const Vector< VectorFloat > initModel: a Vector containing the new init model for the particle filter
      @return returns true if the initModel was successfully updated, false otherwise
      */
-    bool setInitModel(const vector< VectorDouble > initModel){
+    bool setInitModel(const Vector< VectorFloat > initModel){
         if( this->initModel.size() == initModel.size() ){
             this->initModel = initModel;
             return true;
@@ -525,12 +525,12 @@ public:
     }
     
     /**
-     Sets the process noise. The new process noise vector size must match the size of the current process noise vector.
+     Sets the process noise. The new process noise Vector size must match the size of the current process noise Vector.
      
-     @param const VectorDouble &processNoise: a vector containing the new process noise for the particle filter
+     @param const VectorFloat &processNoise: a Vector containing the new process noise for the particle filter
      @return returns true if the processNoise was successfully updated, false otherwise
      */
-    bool setProcessNoise(const VectorDouble &processNoise){
+    bool setProcessNoise(const VectorFloat &processNoise){
         if( this->processNoise.size() == processNoise.size() ){
             this->processNoise = processNoise;
             return true;
@@ -539,12 +539,12 @@ public:
     }
     
     /**
-     Sets the measurement noise. The new measurement noise vector size must match the size of the current measurement noise vector.
+     Sets the measurement noise. The new measurement noise Vector size must match the size of the current measurement noise Vector.
      
-     @param const VectorDouble &measurementNoise: a vector containing the new measurement noise for the particle filter
+     @param const VectorFloat &measurementNoise: a Vector containing the new measurement noise for the particle filter
      @return returns true if the measurementNoise was successfully updated, false otherwise
      */
-    bool setMeasurementNoise(const VectorDouble &measurementNoise){
+    bool setMeasurementNoise(const VectorFloat &measurementNoise){
         if( this->measurementNoise.size() == measurementNoise.size() ){
             this->measurementNoise = measurementNoise;
             return true;
@@ -560,7 +560,7 @@ protected:
      @return returns true if the particle prediction was updated successfully, false otherwise
      */
     virtual bool predict( PARTICLE &p ){
-        errorLog << "predict( PARTICLE &p ) Prediction function not implemented! This must be implemented by the derived class!" << endl;
+        errorLog << "predict( PARTICLE &p ) Prediction function not implemented! This must be implemented by the derived class!" << std::endl;
         return false;
     }
     
@@ -575,7 +575,7 @@ protected:
      @return returns true if the particle update was updated successfully, false otherwise
      */
     virtual bool update( PARTICLE &p, SENSOR_DATA &data ){
-        errorLog << "update( PARTICLE &p, SENSOR_DATA &data ) Update function not implemented! This must be implemented by the derived class!" << endl;
+        errorLog << "update( PARTICLE &p, SENSOR_DATA &data ) Update function not implemented! This must be implemented by the derived class!" << std::endl;
         return false;
     }
     
@@ -591,7 +591,7 @@ protected:
         wNorm = 0;
         wDotProduct = 0;
         numDeadParticles = 0;
-        typename vector< PARTICLE >::iterator iter;
+        typename Vector< PARTICLE >::iterator iter;
         for( iter = particles.begin(); iter != particles.end(); ++iter ){
             if( grt_isinf( iter->w ) ){
                 numDeadParticles++;
@@ -603,12 +603,12 @@ protected:
         
         if( wNorm == 0 ){
             if( verbose )
-                warningLog << "normalizeWeights() - Weight norm is zero!" << endl;
+                warningLog << "normalizeWeights() - Weight norm is zero!" << std::endl;
             return true;
         }
         
         //Normalized the weights so they sum to 1
-        double weightUpdate = 1.0 / wNorm;
+        float_t weightUpdate = 1.0 / wNorm;
         for( iter = particles.begin(); iter != particles.end(); ++iter ){
             
             //Normalize the weights (so they sum to 1)
@@ -619,7 +619,7 @@ protected:
         }
         wDotProduct = 1.0 / wDotProduct;
         
-        //cout << "wNorm: " << wNorm << " wDotProduct: " << wDotProduct << endl;
+        //cout << "wNorm: " << wNorm << " wDotProduct: " << wDotProduct << std::endl;
 
         return true;
     }
@@ -633,12 +633,12 @@ protected:
      */
     virtual bool computeEstimate(){
         
-        typename vector< PARTICLE >::iterator iter;
+        typename Vector< PARTICLE >::iterator iter;
         const unsigned int N = (unsigned int)x.size();
         unsigned int bestIndex = 0;
         unsigned int robustMeanParticleCounter = 0;
-        double bestWeight = 0;
-        double sum = 0;
+        float_t bestWeight = 0;
+        float_t sum = 0;
         estimationLikelihood = 0;
         switch( estimationMode ){
             case MEAN:
@@ -654,9 +654,9 @@ protected:
                 }
                 
                 for(unsigned int j=0; j<N; j++){
-                    x[j] /= double(numParticles);
+                    x[j] /= float_t(numParticles);
                 }
-                estimationLikelihood /= double(numParticles);
+                estimationLikelihood /= float_t(numParticles);
                 break;
             case WEIGHTED_MEAN:
                 for(unsigned int j=0; j<N; j++){
@@ -672,7 +672,7 @@ protected:
                 for( iter = particles.begin(); iter != particles.end(); ++iter ){
                     estimationLikelihood += grt_isnan(iter->w) ? 0 : iter->w;
                 }
-                estimationLikelihood /= double(numParticles);
+                estimationLikelihood /= float_t(numParticles);
                 break;
             case ROBUST_MEAN:
                 //Reset x
@@ -705,7 +705,7 @@ protected:
                 for(unsigned int j=0; j<N; j++){
                     x[j] /= sum;
                 }
-                estimationLikelihood /= double(robustMeanParticleCounter);
+                estimationLikelihood /= float_t(robustMeanParticleCounter);
                 break;
             case BEST_PARTICLE:
                 for(unsigned int i=0; i<numParticles; i++){
@@ -718,7 +718,7 @@ protected:
                 estimationLikelihood = grt_isnan(particles[bestIndex].w) ? 0 : particles[bestIndex].w;
                 break;
             default:
-                errorLog << "ERROR: Unknown estimation mode!" << endl;
+                errorLog << "ERROR: Unknown estimation mode!" << std::endl;
                 return false;
                 break;
         }
@@ -743,14 +743,14 @@ protected:
      */
     virtual bool resample(){
         
-        vector< PARTICLE > *tempParticles = NULL;
+        Vector< PARTICLE > *tempParticles = NULL;
         
         //If the particles are currently reference the first particle distribution, then set the tempParticles to the second distribution
         if( &particles == &particleDistributionA ) tempParticles = &particleDistributionB;
         else tempParticles = &particleDistributionA;
         
         //Select any weight that is above the minimum weight threshold
-        vector< IndexedDouble > weights;
+        Vector< IndexedDouble > weights;
         weights.reserve(numParticles);
         for(unsigned int i=0; i<numParticles; i++){
             if( particles[i].w >= minimumWeightThreshold ){
@@ -786,7 +786,7 @@ protected:
             if( numParticles-n > numParticles-numRandomParticles){
             
                 //Pick a random number between 0 and the max cumsum
-                double randValue = rand.getRandomNumberUniform(0,cumsum[numWeights-1]);
+                float_t randValue = rand.getRandomNumberUniform(0,cumsum[numWeights-1]);
                 randIndex = 0;
                 
                 //Find which bin the rand value falls into, set the random index to this value
@@ -810,7 +810,7 @@ protected:
                             p.x[j] = initModel[j][0] + rand.getRandomNumberGauss(0,initModel[j][1]);
                             break;
                         default:
-                            errorLog << "ERROR: Unknown initMode!" << endl;
+                            errorLog << "ERROR: Unknown initMode!" << std::endl;
                             return false;
                             break;
                     }
@@ -847,12 +847,12 @@ protected:
     /**
      Computes the Gaussian likelihood for the input x, given mu and sigma.
      
-     @param double x: the x value for the Gaussian distrubution
-     @param double mu: the mu value for the Gaussian distrubution
-     @param double sigma: the sigma value for the Gaussian distrubution
+     @param float_t x: the x value for the Gaussian distrubution
+     @param float_t mu: the mu value for the Gaussian distrubution
+     @param float_t sigma: the sigma value for the Gaussian distrubution
      @return returns the Gaussian probabilty for the input x, given mu and sigma
      */
-    double gauss(double x,double mu,double sigma){
+    float_t gauss(float_t x,float_t mu,float_t sigma){
         return 1.0/(SQRT_TWO_PI*sigma) * exp( -SQR(x-mu)/(2.0*SQR(sigma)) );
     }
     
@@ -861,13 +861,13 @@ protected:
      For speed, this function does not check to make sure the size of x and mu are the same. The user
      must therefore ensure that mu has the same size as x before they call this function.
      
-     @param const double x: the x value for the RBF function
-     @param const double mu: the center of the RBF function
-     @param double sigma: the sigma value for the RBF function
-     @param double weight: the weight for this RBF function. Default value=1.0
+     @param const float_t x: the x value for the RBF function
+     @param const float_t mu: the center of the RBF function
+     @param float_t sigma: the sigma value for the RBF function
+     @param float_t weight: the weight for this RBF function. Default value=1.0
      @return returns the RBF function output for input x, given mu, alpha and the weight
      */
-    double rbf(const double x,const double mu,double sigma,double weight=1.0){
+    float_t rbf(const float_t x,const float_t mu,float_t sigma,float_t weight=1.0){
         return weight * exp( -SQR( fabs(x-mu) / sigma ) );
     }
     
@@ -876,14 +876,14 @@ protected:
      For speed, this function does not check to make sure the size of x and mu are the same. The user
      must therefore ensure that mu has the same size as x before they call this function.
      
-     @param const VectorDouble &x: the x value for the RBF function
-     @param const VectorDouble &mu: the center of the RBF function
-     @param double sigma: the sigma value for the RBF function
-     @param double weight: the weight for this RBF function. Default value=1.0
+     @param const VectorFloat &x: the x value for the RBF function
+     @param const VectorFloat &mu: the center of the RBF function
+     @param float_t sigma: the sigma value for the RBF function
+     @param float_t weight: the weight for this RBF function. Default value=1.0
      @return returns the RBF function output for input x, given mu, alpha and the weight
      */
-    double rbf(const VectorDouble &x,const VectorDouble &mu,double sigma,double weight=1.0){
-        double sum = 0;
+    float_t rbf(const VectorFloat &x,const VectorFloat &mu,float_t sigma,float_t weight=1.0){
+        float_t sum = 0;
         const unsigned int N = (unsigned int)x.size();
         for(UINT i=0; i<N; i++){
             sum += fabs(x[i]-mu[i]);
@@ -894,33 +894,33 @@ protected:
     /**
      Computes the square of the input.
      
-     @param const double x: the value you want to compute the square of
+     @param const float_t x: the value you want to compute the square of
      @return returns the square of the input
      */
-    double SQR(const double x){ return x*x; }
+    float_t SQR(const float_t x){ return x*x; }
 
     bool initialized;                               ///<A flag that indicates if the filter has been initialized
     bool verbose;                                   ///<A flag that indicates if warning and info messages should be printed
     bool normWeights;                               ///<A flag that indicates if the weights should be normalized at each filter iteration
     unsigned int numParticles;                      ///<The number of particles in the filter
-    unsigned int stateVectorSize;                   ///<The size of the state vector (x)
+    unsigned int stateVectorSize;                   ///<The size of the state Vector (x)
     unsigned int initMode;                          ///<The mode used to initialize the particles, this should be one of the InitModes enums.
     unsigned int estimationMode;                    ///<The estimation mode (used to compute the state estimation)
     unsigned int numDeadParticles;
-    double minimumWeightThreshold;                  ///<Any weight below this value will not be resampled
-    double robustMeanWeightDistance;                ///<The distance parameter used in the ROBUST_MEAN estimation mode
-    double estimationLikelihood;                    ///<The likelihood of the estimated state
-    double wNorm;                                   ///<Stores the total weight norm value
-    double wDotProduct;                             ///<Stores the dot product of all the weights, used to test for degeneracy
-    double resampleThreshold;                       ///<The threshold below which the particles will be resampled
-    VectorDouble x;                                 ///<The state estimation
-    std::vector< VectorDouble > initModel;           ///<The noise model for the initial starting guess
-    VectorDouble processNoise;                      ///<The noise covariance in the system
-    VectorDouble measurementNoise;                  ///<The noise covariance in the measurement
-    std::vector< PARTICLE > &particles;              ///<A reference to the current active particle vector
-    std::vector< PARTICLE > particleDistributionA;   ///<A vector of particles, this will either hold the particles before or after a resample
-    std::vector< PARTICLE > particleDistributionB;   ///<A vector of particles, this will either hold the particles before or after a resample
-    VectorDouble cumsum;                            ///<The cumulative sum vector used for resampling the particles
+    float_t minimumWeightThreshold;                  ///<Any weight below this value will not be resampled
+    float_t robustMeanWeightDistance;                ///<The distance parameter used in the ROBUST_MEAN estimation mode
+    float_t estimationLikelihood;                    ///<The likelihood of the estimated state
+    float_t wNorm;                                   ///<Stores the total weight norm value
+    float_t wDotProduct;                             ///<Stores the dot product of all the weights, used to test for degeneracy
+    float_t resampleThreshold;                       ///<The threshold below which the particles will be resampled
+    VectorFloat x;                                 ///<The state estimation
+    Vector< VectorFloat > initModel;           ///<The noise model for the initial starting guess
+    VectorFloat processNoise;                      ///<The noise covariance in the system
+    VectorFloat measurementNoise;                  ///<The noise covariance in the measurement
+    Vector< PARTICLE > &particles;              ///<A reference to the current active particle Vector
+    Vector< PARTICLE > particleDistributionA;   ///<A Vector of particles, this will either hold the particles before or after a resample
+    Vector< PARTICLE > particleDistributionB;   ///<A Vector of particles, this will either hold the particles before or after a resample
+    VectorFloat cumsum;                            ///<The cumulative sum Vector used for resampling the particles
     Random rand;                                    ///<A random number generator
     WarningLog warningLog;
     ErrorLog errorLog;
@@ -931,6 +931,6 @@ public:
     
 };
 
-}
+GRT_END_NAMESPACE
 
 #endif //GRT_PARTICLE_FILTER_HEADER

@@ -88,11 +88,11 @@ int main (int argc, const char * argv[])
     }
     
     //Use the test dataset to test the MinDist model
-    double accuracy = 0;
+    float_t accuracy = 0;
     for(UINT i=0; i<testData.getNumSamples(); i++){
         //Get the i'th test sample
         UINT classLabel = testData[i].getClassLabel();
-        vector< double > inputVector = testData[i].getSample();
+        VectorFloat inputVector = testData[i].getSample();
         
         //Perform a prediction using the classifier
         bool predictSuccess = minDist.predict( inputVector );
@@ -104,9 +104,9 @@ int main (int argc, const char * argv[])
         
         //Get the predicted class label
         UINT predictedClassLabel = minDist.getPredictedClassLabel();
-		double maxLikelihood = minDist.getMaximumLikelihood();
-        vector< double > classLikelihoods = minDist.getClassLikelihoods();
-        vector< double > classDistances = minDist.getClassDistances();
+		float_t maxLikelihood = minDist.getMaximumLikelihood();
+        VectorFloat classLikelihoods = minDist.getClassLikelihoods();
+        VectorFloat classDistances = minDist.getClassDistances();
         
         //Update the accuracy
         if( classLabel == predictedClassLabel ) accuracy++;
@@ -114,7 +114,7 @@ int main (int argc, const char * argv[])
 		cout << "TestSample: " << i <<  "\tClassLabel: " << classLabel << "\tPredictedClassLabel: " << predictedClassLabel << "\tLikelihood: " << maxLikelihood << endl;
     }
     
-    cout << "Test Accuracy: " << accuracy/double(testData.getNumSamples())*100.0 << "%" << endl;
+    cout << "Test Accuracy: " << accuracy/float_t(testData.getNumSamples())*100.0 << "%" << endl;
     
     return EXIT_SUCCESS;
 }

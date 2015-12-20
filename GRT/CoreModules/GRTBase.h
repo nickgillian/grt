@@ -47,7 +47,7 @@
 
 #include "../Util/GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class GRTBase
 {
@@ -71,33 +71,33 @@ public:
     bool copyGRTBaseVariables(const GRTBase *GRTBase);
     
     /**
-     This function returns the name of the current class as a string.  For example, if you asked AdaBoost for the class type then this function would
+     This function returns the name of the current class as a std::string.  For example, if you asked AdaBoost for the class type then this function would
      return "AdaBoost".
      
-     return returns a string representing the class type
+     return returns a std::string representing the class type
      */
-    string getClassType() const;
+    std::string getClassType() const;
     
     /**
-	 This function returns the last warning message as a string. If no warnings have occured, the string will be empty.
+	 This function returns the last warning message as a std::string. If no warnings have occured, the std::string will be empty.
      
-     @return returns the last warning message as a string.
+     @return returns the last warning message as a std::string.
      */
-    string getLastWarningMessage() const;
+    std::string getLastWarningMessage() const;
     
     /**
-	 This function returns the last error message as a string. If no errors have occured, the string will be empty.
+	 This function returns the last error message as a std::string. If no errors have occured, the std::string will be empty.
      
-     @return returns the last error message as a string.
+     @return returns the last error message as a std::string.
      */
-    string getLastErrorMessage() const;
+    std::string getLastErrorMessage() const;
     
     /**
-	 This function returns the last info message as a string. If no info have occured, the string will be empty.
+	 This function returns the last info message as a std::string. If no info have occured, the std::string will be empty.
      
-     @return returns the last info message as a string.
+     @return returns the last info message as a std::string.
      */
-    string getLastInfoMessage() const;
+    std::string getLastInfoMessage() const;
     
     /**
      Sets if info logging is enabled/disabled for this specific instance.
@@ -124,20 +124,20 @@ public:
     bool setErrorLoggingEnabled(const bool loggingEnabled);
     
     /**
-     This functions the GRT version number and revision as a string. If you do not want the revision number then set the returnRevision
+     This functions the GRT version number and revision as a std::string. If you do not want the revision number then set the returnRevision
      parameter to false.
      
-     @param bool returnRevision: sets if the revision number should be added to the string that is returned. Default value is true.
-     @return returns the GRT version number and revision as a string.
+     @param returnRevision: sets if the revision number should be added to the std::string that is returned. Default value is true.
+     @return returns the GRT version number and revision as a std::string.
      */
-    static string getGRTVersion(bool returnRevision = true);
+    static std::string getGRTVersion(bool returnRevision = true);
     
     /**
-	 This functions returns the current GRT revision as a string.
+	 This functions returns the current GRT revision as a std::string.
      
-     @return returns the current GRT revision as a string.
+     @return returns the current GRT revision as a std::string.
      */
-    static string getGRTRevison();
+    static std::string getGRTRevison();
     
     /**
 	 This functions returns a pointer to the current instance.
@@ -156,7 +156,7 @@ public:
 protected:
     inline float_t SQR(const float_t &x) const{ return x*x; }
 
-    string classType;
+    std::string classType;
     DebugLog debugLog;
     ErrorLog errorLog;
     InfoLog infoLog;
@@ -166,7 +166,7 @@ protected:
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_GRT_BASE_HEADER
 

@@ -21,9 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRT_LOG_HEADER
 #define GRT_LOG_HEADER
 
-#include <iostream>
-#include <string.h>
-#include "Util.h"
+#include "GRTTypedefs.h"
 
 GRT_BEGIN_NAMESPACE
 
@@ -39,7 +37,23 @@ public:
     }
 
     virtual ~Log(){}
+
+    template < class T >
+    const Log& operator<< (const T val ) const{
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
+            if( *writeProceedingTextPtr ){
+                *writeProceedingTextPtr = false;
+                std::cout << proceedingText.c_str();
+                *lastMessagePtr = "";
+            }
+            std::cout << val;
+            *lastMessagePtr += val;
+        }
+        return *this;
+    }
     
+
+/*
     const Log& operator<< (const bool val ) const{
         if( *loggingEnabledPtr && instanceLoggingEnabled ){
             if( *writeProceedingTextPtr ){
@@ -48,7 +62,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << proceedingText.c_str() << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;
     }
@@ -61,7 +75,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;
     }
@@ -74,7 +88,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;
     }
@@ -87,7 +101,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;
     }
@@ -100,7 +114,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;
     }
@@ -113,7 +127,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;    }
 
@@ -125,7 +139,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;    
     }
@@ -138,7 +152,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;    
     }
@@ -151,7 +165,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;    }
 
@@ -163,7 +177,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;
     }
@@ -176,7 +190,7 @@ public:
                 std::cout << proceedingText.c_str();
             }
             std::cout << val;
-            *lastMessagePtr += Util::toString(val);
+            *lastMessagePtr += convert_to_str(val);
         }
         return *this;    }
 
@@ -217,6 +231,7 @@ public:
         }
         return *this;
     }
+*/
     
     // this is the type of std::cout
     typedef std::basic_ostream<char, std::char_traits<char> > CoutType;

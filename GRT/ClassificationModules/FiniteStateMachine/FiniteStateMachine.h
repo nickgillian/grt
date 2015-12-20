@@ -31,7 +31,7 @@
 #include "FSMParticleFilter.h"
 #include "../../ClusteringModules/KMeans/KMeans.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class FiniteStateMachine : public Classifier
 {
@@ -41,12 +41,12 @@ public:
      Default constructor.
      
      */
-	FiniteStateMachine(const UINT numParticles = 200,const UINT numClustersPerState = 20,const double stateTransitionSmoothingCoeff = 0.0,const double measurementNoise = 10.0);
+	FiniteStateMachine(const UINT numParticles = 200,const UINT numClustersPerState = 20,const float_t stateTransitionSmoothingCoeff = 0.0,const float_t measurementNoise = 10.0);
     
     /**
      Defines the copy constructor.
      
-     @param const FiniteStateMachine &random: the instance from which all the data will be copied into this instance
+     @param rhs: the instance from which all the data will be copied into this instance
      */
     FiniteStateMachine(const FiniteStateMachine &rhs);
     
@@ -58,7 +58,7 @@ public:
     /**
      Defines how the data from the rhs FPSM should be copied to this FPSM
      
-     @param const FPSM &rhs: another instance of a FPSM
+     @param rhs: another instance of a FPSM
      @return returns a pointer to this instance of the FPSM
      */
 	FiniteStateMachine &operator=(const FiniteStateMachine &rhs);
@@ -67,7 +67,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.  
      It clones the data from the Base Class Classifier pointer (which should be pointing to an FiniteStateMachine instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another FiniteStateMachine instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another FiniteStateMachine instance
      @return returns true if the clone was successfull, false otherwise
     */
 	virtual bool deepCopyFrom(const Classifier *classifier);
@@ -77,7 +77,7 @@ public:
      This overrides the train function in the Classifier base class. 
      It converts the data into a TimeSeriesClassificationDataStream format and calls that train_ function.
      
-     @param ClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the FiniteStateMachine model was trained, false otherwise
     */
     virtual bool train_( ClassificationData &trainingData );
@@ -87,7 +87,7 @@ public:
      This overrides the train function in the Classifier base class.
      It converts the data into a TimeSeriesClassificationDataStream format and calls that train_ function.
      
-     @param TimeSeriesClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the FiniteStateMachine model was trained, false otherwise
      */
     virtual bool train_( TimeSeriesClassificationData &trainingData );
@@ -96,7 +96,7 @@ public:
      This is the main training function for the FiniteStateMachine model, using the TimeSeriesClassificationDataStream data.
      This overrides the train function in the Classifier base class.
      
-     @param TimeSeriesClassificationDataStream trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the FiniteStateMachine model was trained, false otherwise
      */
     virtual bool train_( TimeSeriesClassificationDataStream &data );
@@ -105,10 +105,10 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This resets the FiniteStateMachine.
@@ -139,25 +139,25 @@ public:
      This saves the trained FiniteStateMachine model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the FiniteStateMachine model will be saved to
+     @param file: a reference to the file the FiniteStateMachine model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained FiniteStateMachine model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the FiniteStateMachine model will be loaded from
+     @param file: a reference to the file the FiniteStateMachine model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     
     bool setNumParticles(const UINT numParticles);
     bool setNumClustersPerState(const UINT numClustersPerState);
-    bool setStateTransitionSmoothingCoeff(const double stateTransitionSmoothingCoeff);
-    bool setMeasurementNoise(const double measurementNoise);
+    bool setStateTransitionSmoothingCoeff(const float_t stateTransitionSmoothingCoeff);
+    bool setMeasurementNoise(const float_t measurementNoise);
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -174,17 +174,17 @@ protected:
    
     UINT numParticles;
     UINT numClustersPerState;
-    double stateTransitionSmoothingCoeff;
-    double measurementNoise;
+    float_t stateTransitionSmoothingCoeff;
+    float_t measurementNoise;
     FSMParticleFilter particles;
-    MatrixDouble stateTransitions;
-    vector< MatrixDouble > stateEmissions;
-    vector< vector< IndexedDouble > > pt;   ///<This stores the stateTransitions matrix in a format more efficient for the particle filter
-    vector< vector< VectorDouble > > pe;    ///<This stores the stateEmissions model in a format more efficient for the particle filter
+    MatrixFloat stateTransitions;
+    Vector< MatrixFloat > stateEmissions;
+    Vector< Vector< IndexedDouble > > pt;   ///<This stores the stateTransitions matrix in a format more efficient for the particle filter
+    Vector< Vector< VectorFloat > > pe;    ///<This stores the stateEmissions model in a format more efficient for the particle filter
     
     static RegisterClassifierModule< FiniteStateMachine > registerModule;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif

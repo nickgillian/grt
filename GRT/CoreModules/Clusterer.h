@@ -33,7 +33,7 @@
 
 #include "MLBase.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class Clusterer : public MLBase
 {
@@ -145,34 +145,34 @@ public:
     float_t getBestDistance() const;
     
     /**
-     Gets a vector of the cluster likelihoods from the last prediction, this will be an N-dimensional vector, where N is the number of clusters in the model.
+     Gets a Vector of the cluster likelihoods from the last prediction, this will be an N-dimensional Vector, where N is the number of clusters in the model.
      The exact form of these likelihoods depends on the cluster algorithm.
      
-     @return returns a vector of the cluster likelihoods from the last prediction, an empty vector will be returned if the model has not been trained
+     @return returns a Vector of the cluster likelihoods from the last prediction, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getClusterLikelihoods() const;
     
     /**
-     Gets a vector of the cluster distances from the last prediction, this will be an N-dimensional vector, where N is the number of clusters in the model.
+     Gets a Vector of the cluster distances from the last prediction, this will be an N-dimensional Vector, where N is the number of clusters in the model.
      The exact form of these distances depends on the cluster algorithm.
      
-     @return returns a vector of the cluster distances from the last prediction, an empty vector will be returned if the model has not been trained
+     @return returns a Vector of the cluster distances from the last prediction, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getClusterDistances() const;
     
     /**
-     Gets a vector of unsigned ints containing the label of each cluster, this will be an K-dimensional vector, where K is the number of clusters in the model.
+     Gets a Vector of unsigned ints containing the label of each cluster, this will be an K-dimensional Vector, where K is the number of clusters in the model.
 
-     @return returns a vector of unsigned ints containing the label of each cluster, an empty vector will be returned if the model has not been trained
+     @return returns a Vector of unsigned ints containing the label of each cluster, an empty Vector will be returned if the model has not been trained
      */
-    vector< UINT > getClusterLabels() const;
+    Vector< UINT > getClusterLabels() const;
 
     /**
      Returns the classifeir type as a string.
      
      @return returns the Clusterer type as a string
      */
-    string getClustererType() const;
+    std::string getClustererType() const;
     
     /**
      Sets the number of clusters that will be used the next time a model is trained.
@@ -187,7 +187,7 @@ public:
     /**
      Defines a map between a string (which will contain the name of the Clusterer, such as KMeans) and a function returns a new instance of that Clusterer
      */
-    typedef std::map< string, Clusterer*(*)() > StringClustererMap;
+    typedef std::map< std::string, Clusterer*(*)() > StringClustererMap;
     
     /**
      Creates a new Clusterer instance based on the input string (which should contain the name of a valid Clusterer such as KMeans).
@@ -195,7 +195,7 @@ public:
      @param string const &ClustererType: the name of the Clusterer
      @return Clusterer*: a pointer to the new instance of the Clusterer
      */
-    static Clusterer* createInstanceFromString(string const &ClustererType);
+    static Clusterer* createInstanceFromString( std::string const &ClustererType );
     
     /**
      Creates a new Clusterer instance based on the current clustererType string value.
@@ -221,11 +221,11 @@ public:
     const Clusterer& getBaseClusterer() const;
 
     /**
-     Returns a vector of the names of all Clusterers that have been registered with the base Clusterer.
+     Returns a Vector of the names of all Clusterers that have been registered with the base Clusterer.
      
-     @return vector< string >: a vector containing the names of the Clusterers that have been registered with the base Clusterer
+     @return Vector< std::string >: a Vector containing the names of the Clusterers that have been registered with the base Clusterer
     */
-	static vector< string > getRegisteredClusterers();
+	static Vector< std::string > getRegisteredClusterers();
 	
 	//Tell the compiler we are explicitly using the following classes from the base class (this stops hidden overloaded virtual function warnings)
     using MLBase::train;
@@ -236,25 +236,25 @@ protected:
      
      @return returns true if the base settings were saved, false otherwise
      */
-    bool saveClustererSettingsToFile(fstream &file) const;
+    bool saveClustererSettingsToFile( std::fstream &file ) const;
     
     /**
      Loads the core clusterer settings from a file.
      
      @return returns true if the base settings were loaded, false otherwise
      */
-    bool loadClustererSettingsFromFile(fstream &file);
+    bool loadClustererSettingsFromFile( std::fstream &file );
 
-    string clustererType;
+    std::string clustererType;
     UINT numClusters;                   ///< Number of clusters in the model
     UINT predictedClusterLabel;         ///< Stores the predicted cluster label from the most recent predict( )
     float_t maxLikelihood;
     float_t bestDistance;
     VectorFloat clusterLikelihoods;
     VectorFloat clusterDistances;
-    vector< UINT > clusterLabels;
+    Vector< UINT > clusterLabels;
     bool converged;
-    vector<MinMax> ranges;
+    Vector<MinMax> ranges;
     
     static StringClustererMap *getMap() {
         if( !stringClustererMap ){ stringClustererMap = new StringClustererMap; } 
@@ -273,12 +273,12 @@ template< typename T >  Clusterer* getNewClassificationModuleInstance() { return
 template< typename T >
 class RegisterClustererModule : Clusterer { 
 public:
-    RegisterClustererModule(string const &newClassificationModuleName) { 
-        getMap()->insert( std::pair<string, Clusterer*(*)()>(newClassificationModuleName, &getNewClassificationModuleInstance< T > ) );
+    RegisterClustererModule( const std::string &newClassificationModuleName ) { 
+        getMap()->insert( std::pair< std::string, Clusterer*(*)() >(newClassificationModuleName, &getNewClassificationModuleInstance< T > ) );
     }
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_CLUSTERER_HEADER
 

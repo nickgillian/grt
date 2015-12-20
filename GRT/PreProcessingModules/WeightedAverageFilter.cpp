@@ -20,7 +20,7 @@
 
 #include "WeightedAverageFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the WeightedAverageFilter module with the PreProcessing base class
 RegisterPreProcessingModule< WeightedAverageFilter > WeightedAverageFilter::registerModule("WeightedAverageFilter");
@@ -93,15 +93,15 @@ bool WeightedAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
 }
 
     
-bool WeightedAverageFilter::process(const VectorDouble &inputVector){
+bool WeightedAverageFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "process(const VectorDouble &inputVector) - The filter has not been initialized!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The filter has not been initialized!" << endl;
         return false;
     }
 
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
         return false;
     }
     
@@ -238,9 +238,9 @@ bool WeightedAverageFilter::init(UINT filterSize,UINT numDimensions){
     weights.clear();
     processedData.resize(numDimensions,0);
     weights.resize(filterSize);
-    initialized = dataBuffer.resize( filterSize, VectorDouble(numInputDimensions,0) );
+    initialized = dataBuffer.resize( filterSize, VectorFloat(numInputDimensions,0) );
     
-    const double norm = 1.0 / filterSize;
+    const float_t norm = 1.0 / filterSize;
     for(UINT i=0; i<filterSize; i++){
         weights[i] = (i+1)*norm;
     }
@@ -252,31 +252,31 @@ bool WeightedAverageFilter::init(UINT filterSize,UINT numDimensions){
     return initialized;
 }
 
-double WeightedAverageFilter::filter(const double x){
+float_t WeightedAverageFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const double x) - The filter has not been initialized!" << endl;
+        errorLog << "filter(const float_t x) - The filter has not been initialized!" << endl;
         return 0;
     }
     
-    VectorDouble y = filter(VectorDouble(1,x));
+    VectorFloat y = filter(VectorFloat(1,x));
     
     if( y.size() == 0 ) return 0;
     return y[0];
 }
     
-VectorDouble WeightedAverageFilter::filter(const VectorDouble &x){
+VectorFloat WeightedAverageFilter::filter(const VectorFloat &x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const VectorDouble &x) - The filter has not been initialized!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - The filter has not been initialized!" << endl;
+        return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "filter(const VectorDouble &x) - The size of the input vector (" << x.size() << ") does not match that of the number of dimensions of the filter (" << numInputDimensions << ")!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - The size of the input vector (" << x.size() << ") does not match that of the number of dimensions of the filter (" << numInputDimensions << ")!" << endl;
+        return VectorFloat();
     }
     
     if( ++inputSampleCounter > filterSize ) inputSampleCounter = filterSize;
@@ -284,7 +284,7 @@ VectorDouble WeightedAverageFilter::filter(const VectorDouble &x){
     //Add the new value to the buffer
     dataBuffer.push_back( x );
     
-    double weightSum = 0;
+    float_t weightSum = 0;
     for(unsigned int j=0; j<numInputDimensions; j++){
         processedData[j] = 0;
         weightSum = 0;
@@ -298,4 +298,5 @@ VectorDouble WeightedAverageFilter::filter(const VectorDouble &x){
     return processedData;
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
+

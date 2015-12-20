@@ -23,8 +23,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "GRTVersionInfo.h"
 #include <iostream>
+#include <iterator>     // std::front_inserter
 #include <vector>
-#include <algorithm>
+#include <algorithm>  	// std::copy
 #include <fstream>
 #include <sstream>
 #include <stdio.h>
@@ -38,9 +39,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define any common GRT OS independent typedefs
-class MatrixFloat; //Forward declaration of MatrixFloat
 typedef double float_t; ///<This typedef is used to set floating-point precision throughout the GRT
-typedef std::vector< float_t > VectorFloat;
+typedef long double long_float_t; ///<This typedef is used to set long floating-point precision throughout the GRT
 	
 //Declare any common definitions that are not OS specific
 #ifndef PI
@@ -59,7 +59,50 @@ template<class T> inline T SQR(const T &a) {return a*a;}
 template<class T> inline void SWAP(T &a,T &b) { T temp(a); a = b; b = temp; }
 template<class T> inline T SIGN(const T &a, const T &b) {return (b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a));}
 
-inline float_t antilog(const float_t &x){ return exp( x ); }
+template<class T> inline void grt_swap(T &a,T &b) { T temp(a); a = b; b = temp; }
+
+template<class T> inline T grt_numeric_limits_min() { return std::numeric_limits< T >::min(); }
+template<class T> inline T grt_numeric_limits_max() { return std::numeric_limits< T >::max(); }
+
+inline float_t grt_sqr( const float &x ){ return x*x; }
+
+inline float_t grt_sqrt( const float &x ){ return sqrt(x); }
+
+inline float_t grt_antilog( const float_t &x ){ return exp( x ); }
+
+inline float_t grt_exp( const float_t &x ){ return exp( x ); }
+
+inline float_t  grt_log( const float_t &x ){ return log( x ); }
+
+inline float_t grt_sigmoid( const float_t &x ) { return 1.0 / (1.0 + exp(-x)); }
+
+template< class T >
+T grt_scale(const T &x,const T &minSource,const T &maxSource,const T &minTarget,const T &maxTarget,const bool constrain = false){
+    if( constrain ){
+        if( x <= minSource ) return minTarget;
+        if( x >= maxSource ) return maxTarget;
+    }
+    if( minSource == maxSource ) return minTarget;
+    return (((x-minSource)*(maxTarget-minTarget))/(maxSource-minSource))+minTarget;
+}
+
+template< class T >
+std::string grt_to_str( const T &value ){
+    std::stringstream s;
+    s << value;
+    return s.str();
+}
+
+template< class T >
+T grt_from_str( const std::string &str ){
+	std::stringstream s( str );
+    T i;
+    s >> i;
+    return i;
+}
+
+#define grt_min(a,b) (((a)<(b))?(a):(b))
+#define grt_max(a,b) (((a)>(b))?(a):(b))
 
 #ifndef MIN
 #define	MIN(a,b) (((a)<(b))?(a):(b))
@@ -136,11 +179,13 @@ class ClassificationData;
 class RegressionData;
 class TimeSeriesClassificationData;
 class UnlabelledData;
+class VectorFloat;
+class MatrixFloat;
 typedef ClassificationData LabelledClassificationData;
 typedef RegressionData LabelledRegressionData;
 typedef TimeSeriesClassificationData LabelledTimeSeriesClassificationData;
 typedef UnlabelledData UnlabelledClassificationData;
-typedef std::vector< double > VectorDouble;
+typedef VectorFloat VectorDouble;
 typedef MatrixFloat MatrixDouble;
 
 GRT_END_NAMESPACE

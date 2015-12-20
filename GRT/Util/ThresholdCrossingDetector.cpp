@@ -20,7 +20,7 @@
 
 #include "ThresholdCrossingDetector.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 ThresholdCrossingDetector::ThresholdCrossingDetector(UINT analysisMode,UINT thresholdCrossingMode,UINT detectionTimeoutMode,float_t lowerThreshold,float_t upperThreshold,float_t hysteresisThreshold,UINT searchWindowSize,UINT searchTimeoutDuration,UINT offsetFilterSize){
     
@@ -373,4 +373,4 @@ bool ThresholdCrossingDetector::setHysteresisThreshold(const float_t hysteresisT
     return reset();
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE

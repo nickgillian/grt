@@ -20,7 +20,7 @@
 
 #include "SavitzkyGolayFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the SavitzkyGolayFilter module with the PreProcessing base class
 RegisterPreProcessingModule< SavitzkyGolayFilter > SavitzkyGolayFilter::registerModule("SavitzkyGolayFilter");
@@ -96,20 +96,20 @@ bool SavitzkyGolayFilter::deepCopyFrom(const PreProcessing *preProcessing){
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << endl;
+    errorLog << "clone(PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
     
-bool SavitzkyGolayFilter::process(const VectorDouble &inputVector){
+bool SavitzkyGolayFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -122,7 +122,7 @@ bool SavitzkyGolayFilter::process(const VectorDouble &inputVector){
 
 bool SavitzkyGolayFilter::reset(){
     if( initialized ){
-        data.setAllValues(VectorDouble(numInputDimensions,0));
+        data.setAllValues(VectorFloat(numInputDimensions,0));
         yy.clear();
         yy.resize(numInputDimensions,0);
         processedData.clear();
@@ -135,11 +135,11 @@ bool SavitzkyGolayFilter::reset(){
 bool SavitzkyGolayFilter::saveModelToFile(string filename) const{
     
     if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The HighPassFilter has not been initialized" << endl;
+        errorLog << "saveModelToFile(string filename) - The HighPassFilter has not been initialized" << std::endl;
         return false;
     }
     
-    std::fstream file; 
+    std::std::fstream file; 
     file.open(filename.c_str(), std::ios::out);
     
     if( !saveModelToFile( file ) ){
@@ -152,29 +152,29 @@ bool SavitzkyGolayFilter::saveModelToFile(string filename) const{
     return true;
 }
 
-bool SavitzkyGolayFilter::saveModelToFile(fstream &file) const{
+bool SavitzkyGolayFilter::saveModelToFile(std::fstream &file) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(std::fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_SAVITZKY_GOLAY_FILTER_FILE_V1.0" << endl;
+    file << "GRT_SAVITZKY_GOLAY_FILTER_FILE_V1.0" << std::endl;
     
-    file << "NumInputDimensions: " << numInputDimensions << endl;
-    file << "NumOutputDimensions: " << numOutputDimensions << endl;
-    file << "NumPoints: " << numPoints << endl;
-    file << "NumLeftHandPoints: " << numLeftHandPoints << endl;
-    file << "NumRightHandPoints: " << numRightHandPoints << endl;
-    file << "DerivativeOrder: " << derivativeOrder << endl;
-    file << "SmoothingPolynomialOrder: " << smoothingPolynomialOrder << endl;
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
+    file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
+    file << "NumPoints: " << numPoints << std::endl;
+    file << "NumLeftHandPoints: " << numLeftHandPoints << std::endl;
+    file << "NumRightHandPoints: " << numRightHandPoints << std::endl;
+    file << "DerivativeOrder: " << derivativeOrder << std::endl;
+    file << "SmoothingPolynomialOrder: " << smoothingPolynomialOrder << std::endl;
     
     return true;
 }
 
 bool SavitzkyGolayFilter::loadModelFromFile(string filename){
     
-    std::fstream file; 
+    std::std::fstream file; 
     file.open(filename.c_str(), std::ios::in);
     
     if( !loadModelFromFile( file ) ){
@@ -188,27 +188,27 @@ bool SavitzkyGolayFilter::loadModelFromFile(string filename){
     return true;
 }
 
-bool SavitzkyGolayFilter::loadModelFromFile(fstream &file){
+bool SavitzkyGolayFilter::loadModelFromFile(std::fstream &file){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_SAVITZKY_GOLAY_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
         return false;     
     }
     file >> numInputDimensions;
@@ -216,7 +216,7 @@ bool SavitzkyGolayFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
         return false;     
     }
     file >> numOutputDimensions;
@@ -224,7 +224,7 @@ bool SavitzkyGolayFilter::loadModelFromFile(fstream &file){
     //Load the numPoints
     file >> word;
     if( word != "NumPoints:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumPoints header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumPoints header!" << std::endl;
         return false;     
     }
     file >> numPoints;
@@ -232,7 +232,7 @@ bool SavitzkyGolayFilter::loadModelFromFile(fstream &file){
     //Load the NumLeftHandPoints
     file >> word;
     if( word != "NumLeftHandPoints:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumLeftHandPoints header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumLeftHandPoints header!" << std::endl;
         return false;     
     }
     file >> numLeftHandPoints;
@@ -240,7 +240,7 @@ bool SavitzkyGolayFilter::loadModelFromFile(fstream &file){
     //Load the NumRightHandPoints
     file >> word;
     if( word != "NumRightHandPoints:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read numRightHandPoints header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read numRightHandPoints header!" << std::endl;
         return false;     
     }
     file >> numRightHandPoints;
@@ -248,7 +248,7 @@ bool SavitzkyGolayFilter::loadModelFromFile(fstream &file){
     //Load the DerivativeOrder
     file >> word;
     if( word != "DerivativeOrder:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read DerivativeOrder header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read DerivativeOrder header!" << std::endl;
         return false;     
     }
     file >> derivativeOrder;
@@ -256,7 +256,7 @@ bool SavitzkyGolayFilter::loadModelFromFile(fstream &file){
     //Load the SmoothingPolynomialOrder
     file >> word;
     if( word != "SmoothingPolynomialOrder:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read SmoothingPolynomialOrder header!" << endl;
+        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read SmoothingPolynomialOrder header!" << std::endl;
         return false;     
     }
     file >> smoothingPolynomialOrder;
@@ -270,7 +270,7 @@ bool SavitzkyGolayFilter::init(UINT numLeftHandPoints,UINT numRightHandPoints,UI
     initialized = false;
     
     if( numDimensions == 0 ){
-        errorLog << "init(double filterFactor,double gain,UINT numDimensions) - NumDimensions must be greater than 0!" << endl;
+        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
@@ -286,10 +286,10 @@ bool SavitzkyGolayFilter::init(UINT numLeftHandPoints,UINT numRightHandPoints,UI
     yy.resize(numDimensions,0);
     processedData.clear();
     processedData.resize(numDimensions,0);
-    data.resize(numPoints,vector<double>(numDimensions,0));
+    data.resize(numPoints,VectorFloat(numDimensions,0));
     
     if( !calCoeff() ){
-        errorLog << "init(UINT NL,UINT NR,UINT LD,UINT M,UINT numDimensions) - Failed to compute filter coefficents!" << endl;
+        errorLog << "init(UINT NL,UINT NR,UINT LD,UINT M,UINT numDimensions) - Failed to compute filter coefficents!" << std::endl;
         return false;
     }
     
@@ -298,30 +298,30 @@ bool SavitzkyGolayFilter::init(UINT numLeftHandPoints,UINT numRightHandPoints,UI
     return true;
 }
 
-double SavitzkyGolayFilter::filter(const double x){
+float_t SavitzkyGolayFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(double x) - The filter has not been initialized!" << endl;
+        errorLog << "filter(float_t x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
-    VectorDouble y = filter(VectorDouble(1,x));
+    VectorFloat y = filter(VectorFloat(1,x));
     
     if( y.size() > 0 ) return y[0];
 	return 0;
 }
     
-VectorDouble SavitzkyGolayFilter::filter(const VectorDouble &x){
+VectorFloat SavitzkyGolayFilter::filter(const VectorFloat &x){
     
     if( !initialized ){
-        errorLog << "filter(const VectorDouble &x) - Not Initialized!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - Not Initialized!" << std::endl;
+        return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "filter(const VectorDouble &x) - The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << std::endl;
+        return VectorFloat();
     }
     
     //Add the new input data to the data buffer
@@ -345,17 +345,17 @@ bool SavitzkyGolayFilter::calCoeff(){
     int ld = (int)derivativeOrder;
     int m = (int)smoothingPolynomialOrder;
     int i,j,k,imj,ipj,kk,mm,pos;
-    double fac,sum;
-    VectorDouble indx(m+1);
+    float_t fac,sum;
+    VectorFloat indx(m+1);
     MatrixDouble a(m+1,m+1);
-    VectorDouble b(m+1);
-    VectorDouble c(np);
+    VectorFloat b(m+1);
+    VectorFloat c(np);
     
     for (ipj=0; ipj<=(m << 1); ipj++) {
         sum=(ipj ? 0.0 : 1.0);
         
-        for (k=1; k<=nr; k++) sum += pow(double(k),double(ipj));
-        for (k=1; k<=nl; k++) sum += pow(double(-k),double(ipj));
+        for (k=1; k<=nr; k++) sum += pow(float_t(k),float_t(ipj));
+        for (k=1; k<=nl; k++) sum += pow(float_t(-k),float_t(ipj));
         
         mm = min_(ipj,2*m-ipj);
         
@@ -391,4 +391,4 @@ bool SavitzkyGolayFilter::calCoeff(){
     return true;
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE

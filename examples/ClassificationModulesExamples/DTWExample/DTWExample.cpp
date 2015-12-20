@@ -78,7 +78,7 @@ int main (int argc, const char * argv[])
 	}
     
 	//Use the test dataset to test the DTW model
-	double accuracy = 0;
+	float_t accuracy = 0;
 	for(UINT i=0; i<testData.getNumSamples(); i++){
 		//Get the i'th test sample - this is a timeseries
 		UINT classLabel = testData[i].getClassLabel();
@@ -92,7 +92,7 @@ int main (int argc, const char * argv[])
         
 		//Get the predicted class label
 		UINT predictedClassLabel = dtw.getPredictedClassLabel();
-		double maximumLikelihood = dtw.getMaximumLikelihood();
+		float_t maximumLikelihood = dtw.getMaximumLikelihood();
 		VectorDouble classLikelihoods = dtw.getClassLikelihoods();
 		VectorDouble classDistances = dtw.getClassDistances();
         
@@ -102,7 +102,7 @@ int main (int argc, const char * argv[])
         cout << "TestSample: " << i <<  "\tClassLabel: " << classLabel << "\tPredictedClassLabel: " << predictedClassLabel << "\tMaximumLikelihood: " << maximumLikelihood << endl;
 	}
     
-	cout << "Test Accuracy: " << accuracy/double(testData.getNumSamples())*100.0 << "%" << endl;
+	cout << "Test Accuracy: " << accuracy/float_t(testData.getNumSamples())*100.0 << "%" << endl;
     
 	return EXIT_SUCCESS;
 }

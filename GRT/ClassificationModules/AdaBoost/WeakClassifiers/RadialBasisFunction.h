@@ -35,7 +35,7 @@
 
 #include "WeakClassifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class RadialBasisFunction : public WeakClassifier{
 public:
@@ -45,13 +45,13 @@ public:
      Sets the number of steps that will be used to search for the best alpha value during the training phase, in addition to other parameters used
      to control the RBF learning algorithm.
      
-     @param UINT numSteps: sets the number of steps that will be used to search for the best alpha value during the training phase. Default value = 100
-     @param double positiveClassificationThreshold: sets the positive classification threshold, this parameter is the threshold that defines if a value 
+     @param numSteps: sets the number of steps that will be used to search for the best alpha value during the training phase. Default value = 100
+     @param positiveClassificationThreshold: sets the positive classification threshold, this parameter is the threshold that defines if a value 
      is classified as a positive sample or a negative sample. Default value = 0.9
-     @param double minAlphaSearchRange: the minimum value used to search for the best alpha value. Default value = 0.001
-     @param double maxAlphaSearchRange: the maximum value used to search for the best alpha value. Default value = 1.0
+     @param minAlphaSearchRange: the minimum value used to search for the best alpha value. Default value = 0.001
+     @param maxAlphaSearchRange: the maximum value used to search for the best alpha value. Default value = 1.0
      */
-    RadialBasisFunction(UINT numSteps=100,double positiveClassificationThreshold=0.9,double minAlphaSearchRange=0.001,double maxAlphaSearchRange=1.0);
+    RadialBasisFunction(UINT numSteps=100,float_t positiveClassificationThreshold=0.9,float_t minAlphaSearchRange=0.001,float_t maxAlphaSearchRange=1.0);
     
     /**
      Default Destructor.
@@ -71,7 +71,7 @@ public:
     /**
      This function enables the data from one GRT::RadialBasisFunction instance to be copied into this GRT::RadialBasisFunction instance.
      
-     @param WeakClassifier *weakClassifer: a pointer to the Classifier Base Class, this should be pointing to another GRT::RadialBasisFunction instance
+     @param weakClassifer: a pointer to the Classifier Base Class, this should be pointing to another GRT::RadialBasisFunction instance
      @return returns true if the clone was successfull, false otherwise
      */
     virtual bool deepCopyFrom(const WeakClassifier *weakClassifer);
@@ -79,36 +79,36 @@ public:
     /**
      This function trains the RBF, using the weighted labelled training data.
      
-     @param ClassificationData &trainingData: the labelled training data
-     @param VectorDouble &weights: the corresponding weights for each sample in the labelled training data
+     @param trainingData: the labelled training data
+     @param weights: the corresponding weights for each sample in the labelled training data
      @return returns true if the RBF was trained successfull, false otherwise
      */
-    virtual bool train(ClassificationData &trainingData, VectorDouble &weights);
+    virtual bool train(ClassificationData &trainingData, VectorFloat &weights);
     
     /**
      This function predicts the class label of the input vector, given the current RBF model. The class label returned will
      either be positive (WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL) or negative (WEAK_CLASSIFIER_NEGATIVE_CLASS_LABEL).
      
-     @param const VectorDouble &x: the vector used for prediction
+     @param x: the vector used for prediction
      @return returns the predicted class label, which will be either positive or negative
      */
-    virtual double predict(const VectorDouble &x);
+    virtual float_t predict(const VectorFloat &x);
     
     /**
      This function saves the current RBF model to a file.
      
-     fstream &file: a reference to the file you want to save the RBF model to
+     fstream file: a reference to the file you want to save the RBF model to
      @return returns true if the RBF was saved successfull, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This function loads an RBF model from a file.
      
-     fstream &file: a reference to the file you want to load the RBF model from
+     fstream file: a reference to the file you want to load the RBF model from
      @return returns true if the RBF was loaded successfull, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This function prints out some basic info about the RBF to std::cout.
@@ -129,50 +129,50 @@ public:
      
      @return returns the positiveClassificationThreshold
      */
-    double getPositiveClassificationThreshold() const;
+    float_t getPositiveClassificationThreshold() const;
     
     /**
      Gets the current alpha value, this is used in the RBF. You can compute the RBF gamma parameter by: -1.0/(2.0*SQR(alpha)).
      
      @return returns the alpha value
      */
-    double getAlpha() const;
+    float_t getAlpha() const;
     
     /**
      Gets the minAlphaSearchRange value, this is the minimum value used to search for the best alpha value.
      
      @return returns the minAlphaSearchRange value
      */
-    double getMinAlphaSearchRange() const;
+    float_t getMinAlphaSearchRange() const;
     
     /**
      Gets the maxAlphaSearchRange value, this is the maximum value used to search for the best alpha value.
      
      @return returns the maxAlphaSearchRange value
      */
-    double getMaxAlphaSearchRange() const;
+    float_t getMaxAlphaSearchRange() const;
     
     /**
      Gets the RBF center.
      
      @return returns the RBF centre.
      */
-    VectorDouble getRBFCentre() const;
+    VectorFloat getRBFCentre() const;
     
 protected:
-    double rbf(const VectorDouble &a,const VectorDouble &b);
+    float_t rbf(const VectorFloat &a,const VectorFloat &b);
   
     UINT numSteps;
-    double positiveClassificationThreshold;
-    double alpha;
-    double gamma;
-    double minAlphaSearchRange;
-    double maxAlphaSearchRange;
-    VectorDouble rbfCentre;
+    float_t positiveClassificationThreshold;
+    float_t alpha;
+    float_t gamma;
+    float_t minAlphaSearchRange;
+    float_t maxAlphaSearchRange;
+    VectorFloat rbfCentre;
     
     static RegisterWeakClassifierModule< RadialBasisFunction > registerModule; ///< This is used to register the DecisionStump with the WeakClassifier base class
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif // GRT_DECISION_STUMP_HEADER

@@ -29,12 +29,11 @@
 #ifndef GRT_MATRIX_HEADER
 #define GRT_MATRIX_HEADER
 
-#include <iostream>
-#include <iterator>     // std::front_inserter
-#include <algorithm>    // std::copy
-#include <vector>
-#include "GRTException.h"
-#include "ErrorLog.h"
+#include "../Util/GRTTypedefs.h"
+#include "Vector.h"
+#include <exception>
+#include "../Util/GRTException.h"
+#include "../Util/ErrorLog.h"
 
 GRT_BEGIN_NAMESPACE
     
@@ -55,8 +54,8 @@ public:
     /**
     Constructor, sets the size of the matrix to [rows cols]
      
-     @param const UINT rows: sets the number of rows in the matrix, must be a value greater than zero
-     @param const UINT cols: sets the number of columns in the matrix, must be a value greater than zero
+     @param rows: sets the number of rows in the matrix, must be a value greater than zero
+     @param cols: sets the number of columns in the matrix, must be a value greater than zero
     */
 	Matrix(const unsigned int rows,const unsigned int cols):errorLog("[ERROR Matrix]"){
         dataPtr = NULL;
@@ -67,7 +66,7 @@ public:
     /**
      Copy Constructor, copies the values from the rhs Matrix to this Matrix instance
      
-     @param const Matrix &rhs: the Matrix from which the values will be copied
+     @param rhs: the Matrix from which the values will be copied
     */
 	Matrix(const Matrix &rhs):errorLog("[ERROR Matrix]"){
         this->dataPtr = NULL;
@@ -84,9 +83,9 @@ public:
      The input vector must be a vector< vector< T > > in a [rows cols] format.  The number of
      columns in each row must be consistent.  Both the rows and columns must be greater than 0.
      
-     @param const vector< vector< T > > &data: the input data which will be copied to this Matrix instance
+     @param data: the input data which will be copied to this Matrix instance
      */
-	Matrix(const std::vector< std::vector< T > > &data):errorLog("[ERROR Matrix]"){
+	Matrix( const Vector< Vector< T > > &data ):errorLog("[ERROR Matrix]"){
 		this->dataPtr = NULL;
         this->rowPtr = NULL;
 		this->rows = 0;
@@ -94,7 +93,7 @@ public:
         this->size = 0;
 		this->capacity = 0;
         
-		unsigned int tempRows = (unsigned int)data.size();
+		unsigned int tempRows = data.getSize();
 		unsigned int tempCols = 0;
         
 		//If there is no data then return
@@ -102,9 +101,9 @@ public:
         
 		//Check to make sure all the columns are the same size
 		for(unsigned int i=0; i<tempRows; i++){
-			if( i == 0 ) tempCols = data[i].size();
+			if( i == 0 ) tempCols = data[i].getSize();
 			else{
-				if( data[i].size() != tempCols ){
+				if( data[i].getSize() != tempCols ){
                     return;
 				}
 			}
@@ -133,7 +132,7 @@ public:
     /**
      Defines how the data from the rhs Matrix should be copied to this Matrix
      
-     @param const Matrix &rhs: another instance of a Matrix
+     @param rhs: another instance of a Matrix
      @return returns a reference to this instance of the Matrix
     */
 	Matrix& operator=(const Matrix &rhs){
@@ -147,7 +146,7 @@ public:
     /**
      Returns a pointer to the data at row r
      
-     @param const UINT r: the index of the row you want, should be in the range [0 rows-1]
+     @param r: the index of the row you want, should be in the range [0 rows-1]
      @return a pointer to the data at row r
     */
 	inline T* operator[](const unsigned int r){
@@ -157,7 +156,7 @@ public:
     /**
      Returns a const pointer to the data at row r
      
-     @param const UINT r: the index of the row you want, should be in the range [0 rows-1]
+     @param r: the index of the row you want, should be in the range [0 rows-1]
      @return a const pointer to the data at row r
      */
 	inline const T* operator[](const unsigned int r) const{
@@ -167,11 +166,11 @@ public:
     /**
      Gets a row vector [1 cols] from the Matrix at the row index r
      
-     @param const UINT r: the index of the row, this should be in the range [0 rows-1]
+     @param r: the index of the row, this should be in the range [0 rows-1]
      @return returns a row vector from the Matrix at the row index r
     */
-	std::vector<T> getRowVector(const unsigned int r) const{
-		std::vector<T> rowVector(cols);
+	Vector< T > getRowVector(const unsigned int r) const{
+		Vector< T > rowVector(cols);
 		for(unsigned int c=0; c<cols; c++)
 			rowVector[c] = dataPtr[r*cols+c];
 		return rowVector;
@@ -180,11 +179,11 @@ public:
     /**
      Gets a column vector [rows 1] from the Matrix at the column index c
      
-     @param const UINT c: the index of the column, this should be in the range [0 cols-1]
+     @param c: the index of the column, this should be in the range [0 cols-1]
      @return returns a column vector from the Matrix at the column index c
     */
-	std::vector<T> getColVector(const unsigned int c) const{
-		std::vector<T> columnVector(rows);
+	Vector<T> getColVector(const unsigned int c) const{
+		Vector<T> columnVector(rows);
 		for(unsigned int r=0; r<rows; r++)
 			columnVector[r] = dataPtr[r*cols+c];
 		return columnVector;
@@ -196,14 +195,14 @@ public:
      If concatByRow is true then the data in the matrix will be added to the vector row-vector by row-vector, otherwise
      the data will be added column-vector by column-vector.
      
-     @param const bool concatByRow: sets if the matrix data will be added to the vector row-vector by row-vector
+     @param concatByRow: sets if the matrix data will be added to the vector row-vector by row-vector
      @return returns a vector containing the entire matrix data
      */
-    std::vector<T> getConcatenatedVector(const bool concatByRow = true) const{
+    Vector<T> getConcatenatedVector(const bool concatByRow = true) const{
         
-		if( rows == 0 || cols == 0 ) return std::vector<T>();
+		if( rows == 0 || cols == 0 ) return Vector<T>();
         
-		std::vector<T> vectorData(rows*cols);
+		Vector<T> vectorData(rows*cols);
         
         unsigned int i,j =0;
         
@@ -227,8 +226,8 @@ public:
     /**
      Resizes the Matrix to the new size of [r c].  If [r c] matches the previous size then the matrix will not be resized but the function will return true.
      
-     @param const UINT r: the number of rows, must be greater than zero
-     @param const UINT c: the number of columns, must be greater than zero
+     @param r: the number of rows, must be greater than zero
+     @param c: the number of columns, must be greater than zero
      @return returns true or false, indicating if the resize was successful 
     */
 	virtual bool resize(const unsigned int r,const unsigned int c){
@@ -262,7 +261,7 @@ public:
                     size = 0;
                     capacity = 0;
 					errorLog << "resize(const unsigned r,const unsigned int c) - Failed to allocate memory! r: " << r << " c: " << c << std::endl;
-                    throw Exception("Matrix::resize(const unsigned int r,const unsigned int c) - Failed to allocate memory!");
+                    throw GRT::Exception("Matrix::resize(const unsigned int r,const unsigned int c) - Failed to allocate memory!");
                     return false;
                 }
                 
@@ -302,7 +301,7 @@ public:
     /**
      Copies the data from the rhs matrix to this matrix.
      
-     @param const Matrix<T> &rhs: the matrix you want to copy into this matrix
+     @param rhs: the matrix you want to copy into this matrix
      @return returns true or false, indicating if the copy was successful
      */
     virtual bool copy( const Matrix<T> &rhs ){
@@ -329,7 +328,7 @@ public:
     /**
      Sets all the values in the Matrix to the input value
      
-     @param const T &value: the value you want to set all the Matrix values to
+     @param value: the value you want to set all the Matrix values to
      @return returns true or false, indicating if the set was successful 
     */
 	bool setAllValues(const T &value){
@@ -346,11 +345,11 @@ public:
      Sets all the values in the row at rowIndex with the values in the vector called row.
      The size of the row vector must match the number of columns in this Matrix.
      
-     @param const std::vector<T> &row: the vector of row values you want to add
-     @param const unsigned int rowIndex: the row index of the row you want to update, must be in the range [0 rows]
+     @param row: the vector of row values you want to add
+     @param rowIndex: the row index of the row you want to update, must be in the range [0 rows]
      @return returns true or false, indicating if the set was successful 
     */
-	bool setRowVector(const std::vector<T> &row,const unsigned int rowIndex){
+	bool setRowVector(const Vector<T> &row,const unsigned int rowIndex){
 		if( dataPtr == NULL ) return false;
 		if( row.size() != cols ) return false;
 		if( rowIndex >= rows ) return false;
@@ -365,11 +364,11 @@ public:
      Sets all the values in the column at colIndex with the values in the vector called column.
      The size of the column vector must match the number of rows in this Matrix.
      
-     @param const std::vector<T> &column: the vector of column values you want to add
-     @param const unsigned int colIndex: the column index of the column you want to update, must be in the range [0 cols]
+     @param column: the vector of column values you want to add
+     @param colIndex: the column index of the column you want to update, must be in the range [0 cols]
      @return returns true or false, indicating if the set was successful 
     */
-	bool setColVector(const std::vector<T> &column,const unsigned int colIndex){
+	bool setColVector(const Vector<T> &column,const unsigned int colIndex){
 		if( dataPtr == NULL ) return false;
 		if( column.size() != rows ) return false;
 		if( colIndex >= cols ) return false;
@@ -384,10 +383,10 @@ public:
      the number of columns in the Matrix, unless the Matrix size has not been set, in which case the new sample size will define the
      number of columns in the Matrix.
      
-     @param const std::vector<T> &sample: the new column vector you want to add to the end of the Matrix.  Its size should match the number of columns in the Matrix
+     @param sample: the new column vector you want to add to the end of the Matrix.  Its size should match the number of columns in the Matrix
      @return returns true or false, indicating if the push was successful 
     */
-	bool push_back(const std::vector<T> &sample){
+	bool push_back(const Vector<T> &sample){
         
         unsigned int i,j = 0;
         
@@ -463,10 +462,10 @@ public:
      This function reserves a consistent block of data so new rows can more effecitenly be pushed_back into the Matrix.
      The capacity variable represents the number of rows you want to reserve, based on the current number of columns.
      
-     @param const unsigned int capacity: the new capacity value
+     @param capacity: the new capacity value
      @return returns true if the data was reserved, false otherwise
     */
-	bool reserve(const unsigned int capacity){
+	bool reserve( const unsigned int capacity ){
 		
 		//If the number of columns has not been set, then we can not do anything
 		if( cols == 0 ) return false;
@@ -574,7 +573,6 @@ public:
     }
 
 protected:
-    
 	unsigned int rows;      ///< The number of rows in the Matrix
 	unsigned int cols;      ///< The number of columns in the Matrix
     unsigned int size;      ///< Stores rows * cols
@@ -582,9 +580,8 @@ protected:
     T *dataPtr;             ///< A pointer to the raw data
     T **rowPtr;             ///< A pointer to each row in the data
     ErrorLog errorLog;
-
 };
 
 GRT_END_NAMESPACE
 
-#endif //GRT_MATRIX_HEADER
+#endif //Header guard

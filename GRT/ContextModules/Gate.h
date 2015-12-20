@@ -24,7 +24,7 @@
 #include "../Util/GRTCommon.h"
 #include "../CoreModules/Context.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class Gate : public Context{
 public:
@@ -69,6 +69,6 @@ protected:
     static RegisterContextModule< Gate > registerModule;
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_GATE_HEADER

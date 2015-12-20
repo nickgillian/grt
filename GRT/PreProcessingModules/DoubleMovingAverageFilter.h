@@ -3,7 +3,7 @@
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
  
- @brief The class implements a double moving average filter.
+ @brief The class implements a float_t moving average filter.
  
  @example PreprocessingModulesExamples/DoubleMovingAverageFilterExample/DoubleMovingAverageFilterExample.cpp
  */
@@ -34,22 +34,22 @@
 #include "../CoreModules/PreProcessing.h"
 #include "MovingAverageFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class DoubleMovingAverageFilter : public PreProcessing {
 public:
     /**
-     Constructor, sets the size of the double moving average filter and the dimensionality of the data it will filter.
+     Constructor, sets the size of the float_t moving average filter and the dimensionality of the data it will filter.
 	 
-     @param UINT filterSize: the size of the moving average filter, should be a value greater than zero. Default filterSize = 5
-     @param UINT numDimensions: the dimensionality of the data to filter.  Default numDimensions = 1
+     @param filterSize: the size of the moving average filter, should be a value greater than zero. Default filterSize = 5
+     @param numDimensions: the dimensionality of the data to filter.  Default numDimensions = 1
      */
     DoubleMovingAverageFilter(UINT filterSize = 5,UINT numDimensions = 1);
     
     /**
      Copy Constructor, copies the DoubleMovingAverageFilter from the rhs instance to this instance
      
-	 @param const DoubleMovingAverageFilter &rhs: another instance of the DoubleMovingAverageFilter class from which the data will be copied to this instance
+	 @param rhs: another instance of the DoubleMovingAverageFilter class from which the data will be copied to this instance
      */
     DoubleMovingAverageFilter(const DoubleMovingAverageFilter &rhs);
 
@@ -61,7 +61,7 @@ public:
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance
      
-	 @param const DoubleMovingAverageFilter &rhs: another instance of the DoubleMovingAverageFilter class from which the data will be copied to this instance
+	 @param rhs: another instance of the DoubleMovingAverageFilter class from which the data will be copied to this instance
 	 @return a reference to this instance of DoubleMovingAverageFilter
      */
     DoubleMovingAverageFilter& operator=(const DoubleMovingAverageFilter &rhs);
@@ -71,7 +71,7 @@ public:
      This function is used to clone the values from the input pointer to this instance of the PreProcessing module.
      This function is called by the GestureRecognitionPipeline when the user adds a new PreProcessing module to the pipeline.
      
-	 @param const PreProcessing *preProcessing: a pointer to another instance of a DoubleMovingAverageFilter, the values of that instance will be cloned to this instance
+	 @param preProcessing: a pointer to another instance of a DoubleMovingAverageFilter, the values of that instance will be cloned to this instance
 	 @return true if the deep coy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const PreProcessing *preProcessing);
@@ -81,10 +81,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the DoubleMovingAverageFilter's filter function.
      
-	 @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the PreProcessing module
+	 @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the PreProcessing module
 	 @return true if the data was processed, false otherwise
      */
-    virtual bool process(const VectorDouble &inputVector);
+    virtual bool process(const VectorFloat &inputVector);
     
     /**
      Sets the PreProcessing reset function, overwriting the base PreProcessing function.
@@ -99,44 +99,44 @@ public:
      This saves the current settings of the DoubleMovingAverageFilter to a file.
      This overrides the saveModelToFile function in the PreProcessing base class.
      
-     @param string filename: the name of the file to save the settings to
+     @param filename: the name of the file to save the settings to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(string filename) const;
+    virtual bool saveModelToFile(std::string filename) const;
     
     /**
      This saves the current settings of the DoubleMovingAverageFilter to a file.
      This overrides the saveModelToFile function in the PreProcessing base class.
      
-     @param fstream &file: a reference to the file the settings will be saved to
+     @param file: a reference to the file the settings will be saved to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile(std::fstream &file) const;
     
     /**
      This loads the DoubleMovingAverageFilter settings from a file.
      This overrides the loadModelFromFile function in the PreProcessing base class.
      
-     @param string filename: the name of the file to load the settings from
+     @param filename: the name of the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool loadModelFromFile(std::string filename);
     
     /**
      This loads the DoubleMovingAverageFilter settings from a file.
      This overrides the loadModelFromFile function in the PreProcessing base class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile(std::fstream &file);
     
     /**
      Initializes the filter, setting the filter size and dimensionality of the data it will filter.
      Sets all the filter values to zero.
      
-     @param UINT filterSize: the size of the double moving average filter, should be a value greater than zero
-     @param UINT numDimensions: the dimensionality of the data to filter
+     @param filterSize: the size of the float_t moving average filter, should be a value greater than zero
+     @param numDimensions: the dimensionality of the data to filter
 	 @return true if the filter was initiliazed, false otherwise
      */
     bool init(UINT filterSize,UINT numDimensions);
@@ -144,25 +144,25 @@ public:
     /**
      Filters the input, this should only be called if the dimensionality of the filter was set to 1.
      
-     @param const double x: the value to filter, this should only be called if the dimensionality of the filter was set to 1
+     @param x: the value to filter, this should only be called if the dimensionality of the filter was set to 1
 	 @return the filtered value.  Zero will be returned if the value was not filtered
      */
-    double filter(const double x);
+    float_t filter(const float_t x);
     
     /**
      Filters the input, the dimensionality of the input vector should match that of the filter.
      
-     @param const VectorDouble &x: the values to filter, the dimensionality of the input vector should match that of the filter
+     @param x: the values to filter, the dimensionality of the input vector should match that of the filter
 	 @return the filtered values.  An empty vector will be returned if the values were not filtered
      */
-    VectorDouble filter(const VectorDouble &x);
+    VectorFloat filter(const VectorFloat &x);
     
     /**
      Returns the last value(s) that were filtered.
      
 	 @return the filtered values.  An empty vector will be returned if the values were not filtered
      */
-    VectorDouble getFilteredData(){ return processedData; }
+    VectorFloat getFilteredData(){ return processedData; }
     
 protected:
     UINT filterSize;                    ///< The size of the filter
@@ -173,6 +173,6 @@ protected:
     
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_DOUBLE_MOVING_AVERAGE_FILTER_HEADER

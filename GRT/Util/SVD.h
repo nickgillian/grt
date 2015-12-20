@@ -23,7 +23,7 @@
 
 #include "GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 #define MAX_NUM_SVD_ITER 75
 
@@ -33,32 +33,32 @@ class SVD {
 	SVD(){}
 	~SVD(){}
 	
-	bool solve(Matrix<double> &a);
+	bool solve(MatrixFloat &a);
 	
-	Matrix<double> getU(){ return u; }
-	Matrix<double> getV(){ return v; }
-	vector<double> getW(){ return w; }
+	MatrixFloat getU(){ return u; }
+	MatrixFloat getV(){ return v; }
+	VectorFloat getW(){ return w; }
 	
 protected:
-	bool solveVector(vector <double> &b, vector <double> &x, double thresh = -1.);
-	bool solve(Matrix <double> &b, Matrix <double> &x, double thresh = -1.);
+	bool solveVector(VectorFloat &b, VectorFloat &x, float_t thresh = -1.);
+	bool solve(MatrixFloat &b, MatrixFloat &x, float_t thresh = -1.);
 
-	UINT rank(double thresh = -1.);
-	UINT nullity(double thresh = -1.);
-	Matrix <double> range(double thresh = -1.);
-	Matrix <double> nullspace(double thresh = -1.);
+	UINT rank(float_t thresh = -1.);
+	UINT nullity(float_t thresh = -1.);
+	MatrixFloat range(float_t thresh = -1.);
+	MatrixFloat nullspace(float_t thresh = -1.);
 
-	double inv_condition();
+	float_t inv_condition();
 	bool decompose();
 	bool reorder();
-	double pythag(const double a, const double b);
+	float_t pythag(const float_t a, const float_t b);
 	
 	UINT m,n;
-	Matrix <double> u,v;
-	vector <double> w;
-	double eps, tsh;
+	MatrixFloat u,v;
+	VectorFloat w;
+	float_t eps, tsh;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_SVD_HEADER

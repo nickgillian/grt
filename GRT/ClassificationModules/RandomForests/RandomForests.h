@@ -37,7 +37,7 @@
 
 #include "../DecisionTree/DecisionTree.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class RandomForests : public Classifier
 {
@@ -62,7 +62,7 @@ public:
                   const UINT trainingMode = DecisionTree::BEST_RANDOM_SPLIT,
                   const bool removeFeaturesAtEachSpilt = true,
                   const bool useScaling=false,
-                  const double bootstrappedDatasetWeight = 0.8);
+                  const float_t bootstrappedDatasetWeight = 0.8);
     
     /**
      Defines the copy constructor.
@@ -79,7 +79,7 @@ public:
     /**
      Defines how the data from the rhs RandomForests should be copied to this RandomForests
      
-     @param const RandomForests &rhs: another instance of a RandomForests
+     @param rhs: another instance of a RandomForests
      @return returns a pointer to this instance of the RandomForests
      */
 	RandomForests &operator=(const RandomForests &rhs);
@@ -88,7 +88,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.  
      It clones the data from the Base Class Classifier pointer (which should be pointing to an RandomForests instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another RandomForests instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another RandomForests instance
      @return returns true if the clone was successfull, false otherwise
     */
 	virtual bool deepCopyFrom(const Classifier *classifier);
@@ -97,7 +97,7 @@ public:
      This trains the RandomForests model, using the labelled classification data.
      This overrides the train function in the Classifier base class.
      
-     @param ClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the RandomForests model was trained, false otherwise
     */
     virtual bool train_(ClassificationData &trainingData);
@@ -106,7 +106,7 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
     */
     virtual bool predict_(VectorDouble &inputVector);
@@ -129,26 +129,26 @@ public:
      This saves the trained RandomForests model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the RandomForests model will be saved to
+     @param file: a reference to the file the RandomForests model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained RandomForests model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the RandomForests model will be loaded from
+     @param file: a reference to the file the RandomForests model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
 
     /**
      This function enables multiple random forest models to be merged together.  The model in forest will be combined
      with this instance.  For example, if this instance has 10 trees, and the other forest has 15 trees, the resulting
      model will have 25 trees.  Both forests must be trained and have the same number of inputs.
      
-     @param const RandomForests &forest: another random forest instance that will be merged with this instance
+     @param forest: another random forest instance that will be merged with this instance
      @return returns true if the model was combined successfully, false otherwise
      */
     bool combineModels( const RandomForests &forest );
@@ -194,7 +194,7 @@ public:
      
      @return returns a vector of DecisionTreeNodes
      */
-    const vector< DecisionTreeNode* > getForest() const;
+    const Vector< DecisionTreeNode* > getForest() const;
     
     /**
      Gets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be
@@ -211,7 +211,7 @@ public:
      
      @return returns the bootstrappedDatasetWeight parameter
      */
-    double getBootstrappedDatasetWeight() const;
+    float_t getBootstrappedDatasetWeight() const;
 
     /**
      Gets a pointer to the tree at the specific index in the forest. NULL will be returned if the model has not been trained or
@@ -259,7 +259,7 @@ public:
     /**
      Sets the number of trees in the forest.  Changing this value will clear any previously trained model.
      
-     @param UINT forestSize: sets the number of trees in the forest.
+     @param forestSize: sets the number of trees in the forest.
      @return returns true if the parameter was set, false otherwise
      */
     bool setForestSize(const UINT forestSize);
@@ -270,7 +270,7 @@ public:
      A higher value will increase the chances of building a better model, but will take longer to train the model.
      Value must be larger than zero.
      
-     @param UINT numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
+     @param numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
      @return returns true if the parameter was set, false otherwise
      */
     bool setNumRandomSplits(const UINT numSplittingSteps);
@@ -280,7 +280,7 @@ public:
      become a leaf node.
      Value must be larger than zero.
      
-     @param UINT minNumSamplesPerNode: the minimum number of samples that are allowed per node
+     @param minNumSamplesPerNode: the minimum number of samples that are allowed per node
      @return returns true if the parameter was set, false otherwise
      */
     bool setMinNumSamplesPerNode(const UINT minNumSamplesPerNode);
@@ -289,7 +289,7 @@ public:
      Sets the maximum depth of the tree, any node that reaches this depth will automatically become a leaf node.
      Value must be larger than zero.
      
-     @param UINT maxDepth: the maximum depth of the tree
+     @param maxDepth: the maximum depth of the tree
      @return returns true if the parameter was set, false otherwise
      */
     bool setMaxDepth(const UINT maxDepth);
@@ -299,7 +299,7 @@ public:
      removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
      be used, regardless of how many times it has been used again.
      
-     @param bool removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
+     @param removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
      @return returns true if the parameter was set, false otherwise
      */
     bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
@@ -307,7 +307,7 @@ public:
     /**
      Sets the training mode used to train each DecisionTree in the forest, this should be one of the DecisionTree::TrainingModes enums.
      
-     @param const UINT trainingMode: the new trainingMode, this should be one of the DecisionTree::TrainingModes enums
+     @param trainingMode: the new trainingMode, this should be one of the DecisionTree::TrainingModes enums
      @return returns true if the trainingMode was set successfully, false otherwise
      */
     bool setTrainingMode(const UINT trainingMode);
@@ -326,7 +326,7 @@ public:
      
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setBootstrappedDatasetWeight( const double bootstrappedDatasetWeight );
+    bool setBootstrappedDatasetWeight( const float_t bootstrappedDatasetWeight );
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -340,16 +340,16 @@ protected:
     UINT maxDepth;
     UINT trainingMode;
     bool removeFeaturesAtEachSpilt;
-    double bootstrappedDatasetWeight;
+    float_t bootstrappedDatasetWeight;
     DecisionTreeNode* decisionTreeNode;
-    vector< DecisionTreeNode* > forest;
+    Vector< DecisionTreeNode* > forest;
     
 private:
     static RegisterClassifierModule< RandomForests > registerModule;
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_RANDOM_FORESTS_HEADER
 

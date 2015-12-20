@@ -19,12 +19,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include "Classifier.h"
-namespace GRT{
+
+GRT_BEGIN_NAMESPACE
     
 Classifier::StringClassifierMap* Classifier::stringClassifierMap = NULL;
 UINT Classifier::numClassifierInstances = 0;
     
-Classifier* Classifier::createInstanceFromString(string const &classifierType){
+Classifier* Classifier::createInstanceFromString(std::string const &classifierType){
     
     StringClassifierMap::iterator iter = getMap()->find( classifierType );
     if( iter == getMap()->end() ){
@@ -53,8 +54,8 @@ const Classifier* Classifier::getClassifierPointer() const{
     return this;
 }
 
-vector< string > Classifier::getRegisteredClassifiers(){
-	vector< string > registeredClassifiers;
+Vector< string > Classifier::getRegisteredClassifiers(){
+	Vector< string > registeredClassifiers;
 	
 	StringClassifierMap::iterator iter = getMap()->begin();
 	while( iter != getMap()->end() ){
@@ -91,7 +92,7 @@ Classifier::~Classifier(void){
 bool Classifier::copyBaseVariables(const Classifier *classifier){
     
     if( classifier == NULL ){
-        errorLog << "copyBaseVariables(const Classifier *classifier) - Classifier is NULL!" << endl;
+        errorLog << "copyBaseVariables(const Classifier *classifier) - Classifier is NULL!" << std::endl;
         return false;
     }
     
@@ -218,11 +219,11 @@ VectorFloat Classifier::getNullRejectionThresholds() const{
     return VectorFloat(); 
 }
 
-vector< UINT > Classifier::getClassLabels() const{ 
+Vector< UINT > Classifier::getClassLabels() const{ 
     return classLabels;
 }
     
-vector<MinMax> Classifier::getRanges() const{
+Vector<MinMax> Classifier::getRanges() const{
     return ranges;
 }
 
@@ -251,46 +252,46 @@ const Classifier& Classifier::getBaseClassifier() const{
     return *this;
 }
     
-bool Classifier::saveBaseSettingsToFile(fstream &file) const{
+bool Classifier::saveBaseSettingsToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveBaseSettingsToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveBaseSettingsToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     if( !MLBase::saveBaseSettingsToFile( file ) ) return false;
     
-    file << "UseNullRejection: " << useNullRejection << endl;
-    file << "ClassifierMode: " << classifierMode << endl;
-    file << "NullRejectionCoeff: " << nullRejectionCoeff << endl;
+    file << "UseNullRejection: " << useNullRejection << std::endl;
+    file << "ClassifierMode: " << classifierMode << std::endl;
+    file << "NullRejectionCoeff: " << nullRejectionCoeff << std::endl;
     
     if( trained ){
         
-        file << "NumClasses: " << numClasses << endl;
+        file << "NumClasses: " << numClasses << std::endl;
         
         file << "NullRejectionThresholds: ";
 		if (useNullRejection && nullRejectionThresholds.size()){
             for(UINT i=0; i<nullRejectionThresholds.size(); i++){
                 file << " " << nullRejectionThresholds[i];
             }
-            file << endl;
+            file << std::endl;
         }else{
             for(UINT i=0; i<numClasses; i++){
                 file << " " << 0.0;
             }
-            file << endl;
+            file << std::endl;
         }
         
         file << "ClassLabels: ";
         for(UINT i=0; i<classLabels.size(); i++){
             file << " " << classLabels[i];
         }
-        file << endl;
+        file << std::endl;
         
         if( useScaling ){
-            file << "Ranges: " << endl;
+            file << "Ranges: " << std::endl;
             for(UINT i=0; i<ranges.size(); i++){
-                file << ranges[i].minValue << "\t" << ranges[i].maxValue << endl;
+                file << ranges[i].minValue << "\t" << ranges[i].maxValue << std::endl;
             }
         }
     }
@@ -298,10 +299,10 @@ bool Classifier::saveBaseSettingsToFile(fstream &file) const{
     return true;
 }
 
-bool Classifier::loadBaseSettingsFromFile(fstream &file){
+bool Classifier::loadBaseSettingsFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadBaseSettingsFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadBaseSettingsFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -310,12 +311,12 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load if the number of clusters
     file >> word;
     if( word != "UseNullRejection:" ){
-        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read UseNullRejection header!" << endl;
+        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read UseNullRejection header!" << std::endl;
         clear();
         return false;
     }
@@ -324,7 +325,7 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
     //Load if the classifier mode
     file >> word;
     if( word != "ClassifierMode:" ){
-        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read ClassifierMode header!" << endl;
+        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read ClassifierMode header!" << std::endl;
         clear();
         return false;
     }
@@ -333,7 +334,7 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
     //Load if the null rejection coeff
     file >> word;
     if( word != "NullRejectionCoeff:" ){
-        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read NullRejectionCoeff header!" << endl;
+        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read NullRejectionCoeff header!" << std::endl;
         clear();
         return false;
     }
@@ -345,7 +346,7 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
         //Load the number of classes
         file >> word;
         if( word != "NumClasses:" ){
-            errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read NumClasses header!" << endl;
+            errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read NumClasses header!" << std::endl;
             clear();
             return false;
         }
@@ -354,7 +355,7 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
         //Load the null rejection thresholds
         file >> word;
         if( word != "NullRejectionThresholds:" ){
-            errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read NullRejectionThresholds header!" << endl;
+            errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read NullRejectionThresholds header!" << std::endl;
             clear();
             return false;
         }
@@ -366,7 +367,7 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
         //Load the class labels
         file >> word;
         if( word != "ClassLabels:" ){
-            errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read ClassLabels header!" << endl;
+            errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read ClassLabels header!" << std::endl;
             clear();
             return false;
         }
@@ -379,7 +380,7 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
             //Load if the Ranges
             file >> word;
             if( word != "Ranges:" ){
-                errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read Ranges header!" << endl;
+                errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to read Ranges header!" << std::endl;
                 clear();
                 return false;
             }
@@ -395,5 +396,5 @@ bool Classifier::loadBaseSettingsFromFile(fstream &file){
     return true;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

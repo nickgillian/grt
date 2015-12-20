@@ -21,14 +21,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRT_MATRIX_FLOAT_HEADER
 #define GRT_MATRIX_FLOAT_HEADER
 
-#include "GRTTypedefs.h"
 #include "Matrix.h"
-#include "MinMax.h"
-#include "DebugLog.h"
-#include "ErrorLog.h"
-#include "WarningLog.h"
-#include "FileParser.h"
-#include "ErrorLog.h"
+#include "VectorFloat.h"
+#include "../Util/MinMax.h"
+#include "../Util/Log.h"
+#include "../Util/DebugLog.h"
+#include "../Util/ErrorLog.h"
+#include "../Util/WarningLog.h"
+#include "../Util/FileParser.h"
+#include "../Util/ErrorLog.h"
 
 GRT_BEGIN_NAMESPACE
 
@@ -83,12 +84,38 @@ public:
     MatrixFloat& operator=(const Matrix< float_t > &rhs);
     
     /**
-     Defines how the data from the rhs vector of VectorFloats should be copied to this MatrixFloat
+     Defines how the data from the rhs Vector of VectorFloats should be copied to this MatrixFloat
      
-     @param rhs: a vector of VectorFloats
+     @param rhs: a Vector of VectorFloats
      @return returns a reference to this instance of the MatrixFloat
      */
-    MatrixFloat& operator=(const vector< VectorFloat > &rhs);
+    MatrixFloat& operator=(const Vector< VectorFloat > &rhs);
+
+    /**
+     Gets a row vector [1 cols] from the Matrix at the row index r
+     
+     @param r: the index of the row, this should be in the range [0 rows-1]
+     @return returns a row vector from the Matrix at the row index r
+    */
+    VectorFloat getRow(const unsigned int r) const{
+        VectorFloat rowVector(cols);
+        for(unsigned int c=0; c<cols; c++)
+            rowVector[c] = dataPtr[r*cols+c];
+        return rowVector;
+    }
+
+    /**
+     Gets a column vector [rows 1] from the Matrix at the column index c
+     
+     @param c: the index of the column, this should be in the range [0 cols-1]
+     @return returns a column vector from the Matrix at the column index c
+    */
+    VectorFloat getCol(const unsigned int c) const{
+        VectorFloat columnVector(rows);
+        for(unsigned int r=0; r<rows; r++)
+            columnVector[r] = dataPtr[r*cols+c];
+        return columnVector;
+    }
     
     /**
      Resizes the MatrixFloat to the new size of [rows cols]
@@ -105,7 +132,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was saved successful
      */
-    bool save(const string &filename) const;
+    bool save(const std::string &filename) const;
     
     /**
      Loads a matrix from a CSV file. This assumes that the data has been saved as rows and columns in the CSV file
@@ -116,7 +143,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was loaded successful
      */
-    bool load(const string &filename,const char seperator = ',');
+    bool load(const std::string &filename,const char seperator = ',');
     
     /**
      Saves the matrix to a CSV file.
@@ -124,7 +151,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was saved successful
      */
-    bool saveToCSVFile(const string &filename) const;
+    bool saveToCSVFile(const std::string &filename) const;
     
     /**
      Loads a matrix from a CSV file. This assumes that the data has been saved as rows and columns in the CSV file
@@ -133,7 +160,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was loaded successful
      */
-    bool loadFromCSVFile(const string &filename,const char seperator = ',');
+    bool loadFromCSVFile(const std::string &filename,const char seperator = ',');
     
     /**
      Prints the MatrixFloat contents to std::cout
@@ -141,7 +168,7 @@ public:
      @param title: sets the title of the data that will be printed to std::cout
      @return returns true or false, indicating if the print was successful
      */
-    bool print(const string title="") const;
+    bool print(const std::string title="") const;
     
     /**
      Transposes the data.
@@ -162,7 +189,7 @@ public:
      
      @return returns true if the matrix was scaled, false otherwise
      */
-    bool scale(const vector< MinMax > &ranges,const float_t minTarget,const float_t maxTarget);
+    bool scale(const Vector< MinMax > &ranges,const float_t minTarget,const float_t maxTarget);
     
     /**
      Normalizes each row in the matrix by subtracting the row mean and dividing by the row standard deviation.
@@ -292,7 +319,7 @@ public:
      
      @return a vector with the ranges (min and max values) of each column in the matrix
      */
-    std::vector< MinMax > getRanges() const;
+    Vector< MinMax > getRanges() const;
     
     /**
      Gets the trace of this matrix.
@@ -317,4 +344,4 @@ protected:
     
 GRT_END_NAMESPACE
 
-#endif //GRT_MATRIX_float_t_HEADER
+#endif //Header guard

@@ -20,7 +20,7 @@
 
 #include "MovementTrajectoryFeatures.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the ZeroCrossingCounter module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< MovementTrajectoryFeatures > MovementTrajectoryFeatures::registerModule("MovementTrajectoryFeatures");
@@ -86,15 +86,15 @@ bool MovementTrajectoryFeatures::deepCopyFrom(const FeatureExtraction *featureEx
     return false;
 }
     
-bool MovementTrajectoryFeatures::computeFeatures(const VectorDouble &inputVector){
+bool MovementTrajectoryFeatures::computeFeatures(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
         return false;
     }
     
@@ -306,11 +306,11 @@ bool MovementTrajectoryFeatures::init(UINT trajectoryLength,UINT numCentroids,UI
         return false;
     }
     
-    //Resize the feature vector
+    //Resize the feature Vector
     featureVector.resize(numOutputDimensions);
     
     //Resize the raw trajectory data buffer
-    trajectoryDataBuffer.resize( trajectoryLength, VectorDouble(numInputDimensions,0) );
+    trajectoryDataBuffer.resize( trajectoryLength, VectorFloat(numInputDimensions,0) );
     
     //Resize the centroids buffer
     centroids.resize(numCentroids,numInputDimensions);
@@ -321,20 +321,20 @@ bool MovementTrajectoryFeatures::init(UINT trajectoryLength,UINT numCentroids,UI
     return true;
 }
 
-VectorDouble MovementTrajectoryFeatures::update(double x){
-	return update(VectorDouble(1,x));
+VectorFloat MovementTrajectoryFeatures::update(float_t x){
+	return update(VectorFloat(1,x));
 }
     
-VectorDouble MovementTrajectoryFeatures::update(const VectorDouble &x){
+VectorFloat MovementTrajectoryFeatures::update(const VectorFloat &x){
     
     if( !initialized ){
-        errorLog << "update(const VectorDouble &x) - Not Initialized!" << endl;
-        return vector<double>();
+        errorLog << "update(const VectorFloat &x) - Not Initialized!" << endl;
+        return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "update(const VectorDouble &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
-        return vector<double>();
+        errorLog << "update(const VectorFloat &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input Vector (" << x.size() << ")!" << endl;
+        return VectorFloat();
     }
     
     //Add the new data to the trajectory data buffer
@@ -349,25 +349,25 @@ VectorDouble MovementTrajectoryFeatures::update(const VectorDouble &x){
     centroids.setAllValues(0);
     
     UINT dataBufferIndex = 0;
-    UINT numValuesPerCentroid = (UINT)floor(double(trajectoryLength/numCentroids));
+    UINT numValuesPerCentroid = (UINT)floor(float_t(trajectoryLength/numCentroids));
     for(UINT n=0; n<numInputDimensions; n++){
         dataBufferIndex = 0;
         for(UINT i=0; i<numCentroids; i++){
             for(UINT j=0; j<numValuesPerCentroid; j++){
                 centroids[i][n] += trajectoryDataBuffer[dataBufferIndex++][n];
             }
-            centroids[i][n] /= double(numValuesPerCentroid);
+            centroids[i][n] /= float_t(numValuesPerCentroid);
         }
     }
     
     //Copmute the features
     UINT featureIndex = 0;
-    vector< MinMax > centroidNormValues(numInputDimensions);
-    VectorDouble histSumValues;
-    vector< vector< AngleMagnitude > >  angleMagnitudeValues;
+    Vector< MinMax > centroidNormValues(numInputDimensions);
+    VectorFloat histSumValues;
+    Vector< Vector< AngleMagnitude > >  angleMagnitudeValues;
     switch( featureMode ){
         case CENTROID_VALUE:
-            //Simply set the feature vector as the list of centroids
+            //Simply set the feature Vector as the list of centroids
             for(UINT n=0; n<numInputDimensions; n++){
                 for(UINT i=0; i<numCentroids; i++){
                     featureVector[ featureIndex++ ] = centroids[i][n];
@@ -415,7 +415,7 @@ VectorDouble MovementTrajectoryFeatures::update(const VectorDouble &x){
             histSumValues.resize( numInputDimensions/2, 0);
             angleMagnitudeValues.resize( numInputDimensions/2 );
             
-            //Zero the feature vector
+            //Zero the feature Vector
             fill(featureVector.begin(),featureVector.end(),0);
             
             //Compute the angle and magnitude betweem each of the centroids, do this for each pair of points
@@ -429,13 +429,13 @@ VectorDouble MovementTrajectoryFeatures::update(const VectorDouble &x){
                 //Add the angles to the histogram
                 for(UINT i=0; i<numCentroids-1; i++){
                     UINT histBin = 0;
-                    double degreesPerBin = 360.0/numHistogramBins;
-                    double binStartValue = 0;
-                    double binEndValue = degreesPerBin;
+                    float_t degreesPerBin = 360.0/numHistogramBins;
+                    float_t binStartValue = 0;
+                    float_t binEndValue = degreesPerBin;
                     
                     if( angleMagnitudeValues[n][i].angle < 0 || angleMagnitudeValues[n][i].angle  > 360.0 ){
                         warningLog << "The angle of a point is not between [0 360]. Angle: " << angleMagnitudeValues[n][i].angle << endl;
-                        return vector<double>();
+                        return VectorFloat();
                     }
                     
                     //Find which hist bin the current angle is in
@@ -463,7 +463,7 @@ VectorDouble MovementTrajectoryFeatures::update(const VectorDouble &x){
             }
             break;
         default:
-            errorLog << "update(VectorDouble x)- Unknown featureMode!" << endl;
+            errorLog << "update(VectorFloat x)- Unknown featureMode!" << endl;
             return featureVector;
             break;
     }
@@ -471,18 +471,18 @@ VectorDouble MovementTrajectoryFeatures::update(const VectorDouble &x){
     return featureVector;
 }
     
-CircularBuffer< VectorDouble > MovementTrajectoryFeatures::getTrajectoryData(){
+CircularBuffer< VectorFloat > MovementTrajectoryFeatures::getTrajectoryData(){
     if( initialized ){
         return trajectoryDataBuffer;
     }
-    return CircularBuffer< VectorDouble >();
+    return CircularBuffer< VectorFloat >();
 }
 
-MatrixDouble MovementTrajectoryFeatures::getCentroids(){
+MatrixFloat MovementTrajectoryFeatures::getCentroids(){
     if( initialized ){
         return centroids;
     }
-    return MatrixDouble();
+    return MatrixFloat();
 }
     
 UINT MovementTrajectoryFeatures::getFeatureMode(){
@@ -492,4 +492,4 @@ UINT MovementTrajectoryFeatures::getFeatureMode(){
     return 0;
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

@@ -20,10 +20,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "TimeSeriesClassificationDataStream.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 //Constructors and Destructors
-TimeSeriesClassificationDataStream::TimeSeriesClassificationDataStream(const UINT numDimensions,const string datasetName,const string infoText){
+TimeSeriesClassificationDataStream::TimeSeriesClassificationDataStream(const UINT numDimensions,const std::string datasetName,const std::string infoText){
     
     this->numDimensions= numDimensions;
     this->datasetName = datasetName;
@@ -89,29 +89,29 @@ bool TimeSeriesClassificationDataStream::setNumDimensions(const UINT numDimensio
         return true;
     }
     
-    errorLog << "setNumDimensions(const UINT numDimensions) - The number of dimensions of the dataset must be greater than zero!" << endl;
+    errorLog << "setNumDimensions(const UINT numDimensions) - The number of dimensions of the dataset must be greater than zero!" << std::endl;
     return false;
 }
     
     
-bool TimeSeriesClassificationDataStream::setDatasetName(const string datasetName){
+bool TimeSeriesClassificationDataStream::setDatasetName(const std::string datasetName){
     
-    //Make sure there are no spaces in the string
-    if( datasetName.find(" ") == string::npos ){
+    //Make sure there are no spaces in the std::string
+    if( datasetName.find(" ") == std::string::npos ){
         this->datasetName = datasetName;
         return true;
     }
     
-    errorLog << "setDatasetName(const string datasetName) - The dataset name cannot contain any spaces!" << endl;
+    errorLog << "setDatasetName(const std::string datasetName) - The dataset name cannot contain any spaces!" << std::endl;
     return false;
 }
     
-bool TimeSeriesClassificationDataStream::setInfoText(string infoText){
+bool TimeSeriesClassificationDataStream::setInfoText(std::string infoText){
     this->infoText = infoText;
     return true;
 }
     
-bool TimeSeriesClassificationDataStream::setClassNameForCorrespondingClassLabel(const string className,const UINT classLabel){
+bool TimeSeriesClassificationDataStream::setClassNameForCorrespondingClassLabel(const std::string className,const UINT classLabel){
     
     for(UINT i=0; i<classTracker.size(); i++){
         if( classTracker[i].classLabel == classLabel ){
@@ -120,14 +120,14 @@ bool TimeSeriesClassificationDataStream::setClassNameForCorrespondingClassLabel(
         }
     }
     
-    errorLog << "setClassNameForCorrespondingClassLabel(const string className,const UINT classLabel) - Failed to find class with label: " << classLabel << endl;
+    errorLog << "setClassNameForCorrespondingClassLabel(const std::string className,const UINT classLabel) - Failed to find class with label: " << classLabel << std::endl;
     return false;
 }
 
 bool TimeSeriesClassificationDataStream::addSample(const UINT classLabel,const VectorFloat &sample){
 
 	if( numDimensions != sample.size() ){
-		errorLog << "addSample(const UINT classLabel, VectorFloat sample) - the size of the new sample (" << sample.size() << ") does not match the number of dimensions of the dataset (" << numDimensions << ")" << endl;
+		errorLog << "addSample(const UINT classLabel, VectorFloat sample) - the size of the new sample (" << sample.size() << ") does not match the number of dimensions of the dataset (" << numDimensions << ")" << std::endl;
         return false;
 	}
 
@@ -223,13 +223,13 @@ UINT TimeSeriesClassificationDataStream::eraseAllSamplesWithClassLabel(const UIN
     }
     
     //Update the time series position tracker
-    vector< TimeSeriesPositionTracker >::iterator iter = timeSeriesPositionTracker.begin();
+    Vector< TimeSeriesPositionTracker >::iterator iter = timeSeriesPositionTracker.begin();
     
     while( iter != timeSeriesPositionTracker.end() ){
         if( iter->getClassLabel() == classLabel ){
             UINT length = iter->getLength();
             //Update the start and end positions of all the following position trackers
-            vector< TimeSeriesPositionTracker >::iterator updateIter = iter + 1;
+            Vector< TimeSeriesPositionTracker >::iterator updateIter = iter + 1;
             
             while( updateIter != timeSeriesPositionTracker.end() ){
                 updateIter->setStartIndex( updateIter->getStartIndex() - length );
@@ -299,7 +299,7 @@ bool TimeSeriesClassificationDataStream::relabelAllSamplesWithClassLabel(const U
     return true;
 }
     
-bool TimeSeriesClassificationDataStream::setExternalRanges(const vector< MinMax > &externalRanges, const bool useExternalRanges){
+bool TimeSeriesClassificationDataStream::setExternalRanges(const Vector< MinMax > &externalRanges, const bool useExternalRanges){
     
     if( externalRanges.size() != numDimensions ) return false;
     
@@ -318,11 +318,11 @@ bool TimeSeriesClassificationDataStream::enableExternalRangeScaling(const bool u
 }
 
 bool TimeSeriesClassificationDataStream::scale(const float_t minTarget,const float_t maxTarget){
-    vector< MinMax > ranges = getRanges();
+    Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool TimeSeriesClassificationDataStream::scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
+bool TimeSeriesClassificationDataStream::scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
     if( ranges.size() != numDimensions ) return false;
     
     //Scale the training data
@@ -394,11 +394,11 @@ UINT TimeSeriesClassificationDataStream::getClassLabelIndexValue(const UINT clas
             return k;
         }
     }
-    warningLog << "getClassLabelIndexValue(const UINT classLabel) - Failed to find class label: " << classLabel << " in class tracker!" << endl;
+    warningLog << "getClassLabelIndexValue(const UINT classLabel) - Failed to find class label: " << classLabel << " in class tracker!" << std::endl;
     return 0;
 }
 
-string TimeSeriesClassificationDataStream::getClassNameForCorrespondingClassLabel(const UINT classLabel){
+std::string TimeSeriesClassificationDataStream::getClassNameForCorrespondingClassLabel(const UINT classLabel){
     
     for(UINT i=0; i<classTracker.size(); i++){
         if( classTracker[i].classLabel == classLabel ){
@@ -408,9 +408,9 @@ string TimeSeriesClassificationDataStream::getClassNameForCorrespondingClassLabe
     return "CLASS_LABEL_NOT_FOUND";
 }
 
-vector<MinMax> TimeSeriesClassificationDataStream::getRanges() const {
+Vector<MinMax> TimeSeriesClassificationDataStream::getRanges() const {
     
-    vector< MinMax > ranges(numDimensions);
+    Vector< MinMax > ranges(numDimensions);
     
     //If the dataset should be scaled using the external ranges then return the external ranges
     if( useExternalRanges ) return externalRanges;
@@ -429,7 +429,7 @@ vector<MinMax> TimeSeriesClassificationDataStream::getRanges() const {
     return ranges;
 }
     
-bool TimeSeriesClassificationDataStream::save(const string &filename){
+bool TimeSeriesClassificationDataStream::save(const std::string &filename){
     
     //Check if the file should be saved as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -440,7 +440,7 @@ bool TimeSeriesClassificationDataStream::save(const string &filename){
     return saveDatasetToFile( filename );
 }
 
-bool TimeSeriesClassificationDataStream::load(const string &filename){
+bool TimeSeriesClassificationDataStream::load(const std::string &filename){
     
     //Check if the file should be loaded as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -451,13 +451,13 @@ bool TimeSeriesClassificationDataStream::load(const string &filename){
     return loadDatasetFromFile( filename );
 }
 
-bool TimeSeriesClassificationDataStream::saveDatasetToFile(const string &filename) {
+bool TimeSeriesClassificationDataStream::saveDatasetToFile(const std::string &filename) {
 
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
 
     if( !file.is_open() ){
-        errorLog << "saveDatasetToFile(const string &filename) - Failed to open file!" << endl;
+        errorLog << "saveDatasetToFile(const std::string &filename) - Failed to open file!" << std::endl;
         return false;
     }
 
@@ -468,27 +468,27 @@ bool TimeSeriesClassificationDataStream::saveDatasetToFile(const string &filenam
     }
 
     file << "GRT_LABELLED_CONTINUOUS_TIME_SERIES_CLASSIFICATION_FILE_V1.0\n";
-    file << "DatasetName: " << datasetName << endl;
-    file << "InfoText: " << infoText << endl;
-    file << "NumDimensions: "<<numDimensions<<endl;
-    file << "TotalNumSamples: "<<totalNumSamples<<endl;
-    file << "NumberOfClasses: "<<classTracker.size()<<endl;
-    file << "ClassIDsAndCounters: "<<endl;
+    file << "DatasetName: " << datasetName << std::endl;
+    file << "InfoText: " << infoText << std::endl;
+    file << "NumDimensions: " << numDimensions << std::endl;
+    file << "TotalNumSamples: " << totalNumSamples << std::endl;
+    file << "NumberOfClasses: " << classTracker.size() << std::endl;
+    file << "ClassIDsAndCounters: " << std::endl;
     for(UINT i=0; i<classTracker.size(); i++){
-        file << classTracker[i].classLabel << "\t" << classTracker[i].counter << endl;
+        file << classTracker[i].classLabel << "\t" << classTracker[i].counter << std::endl;
     }
 
-    file << "NumberOfPositionTrackers: "<<timeSeriesPositionTracker.size()<<endl;
-    file << "TimeSeriesPositionTrackers: "<<endl;
+    file << "NumberOfPositionTrackers: " << timeSeriesPositionTracker.size() << std::endl;
+    file << "TimeSeriesPositionTrackers: " << std::endl;
     for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
-        file << timeSeriesPositionTracker[i].getClassLabel() << "\t" << timeSeriesPositionTracker[i].getStartIndex() << "\t" << timeSeriesPositionTracker[i].getEndIndex() <<endl;
+        file << timeSeriesPositionTracker[i].getClassLabel() << "\t" << timeSeriesPositionTracker[i].getStartIndex() << "\t" << timeSeriesPositionTracker[i].getEndIndex() << std::endl;
     }
     
-    file << "UseExternalRanges: " << useExternalRanges << endl;
+    file << "UseExternalRanges: " << useExternalRanges << std::endl;
     
     if( useExternalRanges ){
         for(UINT i=0; i<externalRanges.size(); i++){
-            file << externalRanges[i].minValue << "\t" << externalRanges[i].maxValue << endl;
+            file << externalRanges[i].minValue << "\t" << externalRanges[i].maxValue << std::endl;
         }
     }
 
@@ -498,14 +498,14 @@ bool TimeSeriesClassificationDataStream::saveDatasetToFile(const string &filenam
         for(UINT j=0; j<numDimensions; j++){
             file << "\t" << data[i][j];
         }
-        file << endl;
+        file << std::endl;
     }
 
     file.close();
     return true;
 }
 
-bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filename){
+bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const std::string &filename){
 
 	std::fstream file; 
 	file.open(filename.c_str(), std::ios::in);
@@ -514,24 +514,24 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 	clear();
 
 	if( !file.is_open() ){
-		errorLog<< "loadDatasetFromFile(string fileName) - Failed to open file!" << endl;
+		errorLog<< "loadDatasetFromFile(string fileName) - Failed to open file!" << std::endl;
 		return false;
 	}
 
-	string word;
+	std::string word;
 
 	//Check to make sure this is a file with the Training File Format
 	file >> word;
 	if(word != "GRT_LABELLED_CONTINUOUS_TIME_SERIES_CLASSIFICATION_FILE_V1.0"){
 		file.close();
-        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find file header!" << endl;
+        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find file header!" << std::endl;
 		return false;
 	}
     
     //Get the name of the dataset
 	file >> word;
 	if(word != "DatasetName:"){
-        errorLog << "loadDatasetFromFile(string filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(string filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -539,7 +539,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
     
     file >> word;
 	if(word != "InfoText:"){
-        errorLog << "loadDatasetFromFile(string filename) - failed to find InfoText!" << endl;
+        errorLog << "loadDatasetFromFile(string filename) - failed to find InfoText!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -554,7 +554,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 
 	//Get the number of dimensions in the training data
 	if(word != "NumDimensions:"){
-        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find NumDimensions!" << endl;
+        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find NumDimensions!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -563,7 +563,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 	//Get the total number of training examples in the training data
 	file >> word;
 	if(word != "TotalNumSamples:"){
-        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find TotalNumSamples!" << endl;
+        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find TotalNumSamples!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -572,7 +572,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 	//Get the total number of classes in the training data
 	file >> word;
 	if(word != "NumberOfClasses:"){
-        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find NumberOfClasses!" << endl;
+        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find NumberOfClasses!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -584,7 +584,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 	//Get the total number of classes in the training data
 	file >> word;
 	if(word != "ClassIDsAndCounters:"){
-        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find ClassIDsAndCounters!" << endl;
+        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find ClassIDsAndCounters!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -597,7 +597,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 	//Get the NumberOfPositionTrackers
 	file >> word;
 	if(word != "NumberOfPositionTrackers:"){
-        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find NumberOfPositionTrackers!" << endl;
+        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find NumberOfPositionTrackers!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -607,7 +607,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 	//Get the TimeSeriesPositionTrackers
 	file >> word;
 	if(word != "TimeSeriesPositionTrackers:"){
-        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find TimeSeriesPositionTrackers!" << endl;
+        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find TimeSeriesPositionTrackers!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -625,7 +625,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
     //Check if the dataset should be scaled using external ranges
 	file >> word;
 	if(word != "UseExternalRanges:"){
-        errorLog << "loadDatasetFromFile(string filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(string filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -643,7 +643,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 	//Get the main time series data
 	file >> word;
 	if(word != "LabelledContinuousTimeSeriesClassificationData:"){
-        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find LabelledContinuousTimeSeriesClassificationData!" << endl;
+        errorLog<< "loadDatasetFromFile(string fileName) - Failed to find LabelledContinuousTimeSeriesClassificationData!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -668,7 +668,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const string &filen
 	return true;
 }
     
-bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const string &filename) {
+bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const std::string &filename) {
     std::fstream file; 
     file.open(filename.c_str(), std::ios::out );
     
@@ -683,7 +683,7 @@ bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const string &file
         for(UINT j=0; j<numDimensions; j++){
             file << "," << data[i][j];
         }
-        file << endl;
+        file << std::endl;
     }
     
     file.close();
@@ -691,7 +691,7 @@ bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const string &file
     return true;
 }
 
-bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex){
+bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const std::string &filename,const UINT classLabelColumnIndex){
 
     datasetName = "NOT_SET";
     infoText = "";
@@ -703,17 +703,17 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const string &fi
     FileParser parser;
     
     if( !parser.parseCSVFile(filename,true) ){
-        errorLog << "loadDatasetFromCSVFile(const string filename,const UINT classLabelColumnIndex) - Failed to parse CSV file!" << endl;
+        errorLog << "loadDatasetFromCSVFile(const std::string filename,const UINT classLabelColumnIndex) - Failed to parse CSV file!" << std::endl;
         return false;
     }
     
     if( !parser.getConsistentColumnSize() ){
-        errorLog << "loadDatasetFromCSVFile(const string filename,const UINT classLabelColumnIndex) - The CSV file does not have a consistent number of columns!" << endl;
+        errorLog << "loadDatasetFromCSVFile(const std::string filename,const UINT classLabelColumnIndex) - The CSV file does not have a consistent number of columns!" << std::endl;
         return false;
     }
     
     if( parser.getColumnSize() <= 1 ){
-        errorLog << "loadDatasetFromCSVFile(const string filename,const UINT classLabelColumnIndex) - The CSV file does not have enough columns! It should contain at least two columns!" << endl;
+        errorLog << "loadDatasetFromCSVFile(const std::string filename,const UINT classLabelColumnIndex) - The CSV file does not have enough columns! It should contain at least two columns!" << std::endl;
         return false;
     }
     
@@ -739,7 +739,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const string &fi
         
         //Add the labelled sample to the dataset
         if( !addSample(classLabel, sample) ){
-            warningLog << "loadDatasetFromCSVFile(const string filename,const UINT classLabelColumnIndex) - Could not add sample " << i << " to the dataset!" << endl;
+            warningLog << "loadDatasetFromCSVFile(const std::string filename,const UINT classLabelColumnIndex) - Could not add sample " << i << " to the dataset!" << std::endl;
         }
     }
 
@@ -748,32 +748,32 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const string &fi
     
 bool TimeSeriesClassificationDataStream::printStats() const {
     
-    cout << "DatasetName:\t" << datasetName << endl;
-    cout << "DatasetInfo:\t" << infoText << endl;
-    cout << "Number of Dimensions:\t" << numDimensions << endl;
-    cout << "Number of Samples:\t" << totalNumSamples << endl;
-    cout << "Number of Classes:\t" << getNumClasses() << endl;
-    cout << "ClassStats:\n";
+    std::cout << "DatasetName:\t" << datasetName << std::endl;
+    std::cout << "DatasetInfo:\t" << infoText << std::endl;
+    std::cout << "Number of Dimensions:\t" << numDimensions << std::endl;
+    std::cout << "Number of Samples:\t" << totalNumSamples << std::endl;
+    std::cout << "Number of Classes:\t" << getNumClasses() << std::endl;
+    std::cout << "ClassStats:\n";
     
     for(UINT k=0; k<getNumClasses(); k++){
-        cout << "ClassLabel:\t" << classTracker[k].classLabel;
-        cout << "\tNumber of Samples:\t" << classTracker[k].counter;
-        cout << "\tClassName:\t" << classTracker[k].className << endl;
+        std::cout << "ClassLabel:\t" << classTracker[k].classLabel;
+        std::cout << "\tNumber of Samples:\t" << classTracker[k].counter;
+        std::cout << "\tClassName:\t" << classTracker[k].className << std::endl;
     }
     
-    cout << "TimeSeriesMarkerStats:\n";
+    std::cout << "TimeSeriesMarkerStats:\n";
     for(UINT i=0; i<timeSeriesPositionTracker.size(); i++){
-        cout << "ClassLabel: " << timeSeriesPositionTracker[i].getClassLabel();
-        cout << "\tStartIndex: " << timeSeriesPositionTracker[i].getStartIndex();
-        cout << "\tEndIndex: " << timeSeriesPositionTracker[i].getEndIndex();
-        cout << "\tLength: " << timeSeriesPositionTracker[i].getLength() << endl;
+        std::cout << "ClassLabel: " << timeSeriesPositionTracker[i].getClassLabel();
+        std::cout << "\tStartIndex: " << timeSeriesPositionTracker[i].getStartIndex();
+        std::cout << "\tEndIndex: " << timeSeriesPositionTracker[i].getEndIndex();
+        std::cout << "\tLength: " << timeSeriesPositionTracker[i].getLength() << std::endl;
     }
     
-    vector< MinMax > ranges = getRanges();
+    Vector< MinMax > ranges = getRanges();
     
-    cout << "Dataset Ranges:\n";
+    std::cout << "Dataset Ranges:\n";
     for(UINT j=0; j<ranges.size(); j++){
-        cout << "[" << j+1 << "] Min:\t" << ranges[j].minValue << "\tMax: " << ranges[j].maxValue << endl;
+        std::cout << "[" << j+1 << "] Min:\t" << ranges[j].minValue << "\tMax: " << ranges[j].maxValue << std::endl;
     }
     
     return true;
@@ -784,12 +784,12 @@ TimeSeriesClassificationDataStream TimeSeriesClassificationDataStream::getSubset
     TimeSeriesClassificationDataStream subset;
     
     if( endIndex >= totalNumSamples ){
-        warningLog << "getSubset(const UINT startIndex,const UINT endIndex) - The endIndex is greater than or equal to the number of samples in the current dataset!" << endl;
+        warningLog << "getSubset(const UINT startIndex,const UINT endIndex) - The endIndex is greater than or equal to the number of samples in the current dataset!" << std::endl;
         return subset;
     }
     
     if( startIndex >= endIndex ){
-        warningLog << "getSubset(const UINT startIndex,const UINT endIndex) - The startIndex is greater than or equal to the endIndex!" << endl;
+        warningLog << "getSubset(const UINT startIndex,const UINT endIndex) - The startIndex is greater than or equal to the endIndex!" << std::endl;
         return subset;
     }
     
@@ -838,7 +838,7 @@ ClassificationData TimeSeriesClassificationDataStream::getClassificationData( co
         if( addSample ){
             MatrixFloat dataSegment = getTimeSeriesData( timeSeriesPositionTracker[i] );
             for(UINT j=0; j<dataSegment.getNumRows(); j++){
-                classificationData.addSample(timeSeriesPositionTracker[i].getClassLabel(), dataSegment.getRowVector(j) );
+                classificationData.addSample(timeSeriesPositionTracker[i].getClassLabel(), dataSegment.getRow(j) );
             }
         }
     }
@@ -849,7 +849,7 @@ ClassificationData TimeSeriesClassificationDataStream::getClassificationData( co
 MatrixFloat TimeSeriesClassificationDataStream::getTimeSeriesData( const TimeSeriesPositionTracker &trackerInfo ) const {
     
     if( trackerInfo.getStartIndex() >= totalNumSamples || trackerInfo.getEndIndex() > totalNumSamples ){
-        warningLog << "getTimeSeriesData(TimeSeriesPositionTracker trackerInfo) - Invalid tracker indexs!" << endl;
+        warningLog << "getTimeSeriesData(TimeSeriesPositionTracker trackerInfo) - Invalid tracker indexs!" << std::endl;
         return MatrixFloat();
     }
 
@@ -879,9 +879,9 @@ MatrixFloat TimeSeriesClassificationDataStream::getDataAsMatrixFloat() const {
     return matrixData;
 }
     
-vector< UINT > TimeSeriesClassificationDataStream::getClassLabels() const{
+Vector< UINT > TimeSeriesClassificationDataStream::getClassLabels() const{
     const UINT K = (UINT)classTracker.size();
-    vector< UINT > classLabels( K );
+    Vector< UINT > classLabels( K );
     
     for(UINT i=0; i<K; i++){
         classLabels[i] = classTracker[i].classLabel;
@@ -890,5 +890,5 @@ vector< UINT > TimeSeriesClassificationDataStream::getClassLabels() const{
     return classLabels;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

@@ -33,7 +33,7 @@
 
 #include "MLBase.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 #define DEFAULT_NULL_LIKELIHOOD_VALUE 0
 #define DEFAULT_NULL_DISTANCE_VALUE 0
@@ -55,7 +55,7 @@ public:
      This is the base deep copy function for the Classifier modules. This function should be overwritten by the derived class.
      This deep copies the variables and models from the classifier pointer to this classifier instance.
      
-     @param const Classifier *classifier: a pointer to the Classifier base class, this should be pointing to another instance of a matching derived class
+     @param classifier: a pointer to the Classifier base class, this should be pointing to another instance of a matching derived class
      @return returns true if the clone was successfull, false otherwise (the Classifier base class will always return flase)
      */
     virtual bool deepCopyFrom(const Classifier *classifier){ return false; }
@@ -63,7 +63,7 @@ public:
     /**
      This copies the Classifier base class variables from the classifier pointer to this instance.
      
-     @param const Classifier *classifier: a pointer to a classifier from which the values will be copied to this instance
+     @param classifier: a pointer to a classifier from which the values will be copied to this instance
      @return returns true if the copy was successfull, false otherwise
      */
     bool copyBaseVariables(const Classifier *classifier);
@@ -88,7 +88,7 @@ public:
      
      @return returns the classifier type as a string
      */
-    string getClassifierType() const;
+    std::string getClassifierType() const;
     
     /**
      Returns true if the classifier instance supports null rejection, false otherwise.
@@ -145,11 +145,11 @@ public:
     virtual UINT getNumClasses() const;
     
     /**
-     Gets the index of the query classLabel in the classLabels vector. If the query classLabel does not exist in the classLabels vector
+     Gets the index of the query classLabel in the classLabels Vector. If the query classLabel does not exist in the classLabels Vector
      then the function will return zero.
      
      @param classLabel: the query classLabel
-     @return returns index of the query classLabel in the classLabels vector
+     @return returns index of the query classLabel in the classLabels Vector
      */
     UINT getClassLabelIndexValue(UINT classLabel) const;
     
@@ -161,43 +161,43 @@ public:
     UINT getPredictedClassLabel() const;
     
     /**
-     Gets a vector of the class likelihoods from the last prediction, this will be an N-dimensional vector, where N is the number of classes in the model.  
+     Gets a Vector of the class likelihoods from the last prediction, this will be an N-dimensional Vector, where N is the number of classes in the model.  
      The exact form of these likelihoods depends on the classification algorithm.
      
-     @return returns a vector of the class likelihoods from the last prediction, an empty vector will be returned if the model has not been trained
+     @return returns a Vector of the class likelihoods from the last prediction, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getClassLikelihoods() const;
     
     /**
-     Gets a vector of the class distances from the last prediction, this will be an N-dimensional vector, where N is the number of classes in the model.  
+     Gets a Vector of the class distances from the last prediction, this will be an N-dimensional Vector, where N is the number of classes in the model.  
      The exact form of these distances depends on the classification algorithm.
      
-     @return returns a vector of the class distances from the last prediction, an empty vector will be returned if the model has not been trained
+     @return returns a Vector of the class distances from the last prediction, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getClassDistances() const;
     
     /**
-     Gets a vector containing the null rejection thresholds for each class, this will be an N-dimensional vector, where N is the number of classes in the model.  
+     Gets a Vector containing the null rejection thresholds for each class, this will be an N-dimensional Vector, where N is the number of classes in the model.  
      
-     @return returns a vector containing the null rejection thresholds for each class, an empty vector will be returned if the model has not been trained
+     @return returns a Vector containing the null rejection thresholds for each class, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getNullRejectionThresholds() const;
     
     /**
-     Gets a vector containing the label each class represents, this will be an N-dimensional vector, where N is the number of classes in the model. 
+     Gets a Vector containing the label each class represents, this will be an N-dimensional Vector, where N is the number of classes in the model. 
      This is useful if the model was trained with non-monotonically class labels (i.e. class labels such as [1, 3, 6, 9, 12] instead of [1, 2, 3, 4, 5]).
      
-     @return returns a vector containing the class labels for each class, an empty vector will be returned if the model has not been trained
+     @return returns a Vector containing the class labels for each class, an empty Vector will be returned if the model has not been trained
      */
-    vector< UINT > getClassLabels() const;
+    Vector< UINT > getClassLabels() const;
     
     /**
-     Gets a vector of the ranges used to scale the data for training and prediction, these ranges are only used if the classifier has been trained
-     with the #useScaling flag set to true. This should be an N-dimensional vector, where N is the number of features in your data.
+     Gets a Vector of the ranges used to scale the data for training and prediction, these ranges are only used if the classifier has been trained
+     with the #useScaling flag set to true. This should be an N-dimensional Vector, where N is the number of features in your data.
      
-     @return returns a vector containing the ranges used to scale the data for classification, an empty vector will be returned if the model has not been trained
+     @return returns a Vector containing the ranges used to scale the data for classification, an empty Vector will be returned if the model has not been trained
      */
-    vector<MinMax> getRanges() const;
+    Vector<MinMax> getRanges() const;
 
     /**
      Sets if the classifier should use nullRejection.
@@ -220,9 +220,9 @@ public:
 	/**
      Manually sets the nullRejectionThresholds, these are the thresholds used for null rejection for each class.
 	 This needs to be called after the model has been trained. Calling the #setNullRejectionCoeff or #recomputeNullRejectionThresholds
-	 functions will override these values. The size of the newRejectionThresholds vector must match the number of classes in the model.
+	 functions will override these values. The size of the newRejectionThresholds Vector must match the number of classes in the model.
      
-	 @param VectorFloat newRejectionThresholds: the new rejection thresholds
+	 @param newRejectionThresholds: the new rejection thresholds
      @return returns true if nullRejectionThresholds were updated successfully, false otherwise
      */
 	virtual bool setNullRejectionThresholds(VectorFloat newRejectionThresholds);
@@ -245,15 +245,15 @@ public:
     /**
      Defines a map between a string (which will contain the name of the classifier, such as ANBC) and a function returns a new instance of that classifier
      */
-    typedef std::map< string, Classifier*(*)() > StringClassifierMap;
+    typedef std::map< std::string, Classifier*(*)() > StringClassifierMap;
     
     /**
      Creates a new classifier instance based on the input string (which should contain the name of a valid classifier such as ANBC).
      
-     @param string const &classifierType: the name of the classifier
+     @param classifierType: the name of the classifier
      @return Classifier*: a pointer to the new instance of the classifier
      */
-    static Classifier* createInstanceFromString(string const &classifierType);
+    static Classifier* createInstanceFromString( std::string const &classifierType );
     
     /**
      Creates a new classifier instance based on the current classifierType string value.
@@ -286,11 +286,11 @@ public:
     const Classifier& getBaseClassifier() const;
 
     /**
-     Returns a vector of the names of all classifiers that have been registered with the base classifier.
+     Returns a Vector of the names of all classifiers that have been registered with the base classifier.
      
-     @return vector< string >: a vector containing the names of the classifiers that have been registered with the base classifier
+     @return Vector< string >: a Vector containing the names of the classifiers that have been registered with the base classifier
     */
-	static vector< string > getRegisteredClassifiers();
+	static Vector< std::string > getRegisteredClassifiers();
     
 protected:
     /**
@@ -298,16 +298,16 @@ protected:
      
      @return returns true if the base settings were saved, false otherwise
      */
-    bool saveBaseSettingsToFile(fstream &file) const;
+    bool saveBaseSettingsToFile( std::fstream &file ) const;
     
     /**
      Loads the core base settings from a file.
      
      @return returns true if the base settings were loaded, false otherwise
      */
-    bool loadBaseSettingsFromFile(fstream &file);
+    bool loadBaseSettingsFromFile( std::fstream &file );
 
-    string classifierType;
+    std::string classifierType;
     bool supportsNullRejection;
     bool useNullRejection;
     UINT numClasses;
@@ -320,8 +320,8 @@ protected:
     VectorFloat classLikelihoods;
     VectorFloat classDistances;
     VectorFloat nullRejectionThresholds;
-    vector< UINT > classLabels;
-    vector<MinMax> ranges;
+    Vector< UINT > classLabels;
+    Vector<MinMax> ranges;
     
     static StringClassifierMap *getMap() {
         if( !stringClassifierMap ){ stringClassifierMap = new StringClassifierMap; } 
@@ -342,12 +342,12 @@ template< typename T >  Classifier* getNewClassificationModuleInstance() { retur
 template< typename T >
 class RegisterClassifierModule : public Classifier {
 public:
-    RegisterClassifierModule(string const &newClassificationModuleName) { 
-        getMap()->insert( std::pair<string, Classifier*(*)()>(newClassificationModuleName, &getNewClassificationModuleInstance< T > ) );
+    RegisterClassifierModule( std::string const &newClassificationModuleName ) { 
+        getMap()->insert( std::pair< std::string, Classifier*(*)() >(newClassificationModuleName, &getNewClassificationModuleInstance< T > ) );
     }
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_CLASSIFIER_HEADER
 

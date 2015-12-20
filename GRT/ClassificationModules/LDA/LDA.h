@@ -34,7 +34,7 @@
 #include "../../CoreModules/Classifier.h"
 #include "../../Util/LUDecomposition.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class LDAClassModel{
 public:
@@ -47,10 +47,10 @@ public:
         
     }
     
-    UINT getNumDimensions() const { return (UINT)weights.size(); }
+    UINT getNumDimensions() const { return weights.getSize(); }
     
     UINT classLabel;
-    double priorProb;
+    float_t priorProb;
     VectorDouble weights;
     
 };
@@ -61,7 +61,7 @@ public:
     /**
      Default Constructor
      */
-	LDA(bool useScaling=false,bool useNullRejection=true,double nullRejectionCoeff=10.0);
+	LDA(bool useScaling=false,bool useNullRejection=true,float_t nullRejectionCoeff=10.0);
     
     /**
      Default Destructor
@@ -71,7 +71,7 @@ public:
     /**
      Defines how the data from the rhs LDA should be copied to this LDA
      
-     @param const LDA &rhs: another instance of a LDA
+     @param rhs: another instance of a LDA
      @return returns a pointer to this instance of the LDA
      */
 	LDA &operator=(const LDA &rhs){
@@ -90,7 +90,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier method is called.  
      It clones the data from the Base Class Classifier pointer (which should be pointing to an LDA instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another LDA instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another LDA instance
      @return returns true if the clone was successfull, false otherwise
     */
     virtual bool deepCopyFrom(const Classifier *classifier){
@@ -112,7 +112,7 @@ public:
      This trains the LDA model, using the labelled classification data.
      This overrides the train function in the Classifier base class.
      
-     @param LabelledClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the LDA model was trained, false otherwise
     */
     virtual bool train(ClassificationData trainingData);
@@ -121,7 +121,7 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
     */
     virtual bool predict(VectorDouble inputVector);
@@ -130,22 +130,22 @@ public:
      This saves the trained LDA model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the LDA model will be saved to
+     @param file: a reference to the file the LDA model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained LDA model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the LDA model will be loaded from
+     @param file: a reference to the file the LDA model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     //Getters
-    vector< LDAClassModel > getModels(){ if( trained ){ return models; } return vector< LDAClassModel >(); }
+    Vector< LDAClassModel > getModels(){ if( trained ){ return models; } return Vector< LDAClassModel >(); }
     
     //Setters
 
@@ -154,13 +154,13 @@ public:
     using MLBase::loadModelFromFile;
 
 private:
-	MatrixDouble computeBetweenClassScatterMatrix( ClassificationData &data );
-	MatrixDouble computeWithinClassScatterMatrix( ClassificationData &data );
+	MatrixFloat computeBetweenClassScatterMatrix( ClassificationData &data );
+	MatrixFloat computeWithinClassScatterMatrix( ClassificationData &data );
 	
-    vector< LDAClassModel > models;
+    Vector< LDAClassModel > models;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_LDA_HEADER
 

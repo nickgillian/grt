@@ -45,7 +45,7 @@
 
 #include "../DataStructures/TimeSeriesClassificationData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class TimeSeriesClassificationSampleTrimmer{
 public:
@@ -102,6 +102,6 @@ protected:
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif // GRT_TIME_SERIES_TRIMMER_HEADER

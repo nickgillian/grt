@@ -20,12 +20,12 @@
 
 #include "DeadZone.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the DeadZone module with the PreProcessing base class
 RegisterPreProcessingModule< DeadZone > DeadZone::registerModule("DeadZone");
     
-DeadZone::DeadZone(double lowerLimit,double upperLimit,UINT numDimensions){
+DeadZone::DeadZone(float_t lowerLimit,float_t upperLimit,UINT numDimensions){
     classType = "DeadZone";
     preProcessingType = classType;
     debugLog.setProceedingText("[DEBUG DeadZone]");
@@ -73,20 +73,20 @@ bool DeadZone::deepCopyFrom(const PreProcessing *preProcessing){
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << endl;
+    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
     
-bool DeadZone::process(const VectorDouble &inputVector){
+bool DeadZone::process(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -100,10 +100,10 @@ bool DeadZone::reset(){
     return true;
 }
     
-bool DeadZone::saveModelToFile(string filename) const{
+bool DeadZone::saveModelToFile(std::string filename) const{
     
     if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The DeadZone has not been initialized" << endl;
+        errorLog << "saveModelToFile(std::string filename) - The DeadZone has not been initialized" << std::endl;
         return false;
     }
     
@@ -120,24 +120,24 @@ bool DeadZone::saveModelToFile(string filename) const{
 	return true;
 }
 
-bool DeadZone::saveModelToFile(fstream &file) const{
+bool DeadZone::saveModelToFile(std::fstream &file) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_DEAD_ZONE_FILE_V1.0" << endl;
+    file << "GRT_DEAD_ZONE_FILE_V1.0" << std::endl;
     
-    file << "NumInputDimensions: " << numInputDimensions << endl;
-    file << "NumOutputDimensions: " << numOutputDimensions << endl;
-    file << "LowerLimit: " << lowerLimit << endl;
-    file << "UpperLimit: " << upperLimit << endl;	
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
+    file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
+    file << "LowerLimit: " << lowerLimit << std::endl;
+    file << "UpperLimit: " << upperLimit << std::endl;	
     
     return true;
 }
 
-bool DeadZone::loadModelFromFile(string filename){
+bool DeadZone::loadModelFromFile(std::string filename){
     
     std::fstream file; 
 	file.open(filename.c_str(), std::ios::in);
@@ -153,27 +153,27 @@ bool DeadZone::loadModelFromFile(string filename){
 	return true;
 }
 
-bool DeadZone::loadModelFromFile(fstream &file){
+bool DeadZone::loadModelFromFile(std::fstream &file){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_DEAD_ZONE_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
         return false;     
     }
     file >> numInputDimensions;
@@ -181,7 +181,7 @@ bool DeadZone::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
         return false;     
     }
     file >> numOutputDimensions;
@@ -189,14 +189,14 @@ bool DeadZone::loadModelFromFile(fstream &file){
     //Load the lower limit
     file >> word;
     if( word != "LowerLimit:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read LowerLimit header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read LowerLimit header!" << std::endl;
         return false;     
     }
     file >> lowerLimit;
     
     file >> word;
     if( word != "UpperLimit:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read UpperLimit header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read UpperLimit header!" << std::endl;
         return false;     
     }
     file >> upperLimit;
@@ -205,17 +205,17 @@ bool DeadZone::loadModelFromFile(fstream &file){
     return init(lowerLimit,upperLimit,numInputDimensions);
 }
     
-bool DeadZone::init(double lowerLimit,double upperLimit,UINT numDimensions){
+bool DeadZone::init(float_t lowerLimit,float_t upperLimit,UINT numDimensions){
     
     initialized = false;
     
     if( numDimensions == 0 ){
-        errorLog << "init(double lowerLimit,double upperLimit,UINT numDimensions) - NumDimensions must be greater than 0!" << endl;
+        errorLog << "init(float_t lowerLimit,float_t upperLimit,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
     if( lowerLimit >= upperLimit ){
-        errorLog << "init(double lowerLimit,double upperLimit,UINT numDimensions) - The lower limit must be less than the upperlimit!" << endl;
+        errorLog << "init(float_t lowerLimit,float_t upperLimit,UINT numDimensions) - The lower limit must be less than the upperlimit!" << std::endl;
         return false;
     }
     
@@ -230,22 +230,22 @@ bool DeadZone::init(double lowerLimit,double upperLimit,UINT numDimensions){
     return true;
 }
 
-double DeadZone::filter(const double x){
-    VectorDouble y = filter(VectorDouble(1,x));
-    if( y.size() == 0 ) return 0;
+float_t DeadZone::filter(const float_t x){
+    VectorFloat y = filter(VectorFloat(1,x));
+    if( y.getSize() == 0 ) return 0;
 	return y[0];
 }
     
-VectorDouble DeadZone::filter(const VectorDouble &x){
+VectorFloat DeadZone::filter(const VectorFloat &x){
     
     if( !initialized ){
-        errorLog << "filter(const VectorDouble &x) - Not Initialized!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - Not Initialized!" << std::endl;
+        return VectorFloat();
     }
     
-    if( x.size() != numInputDimensions ){
-        errorLog << "filter(const VectorDouble &x) - The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
-        return VectorDouble();
+    if( x.getSize() != numInputDimensions ){
+        errorLog << "filter(const VectorFloat &x) - The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << std::endl;
+        return VectorFloat();
     }
     
     for(UINT n=0; n<numInputDimensions; n++){
@@ -259,14 +259,14 @@ VectorDouble DeadZone::filter(const VectorDouble &x){
     return processedData;
 }
 
-bool DeadZone::setLowerLimit(double lowerLimit){ 
+bool DeadZone::setLowerLimit(float_t lowerLimit){ 
 	this->lowerLimit = lowerLimit; 
 	return true; 
 }
 
-bool DeadZone::setUpperLimit(double upperLimit){ 
+bool DeadZone::setUpperLimit(float_t upperLimit){ 
 	this->upperLimit = upperLimit; 
 	return true; 
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

@@ -31,13 +31,13 @@
 
 #include "../Util/GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class ClassificationSample{
 public:
 	ClassificationSample();
 	ClassificationSample(const UINT numDimensions);
-	ClassificationSample(const UINT classLabel,const VectorDouble &sample);
+	ClassificationSample(const UINT classLabel,const VectorFloat &sample);
 	ClassificationSample(const ClassificationSample &rhs);
 	~ClassificationSample();
 
@@ -63,20 +63,20 @@ public:
     	//Getters
     	UINT getNumDimensions() const{ return numDimensions; }
     	UINT getClassLabel() const{ return classLabel; }
-    	VectorDouble getSample() const{ return sample; }
+    	VectorFloat getSample() const{ return sample; }
     
     	//Setters
-	bool set(UINT classLabel,const VectorDouble &sample);
+	bool set(UINT classLabel,const VectorFloat &sample);
     	bool setClassLabel(const UINT classLabel);
-    	bool setSample(const VectorDouble &sample);
+    	bool setSample(const VectorFloat &sample);
 
 protected:
 	UINT numDimensions;
 	UINT classLabel;
-	VectorDouble sample;
+	VectorFloat sample;
 
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif // GRT_CLASSIFICATION_SAMPLE_HEADER

@@ -20,7 +20,7 @@
 
 #include "RBMQuantizer.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register your module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< RBMQuantizer > RBMQuantizer::registerModule("RBMQuantizer");
@@ -339,4 +339,5 @@ bool RBMQuantizer::setNumClusters(const UINT numClusters){
     return true;
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
+

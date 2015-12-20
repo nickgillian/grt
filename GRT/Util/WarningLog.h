@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "Log.h"
 #include "ObserverManager.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class WarningLogMessage{
 public:
@@ -48,7 +48,7 @@ public:
     std::string message;
 };
 
-class WarningLog : public Log{
+class WarningLog : public GRT::Log{
 public:
     WarningLog(std::string proceedingText =""){
         setProceedingText(proceedingText);
@@ -89,6 +89,6 @@ protected:
     static bool warningLoggingEnabled;
 };
 
-}; //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_WARNING_LOG_HEADER

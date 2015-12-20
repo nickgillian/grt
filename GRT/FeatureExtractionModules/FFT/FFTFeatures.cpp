@@ -20,7 +20,7 @@
 
 #include "FFTFeatures.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the FFTFeatures module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< FFTFeatures > FFTFeatures::registerModule("FFTFeatures");
@@ -89,12 +89,12 @@ bool FFTFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << endl;
+    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
     
-bool FFTFeatures::saveModelToFile(string filename) const{
+bool FFTFeatures::saveModelToFile( std::string filename ) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -108,7 +108,7 @@ bool FFTFeatures::saveModelToFile(string filename) const{
     return true;
 }
 
-bool FFTFeatures::loadModelFromFile(string filename){
+bool FFTFeatures::loadModelFromFile( std::string filename ){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
@@ -123,60 +123,60 @@ bool FFTFeatures::loadModelFromFile(string filename){
     return true;
 }
 
-bool FFTFeatures::saveModelToFile(fstream &file) const{
+bool FFTFeatures::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //Write the file header
-    file << "GRT_FFT_FEATURES_FILE_V1.0" << endl;
+    file << "GRT_FFT_FEATURES_FILE_V1.0" << std::endl;
     
     //Save the base settings to the file
     if( !saveFeatureExtractionSettingsToFile( file ) ){
-        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
         return false;
     }
     
     //Write the FFT features settings
-    file << "FFTWindowSize: " << fftWindowSize << endl;
-    file << "NumChannelsInFFTSignal: " << numChannelsInFFTSignal << endl;
-    file << "ComputeMaxFreqFeature: " << computeMaxFreqFeature << endl;
-    file << "ComputeMaxFreqSpectrumRatio: " << computeMaxFreqSpectrumRatio << endl;
-    file << "ComputeCentroidFeature: " << computeCentroidFeature << endl;	
-    file << "ComputeTopNFreqFeatures: " << computeTopNFreqFeatures << endl;		
-    file << "N: " << N << endl;
+    file << "FFTWindowSize: " << fftWindowSize << std::endl;
+    file << "NumChannelsInFFTSignal: " << numChannelsInFFTSignal << std::endl;
+    file << "ComputeMaxFreqFeature: " << computeMaxFreqFeature << std::endl;
+    file << "ComputeMaxFreqSpectrumRatio: " << computeMaxFreqSpectrumRatio << std::endl;
+    file << "ComputeCentroidFeature: " << computeCentroidFeature << std::endl;	
+    file << "ComputeTopNFreqFeatures: " << computeTopNFreqFeatures << std::endl;		
+    file << "N: " << N << std::endl;
     
     return true;
 }
     
-bool FFTFeatures::loadModelFromFile(fstream &file){
+bool FFTFeatures::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_FFT_FEATURES_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
-        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
         return false;
     }
     
     //Load the FFTWindowSize
     file >> word;
     if( word != "FFTWindowSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FFTWindowSize header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read FFTWindowSize header!" << std::endl;
         return false;     
     }
     file >> fftWindowSize;
@@ -184,42 +184,42 @@ bool FFTFeatures::loadModelFromFile(fstream &file){
     //Load the NumOutputDimensions
     file >> word;
     if( word != "NumChannelsInFFTSignal:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumChannelsInFFTSignal header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumChannelsInFFTSignal header!" << std::endl;
         return false;     
     }
     file >> numChannelsInFFTSignal;
     
     file >> word;
     if( word != "ComputeMaxFreqFeature:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeMaxFreqFeature header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeMaxFreqFeature header!" << std::endl;
         return false;     
     }
     file >> computeMaxFreqFeature;
     
     file >> word;
     if( word != "ComputeMaxFreqSpectrumRatio:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeMaxFreqSpectrumRatio header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeMaxFreqSpectrumRatio header!" << std::endl;
         return false;     
     }
     file >> computeMaxFreqSpectrumRatio;
     
     file >> word;
     if( word != "ComputeCentroidFeature:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeCentroidFeature header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeCentroidFeature header!" << std::endl;
         return false;     
     }
     file >> computeCentroidFeature;
     
     file >> word;
     if( word != "ComputeTopNFreqFeatures:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeTopNFreqFeatures header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeTopNFreqFeatures header!" << std::endl;
         return false;     
     }
     file >> computeTopNFreqFeatures;
     
     file >> word;
     if( word != "N:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read N header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read N header!" << std::endl;
         return false;     
     }
     file >> N;
@@ -266,16 +266,16 @@ bool FFTFeatures::init(UINT fftWindowSize,UINT numChannelsInFFTSignal,bool compu
     return true;
 }
     
-bool FFTFeatures::computeFeatures(const VectorDouble &inputVector){
+bool FFTFeatures::computeFeatures(const VectorFloat &inputVector){
 
     if( !initialized ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
     //The input vector should be the magnitude data from an FFT
-    if( inputVector.size() != fftWindowSize*numChannelsInFFTSignal ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match the expected size! Verify that the FFT module that generated this inputVector has a window size of " << fftWindowSize << " and the number of input channels is: " << numChannelsInFFTSignal << ". Also verify that only the magnitude values are being computed (and not the phase)." << endl;
+    if( inputVector.getSize() != fftWindowSize*numChannelsInFFTSignal ){
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match the expected size! Verify that the FFT module that generated this inputVector has a window size of " << fftWindowSize << " and the number of input channels is: " << numChannelsInFFTSignal << ". Also verify that only the magnitude values are being computed (and not the phase)." << std::endl;
         return false;
     }
     
@@ -283,10 +283,10 @@ bool FFTFeatures::computeFeatures(const VectorDouble &inputVector){
     
     UINT featureIndex = 0;
     IndexedDouble maxFreq(0,0);
-    vector< IndexedDouble > fftMagData(fftWindowSize);
+    Vector< IndexedDouble > fftMagData(fftWindowSize);
     
     for(UINT i=0; i<numChannelsInFFTSignal; i++){
-        double spectrumSum = 0;
+        float_t spectrumSum = 0;
         maxFreq.value = 0;
         maxFreq.index = 0;
         centroidFeature = 0;
@@ -348,4 +348,4 @@ bool FFTFeatures::reset(){
     return false;
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

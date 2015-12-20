@@ -20,12 +20,12 @@
 
 #include "HighPassFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the HighPassFilter module with the PreProcessing base class
 RegisterPreProcessingModule< HighPassFilter > HighPassFilter::registerModule("HighPassFilter");
     
-HighPassFilter::HighPassFilter(double filterFactor,double gain,UINT numDimensions,double cutoffFrequency,double delta){
+HighPassFilter::HighPassFilter(float_t filterFactor,float_t gain,UINT numDimensions,float_t cutoffFrequency,float_t delta){
     
     classType = "HighPassFilter";
     preProcessingType = classType;
@@ -87,20 +87,20 @@ bool HighPassFilter::deepCopyFrom(const PreProcessing *preProcessing){
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << endl;
+    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
     
-bool HighPassFilter::process(const VectorDouble &inputVector){
+bool HighPassFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -116,10 +116,10 @@ bool HighPassFilter::reset(){
     return false;
 }
     
-bool HighPassFilter::saveModelToFile(string filename) const{
+bool HighPassFilter::saveModelToFile( std::string filename ) const{
     
     if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The HighPassFilter has not been initialized" << endl;
+        errorLog << "saveModelToFile(string filename) - The HighPassFilter has not been initialized" << std::endl;
         return false;
     }
     
@@ -136,24 +136,24 @@ bool HighPassFilter::saveModelToFile(string filename) const{
     return true;
 }
     
-bool HighPassFilter::saveModelToFile(fstream &file) const{
+bool HighPassFilter::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_HIGH_PASS_FILTER_FILE_V1.0" << endl;
+    file << "GRT_HIGH_PASS_FILTER_FILE_V1.0" << std::endl;
     
-    file << "NumInputDimensions: " << numInputDimensions << endl;
-    file << "NumOutputDimensions: " << numOutputDimensions << endl;
-    file << "FilterFactor: " << filterFactor << endl;
-    file << "Gain: " << gain << endl;
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
+    file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
+    file << "FilterFactor: " << filterFactor << std::endl;
+    file << "Gain: " << gain << std::endl;
     
     return true;
 }
     
-bool HighPassFilter::loadModelFromFile(string filename){
+bool HighPassFilter::loadModelFromFile( std::string filename ){
     
     std::fstream file; 
     file.open(filename.c_str(), std::ios::in);
@@ -169,27 +169,27 @@ bool HighPassFilter::loadModelFromFile(string filename){
     return true;
 }
     
-bool HighPassFilter::loadModelFromFile(fstream &file){
+bool HighPassFilter::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_HIGH_PASS_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
         return false;     
     }
     file >> numInputDimensions;
@@ -197,7 +197,7 @@ bool HighPassFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
         return false;     
     }
     file >> numOutputDimensions;
@@ -205,7 +205,7 @@ bool HighPassFilter::loadModelFromFile(fstream &file){
     //Load the filter factor
     file >> word;
     if( word != "FilterFactor:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterFactor header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterFactor header!" << std::endl;
         return false;     
     }
     file >> filterFactor;
@@ -213,7 +213,7 @@ bool HighPassFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "Gain:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read Gain header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read Gain header!" << std::endl;
         return false;     
     }
     file >> gain;
@@ -222,22 +222,22 @@ bool HighPassFilter::loadModelFromFile(fstream &file){
     return init(filterFactor,gain,numInputDimensions);  
 }
     
-bool HighPassFilter::init(double filterFactor,double gain,UINT numDimensions){
+bool HighPassFilter::init(float_t filterFactor,float_t gain,UINT numDimensions){
     
     initialized = false;
     
     if( numDimensions == 0 ){
-        errorLog << "init(double filterFactor,double gain,UINT numDimensions) - NumDimensions must be greater than 0!" << endl;
+        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
     if( filterFactor <= 0 ){
-        errorLog << "init(double filterFactor,double gain,UINT numDimensions) - FilterFactor must be greater than 0!" << endl;
+        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - FilterFactor must be greater than 0!" << std::endl;
         return false;
     }
     
     if( gain <= 0 ){
-        errorLog << "init(double filterFactor,double gain,UINT numDimensions) - Gain must be greater than 0!" << endl;
+        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - Gain must be greater than 0!" << std::endl;
         return false;
     }
     
@@ -256,71 +256,71 @@ bool HighPassFilter::init(double filterFactor,double gain,UINT numDimensions){
     return true;
 }
 
-double HighPassFilter::filter(const double x){
+float_t HighPassFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const double x) - The filter has not been initialized!" << endl;
+        errorLog << "filter(const float_t x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
-    VectorDouble y = filter(VectorDouble(1,x));
+    VectorFloat y = filter(VectorFloat(1,x));
     
     if( y.size() == 0 ) return 0;
     return y[0];
 
 }
     
-VectorDouble HighPassFilter::filter(const VectorDouble &x){
+VectorFloat HighPassFilter::filter(const VectorFloat &x){
     
     if( !initialized ){
-        errorLog << "filter(const VectorDouble &x) - Not Initialized!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - Not Initialized!" << std::endl;
+        return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "filter(const VectorDouble &x) - The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << std::endl;
+        return VectorFloat();
     }
     
     for(UINT n=0; n<numInputDimensions; n++){
         //Compute the new output
-        processedData[n] = filterFactor * (yy[n] + x[n] - xx[n]) * gain;
+        yy[n] = filterFactor * (yy[n] + x[n] - xx[n]) * gain;
         
         //Store the current input
         xx[n] = x[n];
         
-        //Store the current output
-        yy[n] = processedData[n];
+        //Store the current output in processed data so it can be accessed by the base class
+        processedData[n] = processedData[n];
     }
     return processedData;
 }
     
-bool HighPassFilter::setGain(double gain){
+bool HighPassFilter::setGain(float_t gain){
     if( gain > 0 ){
         this->gain = gain;
         return true;
     }
-    errorLog << "setGain(double gain) - Gain value must be greater than 0!" << endl;
+    errorLog << "setGain(float_t gain) - Gain value must be greater than 0!" << std::endl;
     return false;
 }
 
-bool HighPassFilter::setFilterFactor(double filterFactor){
+bool HighPassFilter::setFilterFactor(float_t filterFactor){
     if( filterFactor > 0 ){
         this->filterFactor = filterFactor;
         return true;
     }
-    errorLog << "setFilterFactor(double filterFactor) - FilterFactor value must be greater than 0!" << endl;
+    errorLog << "setFilterFactor(float_t filterFactor) - FilterFactor value must be greater than 0!" << std::endl;
     return false;
 }
     
-bool HighPassFilter::setCutoffFrequency(double cutoffFrequency,double delta){
+bool HighPassFilter::setCutoffFrequency(float_t cutoffFrequency,float_t delta){
     if( cutoffFrequency > 0 && delta > 0 ){
-        double RC = (1.0/TWO_PI) / cutoffFrequency;
+        float_t RC = (1.0/TWO_PI) / cutoffFrequency;
         filterFactor = RC / (RC+delta);
         return true;
     }
     return false;
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE

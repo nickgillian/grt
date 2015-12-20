@@ -36,7 +36,7 @@
 #include "../../DataStructures/TimeSeriesClassificationDataStream.h"
 #include "../../DataStructures/UnlabelledData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class KMeansFeatures : public FeatureExtraction{
 public:
@@ -46,7 +46,7 @@ public:
 	@param numDimensions: the number of dimensions in the input data
     @param numClusters: the number of quantization clusters
      */
-    KMeansFeatures(const vector< UINT > numClustersPerLayer = vector< UINT >(1,100),const float_t alpha = 0.2,const bool useScaling = true);
+    KMeansFeatures(const Vector< UINT > numClustersPerLayer = Vector< UINT >(1,100),const float_t alpha = 0.2,const bool useScaling = true);
 	
     /**
      Copy constructor, copies the KMeansQuantizer from the rhs instance to this instance.
@@ -103,7 +103,7 @@ public:
      @param filename: the filename to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(string filename) const;
+    virtual bool saveModelToFile( std::string filename ) const;
     
     /**
      This saves the feature extraction settings to a file.
@@ -111,7 +111,7 @@ public:
      @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool loadModelFromFile( std::string filename );
     
     /**
      This saves the feature extraction settings to a file.
@@ -121,7 +121,7 @@ public:
      @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads the feature extraction settings from a file.
@@ -130,7 +130,7 @@ public:
      @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
 
     /**
      Trains the quantization model using the training dataset.
@@ -174,13 +174,13 @@ public:
     
     bool computeFeatures(VectorFloat &inputVector,VectorFloat &outputVector);
     
-    bool init( const vector< UINT > numClustersPerLayer );
+    bool init( const Vector< UINT > numClustersPerLayer );
     
     bool projectDataThroughLayer( const VectorFloat &input, VectorFloat &output, const UINT layer );
     
     UINT getNumLayers() const;
     UINT getLayerSize(const UINT layerIndex) const;
-    vector< MatrixFloat > getClusters() const;
+    Vector< MatrixFloat > getClusters() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::train;
@@ -190,13 +190,13 @@ public:
     
 protected:
     float_t alpha;
-    vector< UINT > numClustersPerLayer;
-    vector< MinMax > ranges;
-    vector< MatrixFloat > clusters;
+    Vector< UINT > numClustersPerLayer;
+    Vector< MinMax > ranges;
+    Vector< MatrixFloat > clusters;
     
     static RegisterFeatureExtractionModule< KMeansFeatures > registerModule;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_KMEANS_FEATURES_HEADER

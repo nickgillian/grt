@@ -31,22 +31,22 @@
 
 #include "../../CoreModules/FeatureExtraction.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class TimeseriesBuffer : public FeatureExtraction{
 public:
     /**
      Constructor, sets the size of the timeseries buffer and number of input dimensions.
      
-     @param UINT bufferSize: sets the size of the timeseries buffer. Default value = 5
-     @param UINT numDimensions: sets the number of dimensions that will be input to the feature extraction. Default value = 1
+     @param bufferSize: sets the size of the timeseries buffer. Default value = 5
+     @param numDimensions: sets the number of dimensions that will be input to the feature extraction. Default value = 1
      */
     TimeseriesBuffer(UINT bufferSize = 5,UINT numDimensions = 1);
 	
     /**
      Copy constructor, copies the TimeseriesBuffer from the rhs instance to this instance.
      
-     @param const TimeseriesBuffer &rhs: another instance of the TimeseriesBuffer class from which the data will be copied to this instance
+     @param rhs: another instance of the TimeseriesBuffer class from which the data will be copied to this instance
      */
     TimeseriesBuffer(const TimeseriesBuffer &rhs);
     
@@ -58,7 +58,7 @@ public:
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance.
      
-     @param const TimeseriesBuffer &rhs: another instance of the TimeseriesBuffer class from which the data will be copied to this instance
+     @param rhs: another instance of the TimeseriesBuffer class from which the data will be copied to this instance
      @return a reference to this instance of TimeseriesBuffer
      */
     TimeseriesBuffer& operator=(const TimeseriesBuffer &rhs);
@@ -68,7 +68,7 @@ public:
      This function is used to deep copy the values from the input pointer to this instance of the FeatureExtraction module.
      This function is called by the GestureRecognitionPipeline when the user adds a new FeatureExtraction module to the pipeleine.
      
-     @param const FeatureExtraction *featureExtraction: a pointer to another instance of a TimeseriesBuffer, the values of that instance will be cloned to this instance
+     @param featureExtraction: a pointer to another instance of a TimeseriesBuffer, the values of that instance will be cloned to this instance
      @return returns true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const FeatureExtraction *featureExtraction);
@@ -78,10 +78,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the TimeseriesBuffer's update function.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector);
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -95,7 +95,7 @@ public:
     /**
      This saves the feature extraction settings to a file.
      
-     @param const string filename: the filename to save the settings to
+     @param filename: the filename to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
     virtual bool saveModelToFile(string filename) const;
@@ -103,7 +103,7 @@ public:
     /**
      This saves the feature extraction settings to a file.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
     virtual bool loadModelFromFile(string filename);
@@ -112,7 +112,7 @@ public:
      This saves the feature extraction settings to a file.
      This overrides the saveSettingsToFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
     virtual bool saveModelToFile(fstream &file) const;
@@ -121,7 +121,7 @@ public:
      This loads the feature extraction settings from a file.
      This overrides the loadSettingsFromFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
     virtual bool loadModelFromFile(fstream &file);
@@ -131,8 +131,8 @@ public:
      The search bufferSize and numDimensions values must be larger than 0.
      Sets all the data buffer values to zero.
      
-     @param UINT bufferSize: sets the size of the timeseries buffer
-     @param UINT numDimensions: sets the number of dimensions that will be input to the feature extraction
+     @param bufferSize: sets the size of the timeseries buffer
+     @param numDimensions: sets the number of dimensions that will be input to the feature extraction
 	 @return true if the TimeseriesBuffer was initiliazed, false otherwise
      */
     bool init(UINT bufferSize,UINT numDimensions);
@@ -140,18 +140,18 @@ public:
     /**
      Updates the timeseries buffer with the new data x, this should only be called if the dimensionality of this instance was set to 1.
      
-     @param double x: the value to add to the buffer, this should only be called if the dimensionality of the filter was set to 1
+     @param x: the value to add to the buffer, this should only be called if the dimensionality of the filter was set to 1
 	 @return a vector containing the timeseries buffer, an empty vector will be returned if the buffer is not initialized
      */
-	VectorDouble update(double x);
+	VectorFloat update(float_t x);
     
     /**
      Updates the timeseries buffer with the new data x, the dimensionality of x should match that of this instance.
      
-     @param const VectorDouble &x: a vector containing the values to be processed, must be the same size as the numInputDimensions
+     @param x: a vector containing the values to be processed, must be the same size as the numInputDimensions
 	 @return a vector containing the timeseries buffer, an empty vector will be returned if the buffer is not initialized
      */
-    VectorDouble update(const VectorDouble &x);
+    VectorFloat update(const VectorFloat &x);
     
     /**
      Sets the timeseries buffer size.  The buffer size must be larger than zero.
@@ -175,7 +175,7 @@ public:
      
      @return returns a vector containing the timeseries values, an empty vector will be returned if the module has not been initialized
      */
-    vector< VectorDouble > getDataBuffer();
+    Vector< VectorFloat > getDataBuffer();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::train;
@@ -185,11 +185,11 @@ public:
     
 protected:
     UINT bufferSize;
-    CircularBuffer< VectorDouble > dataBuffer;              ///< A buffer used to store the timeseries data
+    CircularBuffer< VectorFloat > dataBuffer;              ///< A buffer used to store the timeseries data
     
     static RegisterFeatureExtractionModule< TimeseriesBuffer > registerModule;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TIMESERIES_BUFFER_HEADER

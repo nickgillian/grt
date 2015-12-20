@@ -31,7 +31,7 @@
 
 #include "../../CoreAlgorithms/Tree/Node.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class ClusterTreeNode : public Node{
 public:
@@ -60,16 +60,16 @@ public:
      NOTE: The threshold and featureIndex should be set first BEFORE this function is called. The threshold and featureIndex can be set by
      training the node through the DecisionTree class.
      
-     @param const VectorDouble &x: the input vector that will be used for the prediction
+     @param const VectorFloat &x: the input Vector that will be used for the prediction
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x){
+    virtual bool predict(const VectorFloat &x){
         if( x[ featureIndex ] >= threshold ) return true;
         return false;
     }
     
     /**
-     This function recursively predicts if the probability of the input vector.  
+     This function recursively predicts if the probability of the input Vector.  
      If this node is a leaf node, then the class likelihoods are equal to the class probabilities at the leaf node.
      If this node is not a leaf node, then this function will recursively call the predict function on either the left or right children
      until a leaf node is reached.
@@ -77,11 +77,11 @@ public:
      NOTE: The threshold, featureIndex and classProbabilities should be set first BEFORE this function is called. The threshold, featureIndex 
      and classProbabilities can be set by training the node through the DecisionTree class.
      
-     @param const VectorDouble &x: the input vector that will be used for the prediction
-     @param VectorDouble &classLikelihoods: a reference to a vector that will store the class probabilities
+     @param const VectorFloat &x: the input Vector that will be used for the prediction
+     @param VectorFloat &classLikelihoods: a reference to a Vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &y){
+    virtual bool predict(const VectorFloat &x,VectorFloat &y){
         
         if( isLeafNode ){
             if( y.size() != 1 ) y.resize( 1 );
@@ -130,19 +130,19 @@ public:
      */
     virtual bool print() const{
         
-        string tab = "";
+        std::string tab = "";
         for(UINT i=0; i<depth; i++) tab += "\t";
         
-        cout << tab << "depth: " << depth << " nodeSize: " << nodeSize << " featureIndex: " << featureIndex << " threshold " << threshold << " isLeafNode: " << isLeafNode << endl;
-        cout << tab << "ClusterLabel: " << clusterLabel << endl;
+        std::cout << tab << "depth: " << depth << " nodeSize: " << nodeSize << " featureIndex: " << featureIndex << " threshold " << threshold << " isLeafNode: " << isLeafNode << std::endl;
+        std::cout << tab << "ClusterLabel: " << clusterLabel << std::endl;
         
         if( leftChild != NULL ){
-            cout << tab << "LeftChild: " << endl;
+            std::cout << tab << "LeftChild: " << std::endl;
             leftChild->print();
         }
         
         if( rightChild != NULL ){
-            cout << tab << "RightChild: " << endl;
+            std::cout << tab << "RightChild: " << std::endl;
             rightChild->print();
         }
         
@@ -214,7 +214,7 @@ public:
      
      @return returns the threshold
      */
-    double getThreshold() const{
+    float_t getThreshold() const{
         return threshold;
     }
     
@@ -230,13 +230,13 @@ public:
     /**
      This function sets the Cluster Tree Node.
      
-     @param const UINT nodeSize: sets the node size, this is the number of training samples at that node
-     @param const UINT featureIndex: sets the index of the feature that should be used for the threshold spilt
-     @param const double threshold: set the threshold value used for the spilt
-     @param const UINT clusterLabel: the cluster label for this node
+     @param nodeSize: sets the node size, this is the number of training samples at that node
+     @param featureIndex: sets the index of the feature that should be used for the threshold spilt
+     @param threshold: set the threshold value used for the spilt
+     @param clusterLabel: the cluster label for this node
      @return returns true if the node was set, false otherwise
      */
-    bool set(const UINT nodeSize,const UINT featureIndex,const double threshold,const UINT clusterLabel){
+    bool set(const UINT nodeSize,const UINT featureIndex,const float_t threshold,const UINT clusterLabel){
         this->nodeSize = nodeSize;
         this->featureIndex = featureIndex;
         this->threshold = threshold;
@@ -249,22 +249,22 @@ protected:
      This saves the ClusterTreeNode custom parameters to a file. It will be called automatically by the Node base class
      if the saveToFile function is called.
      
-     @param fstream &file: a reference to the file the parameters will be saved to
+     @param file: a reference to the file the parameters will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveParametersToFile(fstream &file) const{
+    virtual bool saveParametersToFile(std::fstream &file) const{
         
         if(!file.is_open())
         {
-            errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
+            errorLog << "saveParametersToFile(fstream &file) - File is not open!" << std::endl;
             return false;
         }
         
         //Save the custom ClusterTreeNode parameters
-        file << "NodeSize: " << nodeSize << endl;
-        file << "FeatureIndex: " << featureIndex << endl;
-        file << "Threshold: " << threshold << endl;
-        file << "ClusterLabel: " << clusterLabel << endl;
+        file << "NodeSize: " << nodeSize << std::endl;
+        file << "FeatureIndex: " << featureIndex << std::endl;
+        file << "Threshold: " << threshold << std::endl;
+        file << "ClusterLabel: " << clusterLabel << std::endl;
         
         return true;
     }
@@ -272,44 +272,44 @@ protected:
     /**
      This loads the ClusterTreeNode parameters from a file.
      
-     @param fstream &file: a reference to the file the parameters will be loaded from
+     @param file: a reference to the file the parameters will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadParametersFromFile(fstream &file){
+    virtual bool loadParametersFromFile(std::fstream &file){
         
         if(!file.is_open())
         {
-            errorLog << "loadFromFile(fstream &file) - File is not open!" << endl;
+            errorLog << "loadFromFile(fstream &file) - File is not open!" << std::endl;
             return false;
         }
         
-        string word;
+        std::string word;
         
         //Load the custom ClusterTreeNode Parameters
         file >> word;
         if( word != "NodeSize:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NodeSize header!" << endl;
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NodeSize header!" << std::endl;
             return false;
         }
         file >> nodeSize;
         
         file >> word;
         if( word != "FeatureIndex:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndex header!" << endl;
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndex header!" << std::endl;
             return false;
         }
         file >> featureIndex;
         
         file >> word;
         if( word != "Threshold:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find Threshold header!" << endl;
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find Threshold header!" << std::endl;
             return false;
         }
         file >> threshold;
         
         file >> word;
         if( word != "ClusterLabel:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find ClusterLabel header!" << endl;
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find ClusterLabel header!" << std::endl;
             return false;
         }
         file >> clusterLabel;
@@ -320,12 +320,12 @@ protected:
     UINT clusterLabel;
     UINT nodeSize;
     UINT featureIndex;
-    double threshold;
+    float_t threshold;
     
     static RegisterNode< ClusterTreeNode > registerModule;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_CLUSTER_TREE_NODE_HEADER
 

@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "Neuron.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 Neuron::Neuron(){
 	activationFunction = LINEAR;
@@ -133,4 +133,4 @@ bool Neuron::validateActivationFunction(const UINT actvationFunction){
     return false;
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE

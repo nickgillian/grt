@@ -36,7 +36,7 @@
 #include "../../CoreModules/FeatureExtraction.h"
 #include "../../Util/Util.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class MovementIndex : public FeatureExtraction{
 public:
@@ -83,10 +83,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the MovementIndex's update function.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @param const VectorFloat &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector);
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -143,18 +143,18 @@ public:
     /**
      Computes the features from the input, this should only be called if the dimensionality of this instance was set to 1.
      
-     @param double x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
+     @param float_t x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
 	 @return a vector containing the features, an empty vector will be returned if the features were not computed
      */
-	VectorDouble update(double x);
+	VectorFloat update(float_t x);
     
     /**
      Computes the features from the input, the dimensionality of x should match that of this instance.
      
-     @param const VectorDouble &x: a vector containing the values to be processed, must be the same size as the numInputDimensions
+     @param const VectorFloat &x: a vector containing the values to be processed, must be the same size as the numInputDimensions
 	 @return a vector containing the features, an empty vector will be returned if the features were not computed
      */
-    VectorDouble update(const VectorDouble &x);
+    VectorFloat update(const VectorFloat &x);
     
     /**
      Gets the current values in the data buffer.
@@ -162,7 +162,7 @@ public:
      
      @return returns a curcular buffer containing the data buffer values, an empty circular buffer will be returned if the feature extraction module has not been initialized
      */
-    CircularBuffer< VectorDouble > getData();
+    CircularBuffer< VectorFloat > getData();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::train;
@@ -172,11 +172,11 @@ public:
 
 protected:
     UINT bufferLength;
-    CircularBuffer< vector< double > > dataBuffer;
+    CircularBuffer< VectorFloat > dataBuffer;
     
     static RegisterFeatureExtractionModule< MovementIndex > registerModule;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MOVEMENT_INDEX_HEADER

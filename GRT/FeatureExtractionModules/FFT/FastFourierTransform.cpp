@@ -25,8 +25,7 @@
 
 #include "FastFourierTransform.h"	
 
-
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 FastFourierTransform::FastFourierTransform(){
 	initialized = false;
@@ -156,21 +155,21 @@ bool FastFourierTransform::init(const unsigned int windowSize,const unsigned int
     return true;
 }
 
-bool FastFourierTransform::computeFFT( VectorDouble &data ){
+bool FastFourierTransform::computeFFT( VectorFloat &data ){
     
     if( !initialized ){
         return false;
     }
 
-	//Validate the input vector 
+	//Validate the input Vector 
     if( !enableZeroPadding ){
 		if( (unsigned int)data.size() != windowSize ){
-        	errorLog << "The size of the data vector (" << data.size() << ") does not match the windowSize: " << windowSize << endl;
+        	errorLog << "The size of the data Vector (" << data.size() << ") does not match the windowSize: " << windowSize << std::endl;
         	return false;
     	}
 	}else{
 		if( (unsigned int)data.size() > windowSize ){
-        	errorLog << "The size of the data vector (" << data.size() << ") is greater than the windowSize: " << windowSize << endl;
+        	errorLog << "The size of the data Vector (" << data.size() << ") is greater than the windowSize: " << windowSize << std::endl;
         	return false;
     	}
 	}
@@ -210,12 +209,12 @@ bool FastFourierTransform::computeFFT( VectorDouble &data ){
     }
 
     //Compute the average power
-    averagePower = averagePower / (double)(windowSize/2);
+    averagePower = averagePower / (float_t)(windowSize/2);
     
     return true;
 }
     
-bool FastFourierTransform::windowData( VectorDouble &data ){
+bool FastFourierTransform::windowData( VectorFloat &data ){
    
 	const unsigned int N = (unsigned int)data.size();
  	const unsigned int K = N/2;
@@ -226,8 +225,8 @@ bool FastFourierTransform::windowData( VectorDouble &data ){
             break;
         case BARTLETT_WINDOW:
             for(unsigned int i=0; i<K; i++) {
-                data[i] *= (i / (double) (K));
-                data[i + K] *= (1.0 - (i / (double)K));
+                data[i] *= (i / (float_t) (K));
+                data[i + K] *= (1.0 - (i / (float_t)K));
             }
             return true;
             break;
@@ -249,12 +248,12 @@ bool FastFourierTransform::windowData( VectorDouble &data ){
     return false;
 }
     
-VectorDouble FastFourierTransform::getMagnitudeData(){
+VectorFloat FastFourierTransform::getMagnitudeData(){
     
-    if( !initialized ) return VectorDouble();
+    if( !initialized ) return VectorFloat();
     
 	const unsigned int N = windowSize/2;    
-    VectorDouble magnitudeData(N);
+    VectorFloat magnitudeData(N);
     
     for(unsigned int i=0; i<N; i++){
         magnitudeData[i] = magnitude[i];
@@ -263,11 +262,11 @@ VectorDouble FastFourierTransform::getMagnitudeData(){
     return magnitudeData;
 }
 
-VectorDouble FastFourierTransform::getPhaseData(){
-    if( !initialized ) return VectorDouble();
+VectorFloat FastFourierTransform::getPhaseData(){
+    if( !initialized ) return VectorFloat();
 
 	const unsigned int N = windowSize/2;    
-    VectorDouble phaseData(N);
+    VectorFloat phaseData(N);
     
     for(unsigned int i=0; i<N; i++){
         phaseData[i] = phase[i];
@@ -276,10 +275,10 @@ VectorDouble FastFourierTransform::getPhaseData(){
     return phaseData;
 }
 
-VectorDouble FastFourierTransform::getPowerData(){
-    if( !initialized ) return VectorDouble();
+VectorFloat FastFourierTransform::getPowerData(){
+    if( !initialized ) return VectorFloat();
     
-    VectorDouble powerData(windowSize/2);
+    VectorFloat powerData(windowSize/2);
     
     for(unsigned int i=0; i<windowSize/2; i++){
         powerData[i] = power[i];
@@ -288,19 +287,19 @@ VectorDouble FastFourierTransform::getPowerData(){
     return powerData;
 }
     
-double FastFourierTransform::getAveragePower(){
+float_t FastFourierTransform::getAveragePower(){
     return averagePower;
 }
     
-double* FastFourierTransform::getMagnitudeDataPtr(){
+float_t* FastFourierTransform::getMagnitudeDataPtr(){
     return &magnitude[0];
 }
 
-double* FastFourierTransform::getPhaseDataPtr(){
+float_t* FastFourierTransform::getPhaseDataPtr(){
     return &phase[0];
 }
 
-double* FastFourierTransform::getPowerDataPtr(){
+float_t* FastFourierTransform::getPowerDataPtr(){
     return &power[0];
 }
     
@@ -319,12 +318,12 @@ double* FastFourierTransform::getPowerDataPtr(){
  * i4  <->  imag[n/2-i]
  */
 
-bool FastFourierTransform::realFFT( const VectorDouble &realIn, double *realOut, double *imagOut ){
+bool FastFourierTransform::realFFT( const VectorFloat &realIn, float_t *realOut, float_t *imagOut ){
     int NumSamples = (int)windowSize;
     int Half = NumSamples / 2;
     int i;
     
-    double theta = PI / Half;
+    float_t theta = PI / Half;
     
     for (i = 0; i < Half; i++) {
         tmpReal[i] = realIn[2 * i];
@@ -335,16 +334,16 @@ bool FastFourierTransform::realFFT( const VectorDouble &realIn, double *realOut,
         return false;
     }
     
-    double wtemp = double(sin(0.5 * theta));
+    float_t wtemp = float_t(sin(0.5 * theta));
     
-    double wpr = -2.0 * wtemp * wtemp;
-    double wpi = double (sin(theta));
-    double wr = 1.0 + wpr;
-    double wi = wpi;
+    float_t wpr = -2.0 * wtemp * wtemp;
+    float_t wpi = float_t (sin(theta));
+    float_t wr = 1.0 + wpr;
+    float_t wi = wpi;
     
     int i3;
     
-    double h1r, h1i, h2r, h2i;
+    float_t h1r, h1i, h2r, h2i;
     
     for (i = 1; i < Half / 2; i++) {
         
@@ -370,13 +369,13 @@ bool FastFourierTransform::realFFT( const VectorDouble &realIn, double *realOut,
     return true;
 }
 
-bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,double *realIn, double *imagIn, double *realOut, double *imagOut){
+bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,float_t *realIn, float_t *imagIn, float_t *realOut, float_t *imagOut){
     int NumBits;                 /* Number of bits needed to store indices */
     int i, j, k, n;
     int BlockSize, BlockEnd;
     
-    double angle_numerator = 2.0 * PI;
-    double tr, ti;                /* temp real, temp imaginary */
+    float_t angle_numerator = 2.0 * PI;
+    float_t tr, ti;                /* temp real, temp imaginary */
     
     if( !isPowerOfTwo(numSamples) ) {
         fprintf(stderr, "%d is not a power of two\n", numSamples);
@@ -400,14 +399,14 @@ bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,double *real
     BlockEnd = 1;
     for (BlockSize = 2; BlockSize <= numSamples; BlockSize <<= 1) {
         
-        double delta_angle = angle_numerator / (double) BlockSize;
+        float_t delta_angle = angle_numerator / (float_t) BlockSize;
         
-        double sm2 = sin(-2 * delta_angle);
-        double sm1 = sin(-delta_angle);
-        double cm2 = cos(-2 * delta_angle);
-        double cm1 = cos(-delta_angle);
-        double w = 2 * cm1;
-        double ar0, ar1, ar2, ai0, ai1, ai2;
+        float_t sm2 = sin(-2 * delta_angle);
+        float_t sm1 = sin(-delta_angle);
+        float_t cm2 = cos(-2 * delta_angle);
+        float_t cm1 = cos(-delta_angle);
+        float_t w = 2 * cm1;
+        float_t ar0, ar1, ar2, ai0, ai1, ai2;
         
         for (i = 0; i < numSamples; i += BlockSize) {
             ar2 = cm2;
@@ -442,7 +441,7 @@ bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,double *real
     
     //Need to normalize the results if we are computing the inverse transform
     if( inverseTransform ){
-        double denom = (double) numSamples;
+        float_t denom = (float_t) numSamples;
         
         for(i = 0; i < numSamples; i++) {
             realOut[i] /= denom;
@@ -505,4 +504,5 @@ inline bool FastFourierTransform::isPowerOfTwo(const unsigned int x){
     return true;
 }
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
+

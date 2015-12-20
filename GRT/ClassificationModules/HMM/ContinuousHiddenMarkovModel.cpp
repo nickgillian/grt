@@ -19,18 +19,19 @@
  */
 
 #include "ContinuousHiddenMarkovModel.h"
+#include "HMMEnums.h"
 
-using namespace GRT;
+GRT_BEGIN_NAMESPACE
 
 //Init the model with a set number of states and symbols
-ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFactor,const UINT delta,const bool autoEstimateSigma,const double sigma){
+ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFactor,const UINT delta,const bool autoEstimateSigma,const float_t sigma){
 
     clear();
 	this->downsampleFactor = downsampleFactor;
 	this->delta = delta;
     this->autoEstimateSigma = autoEstimateSigma;
     this->sigma = sigma;
-    modelType = HMM_LEFTRIGHT;
+    modelType = HMMModelTypes::HMM_LEFTRIGHT;
 	cThreshold = 0;
     useScaling = false;
     
@@ -106,22 +107,22 @@ ContinuousHiddenMarkovModel& ContinuousHiddenMarkovModel::operator=(const Contin
     return *this;
 }
     
-bool ContinuousHiddenMarkovModel::predict_(VectorDouble &x){
+bool ContinuousHiddenMarkovModel::predict_(VectorFloat &x){
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &x) - The model is not trained!" << endl;
+        errorLog << "predict_(VectorFloat &x) - The model is not trained!" << std::endl;
         return false;
     }
     
-    if( x.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &x) - The input vector size (" << x.size() << ") does not match the number of input dimensions (" << numInputDimensions << ")" << endl;
+    if( x.getSize() != numInputDimensions ){
+        errorLog << "predict_(VectorFloat &x) - The input vector size (" << x.getSize() << ") does not match the number of input dimensions (" << numInputDimensions << ")" << std::endl;
         return false;
     }
     
     //Add the new sample to the circular buffer
     observationSequence.push_back( x );
     
-    //Convert the circular buffer to MatrixDouble
+    //Convert the circular buffer to MatrixFloat
     for(unsigned int i=0; i<observationSequence.getSize(); i++){
         for(unsigned int j=0; j<numInputDimensions; j++){
             obsSequence[i][j] = observationSequence[i][j];
@@ -131,26 +132,26 @@ bool ContinuousHiddenMarkovModel::predict_(VectorDouble &x){
     return predict_( obsSequence );
 }
   
-bool ContinuousHiddenMarkovModel::predict_( MatrixDouble &timeseries ){
+bool ContinuousHiddenMarkovModel::predict_( MatrixFloat &timeseries ){
     
     if( !trained ){
-        errorLog << "predict_( MatrixDouble &timeseries ) - The model is not trained!" << endl;
+        errorLog << "predict_( MatrixFloat &timeseries ) - The model is not trained!" << std::endl;
         return false;
     }
     
     if( timeseries.getNumCols() != numInputDimensions ){
-        errorLog << "predict_( MatrixDouble &timeseries ) - The matrix column size (" << timeseries.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")" << endl;
+        errorLog << "predict_( MatrixFloat &timeseries ) - The matrix column size (" << timeseries.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")" << std::endl;
         return false;
     }
     
     unsigned int t,i,j,k,index = 0;
-    double maxAlpha = 0;
-    double norm = 0;
+    float_t maxAlpha = 0;
+    float_t norm = 0;
     
     //Downsample the observation timeseries using the same downsample factor of the training data
     const unsigned int timeseriesLength = (int)timeseries.getNumRows();
-    const unsigned int T = (int)floor( timeseriesLength / double(downsampleFactor) );
-    MatrixDouble obs(T,numInputDimensions);
+    const unsigned int T = (int)floor( timeseriesLength / float_t(downsampleFactor) );
+    MatrixFloat obs(T,numInputDimensions);
     for(j=0; j<numInputDimensions; j++){
         index = 0;
         for(i=0; i<T; i++){
@@ -226,7 +227,7 @@ bool ContinuousHiddenMarkovModel::predict_( MatrixDouble &timeseries ){
     loglikelihood = -loglikelihood; //Store the negative log likelihood
     
     //Set the phase as the last estimated state, this will give a phase between [0 1]
-    phase = (estimatedStates[T-1]+1.0)/double(numStates);
+    phase = (estimatedStates[T-1]+1.0)/float_t(numStates);
 
     return true;
 }
@@ -254,7 +255,7 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
     b.resize(numStates, numInputDimensions);
     
     unsigned int index = 0;
-    double norm = 0;
+    float_t norm = 0;
     for(unsigned int j=0; j<numInputDimensions; j++){
         index = 0;
         for(unsigned int i=0; i<numStates; i++){
@@ -312,7 +313,7 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
     if( autoEstimateSigma ){
         
         //Estimate the standard dev for each dimension, for each state
-        MatrixDouble meanResults( numStates, numInputDimensions );
+        MatrixFloat meanResults( numStates, numInputDimensions );
         for(unsigned int j=0; j<numInputDimensions; j++){
             
             //Estimate the mean for each state
@@ -357,7 +358,7 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
     }
     
     //Setup the observation buffer for prediction
-    observationSequence.resize( timeseriesLength, VectorDouble(numInputDimensions,0) );
+    observationSequence.resize( timeseriesLength, VectorFloat(numInputDimensions,0) );
     obsSequence.resize(timeseriesLength,numInputDimensions);
     estimatedStates.resize( numStates );
     
@@ -374,7 +375,7 @@ bool ContinuousHiddenMarkovModel::reset(){
 
     if( trained ){
         for(unsigned int i=0; i<observationSequence.getSize(); i++){
-            observationSequence.push_back( VectorDouble(numInputDimensions,0) );
+            observationSequence.push_back( VectorFloat(numInputDimensions,0) );
         }
     }
     
@@ -405,44 +406,44 @@ bool ContinuousHiddenMarkovModel::clear(){
 bool ContinuousHiddenMarkovModel::print() const{
 
     if( trained ){
-        trainingLog << "A: " << endl;
+        trainingLog << "A: " << std::endl;
         for(UINT i=0; i<a.getNumRows(); i++){
             for(UINT j=0; j<a.getNumCols(); j++){
                 trainingLog << a[i][j] << "\t";
             }
-            trainingLog << endl;
+            trainingLog << std::endl;
         }
 
-        trainingLog << "B: " << endl;
+        trainingLog << "B: " << std::endl;
         for(UINT i=0; i<b.getNumRows(); i++){
             for(UINT j=0; j<b.getNumCols(); j++){
                 trainingLog << b[i][j] << "\t";
             }
-            trainingLog << endl;
+            trainingLog << std::endl;
         }
         
         trainingLog << "Pi: ";
         for(size_t i=0; i<pi.size(); i++){
             trainingLog << pi[i] << "\t";
         }
-        trainingLog << endl;
+        trainingLog << std::endl;
         
         trainingLog << "SigmaStates: ";
         for(UINT i=0; i<sigmaStates.getNumRows(); i++){
             for(UINT j=0; j<sigmaStates.getNumCols(); j++){
                 trainingLog << sigmaStates[i][j] << "\t";
             }
-            trainingLog << endl;
+            trainingLog << std::endl;
         }
-        trainingLog << endl;
+        trainingLog << std::endl;
 
         //Check the weights all sum to 1
         if( true ){
-            double sum=0.0;
+            float_t sum=0.0;
             for(UINT i=0; i<a.getNumRows(); i++){
               sum=0.0;
               for(UINT j=0; j<a.getNumCols(); j++) sum += a[i][j];
-              if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: A Row " << i <<" Sum: "<< sum << endl;
+              if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: A Row " << i <<" Sum: "<< sum << std::endl;
             }
         }
     }
@@ -457,7 +458,7 @@ bool ContinuousHiddenMarkovModel::setDownsampleFactor(const UINT downsampleFacto
         this->downsampleFactor = downsampleFactor;
         return true;
     }
-    warningLog << "setDownsampleFactor(const UINT downsampleFactor) - Failed to set downsample factor, it must be greater than zero!" << endl;
+    warningLog << "setDownsampleFactor(const UINT downsampleFactor) - Failed to set downsample factor, it must be greater than zero!" << std::endl;
     return false;
 }
     
@@ -467,7 +468,7 @@ bool ContinuousHiddenMarkovModel::setModelType(const UINT modelType){
         this->modelType = modelType;
         return true;
     }
-    warningLog << "setModelType(const UINT modelType) - Failed to set model type, unknown type!" << endl;
+    warningLog << "setModelType(const UINT modelType) - Failed to set model type, unknown type!" << std::endl;
     return false;
 }
 
@@ -477,11 +478,11 @@ bool ContinuousHiddenMarkovModel::setDelta(const UINT delta){
         this->delta = delta;
         return true;
     }
-    warningLog << "setDelta(const UINT delta) - Failed to set delta, it must be greater than zero!" << endl;
+    warningLog << "setDelta(const UINT delta) - Failed to set delta, it must be greater than zero!" << std::endl;
     return false;
 }
     
-bool ContinuousHiddenMarkovModel::setSigma(const double sigma){
+bool ContinuousHiddenMarkovModel::setSigma(const float_t sigma){
     if( sigma > 0 ){
         this->sigma = sigma;
         
@@ -490,7 +491,7 @@ bool ContinuousHiddenMarkovModel::setSigma(const double sigma){
         }
         return true;
     }
-    warningLog << "setSigma(const double sigma) - Failed to set sigma, it must be greater than zero!" << endl;
+    warningLog << "setSigma(const float_t sigma) - Failed to set sigma, it must be greater than zero!" << std::endl;
     return false;
 }
 
@@ -503,19 +504,19 @@ bool ContinuousHiddenMarkovModel::setAutoEstimateSigma(const bool autoEstimateSi
     return true;
 }
 
-double ContinuousHiddenMarkovModel::gauss( const MatrixDouble &x, const MatrixDouble &y, const MatrixDouble &sigma, const unsigned int i,const unsigned int j,const unsigned int N ){
-    double z = 1;
+float_t ContinuousHiddenMarkovModel::gauss( const MatrixFloat &x, const MatrixFloat &y, const MatrixFloat &sigma, const unsigned int i,const unsigned int j,const unsigned int N ){
+    float_t z = 1;
     for(unsigned int n=0; n<N; n++){
         z *= (1.0/( sigma[i][n] * SQRT_TWO_PI )) * exp( - SQR(x[i][n]-y[j][n])/(2.0*SQR(sigma[i][n])) );
     }
     return z;
 }
     
-bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
+bool ContinuousHiddenMarkovModel::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog << "saveModelToFile( fstream &file ) - File is not open!" << endl;
+        errorLog << "saveModelToFile( fstream &file ) - File is not open!" << std::endl;
         return false;
     }
     
@@ -524,19 +525,19 @@ bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
     
     //Write the base settings to the file
     if( !MLBase::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
-    file << "DownsampleFactor: " << downsampleFactor << endl;
-    file << "NumStates: " << numStates << endl;
-    file << "ClassLabel: " << classLabel << endl;
-    file << "TimeseriesLength: " << timeseriesLength << endl;
-    file << "Sigma: " << sigma << endl;
-    file << "AutoEstimateSigma: " << autoEstimateSigma << endl;
-    file << "ModelType: " << modelType << endl;
-    file << "Delta: " << delta << endl;
-    file << "Threshold: " << cThreshold << endl;
+    file << "DownsampleFactor: " << downsampleFactor << std::endl;
+    file << "NumStates: " << numStates << std::endl;
+    file << "ClassLabel: " << classLabel << std::endl;
+    file << "TimeseriesLength: " << timeseriesLength << std::endl;
+    file << "Sigma: " << sigma << std::endl;
+    file << "AutoEstimateSigma: " << autoEstimateSigma << std::endl;
+    file << "ModelType: " << modelType << std::endl;
+    file << "Delta: " << delta << std::endl;
+    file << "Threshold: " << cThreshold << std::endl;
     
     if( trained ){
         file << "A:\n";
@@ -544,7 +545,7 @@ bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
             for(UINT j=0; j<numStates; j++){
                 file << a[i][j];
                 if( j+1 < numStates ) file << "\t";
-            }file << endl;
+            }file << std::endl;
         }
         
         file << "B:\n";
@@ -552,7 +553,7 @@ bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
             for(UINT j=0; j<numInputDimensions; j++){
                 file << b[i][j];
                 if( j+1 < numInputDimensions ) file << "\t";
-            }file << endl;
+            }file << std::endl;
         }
         
         file<<"Pi: ";
@@ -560,29 +561,29 @@ bool ContinuousHiddenMarkovModel::saveModelToFile(fstream &file) const{
             file << pi[i];
             if( i+1 < numStates ) file << "\t";
         }
-        file << endl;
+        file << std::endl;
         
         file << "SigmaStates: ";
         for(UINT i=0; i<numStates; i++){
             for(UINT j=0; j<numInputDimensions; j++){
                 file << sigmaStates[i][j];
                 if( j+1 < numInputDimensions ) file << "\t";
-            }file << endl;
+            }file << std::endl;
         }
-        file << endl;
+        file << std::endl;
 
     }
     
     return true;
 }
 
-bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
+bool ContinuousHiddenMarkovModel::loadModelFromFile( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile( fstream &file ) - File is not open!" << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - File is not open!" << std::endl;
         return false;
     }
     
@@ -592,75 +593,75 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
     
     //Find the file type header
     if(word != "CONTINUOUS_HMM_MODEL_FILE_V1.0"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header!" << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header!" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !MLBase::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "DownsampleFactor:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the DownsampleFactor header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the DownsampleFactor header." << std::endl;
         return false;
     }
     file >> downsampleFactor;
     
     file >> word;
     if(word != "NumStates:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumStates header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumStates header." << std::endl;
         return false;
     }
     file >> numStates;
     
     file >> word;
     if(word != "ClassLabel:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the ClassLabel header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the ClassLabel header." << std::endl;
         return false;
     }
     file >> classLabel;
     
     file >> word;
     if(word != "TimeseriesLength:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the TimeseriesLength header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the TimeseriesLength header." << std::endl;
         return false;
     }
     file >> timeseriesLength;
     
     file >> word;
     if(word != "Sigma:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Sigma for the header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Sigma for the header." << std::endl;
         return false;
     }
     file >> sigma;
     
     file >> word;
     if(word != "AutoEstimateSigma:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the AutoEstimateSigma for the header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the AutoEstimateSigma for the header." << std::endl;
         return false;
     }
     file >> autoEstimateSigma;
     
     file >> word;
     if(word != "ModelType:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the ModelType for the header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the ModelType for the header." << std::endl;
         return false;
     }
     file >> modelType;
     
     file >> word;
     if(word != "Delta:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Delta for the header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Delta for the header." << std::endl;
         return false;
     }
     file >> delta;
     
     file >> word;
     if(word != "Threshold:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Threshold for the header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Threshold for the header." << std::endl;
         return false;
     }
     file >> cThreshold;
@@ -674,7 +675,7 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
         //Load the A, B and Pi matrices
         file >> word;
         if(word != "A:"){
-            errorLog << "loadModelFromFile( fstream &file ) - Could not find the A matrix header." << endl;
+            errorLog << "loadModelFromFile( fstream &file ) - Could not find the A matrix header." << std::endl;
             return false;
         }
         
@@ -687,7 +688,7 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
         
         file >> word;
         if(word != "B:"){
-            errorLog << "loadModelFromFile( fstream &file ) - Could not find the B matrix header." << endl;
+            errorLog << "loadModelFromFile( fstream &file ) - Could not find the B matrix header." << std::endl;
             return false;
         }
         
@@ -700,7 +701,7 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
         
         file >> word;
         if(word != "Pi:"){
-            errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi header." << endl;
+            errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi header." << std::endl;
             return false;
         }
         
@@ -711,7 +712,7 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
 
         file >> word;
         if(word != "SigmaStates:"){
-            errorLog << "loadModelFromFile( fstream &file ) - Could not find the SigmaStates header." << endl;
+            errorLog << "loadModelFromFile( fstream &file ) - Could not find the SigmaStates header." << std::endl;
             return false;
         }
         
@@ -723,10 +724,13 @@ bool ContinuousHiddenMarkovModel::loadModelFromFile(fstream &file){
         }
         
         //Setup the observation buffer for prediction
-        observationSequence.resize( timeseriesLength, VectorDouble(numInputDimensions,0) );
+        observationSequence.resize( timeseriesLength, VectorFloat(numInputDimensions,0) );
         obsSequence.resize(timeseriesLength,numInputDimensions);
         estimatedStates.resize( numStates );
     }
 
     return true;
 }
+
+GRT_END_NAMESPACE
+

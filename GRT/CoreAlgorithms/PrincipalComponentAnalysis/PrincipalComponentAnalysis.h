@@ -46,7 +46,7 @@
 #include "../../Util/GRTCommon.h"
 #include "../../CoreModules/MLBase.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 	
 class PrincipalComponentAnalysis : public MLBase{
  public:
@@ -104,7 +104,7 @@ class PrincipalComponentAnalysis : public MLBase{
      The computeFeatureVector function should have been called at least once before this function is called.
      The size of the data vector must match the numInputDimensions parameter.  The function will return true if the projection was successful, false otherwise.
      
-     @param const data: The data that should be projected onto the principal subspace. This should be an N-dimensional vector, where N must equal the numInputDimensions value.
+     @param data: The data that should be projected onto the principal subspace. This should be an N-dimensional vector, where N must equal the numInputDimensions value.
      @param prjData: A vector into which the projected data will be stored. This vector will be resized to K, where K is the numPrincipalComponents.
      @return returns true if the projection was successful, false otherwise
      */
@@ -113,18 +113,18 @@ class PrincipalComponentAnalysis : public MLBase{
     /**
      This saves the trained PCA model to a file.
    
-     @param fstream &file: a reference to the file the model will be saved to
+     @param file: a reference to the file the model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained PCA model from a file.
      
-     @param fstream &file: a reference to the file the model will be loaded from
+     @param file: a reference to the file the model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
 	
     /**
      Returns true if the module was trained.
@@ -187,7 +187,7 @@ class PrincipalComponentAnalysis : public MLBase{
      A helper function that prints the PCA info. If the user sets the title string, then this will be written in
      addition with the PCA data.
      */
-    virtual bool print(string title="") const;
+    virtual bool print( std::string title="" ) const;
     
     /**
      Returns a matrix containing the eigen vectors.
@@ -207,14 +207,14 @@ protected:
     VectorFloat stdDev;
     VectorFloat componentWeights;
     VectorFloat eigenvalues;
-    vector< IndexedDouble > sortedEigenvalues;
+    Vector< IndexedDouble > sortedEigenvalues;
     MatrixFloat eigenvectors;
 
     enum AnalysisMode{MAX_VARIANCE=0,MAX_NUM_PCS};
 	
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_PRINCIPAL_COMPONENT_ANALYSIS_HEADER
 

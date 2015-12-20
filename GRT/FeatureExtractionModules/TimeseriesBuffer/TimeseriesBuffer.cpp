@@ -79,15 +79,15 @@ bool TimeseriesBuffer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     return false;
 }
     
-bool TimeseriesBuffer::computeFeatures(const VectorDouble &inputVector){
+bool TimeseriesBuffer::computeFeatures(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
         return false;
     }
     
@@ -206,7 +206,7 @@ bool TimeseriesBuffer::init(UINT bufferSize,UINT numDimensions){
     numInputDimensions = numDimensions;
     numOutputDimensions = bufferSize * numInputDimensions;
     this->bufferSize = bufferSize;
-    dataBuffer.resize( bufferSize, VectorDouble(numInputDimensions,0) );
+    dataBuffer.resize( bufferSize, VectorFloat(numInputDimensions,0) );
     featureVector.resize(numOutputDimensions,0);
     
     //Flag that the timeseries buffer has been initialized
@@ -216,20 +216,20 @@ bool TimeseriesBuffer::init(UINT bufferSize,UINT numDimensions){
 }
 
 
-VectorDouble TimeseriesBuffer::update(double x){
-	return update(VectorDouble(1,x));
+VectorFloat TimeseriesBuffer::update(float_t x){
+	return update(VectorFloat(1,x));
 }
     
-VectorDouble TimeseriesBuffer::update(const VectorDouble &x){
+VectorFloat TimeseriesBuffer::update(const VectorFloat &x){
     
     if( !initialized ){
-        errorLog << "update(const VectorDouble &x) - Not Initialized!" << endl;
-        return VectorDouble();
+        errorLog << "update(const VectorFloat &x) - Not Initialized!" << endl;
+        return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "update(const VectorDouble &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
-        return VectorDouble();
+        errorLog << "update(const VectorFloat &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
+        return VectorFloat();
     }
     
     //Add the new data to the buffer
@@ -266,9 +266,9 @@ UINT TimeseriesBuffer::getBufferSize(){
     return 0;
 }
 
-vector< VectorDouble > TimeseriesBuffer::getDataBuffer(){
-    if( initialized ) return dataBuffer.getDataAsVector();
-    return vector< VectorDouble >();
+Vector< VectorFloat > TimeseriesBuffer::getDataBuffer(){
+    if( initialized ) return dataBuffer.getData();
+    return Vector< VectorFloat >();
 }
 
 }//End of namespace GRT

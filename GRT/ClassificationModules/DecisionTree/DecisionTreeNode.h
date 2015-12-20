@@ -35,7 +35,7 @@
 #include "../../CoreAlgorithms/Tree/Tree.h"
 #include "../../DataStructures/ClassificationData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class DecisionTreeNode : public Node{
 public:
@@ -50,7 +50,7 @@ public:
     virtual ~DecisionTreeNode();
     
     /**
-     This function recursively predicts if the probability of the input vector.  
+     This function recursively predicts if the probability of the input Vector.  
      If this node is a leaf node, then the class likelihoods are equal to the class probabilities at the leaf node.
      If this node is not a leaf node, then this function will recursively call the predict function on either the left or right children
      until a leaf node is reached.
@@ -58,27 +58,27 @@ public:
      NOTE: The threshold, featureIndex and classProbabilities should be set first BEFORE this function is called. The threshold, featureIndex 
      and classProbabilities can be set by training the node through the DecisionTree class.
      
-     @param const VectorDouble &x: the input vector that will be used for the prediction
-     @param VectorDouble &classLikelihoods: a reference to a vector that will store the class probabilities
+     @param x: the input Vector that will be used for the prediction
+     @param classLikelihoods: a reference to a Vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x,VectorDouble &classLikelihoods);
+    virtual bool predict(const VectorFloat &x,VectorFloat &classLikelihoods);
     
     /**
      This function calls the best spliting algorithm based on the current trainingMode.  
      
      This function will return true if the best spliting algorithm found a split, false otherwise.
      
-     @param const UINT &trainingMode: the training mode to use, this should be one of the
-     @param const UINT &numSplittingSteps: sets the number of iterations that will be used to search for the best threshold
-     @param const ClassificationData &trainingData: the training data to use for the best split search
-     @param const const vector< UINT > &features: a vector containing the indexs of the features that can be used for the search
-     @param const vector< UINT > &classLabels: a vector containing the class labels for the search
-     @param UINT &featureIndex: this will store the best feature index found during the search
-     @param double &minError: this will store the minimum error found during the search
+     @param trainingMode: the training mode to use, this should be one of the
+     @param numSplittingSteps: sets the number of iterations that will be used to search for the best threshold
+     @param trainingData: the training data to use for the best split search
+     @param features: a Vector containing the indexs of the features that can be used for the search
+     @param classLabels: a Vector containing the class labels for the search
+     @param featureIndex: this will store the best feature index found during the search
+     @param minError: this will store the minimum error found during the search
      @return returns true if the best spliting algorithm found a split, false otherwise
      */
-    virtual bool computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError );
+    virtual bool computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError );
 
     /**
      This functions cleans up any dynamic memory assigned by the node.
@@ -92,10 +92,10 @@ public:
      This function adds the current model to the formatted stream.
      This function should be overwritten by the derived class.
      
-     @param ostream &file: a reference to the stream the model will be added to
+     @param stream: a reference to the stream the model will be added to
      @return returns true if the model was added successfully, false otherwise
      */
-    virtual bool getModel(ostream &stream) const;
+    virtual bool getModel( std::ostream &stream ) const;
     
     /**
      This function returns a deep copy of the DecisionTreeNode and all it's children.
@@ -121,32 +121,32 @@ public:
     UINT getNodeSize() const;
     
     /**
-     This function returns the number of classes in the class probabilities vector.
+     This function returns the number of classes in the class probabilities Vector.
      
-     @return returns the number of classes in the class probabilities vector
+     @return returns the number of classes in the class probabilities Vector
      */
     UINT getNumClasses() const;
     
     /**
-     This function returns the class probabilities vector.
+     This function returns the class probabilities Vector.
      
-     @return returns the classProbabilities vector
+     @return returns the classProbabilities Vector
      */
-    VectorDouble getClassProbabilities() const;
+    VectorFloat getClassProbabilities() const;
     
     /**
      This function sets the Decision Tree Node as a leaf node.
      
-     @param const UINT nodeSize: sets the node size, this is the number of training samples at that node
-     @param const VectorDouble &classProbabilities: the vector of class probabilities at this node
+     @param nodeSize: sets the node size, this is the number of training samples at that node
+     @param classProbabilities: the Vector of class probabilities at this node
      @return returns true if the node was updated, false otherwise
      */
-    bool setLeafNode( const UINT nodeSize, const VectorDouble &classProbabilities );
+    bool setLeafNode( const UINT nodeSize, const VectorFloat &classProbabilities );
     
     /**
      This function sets the Decision Tree Node nodeSize.
      
-     @param const UINT nodeSize: sets the node size, this is the number of training samples at that node
+     @param nodeSize: sets the node size, this is the number of training samples at that node
      @return returns true if the node size was set, false otherwise
      */
     bool setNodeSize(const UINT nodeSize);
@@ -154,26 +154,26 @@ public:
     /**
      This function sets the Decision Tree Node class probabilities.
      
-     @param const VectorDouble &classProbabilities: the vector of class probabilities at this node
+     @param classProbabilities: the Vector of class probabilities at this node
      @return returns true if the node was set classProbabilities, false otherwise
      */
-    bool setClassProbabilities(const VectorDouble &classProbabilities);
+    bool setClassProbabilities(const VectorFloat &classProbabilities);
     
-    static UINT getClassLabelIndexValue(UINT classLabel,const vector< UINT > &classLabels);
+    static UINT getClassLabelIndexValue(UINT classLabel,const Vector< UINT > &classLabels);
     
     using Node::predict;
     
 protected:
-    virtual bool computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+    virtual bool computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
         
-        errorLog << "computeBestSpiltBestIterativeSpilt(...) - Base class not overwritten!" << endl;
+        errorLog << "computeBestSpiltBestIterativeSpilt(...) - Base class not overwritten!" << std::endl;
         
         return false;
     }
     
-    virtual bool computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+    virtual bool computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
         
-        errorLog << "computeBestSpiltBestRandomSpilt(...) - Base class not overwritten!" << endl;
+        errorLog << "computeBestSpiltBestRandomSpilt(...) - Base class not overwritten!" << std::endl;
         
         return false;
     }
@@ -182,26 +182,26 @@ protected:
      This saves the DecisionTreeNode custom parameters to a file. It will be called automatically by the Node base class
      if the saveToFile function is called.
      
-     @param fstream &file: a reference to the file the parameters will be saved to
+     @param file: a reference to the file the parameters will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveParametersToFile(fstream &file) const{
+    virtual bool saveParametersToFile( std::fstream &file ) const{
         
         if( !file.is_open() )
         {
-            errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
+            errorLog << "saveParametersToFile(fstream &file) - File is not open!" << std::endl;
             return false;
         }
         
         //Save the custom DecisionTreeNode parameters
-        file << "NodeSize: " << nodeSize << endl;
-        file << "NumClasses: " << classProbabilities.size() << endl;
+        file << "NodeSize: " << nodeSize << std::endl;
+        file << "NumClasses: " << classProbabilities.size() << std::endl;
         file << "ClassProbabilities: ";
         if( classProbabilities.size() > 0 ){
             for(UINT i=0; i<classProbabilities.size(); i++){
                 file << classProbabilities[i];
                 if( i < classProbabilities.size()-1 ) file << "\t";
-                else file << endl;
+                else file << std::endl;
             }
         }
         
@@ -211,33 +211,33 @@ protected:
     /**
      This loads the Decision Tree Node parameters from a file.
      
-     @param fstream &file: a reference to the file the parameters will be loaded from
+     @param file: a reference to the file the parameters will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadParametersFromFile(fstream &file){
+    virtual bool loadParametersFromFile( std::fstream &file ){
         
         if( !file.is_open() )
         {
-            errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << endl;
+            errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << std::endl;
             return false;
         }
         
         classProbabilities.clear();
         
-        string word;
+        std::string word;
         UINT numClasses;
         
         //Load the custom DecisionTreeNode Parameters
         file >> word;
         if( word != "NodeSize:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NodeSize header!" << endl;
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NodeSize header!" << std::endl;
             return false;
         }
         file >> nodeSize;
         
         file >> word;
         if( word != "NumClasses:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NumClasses header!" << endl;
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NumClasses header!" << std::endl;
             return false;
         }
         file >> numClasses;
@@ -246,7 +246,7 @@ protected:
         
         file >> word;
         if( word != "ClassProbabilities:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find ClassProbabilities header!" << endl;
+            errorLog << "loadParametersFromFile(fstream &file) - Failed to find ClassProbabilities header!" << std::endl;
             return false;
         }
         if( numClasses > 0 ){
@@ -259,12 +259,12 @@ protected:
     }
     
     UINT nodeSize;
-    VectorDouble classProbabilities;
+    VectorFloat classProbabilities;
     
     static RegisterNode< DecisionTreeNode > registerModule;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_DECISION_TREE_NODE_HEADER
 

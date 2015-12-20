@@ -31,11 +31,9 @@
 #ifndef GRT_HMM_ENUMS_HEADER
 #define GRT_HMM_ENUMS_HEADER
 
-namespace GRT {
+#include <iostream>
     
 enum HMMModelTypes{HMM_ERGODIC=0,HMM_LEFTRIGHT};
 enum HMMTypes{HMM_DISCRETE=0,HMM_CONTINUOUS};
-    
-}//End of namespace GRT
 
 #endif //GRT_HMM_ENUMS_HEADER

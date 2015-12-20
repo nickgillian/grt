@@ -20,9 +20,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "TimeSeriesClassificationData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
-TimeSeriesClassificationData::TimeSeriesClassificationData(UINT numDimensions,string datasetName,string infoText){
+TimeSeriesClassificationData::TimeSeriesClassificationData(UINT numDimensions,std::string datasetName,std::string infoText){
     debugLog.setProceedingText("[DEBUG TSCD]");
     errorLog.setProceedingText("[ERROR TSCD]");
     warningLog.setProceedingText("[WARNING TSCD]");
@@ -90,28 +90,28 @@ bool TimeSeriesClassificationData::setNumDimensions(const UINT numDimensions){
         return true;
     }
 
-    errorLog << "setNumDimensions(UINT numDimensions) - The number of dimensions of the dataset must be greater than zero!" << endl;
+    errorLog << "setNumDimensions(UINT numDimensions) - The number of dimensions of the dataset must be greater than zero!" << std::endl;
     return false;
 }
 
-bool TimeSeriesClassificationData::setDatasetName(const string datasetName){
+bool TimeSeriesClassificationData::setDatasetName(const std::string datasetName){
 
-    //Make sure there are no spaces in the string
-    if( datasetName.find(" ") == string::npos ){
+    //Make sure there are no spaces in the std::string
+    if( datasetName.find(" ") == std::string::npos ){
         this->datasetName = datasetName;
         return true;
     }
 
-    errorLog << "setDatasetName(string datasetName) - The dataset name cannot contain any spaces!" << endl;
+    errorLog << "setDatasetName(std::string datasetName) - The dataset name cannot contain any spaces!" << std::endl;
     return false;
 }
 
-bool TimeSeriesClassificationData::setInfoText(const string infoText){
+bool TimeSeriesClassificationData::setInfoText(const std::string infoText){
     this->infoText = infoText;
     return true;
 }
 
-bool TimeSeriesClassificationData::setClassNameForCorrespondingClassLabel(const string className,const UINT classLabel){
+bool TimeSeriesClassificationData::setClassNameForCorrespondingClassLabel(const std::string className,const UINT classLabel){
 
     for(UINT i=0; i<classTracker.size(); i++){
         if( classTracker[i].classLabel == classLabel ){
@@ -131,13 +131,13 @@ bool TimeSeriesClassificationData::setAllowNullGestureClass(const bool allowNull
 bool TimeSeriesClassificationData::addSample(const UINT classLabel,const MatrixFloat &trainingSample){
 	
     if( trainingSample.getNumCols() != numDimensions ){
-        errorLog << "addSample(UINT classLabel, MatrixFloat trainingSample) - The dimensionality of the training sample (" << trainingSample.getNumCols() << ") does not match that of the dataset (" << numDimensions << ")" << endl;
+        errorLog << "addSample(UINT classLabel, MatrixFloat trainingSample) - The dimensionality of the training sample (" << trainingSample.getNumCols() << ") does not match that of the dataset (" << numDimensions << ")" << std::endl;
         return false;
     }
     
     //The class label must be greater than zero (as zero is used for the null rejection class label
     if( classLabel == GRT_DEFAULT_NULL_CLASS_LABEL && !allowNullGestureClass ){
-        errorLog << "addSample(UINT classLabel, MatrixFloat sample) - the class label can not be 0!" << endl;
+        errorLog << "addSample(UINT classLabel, MatrixFloat sample) - the class label can not be 0!" << std::endl;
         return false;
     }
 
@@ -265,7 +265,7 @@ bool TimeSeriesClassificationData::relabelAllSamplesWithClassLabel(const UINT ol
     return true;
 }
 
-bool TimeSeriesClassificationData::setExternalRanges(const vector< MinMax > &externalRanges,const bool useExternalRanges){
+bool TimeSeriesClassificationData::setExternalRanges(const Vector< MinMax > &externalRanges,const bool useExternalRanges){
 
     if( externalRanges.size() != numDimensions ) return false;
 
@@ -284,11 +284,11 @@ bool TimeSeriesClassificationData::enableExternalRangeScaling(const bool useExte
 }
 
 bool TimeSeriesClassificationData::scale(const float_t minTarget,const float_t maxTarget){
-    vector< MinMax > ranges = getRanges();
+    Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool TimeSeriesClassificationData::scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
+bool TimeSeriesClassificationData::scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
     if( ranges.size() != numDimensions ) return false;
 
     //Scale the training data
@@ -303,7 +303,7 @@ bool TimeSeriesClassificationData::scale(const vector<MinMax> &ranges,const floa
     return true;
 }
     
-bool TimeSeriesClassificationData::save(const string &filename) const{
+bool TimeSeriesClassificationData::save(const std::string &filename) const{
     
     //Check if the file should be saved as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -314,7 +314,7 @@ bool TimeSeriesClassificationData::save(const string &filename) const{
     return saveDatasetToFile( filename );
 }
 
-bool TimeSeriesClassificationData::load(const string &filename){
+bool TimeSeriesClassificationData::load(const std::string &filename){
     
     //Check if the file should be loaded as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -325,33 +325,33 @@ bool TimeSeriesClassificationData::load(const string &filename){
     return loadDatasetFromFile( filename );
 }
 
-bool TimeSeriesClassificationData::saveDatasetToFile(const string fileName) const{
+bool TimeSeriesClassificationData::saveDatasetToFile(const std::string fileName) const{
 
 	std::fstream file;
 	file.open(fileName.c_str(), std::ios::out);
 
 	if( !file.is_open() ){
-        errorLog << "saveDatasetToFile(string fileName) -  Failed to open file!" << endl;
+        errorLog << "saveDatasetToFile(std::string fileName) -  Failed to open file!" << std::endl;
 		return false;
 	}
 
 	file << "GRT_LABELLED_TIME_SERIES_CLASSIFICATION_DATA_FILE_V1.0\n";
-    file << "DatasetName: " << datasetName << endl;
-    file << "InfoText: " << infoText << endl;
-	file << "NumDimensions: "<<numDimensions<<endl;
-	file << "TotalNumTrainingExamples: "<<totalNumSamples<<endl;
-	file << "NumberOfClasses: "<<classTracker.size()<<endl;
-	file << "ClassIDsAndCounters: "<<endl;
+    file << "DatasetName: " << datasetName << std::endl;
+    file << "InfoText: " << infoText << std::endl;
+	file << "NumDimensions: "<<numDimensions << std::endl;
+	file << "TotalNumTrainingExamples: "<<totalNumSamples << std::endl;
+	file << "NumberOfClasses: "<<classTracker.size() << std::endl;
+	file << "ClassIDsAndCounters: " << std::endl;
 
 	for(UINT i=0; i<classTracker.size(); i++){
-		file << classTracker[i].classLabel << "\t" << classTracker[i].counter << endl;
+		file << classTracker[i].classLabel << "\t" << classTracker[i].counter << std::endl;
 	}
 
-    file << "UseExternalRanges: " << useExternalRanges << endl;
+    file << "UseExternalRanges: " << useExternalRanges << std::endl;
 
     if( useExternalRanges ){
         for(UINT i=0; i<externalRanges.size(); i++){
-            file << externalRanges[i].minValue << "\t" << externalRanges[i].maxValue << endl;
+            file << externalRanges[i].minValue << "\t" << externalRanges[i].maxValue << std::endl;
         }
     }
 
@@ -359,14 +359,14 @@ bool TimeSeriesClassificationData::saveDatasetToFile(const string fileName) cons
 
 	for(UINT x=0; x<totalNumSamples; x++){
 		file << "************TIME_SERIES************\n";
-		file << "ClassID: "<<data[x].getClassLabel() <<endl;
-		file << "TimeSeriesLength: "<<data[x].getLength()<<endl;
+		file << "ClassID: "<<data[x].getClassLabel() << std::endl;
+		file << "TimeSeriesLength: "<<data[x].getLength()<< std::endl;
 		file << "TimeSeriesData: \n";
 		for(UINT i=0; i<data[x].getLength(); i++){
 			for(UINT j=0; j<numDimensions; j++){
 				file << data[x][i][j];
 				if( j<numDimensions-1 ) file << "\t";
-			}file << endl;
+			}file << std::endl;
 		}
 	}
 
@@ -374,7 +374,7 @@ bool TimeSeriesClassificationData::saveDatasetToFile(const string fileName) cons
 	return true;
 }
 
-bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
+bool TimeSeriesClassificationData::loadDatasetFromFile(const std::string filename){
 
 	std::fstream file;
 	file.open(filename.c_str(), std::ios::in);
@@ -382,25 +382,25 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 	clear();
 
 	if( !file.is_open() ){
-		errorLog << "loadDatasetFromFile(string filename) - FILE NOT OPEN!" << endl;
+		errorLog << "loadDatasetFromFile(std::string filename) - FILE NOT OPEN!" << std::endl;
 		return false;
 	}
 
-	string word;
+	std::string word;
 
 	//Check to make sure this is a file with the Training File Format
 	file >> word;
 	if(word != "GRT_LABELLED_TIME_SERIES_CLASSIFICATION_DATA_FILE_V1.0"){
 		file.close();
         clear();
-        errorLog << "loadDatasetFromFile(string filename) - Failed to find file header!" << endl;
+        errorLog << "loadDatasetFromFile(std::string filename) - Failed to find file header!" << std::endl;
 		return false;
 	}
 
     //Get the name of the dataset
 	file >> word;
 	if(word != "DatasetName:"){
-        errorLog << "loadDatasetFromFile(string filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(std::string filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -408,7 +408,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 
     file >> word;
 	if(word != "InfoText:"){
-        errorLog << "loadDatasetFromFile(string filename) - failed to find InfoText!" << endl;
+        errorLog << "loadDatasetFromFile(std::string filename) - failed to find InfoText!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -425,7 +425,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 	if(word != "NumDimensions:"){
 		file.close();
         clear();
-        errorLog << "loadDatasetFromFile(string filename) - Failed to find NumDimensions!" << endl;
+        errorLog << "loadDatasetFromFile(std::string filename) - Failed to find NumDimensions!" << std::endl;
 		return false;
 	}
 	file >> numDimensions;
@@ -435,7 +435,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 	if(word != "TotalNumTrainingExamples:"){
 		file.close();
         clear();
-        errorLog << "loadDatasetFromFile(string filename) - Failed to find TotalNumTrainingExamples!" << endl;
+        errorLog << "loadDatasetFromFile(std::string filename) - Failed to find TotalNumTrainingExamples!" << std::endl;
 		return false;
 	}
 	file >> totalNumSamples;
@@ -445,7 +445,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 	if(word != "NumberOfClasses:"){
 		file.close();
         clear();
-        errorLog << "loadDatasetFromFile(string filename) - Failed to find NumberOfClasses!" << endl;
+        errorLog << "loadDatasetFromFile(std::string filename) - Failed to find NumberOfClasses!" << std::endl;
 		return false;
 	}
 	file >> numClasses;
@@ -458,7 +458,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 	if(word != "ClassIDsAndCounters:"){
 		file.close();
         clear();
-        errorLog << "loadDatasetFromFile(string filename) - Failed to find ClassIDsAndCounters!" << endl;
+        errorLog << "loadDatasetFromFile(std::string filename) - Failed to find ClassIDsAndCounters!" << std::endl;
 		return false;
 	}
 
@@ -472,7 +472,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 	if(word != "UseExternalRanges:"){
 		file.close();
         clear();
-        errorLog << "loadDatasetFromFile(string filename) - Failed to find UseExternalRanges!" << endl;
+        errorLog << "loadDatasetFromFile(std::string filename) - Failed to find UseExternalRanges!" << std::endl;
 		return false;
 	}
 
@@ -491,7 +491,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 	if(word != "LabelledTimeSeriesTrainingData:"){
         file.close();
         clear();
-        errorLog << "loadDatasetFromFile(string filename) - Failed to find LabelledTimeSeriesTrainingData!" << endl;
+        errorLog << "loadDatasetFromFile(std::string filename) - Failed to find LabelledTimeSeriesTrainingData!" << std::endl;
 		return false;
 	}
 
@@ -507,7 +507,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 		if( word != "************TIME_SERIES************" ){
 			file.close();
             clear();
-            errorLog << "loadDatasetFromFile(string filename) - Failed to find TimeSeries Header!" << endl;
+            errorLog << "loadDatasetFromFile(std::string filename) - Failed to find TimeSeries Header!" << std::endl;
             return false;
 		}
 
@@ -515,7 +515,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 		if( word != "ClassID:" ){
 			file.close();
             clear();
-            errorLog << "loadDatasetFromFile(string filename) - Failed to find ClassID!" << endl;
+            errorLog << "loadDatasetFromFile(std::string filename) - Failed to find ClassID!" << std::endl;
             return false;
 		}
 		file >> classLabel;
@@ -524,7 +524,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 		if( word != "TimeSeriesLength:" ){
 			file.close();
             clear();
-            errorLog << "loadDatasetFromFile(string filename) - Failed to find TimeSeriesLength!" << endl;
+            errorLog << "loadDatasetFromFile(std::string filename) - Failed to find TimeSeriesLength!" << std::endl;
             return false;
 		}
 		file >> timeSeriesLength;
@@ -533,7 +533,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 		if( word != "TimeSeriesData:" ){
 			file.close();
             clear();
-            errorLog << "loadDatasetFromFile(string filename) - Failed to find TimeSeriesData!" << endl;
+            errorLog << "loadDatasetFromFile(std::string filename) - Failed to find TimeSeriesData!" << std::endl;
             return false;
 		}
 
@@ -552,7 +552,7 @@ bool TimeSeriesClassificationData::loadDatasetFromFile(const string filename){
 	return true;
 }
     
-bool TimeSeriesClassificationData::saveDatasetToCSVFile(const string &filename) const{
+bool TimeSeriesClassificationData::saveDatasetToCSVFile(const std::string &filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out );
@@ -572,7 +572,7 @@ bool TimeSeriesClassificationData::saveDatasetToCSVFile(const string &filename) 
                     file << ",";
                 }
             }
-            file << endl;
+            file << std::endl;
         }
     }
     
@@ -581,7 +581,7 @@ bool TimeSeriesClassificationData::saveDatasetToCSVFile(const string &filename) 
     return true;
 }
 
-bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename){
+bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const std::string &filename){
     
     numDimensions = 0;
     datasetName = "NOT_SET";
@@ -594,17 +594,17 @@ bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename
     FileParser parser;
     
     if( !parser.parseCSVFile(filename,true) ){
-        errorLog << "loadDatasetFromCSVFile(const string &filename) - Failed to parse CSV file!" << endl;
+        errorLog << "loadDatasetFromCSVFile(const std::string &filename) - Failed to parse CSV file!" << std::endl;
         return false;
     }
     
     if( !parser.getConsistentColumnSize() ){
-        errorLog << "loadDatasetFromCSVFile(const string &filename) - The CSV file does not have a consistent number of columns!" << endl;
+        errorLog << "loadDatasetFromCSVFile(const std::string &filename) - The CSV file does not have a consistent number of columns!" << std::endl;
         return false;
     }
     
     if( parser.getColumnSize() <= 2 ){
-        errorLog << "loadDatasetFromCSVFile(const string &filename) - The CSV file does not have enough columns! It should contain at least three columns!" << endl;
+        errorLog << "loadDatasetFromCSVFile(const std::string &filename) - The CSV file does not have enough columns! It should contain at least three columns!" << std::endl;
         return false;
     }
     
@@ -623,26 +623,26 @@ bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename
     MatrixFloat timeseries;
     for(UINT i=0; i<parser.getRowSize(); i++){
         
-        sampleCounter = Util::stringToInt( parser[i][0] );
+        sampleCounter = grt_from_str< UINT >( parser[i][0] );
         
         //Check to see if a new timeseries has started, if so then add the previous time series as a sample and start recording the new time series
         if( sampleCounter != lastSampleCounter && i != 0 ){
             //Add the labelled sample to the dataset
             if( !addSample(classLabel, timeseries) ){
-                warningLog << "loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex) - Could not add sample " << i << " to the dataset!" << endl;
+                warningLog << "loadDatasetFromCSVFile(const std::string &filename,const UINT classLabelColumnIndex) - Could not add sample " << i << " to the dataset!" << std::endl;
             }
             timeseries.clear();
         }
         lastSampleCounter = sampleCounter;
         
         //Get the class label
-        classLabel = Util::stringToInt( parser[i][1] );
+        classLabel = grt_from_str< UINT >( parser[i][1] );
         
         //Get the sample data
         j=0;
         n=2;
         while( j != numDimensions ){
-            sample[j++] = Util::stringToFloat( parser[i][n] );
+            sample[j++] = grt_from_str< float_t >( parser[i][n] );
             n++;
         }
         
@@ -652,7 +652,7 @@ bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename
 	if ( timeseries.getSize() > 0 )
         //Add the labelled sample to the dataset
         if( !addSample(classLabel, timeseries) ){
-            warningLog << "loadDatasetFromCSVFile(const string &filename,const UINT classLabelColumnIndex) - Could not add sample " << parser.getRowSize()-1 << " to the dataset!" << endl;
+            warningLog << "loadDatasetFromCSVFile(const std::string &filename,const UINT classLabelColumnIndex) - Could not add sample " << parser.getRowSize()-1 << " to the dataset!" << std::endl;
         }
     
     return true;
@@ -660,14 +660,14 @@ bool TimeSeriesClassificationData::loadDatasetFromCSVFile(const string &filename
     
 bool TimeSeriesClassificationData::printStats() const {
     
-    cout << getStatsAsString();
+    std::cout << getStatsAsString();
     
     return true;
 }
     
 std::string TimeSeriesClassificationData::getStatsAsString() const{
     
-    string stats;
+    std::string stats;
     
     stats += "DatasetName:\t" + datasetName + "\n";
     stats += "DatasetInfo:\t" + infoText + "\n";
@@ -682,7 +682,7 @@ std::string TimeSeriesClassificationData::getStatsAsString() const{
         stats +="\tClassName:\t" + classTracker[k].className + "\n";
     }
     
-    vector< MinMax > ranges = getRanges();
+    Vector< MinMax > ranges = getRanges();
     
     stats += "Dataset Ranges:\n";
     for(UINT j=0; j<ranges.size(); j++){
@@ -713,7 +713,7 @@ TimeSeriesClassificationData TimeSeriesClassificationData::partition(const UINT 
     TimeSeriesClassificationData testSet(numDimensions);
     trainingSet.setAllowNullGestureClass(allowNullGestureClass);
     testSet.setAllowNullGestureClass(allowNullGestureClass);
-    vector< UINT > indexs( totalNumSamples );
+    Vector< UINT > indexs( totalNumSamples );
 
     //Create the random partion indexs
     Random random;
@@ -721,7 +721,7 @@ TimeSeriesClassificationData TimeSeriesClassificationData::partition(const UINT 
 
     if( useStratifiedSampling ){
         //Break the data into seperate classes
-        vector< vector< UINT > > classData( getNumClasses() );
+        Vector< Vector< UINT > > classData( getNumClasses() );
 
         //Add the indexs to their respective classes
         for(UINT i=0; i<totalNumSamples; i++){
@@ -789,7 +789,7 @@ TimeSeriesClassificationData TimeSeriesClassificationData::partition(const UINT 
 bool TimeSeriesClassificationData::merge(const TimeSeriesClassificationData &labelledData){
 
     if( labelledData.getNumDimensions() != numDimensions ){
-        errorLog << "merge(TimeSeriesClassificationData &labelledData) - The number of dimensions in the labelledData (" << labelledData.getNumDimensions() << ") does not match the number of dimensions of this dataset (" << numDimensions << ")" << endl;
+        errorLog << "merge(TimeSeriesClassificationData &labelledData) - The number of dimensions in the labelledData (" << labelledData.getNumDimensions() << ") does not match the number of dimensions of this dataset (" << numDimensions << ")" << std::endl;
         return false;
     }
 
@@ -803,7 +803,7 @@ bool TimeSeriesClassificationData::merge(const TimeSeriesClassificationData &lab
     }
 
     //Set the class names from the dataset
-    vector< ClassTracker > classTracker = labelledData.getClassTracker();
+    Vector< ClassTracker > classTracker = labelledData.getClassTracker();
     for(UINT i=0; i<classTracker.size(); i++){
         setClassNameForCorrespondingClassLabel(classTracker[i].className, classTracker[i].classLabel);
     }
@@ -818,13 +818,13 @@ bool TimeSeriesClassificationData::spiltDataIntoKFolds(const UINT K,const bool u
 
     //K can not be zero
     if( K > totalNumSamples ){
-        errorLog << "spiltDataIntoKFolds(UINT K) - K can not be zero!" << endl;
+        errorLog << "spiltDataIntoKFolds(UINT K) - K can not be zero!" << std::endl;
         return false;
     }
 
     //K can not be larger than the number of examples
     if( K > totalNumSamples ){
-        errorLog << "spiltDataIntoKFolds(UINT K,bool useStratifiedSampling) - K can not be larger than the total number of samples in the dataset!" << endl;
+        errorLog << "spiltDataIntoKFolds(UINT K,bool useStratifiedSampling) - K can not be larger than the total number of samples in the dataset!" << std::endl;
         return false;
     }
 
@@ -832,7 +832,7 @@ bool TimeSeriesClassificationData::spiltDataIntoKFolds(const UINT K,const bool u
     if( useStratifiedSampling ){
         for(UINT c=0; c<classTracker.size(); c++){
             if( K > classTracker[c].counter ){
-                errorLog << "spiltDataIntoKFolds(UINT K,bool useStratifiedSampling) - K can not be larger than the number of samples in any given class!" << endl;
+                errorLog << "spiltDataIntoKFolds(UINT K,bool useStratifiedSampling) - K can not be larger than the number of samples in any given class!" << std::endl;
                 return false;
             }
         }
@@ -840,7 +840,7 @@ bool TimeSeriesClassificationData::spiltDataIntoKFolds(const UINT K,const bool u
 
     //Setup the dataset for k-fold cross validation
     kFoldValue = K;
-    vector< UINT > indexs( totalNumSamples );
+    Vector< UINT > indexs( totalNumSamples );
 
     //Work out how many samples are in each fold, the last fold might have more samples than the others
     UINT numSamplesPerFold = (UINT) floor( totalNumSamples/float_t(K) );
@@ -854,7 +854,7 @@ bool TimeSeriesClassificationData::spiltDataIntoKFolds(const UINT K,const bool u
 
     if( useStratifiedSampling ){
         //Break the data into seperate classes
-        vector< vector< UINT > > classData( getNumClasses() );
+        Vector< Vector< UINT > > classData( getNumClasses() );
 
         //Add the indexs to their respective classes
         for(UINT i=0; i<totalNumSamples; i++){
@@ -874,7 +874,7 @@ bool TimeSeriesClassificationData::spiltDataIntoKFolds(const UINT K,const bool u
         }
 
         //Loop over each of the classes and add the data equally to each of the k folds until there is no data left
-        vector< UINT >::iterator iter;
+        Vector< UINT >::iterator iter;
         for(UINT c=0; c<getNumClasses(); c++){
             iter = classData[ c ].begin();
             UINT k = 0;
@@ -921,7 +921,7 @@ TimeSeriesClassificationData TimeSeriesClassificationData::getTrainingFoldData(c
     TimeSeriesClassificationData trainingData;
 
     if( !crossValidationSetup ){
-        errorLog << "getTrainingFoldData(UINT foldIndex) - Cross Validation has not been setup! You need to call the spiltDataIntoKFolds(UINT K,bool useStratifiedSampling) function first before calling this function!" << endl;
+        errorLog << "getTrainingFoldData(UINT foldIndex) - Cross Validation has not been setup! You need to call the spiltDataIntoKFolds(UINT K,bool useStratifiedSampling) function first before calling this function!" << std::endl;
         return trainingData;
     }
 
@@ -986,7 +986,7 @@ UnlabelledData TimeSeriesClassificationData::reformatAsUnlabelledData() const {
 
     for(UINT i=0; i<totalNumSamples; i++){
         for(UINT x=0; x<data[i].getLength(); x++){
-            unlabelledData.addSample( data[i].getData().getRowVector( x ) );
+            unlabelledData.addSample( data[i].getData().getRow( x ) );
         }
     }
 
@@ -1024,11 +1024,11 @@ UINT TimeSeriesClassificationData::getClassLabelIndexValue(const UINT classLabel
             return k;
         }
     }
-    warningLog << "getClassLabelIndexValue(UINT classLabel) - Failed to find class label: " << classLabel << " in class tracker!" << endl;
+    warningLog << "getClassLabelIndexValue(UINT classLabel) - Failed to find class label: " << classLabel << " in class tracker!" << std::endl;
     return 0;
 }
 
-string TimeSeriesClassificationData::getClassNameForCorrespondingClassLabel(const UINT classLabel) const {
+std::string TimeSeriesClassificationData::getClassNameForCorrespondingClassLabel(const UINT classLabel) const {
 
     for(UINT i=0; i<classTracker.size(); i++){
         if( classTracker[i].classLabel == classLabel ){
@@ -1038,11 +1038,11 @@ string TimeSeriesClassificationData::getClassNameForCorrespondingClassLabel(cons
     return "CLASS_LABEL_NOT_FOUND";
 }
 
-vector<MinMax> TimeSeriesClassificationData::getRanges() const {
+Vector<MinMax> TimeSeriesClassificationData::getRanges() const {
 
     if( useExternalRanges ) return externalRanges;
 
-    vector<MinMax> ranges(numDimensions);
+    Vector<MinMax> ranges(numDimensions);
 
     if( totalNumSamples > 0 ){
         for(UINT j=0; j<numDimensions; j++){
@@ -1083,4 +1083,5 @@ MatrixFloat TimeSeriesClassificationData::getDataAsMatrixFloat() const {
     return matrixData;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
+

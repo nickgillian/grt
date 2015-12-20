@@ -31,22 +31,22 @@
 
 #include "../CoreModules/PreProcessing.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class LeakyIntegrator : public PreProcessing{
 public:
     /**
      Constructor, sets the leak rate and the dimensionality of the input data.
 	 
-     @param const double leakRate: sets the leak rate of the filter, this should be in the range [0 1].  Default delta = 0.99
-     @param const UINT numDimensions: the dimensionality of the input data.  Default numDimensions = 1
+     @param leakRate: sets the leak rate of the filter, this should be in the range [0 1].  Default delta = 0.99
+     @param numDimensions: the dimensionality of the input data.  Default numDimensions = 1
      */
-    LeakyIntegrator(const double leakRate = 0.99,const UINT numDimensions = 1);
+    LeakyIntegrator(const float_t leakRate = 0.99,const UINT numDimensions = 1);
     
     /**
      Copy Constructor, copies the LeakyIntegrator from the rhs instance to this instance
      
-	 @param const LeakyIntegrator &rhs: another instance of the LeakyIntegrator class from which the data will be copied to this instance
+	 @param rhs: another instance of the LeakyIntegrator class from which the data will be copied to this instance
      */
     LeakyIntegrator(const LeakyIntegrator &rhs);
     
@@ -58,7 +58,7 @@ public:
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance
      
-	 @param const LeakyIntegrator &rhs: another instance of the LeakyIntegrator class from which the data will be copied to this instance
+	 @param rhs: another instance of the LeakyIntegrator class from which the data will be copied to this instance
 	 @return a reference to this instance of LeakyIntegrator
      */
     LeakyIntegrator& operator=(const LeakyIntegrator &rhs);
@@ -68,7 +68,7 @@ public:
      This function is used to clone the values from the input pointer to this instance of the PreProcessing module.
      This function is called by the GestureRecognitionPipeline when the user adds a new PreProcessing module to the pipeline.
      
-	 @param const PreProcessing *preProcessing: a pointer to another instance of a LeakyIntegrator, the values of that instance will be cloned to this instance
+	 @param preProcessing: a pointer to another instance of a LeakyIntegrator, the values of that instance will be cloned to this instance
 	 @return true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const PreProcessing *preProcessing);
@@ -78,10 +78,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the LeakyIntegrator's computeLeakyIntegrator function.
      
-	 @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the PreProcessing module
+	 @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the PreProcessing module
 	 @return true if the data was processed, false otherwise
      */
-    virtual bool process(const VectorDouble &inputVector);
+    virtual bool process(const VectorFloat &inputVector);
     
     /**
      Sets the PreProcessing reset function, overwriting the base PreProcessing function.
@@ -96,72 +96,72 @@ public:
      This saves the current settings of the LeakyIntegrator to a file.
      This overrides the saveModelToFile function in the PreProcessing base class.
      
-     @param fstream &file: a reference to the file the settings will be saved to
+     @param file: a reference to the file the settings will be saved to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads the LeakyIntegrator settings from a file.
      This overrides the loadModelFromFile function in the PreProcessing base class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
 
     /**
      Initializes the instance, sets the leak rate and the dimensionality of the input data.
 	 
-     @param const double leakRate: sets the leak rate of the filter, this should be in the range [0 1].  Default delta = 0.99
-     @param const UINT numDimensions: the dimensionality of the input data.  Default numDimensions = 1
+     @param leakRate: sets the leak rate of the filter, this should be in the range [0 1].  Default delta = 0.99
+     @param numDimensions: the dimensionality of the input data.  Default numDimensions = 1
 	 @return true if the instance was initiliazed, false otherwise
      */
-    bool init(const double leakRate,const UINT numDimensions);
+    bool init(const float_t leakRate,const UINT numDimensions);
     
     /**
      Computes the LeakyIntegrator of the input, this should only be called if the dimensionality of the instance was set to 1.
      
-     @param double x: the value to compute the LeakyIntegrator of, this should only be called if the dimensionality of the filter was set to 1
+     @param x: the value to compute the LeakyIntegrator of, this should only be called if the dimensionality of the filter was set to 1
 	 @return the LeakyIntegrator of the input.  Zero will be returned if the value was not computed
      */
-	double update(const double x);
+	float_t update(const float_t x);
     
     /**
      Computes the LeakyIntegrator of the input, the dimensionality of the input should match the number of inputs for the LeakyIntegrator
      
-     @param const VectorDouble &x: the values to compute the LeakyIntegrator of, the dimensionality of the input should match the number of inputs for the LeakyIntegrator
+     @param x: the values to compute the LeakyIntegrator of, the dimensionality of the input should match the number of inputs for the LeakyIntegrator
 	 @return the LeakyIntegrators of the input.  An empty vector will be returned if the values were not filtered
      */
-    VectorDouble update(const VectorDouble &x);
+    VectorFloat update(const VectorFloat &x);
     
     /**
      Sets the leak rate.  This should be in the range [0 1].
      Setting delta will re-initialize this instance.
      
-     @param double leakRate: the new leak rate value
+     @param leakRate: the new leak rate value
 	 @return returns true if delta was set, false otherwise
      */
-    bool setLeakRate(const double leakRate);
+    bool setLeakRate(const float_t leakRate);
     
     /**
      Gets the leak rate.
      
 	 @return returns the current leak rate
      */
-    double getLeakRate();
+    float_t getLeakRate();
     
     using PreProcessing::saveModelToFile;
     using PreProcessing::loadModelFromFile;
 
 protected:
-    double leakRate;                        ///< The current leak rate
-	VectorDouble y;                        ///< A buffer holding the previous input value(s)
+    float_t leakRate;                        ///< The current leak rate
+	VectorFloat y;                        ///< A buffer holding the previous input value(s)
     
     static RegisterPreProcessingModule< LeakyIntegrator > registerModule;
     
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_LeakyIntegrator_HEADER

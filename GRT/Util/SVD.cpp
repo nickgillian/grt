@@ -19,9 +19,9 @@
  */
 #include "SVD.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 	
-bool SVD::solve(Matrix<double> &a){
+bool SVD::solve(MatrixFloat &a){
 	
 	//Setup the memory
 	m = a.getNumRows();
@@ -30,23 +30,23 @@ bool SVD::solve(Matrix<double> &a){
 	v.resize(n,n);
 	w.resize(n);
 	
-	eps = numeric_limits< double >::epsilon();
+	eps = std::numeric_limits< float_t >::epsilon();
 	if( !decompose() ) return false;
 	if( !reorder() ) return false;
 	
-	tsh = 0.5*sqrt(m+n+1.)*w[0]*eps;
+	tsh = 0.5*grt_sqrt(m+n+1.)*w[0]*eps;
 
 	return true;
 }
 
-bool SVD::solveVector(vector <double> &b, vector <double> &x, double thresh) {
+bool SVD::solveVector(VectorFloat &b, VectorFloat &x, float_t thresh) {
 	UINT i,j,jj;
-	double s;
+	float_t s;
 	if(b.size() != m || x.size() != n){
 		return false;
 	}
-	vector <double> tmp(n);
-	tsh = (thresh >= 0. ? thresh : 0.5*sqrt(m+n+1.)*w[0]*eps);
+	VectorFloat tmp(n);
+	tsh = (thresh >= 0. ? thresh : 0.5*grt_sqrt(m+n+1.)*w[0]*eps);
 	for (j=0;j<n;j++) {
 		s=0.0;
 		if (w[j] > tsh) {
@@ -63,12 +63,12 @@ bool SVD::solveVector(vector <double> &b, vector <double> &x, double thresh) {
 	return true;
 }
 
-bool SVD::solve(Matrix <double> &b, Matrix <double> &x, double thresh){
+bool SVD::solve(MatrixFloat &b, MatrixFloat &x, float_t thresh){
 	UINT i,j,m=b.getNumCols();
 	if (b.getNumRows() != n || x.getNumRows() != n || b.getNumCols() != x.getNumCols()){
 		return false;
 	}
-	vector <double> xx(n);
+	VectorFloat xx(n);
 	for (j=0;j<m;j++) {
 		for (i=0;i<n;i++) xx[i] = b[i][j];
 		solveVector(xx,xx,thresh);
@@ -76,23 +76,23 @@ bool SVD::solve(Matrix <double> &b, Matrix <double> &x, double thresh){
 	}
 	return true;
 }
-UINT SVD::rank(double thresh) {
+UINT SVD::rank(float_t thresh) {
 	UINT j,nr=0;
-	tsh = (thresh >= 0. ? thresh : 0.5*sqrt(m+n+1.)*w[0]*eps);
+	tsh = (thresh >= 0. ? thresh : 0.5*grt_sqrt(m+n+1.)*w[0]*eps);
 	for (j=0;j<n;j++) if (w[j] > tsh) nr++;
 	return nr;
 }
 
-UINT SVD::nullity(double thresh) {
+UINT SVD::nullity(float_t thresh) {
 	UINT j,nn=0;
-	tsh = (thresh >= 0. ? thresh : 0.5*sqrt(m+n+1.)*w[0]*eps);
+	tsh = (thresh >= 0. ? thresh : 0.5*grt_sqrt(m+n+1.)*w[0]*eps);
 	for (j=0;j<n;j++) if (w[j] <= tsh) nn++;
 	return nn;
 }
 
-Matrix <double> SVD::range(double thresh){
+MatrixFloat SVD::range(float_t thresh){
 	UINT i,j,nr=0;
-	Matrix <double> rnge(m,rank(thresh));
+	MatrixFloat rnge(m,rank(thresh));
 	for (j=0;j<n;j++) {
 		if (w[j] > tsh) {
 			for (i=0;i<m;i++) rnge[i][nr] = u[i][j];
@@ -102,9 +102,9 @@ Matrix <double> SVD::range(double thresh){
 	return rnge;
 }
 
-Matrix <double> SVD::nullspace(double thresh){
+MatrixFloat SVD::nullspace(float_t thresh){
 	UINT j,jj,nn=0;
-	Matrix <double> nullsp(n,nullity(thresh));
+	MatrixFloat nullsp(n,nullity(thresh));
 	for (j=0;j<n;j++) {
 		if (w[j] <= tsh) {
 			for (jj=0;jj<n;jj++) nullsp[jj][nn] = v[jj][j];
@@ -114,15 +114,15 @@ Matrix <double> SVD::nullspace(double thresh){
 	return nullsp;
 }
 
-double SVD::inv_condition() {
+float_t SVD::inv_condition() {
 	return (w[0] <= 0. || w[n-1] <= 0.) ? 0. : w[n-1]/w[0];
 }
 
 bool SVD::decompose() {
 	bool flag;
 	int i,its,j,jj,k,l,nm,N,M;
-	double anorm,c,f,g,h,s,scale,x,y,z;
-	vector <double> rv1(n);
+	float_t anorm,c,f,g,h,s,scale,x,y,z;
+	VectorFloat rv1(n);
 	g = scale = anorm = 0.0;
 	N = int(n);
 	M = int(m);
@@ -139,7 +139,7 @@ bool SVD::decompose() {
 				    s+= u[k][i]*u[k][i];
 				}
 				f=u[i][i];
-				g = -SIGN(sqrt(s),f);
+				g = -SIGN(grt_sqrt(s),f);
 				h=f*g-s;
 				u[i][i]=f-g;
 				for (j=l-1;j<N;j++) {
@@ -160,7 +160,7 @@ bool SVD::decompose() {
 					s += u[i][k]*u[i][k];
 				}
 				f=u[i][l-1];
-				g = -SIGN(sqrt(s),f);
+				g = -SIGN(grt_sqrt(s),f);
 				h=f*g-s;
 				u[i][l-1]=f-g;
 				for (k=l-1;k<N;k++) rv1[k]=u[i][k]/h;
@@ -303,9 +303,9 @@ bool SVD::decompose() {
 
 bool SVD::reorder() {
 	UINT i,j,k,s,inc=1;
-	double sw;
-	vector <double> su(m);
-	vector <double> sv(n);
+	float_t sw;
+	VectorFloat su(m);
+	VectorFloat sv(n);
 	do { inc *= 3; inc++; } while (inc <= n);
 	do {
 		inc /= 3;
@@ -338,10 +338,10 @@ bool SVD::reorder() {
 	return true;
 }
 
-double SVD::pythag(const double a, const double b) {
-	double absa=fabs(a);
-	double absb=fabs(b);
-	return (absa > absb ? absa*sqrt(1.0+SQR(absb/absa)) : (absb == 0.0 ? 0.0 : absb*sqrt(1.0+SQR(absa/absb))));
+float_t SVD::pythag(const float_t a, const float_t b) {
+	float_t absa=fabs(a);
+	float_t absb=fabs(b);
+	return (absa > absb ? absa*grt_sqrt(1.0+grt_sqr(absb/absa)) : (absb == 0.0 ? 0.0 : absb*grt_sqrt(1.0+grt_sqr(absa/absb))));
 }
   
-}
+GRT_END_NAMESPACE

@@ -22,12 +22,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_OBSERVER_MANAGER_HEADER
 
 #include "Observer.h"
-#include <iostream>
-#include <vector>
-#include <list>
-#include <algorithm>
+#include "../DataStructures/Vector.h"
+//#include <iostream>
+//#include <vector>
+//#include <list>
+//#include <algorithm>
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 template <class NotifyType>
 class ObserverManager {
@@ -101,10 +102,10 @@ public:
     
 protected:
     
-    std::vector< Observer<NotifyType>* > observers;
+    Vector< Observer<NotifyType>* > observers;
     
 };
     
-} //End of namespace GRT_OBSERVER_MANAGER_HEADER
+GRT_END_NAMESPACE
 
 #endif //End of 

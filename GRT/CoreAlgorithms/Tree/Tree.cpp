@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "Tree.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 Tree::Tree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode)
 {
@@ -64,7 +64,7 @@ bool Tree::print() const{
     return false;
 }
 
-bool Tree::getModel(ostream &stream) const{
+bool Tree::getModel( std::ostream &stream ) const{
     
     if( tree != NULL ){
         if( tree->getModel( stream ) ){
@@ -122,7 +122,7 @@ bool Tree::setTrainingMode(const UINT trainingMode){
         this->trainingMode = trainingMode;
         return true;
     }
-    warningLog << "Unknown trainingMode: " << trainingMode << endl;
+    warningLog << "Unknown trainingMode: " << trainingMode << std::endl;
     return false;
 }
     
@@ -131,7 +131,7 @@ bool Tree::setNumSplittingSteps(const UINT numSplittingSteps){
         this->numSplittingSteps = numSplittingSteps;
         return true;
     }
-    warningLog << "setNumSplittingSteps(const UINT numSplittingSteps) - The number of splitting steps must be greater than zero!" << endl;
+    warningLog << "setNumSplittingSteps(const UINT numSplittingSteps) - The number of splitting steps must be greater than zero!" << std::endl;
     return false;
 }
 
@@ -140,7 +140,7 @@ bool Tree::setMinNumSamplesPerNode(const UINT minNumSamplesPerNode){
         this->minNumSamplesPerNode = minNumSamplesPerNode;
         return true;
     }
-    warningLog << "setMinNumSamplesPerNode(const UINT minNumSamplesPerNode) - The minimum number of samples per node must be greater than zero!" << endl;
+    warningLog << "setMinNumSamplesPerNode(const UINT minNumSamplesPerNode) - The minimum number of samples per node must be greater than zero!" << std::endl;
     return false;
 }
 
@@ -149,7 +149,7 @@ bool Tree::setMaxDepth(const UINT maxDepth){
         this->maxDepth = maxDepth;
         return true;
     }
-    warningLog << "setMaxDepth(const UINT maxDepth) - The maximum depth must be greater than zero!" << endl;
+    warningLog << "setMaxDepth(const UINT maxDepth) - The maximum depth must be greater than zero!" << std::endl;
     return false;
 }
     
@@ -158,5 +158,5 @@ bool Tree::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
     return true;
 }
     
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

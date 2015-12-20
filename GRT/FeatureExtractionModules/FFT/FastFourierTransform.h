@@ -29,7 +29,7 @@
 #include "../../Util/GRTCommon.h"
 #include "../../CoreModules/GRTBase.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class FastFourierTransform : public GRTBase{
 	
@@ -45,22 +45,22 @@ public:
     
 	bool init(const unsigned int windowSize,const unsigned int windowFunction = RECTANGULAR_WINDOW,const bool computeMagnitude = true,const bool computePhase = true,bool enableZeroPadding = true);
     
-    bool computeFFT( VectorDouble &data );
+    bool computeFFT( VectorFloat &data );
     
-	VectorDouble getMagnitudeData();
-	VectorDouble getPhaseData();
-	VectorDouble getPowerData();
-	double getAveragePower();
-	double *getMagnitudeDataPtr();
-	double *getPhaseDataPtr();
-	double *getPowerDataPtr();
+	VectorFloat getMagnitudeData();
+	VectorFloat getPhaseData();
+	VectorFloat getPowerData();
+	float_t getAveragePower();
+	float_t *getMagnitudeDataPtr();
+	float_t *getPhaseDataPtr();
+	float_t *getPowerDataPtr();
     
 	UINT getFFTSize(){ return windowSize; }
     
 protected:
-    bool windowData( VectorDouble &data );
-    bool realFFT( const VectorDouble &realIn, double *realOut, double *imagOut );
-    bool FFT(int NumSamples,bool InverseTransform,double *realIn, double *imagIn, double *realOut, double *imagOut);
+    bool windowData( VectorFloat &data );
+    bool realFFT( const VectorFloat &realIn, float_t *realOut, float_t *imagOut );
+    bool FFT(int NumSamples,bool InverseTransform,float_t *realIn, float_t *imagIn, float_t *realOut, float_t *imagOut);
     int numberOfBitsNeeded(int PowerOfTwo);
     int reverseBits(int index, int NumBits);
     void initFFT();
@@ -73,22 +73,22 @@ protected:
     bool computeMagnitude;
     bool computePhase;
 	bool enableZeroPadding;
-    VectorDouble fftReal;
-    VectorDouble fftImag;
-    VectorDouble tmpReal;
-    VectorDouble tmpImag;
-    VectorDouble magnitude;
-    VectorDouble phase;
-    VectorDouble power;
-    double averagePower;
+    VectorFloat fftReal;
+    VectorFloat fftImag;
+    VectorFloat tmpReal;
+    VectorFloat tmpImag;
+    VectorFloat magnitude;
+    VectorFloat phase;
+    VectorFloat power;
+    float_t averagePower;
     const static int MAX_FAST_BITS = 16;
-    vector< vector< int > > bitTable;
+    Vector< Vector< int > > bitTable;
     
 public:
     enum WindowFunctionOptions{RECTANGULAR_WINDOW=0,BARTLETT_WINDOW,HAMMING_WINDOW,HANNING_WINDOW};
 
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_FAST_FOURIER_TRANSFORM_HEADER

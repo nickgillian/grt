@@ -1,7 +1,7 @@
 
 #include "DecisionTreeThresholdNode.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the DecisionTreeThresholdNode module with the Node base class
 RegisterNode< DecisionTreeThresholdNode > DecisionTreeThresholdNode::registerModule("DecisionTreeThresholdNode");
@@ -18,7 +18,7 @@ DecisionTreeThresholdNode::~DecisionTreeThresholdNode(){
     clear();
 }
 
-bool DecisionTreeThresholdNode::predict(const VectorDouble &x) {
+bool DecisionTreeThresholdNode::predict(const VectorFloat &x) {
 
     if( x[ featureIndex ] >= threshold ) return true;
     
@@ -38,35 +38,35 @@ bool DecisionTreeThresholdNode::clear(){
 
 bool DecisionTreeThresholdNode::print() const{
     
-    ostringstream stream;
+    std::ostringstream stream;
     
     if( getModel( stream ) ){
-        cout << stream.str();
+        std::cout << stream.str();
         return true;
     }
     
     return false;
 }
     
-bool DecisionTreeThresholdNode::getModel(ostream &stream) const{
+bool DecisionTreeThresholdNode::getModel( std::ostream &stream ) const{
     
-    string tab = "";
+    std::string tab = "";
     for(UINT i=0; i<depth; i++) tab += "\t";
     
-    stream << tab << "depth: " << depth << " nodeSize: " << nodeSize << " featureIndex: " << featureIndex << " threshold " << threshold << " isLeafNode: " << isLeafNode << endl;
+    stream << tab << "depth: " << depth << " nodeSize: " << nodeSize << " featureIndex: " << featureIndex << " threshold " << threshold << " isLeafNode: " << isLeafNode << std::endl;
     stream << tab << "ClassProbabilities: ";
     for(UINT i=0; i<classProbabilities.size(); i++){
         stream << classProbabilities[i] << "\t";
     }
-    stream << endl;
+    stream << std::endl;
     
     if( leftChild != NULL ){
-        stream << tab << "LeftChild: " << endl;
+        stream << tab << "LeftChild: " << std::endl;
         leftChild->getModel( stream );
     }
     
     if( rightChild != NULL ){
-        stream << tab << "RightChild: " << endl;
+        stream << tab << "RightChild: " << std::endl;
         rightChild->getModel( stream );
     }
     
@@ -114,11 +114,11 @@ UINT DecisionTreeThresholdNode::getFeatureIndex() const{
     return featureIndex;
 }
 
-double DecisionTreeThresholdNode::getThreshold() const{
+float_t DecisionTreeThresholdNode::getThreshold() const{
     return threshold;
 }
 
-bool DecisionTreeThresholdNode::set(const UINT nodeSize,const UINT featureIndex,const double threshold,const VectorDouble &classProbabilities){
+bool DecisionTreeThresholdNode::set(const UINT nodeSize,const UINT featureIndex,const float_t threshold,const VectorFloat &classProbabilities){
     this->nodeSize = nodeSize;
     this->featureIndex = featureIndex;
     this->threshold = threshold;
@@ -126,36 +126,36 @@ bool DecisionTreeThresholdNode::set(const UINT nodeSize,const UINT featureIndex,
     return true;
 }
 
-bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
     
     const UINT M = trainingData.getNumSamples();
-    const UINT N = (UINT)features.size();
-    const UINT K = (UINT)classLabels.size();
+    const UINT N = features.getSize();
+    const UINT K = classLabels.getSize();
     
     if( N == 0 ) return false;
     
-    minError = numeric_limits<double>::max();
+    minError = grt_numeric_limits_max< float_t >();
     UINT bestFeatureIndex = 0;
-    double bestThreshold = 0;
-    double error = 0;
-    double minRange = 0;
-    double maxRange = 0;
-    double step = 0;
-    double giniIndexL = 0;
-    double giniIndexR = 0;
-    double weightL = 0;
-    double weightR = 0;
-    vector< UINT > groupIndex(M);
-    VectorDouble groupCounter(2,0);
-    vector< MinMax > ranges = trainingData.getRanges();
+    float_t bestThreshold = 0;
+    float_t error = 0;
+    float_t minRange = 0;
+    float_t maxRange = 0;
+    float_t step = 0;
+    float_t giniIndexL = 0;
+    float_t giniIndexR = 0;
+    float_t weightL = 0;
+    float_t weightR = 0;
+    Vector< UINT > groupIndex(M);
+    VectorFloat groupCounter(2,0);
+    Vector< MinMax > ranges = trainingData.getRanges();
     
-    MatrixDouble classProbabilities(K,2);
+    MatrixFloat classProbabilities(K,2);
     
     //Loop over each feature and try and find the best split point
     for(UINT n=0; n<N; n++){
         minRange = ranges[n].minValue;
         maxRange = ranges[n].maxValue;
-        step = (maxRange-minRange)/double(numSplittingSteps);
+        step = (maxRange-minRange)/float_t(numSplittingSteps);
         threshold = minRange;
         featureIndex = features[n];
         while( threshold <= maxRange ){
@@ -206,7 +206,7 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &
     return true;
 }
 
-bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();
@@ -214,20 +214,20 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &num
     
     if( N == 0 ) return false;
     
-    minError = numeric_limits<double>::max();
+    minError = grt_numeric_limits_max< float_t >();
     UINT bestFeatureIndex = 0;
-    double bestThreshold = 0;
-    double error = 0;
-    double giniIndexL = 0;
-    double giniIndexR = 0;
-    double weightL = 0;
-    double weightR = 0;
+    float_t bestThreshold = 0;
+    float_t error = 0;
+    float_t giniIndexL = 0;
+    float_t giniIndexR = 0;
+    float_t weightL = 0;
+    float_t weightR = 0;
     Random random;
-    vector< UINT > groupIndex(M);
-    VectorDouble groupCounter(2,0);
-    vector< MinMax > ranges = trainingData.getRanges();
+    Vector< UINT > groupIndex(M);
+    VectorFloat groupCounter(2,0);
+    Vector< MinMax > ranges = trainingData.getRanges();
     
-    MatrixDouble classProbabilities(K,2);
+    MatrixFloat classProbabilities(K,2);
     
     //Loop over each feature and try and find the best split point
     for(UINT n=0; n<N; n++){
@@ -279,59 +279,60 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &num
     return true;
 }
 
-bool DecisionTreeThresholdNode::saveParametersToFile(fstream &file) const{
+bool DecisionTreeThresholdNode::saveParametersToFile( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
+        errorLog << "saveParametersToFile(fstream &file) - File is not open!" << std::endl;
         return false;
     }
     
     //Save the DecisionTreeNode parameters
     if( !DecisionTreeNode::saveParametersToFile( file ) ){
-        errorLog << "saveParametersToFile(fstream &file) - Failed to save DecisionTreeNode parameters to file!" << endl;
+        errorLog << "saveParametersToFile(fstream &file) - Failed to save DecisionTreeNode parameters to file!" << std::endl;
         return false;
     }
     
     //Save the custom DecisionTreeThresholdNode parameters
-    file << "FeatureIndex: " << featureIndex << endl;
-    file << "Threshold: " << threshold << endl;
+    file << "FeatureIndex: " << featureIndex << std::endl;
+    file << "Threshold: " << threshold << std::endl;
     
     return true;
 }
 
-bool DecisionTreeThresholdNode::loadParametersFromFile(fstream &file){
+bool DecisionTreeThresholdNode::loadParametersFromFile( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << endl;
+        errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << std::endl;
         return false;
     }
     
     //Load the DecisionTreeNode parameters
     if( !DecisionTreeNode::loadParametersFromFile( file ) ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to load DecisionTreeNode parameters from file!" << endl;
+        errorLog << "loadParametersFromFile(fstream &file) - Failed to load DecisionTreeNode parameters from file!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the custom DecisionTreeThresholdNode Parameters
     file >> word;
     if( word != "FeatureIndex:" ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndex header!" << endl;
+        errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndex header!" << std::endl;
         return false;
     }
     file >> featureIndex;
     
     file >> word;
     if( word != "Threshold:" ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to find Threshold header!" << endl;
+        errorLog << "loadParametersFromFile(fstream &file) - Failed to find Threshold header!" << std::endl;
         return false;
     }
     file >> threshold;
     
     return true;
 }
-}
+
+GRT_END_NAMESPACE
 

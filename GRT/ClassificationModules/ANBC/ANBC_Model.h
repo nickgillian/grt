@@ -31,36 +31,35 @@
 #ifndef GRT_ANBC_MODEL_HEADER
 #define GRT_ANBC_MODEL_HEADER
 
-#include "../../Util/GRTCommon.h"
+#include "../../DataStructures/VectorFloat.h"
+#include "../../DataStructures/MatrixFloat.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class ANBC_Model{
 public:
 	ANBC_Model(void){ N=0; classLabel = 0; gamma=2.0; threshold=0.0; trainingMu=0.0; trainingSigma=0.0;};
 	~ANBC_Model(void){};
 
-	bool train(UINT classLabel,MatrixDouble &trainingData,VectorDouble &weightsVector);
-	double predict(const VectorDouble &observation);
-	double predictUnnormed(const VectorDouble &x);
-	inline double gauss(const double x,const double mu,const double sigma);
-	inline double unnormedGauss(const double x,const double mu,const double sigma);
-	void recomputeThresholdValue(const double gamma);
+	bool train( const UINT classLabel, const MatrixDouble &trainingData, const VectorFloat &weightsVector );
+	float_t predict( const VectorFloat &x );
+	float_t predictUnnormed( const VectorFloat &x );
+	inline float_t gauss(const float_t x,const float_t mu,const float_t sigma);
+	inline float_t unnormedGauss(const float_t x,const float_t mu,const float_t sigma);
+	void recomputeThresholdValue(const float_t gamma);
 
 public:
-    inline double SQR(double x){ return x*x; }
-    
 	UINT	N;					//The number of dimensions in the problem
     UINT classLabel;            //The label of the class this model represents
-	double threshold;			//The classification threshold value
-	double gamma;				//The number of standard deviations to use for the threshold
-	double trainingMu;			//The average confidence value in the training data
-	double trainingSigma;		//The simga confidence value in the training data
-	VectorDouble mu;			//A vector to hold the mean values for each dimension
-	VectorDouble sigma;		//A vector to hold the sigma values for each dimension
-	VectorDouble weights;		//A vector to hold the weights for each dimension
+	float_t threshold;			//The classification threshold value
+	float_t gamma;				//The number of standard deviations to use for the threshold
+	float_t trainingMu;			//The average confidence value in the training data
+	float_t trainingSigma;		//The simga confidence value in the training data
+	VectorFloat mu;			//A vector to hold the mean values for each dimension
+	VectorFloat sigma;		//A vector to hold the sigma values for each dimension
+	VectorFloat weights;		//A vector to hold the weights for each dimension
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_ANBC_MODEL_HEADER

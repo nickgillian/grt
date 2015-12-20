@@ -31,7 +31,7 @@
 
 #include "WeakClassifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class DecisionStump : public WeakClassifier{
 public:
@@ -40,7 +40,7 @@ public:
      
      Sets the number of random splits that will be used to search for the best split value.
      
-     @param const UINT numRandomSplits: sets the number of random splits that will be used to search for the best split value. Default value = 100
+     @param numRandomSplits: sets the number of random splits that will be used to search for the best split value. Default value = 100
      */
     DecisionStump(const UINT numRandomSplits = 100);
     
@@ -62,7 +62,7 @@ public:
     /**
      This function enables the data from one GRT::DecisionStump instance to be copied into this GRT::DecisionStump instance.
      
-     @param WeakClassifier *weakClassifer: a pointer to the Classifier Base Class, this should be pointing to another GRT::DecisionStump instance
+     @param weakClassifer: a pointer to the Classifier Base Class, this should be pointing to another GRT::DecisionStump instance
      @return returns true if the clone was successfull, false otherwise
      */
     virtual bool deepCopyFrom(const WeakClassifier *weakClassifer);
@@ -70,36 +70,36 @@ public:
     /**
      This function trains the DecisionStump model, using the weighted labelled training data.
      
-     @param ClassificationData &trainingData: the labelled training data
-     @param VectorDouble &weights: the corresponding weights for each sample in the labelled training data
+     @param trainingData: the labelled training data
+     @param weights: the corresponding weights for each sample in the labelled training data
      @return returns true if the model was trained successfull, false otherwise
      */
-    virtual bool train(ClassificationData &trainingData, VectorDouble &weights);
+    virtual bool train(ClassificationData &trainingData, VectorFloat &weights);
     
     /**
      This function predicts the class label of the input vector, given the current model. The class label returned will
      either be positive (WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL) or negative (WEAK_CLASSIFIER_NEGATIVE_CLASS_LABEL).
      
-     @param VectorDouble &weights: a reference to the vector used for prediction
+     @param weights: a reference to the vector used for prediction
      @return returns the estimated class label, which will be positive or negative
      */
-    virtual double predict(const VectorDouble &x);
+    virtual float_t predict(const VectorFloat &x);
     
     /**
      This function saves the current model to a file.
      
-     fstream &file: a reference to the file you want to save the RBF model to
+     fstream file: a reference to the file you want to save the RBF model to
      @return returns true if the model was saved successfull, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This function loads an model model from a file.
      
-     fstream &file: a reference to the file you want to load the RBF model from
+     fstream file: a reference to the file you want to load the RBF model from
      @return returns true if the model was loaded successfull, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This function prints out some basic info about the model to std::cout.
@@ -124,16 +124,17 @@ public:
     /**
      @return returns the decision spilt threshold
      */
-    double getDecisionValue() const;
+    float_t getDecisionValue() const;
+
 protected:
     UINT decisionFeatureIndex;  ///< The dimension that the data will be spilt on
     UINT direction;             ///< Indicates if the decision spilt threshold is greater than (1), or less than (0)
     UINT numRandomSplits;       ///< The number of random splits used to search for the best decision spilt
-    double decisionValue;       ///< The decision spilt threshold
+    float_t decisionValue;       ///< The decision spilt threshold
     
     static RegisterWeakClassifierModule< DecisionStump > registerModule; ///< This is used to register the DecisionStump with the WeakClassifier base class
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_DECISION_STUMP_HEADER

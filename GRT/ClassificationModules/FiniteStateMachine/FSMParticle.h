@@ -29,7 +29,7 @@
 
 #include "../../CoreAlgorithms/ParticleFilter/Particle.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class FSMParticle : public Particle{
 public:
@@ -63,6 +63,6 @@ public:
     int currentState;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif

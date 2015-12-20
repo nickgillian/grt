@@ -49,8 +49,6 @@
 //Include the Utilities
 #include "Util/GRTVersionInfo.h"
 #include "Util/GRTCommon.h"
-#include "Util/Matrix.h"
-#include "Util/MatrixFloat.h"
 #include "Util/RangeTracker.h"
 #include "Util/TrainingDataRecordingTimer.h"
 #include "Util/SVD.h"
@@ -64,6 +62,10 @@
 #include "Util/CommandLineParser.h"
 
 //Include the data structures
+#include "DataStructures/Vector.h"
+#include "DataStructures/VectorFloat.h"
+#include "DataStructures/Matrix.h"
+#include "DataStructures/MatrixFloat.h"
 #include "DataStructures/ClassificationData.h"
 #include "DataStructures/TimeSeriesClassificationData.h"
 #include "DataStructures/TimeSeriesClassificationDataStream.h"

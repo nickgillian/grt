@@ -33,10 +33,11 @@
 #ifndef GRT_BERNOULLI_RBM_HEADER
 #define GRT_BERNOULLI_RBM_HEADER
 
-#include "../../Util/MatrixFloat.h"
+#include "../../Util/GRTTypedefs.h"
+#include "../../DataStructures/MatrixFloat.h"
 #include "../../CoreModules/MLBase.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class BernoulliRBM : public MLBase{
 
@@ -50,7 +51,7 @@ public:
      The RBM should be trained first before you use this function.
      The size of the input data must match the number of visible units.
      
-     @param VectorFloat &inputData: a reference to the input data that will be used to train the RBM model
+     @param inputData: a reference to the input data that will be used to train the RBM model
      @return returns true if the prediction was successful, false otherwise
      */
     bool predict_(VectorFloat &inputData);
@@ -60,8 +61,8 @@ public:
      The RBM should be trained first before you use this function.  
      The size of the input data must match the number of visible units.
      
-     @param VectorFloat &inputData: a reference to the input data that will be used to train the RBM model
-     @param VectorFloat &outputData: a reference to the output data that will be used to train the RBM model
+     @param inputData: a reference to the input data that will be used to train the RBM model
+     @param outputData: a reference to the output data that will be used to train the RBM model
      @return returns true if the prediction was successful, false otherwise
      */
     bool predict_(VectorFloat &inputData,VectorFloat &outputData);
@@ -71,9 +72,9 @@ public:
      If you are using this function then you should make sure the RBM is trained first before you use it.
      The size of the matrices must match the size of the model.
      
-     @param const MatrixFloat &inputData: a reference to the input data
-     @param MatrixFloat &outputData: a reference to the output data that will store the results of the propagation
-     @param const UINT rowIndex: the row in the inputData/outputData that should be used for the propagation
+     @param inputData: a reference to the input data
+     @param outputData: a reference to the output data that will store the results of the propagation
+     @param rowIndex: the row in the inputData/outputData that should be used for the propagation
      @return returns true if the prediction was successful, false otherwise
      */
     bool predict_(const MatrixFloat &inputData,MatrixFloat &outputData,const UINT rowIndex);
@@ -81,7 +82,7 @@ public:
     /**
      This is the main training interface for referenced MatrixFloat data.
      
-     @param MatrixFloat &trainingData: a reference to the training data that will be used to train the RBM model
+     @param trainingData: a reference to the training data that will be used to train the RBM model
      @return returns true if the model was successfully trained, false otherwise
      */
     virtual bool train_(MatrixFloat &data);
@@ -104,18 +105,18 @@ public:
     /**
      This saves the trained model to a file.
      
-     @param fstream &file: a reference to the file the model will be saved to
+     @param file: a reference to the file the model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained model from a file.
      
-     @param fstream &file: a reference to the file the model will be loaded from
+     @param file: a reference to the file the model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     bool reconstruct(const VectorFloat &input,VectorFloat &output);
     
@@ -143,11 +144,7 @@ public:
     using MLBase::predict_; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
     
 protected:
-    bool loadLegacyModelFromFile(fstream &file);
-    
-    inline float_t sigmoid(const float_t &x) {
-        return 1.0 / (1.0 + exp(-x));
-    }
+    bool loadLegacyModelFromFile( std::fstream &file );
     
     inline float_t sigmoidRandom(const float_t &x){
         return (1.0 / (1.0 + exp(-x)) > rand.getRandomNumberUniform(0.0,1.0)) ? 1.0 : 0.0;
@@ -170,7 +167,7 @@ protected:
     VectorFloat nh_means;
     VectorFloat nh_samples;
     VectorFloat outputData;
-    vector<MinMax> ranges;
+    Vector<MinMax> ranges;
     Random rand;
     
     struct BatchIndexs{
@@ -182,7 +179,7 @@ protected:
     
 };
     
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_BERNOULLI_RBM_HEADER
 

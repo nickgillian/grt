@@ -39,7 +39,7 @@
 
 #include "../../CoreModules/Classifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class BAG : public Classifier
 {
@@ -47,14 +47,14 @@ public:
     /**
      Default Constructor
 
-     @param bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
+     @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      */
 	BAG(bool useScaling=false);
     
     /**
      Defines the copy constructor.
      
-     @param const BAG &rhs: the instance from which all the data will be copied into this instance
+     @param rhs: the instance from which all the data will be copied into this instance
      */
     BAG(const BAG &rhs);
     
@@ -66,7 +66,7 @@ public:
     /**
      Defines how the data from the rhs BAG should be copied to this BAG
      
-     @param const BAG &rhs: another instance of a BAG
+     @param rhs: another instance of a BAG
      @return returns a pointer to this instance of the BAG
      */
 	BAG &operator=(const BAG &rhs);
@@ -75,7 +75,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.  
      It clones the data from the Base Class Classifier pointer (which should be pointing to an BAG instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another BAG instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another BAG instance
      @return returns true if the clone was successfull, false otherwise
     */
 	virtual bool deepCopyFrom(const Classifier *classifier);
@@ -84,7 +84,7 @@ public:
      This trains the BAG model, using the labelled classification data.
      This overrides the train function in the Classifier base class.
      
-     @param ClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the BAG model was trained, false otherwise
     */
     virtual bool train_(ClassificationData &trainingData);
@@ -93,10 +93,10 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input Vector to classify
      @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This resets the BAG classifier.
@@ -117,19 +117,19 @@ public:
      This saves the trained BAG model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the BAG model will be saved to
+     @param file: a reference to the file the BAG model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained BAG model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the BAG model will be loaded from
+     @param file: a reference to the file the BAG model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      Gets the number of classifiers in the ensemble.
@@ -141,26 +141,26 @@ public:
     /**
      Gets the weights for each classifier in the ensemble.
      
-     @return returns a vector of weights.
+     @return returns a Vector of weights.
      */
-    VectorDouble getEnsembleWeights() const;
+    VectorFloat getEnsembleWeights() const;
     
     /**
      Gets the ensemble.
      
-     @return returns a vector of Classifier pointers.
+     @return returns a Vector of Classifier pointers.
      */
-    const vector< Classifier* > getEnsemble() const;
+    const Vector< Classifier* > getEnsemble() const;
 
     /**
      This functions adds a copy of the input classifier to the ensemble. This classifier will then
      be trained (in addition to the other classifiers in the ensemble) when you call the BAG train
      function.
      
-     @param const Classifier &classifier: a reference to the classifier you want to add to the ensemble
+     @param classifier: a reference to the classifier you want to add to the ensemble
      @return returns true if a copy of the classifier was successfully added to the ensemble, false otherwise
      */
-    bool addClassifierToEnsemble(const Classifier &classifier,double weight=1);
+    bool addClassifierToEnsemble(const Classifier &classifier,float_t weight=1);
     
     /**
      This functions clears the current ensemble, removing all classifiers and weights.
@@ -179,7 +179,7 @@ public:
      
      @return returns true if the ensemble weights were successfully updated, false otherwise
      */
-    bool setWeights(const VectorDouble &weights);
+    bool setWeights(const VectorFloat &weights);
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -190,14 +190,14 @@ public:
     using MLBase::predict_;
     
 protected:
-    bool loadLegacyModelFromFile( fstream &file );
+    bool loadLegacyModelFromFile( std::fstream &file );
     
-    VectorDouble weights;
-    vector< Classifier* > ensemble;
+    VectorFloat weights;
+    Vector< Classifier* > ensemble;
     
     static RegisterClassifierModule< BAG > registerModule;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_BAG_HEADER

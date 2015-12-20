@@ -33,7 +33,7 @@
 
 #include "../../../Util/GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class Neuron{
 public:
@@ -57,7 +57,7 @@ public:
     enum ActivationFunctions{LINEAR=0,SIGMOID,BIPOLAR_SIGMOID,NUMBER_OF_ACTIVATION_FUNCTIONS};
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_NEURON_HEADER
 

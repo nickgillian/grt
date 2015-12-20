@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "MLP.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 const float_t MLP_NEURON_MIN_TARGET = -1.0;
 const float_t MLP_NEURON_MAX_TARGET = 1.0;
@@ -168,7 +168,7 @@ bool MLP::predict_(VectorFloat &inputVector){
     }
     
     if( inputVector.size() != numInputNeurons ){
-        errorLog << "predict_(VectorFloat &inputVector) - The sie of the input vector (" << int(inputVector.size()) << ") does not match that of the number of input dimensions (" << numInputNeurons << ") " << endl;
+        errorLog << "predict_(VectorFloat &inputVector) - The sie of the input Vector (" << int(inputVector.size()) << ") does not match that of the number of input dimensions (" << numInputNeurons << ") " << endl;
         return false;
     }
     
@@ -431,8 +431,8 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     float_t backPropError = 0;
     float_t bestValue = 0;
     VectorFloat y;
-    vector< UINT > indexList(M);
-    vector< vector< float_t > > tempTrainingErrorLog;
+    Vector< UINT > indexList(M);
+    Vector< VectorFloat > tempTrainingErrorLog;
     TrainingResult result;
     trainingResults.reserve(M);
     
@@ -461,7 +461,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             totalSquaredTrainingError = 0;
             
             for(UINT i=0; i<M; i++){
-                //Get the i'th training and target vectors
+                //Get the i'th training and target Vectors
                 const VectorFloat &trainingExample = trainingData[ indexList[i] ].getInputVector();
                 const VectorFloat &targetVector = trainingData[ indexList[i] ].getTargetVector();
                 
@@ -710,8 +710,8 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     float_t bestTSError = numeric_limits< float_t >::max();
     float_t bestRMSError = numeric_limits< float_t >::max();
     float_t delta = 0;
-    vector< UINT > indexList(M);
-    vector< vector< float_t > > tempTrainingErrorLog;
+    Vector< UINT > indexList(M);
+    Vector< VectorFloat > tempTrainingErrorLog;
     TrainingResult result;
     trainingResults.reserve(M);
     
@@ -739,7 +739,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
             totalSquaredTrainingError = 0;
             
             for(UINT i=0; i<M; i++){
-                //Get the i'th training and target vectors
+                //Get the i'th training and target Vectors
                 const VectorFloat &trainingExample = trainingData[ indexList[i] ].getInputVector();
                 const VectorFloat &targetVector = trainingData[ indexList[i] ].getTargetVector();
                 
@@ -927,7 +927,7 @@ float_t MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &tar
         outputLayer[i].previousBiasUpdate = update;
     }
     
-    //Compute the squared error between the output of the network and the target vector
+    //Compute the squared error between the output of the network and the target Vector
     float_t error = 0;
     for(UINT i=0; i<numOutputNeurons; i++){
         error += SQR( targetVector[i] - outputNeuronsOutput[i] );
@@ -942,7 +942,7 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
     if( hiddenNeuronsOutput.size() != numHiddenNeurons ) hiddenNeuronsOutput.resize(numHiddenNeurons,0);
     if( outputNeuronsOutput.size() != numOutputNeurons ) outputNeuronsOutput.resize(numOutputNeurons,0);
 
-	//Scale the input vector if required
+	//Scale the input Vector if required
 	if( useScaling ){
 		for(UINT i=0; i<numInputNeurons; i++){
 			trainingExample[i] = scale(trainingExample[i],inputVectorRanges[i].minValue,inputVectorRanges[i].maxValue,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
@@ -966,7 +966,7 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
         outputNeuronsOutput[i] = outputLayer[i].fire( hiddenNeuronsOutput );
     }
 
-	//Scale the output vector if required
+	//Scale the output Vector if required
 	if( useScaling ){
 		for(UINT i=0; i<numOutputNeurons; i++){
 			outputNeuronsOutput[i] = scale(outputNeuronsOutput[i],MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET,targetVectorRanges[i].minValue,targetVectorRanges[i].maxValue);
@@ -1544,19 +1544,19 @@ bool MLP::getRegressionModeActive() const{
     return !classificationModeActive;
 }
     
-vector< Neuron > MLP::getInputLayer() const{
+Vector< Neuron > MLP::getInputLayer() const{
     return inputLayer;
 }
     
-vector< Neuron > MLP::getHiddenLayer() const{
+Vector< Neuron > MLP::getHiddenLayer() const{
     return hiddenLayer;
 }
     
-vector< Neuron > MLP::getOutputLayer() const{
+Vector< Neuron > MLP::getOutputLayer() const{
     return outputLayer;
 }
     
-vector< vector< float_t > > MLP::getTrainingLog() const{
+Vector< VectorFloat > MLP::getTrainingLog() const{
     return trainingErrorLog;
 }
     
@@ -2132,4 +2132,5 @@ bool MLP::loadLegacyModelFromFile( fstream &file ){
     return true;
 }
     
-} //End of namespace GRT
+GRT_END_NAMESPACE
+

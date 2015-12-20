@@ -33,15 +33,15 @@
 
 #include "../../CoreModules/MLBase.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 class MovementDetector : public MLBase{
 public:
-    MovementDetector( const UINT numDimensions = 1, const double upperThreshold = 1, const double lowerThreshold = 0.9, const double gamma = 0.95, const UINT searchTimeout = 0);
+    MovementDetector( const UINT numDimensions = 1, const float_t upperThreshold = 1, const float_t lowerThreshold = 0.9, const float_t gamma = 0.95, const UINT searchTimeout = 0);
     
     virtual ~MovementDetector();
     
-    virtual bool predict_( VectorDouble &input );
+    virtual bool predict_( VectorFloat &input );
     
     /**
      This overrides the clear function in the ML base class.
@@ -63,27 +63,27 @@ public:
      This saves the trained MovementDetector model to a file.
      This overrides the saveModelToFile function in the ML base class.
      
-     @param fstream &file: a reference to the file the MovementDetector model will be saved to
+     @param file: a reference to the file the MovementDetector model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained MovementDetector model from a file.
      This overrides the loadModelFromFile function in the ML base class.
      
-     @param fstream &file: a reference to the file the MovementDetector model will be loaded from
+     @param file: a reference to the file the MovementDetector model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
-    double getUpperThreshold() const;
+    float_t getUpperThreshold() const;
     
-    double getLowerThreshold() const;
+    float_t getLowerThreshold() const;
     
-    double getMovementIndex() const;
+    float_t getMovementIndex() const;
     
-    double getGamma() const;
+    float_t getGamma() const;
     
     bool getMovementDetected() const;
     
@@ -93,11 +93,11 @@ public:
     
     UINT getSearchTimeout() const;
     
-    bool setUpperThreshold(const double upperThreshold);
+    bool setUpperThreshold(const float_t upperThreshold);
     
-    bool setLowerThreshold(const double lowerThreshold);
+    bool setLowerThreshold(const float_t lowerThreshold);
     
-    bool setGamma(const double gamma);
+    bool setGamma(const float_t gamma);
     
     bool setSearchTimeout(const UINT searchTimeout);
     
@@ -109,21 +109,21 @@ protected:
 
     UINT state;
     UINT searchTimeout;
-    double upperThreshold;
-    double lowerThreshold;
-    double movementIndex;
-    double gamma;
+    float_t upperThreshold;
+    float_t lowerThreshold;
+    float_t movementIndex;
+    float_t gamma;
     bool firstSample;
     bool movementDetected;
     bool noMovementDetected;
     Timer searchTimer;
-    VectorDouble lastSample;
+    VectorFloat lastSample;
     
 public:
     enum SearchStates{SEARCHING_FOR_MOVEMENT=0,SEARCHING_FOR_NO_MOVEMENT,SEARCH_TIMEOUT};
     
 };
 
-}
+GRT_END_NAMESPACE
 
 #endif //GRT_MOVEMENT_DETECTOR_HEADER

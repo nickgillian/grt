@@ -50,7 +50,7 @@
 #include "WeakClassifiers/DecisionStump.h"
 #include "WeakClassifiers/RadialBasisFunction.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //typedef DecisionStump AdaBoostWeakClassifier;
 
@@ -60,19 +60,19 @@ public:
     /**
      Default Constructor
      
-     @param const WeakClassifier &weakClassifier: sets the initial weak classifier that is added to the vector of weak classifiers used to train the AdaBoost model
-     @param bool useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
-     @param bool useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the top K datum is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
-     @param double nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 10.0
-     @param UINT numBoostingIterations: sets the number of boosting iterations to use during training. Default value = 20
-     @param UINT predictionMethod: sets the prediction method for AdaBoost, this should be one of the PredictionMethods. Default value = MAX_VALUE
+     @param weakClassifier: sets the initial weak classifier that is added to the vector of weak classifiers used to train the AdaBoost model
+     @param useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
+     @param useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the top K datum is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
+     @param nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 10.0
+     @param numBoostingIterations: sets the number of boosting iterations to use during training. Default value = 20
+     @param predictionMethod: sets the prediction method for AdaBoost, this should be one of the PredictionMethods. Default value = MAX_VALUE
      */
-    AdaBoost(const WeakClassifier &weakClassifier = DecisionStump(),bool useScaling=false,bool useNullRejection=false,double nullRejectionCoeff=10.0,UINT numBoostingIterations=20,UINT predictionMethod=MAX_VALUE);
+    AdaBoost(const WeakClassifier &weakClassifier = DecisionStump(),bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=10.0,UINT numBoostingIterations=20,UINT predictionMethod=MAX_VALUE);
     
     /**
      Defines the copy constructor.
      
-     @param const AdaBoost &rhs: the instance from which all the data will be copied into this instance
+     @param rhs: the instance from which all the data will be copied into this instance
      */
     AdaBoost(const AdaBoost &rhs);
     
@@ -84,7 +84,7 @@ public:
     /**
      Defines how the data from the rhs AdaBoost should be copied to this AdaBoost
      
-     @param const AdaBoost &rhs: another instance of a AdaBoost
+     @param rhs: another instance of a AdaBoost
      @return returns a reference to this instance of the AdaBoost
      */
     AdaBoost &operator=(const AdaBoost &rhs);
@@ -93,7 +93,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.
      It clones the data from the Base Class Classifier pointer (which should be pointing to an AdaBoost instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another AdaBoost instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another AdaBoost instance
      @return returns true if the clone was successfull, false otherwise
      */
     virtual bool deepCopyFrom(const Classifier *classifier);
@@ -102,7 +102,7 @@ public:
      This trains the AdaBoost model, using the labelled classification data.
      This overrides the train function in the Classifier base class.
      
-     @param ClassificationData &trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the AdaBoost model was trained, false otherwise
      */
     virtual bool train_(ClassificationData &trainingData);
@@ -111,10 +111,10 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble &inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
      */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This overrides the clear function in the Classifier base class.
@@ -128,23 +128,23 @@ public:
      This saves the trained AdaBoost model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the AdaBoost model will be saved to
+     @param file: a reference to the file the AdaBoost model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained AdaBoost model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the AdaBoost model will be loaded from
+     @param file: a reference to the file the AdaBoost model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This recomputes the null rejection thresholds for each of the classes in the AdaBoost model.
-     This will be called automatically if the setGamma(double gamma) function is called.
+     This will be called automatically if the setGamma(float_t gamma) function is called.
      The AdaBoost model needs to be trained first before this function can be called.
      
      @return returns true if the null rejection thresholds were updated successfully, false otherwise
@@ -158,7 +158,7 @@ public:
      
      @return returns true if the gamma parameter was updated successfully, false otherwise
      */
-    bool setNullRejectionCoeff(double nullRejectionCoeff);
+    bool setNullRejectionCoeff(float_t nullRejectionCoeff);
     
     /**
      Sets the WeakClassifier to use for boosting.  
@@ -196,7 +196,7 @@ public:
     /**
      Sets the prediction method for AdaBoost, this should be one of the PredictionMethods enumerations.
      
-     @param UINT predictionMethod: the predictionMethod that should be used by AdaBoost, this should be one of the PredictionMethods enumerations
+     @param predictionMethod: the predictionMethod that should be used by AdaBoost, this should be one of the PredictionMethods enumerations
      @return returns true if the predictionMethod was set successfully, false otherwise
      */
 	bool setPredictionMethod(UINT predictionMethod);
@@ -213,7 +213,7 @@ public:
      
      @return a vector containing the current AdaBoostClassModel models.
      */
-    vector< AdaBoostClassModel > getModels() const { return models; }
+    Vector< AdaBoostClassModel > getModels() const { return models; }
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -224,12 +224,12 @@ public:
     using MLBase::predict_;
     
 protected:
-    bool loadLegacyModelFromFile( fstream &file );
+    bool loadLegacyModelFromFile( std::fstream &file );
     
     UINT numBoostingIterations;
     UINT predictionMethod;
-    vector< WeakClassifier* > weakClassifiers;
-    vector< AdaBoostClassModel > models;
+    Vector< WeakClassifier* > weakClassifiers;
+    Vector< AdaBoostClassModel > models;
     
     static RegisterClassifierModule< AdaBoost > registerModule;
     
@@ -240,6 +240,6 @@ public:
     enum PredictionMethods{MAX_POSITIVE_VALUE=0,MAX_VALUE};
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_ADABOOST_HEADER

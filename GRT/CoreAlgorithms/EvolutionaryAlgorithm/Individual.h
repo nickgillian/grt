@@ -23,7 +23,7 @@
 
 #include "../../Util/GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class Individual{
 public:
@@ -51,6 +51,6 @@ public:
     VectorFloat gene;
 };
     
-}
+GRT_END_NAMESPACE
 
 #endif //GRT_INDIVIDUAL_HEADER

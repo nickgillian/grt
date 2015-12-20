@@ -23,7 +23,7 @@
 
 #include "../../CoreAlgorithms/ParticleFilter/ParticleFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class ParticleClassifierGestureTemplate{
 public:
@@ -40,10 +40,10 @@ public:
     }
     
     unsigned int classLabel;
-    MatrixDouble timeseries;
+    MatrixFloat timeseries;
 };
 
-class ParticleClassifierParticleFilter : public ParticleFilter< Particle,VectorDouble > {
+class ParticleClassifierParticleFilter : public ParticleFilter< Particle,VectorFloat > {
     
 public:
     ParticleClassifierParticleFilter(){
@@ -55,10 +55,10 @@ public:
     
     }
     
-    virtual bool preFilterUpdate( VectorDouble &data ){
+    virtual bool preFilterUpdate( VectorFloat &data ){
         
         //Randomly reset a small number of particles to ensure the classifier does not get stuck on one gesture
-        unsigned int numRandomFlipParticles = 0;//(unsigned int)floor( processNoise[0] * double(numParticles) );
+        unsigned int numRandomFlipParticles = 0;//(unsigned int)floor( processNoise[0] * float_t(numParticles) );
         
         for(unsigned int i=0; i<numRandomFlipParticles; i++){
             //unsigned int randomParticleIndex = rand.getRandomNumberInt(0, numParticles);
@@ -72,7 +72,7 @@ public:
         return true;
     }
     
-    virtual bool postFilterUpdate( VectorDouble &data ){
+    virtual bool postFilterUpdate( VectorFloat &data ){
         
         return true;
     }
@@ -80,8 +80,8 @@ public:
     virtual bool predict( Particle &p ){
         
         //Given the prior set of particles, randomly generate new state estimations using the process model
-        const double phase = p.x[1];
-        const double velocity = p.x[2];
+        const float_t phase = p.x[1];
+        const float_t velocity = p.x[2];
             
         //Update the phase
         p.x[1] = Util::limit( phase + rand.getRandomNumberGauss(0.0,processNoise[1]) , 0, 1);
@@ -95,7 +95,7 @@ public:
         return true;
     }
     
-    virtual bool update( Particle &p, VectorDouble &data ){
+    virtual bool update( Particle &p, VectorFloat &data ){
         
         //Generate the weights for the current particle
         p.w = 1;
@@ -104,16 +104,16 @@ public:
         const unsigned int templateIndex = (unsigned int)p.x[0];
         
         if( templateIndex >= numTemplates ){
-            errorLog << "update( Particle &p, VectorDouble &data ) - Template index out of bounds! templateIndex: " << templateIndex << endl;
+            errorLog << "update( Particle &p, VectorFloat &data ) - Template index out of bounds! templateIndex: " << templateIndex << std::endl;
             return false;
         }
         
         //Get the current position in the template
         const unsigned int templateLength = gestureTemplates[templateIndex].timeseries.getNumRows();
-        const unsigned int templatePos = (unsigned int)(p.x[1] * double(templateLength-1));
+        const unsigned int templatePos = (unsigned int)(p.x[1] * float_t(templateLength-1));
         
         if( templatePos >= templateLength ){
-            errorLog << "update( Particle &p, VectorDouble &data ) - Template position out of bounds! templatePos: " << templatePos << " templateLength: " << templateLength << endl;
+            errorLog << "update( Particle &p, VectorFloat &data ) - Template position out of bounds! templatePos: " << templatePos << " templateLength: " << templateLength << std::endl;
             return false;
         }
         
@@ -138,7 +138,7 @@ public:
         return true;
     }
     
-    bool train( const unsigned int numParticles, const TimeSeriesClassificationData &trainingData, double sensorNoise, double transitionSigma, double phaseSigma, double velocitySigma){
+    bool train( const unsigned int numParticles, const TimeSeriesClassificationData &trainingData, float_t sensorNoise, float_t transitionSigma, float_t phaseSigma, float_t velocitySigma){
         
         //Clear any previous model
         clear();
@@ -160,7 +160,7 @@ public:
         //[1] phase (position within the template, normalized [0 1])
         //[2] velocity (value between [-0.2 0.2])
         stateVectorSize = 3;
-        initModel.resize( stateVectorSize, VectorDouble(2,0) );
+        initModel.resize( stateVectorSize, VectorFloat(2,0) );
         processNoise.resize( stateVectorSize );
         measurementNoise.resize( numInputDimensions );
         
@@ -188,7 +188,7 @@ public:
         initialized = true;
         
         if( !initParticles( numParticles ) ){
-            errorLog << "ERROR: Failed to init particles!" << endl;
+            errorLog << "ERROR: Failed to init particles!" << std::endl;
             clear();
             return false;
         }
@@ -210,10 +210,10 @@ public:
     unsigned int numTemplates;
     unsigned int numClasses;
     unsigned int resampleCounter;
-    vector< ParticleClassifierGestureTemplate > gestureTemplates;
+    Vector< ParticleClassifierGestureTemplate > gestureTemplates;
     
 };
     
-}
+GRT_END_NAMESPACE
 
 #endif //GRT_PARTICLE_CLASSIFIER_PARTICLE_FILTER_HEADER

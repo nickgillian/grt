@@ -24,7 +24,7 @@
 #include "../../CoreModules/Classifier.h"
 #include "ParticleClassifierParticleFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class ParticleClassifier : public Classifier
 {
@@ -33,14 +33,14 @@ public:
     /**
      Default Constructor
      */
-	ParticleClassifier(const unsigned int numParticles = 2000,const double sensorNoise = 20.0,const double transitionSigma = 0.005,const double phaseSigma = 0.1,const double velocitySigma = 0.01);
+	ParticleClassifier(const unsigned int numParticles = 2000,const float_t sensorNoise = 20.0,const float_t transitionSigma = 0.005,const float_t phaseSigma = 0.1,const float_t velocitySigma = 0.01);
 	
     /**
      Default copy constructor
      
      Defines how the data from the rhs ParticleClassifier should be copied to this ParticleClassifier
      
-     @param const ParticleClassifier &rhs: another instance of a ParticleClassifier
+     @param rhs: another instance of a ParticleClassifier
      */
 	ParticleClassifier(const ParticleClassifier &rhs);
 	
@@ -52,7 +52,7 @@ public:
     /**
      Defines how the data from the rhs ParticleClassifier should be copied to this ParticleClassifier
      
-     @param const ParticleClassifier &rhs: another instance of a ParticleClassifier
+     @param rhs: another instance of a ParticleClassifier
      @return returns a pointer to this instance of the ParticleClassifier
      */
 	ParticleClassifier& operator=(const ParticleClassifier &rhs);
@@ -61,7 +61,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.
      It clones the data from the Base Class Classifier pointer (which should be pointing to an ParticleClassifier instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another ParticleClassifier instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another ParticleClassifier instance
      @return returns true if the clone was successfull, false otherwise
      */
 	virtual bool deepCopyFrom(const Classifier *classifier);
@@ -70,7 +70,7 @@ public:
      This trains the ParticleClassifier model, using the labelled timeseries classification data.
      This overrides the train function in the Classifier base class.
      
-     @param TimeSeriesClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the DTW model was trained, false otherwise
      */
     virtual bool train_(TimeSeriesClassificationData &trainingData);
@@ -79,28 +79,28 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
      */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This saves the trained ParticleClassifier model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the ParticleClassifier model will be saved to
+     @param file: a reference to the file the ParticleClassifier model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained ParticleClassifier model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the ParticleClassifier model will be loaded from
+     @param file: a reference to the file the ParticleClassifier model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This clears the ParticleClassifier classifier.
@@ -116,15 +116,15 @@ public:
      */
     virtual bool reset();
     
-    const vector< ParticleClassifierGestureTemplate >& getGestureTemplates() const;
+    const Vector< ParticleClassifierGestureTemplate >& getGestureTemplates() const;
     
     const ParticleClassifierParticleFilter& getParticleFilter() const;
     
-    VectorDouble getStateEstimation() const;
+    VectorFloat getStateEstimation() const;
     
-    double getPhase() const;
+    float_t getPhase() const;
     
-    double getVelocity() const;
+    float_t getVelocity() const;
     
     bool setNumParticles(const unsigned int numParticles);
 
@@ -136,24 +136,22 @@ public:
     
     bool setVelocitySigma(const unsigned int velocitySigma);
     
-    
     using MLBase::predict;
     using MLBase::train;
     
 protected:
     unsigned int numParticles;
-    double sensorNoise;
-    double transitionSigma;
-    double phaseSigma;
-    double velocitySigma;
+    float_t sensorNoise;
+    float_t transitionSigma;
+    float_t phaseSigma;
+    float_t velocitySigma;
 	ParticleClassifierParticleFilter particleFilter;
     
 private:
     static RegisterClassifierModule< ParticleClassifier > registerModule;
 	
-
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif

@@ -23,14 +23,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <iostream>
 #include <string>
-using namespace std;
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class ClassTracker{
 public:
 
-    ClassTracker(unsigned int classLabel = 0,unsigned int counter = 0, string className = "NOT_SET"){
+    ClassTracker(unsigned int classLabel = 0,unsigned int counter = 0, std::string className = "NOT_SET"){
         this->classLabel = classLabel;
         this->counter = counter;
         this->className = className;
@@ -63,9 +62,9 @@ public:
     
     unsigned int classLabel;
     unsigned int counter;
-    string className;
+    std::string className;
 };
 
-}; //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_CLASS_TRACKER_HEADER

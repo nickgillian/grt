@@ -51,7 +51,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 //Include the common GRT classes
 #include "GRTException.h"
-#include "MatrixFloat.h"
 #include "MinMax.h"
 #include "ClassTracker.h"
 #include "IndexedDouble.h"
@@ -61,6 +60,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "TrainingLog.h"
 #include "TestingLog.h"
 #include "WarningLog.h"
+#include "../DataStructures/VectorFloat.h"
+#include "../DataStructures/MatrixFloat.h"
 #include "TrainingResult.h"
 #include "TestInstanceResult.h"
 #include "TestResult.h"

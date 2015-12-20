@@ -36,7 +36,7 @@
 #include "MinDistModel.h"
 #include "../../CoreModules/Classifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class MinDist : public Classifier
 {
@@ -44,17 +44,17 @@ public:
     /**
      Default Constructor
      
-     @param bool useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
-     @param bool useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the top K datum is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
-     @param double nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 10.0
-     @param UINT numClusters: sets how many clusters each model will try to find during the training phase.  Default value = 10
+     @param useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
+     @param useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the top K datum is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
+     @param nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 10.0
+     @param numClusters: sets how many clusters each model will try to find during the training phase.  Default value = 10
      */
-	MinDist(bool useScaling=false,bool useNullRejection=false,double nullRejectionCoeff=10.0,UINT numClusters=10);
+	MinDist(bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=10.0,UINT numClusters=10);
     
     /**
      Defines the copy constructor.
      
-     @param const MinDist &rhs: the instance from which all the data will be copied into this instance
+     @param rhs: the instance from which all the data will be copied into this instance
      */
     MinDist(const MinDist &rhs);
     
@@ -66,7 +66,7 @@ public:
     /**
      Defines how the data from the rhs MinDist should be copied to this MinDist
      
-     @param const MinDist &rhs: another instance of a MinDist
+     @param rhs: another instance of a MinDist
      @return returns a pointer to this instance of the MinDist
      */
 	MinDist &operator=(const MinDist &rhs);
@@ -75,7 +75,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.  
      It clones the data from the Base Class Classifier pointer (which should be pointing to an MinDist instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another MinDist instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another MinDist instance
      @return returns true if the clone was successfull, false otherwise
     */
     virtual bool deepCopyFrom(const Classifier *classifier);
@@ -84,7 +84,7 @@ public:
      This trains the MinDist model, using the labelled classification data.
      This overrides the train function in the Classifier base class.
      
-     @param ClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the MinDist model was trained, false otherwise
     */
     virtual bool train_(ClassificationData &trainingData);
@@ -93,10 +93,10 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This overrides the clear function in the Classifier base class.
@@ -110,23 +110,23 @@ public:
      This saves the trained MinDist model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the MinDist model will be saved to
+     @param file: a reference to the file the MinDist model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained MinDist model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the MinDist model will be loaded from
+     @param file: a reference to the file the MinDist model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This recomputes the null rejection thresholds for each of the classes in the MinDist model.
-     This will be called automatically if the setGamma(double gamma) function is called.
+     This will be called automatically if the setGamma(float_t gamma) function is called.
      The MinDist model needs to be trained first before this function can be called.
      
      @return returns true if the null rejection thresholds were updated successfully, false otherwise
@@ -145,7 +145,7 @@ public:
      
      @return returns a vector of the MinDist models for each of the classes
     */
-    vector< MinDistModel > getModels() const;
+    Vector< MinDistModel > getModels() const;
     
     /**
      Sets the nullRejectionCoeff parameter.
@@ -154,7 +154,7 @@ public:
      
      @return returns true if the gamma parameter was updated successfully, false otherwise
     */
-	virtual bool setNullRejectionCoeff(double nullRejectionCoeff);
+	virtual bool setNullRejectionCoeff(float_t nullRejectionCoeff);
     
     /**
      Sets the numClusters parameter.
@@ -166,10 +166,10 @@ public:
     bool setNumClusters(UINT numClusters);
 
 protected:
-    bool loadLegacyModelFromFile( fstream &file );
+    bool loadLegacyModelFromFile( std::fstream &file );
     
 	UINT numClusters; 
-	vector< MinDistModel > models;            //A buffer to hold all the models
+	Vector< MinDistModel > models;            //A buffer to hold all the models
     
 private:
     static RegisterClassifierModule< MinDist > registerModule;

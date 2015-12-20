@@ -86,11 +86,11 @@ int main (int argc, const char * argv[])
     }
     
     //Use the test dataset to test the KNN model
-    double accuracy = 0;
+    float_t accuracy = 0;
     for(UINT i=0; i<testData.getNumSamples(); i++){
         //Get the i'th test sample
         UINT classLabel = testData[i].getClassLabel();
-        vector< double > inputVector = testData[i].getSample();
+        VectorFloat inputVector = testData[i].getSample();
         
         //Perform a prediction using the classifier
         bool predictSuccess = knn.predict( inputVector );
@@ -102,8 +102,8 @@ int main (int argc, const char * argv[])
         
         //Get the predicted class label
         UINT predictedClassLabel = knn.getPredictedClassLabel();
-        vector< double > classLikelihoods = knn.getClassLikelihoods();
-        vector< double > classDistances = knn.getClassDistances();
+        VectorFloat classLikelihoods = knn.getClassLikelihoods();
+        VectorFloat classDistances = knn.getClassDistances();
         
         //Update the accuracy
         if( classLabel == predictedClassLabel ) accuracy++;
@@ -111,7 +111,7 @@ int main (int argc, const char * argv[])
         cout << "TestSample: " << i <<  " ClassLabel: " << classLabel << " PredictedClassLabel: " << predictedClassLabel << endl;
     }
     
-    cout << "Test Accuracy: " << accuracy/double(testData.getNumSamples())*100.0 << "%" << endl;
+    cout << "Test Accuracy: " << accuracy/float_t(testData.getNumSamples())*100.0 << "%" << endl;
     
     return EXIT_SUCCESS;
 

@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "TimeSeriesClassificationSampleTrimmer.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 TimeSeriesClassificationSampleTrimmer::TimeSeriesClassificationSampleTrimmer(float_t trimThreshold,float_t maximumTrimPercentage){
     this->trimThreshold = trimThreshold;
@@ -38,12 +38,12 @@ bool TimeSeriesClassificationSampleTrimmer::trimTimeSeries(TimeSeriesClassificat
     const UINT N = timeSeries.getNumDimensions();
     
     if( M == 0 ){
-        warningLog << "trimTimeSeries(TimeSeriesClassificationSample &timeSeries) - can't trim data, the length of the input time series is 0!" << endl;
+        warningLog << "trimTimeSeries(TimeSeriesClassificationSample &timeSeries) - can't trim data, the length of the input time series is 0!" << std::endl;
         return false;
     }
     
     if( N == 0 ){
-        warningLog << "trimTimeSeries(TimeSeriesClassificationSample &timeSeries) - can't trim data, the number of dimensions in the input time series is 0!" << endl;
+        warningLog << "trimTimeSeries(TimeSeriesClassificationSample &timeSeries) - can't trim data, the number of dimensions in the input time series is 0!" << std::endl;
         return false;
     }
     
@@ -80,22 +80,22 @@ bool TimeSeriesClassificationSampleTrimmer::trimTimeSeries(TimeSeriesClassificat
     }
     
     if( firstIndex == 0 && lastIndex == 0 ){
-        warningLog << "Failed to find either the first index or the last index!";
+        warningLog << "Failed to find either the first index or the last index!" << std::endl;
         return false;
     }
     
     if( firstIndex == lastIndex ){
-        warningLog << "The first index and last index are the same!";
+        warningLog << "The first index and last index are the same!" << std::endl;
         return false;
     }
 
 	if( firstIndex > lastIndex ){
-        warningLog << "The first index is greater than the last index!";
+        warningLog << "The first index is greater than the last index!" << std::endl;
         return false;
     }
     
     if( lastIndex == 0 ){
-        warningLog << "Failed to find the last index!";
+        warningLog << "Failed to find the last index!" << std::endl;
         lastIndex = M-1;
     }
     
@@ -120,8 +120,9 @@ bool TimeSeriesClassificationSampleTrimmer::trimTimeSeries(TimeSeriesClassificat
     
     warningLog << "Maximum Trim Percentage Excedded, Can't Trim Sample!";
     warningLog << " Original Timeseries Length: " << M << " Trimmed Timeseries Length: " << newM;
-    warningLog << " Percentage: " << (100-trimPercentage) << " MaximumTrimPercentage: " << maximumTrimPercentage << endl;
+    warningLog << " Percentage: " << (100-trimPercentage) << " MaximumTrimPercentage: " << maximumTrimPercentage << std::endl;
     return false;
 }
     
-}; //End of namespace GRT
+GRT_END_NAMESPACE
+

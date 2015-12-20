@@ -20,9 +20,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "RegressionData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
-RegressionData::RegressionData(const UINT numInputDimensions,const UINT numTargetDimensions,const string datasetName,const string infoText):totalNumSamples(0){
+RegressionData::RegressionData(const UINT numInputDimensions,const UINT numTargetDimensions,const std::string datasetName,const std::string infoText):totalNumSamples(0){
     this->numInputDimensions = numInputDimensions;
     this->numTargetDimensions = numTargetDimensions;
     this->datasetName = datasetName;
@@ -82,29 +82,29 @@ bool RegressionData::setInputAndTargetDimensions(const UINT numInputDimensions,c
         externalTargetRanges.clear();
         return true;
     }
-    errorLog << "setInputAndTargetDimensions(UINT numInputDimensions,UINT numTargetDimensions) - The number of input and target dimensions should be greater than zero!" << endl;
+    errorLog << "setInputAndTargetDimensions(UINT numInputDimensions,UINT numTargetDimensions) - The number of input and target dimensions should be greater than zero!" << std::endl;
     return false;
 }
 
-bool RegressionData::setDatasetName(const string &datasetName){
+bool RegressionData::setDatasetName(const std::string &datasetName){
 
     //Make sure there are no spaces in the string
-    if( datasetName.find(" ") == string::npos ){
+    if( datasetName.find(" ") == std::string::npos ){
         this->datasetName = datasetName;
         return true;
     }
 
-    errorLog << "setDatasetName(const string &datasetName) - The dataset name cannot contain any spaces!" << endl;
+    errorLog << "setDatasetName(const string &datasetName) - The dataset name cannot contain any spaces!" << std::endl;
     return false;
 }
 
-bool RegressionData::setInfoText(const string &infoText){
+bool RegressionData::setInfoText(const std::string &infoText){
     this->infoText = infoText;
     return true;
 }
 
-bool RegressionData::addSample(const VectorDouble &inputVector,const VectorDouble &targetVector){
-	if( inputVector.size() == numInputDimensions && targetVector.size() == numTargetDimensions ){
+bool RegressionData::addSample(const VectorFloat &inputVector,const VectorFloat &targetVector){
+	if( inputVector.getSize() == numInputDimensions && targetVector.getSize() == numTargetDimensions ){
         data.push_back( RegressionSample(inputVector,targetVector) );
         totalNumSamples++;
 
@@ -113,7 +113,7 @@ bool RegressionData::addSample(const VectorDouble &inputVector,const VectorDoubl
         crossValidationIndexs.clear();
         return true;
     }
-    errorLog << "addSample(const VectorDouble &inputVector,const VectorDouble &targetVector) - The inputVector size or targetVector size does not match the size of the numInputDimensions or numTargetDimensions" << endl;
+    errorLog << "addSample(const VectorFloat &inputVector,const VectorFloat &targetVector) - The inputVector size or targetVector size does not match the size of the numInputDimensions or numTargetDimensions" << std::endl;
     return false;
 }
 
@@ -121,14 +121,14 @@ bool RegressionData::removeLastSample(){
 	if( totalNumSamples > 0 ){
 		//Remove the training example from the buffer
 		data.erase(data.end()-1);
-		totalNumSamples = (UINT)data.size();
+		totalNumSamples = data.getSize();
 
         //The dataset has changed so flag that any previous cross validation setup will now not work
         crossValidationSetup = false;
         crossValidationIndexs.clear();
 		return true;
 	}
-    warningLog << "removeLastSample() - There are no samples to remove!" << endl;
+    warningLog << "removeLastSample() - There are no samples to remove!" << std::endl;
     return false;
 }
     
@@ -141,10 +141,10 @@ bool RegressionData::reserve(const UINT N){
     return false;
 }
 
-bool RegressionData::setExternalRanges(const vector< MinMax > &externalInputRanges,const vector< MinMax > & externalTargetRanges,const bool useExternalRanges){
+bool RegressionData::setExternalRanges(const Vector< MinMax > &externalInputRanges,const Vector< MinMax > & externalTargetRanges,const bool useExternalRanges){
 
-    if( externalInputRanges.size() != numInputDimensions ) return false;
-    if( externalTargetRanges.size() != numTargetDimensions ) return false;
+    if( externalInputRanges.getSize() != numInputDimensions ) return false;
+    if( externalTargetRanges.getSize() != numTargetDimensions ) return false;
 
     this->externalInputRanges = externalInputRanges;
     this->externalTargetRanges = externalTargetRanges;
@@ -154,33 +154,33 @@ bool RegressionData::setExternalRanges(const vector< MinMax > &externalInputRang
 }
 
 bool RegressionData::enableExternalRangeScaling(const bool useExternalRanges){
-    if( externalInputRanges.size() != numInputDimensions && externalTargetRanges.size() != numTargetDimensions  ){
+    if( externalInputRanges.getSize() != numInputDimensions && externalTargetRanges.getSize() != numTargetDimensions  ){
         this->useExternalRanges = useExternalRanges;
         return true;
     }
     return false;
 }
 
-bool RegressionData::scale(const double minTarget,const double maxTarget){
-    vector< MinMax > inputRanges = getInputRanges();
-    vector< MinMax > targetRanges = getTargetRanges();
+bool RegressionData::scale(const float_t minTarget,const float_t maxTarget){
+    Vector< MinMax > inputRanges = getInputRanges();
+    Vector< MinMax > targetRanges = getTargetRanges();
     return scale(inputRanges,targetRanges,minTarget,maxTarget);
 }
 
-bool RegressionData::scale(const vector< MinMax > &inputVectorRanges,const vector< MinMax > &targetVectorRanges,const double minTarget,const double maxTarget){
-    if( inputVectorRanges.size() == numInputDimensions && targetVectorRanges.size() == numTargetDimensions ){
+bool RegressionData::scale(const Vector< MinMax > &inputVectorRanges,const Vector< MinMax > &targetVectorRanges,const float_t minTarget,const float_t maxTarget){
+    if( inputVectorRanges.getSize() == numInputDimensions && targetVectorRanges.getSize() == numTargetDimensions ){
 
-        VectorDouble scaledInputVector(numInputDimensions,0);
-        VectorDouble scaledTargetVector(numTargetDimensions,0);
+        VectorFloat scaledInputVector(numInputDimensions,0);
+        VectorFloat scaledTargetVector(numTargetDimensions,0);
         for(UINT i=0; i<totalNumSamples; i++){
 
-            //Scale the input vector
+            //Scale the input Vector
             for(UINT j=0; j<numInputDimensions; j++){
-                scaledInputVector[j] = Util::scale(data[i].getInputVectorValue(j),inputVectorRanges[j].minValue,inputVectorRanges[j].maxValue,minTarget,maxTarget);
+                scaledInputVector[j] = grt_scale(data[i].getInputVectorValue(j),inputVectorRanges[j].minValue,inputVectorRanges[j].maxValue,minTarget,maxTarget);
             }
-            //Scale the target vector
+            //Scale the target Vector
             for(UINT j=0; j<numTargetDimensions; j++){
-                scaledTargetVector[j] = Util::scale(data[i].getTargetVectorValue(j),targetVectorRanges[j].minValue,targetVectorRanges[j].maxValue,minTarget,maxTarget);
+                scaledTargetVector[j] = grt_scale(data[i].getTargetVectorValue(j),targetVectorRanges[j].minValue,targetVectorRanges[j].maxValue,minTarget,maxTarget);
             }
             //Update the training sample with the scaled data
             data[i].set(scaledInputVector,scaledTargetVector);
@@ -191,11 +191,11 @@ bool RegressionData::scale(const vector< MinMax > &inputVectorRanges,const vecto
     return false;
 }
 
-vector<MinMax> RegressionData::getInputRanges() const{
+Vector<MinMax> RegressionData::getInputRanges() const{
 
     if( useExternalRanges ) return externalInputRanges;
 
-	vector< MinMax > ranges(numInputDimensions);
+	Vector< MinMax > ranges(numInputDimensions);
 
 	if( totalNumSamples > 0 ){
 		for(UINT j=0; j<numInputDimensions; j++){
@@ -210,11 +210,11 @@ vector<MinMax> RegressionData::getInputRanges() const{
 	return ranges;
 }
 
-vector<MinMax> RegressionData::getTargetRanges() const{
+Vector<MinMax> RegressionData::getTargetRanges() const{
 
     if( useExternalRanges ) return externalTargetRanges;
 
-    vector< MinMax > ranges(numTargetDimensions);
+    Vector< MinMax > ranges(numTargetDimensions);
 
     if( totalNumSamples > 0 ){
         for(UINT j=0; j<numTargetDimensions; j++){
@@ -229,23 +229,23 @@ vector<MinMax> RegressionData::getTargetRanges() const{
     return ranges;
 }
 
-string RegressionData::getStatsAsString() const{
+std::string RegressionData::getStatsAsString() const{
 
-    string statsText;
+    std::string statsText;
     statsText += "DatasetName:\t" + datasetName + "\n";
     statsText += "DatasetInfo:\t" + infoText + "\n";
     statsText += "Number of Input Dimensions:\t" + Util::toString( numInputDimensions ) + "\n";
     statsText += "Number of Target Dimensions:\t" + Util::toString( numTargetDimensions ) + "\n";
     statsText += "Number of Samples:\t" + Util::toString( totalNumSamples ) + "\n";
 
-    vector< MinMax > inputRanges = getInputRanges();
+    Vector< MinMax > inputRanges = getInputRanges();
 
     statsText += "Dataset Input Dimension Ranges:\n";
     for(UINT j=0; j<inputRanges.size(); j++){
         statsText += "[" + Util::toString( j+1 ) + "] Min:\t" + Util::toString( inputRanges[j].minValue ) + "\tMax: " + Util::toString( inputRanges[j].maxValue ) + "\n";
     }
 
-    vector< MinMax > targetRanges = getTargetRanges();
+    Vector< MinMax > targetRanges = getTargetRanges();
 
     statsText += "Dataset Target Dimension Ranges:\n";
     for(UINT j=0; j<targetRanges.size(); j++){
@@ -255,7 +255,7 @@ string RegressionData::getStatsAsString() const{
 }
 
 bool RegressionData::printStats() const{
-    cout << getStatsAsString();
+    std::cout << getStatsAsString();
     return true;
 }
     
@@ -266,11 +266,11 @@ RegressionData RegressionData::partition(const UINT trainingSizePercentage){
 	//therefore sets the size of the data which remains in this instance and the remaining percentage of data is then added to
 	//the testing/validation dataset
 
-	const UINT numTrainingExamples = (UINT) floor( double(totalNumSamples) / 100.0 * double(trainingSizePercentage) );
+	const UINT numTrainingExamples = (UINT) floor( float_t(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
 
 	RegressionData trainingSet(numInputDimensions,numTargetDimensions);
 	RegressionData testSet(numInputDimensions,numTargetDimensions);
-	vector< UINT > indexs( totalNumSamples );
+	Vector< UINT > indexs( totalNumSamples );
 
 	//Create the random partion indexs
 	Random random;
@@ -303,12 +303,12 @@ RegressionData RegressionData::partition(const UINT trainingSizePercentage){
 bool RegressionData::merge(const RegressionData &regressionData){
 
     if( regressionData.getNumInputDimensions() != numInputDimensions ){
-        errorLog << "merge(RegressionData &regressionData) - The number of input dimensions in the regressionData (" << regressionData.getNumInputDimensions() << ") does not match the number of input dimensions of this dataset (" << numInputDimensions << ")" << endl;
+        errorLog << "merge(RegressionData &regressionData) - The number of input dimensions in the regressionData (" << regressionData.getNumInputDimensions() << ") does not match the number of input dimensions of this dataset (" << numInputDimensions << ")" << std::endl;
         return false;
     }
 
     if( regressionData.getNumTargetDimensions() != numTargetDimensions ){
-        errorLog << "merge(RegressionData &regressionData) - The number of target dimensions in the regressionData (" << regressionData.getNumTargetDimensions() << ") does not match the number of target dimensions of this dataset (" << numTargetDimensions << ")" << endl;
+        errorLog << "merge(RegressionData &regressionData) - The number of target dimensions in the regressionData (" << regressionData.getNumTargetDimensions() << ") does not match the number of target dimensions of this dataset (" << numTargetDimensions << ")" << std::endl;
         return false;
     }
 
@@ -331,22 +331,22 @@ bool RegressionData::spiltDataIntoKFolds(const UINT K){
 
     //K can not be zero
     if( K > totalNumSamples ){
-        errorLog << "spiltDataIntoKFolds(UINT K) - K can not be zero!" << endl;
+        errorLog << "spiltDataIntoKFolds(UINT K) - K can not be zero!" << std::endl;
         return false;
     }
 
     //K can not be larger than the number of examples
     if( K > totalNumSamples ){
-        errorLog << "spiltDataIntoKFolds(UINT K) - K can not be larger than the total number of samples in the dataset!" << endl;
+        errorLog << "spiltDataIntoKFolds(UINT K) - K can not be larger than the total number of samples in the dataset!" << std::endl;
         return false;
     }
 
     //Setup the dataset for k-fold cross validation
     kFoldValue = K;
-    vector< UINT > indexs( totalNumSamples );
+    Vector< UINT > indexs( totalNumSamples );
 
     //Work out how many samples are in each fold, the last fold might have more samples than the others
-    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/double(K) );
+    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/float_t(K) );
 
     //Add the random indexs to each fold
     crossValidationIndexs.resize(K);
@@ -387,7 +387,7 @@ RegressionData RegressionData::getTrainingFoldData(const UINT foldIndex) const{
     RegressionData trainingData;
 
     if( !crossValidationSetup ){
-        errorLog << "getTrainingFoldData(UINT foldIndex) - Cross Validation has not been setup! You need to call the spiltDataIntoKFolds(UINT K,bool useStratifiedSampling) function first before calling this function!" << endl;
+        errorLog << "getTrainingFoldData(UINT foldIndex) - Cross Validation has not been setup! You need to call the spiltDataIntoKFolds(UINT K,bool useStratifiedSampling) function first before calling this function!" << std::endl;
         return trainingData;
     }
 
@@ -438,12 +438,12 @@ UINT RegressionData::removeDuplicateSamples(){
     sort(data.begin(),data.end(),RegressionSample::sortByInputVectorAscending );
 
     //Remove any samples that are very close to each other
-    double minDist = 1.0e-5;
-    double dist = 0;
-    double totalDimensions = numInputDimensions + numTargetDimensions;
+    float_t minDist = 1.0e-5;
+    float_t dist = 0;
+    float_t totalDimensions = numInputDimensions + numTargetDimensions;
     bool keepSearching = true;
-    vector< RegressionSample >::iterator currentSample = data.begin();
-    vector< RegressionSample >::iterator nextSample = data.begin()+1;
+    Vector< RegressionSample >::iterator currentSample = data.begin();
+    Vector< RegressionSample >::iterator nextSample = data.begin()+1;
 
     if( currentSample == data.end() ) keepSearching = false;
     if( nextSample == data.end() ) keepSearching = false;
@@ -462,7 +462,7 @@ UINT RegressionData::removeDuplicateSamples(){
             currentSample = data.erase( nextSample );
             nextSample = currentSample + 1;
             numSamplesRemoved++;
-            debugLog << "Removing sample with dist: " << dist << endl;
+            debugLog << "Removing sample with dist: " << dist << std::endl;
         }else{
             currentSample++;
             nextSample++;
@@ -475,7 +475,7 @@ UINT RegressionData::removeDuplicateSamples(){
     return numSamplesRemoved;
 }
     
-bool RegressionData::save(const string &filename) const{
+bool RegressionData::save(const std::string &filename) const{
     
     //Check if the file should be saved as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -486,7 +486,7 @@ bool RegressionData::save(const string &filename) const{
     return saveDatasetToFile( filename );
 }
 
-bool RegressionData::load(const string &filename){
+bool RegressionData::load(const std::string &filename){
     
     //Check if the file should be loaded as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -497,30 +497,30 @@ bool RegressionData::load(const string &filename){
     return loadDatasetFromFile( filename );
 }
 
-bool RegressionData::saveDatasetToFile(const string &filename) const{
+bool RegressionData::saveDatasetToFile(const std::string &filename) const{
 
 	std::fstream file;
 	file.open(filename.c_str(), std::ios::out);
 
 	if( !file.is_open() ){
-        errorLog << "saveDatasetToFile(const string &filename) - Failed to open file!" << endl;
+        errorLog << "saveDatasetToFile(const string &filename) - Failed to open file!" << std::endl;
 		return false;
 	}
 
 	file << "GRT_LABELLED_REGRESSION_DATA_FILE_V1.0\n";
-    file << "DatasetName: " << datasetName << endl;
-    file << "InfoText: " << infoText << endl;
-	file << "NumInputDimensions: "<<numInputDimensions<<endl;
-	file << "NumTargetDimensions: "<<numTargetDimensions<<endl;
-	file << "TotalNumTrainingExamples: "<<totalNumSamples<<endl;
-    file << "UseExternalRanges: " << useExternalRanges << endl;
+    file << "DatasetName: " << datasetName << std::endl;
+    file << "InfoText: " << infoText << std::endl;
+	file << "NumInputDimensions: "<<numInputDimensions << std::endl;
+	file << "NumTargetDimensions: "<<numTargetDimensions << std::endl;
+	file << "TotalNumTrainingExamples: "<<totalNumSamples << std::endl;
+    file << "UseExternalRanges: " << useExternalRanges << std::endl;
 
     if( useExternalRanges ){
-        for(UINT i=0; i<externalInputRanges.size(); i++){
-            file << externalInputRanges[i].minValue << "\t" << externalInputRanges[i].maxValue << endl;
+        for(UINT i=0; i<externalInputRanges.getSize(); i++){
+            file << externalInputRanges[i].minValue << "\t" << externalInputRanges[i].maxValue << std::endl;
         }
-        for(UINT i=0; i<externalTargetRanges.size(); i++){
-            file << externalTargetRanges[i].minValue << "\t" << externalTargetRanges[i].maxValue << endl;
+        for(UINT i=0; i<externalTargetRanges.getSize(); i++){
+            file << externalTargetRanges[i].minValue << "\t" << externalTargetRanges[i].maxValue << std::endl;
         }
     }
 
@@ -534,30 +534,30 @@ bool RegressionData::saveDatasetToFile(const string &filename) const{
 			file << data[i].getTargetVectorValue(j);
 			if( j!= numTargetDimensions-1 ) file << "\t";
 		}
-		file << endl;
+		file << std::endl;
 	}
 
 	file.close();
 	return true;
 }
 
-bool RegressionData::loadDatasetFromFile(const string &filename){
+bool RegressionData::loadDatasetFromFile(const std::string &filename){
 
 	std::fstream file;
 	file.open(filename.c_str(), std::ios::in);
 	clear();
 
 	if( !file.is_open() ){
-        errorLog << "loadDatasetFromFile(const string &filename) - Failed to open file!" << endl;
+        errorLog << "loadDatasetFromFile(const string &filename) - Failed to open file!" << std::endl;
 		return false;
 	}
 
-	string word;
+	std::string word;
 
 	//Check to make sure this is a file with the Training File Format
 	file >> word;
 	if(word != "GRT_LABELLED_REGRESSION_DATA_FILE_V1.0"){
-        errorLog << "loadDatasetFromFile(const string &filename) - Unknown file header!" << endl;
+        errorLog << "loadDatasetFromFile(const string &filename) - Unknown file header!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -565,7 +565,7 @@ bool RegressionData::loadDatasetFromFile(const string &filename){
     //Get the name of the dataset
 	file >> word;
 	if(word != "DatasetName:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(const string &filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -573,7 +573,7 @@ bool RegressionData::loadDatasetFromFile(const string &filename){
 
     file >> word;
 	if(word != "InfoText:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - failed to find InfoText!" << endl;
+        errorLog << "loadDatasetFromFile(const string &filename) - failed to find InfoText!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -588,7 +588,7 @@ bool RegressionData::loadDatasetFromFile(const string &filename){
 
 	//Get the number of input dimensions in the training data
 	if(word != "NumInputDimensions:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - Failed to find NumInputDimensions!" << endl;
+        errorLog << "loadDatasetFromFile(const string &filename) - Failed to find NumInputDimensions!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -597,7 +597,7 @@ bool RegressionData::loadDatasetFromFile(const string &filename){
 	//Get the number of target dimensions in the training data
 	file >> word;
 	if(word != "NumTargetDimensions:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - Failed to find NumTargetDimensions!" << endl;
+        errorLog << "loadDatasetFromFile(const string &filename) - Failed to find NumTargetDimensions!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -606,7 +606,7 @@ bool RegressionData::loadDatasetFromFile(const string &filename){
 	//Get the total number of training examples in the training data
 	file >> word;
 	if(word != "TotalNumTrainingExamples:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - Failed to find TotalNumTrainingExamples!" << endl;
+        errorLog << "loadDatasetFromFile(const string &filename) - Failed to find TotalNumTrainingExamples!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -615,7 +615,7 @@ bool RegressionData::loadDatasetFromFile(const string &filename){
     //Check if the dataset should be scaled using external ranges
 	file >> word;
 	if(word != "UseExternalRanges:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(const string &filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -638,17 +638,17 @@ bool RegressionData::loadDatasetFromFile(const string &filename){
 	//Get the main training data
 	file >> word;
 	if( word != "RegressionData:" && word != "LabelledRegressionData:" ){
-        errorLog << "loadDatasetFromFile(const string &filename) - Failed to find RegressionData!" << endl;
+        errorLog << "loadDatasetFromFile(const string &filename) - Failed to find RegressionData!" << std::endl;
 		file.close();
 		return false;
 	}
 
-	VectorDouble inputVector(numInputDimensions);
-	VectorDouble targetVector(numTargetDimensions);
+	VectorFloat inputVector(numInputDimensions);
+	VectorFloat targetVector(numTargetDimensions);
 	data.resize( totalNumSamples, RegressionSample(inputVector,targetVector) );
 
 	for(UINT i=0; i<totalNumSamples; i++){
-		//Read the input vector
+		//Read the input Vector
 		for(UINT j=0; j<numInputDimensions; j++){
 			file >> inputVector[j];
 		}
@@ -662,13 +662,13 @@ bool RegressionData::loadDatasetFromFile(const string &filename){
 	return true;
 }
 
-bool RegressionData::saveDatasetToCSVFile(const string &filename) const{
+bool RegressionData::saveDatasetToCSVFile(const std::string &filename) const{
 
     std::fstream file;
 	file.open(filename.c_str(), std::ios::out );
 
 	if( !file.is_open() ){
-        errorLog << "saveDatasetToCSVFile(const string &filename) - Failed to open file!" << endl;
+        errorLog << "saveDatasetToCSVFile(const string &filename) - Failed to open file!" << std::endl;
 		return false;
 	}
 
@@ -681,7 +681,7 @@ bool RegressionData::saveDatasetToCSVFile(const string &filename) const{
 			file << data[i].getTargetVector()[j];
             if( j != numTargetDimensions-1 ) file << ",";
 		}
-		file << endl;
+		file << std::endl;
 	}
 
 	file.close();
@@ -689,10 +689,10 @@ bool RegressionData::saveDatasetToCSVFile(const string &filename) const{
     return true;
 }
 
-bool RegressionData::loadDatasetFromCSVFile(const string &filename,const UINT numInputDimensions,const UINT numTargetDimensions){
+bool RegressionData::loadDatasetFromCSVFile(const std::string &filename,const UINT numInputDimensions,const UINT numTargetDimensions){
 
-    fstream file;
-    string value;
+    std::fstream file;
+    std::string value;
     clear();
     datasetName = "NOT_SET";
     infoText = "";
@@ -704,18 +704,18 @@ bool RegressionData::loadDatasetFromCSVFile(const string &filename,const UINT nu
     FileParser parser;
     
     if( !parser.parseCSVFile(filename,true) ){
-        errorLog << "loadDatasetFromCSVFile(...) - Failed to parse CSV file!" << endl;
+        errorLog << "loadDatasetFromCSVFile(...) - Failed to parse CSV file!" << std::endl;
         return false;
     }
     
     if( !parser.getConsistentColumnSize() ){
-        errorLog << "loadDatasetFromCSVFile(...) - The CSV file does not have a consistent number of columns!" << endl;
+        errorLog << "loadDatasetFromCSVFile(...) - The CSV file does not have a consistent number of columns!" << std::endl;
         return false;
     }
     
     if( parser.getColumnSize() != numInputDimensions+numTargetDimensions ){
         errorLog << "loadDatasetFromCSVFile(...) - The number of columns in the CSV file (" << parser.getColumnSize() << ")";
-        errorLog << " does not match the number of input dimensions plus the number of target dimensions (" << numInputDimensions+numTargetDimensions << ")" << endl;
+        errorLog << " does not match the number of input dimensions plus the number of target dimensions (" << numInputDimensions+numTargetDimensions << ")" << std::endl;
         return false;
     }
     
@@ -723,31 +723,31 @@ bool RegressionData::loadDatasetFromCSVFile(const string &filename,const UINT nu
     setInputAndTargetDimensions(numInputDimensions, numTargetDimensions);
     
     UINT n = 0;
-    VectorDouble inputVector(numInputDimensions);
-    VectorDouble targetVector(numTargetDimensions);
+    VectorFloat inputVector(numInputDimensions);
+    VectorFloat targetVector(numTargetDimensions);
     for(UINT i=0; i<parser.getRowSize(); i++){
         
         //Reset n
         n = 0;
         
-        //Get the input vector
+        //Get the input Vector
         for(UINT j=0; j<numInputDimensions; j++){
-            inputVector[j] = Util::stringToDouble( parser[i][n++] );
+            inputVector[j] = grt_from_str< float_t >( parser[i][n++] );
         }
         
-        //Get the target vector
+        //Get the target Vector
         for(UINT j=0; j<numTargetDimensions; j++){
-            targetVector[j] = Util::stringToDouble( parser[i][n++] );
+            targetVector[j] = grt_from_str< float_t >( parser[i][n++] );
         }
         
         //Add the labelled sample to the dataset
         if( !addSample(inputVector, targetVector) ){
-            warningLog << "loadDatasetFromCSVFile(string filename) - Could not add sample " << i << " to the dataset!" << endl;
+            warningLog << "loadDatasetFromCSVFile(string filename) - Could not add sample " << i << " to the dataset!" << std::endl;
         }
     }
     
     return true;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

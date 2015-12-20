@@ -35,7 +35,7 @@
 
 #include "../../CoreModules/MLBase.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 class LinearLeastSquares : public MLBase{
 public:
@@ -56,25 +56,25 @@ public:
         
     }
     
-    bool solve( const VectorDouble &x, const VectorDouble &y ){
+    bool solve( const VectorFloat &x, const VectorFloat &y ){
         
         if( x.size() == 0 && y.size() == 0 ){
-            warningLog << "solve( const VectorDouble &x, const VectorDouble &y ) - Failed to compute solution, input vectors are empty!" << endl;
+            warningLog << "solve( const VectorFloat &x, const VectorFloat &y ) - Failed to compute solution, input vectors are empty!" << endl;
             return false;
         }
         
         if( x.size() != y.size() ){
-            warningLog << "solve( const VectorDouble &x, const VectorDouble &y ) - Failed to compute solution, input vectors do not have the same size!" << endl;
+            warningLog << "solve( const VectorFloat &x, const VectorFloat &y ) - Failed to compute solution, input vectors do not have the same size!" << endl;
             return false;
         }
         
         const unsigned int N = (unsigned int)x.size();
-        double sumx = 0.0;    //Stores the sum of x
-        double sumx2 = 0.0;   //Stores the sum of x^2
-        double sumxy = 0.0;   //Stores the sum of x * y
-        double sumy = 0.0;    //Stores the sum of y
-        double sumy2 = 0.0;   //Stores the sum of y**2
-        double denom = 0;
+        float_t sumx = 0.0;    //Stores the sum of x
+        float_t sumx2 = 0.0;   //Stores the sum of x^2
+        float_t sumxy = 0.0;   //Stores the sum of x * y
+        float_t sumy = 0.0;    //Stores the sum of y
+        float_t sumy2 = 0.0;   //Stores the sum of y**2
+        float_t denom = 0;
         
         m = 0;
         b = 0;
@@ -91,7 +91,7 @@ public:
         denom = (n * sumx2 - sqr(sumx));
         if (denom == 0) {
             // singular matrix. can't solve the problem.
-            warningLog << "solve( const VectorDouble &x, const VectorDouble &y ) - Failed to compute solution, singular matrix detected!" << endl;
+            warningLog << "solve( const VectorFloat &x, const VectorFloat &y ) - Failed to compute solution, singular matrix detected!" << endl;
             return false;
         }
         
@@ -106,12 +106,12 @@ public:
     
 protected:
 
-    double m;
-    double b;
-    double r;
+    float_t m;
+    float_t b;
+    float_t r;
     
 };
 
-}
+GRT_END_NAMESPACE
 
 #endif //GRT_MEAN_SHIFT_HEADER

@@ -1,9 +1,9 @@
 
 #include "MovementDetector.h"
 
-using namespace GRT;
+GRT_BEGIN_NAMESPACE
 
-MovementDetector::MovementDetector( const UINT numDimensions, const double upperThreshold, const double lowerThreshold, const double gamma, const UINT searchTimeout ) {
+MovementDetector::MovementDetector( const UINT numDimensions, const float_t upperThreshold, const float_t lowerThreshold, const float_t gamma, const UINT searchTimeout ) {
     classType = "MovementDetector";
     infoLog.setProceedingText("[MovementDetector]");
     debugLog.setProceedingText("[DEBUG MovementDetector]");
@@ -26,23 +26,23 @@ MovementDetector::~MovementDetector(){
         
 }
     
-bool MovementDetector::predict_( VectorDouble &input ){
+bool MovementDetector::predict_( VectorFloat &input ){
     
     movementDetected = false;
     noMovementDetected = false;
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &input) - AdaBoost Model Not Trained!" << endl;
+        errorLog << "predict_(VectorFloat &input) - AdaBoost Model Not Trained!" << std::endl;
         return false;
     }
     
     if( input.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &input) - The size of the input vector (" << input.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
+        errorLog << "predict_(VectorFloat &input) - The size of the input vector (" << input.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
         return false;
     }
     
     //Compute the movement index, unless we are in the first sample
-    double x = 0;
+    float_t x = 0;
     if( !firstSample ){
         for(UINT n=0; n<numInputDimensions; n++){
             x += SQR( input[n] - lastSample[n] );
@@ -103,33 +103,33 @@ bool MovementDetector::reset(){
     return true;
 }
 
-bool MovementDetector::saveModelToFile(fstream &file) const{
+bool MovementDetector::saveModelToFile( std::fstream &file ) const{
     
     //Write the header info
     file << "GRT_MOVEMENT_DETECTOR_MODEL_FILE_V1.0\n";
     
     //Write the base settings to the file
     if( !MLBase::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save ML base settings to file!" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save ML base settings to file!" << std::endl;
         return false;
     }
     
     //Write the detector variables
-    file << "SearchTimeout: " << searchTimeout << endl;
-    file << "UpperThreshold: " << upperThreshold << endl;
-    file << "LowerThreshold: " << lowerThreshold << endl;
-    file << "Gamma: " << gamma << endl;
+    file << "SearchTimeout: " << searchTimeout << std::endl;
+    file << "UpperThreshold: " << upperThreshold << std::endl;
+    file << "LowerThreshold: " << lowerThreshold << std::endl;
+    file << "Gamma: " << gamma << std::endl;
     
     return true;
 }
 
-bool MovementDetector::loadModelFromFile(fstream &file){
+bool MovementDetector::loadModelFromFile( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not open file to load model!" << std::endl;
         return false;
     }
     
@@ -138,40 +138,40 @@ bool MovementDetector::loadModelFromFile(fstream &file){
     
     //Write the header info
     if( word != "GRT_MOVEMENT_DETECTOR_MODEL_FILE_V1.0" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read file header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read file header!" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !MLBase::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if( word != "SearchTimeout:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read SearchTimeout header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read SearchTimeout header!" << std::endl;
         return false;
     }
     file >> searchTimeout;
     
     file >> word;
     if( word != "UpperThreshold:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read UpperThreshold header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read UpperThreshold header!" << std::endl;
         return false;
     }
     file >> upperThreshold;
     
     file >> word;
     if( word != "LowerThreshold:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read LowerThreshold header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read LowerThreshold header!" << std::endl;
         return false;
     }
     file >> lowerThreshold;
     
     file >> word;
     if( word != "Gamma:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read Gamma header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read Gamma header!" << std::endl;
         return false;
     }
     file >> gamma;
@@ -179,19 +179,19 @@ bool MovementDetector::loadModelFromFile(fstream &file){
     return true;
 }
 
-double MovementDetector::getUpperThreshold() const {
+float_t MovementDetector::getUpperThreshold() const {
     return upperThreshold;
 }
 
-double MovementDetector::getLowerThreshold() const {
+float_t MovementDetector::getLowerThreshold() const {
     return lowerThreshold;
 }
 
-double MovementDetector::getMovementIndex() const {
+float_t MovementDetector::getMovementIndex() const {
     return movementIndex;
 }
 
-double MovementDetector::getGamma() const {
+float_t MovementDetector::getGamma() const {
     return gamma;
 }
 
@@ -211,17 +211,17 @@ UINT MovementDetector::getSearchTimeout() const {
     return searchTimeout;
 }
 
-bool MovementDetector::setUpperThreshold(const double upperThreshold) {
+bool MovementDetector::setUpperThreshold(const float_t upperThreshold) {
     this->upperThreshold = upperThreshold;
     return true;
 }
 
-bool MovementDetector::setLowerThreshold(const double lowerThreshold) {
+bool MovementDetector::setLowerThreshold(const float_t lowerThreshold) {
     this->lowerThreshold = lowerThreshold;
     return true;
 }
 
-bool MovementDetector::setGamma(const double gamma) {
+bool MovementDetector::setGamma(const float_t gamma) {
     this->gamma = gamma;
     return true;
 }
@@ -230,3 +230,5 @@ bool MovementDetector::setSearchTimeout(const UINT searchTimeout){
     this->searchTimeout = searchTimeout;
     return true;
 }
+
+GRT_END_NAMESPACE

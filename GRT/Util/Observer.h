@@ -27,14 +27,9 @@
 #ifndef GRT_OBSERVER_HEADER
 #define GRT_OBSERVER_HEADER
 
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include "GRTTypedefs.h"
 
-namespace GRT {
-    
-//Forward declaration of MLBase
-class MLBase;
+GRT_BEGIN_NAMESPACE
         
 template< class NotifyType >
 class Observer
@@ -47,6 +42,6 @@ public:
     virtual void notify(const NotifyType &data){};
 };
     
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif // GRT_OBSERVER_HEADER

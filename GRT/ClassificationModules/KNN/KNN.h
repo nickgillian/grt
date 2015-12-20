@@ -44,7 +44,7 @@
 
 #include "../../CoreModules/Classifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 #define BIG_DISTANCE 99e+99
 
@@ -54,15 +54,15 @@ public:
     /**
      Default Constructor
      
-     @param UINT K: the number of neigbors the algorithm will us to perform a classification. Default value is K = 10
-     @param bool useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
-     @param bool useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the top K datum is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
-     @param double nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 10.0
+     @param K: the number of neigbors the algorithm will us to perform a classification. Default value is K = 10
+     @param useScaling: sets if the training and prediction data should be scaled to a specific range.  Default value is useScaling = false
+     @param useNullRejection: sets if null rejection will be used for the realtime prediction.  If useNullRejection is set to true then the predictedClassLabel will be set to 0 (which is the default null label) if the distance between the inputVector and the top K datum is greater than the null rejection threshold for the top predicted class.  The null rejection threshold is computed for each class during the training phase. Default value is useNullRejection = false
+     @param nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 10.0
      @param searchForBestKValue: sets if the training algorithm will search for the best K value.  Default value is searchForBestKValue = false
      @param minKSearchValue: sets the minimum K value to use when searching for the best K value.  Default value is minKSearchValue = 1
      @param maxKSearchValue: sets the maximum K value to use when searching for the best K value.  Default value is maxKSearchValue = 1
     */
-	KNN(UINT K=10,bool useScaling=false,bool useNullRejection=false,double nullRejectionCoeff=10.0,bool searchForBestKValue = false,UINT minKSearchValue = 1,UINT maxKSearchValue = 10);
+	KNN(UINT K=10,bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=10.0,bool searchForBestKValue = false,UINT minKSearchValue = 1,UINT maxKSearchValue = 10);
     
     /**
      Defines the copy constructor.
@@ -79,7 +79,7 @@ public:
     /**
      Defines how the data from the rhs KNN should be copied to this KNN
      
-     @param const KNN &rhs: another instance of a KNN
+     @param rhs: another instance of a KNN
      @return returns a pointer to this instance of the KNN
     */
 	KNN &operator=(const KNN &rhs);
@@ -88,7 +88,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier method is called.  
      It clones the data from the Base Class Classifier pointer (which should be pointing to a KNN instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another KNN instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another KNN instance
      @return returns true if the clone was successfull, false otherwise
     */
     virtual bool deepCopyFrom(const Classifier *classifier);
@@ -97,7 +97,7 @@ public:
      This trains the KNN model, using the labelled classification data.
      This overrides the train function in the Classifier base class.
      
-     @param ClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the KNN model was trained, false otherwise
     */
     virtual bool train_(ClassificationData &trainingData);
@@ -106,10 +106,10 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This overrides the clear function in the Classifier base class.
@@ -123,23 +123,23 @@ public:
      This saves the trained KNN model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the KNN model will be saved to
+     @param file: a reference to the file the KNN model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained KNN model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the KNN model will be loaded from
+     @param file: a reference to the file the KNN model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This recomputes the null rejection thresholds for each of the classes in the KNN model.
-     This will be called automatically if the setGamma(double gamma) function is called.
+     This will be called automatically if the setGamma(float_t gamma) function is called.
      The KNN model needs to be trained first before this function can be called.
      
      @return returns true if the null rejection thresholds were updated successfully, false otherwise
@@ -202,7 +202,7 @@ public:
      
      @return returns true if the nullRejectionCoeff parameter was updated successfully, false otherwise
      */
-    bool setNullRejectionCoeff(double nullRejectionCoeff);
+    bool setNullRejectionCoeff(float_t nullRejectionCoeff);
     
     /**
      Sets the current distance method being used to compute the neighest neighbours.
@@ -223,11 +223,11 @@ public:
 
 protected:
     bool train_(const ClassificationData &trainingData,const UINT K);
-    bool predict(const VectorDouble &inputVector,const UINT K);
-    bool loadLegacyModelFromFile( fstream &file );
-    double computeEuclideanDistance(const VectorDouble &a,const VectorDouble &b);
-    double computeCosineDistance(const VectorDouble &a,const VectorDouble &b);
-    double computeManhattanDistance(const VectorDouble &a,const VectorDouble &b);
+    bool predict(const VectorFloat &inputVector,const UINT K);
+    bool loadLegacyModelFromFile( std::fstream &file );
+    float_t computeEuclideanDistance(const VectorFloat &a,const VectorFloat &b);
+    float_t computeCosineDistance(const VectorFloat &a,const VectorFloat &b);
+    float_t computeManhattanDistance(const VectorFloat &a,const VectorFloat &b);
     
     UINT K;                                     ///> The number of neighbours to search for
     UINT distanceMethod;                        ///> The distance method used to compute the distance between each data point
@@ -235,8 +235,8 @@ protected:
     UINT minKSearchValue;                       ///> The minimum K value to start the search from
     UINT maxKSearchValue;                       ///> The maximum K value to end the search at
     ClassificationData trainingData;            ///> Holds the trainingData to perform the predictions
-    VectorDouble trainingMu;                    ///> Holds the average max-class distance of the training data for each of classes
-    VectorDouble trainingSigma;                 ///> Holds the stddev of the max-class distance of the training data for each of classes
+    VectorFloat trainingMu;                    ///> Holds the average max-class distance of the training data for each of classes
+    VectorFloat trainingSigma;                 ///> Holds the stddev of the max-class distance of the training data for each of classes
     
     static RegisterClassifierModule< KNN > registerModule;
     
@@ -245,7 +245,7 @@ public:
 	
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_KNN_HEADER
 

@@ -36,7 +36,7 @@
 #include "ContinuousHiddenMarkovModel.h"
 #include "../../CoreModules/Classifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class HMM : public Classifier
 {
@@ -46,11 +46,11 @@ public:
      
      Sets up the HMM instance with default parameters.
      
-     @param const UINT hmmType: sets the HMM type, this should be either HMM_DISCRETE or HMM_CONTINUOUS. Default: HMM_CONTINUOUS
-     @param const UINT modelType: sets the model type used by either the discrete or continuous hmm. This should be either HMM_ERGODIC or HMM_LEFTRIGHT. Default: HMM_LEFTRIGHT
-     @param const UINT delta: sets the number of states a model can transistion to for a HMM_LEFTRIGHT model. Default: 1
-     @param const UINT useScaling: sets if the training/input data should be scaled to the range [0 1]. Default: false
-     @param const UINT useNullRejection: sets if the algorithm should use null rejection (i.e., automatically gesture spotting). Default: false
+     @param hmmType: sets the HMM type, this should be either HMM_DISCRETE or HMM_CONTINUOUS. Default: HMM_CONTINUOUS
+     @param modelType: sets the model type used by either the discrete or continuous hmm. This should be either HMM_ERGODIC or HMM_LEFTRIGHT. Default: HMM_LEFTRIGHT
+     @param delta: sets the number of states a model can transistion to for a HMM_LEFTRIGHT model. Default: 1
+     @param useScaling: sets if the training/input data should be scaled to the range [0 1]. Default: false
+     @param useNullRejection: sets if the algorithm should use null rejection (i.e., automatically gesture spotting). Default: false
      */
 	HMM(const UINT hmmType=HMM_CONTINUOUS,const UINT modelType=HMM_LEFTRIGHT,const UINT delta=1,const bool useScaling = false,const bool useNullRejection = false);
     
@@ -59,7 +59,7 @@ public:
      
      Copies the settings/models from the rhs HMM instance to this instance.
      
-     @param const HMM &rhs: another HMM instance from which the settings/models will be copied to this instance
+     @param rhs: another HMM instance from which the settings/models will be copied to this instance
      */
     HMM(const HMM &rhs);
     
@@ -73,7 +73,7 @@ public:
      
      Copies the settings/models from the rhs HMM instance to this instance.
      
-     @param const HMM &rhs: another HMM instance from which the settings/models will be copied to this instance
+     @param rhs: another HMM instance from which the settings/models will be copied to this instance
      @return returns a reference to this instance
      */
     HMM& operator=(const HMM &rhs);
@@ -82,7 +82,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.  
      It clones the data from the Base Class Classifier pointer (which should be pointing to an HMM instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another HMM instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another HMM instance
      @return returns true if the clone was successfull, false otherwise
      */
     virtual bool deepCopyFrom(const Classifier *classifier);
@@ -91,7 +91,7 @@ public:
      This overrides the train function in the Classifier base class. It simply prints a warning message stating that the 
      bool train(LabelledTimeSeriesClassificationData trainingData) function should be used to train the HMM model.
      
-     @param ClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the HMM model was trained, false otherwise
      */
     virtual bool train(ClassificationData trainingData);
@@ -101,7 +101,7 @@ public:
      This is the main training function for the HMM class.
      This overrides the train function in the Classifier base class.
      
-     @param TimeSeriesClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the HMM model was trained, false otherwise
      */
     virtual bool train_(TimeSeriesClassificationData &trainingData);
@@ -110,19 +110,19 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input Vector to classify
      @return returns true if the prediction was performed, false otherwise
      */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This predicts the class of the timeseries.
      This overrides the predict function in the Classifier base class.
      
-     @param MatrixDouble timeSeries: the input timeseries to classify
+     @param timeSeries: the input timeseries to classify
      @return returns true if the prediction was performed, false otherwise
      */
-    virtual bool predict_(MatrixDouble &timeseries);
+    virtual bool predict_(MatrixFloat &timeseries);
     
     /**
      This resets the HMM classifier.
@@ -145,19 +145,19 @@ public:
      This saves the trained HMM model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the HMM model will be saved to
+     @param file: a reference to the file the HMM model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained HMM model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the HMM model will be loaded from
+     @param file: a reference to the file the HMM model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This function gets the HMM type.  This will be either HMM_DISCRETE or HMM_CONTINUOUS.
@@ -208,27 +208,27 @@ public:
     UINT getNumRandomTrainingIterations() const;
     
     /**
-     This function gets returns a vector of trained DiscreteHiddenMarkovModels.  There will be one HiddenMarkovModel for each class in
+     This function gets returns a Vector of trained DiscreteHiddenMarkovModels.  There will be one HiddenMarkovModel for each class in
      the training data. This is only relevant if the HMM model type is HMM_DISCRETE.
      
      @return returns the trained DiscreteHiddenMarkovModels
      */
-    vector< DiscreteHiddenMarkovModel > getDiscreteModels() const;
+    Vector< DiscreteHiddenMarkovModel > getDiscreteModels() const;
     
     /**
-     This function gets returns a vector of trained ContinuousHiddenMarkovModels.  There will be one HiddenMarkovModel for each sample in
+     This function gets returns a Vector of trained ContinuousHiddenMarkovModels.  There will be one HiddenMarkovModel for each sample in
      the training data. This is only relevant if the HMM model type is HMM_CONTINUOUS.
      
      @return returns the trained ContinuousHiddenMarkovModels
      */
-    vector< ContinuousHiddenMarkovModel > getContinuousModels() const;
+    Vector< ContinuousHiddenMarkovModel > getContinuousModels() const;
     
     /**
      This function sets the hmmType.  This should be either a HMM_DISCRETE, or HMM_CONTINUOUS.
      
      This will clear any trained model.
      
-     @param const UINT hmmType: the new hmmType
+     @param hmmType: the new hmmType
      @return returns true if the parameter was set correctly, false otherwise
      */
     bool setHMMType(const UINT hmmType);
@@ -238,7 +238,7 @@ public:
      
      This will clear any trained model.
      
-     @param const UINT modelType: the modelType in each HMM
+     @param modelType: the modelType in each HMM
      @return returns true if the parameter was set correctly, false otherwise
      */
     bool setModelType(const UINT modelType);
@@ -252,7 +252,7 @@ public:
      
      This will clear any trained model.
      
-     @param const UINT delta: the delta parameter used for each HMM
+     @param delta: the delta parameter used for each HMM
      @return returns true if the parameter was set correctly, false otherwise
      */
     bool setDelta(const UINT delta);
@@ -265,7 +265,7 @@ public:
      
      The parameter must be greater than zero. This will clear any trained model.
      
-     @param const UINT downsampleFactor: the downsample factor used for a continuous HMM
+     @param downsampleFactor: the downsample factor used for a continuous HMM
      @return returns true if the parameter was set correctly, false otherwise
      */
     bool setDownsampleFactor(const UINT downsampleFactor);
@@ -276,7 +276,7 @@ public:
      
      The parameter must be greater than zero. This will NOT clear any trained model.
      
-     @param const UINT committeeSize: the committeeSize used for a continuous HMM
+     @param committeeSize: the committeeSize used for a continuous HMM
      @return returns true if the parameter was set correctly, false otherwise
      */
     bool setCommitteeSize(const UINT committeeSize);
@@ -286,7 +286,7 @@ public:
      
      The parameter must be greater than zero. This will clear any trained model.
      
-     @param const UINT numStates: the number of states in each HMM
+     @param numStates: the number of states in each HMM
      @return returns true if the parameter was set correctly, false otherwise
      */
     bool setNumStates(const UINT numStates);
@@ -294,7 +294,7 @@ public:
     /**
      This function sets the number of symbols for a HMM_DISCRETE.  The parameter must be greater than zero. This will clear any trained model.
      
-     @param const UINT symbols: the number of symbols in each HMM
+     @param symbols: the number of symbols in each HMM
      @return returns true if the parameter was set correctly, false otherwise
      */
     bool setNumSymbols(const UINT numStates);
@@ -308,7 +308,7 @@ public:
      
      This will clear any trained model.
      
-     @param const UINT numRandomTrainingIterations: the number of random training iterations used to train each HMM
+     @param numRandomTrainingIterations: the number of random training iterations used to train each HMM
      @return returns true if the parameter was set correctly, false otherwise
      */
     bool setNumRandomTrainingIterations(const UINT numRandomTrainingIterations);
@@ -322,10 +322,10 @@ public:
      
      Sigma must be greater than zero.
      
-     @param const double sigma: the new sigma parameter
+     @param sigma: the new sigma parameter
      @return returns true if the parameter was set correctly, false otherwise
      */
-    bool setSigma(const double sigma);
+    bool setSigma(const float_t sigma);
     
     bool setAutoEstimateSigma(const bool autoEstimateSigma);
     
@@ -338,12 +338,12 @@ public:
 protected:
     bool train_discrete(TimeSeriesClassificationData &trainingData);
     bool train_continuous(TimeSeriesClassificationData &trainingData);
-    bool predict_discrete( VectorDouble &inputVector );
-    bool predict_continuous( VectorDouble &inputVector );
-    bool predict_discrete(MatrixDouble &timeseries);
-    bool predict_continuous(MatrixDouble &timeseries);
-    bool convertDataToObservationSequence( TimeSeriesClassificationData &classData, vector< vector< UINT > > &observationSequences );
-    bool loadLegacyModelFromFile( fstream &file );
+    bool predict_discrete( VectorFloat &inputVector );
+    bool predict_continuous( VectorFloat &inputVector );
+    bool predict_discrete(MatrixFloat &timeseries);
+    bool predict_continuous(MatrixFloat &timeseries);
+    bool convertDataToObservationSequence( TimeSeriesClassificationData &classData, Vector< Vector< UINT > > &observationSequences );
+    bool loadLegacyModelFromFile( std::fstream &file );
 
 	UINT hmmType;           ///<Controls if this is a HMM_DISCRETE or a HMM_CONTINUOUS
     UINT modelType;         //Set if the model is ERGODIC or LEFTRIGHT
@@ -353,18 +353,18 @@ protected:
 	UINT numStates;			//The number of states for each model
 	UINT numSymbols;		//The number of symbols for each model
     UINT numRandomTrainingIterations;
-    vector< DiscreteHiddenMarkovModel > discreteModels;
+    Vector< DiscreteHiddenMarkovModel > discreteModels;
     
     //Continuous HMM variables
     UINT downsampleFactor;
     UINT committeeSize;
-    double sigma;
+    float_t sigma;
     bool autoEstimateSigma;
-    vector< ContinuousHiddenMarkovModel > continuousModels;
+    Vector< ContinuousHiddenMarkovModel > continuousModels;
     
     static RegisterClassifierModule< HMM > registerModule;
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_HMM_HEADER

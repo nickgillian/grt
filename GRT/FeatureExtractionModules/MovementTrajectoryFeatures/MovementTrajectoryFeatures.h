@@ -32,15 +32,15 @@
 #include "../../CoreModules/FeatureExtraction.h"
 #include "../../Util/Util.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 struct AngleMagnitude{
     AngleMagnitude(){
         angle = 0;
         magnitude = 0;
     }
-    double angle;
-    double magnitude;
+    float_t angle;
+    float_t magnitude;
 };
 typedef struct AngleMagnitude AngleMagnitude;
     
@@ -86,10 +86,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the MovementTrajectoryFeatures's update function.
      
-     @param const vector< double > &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @param const vector< float_t > &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector);
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -142,18 +142,18 @@ public:
     /**
      Computes the features from the input, this should only be called if the dimensionality of this instance was set to 1.
      
-     @param double x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
+     @param float_t x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
 	 @return a vector containing the features, an empty vector will be returned if the features were not computed
      */
-	VectorDouble update(double x);
+	VectorFloat update(float_t x);
     
     /**
      Computes the features from the input, the dimensionality of x should match that of this instance.
      
-     @param const vector<double> &x: a vector containing the values to be processed, must be the same size as the numInputDimensions
+     @param const VectorFloat &x: a vector containing the values to be processed, must be the same size as the numInputDimensions
 	 @return a vector containing the features, an empty vector will be returned if the features were not computed
      */
-    VectorDouble update(const VectorDouble &x);
+    VectorFloat update(const VectorFloat &x);
     
     /**
      Gets the current values in the trajectory buffer.
@@ -161,7 +161,7 @@ public:
      
      @return returns a curcular buffer containing the data buffer values, an empty circular buffer will be returned if the feature extraction module has not been initialized
      */
-    CircularBuffer< VectorDouble > getTrajectoryData();
+    CircularBuffer< VectorFloat > getTrajectoryData();
     
     /**
      Gets a matrix containing the centroids of the trajectory data. Each row represents the centroids from a subsection of the trajectory data, each column 
@@ -192,7 +192,7 @@ protected:
     UINT numHistogramBins;
     bool useTrajStartAndEndValues;
     bool useWeightedMagnitudeValues;
-    CircularBuffer< VectorDouble > trajectoryDataBuffer;
+    CircularBuffer< VectorFloat > trajectoryDataBuffer;
     MatrixDouble centroids;
     
     static RegisterFeatureExtractionModule< MovementTrajectoryFeatures > registerModule;
@@ -201,6 +201,6 @@ public:
     enum FeatureModes{CENTROID_VALUE=0,NORMALIZED_CENTROID_VALUE,CENTROID_DERIVATIVE,CENTROID_ANGLE_2D};
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MOVEMENT_TRAJECTORY_FEATURES_HEADER

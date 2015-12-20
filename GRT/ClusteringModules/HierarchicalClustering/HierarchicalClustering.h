@@ -31,7 +31,7 @@
 
 #include "../../CoreModules/Clusterer.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class ClusterInfo{
 public:
@@ -77,13 +77,13 @@ public:
         return (UINT)indexs.size();
     }
     
-    double getClusterVariance() const{
+    float_t getClusterVariance() const{
         return clusterVariance;
     }
     
     unsigned int uniqueClusterID;
-    double clusterVariance;
-    vector< UINT > indexs;
+    float_t clusterVariance;
+    Vector< UINT > indexs;
 };
     
 class ClusterLevel{
@@ -128,7 +128,7 @@ public:
     }
     
     unsigned int level;
-    vector< ClusterInfo > clusters;
+    Vector< ClusterInfo > clusters;
 };
 
 class HierarchicalClustering : public Clusterer {
@@ -142,7 +142,7 @@ public:
     /**
      Defines how the data from the rhs instance should be copied to this instance
      
-     @param const HierarchicalClustering &rhs: another instance of a HierarchicalClustering
+     @param rhs: another instance of a HierarchicalClustering
      */
     HierarchicalClustering(const HierarchicalClustering &rhs);
     
@@ -154,7 +154,7 @@ public:
     /**
      Defines how the data from the rhs instance should be copied to this instance
      
-     @param const HierarchicalClustering &rhs: another instance of a HierarchicalClustering
+     @param rhs: another instance of a HierarchicalClustering
      @return returns a reference to this instance of the HierarchicalClustering
      */
     HierarchicalClustering &operator=(const HierarchicalClustering &rhs);
@@ -163,7 +163,7 @@ public:
      This deep copies the variables and models from the Clusterer pointer to this HierarchicalClustering instance.
      This overrides the base deep copy function for the Clusterer modules.
      
-     @param const Clusterer *clusterer: a pointer to the Clusterer base class, this should be pointing to another HierarchicalClustering instance
+     @param clusterer: a pointer to the Clusterer base class, this should be pointing to another HierarchicalClustering instance
      @return returns true if the clone was successfull, false otherwise
      */
     virtual bool deepCopyFrom(const Clusterer *clusterer);
@@ -184,17 +184,17 @@ public:
     virtual bool clear();
     
     /**
-     This is the main training interface for referenced MatrixDouble data. It overrides the train_ function in the ML base class.
+     This is the main training interface for referenced MatrixFloat data. It overrides the train_ function in the ML base class.
      
-     @param MatrixDouble &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
-    virtual bool train_(MatrixDouble &data);
+    virtual bool train_(MatrixFloat &trainingData);
     
     /**
      This is the main training interface for reference ClassificationData data. It overrides the train_ function in the ML base class.
      
-     @param ClassificationData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
     virtual bool train_(ClassificationData &trainingData);
@@ -202,7 +202,7 @@ public:
     /**
      This is the main training interface for reference UnlabelledData data. It overrides the train_ function in the ML base class.
      
-     @param UnlabelledData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
 	virtual bool train_(UnlabelledData &trainingData);
@@ -211,45 +211,44 @@ public:
      This saves the trained HierarchicalClustering model to a file.
      This overrides the saveModelToFile function in the base class.
      
-     @param fstream &file: a reference to the file the HierarchicalClustering model will be saved to
+     @param file: a reference to the file the HierarchicalClustering model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained HierarchicalClustering model from a file.
      This overrides the loadModelFromFile function in the base class.
      
-     @param fstream &file: a reference to the file the HierarchicalClustering model will be loaded from
+     @param file: a reference to the file the HierarchicalClustering model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     bool printModel();
     
-    vector< ClusterLevel > getClusters(){ return clusters; }
+    Vector< ClusterLevel > getClusters(){ return clusters; }
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
 
 protected:
-	inline double SQR(const double &a) {return a*a;};
-    double squaredEuclideanDistance(const double *a,const double *b);
-    double computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB );
-    double computeClusterVariance( const ClusterInfo &cluster, const MatrixDouble &data );
+	inline float_t SQR(const float_t &a) {return a*a;};
+    float_t squaredEuclideanDistance(const float_t *a,const float_t *b);
+    float_t computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB );
+    float_t computeClusterVariance( const ClusterInfo &cluster, const MatrixFloat &data );
 
 	UINT M;                             //Number of training examples
 	UINT N;                             //Number of dimensions
-    vector< ClusterLevel > clusters;
-    MatrixDouble distanceMatrix;                     //The distance matrix
+    Vector< ClusterLevel > clusters;
+    MatrixFloat distanceMatrix;                     //The distance matrix
 
 private:
     static RegisterClustererModule< HierarchicalClustering > registerModule;
-
 		
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_HIERARCHICAL_CLUSTERING_HEADER

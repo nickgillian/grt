@@ -20,9 +20,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "LDA.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
-LDA::LDA(bool useScaling,bool useNullRejection,double nullRejectionCoeff)
+LDA::LDA(bool useScaling,bool useNullRejection,float_t nullRejectionCoeff)
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
@@ -42,7 +42,7 @@ LDA::~LDA(void)
     
 bool LDA::train(ClassificationData trainingData){
     
-    errorLog << "SORRY - this module is still under development and can't be used yet!" << endl;
+    errorLog << "SORRY - this module is still under development and can't be used yet!" << std::endl;
     return false;
     
     //Reset any previous model
@@ -53,7 +53,7 @@ bool LDA::train(ClassificationData trainingData){
     trained = false;
     
     if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train(LabelledClassificationData trainingData) - There is no training data to train the model!" << endl;
+        errorLog << "train(LabelledClassificationData trainingData) - There is no training data to train the model!" << std::endl;
         return false;
     }
     
@@ -61,10 +61,10 @@ bool LDA::train(ClassificationData trainingData){
     numClasses = trainingData.getNumClasses();
 
 	//Calculate the between scatter matrix
-	MatrixDouble SB = computeBetweenClassScatterMatrix( trainingData );
+	MatrixFloat SB = computeBetweenClassScatterMatrix( trainingData );
 	
 	//Calculate the within scatter matrix
-	MatrixDouble SW = computeWithinClassScatterMatrix( trainingData );
+	MatrixFloat SW = computeWithinClassScatterMatrix( trainingData );
 
 
    /*
@@ -74,10 +74,10 @@ bool LDA::train(ClassificationData trainingData){
     vector< UINT > groupLabels(numClasses);
     VectorDouble groupCounters(numClasses);
     VectorDouble priorProb(numClasses);
-    MatrixDouble groupMeans(numClasses,numFeatures);
-    MatrixDouble pCov(numFeatures,numFeatures);
-    MatrixDouble pCovInv(numFeatures,numFeatures);
-    MatrixDouble modelCoeff(numClasses,numFeatures+1);
+    MatrixFloat groupMeans(numClasses,numFeatures);
+    MatrixFloat pCov(numFeatures,numFeatures);
+    MatrixFloat pCovInv(numFeatures,numFeatures);
+    MatrixFloat modelCoeff(numClasses,numFeatures+1);
     
     pCov.setAllValues(0);
     modelCoeff.setAllValues(0);
@@ -91,7 +91,7 @@ bool LDA::train(ClassificationData trainingData){
     //Loop over the classes to compute the group stats
     for(UINT k=0; k<numClasses; k++){
         LabelledClassificationData classData = trainingData.getClassData( groupLabels[k] );
-        MatrixDouble cov(numFeatures,numFeatures);
+        MatrixFloat cov(numFeatures,numFeatures);
         
         //Compute class mu
         for(UINT j=0; j<numFeatures; j++){
@@ -99,7 +99,7 @@ bool LDA::train(ClassificationData trainingData){
             for(UINT i=0; i<classData.getNumSamples(); i++){
                 groupMeans[k][j] += classData[i][j];
             }
-            groupMeans[k][j] /= double(classData.getNumSamples());
+            groupMeans[k][j] /= float_t(classData.getNumSamples());
         }
         
         //Compute the class covariance
@@ -109,7 +109,7 @@ bool LDA::train(ClassificationData trainingData){
                 for(UINT i=0; i<classData.getNumSamples(); i++){
                     cov[m][n] += (classData[i][m]-groupMeans[k][m]) * (classData[i][n]-groupMeans[k][n]);
                 }
-                cov[m][n] /= double(classData.getNumSamples()-1);
+                cov[m][n] /= float_t(classData.getNumSamples()-1);
             }
         }
         
@@ -118,14 +118,14 @@ bool LDA::train(ClassificationData trainingData){
             for(UINT n=0; n<numFeatures; n++){
                 debugLog << cov[m][n] << "\t";
             }debugLog << "\n";
-        }debugLog << endl;
+        }debugLog << std::endl;
         
         //Set the prior probability for this class (which is just 1/numClasses)
-        priorProb[k] = 1.0/double(numClasses);
+        priorProb[k] = 1.0/float_t(numClasses);
         
         //Update the main covariance matrix
-        double weight = ((classData.getNumSamples() - 1) / double(trainingData.getNumSamples() - numClasses) );
-        debugLog << "Weight: " << weight << endl;
+        float_t weight = ((classData.getNumSamples() - 1) / float_t(trainingData.getNumSamples() - numClasses) );
+        debugLog << "Weight: " << weight << std::endl;
         for(UINT m=0; m<numFeatures; m++){
             for(UINT n=0; n<numFeatures; n++){
                 pCov[m][n] += weight * cov[m][n];
@@ -137,7 +137,7 @@ bool LDA::train(ClassificationData trainingData){
         debugLog << "GroupMu: " << groupLabels[k] << "\t";
         for(UINT j=0; j<numFeatures; j++){
             debugLog << groupMeans[k][j] << "\t";
-        }debugLog << endl;
+        }debugLog << std::endl;
     }
     
     debugLog << "pCov:\n";
@@ -145,18 +145,18 @@ bool LDA::train(ClassificationData trainingData){
         for(UINT n=0; n<numFeatures; n++){
             debugLog << pCov[m][n] << "\t";
         }debugLog << "\n";
-    }debugLog << endl;
+    }debugLog << std::endl;
     
     //Invert the pCov matrix
     LUDecomposition matrixInverter(pCov);
     if( !matrixInverter.inverse(pCovInv) ){
-        errorLog << "Failed to invert pCov Matrix!" << endl;
+        errorLog << "Failed to invert pCov Matrix!" << std::endl;
         return false;
     }
     
     //Loop over classes to calculate linear discriminant coefficients
-    double sum = 0;
-    vector< double > temp(numFeatures);
+    float_t sum = 0;
+    vector< float_t > temp(numFeatures);
     for(UINT k=0; k<numClasses; k++){
         //Compute the temporary vector
         for(UINT j=0; j<numFeatures; j++){
@@ -199,7 +199,7 @@ bool LDA::train(ClassificationData trainingData){
 bool LDA::predict(VectorDouble inputVector){
     
     if( !trained ){
-        errorLog << "predict(vector< double > inputVector) - LDA Model Not Trained!" << endl;
+        errorLog << "predict(vector< float_t > inputVector) - LDA Model Not Trained!" << std::endl;
         return false;
     }
     
@@ -208,13 +208,13 @@ bool LDA::predict(VectorDouble inputVector){
     
     if( !trained ) return false;
     
-	if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict(vector< double > inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << endl;
+	if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "predict(vector< float_t > inputVector) - The size of the input vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
 		return false;
 	}
     
     //Make sure the likelihoods and distances vectors have been assigned
-    if( classLikelihoods.size() != numClasses || classDistances.size() != numClasses ){
+    if( classLikelihoods.getSize() != numClasses || classDistances.getSize() != numClasses ){
         classLikelihoods.resize(numClasses);
         classDistances.resize(numClasses);
     }
@@ -223,7 +223,7 @@ bool LDA::predict(VectorDouble inputVector){
     bestDistance = 0;
     maxLikelihood = 0;
     UINT bestIndex = 0;
-    double sum = 0;
+    float_t sum = 0;
     for(UINT k=0; k<numClasses; k++){
         
         for(UINT j=0; j<numInputDimensions+1; j++){
@@ -251,44 +251,44 @@ bool LDA::predict(VectorDouble inputVector){
     return true;
 }
     
-bool LDA::saveModelToFile(fstream &file) const{
+bool LDA::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog <<"saveModelToFile(fstream &file) - Could not open file to save model" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - Could not open file to save model" << std::endl;
         return false;
     }
     
     //Write the header info
     file<<"GRT_LDA_MODEL_FILE_V1.0\n";
-    file<<"NumFeatures: "<<numInputDimensions<<endl;
-    file<<"NumClasses: "<<numClasses<<endl;
-    file <<"UseScaling: " << useScaling << endl;
-    file<<"UseNullRejection: " << useNullRejection << endl;
+    file<<"NumFeatures: "<<numInputDimensions<< std::endl;
+    file<<"NumClasses: "<<numClasses<< std::endl;
+    file <<"UseScaling: " << useScaling << std::endl;
+    file<<"UseNullRejection: " << useNullRejection << std::endl;
     
     ///Write the ranges if needed
     if( useScaling ){
         file << "Ranges: \n";
         for(UINT n=0; n<ranges.size(); n++){
-            file << ranges[n].minValue << "\t" << ranges[n].maxValue << endl;
+            file << ranges[n].minValue << "\t" << ranges[n].maxValue << std::endl;
         }
     }
     
     //Write each of the models
     for(UINT k=0; k<numClasses; k++){
-        file<<"ClassLabel: "<<models[k].classLabel<<endl;
-        file<<"PriorProbability: "<<models[k].priorProb<<endl;
+        file<<"ClassLabel: "<<models[k].classLabel<< std::endl;
+        file<<"PriorProbability: "<<models[k].priorProb<< std::endl;
         file<<"Weights: ";
         
         for(UINT j=0; j<models[k].getNumDimensions(); j++){
             file << "\t" << models[k].weights[j];
-        }file<<endl;
+        }file<< std::endl;
     }
     
     return true;
 }
     
-bool LDA::loadModelFromFile(fstream &file){
+bool LDA::loadModelFromFile( std::fstream &file ){
     
     trained = false;
     numInputDimensions = 0;
@@ -298,7 +298,7 @@ bool LDA::loadModelFromFile(fstream &file){
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -307,34 +307,34 @@ bool LDA::loadModelFromFile(fstream &file){
     //Find the file type header
     file >> word;
     if(word != "GRT_LDA_MODEL_FILE_V1.0"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find Model File Header" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "NumFeatures:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find NumFeatures " << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find NumFeatures " << std::endl;
         return false;
     }
     file >> numInputDimensions;
     
     file >> word;
     if(word != "NumClasses:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find NumClasses" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find NumClasses" << std::endl;
         return false;
     }
     file >> numClasses;
     
     file >> word;
     if(word != "UseScaling:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find UseScaling" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find UseScaling" << std::endl;
         return false;
     }
     file >> useScaling;
     
     file >> word;
     if(word != "UseNullRejection:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find UseNullRejection" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find UseNullRejection" << std::endl;
         return false;
     }
     file >> useNullRejection;
@@ -346,7 +346,7 @@ bool LDA::loadModelFromFile(fstream &file){
         
         file >> word;
         if(word != "Ranges:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find the Ranges" << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find the Ranges" << std::endl;
             return false;
         }
         for(UINT n=0; n<ranges.size(); n++){
@@ -363,7 +363,7 @@ bool LDA::loadModelFromFile(fstream &file){
     for(UINT k=0; k<numClasses; k++){
         file >> word;
         if(word != "ClassLabel:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find ClassLabel for the "<<k+1<<"th model" << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find ClassLabel for the "<<k+1<<"th model" << std::endl;
             return false;
         }
         file >> models[k].classLabel;
@@ -371,7 +371,7 @@ bool LDA::loadModelFromFile(fstream &file){
         
         file >> word;
         if(word != "PriorProbability:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find the PriorProbability for the "<<k+1<<"th model" << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find the PriorProbability for the "<<k+1<<"th model" << std::endl;
             return false;
         }
         file >> models[k].priorProb;
@@ -381,13 +381,13 @@ bool LDA::loadModelFromFile(fstream &file){
         //Load the weights
         file >> word;
         if(word != "Weights:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find the Weights vector for the "<<k+1<<"th model" << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find the Weights vector for the "<<k+1<<"th model" << std::endl;
             return false;
         }
         
         //Load Weights
         for(UINT j=0; j<numInputDimensions+1; j++){
-            double value;
+            float_t value;
             file >> value;
             models[k].weights[j] = value;
         }
@@ -402,13 +402,12 @@ bool LDA::loadModelFromFile(fstream &file){
     trained = true;
     
     return true;
-    
 }
 
-MatrixDouble LDA::computeBetweenClassScatterMatrix( ClassificationData &data ){
+MatrixFloat LDA::computeBetweenClassScatterMatrix( ClassificationData &data ){
 	
-	MatrixDouble sb(numInputDimensions,numInputDimensions);
-	MatrixDouble classMean = data.getClassMean();
+	MatrixFloat sb(numInputDimensions,numInputDimensions);
+	MatrixFloat classMean = data.getClassMean();
 	VectorDouble totalMean = data.getMean();
 	sb.setAllValues( 0 );
 	
@@ -418,7 +417,7 @@ MatrixDouble LDA::computeBetweenClassScatterMatrix( ClassificationData &data ){
 	
 		for(UINT m=0; m<numInputDimensions; m++){
 			for(UINT n=0; n<numInputDimensions; n++){
-				sb[m][n] += (classMean[k][m]-totalMean[m]) * (classMean[k][n]-totalMean[n]) * double(numSamplesInClass);
+				sb[m][n] += (classMean[k][m]-totalMean[m]) * (classMean[k][n]-totalMean[n]) * float_t(numSamplesInClass);
 			}
 		}
 	}
@@ -426,16 +425,16 @@ MatrixDouble LDA::computeBetweenClassScatterMatrix( ClassificationData &data ){
 	return sb;
 }
 
-MatrixDouble LDA::computeWithinClassScatterMatrix( ClassificationData &data ){
+MatrixFloat LDA::computeWithinClassScatterMatrix( ClassificationData &data ){
 	
-	MatrixDouble sw(numInputDimensions,numInputDimensions);
+	MatrixFloat sw(numInputDimensions,numInputDimensions);
 	sw.setAllValues( 0 );
 	
 	for(UINT k=0; k<numClasses; k++){
 		
 		//Compute the scatter matrix for class k
 		ClassificationData classData = data.getClassData( data.getClassTracker()[k].classLabel );
-		MatrixDouble scatterMatrix = classData.getCovarianceMatrix();
+		MatrixFloat scatterMatrix = classData.getCovarianceMatrix();
 		
 		//Add this to the main scatter matrix
 		for(UINT m=0; m<numInputDimensions; m++){
@@ -448,5 +447,5 @@ MatrixDouble LDA::computeWithinClassScatterMatrix( ClassificationData &data ){
 	return sw;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

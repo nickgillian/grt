@@ -27,12 +27,12 @@
 
 #include "WeakClassifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 WeakClassifier::StringWeakClassifierMap* WeakClassifier::stringWeakClassifierMap = NULL;
 UINT WeakClassifier::numWeakClassifierInstances = 0;
 
-WeakClassifier* WeakClassifier::createInstanceFromString(string const &weakClassifierType){
+WeakClassifier* WeakClassifier::createInstanceFromString( std::string const &weakClassifierType ){
     
     StringWeakClassifierMap::iterator iter = getMap()->find( weakClassifierType );
     if( iter == getMap()->end() ){
@@ -69,7 +69,7 @@ WeakClassifier& WeakClassifier::operator=(const WeakClassifier &rhs){
     
 bool WeakClassifier::copyBaseVariables(const WeakClassifier *weakClassifer){
     if( weakClassifer == NULL ){
-        errorLog << "copyBaseVariables(const WeakClassifier *rhs) rhs is NULL!" << endl;
+        errorLog << "copyBaseVariables(const WeakClassifier *rhs) rhs is NULL!" << std::endl;
         return false;
     }
     this->weakClassifierType = weakClassifer->weakClassifierType;
@@ -82,5 +82,5 @@ WeakClassifier* WeakClassifier::createNewInstance() const{
     return createInstanceFromString( weakClassifierType );
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

@@ -35,7 +35,7 @@
 #include "../../CoreModules/Classifier.h"
 #include "../../ClusteringModules/GaussianMixtureModels/GaussianMixtureModels.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
     
 class GuassModel{
 public:
@@ -50,33 +50,33 @@ public:
     bool printModelValues() const{
         if( mu.size() == 0 ) return false;
         
-        cout << "Determinate: " << det << endl;
-        cout << "Mu: ";
-        for(UINT i=0; i<mu.size(); i++)
-            cout << mu[i] << "\t";
-        cout << endl;
+        std::cout << "Determinate: " << det << std::endl;
+        std::cout << "Mu: ";
+        for(UINT i=0; i<mu.getSize(); i++)
+            std::cout << mu[i] << "\t";
+        std::cout << std::endl;
         
-        cout << "Sigma: \n";
+        std::cout << "Sigma: \n";
         for(UINT i=0; i<sigma.getNumRows(); i++){
             for(UINT j=0; j<sigma.getNumCols(); j++){
-                cout << sigma[i][j] << "\t";
-            }cout << endl;
-        }cout << endl;
+                std::cout << sigma[i][j] << "\t";
+            }std::cout << std::endl;
+        }std::cout << std::endl;
         
-        cout << "InvSigma: \n";
+        std::cout << "InvSigma: \n";
         for(UINT i=0; i<invSigma.getNumRows(); i++){
             for(UINT j=0; j<invSigma.getNumCols(); j++){
-                cout << invSigma[i][j] << "\t";
-            }cout << endl;
-        }cout << endl;
+                std::cout << invSigma[i][j] << "\t";
+            }std::cout << std::endl;
+        }std::cout << std::endl;
         
         return true;
     }
     
-    double det;
-    VectorDouble mu;
-    MatrixDouble sigma;
-    MatrixDouble invSigma;
+    float_t det;
+    VectorFloat mu;
+    MatrixFloat sigma;
+    MatrixFloat invSigma;
 };
     
 class MixtureModel{
@@ -102,8 +102,8 @@ public:
         return gaussModels[i];
 	}
     
-    double computeMixtureLikelihood(const vector<double> &x){
-        double sum = 0;
+    float_t computeMixtureLikelihood( const VectorFloat &x ){
+        float_t sum = 0;
         for(UINT k=0; k<K; k++){
             sum += gauss(x,gaussModels[k].det,gaussModels[k].mu,gaussModels[k].invSigma);
         }
@@ -121,8 +121,8 @@ public:
         return false;
     }
     
-    bool recomputeNullRejectionThreshold(double gamma){
-        double newRejectionThreshold = 0;
+    bool recomputeNullRejectionThreshold(float_t gamma){
+        float_t newRejectionThreshold = 0;
         //TODO - Need a way of improving the null rejection threshold for the GMMs!!!!
         newRejectionThreshold = trainingMu - (trainingSigma*gamma);
         newRejectionThreshold = 0.02;
@@ -145,8 +145,8 @@ public:
     }
     
     bool printModelValues() const{
-        if( gaussModels.size() > 0 ){
-            for(UINT k=0; k<gaussModels.size(); k++){
+        if( gaussModels.getSize() > 0 ){
+            for(UINT k=0; k<gaussModels.getSize(); k++){
                 gaussModels[k].printModelValues();
             }
         }
@@ -157,19 +157,19 @@ public:
     
     UINT getClassLabel() const { return classLabel; }
     
-    double getTrainingMu() const {
+    float_t getTrainingMu() const {
         return trainingMu;
     }
     
-    double getTrainingSigma() const {
+    float_t getTrainingSigma() const {
         return trainingSigma;
     }
     
-    double getNullRejectionThreshold() const {
+    float_t getNullRejectionThreshold() const {
         return nullRejectionThreshold;
     }
     
-    double getNormalizationFactor() const {
+    float_t getNormalizationFactor() const {
         return normFactor;
     }
     
@@ -178,29 +178,29 @@ public:
         return true;
     }
     
-    bool setNormalizationFactor(const double normFactor){
+    bool setNormalizationFactor(const float_t normFactor){
         this->normFactor = normFactor;
         return true;
     }
     
-    bool setTrainingMuAndSigma(const double trainingMu,const double trainingSigma){
+    bool setTrainingMuAndSigma(const float_t trainingMu,const float_t trainingSigma){
         this->trainingMu = trainingMu;
         this->trainingSigma = trainingSigma;
         return true;
     }
     
-    bool setNullRejectionThreshold(const double nullRejectionThreshold){
+    bool setNullRejectionThreshold(const float_t nullRejectionThreshold){
         this->nullRejectionThreshold = nullRejectionThreshold;
         return true;
     }
     
 private:    
-    double gauss(const VectorDouble &x,double det,const VectorDouble &mu,const MatrixDouble &invSigma){
+    float_t gauss(const VectorFloat &x,float_t det,const VectorFloat &mu,const MatrixFloat &invSigma){
         
-        double y = 0;
-        double sum = 0;
-        const UINT N = (UINT)x.size();
-        VectorDouble temp(N,0);
+        float_t y = 0;
+        float_t sum = 0;
+        const UINT N = x.getSize();
+        VectorFloat temp(N,0);
         
         //Compute the first part of the equation
         y = (1.0/pow(TWO_PI,N/2.0)) * (1.0/pow(det,0.5));
@@ -213,20 +213,20 @@ private:
             sum += (x[i]-mu[i]) * temp[i];
         }
         
-        return ( y*exp( -0.5*sum ) );
+        return ( y*grt_exp( -0.5*sum ) );
     }
     
     UINT classLabel;
     UINT K;
-    double nullRejectionThreshold;
-    double gamma;                           //The number of standard deviations to use for the threshold
-	double trainingMu;                      //The average confidence value in the training data
-	double trainingSigma;                   //The simga confidence value in the training data
-    double normFactor;
-    vector< GuassModel > gaussModels;
+    float_t nullRejectionThreshold;
+    float_t gamma;                           //The number of standard deviations to use for the threshold
+	float_t trainingMu;                      //The average confidence value in the training data
+	float_t trainingSigma;                   //The simga confidence value in the training data
+    float_t normFactor;
+    Vector< GuassModel > gaussModels;
     
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MIXTURE_MODEL_HEADER

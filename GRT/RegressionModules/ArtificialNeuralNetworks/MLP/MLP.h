@@ -36,7 +36,7 @@
 #include "Neuron.h"
 #include "../../../CoreModules/Regressifier.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class MLP : public Regressifier{
 public:
@@ -91,10 +91,10 @@ public:
     virtual bool train_(RegressionData &trainingData);
     
     /**
-     This function either predicts the class of the input vector (if the MLP is in Classification Mode), or it performs regression using
+     This function either predicts the class of the input Vector (if the MLP is in Classification Mode), or it performs regression using
      the MLP model.
      
-     @param inputVector: the input vector to classify or perform regression on
+     @param inputVector: the input Vector to classify or perform regression on
      @return returns true if the prediction/regression was performed, false otherwise
      */
     virtual bool predict_(VectorFloat &inputVector);
@@ -312,31 +312,31 @@ public:
     /**
      Returns the neurons for the input layer.
      
-     @return returns a vector of neurons for the input layer
+     @return returns a Vector of neurons for the input layer
      */
-	vector< Neuron > getInputLayer() const;
+	Vector< Neuron > getInputLayer() const;
     
     /**
      Returns the neurons for the hidden layer.
      
-     @return returns a vector of neurons for the hidden layer
+     @return returns a Vector of neurons for the hidden layer
      */
-	vector< Neuron > getHiddenLayer() const;
+	Vector< Neuron > getHiddenLayer() const;
     
     /**
      Returns the neurons for the output layer.
      
-     @return returns a vector of neurons for the output layer
+     @return returns a Vector of neurons for the output layer
      */
-	vector< Neuron > getOutputLayer() const;
+	Vector< Neuron > getOutputLayer() const;
     
     /**
-     Returns a vector of VectorFloat representing the training log for each random round of training.
-     The outer vector represents each round and the inner vector represents each epoch in that round.
+     Returns a Vector of VectorFloat representing the training log for each random round of training.
+     The outer Vector represents each round and the inner Vector represents each epoch in that round.
      
-     @return returns a vector of MinMax values representing the ranges of the output layer
+     @return returns a Vector of MinMax values representing the ranges of the output layer
      */
-	vector< VectorFloat > getTrainingLog() const;
+	Vector< VectorFloat > getTrainingLog() const;
     
     /**
      Returns true if the MLP should use null rejection during classification. This is only relevant if the MLP is in classification mode.
@@ -374,16 +374,16 @@ public:
     float_t getMaximumLikelihood() const;
     
     /**
-     Gets a vector of the class likelihoods from the last prediction, this will be an N-dimensional vector, where N is the number of classes in the model.
+     Gets a Vector of the class likelihoods from the last prediction, this will be an N-dimensional Vector, where N is the number of classes in the model.
      
-     @return returns a vector of the class likelihoods from the last prediction, an empty vector will be returned if the model has not been trained
+     @return returns a Vector of the class likelihoods from the last prediction, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getClassLikelihoods() const;
     
     /**
-     Gets a vector of the class distances from the last prediction, this will be an N-dimensional vector, where N is the number of classes in the model.
+     Gets a Vector of the class distances from the last prediction, this will be an N-dimensional Vector, where N is the number of classes in the model.
      
-     @return returns a vector of the class distances from the last prediction, an empty vector will be returned if the model has not been trained
+     @return returns a Vector of the class distances from the last prediction, an empty Vector will be returned if the model has not been trained
      */
     VectorFloat getClassDistances() const;
     
@@ -500,10 +500,10 @@ protected:
     bool loadLegacyModelFromFile( fstream &file );
     
     /**
-     Performs one round of back propagation, using the training example and target vector
+     Performs one round of back propagation, using the training example and target Vector
      
-     @param inputVector: the input vector to use for back propagation
-     @param targetVector: the target vector to use for back propagation
+     @param inputVector: the input Vector to use for back propagation
+     @param targetVector: the target Vector to use for back propagation
      @param alpha: the training rate
      @param beta: the momentum
      @return returns the squared error for the current training example
@@ -513,15 +513,15 @@ protected:
     /**
      Performs the feedforward step using the current model and the input training example.
      
-     @param data: the input vector to use for the feedforward
-     @return returns a new vector of the results from the feedforward step
+     @param data: the input Vector to use for the feedforward
+     @return returns a new Vector of the results from the feedforward step
      */
     VectorFloat feedforward(VectorFloat data);
     
     /**
      Performs the feedforward step for back propagation, using the input data
      
-     @param data: the input vector to use for the feedforward
+     @param data: the input Vector to use for the feedforward
      @param inputNeuronsOuput: the results of the input layer 
      @param hiddenNeuronsOutput: the results of the hidden layer
      @param outputNeuronsOutput: the results of the output layer
@@ -542,10 +542,10 @@ protected:
     bool initialized;
     Random random;
     
-    vector< Neuron > inputLayer;
-    vector< Neuron > hiddenLayer;
-    vector< Neuron > outputLayer;
-	vector< VectorFloat > trainingErrorLog;
+    Vector< Neuron > inputLayer;
+    Vector< Neuron > hiddenLayer;
+    Vector< Neuron > outputLayer;
+	Vector< VectorFloat > trainingErrorLog;
     
     //Classifier Variables
     bool classificationModeActive;
@@ -570,6 +570,6 @@ public:
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MLP_HEADER

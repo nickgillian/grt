@@ -20,12 +20,12 @@
 
 #include "ZeroCrossingCounter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the ZeroCrossingCounter module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< ZeroCrossingCounter > ZeroCrossingCounter::registerModule("ZeroCrossingCounter");
     
-ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,double deadZoneThreshold,UINT numDimensions,UINT featureMode){
+ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode){
     
     classType = "ZeroCrossingCounter";
     featureExtractionType = classType;
@@ -81,15 +81,15 @@ bool ZeroCrossingCounter::deepCopyFrom(const FeatureExtraction *featureExtractio
     return false;
 }
     
-bool ZeroCrossingCounter::computeFeatures(const VectorDouble &inputVector){
+bool ZeroCrossingCounter::computeFeatures(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
         return false;
     }
     
@@ -205,28 +205,28 @@ bool ZeroCrossingCounter::loadModelFromFile(fstream &file){
     return init(searchWindowSize,deadZoneThreshold,numInputDimensions,featureMode);
 }
     
-bool ZeroCrossingCounter::init(UINT searchWindowSize,double deadZoneThreshold,UINT numDimensions,UINT featureMode){
+bool ZeroCrossingCounter::init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode){
     
     initialized = false;
     featureDataReady = false;
     
     if( searchWindowSize == 0 ){
-        errorLog << "init(UINT searchWindowSize,double deadZoneThreshold,UINT numDimensions,UINT featureMode) - The searchWindowSize must be greater than zero!" << endl;
+        errorLog << "init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode) - The searchWindowSize must be greater than zero!" << endl;
         return false;
     }
     
     if( deadZoneThreshold < 0 ){
-        errorLog << "init(UINT searchWindowSize,double deadZoneThreshold,UINT numDimensions,UINT featureMode) - The deadZoneThreshold must be greater than zero!" << endl;
+        errorLog << "init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode) - The deadZoneThreshold must be greater than zero!" << endl;
         return false;
     }
     
     if( numDimensions == 0 ){
-        errorLog << "init(UINT searchWindowSize,double deadZoneThreshold,UINT numDimensions,UINT featureMode) - The numDimensions must be greater than zero!" << endl;
+        errorLog << "init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode) - The numDimensions must be greater than zero!" << endl;
         return false;
     }
     
     if( featureMode != INDEPENDANT_FEATURE_MODE && featureMode != COMBINED_FEATURE_MODE ){
-        errorLog << "init(UINT searchWindowSize,double deadZoneThreshold,UINT numDimensions,UINT featureMode) - Unkown feature mode!" << endl;
+        errorLog << "init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode) - Unkown feature mode!" << endl;
         return false;
     }
     
@@ -238,7 +238,7 @@ bool ZeroCrossingCounter::init(UINT searchWindowSize,double deadZoneThreshold,UI
     numOutputDimensions = (featureMode == INDEPENDANT_FEATURE_MODE ? TOTAL_NUM_ZERO_CROSSING_FEATURES * numInputDimensions : TOTAL_NUM_ZERO_CROSSING_FEATURES);
     derivative.init(Derivative::FIRST_DERIVATIVE, 1.0, numInputDimensions, true, 5);
     deadZone.init(-deadZoneThreshold,deadZoneThreshold,numInputDimensions);
-    dataBuffer.resize( searchWindowSize, vector< double >(numInputDimensions,NAN) );
+    dataBuffer.resize( searchWindowSize, VectorFloat(numInputDimensions,NAN) );
     featureVector.resize(numOutputDimensions,0);
     
     //Flag that the zero crossing counter has been initialized
@@ -248,20 +248,20 @@ bool ZeroCrossingCounter::init(UINT searchWindowSize,double deadZoneThreshold,UI
 }
 
 
-VectorDouble ZeroCrossingCounter::update(double x){
-	return update(VectorDouble(1,x));
+VectorFloat ZeroCrossingCounter::update(float_t x){
+	return update(VectorFloat(1,x));
 }
     
-VectorDouble ZeroCrossingCounter::update(const VectorDouble &x){
+VectorFloat ZeroCrossingCounter::update(const VectorFloat &x){
     
     if( !initialized ){
-        errorLog << "update(const VectorDouble &x) - Not Initialized!" << endl;
-        return vector<double>();
+        errorLog << "update(const VectorFloat &x) - Not Initialized!" << endl;
+        return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "update(const VectorDouble &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
-        return vector<double>();
+        errorLog << "update(const VectorFloat &x)- The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
+        return VectorFloat();
     }
     
     //Clear the feature vector
@@ -286,10 +286,10 @@ VectorDouble ZeroCrossingCounter::update(const VectorDouble &x){
                 featureVector[ NUM_ZERO_CROSSINGS_COUNTED + colIndex ]++;
                 
                 //Update the magnitude, search the last 5 values around the zero crossing to make sure we get the maxima of the peak
-                double maxValue = 0;
+                float_t maxValue = 0;
                 UINT searchSize = i > 5 ? 5 : i;
                 for(UINT n=0; n<searchSize; n++){
-                    double value = fabs( dataBuffer[ i-n ][j] );
+                    float_t value = fabs( dataBuffer[ i-n ][j] );
                     if( value > maxValue ) maxValue = value;
                 }
                 featureVector[ ZERO_CROSSING_MAGNITUDE + colIndex ] += maxValue;
@@ -334,4 +334,4 @@ bool ZeroCrossingCounter::setFeatureMode(UINT featureMode){
 
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

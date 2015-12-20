@@ -32,7 +32,7 @@
 
 #include "../../CoreModules/GRTBase.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class Node : public GRTBase{
 public:
@@ -103,26 +103,26 @@ public:
      This function adds the current model to the formatted stream.
      This function should be overwritten by the derived class.
      
-     @param ostream &file: a reference to the stream the model will be added to
+     @param file: a reference to the stream the model will be added to
      @return returns true if the model was added successfully, false otherwise
      */
-    virtual bool getModel(ostream &stream) const;
+    virtual bool getModel( std::ostream &stream ) const;
     
     /**
      This saves the Node to a file.
      
-     @param fstream &file: a reference to the file the Node model will be saved to
+     @param file: a reference to the file the Node model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveToFile(fstream &file) const;
+    virtual bool saveToFile( std::fstream &file ) const;
     
     /**
      This loads the Node from a file.
      
-     @param fstream &file: a reference to the file the Node model will be loaded from
+     @param file: a reference to the file the Node model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadFromFile(fstream &file);
+    virtual bool loadFromFile( std::fstream &file );
     
     /**
      This function returns a deep copy of the Node and all it's children.
@@ -137,7 +137,7 @@ public:
      
      @return returns the nodeType
      */
-    string getNodeType() const;
+    std::string getNodeType() const;
     
     /**
      This function returns the depth of the node. The depth is the level in the tree at which the node is located, the root node has a
@@ -212,7 +212,7 @@ public:
     /**
      Defines a map between a string (which will contain the name of the node, such as DecisionTreeNode) and a function returns a new instance of that node.
      */
-    typedef std::map< string, Node*(*)() > StringNodeMap;
+    typedef std::map< std::string, Node*(*)() > StringNodeMap;
     
     /**
      Creates a new classifier instance based on the input string (which should contain the name of a valid classifier such as ANBC).
@@ -220,7 +220,7 @@ public:
      @param string const &classifierType: the name of the classifier
      @return Classifier*: a pointer to the new instance of the classifier
      */
-    static Node* createInstanceFromString(string const &nodeType);
+    static Node* createInstanceFromString( std::string const &nodeType );
     
     /**
      Creates a new classifier instance based on the current classifierType string value.
@@ -235,27 +235,21 @@ protected:
      This saves the custom parameters to a file. This can be used by any class that inherits from the Node class to save
      the custom parameters from that class to a file by overridding this function.
      
-     @param fstream &file: a reference to the file the parameters will be saved to
+     @param file: a reference to the file the parameters will be saved to
      @return returns true if the parameters were saved successfully, false otherwise
      */
-    virtual bool saveParametersToFile(fstream &file) const{
-
-        return true;
-    }
+    virtual bool saveParametersToFile( std::fstream &file ) const{ return true; }
     
     /**
      This loads the custom parameters to from file. This can be used by any class that inherits from the Node class to load
      the custom parameters from that class from a file by overridding this function.
      
-     @param fstream &file: a reference to the file the parameters will be loaded from
+     @param file: a reference to the file the parameters will be loaded from
      @return returns true if the parameters were loaded successfully, false otherwise
      */
-    virtual bool loadParametersFromFile(fstream &file){
-        
-        return true;
-    }
+    virtual bool loadParametersFromFile( std::fstream &file ){ return true; }
     
-    string nodeType;
+    std::string nodeType;
     UINT depth;
     UINT nodeID;
     UINT predictedNodeID;
@@ -281,12 +275,12 @@ template< typename T >  Node* getNewNodeInstance() { return new T; }
 template< typename T >
 class RegisterNode : Node {
 public:
-    RegisterNode(string const &newNodeName) {
-        getMap()->insert( std::pair<string, Node*(*)()>(newNodeName, &getNewNodeInstance< T > ) );
+    RegisterNode(std::string const &newNodeName) {
+        getMap()->insert( std::pair< std::string, Node*(*)() >(newNodeName, &getNewNodeInstance< T > ) );
     }
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_NODE_HEADER
 

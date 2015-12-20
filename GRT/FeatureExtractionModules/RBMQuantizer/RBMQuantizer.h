@@ -44,7 +44,7 @@
 #include "../../DataStructures/TimeSeriesClassificationDataStream.h"
 #include "../../DataStructures/UnlabelledData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class RBMQuantizer : public FeatureExtraction{
 public:
@@ -257,6 +257,6 @@ protected:
     static RegisterFeatureExtractionModule< RBMQuantizer > registerModule;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_RBM_QUANTIZER_HEADER

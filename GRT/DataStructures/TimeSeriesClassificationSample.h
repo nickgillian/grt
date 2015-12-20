@@ -29,9 +29,10 @@
 #ifndef GRT_TIME_SERIES_CLASSIFICATION_SAMPLE_HEADER
 #define GRT_TIME_SERIES_CLASSIFICATION_SAMPLE_HEADER
 
-#include "../Util/GRTCommon.h"
+#include "VectorFloat.h"
+#include "MatrixFloat.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class TimeSeriesClassificationSample{
 public:
@@ -57,8 +58,8 @@ public:
 	}
 
 	bool clear();
-    bool addSample(const UINT classLabel,const VectorFloat &sample);
-	bool setTrainingSample(const UINT classLabel,const MatrixFloat &data);
+    bool addSample( const UINT classLabel, const VectorFloat &sample );
+	bool setTrainingSample( const UINT classLabel, const MatrixFloat &data );
 	inline UINT getLength() const { return data.getNumRows(); }
     inline UINT getNumDimensions() const { return data.getNumCols(); }
     inline UINT getClassLabel() const { return classLabel; }
@@ -70,6 +71,6 @@ protected:
 	MatrixFloat data;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_LABELLED_TIME_SERIES_CLASSIFICATION_SAMPLE_HEADER

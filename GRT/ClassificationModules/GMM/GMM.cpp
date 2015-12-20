@@ -20,12 +20,12 @@
  */
 #include "GMM.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
     
 //Register the GMM module with the Classifier base class
 RegisterClassifierModule< GMM > GMM::registerModule("GMM");
     
-GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,double nullRejectionCoeff,UINT maxIter,double minChange){
+GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,float_t nullRejectionCoeff,UINT maxIter,float_t minChange){
     classType = "GMM";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -94,39 +94,39 @@ bool GMM::deepCopyFrom(const Classifier *classifier){
     return false;
 }
 
-bool GMM::predict_(VectorDouble &x){
+bool GMM::predict_(VectorFloat &x){
 
 	predictedClassLabel = 0;
 	
-    if( classDistances.size() != numClasses || classLikelihoods.size() != numClasses ){
+    if( classDistances.getSize() != numClasses || classLikelihoods.getSize() != numClasses ){
         classDistances.resize(numClasses);
         classLikelihoods.resize(numClasses);
     }
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &x) - Mixture Models have not been trained!" << endl;
+        errorLog << "predict_(VectorFloat &x) - Mixture Models have not been trained!" << std::endl;
         return false;
     }
     
-    if( x.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &x) - The size of the input vector (" << x.size() << ") does not match that of the number of features the model was trained with (" << numInputDimensions << ")." << endl;
+    if( x.getSize() != numInputDimensions ){
+        errorLog << "predict_(VectorFloat &x) - The size of the input vector (" << x.getSize() << ") does not match that of the number of features the model was trained with (" << numInputDimensions << ")." << std::endl;
         return false;
     }
     
     if( useScaling ){
         for(UINT i=0; i<numInputDimensions; i++){
-            x[i] = scale(x[i], ranges[i].minValue, ranges[i].maxValue, GMM_MIN_SCALE_VALUE, GMM_MAX_SCALE_VALUE);
+            x[i] = grt_scale(x[i], ranges[i].minValue, ranges[i].maxValue, GMM_MIN_SCALE_VALUE, GMM_MAX_SCALE_VALUE);
         }
     }
 
 	UINT bestIndex = 0;
 	maxLikelihood = 0;
     bestDistance = 0;
-    double sum = 0;
+    float_t sum = 0;
 	for(UINT k=0; k<numClasses; k++){
         classDistances[k] = computeMixtureLikelihood(x,k);
         
-        //cout << "K: " << k << " Dist: " << classDistances[k] << endl;
+        //cout << "K: " << k << " Dist: " << classDistances[k] << std::endl;
         classLikelihoods[k] = classDistances[k];
         sum += classLikelihoods[k];
 		if( classLikelihoods[k] > bestDistance ){
@@ -143,7 +143,7 @@ bool GMM::predict_(VectorDouble &x){
     
     if( useNullRejection ){
         
-        //cout << "Dist: " << classDistances[bestIndex] << " RejectionThreshold: " << models[bestIndex].getRejectionThreshold() << endl;
+        //cout << "Dist: " << classDistances[bestIndex] << " RejectionThreshold: " << models[bestIndex].getRejectionThreshold() << std::endl;
         
         //If the best distance is below the modles rejection threshold then set the predicted class label as the best class label
         //Otherwise set the predicted class label as the default null rejection class label of 0
@@ -164,7 +164,7 @@ bool GMM::train_(ClassificationData &trainingData){
 	clear();
     
     if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train_(ClassificationData &trainingData) - Training data is empty!" << endl;
+        errorLog << "train_(ClassificationData &trainingData) - Training data is empty!" << std::endl;
         return false;
     }
     
@@ -174,13 +174,13 @@ bool GMM::train_(ClassificationData &trainingData){
     models.resize(numClasses);
     
     if( numInputDimensions >= 6 ){
-        warningLog << "train_(ClassificationData &trainingData) - The number of features in your training data is high (" << numInputDimensions << ").  The GMMClassifier does not work well with high dimensional data, you might get better results from one of the other classifiers." << endl;
+        warningLog << "train_(ClassificationData &trainingData) - The number of features in your training data is high (" << numInputDimensions << ").  The GMMClassifier does not work well with high dimensional data, you might get better results from one of the other classifiers." << std::endl;
     }
     
     //Get the ranges of the training data if the training data is going to be scaled
 	ranges = trainingData.getRanges();
     if( !trainingData.scale(GMM_MIN_SCALE_VALUE, GMM_MAX_SCALE_VALUE) ){
-        errorLog << "train_(ClassificationData &trainingData) - Failed to scale training data!" << endl;
+        errorLog << "train_(ClassificationData &trainingData) - Failed to scale training data!" << std::endl;
         return false;
     }
 
@@ -195,8 +195,8 @@ bool GMM::train_(ClassificationData &trainingData){
         gaussianMixtureModel.setMinChange( minChange );
         gaussianMixtureModel.setMaxNumEpochs( maxIter );
         
-        if( !gaussianMixtureModel.train( classData.getDataAsMatrixDouble() ) ){
-            errorLog << "train_(ClassificationData &trainingData) - Failed to train Mixture Model for class " << classLabel << endl;
+        if( !gaussianMixtureModel.train( classData.getDataAsMatrixFloat() ) ){
+            errorLog << "train_(ClassificationData &trainingData) - Failed to train Mixture Model for class " << classLabel << std::endl;
             return false;
         }
         
@@ -213,7 +213,7 @@ bool GMM::train_(ClassificationData &trainingData){
             LUDecomposition ludcmp( models[k][j].sigma );
             if( !ludcmp.inverse( models[k][j].invSigma ) ){
                 models.clear();
-                errorLog << "train_(ClassificationData &trainingData) - Failed to invert Matrix for class " << classLabel << "!" << endl;
+                errorLog << "train_(ClassificationData &trainingData) - Failed to invert Matrix for class " << classLabel << "!" << std::endl;
                 return false;
             }
             models[k][j].det = ludcmp.det();
@@ -223,32 +223,32 @@ bool GMM::train_(ClassificationData &trainingData){
         models[k].recomputeNormalizationFactor();
         
         //Compute the rejection thresholds
-        double mu = 0;
-        double sigma = 0;
-        VectorDouble predictionResults(classData.getNumSamples(),0);
+        float_t mu = 0;
+        float_t sigma = 0;
+        VectorFloat predictionResults(classData.getNumSamples(),0);
         for(UINT i=0; i<classData.getNumSamples(); i++){
-            vector< double > sample = classData[i].getSample();
+            VectorFloat sample = classData[i].getSample();
             predictionResults[i] = models[k].computeMixtureLikelihood( sample );
             mu += predictionResults[i];
         }
         
         //Update mu
-        mu /= double( classData.getNumSamples() );
+        mu /= float_t( classData.getNumSamples() );
         
         //Calculate the standard deviation
         for(UINT i=0; i<classData.getNumSamples(); i++) 
-            sigma += SQR( (predictionResults[i]-mu) );
-        sigma = sqrt( sigma / (double(classData.getNumSamples())-1.0) );
+            sigma += grt_sqr( (predictionResults[i]-mu) );
+        sigma = grt_sqrt( sigma / (float_t(classData.getNumSamples())-1.0) );
         sigma = 0.2;
         
         //Set the models training mu and sigma 
         models[k].setTrainingMuAndSigma(mu,sigma);
         
         if( !models[k].recomputeNullRejectionThreshold(nullRejectionCoeff) && useNullRejection ){
-            warningLog << "train_(ClassificationData &trainingData) - Failed to recompute rejection threshold for class " << classLabel << " - the nullRjectionCoeff value is too high!" << endl;
+            warningLog << "train_(ClassificationData &trainingData) - Failed to recompute rejection threshold for class " << classLabel << " - the nullRjectionCoeff value is too high!" << std::endl;
         }
         
-        //cout << "Training Mu: " << mu << " TrainingSigma: " << sigma << " RejectionThreshold: " << models[k].getNullRejectionThreshold() << endl;
+        //cout << "Training Mu: " << mu << " TrainingSigma: " << sigma << " RejectionThreshold: " << models[k].getNullRejectionThreshold() << std::endl;
         //models[k].printModelValues();
     }
     
@@ -270,24 +270,24 @@ bool GMM::train_(ClassificationData &trainingData){
     return true;
 }
     
-double GMM::computeMixtureLikelihood(const VectorDouble &x,const UINT k){
+float_t GMM::computeMixtureLikelihood(const VectorFloat &x,const UINT k){
     if( k >= numClasses ){
-        errorLog << "computeMixtureLikelihood(const VectorDouble x,const UINT k) - Invalid k value!" << endl;
+        errorLog << "computeMixtureLikelihood(const VectorFloat x,const UINT k) - Invalid k value!" << std::endl;
         return 0;
     }
-    return models[k].computeMixtureLikelihood(x);
+    return models[k].computeMixtureLikelihood( x );
 }
     
-bool GMM::saveModelToFile(fstream &file) const{
+bool GMM::saveModelToFile( std::fstream &file ) const{
     
     if( !trained ){
-        errorLog <<"saveGMMToFile(fstream &file) - The model has not been trained!" << endl;
+        errorLog <<"saveGMMToFile(fstream &file) - The model has not been trained!" << std::endl;
         return false;
     }
     
     if( !file.is_open() )
     {
-        errorLog <<"saveGMMToFile(fstream &file) - The file has not been opened!" << endl;
+        errorLog <<"saveGMMToFile(fstream &file) - The file has not been opened!" << std::endl;
         return false;
     }
     
@@ -296,29 +296,29 @@ bool GMM::saveModelToFile(fstream &file) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
 		return false;
     }
     
-    file << "NumMixtureModels: " << numMixtureModels << endl;
+    file << "NumMixtureModels: " << numMixtureModels << std::endl;
     
     if( trained ){
         //Write each of the models
         file << "Models:\n";
         for(UINT k=0; k<numClasses; k++){
-            file << "ClassLabel: " << models[k].getClassLabel() << endl;
-            file << "K: " << models[k].getK() << endl;
-            file << "NormalizationFactor: " << models[k].getNormalizationFactor() << endl;
-            file << "TrainingMu: " << models[k].getTrainingMu() << endl;
-            file << "TrainingSigma: " << models[k].getTrainingSigma() << endl;
-            file << "NullRejectionThreshold: " << models[k].getNullRejectionThreshold() << endl;
+            file << "ClassLabel: " << models[k].getClassLabel() << std::endl;
+            file << "K: " << models[k].getK() << std::endl;
+            file << "NormalizationFactor: " << models[k].getNormalizationFactor() << std::endl;
+            file << "TrainingMu: " << models[k].getTrainingMu() << std::endl;
+            file << "TrainingSigma: " << models[k].getTrainingSigma() << std::endl;
+            file << "NullRejectionThreshold: " << models[k].getNullRejectionThreshold() << std::endl;
             
             for(UINT index=0; index<models[k].getK(); index++){
-                file << "Determinant: " << models[k][index].det << endl;
+                file << "Determinant: " << models[k][index].det << std::endl;
                 
                 file << "Mu: ";
                 for(UINT j=0; j<models[k][index].mu.size(); j++) file << "\t" << models[k][index].mu[j];
-                file << endl;
+                file << std::endl;
                 
                 file << "Sigma:\n";
                 for(UINT i=0; i<models[k][index].sigma.getNumRows(); i++){
@@ -326,7 +326,7 @@ bool GMM::saveModelToFile(fstream &file) const{
                         file << models[k][index].sigma[i][j];
                         if( j < models[k][index].sigma.getNumCols()-1 ) file << "\t";
                     }
-                    file << endl;
+                    file << std::endl;
                 }
                 
                 file << "InvSigma:\n";
@@ -335,18 +335,18 @@ bool GMM::saveModelToFile(fstream &file) const{
                         file << models[k][index].invSigma[i][j];
                         if( j < models[k][index].invSigma.getNumCols()-1 ) file << "\t";
                     }
-                    file << endl;
+                    file << std::endl;
                 }
             }
             
-            file << endl;
+            file << std::endl;
         }
     }
     
     return true;
 }
     
-bool GMM::loadModelFromFile(fstream &file){
+bool GMM::loadModelFromFile( std::fstream &file ){
     
     trained = false;
     numInputDimensions = 0;
@@ -356,7 +356,7 @@ bool GMM::loadModelFromFile(fstream &file){
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(fstream &file) - Could not open file to load model" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -370,19 +370,19 @@ bool GMM::loadModelFromFile(fstream &file){
     
     //Find the file type header
     if(word != "GRT_GMM_MODEL_FILE_V2.0"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find Model File Header" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "NumMixtureModels:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find NumMixtureModels" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find NumMixtureModels" << std::endl;
         return false;
     }
     file >> numMixtureModels;
@@ -392,7 +392,7 @@ bool GMM::loadModelFromFile(fstream &file){
         //Read the model header
         file >> word;
         if(word != "Models:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find the Models Header" << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find the Models Header" << std::endl;
             return false;
         }
         
@@ -404,14 +404,14 @@ bool GMM::loadModelFromFile(fstream &file){
         for(UINT k=0; k<numClasses; k++){
             UINT classLabel = 0;
             UINT K = 0;
-            double normalizationFactor;
-            double trainingMu;
-            double trainingSigma;
-            double rejectionThreshold;
+            float_t normalizationFactor;
+            float_t trainingMu;
+            float_t trainingSigma;
+            float_t rejectionThreshold;
             
             file >> word;
             if(word != "ClassLabel:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find the ClassLabel for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find the ClassLabel for model " << k+1 << std::endl;
                 return false;
             }
             file >> classLabel;
@@ -420,14 +420,14 @@ bool GMM::loadModelFromFile(fstream &file){
             
             file >> word;
             if(word != "K:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find K for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find K for model " << k+1 << std::endl;
                 return false;
             }
             file >> K;
             
             file >> word;
             if(word != "NormalizationFactor:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find NormalizationFactor for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find NormalizationFactor for model " << k+1 << std::endl;
                 return false;
             }
             file >> normalizationFactor;
@@ -435,14 +435,14 @@ bool GMM::loadModelFromFile(fstream &file){
             
             file >> word;
             if(word != "TrainingMu:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingMu for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingMu for model " << k+1 << std::endl;
                 return false;
             }
             file >> trainingMu;
             
             file >> word;
             if(word != "TrainingSigma:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingSigma for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingSigma for model " << k+1 << std::endl;
                 return false;
             }
             file >> trainingSigma;
@@ -452,7 +452,7 @@ bool GMM::loadModelFromFile(fstream &file){
             
             file >> word;
             if(word != "NullRejectionThreshold:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find NullRejectionThreshold for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find NullRejectionThreshold for model " << k+1 << std::endl;
                 return false;
             }
             file >>rejectionThreshold;
@@ -473,7 +473,7 @@ bool GMM::loadModelFromFile(fstream &file){
                 
                 file >> word;
                 if(word != "Determinant:"){
-                    errorLog << "loadModelFromFile(fstream &file) - Could not find the Determinant for model " << k+1 << endl;
+                    errorLog << "loadModelFromFile(fstream &file) - Could not find the Determinant for model " << k+1 << std::endl;
                     return false;
                 }
                 file >> models[k][index].det;
@@ -481,7 +481,7 @@ bool GMM::loadModelFromFile(fstream &file){
                 
                 file >> word;
                 if(word != "Mu:"){
-                    errorLog << "loadModelFromFile(fstream &file) - Could not find Mu for model " << k+1 << endl;
+                    errorLog << "loadModelFromFile(fstream &file) - Could not find Mu for model " << k+1 << std::endl;
                     return false;
                 }
                 for(UINT j=0; j<models[k][index].mu.size(); j++){
@@ -491,7 +491,7 @@ bool GMM::loadModelFromFile(fstream &file){
                 
                 file >> word;
                 if(word != "Sigma:"){
-                    errorLog << "loadModelFromFile(fstream &file) - Could not find Sigma for model " << k+1 << endl;
+                    errorLog << "loadModelFromFile(fstream &file) - Could not find Sigma for model " << k+1 << std::endl;
                     return false;
                 }
                 for(UINT i=0; i<models[k][index].sigma.getNumRows(); i++){
@@ -502,7 +502,7 @@ bool GMM::loadModelFromFile(fstream &file){
                 
                 file >> word;
                 if(word != "InvSigma:"){
-                    errorLog << "loadModelFromFile(fstream &file) - Could not find InvSigma for model " << k+1 << endl;
+                    errorLog << "loadModelFromFile(fstream &file) - Could not find InvSigma for model " << k+1 << std::endl;
                     return false;
                 }
                 for(UINT i=0; i<models[k][index].invSigma.getNumRows(); i++){
@@ -558,9 +558,9 @@ UINT GMM::getNumMixtureModels(){
     return numMixtureModels;
 }
     
-vector< MixtureModel > GMM::getModels(){
+Vector< MixtureModel > GMM::getModels(){
     if( trained ){ return models; }
-    return vector< MixtureModel >();
+    return Vector< MixtureModel >();
 }
     
 bool GMM::setNumMixtureModels(UINT K){
@@ -570,7 +570,7 @@ bool GMM::setNumMixtureModels(UINT K){
     }
     return false;
 }
-bool GMM::setMinChange(double minChange){
+bool GMM::setMinChange(float_t minChange){
     if( minChange > 0 ){
         this->minChange = minChange;
         return true;
@@ -585,62 +585,62 @@ bool GMM::setMaxIter(UINT maxIter){
     return false;
 }
     
-bool GMM::loadLegacyModelFromFile( fstream &file ){
+bool GMM::loadLegacyModelFromFile( std::fstream &file ){
     
-    string word;
+    std::string word;
     
     file >> word;
     if(word != "NumFeatures:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find NumFeatures " << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find NumFeatures " << std::endl;
         return false;
     }
     file >> numInputDimensions;
     
     file >> word;
     if(word != "NumClasses:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find NumClasses" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find NumClasses" << std::endl;
         return false;
     }
     file >> numClasses;
     
     file >> word;
     if(word != "NumMixtureModels:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find NumMixtureModels" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find NumMixtureModels" << std::endl;
         return false;
     }
     file >> numMixtureModels;
     
     file >> word;
     if(word != "MaxIter:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find MaxIter" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find MaxIter" << std::endl;
         return false;
     }
     file >> maxIter;
     
     file >> word;
     if(word != "MinChange:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find MinChange" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find MinChange" << std::endl;
         return false;
     }
     file >> minChange;
     
     file >> word;
     if(word != "UseScaling:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find UseScaling" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find UseScaling" << std::endl;
         return false;
     }
     file >> useScaling;
     
     file >> word;
     if(word != "UseNullRejection:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find UseNullRejection" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find UseNullRejection" << std::endl;
         return false;
     }
     file >> useNullRejection;
     
     file >> word;
     if(word != "NullRejectionCoeff:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find NullRejectionCoeff" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find NullRejectionCoeff" << std::endl;
         return false;
     }
     file >> nullRejectionCoeff;
@@ -652,7 +652,7 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
         
         file >> word;
         if(word != "Ranges:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find the Ranges" << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find the Ranges" << std::endl;
             return false;
         }
         for(UINT n=0; n<ranges.size(); n++){
@@ -664,7 +664,7 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
     //Read the model header
     file >> word;
     if(word != "Models:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find the Models Header" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Could not find the Models Header" << std::endl;
         return false;
     }
     
@@ -676,14 +676,14 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
     for(UINT k=0; k<numClasses; k++){
         UINT classLabel = 0;
         UINT K = 0;
-        double normalizationFactor;
-        double trainingMu;
-        double trainingSigma;
-        double rejectionThreshold;
+        float_t normalizationFactor;
+        float_t trainingMu;
+        float_t trainingSigma;
+        float_t rejectionThreshold;
         
         file >> word;
         if(word != "ClassLabel:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find the ClassLabel for model " << k+1 << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find the ClassLabel for model " << k+1 << std::endl;
             return false;
         }
         file >> classLabel;
@@ -692,14 +692,14 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
         
         file >> word;
         if(word != "K:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find K for model " << k+1 << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find K for model " << k+1 << std::endl;
             return false;
         }
         file >> K;
         
         file >> word;
         if(word != "NormalizationFactor:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find NormalizationFactor for model " << k+1 << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find NormalizationFactor for model " << k+1 << std::endl;
             return false;
         }
         file >> normalizationFactor;
@@ -707,14 +707,14 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
         
         file >> word;
         if(word != "TrainingMu:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingMu for model " << k+1 << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingMu for model " << k+1 << std::endl;
             return false;
         }
         file >> trainingMu;
         
         file >> word;
         if(word != "TrainingSigma:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingSigma for model " << k+1 << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingSigma for model " << k+1 << std::endl;
             return false;
         }
         file >> trainingSigma;
@@ -724,7 +724,7 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
         
         file >> word;
         if(word != "NullRejectionThreshold:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find NullRejectionThreshold for model " << k+1 << endl;
+            errorLog << "loadModelFromFile(fstream &file) - Could not find NullRejectionThreshold for model " << k+1 << std::endl;
             return false;
         }
         file >>rejectionThreshold;
@@ -745,7 +745,7 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
             
             file >> word;
             if(word != "Determinant:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find the Determinant for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find the Determinant for model " << k+1 << std::endl;
                 return false;
             }
             file >> models[k][index].det;
@@ -753,7 +753,7 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
             
             file >> word;
             if(word != "Mu:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find Mu for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find Mu for model " << k+1 << std::endl;
                 return false;
             }
             for(UINT j=0; j<models[k][index].mu.size(); j++){
@@ -763,7 +763,7 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
             
             file >> word;
             if(word != "Sigma:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find Sigma for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find Sigma for model " << k+1 << std::endl;
                 return false;
             }
             for(UINT i=0; i<models[k][index].sigma.getNumRows(); i++){
@@ -774,7 +774,7 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
             
             file >> word;
             if(word != "InvSigma:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find InvSigma for model " << k+1 << endl;
+                errorLog << "loadModelFromFile(fstream &file) - Could not find InvSigma for model " << k+1 << std::endl;
                 return false;
             }
             for(UINT i=0; i<models[k][index].invSigma.getNumRows(); i++){
@@ -800,4 +800,4 @@ bool GMM::loadLegacyModelFromFile( fstream &file ){
     return true;
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

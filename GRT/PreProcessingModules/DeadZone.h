@@ -34,23 +34,23 @@
 
 #include "../CoreModules/PreProcessing.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class DeadZone : public PreProcessing{
 public:
 	/**
      Constructor, sets the lower and upper limits of the dead-zone region and the dimensionality of the input data.
 	 
-	 @param double lowerLimit: sets the lower limit of the dead-zone region.  Default lowerLimit = -0.1
-	 @param UINT upperLimit: sets the upper limit of the dead-zone region.  Default upperLimit = 0.1
-     @param UINT numDimensions: the dimensionality of the input data.  Default numDimensions = 1
+	 @param lowerLimit: sets the lower limit of the dead-zone region.  Default lowerLimit = -0.1
+	 @param upperLimit: sets the upper limit of the dead-zone region.  Default upperLimit = 0.1
+     @param numDimensions: the dimensionality of the input data.  Default numDimensions = 1
      */
-    DeadZone(double lowerLimit = -0.1,double upperLimit = 0.1,UINT numDimensions = 1);
+    DeadZone(float_t lowerLimit = -0.1,float_t upperLimit = 0.1,UINT numDimensions = 1);
 
 	/**
      Copy Constructor, copies the DeadZone from the rhs instance to this instance
      
-	 @param const DeadZone &rhs: another instance of the DeadZone class from which the data will be copied to this instance
+	 @param rhs: another instance of the DeadZone class from which the data will be copied to this instance
      */
 	DeadZone(const DeadZone &rhs);
 
@@ -62,7 +62,7 @@ public:
 	/**
      Sets the equals operator, copies the data from the rhs instance to this instance
      
-	 @param const DeadZone &rhs: another instance of the DeadZone class from which the data will be copied to this instance
+	 @param rhs: another instance of the DeadZone class from which the data will be copied to this instance
 	 @return a reference to this instance of DeadZone
      */
 	DeadZone& operator=(const DeadZone &rhs);
@@ -72,7 +72,7 @@ public:
      This function is used to clone the values from the input pointer to this instance of the PreProcessing module.
      This function is called by the GestureRecognitionPipeline when the user adds a new PreProcessing module to the pipeline.
      
-	 @param const PreProcessing *preProcessing: a pointer to another instance of a DeadZone, the values of that instance will be cloned to this instance
+	 @param preProcessing: a pointer to another instance of a DeadZone, the values of that instance will be cloned to this instance
 	 @return true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const PreProcessing *preProcessing);
@@ -82,10 +82,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the DeadZone's filter function.
      
-	 @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the PreProcessing module
+	 @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the PreProcessing module
 	 @return true if the data was processed, false otherwise
      */
-    virtual bool process(const VectorDouble &inputVector);
+    virtual bool process(const VectorFloat &inputVector);
     
     /**
      Sets the PreProcessing reset function, overwriting the base PreProcessing function.
@@ -103,7 +103,7 @@ public:
      @param string filename: the name of the file to save the settings to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(string filename) const;
+    virtual bool saveModelToFile(std::string filename) const;
     
     /**
      This saves the current settings of the DeadZone to a file.
@@ -112,7 +112,7 @@ public:
      @param fstream &file: a reference to the file the settings will be saved to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile(std::fstream &file) const;
     
     /**
      This loads the DeadZone settings from a file.
@@ -121,7 +121,7 @@ public:
      @param string filename: the name of the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(string filename);
+    virtual bool loadModelFromFile(std::string filename);
     
     /**
      This loads the DeadZone settings from a file.
@@ -130,72 +130,72 @@ public:
      @param fstream &file: a reference to the file to load the settings from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile(std::fstream &file);
 
 	/**
      Initializes the instance, sets the lower and upper limits of the dead-zone region and the dimensionality of the input data.
 
-	 @param double lowerLimit: sets the lower limit of the dead-zone region
+	 @param float_t lowerLimit: sets the lower limit of the dead-zone region
 	 @param UINT upperLimit: sets the upper limit of the dead-zone region
      @param UINT numDimensions: the dimensionality of the input data
 	 @return true if the instance was initiliazed, false otherwise
      */
-    bool init(double lowerLimit,double upperLimit,UINT numDimensions);
+    bool init(float_t lowerLimit,float_t upperLimit,UINT numDimensions);
 
 	/**
      Filters the value x using the dead-zone values, this should only be called if the dimensionality of the instance was set to 1.
      
-     @param const double x: the value to be filtered, this should only be called if the dimensionality of the filter was set to 1
+     @param const float_t x: the value to be filtered, this should only be called if the dimensionality of the filter was set to 1
 	 @return the filtered input value.  Zero will be returned if the value was not computed
      */
-	double filter(const double x);
+	float_t filter(const float_t x);
 	
 	/**
      Filters x using the dead-zone values, the dimensionality of the input should match the number of inputs for the dead zone
      
-     @param const VectorDouble &x: the values to be filtered, the dimensionality of the input should match the number of inputs for the derivative
+     @param const VectorFloat &x: the values to be filtered, the dimensionality of the input should match the number of inputs for the derivative
 	 @return the filtered input values.  An empty vector will be returned if the values were not filtered
      */
-    VectorDouble filter(const VectorDouble &x);
+    VectorFloat filter(const VectorFloat &x);
     
     /**
      Sets the lower limit of the dead-zone region.
      
-     @param double lowerLimit: the new lower limit for the dead zone
+     @param float_t lowerLimit: the new lower limit for the dead zone
 	 @return returns true if the lowerLimit value was set, false otherwise
      */
-	bool setLowerLimit(double lowerLimit);
+	bool setLowerLimit(float_t lowerLimit);
 
 	/**
      Sets the upper limit of the dead-zone region.
      
-     @param double upperLimit: the new upper limit for the dead zone
+     @param float_t upperLimit: the new upper limit for the dead zone
 	 @return returns true if the upperLimit value was set, false otherwise
      */
-	bool setUpperLimit(double upperLimit);
+	bool setUpperLimit(float_t upperLimit);
     
     /**
      Gets the lower limit of the dead-zone region.
      
 	 @return returns the lower limit if the DeadZone has been initialized, zero otherwise
      */
-    double getLowerLimit(){ if( initialized ){ return lowerLimit; } return 0; }
+    float_t getLowerLimit(){ if( initialized ){ return lowerLimit; } return 0; }
 
 	/**
      Gets the upper limit of the dead-zone region.
      
 	 @return returns the upper limit if the DeadZone has been initialized, zero otherwise
      */
-    double getUpperLimit(){ if( initialized ){ return upperLimit; } return 0; }
+    float_t getUpperLimit(){ if( initialized ){ return upperLimit; } return 0; }
 
 protected:
-    double lowerLimit;				///< The lower limit of the dead-zone region
-    double upperLimit;				///< The upper limit of the dead-zone region
+    float_t lowerLimit;				///< The lower limit of the dead-zone region
+    float_t upperLimit;				///< The upper limit of the dead-zone region
     
     static RegisterPreProcessingModule< DeadZone > registerModule;
 	
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_DEADZONE_HEADER

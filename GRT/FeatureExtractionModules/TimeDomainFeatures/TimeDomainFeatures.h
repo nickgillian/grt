@@ -32,7 +32,7 @@
 #include "../../CoreModules/FeatureExtraction.h"
 #include "../../Util/Util.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class TimeDomainFeatures : public FeatureExtraction{
 public:
@@ -75,10 +75,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the TimeDomainFeatures's update function.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @param const VectorFloat &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector);
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -131,32 +131,32 @@ public:
     /**
      Computes the features from the input, this should only be called if the dimensionality of this instance was set to 1.
      
-     @param double x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
+     @param float_t x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
 	 @return a vector containing the features, an empty vector will be returned if the features were not computed
      */
-	VectorDouble update(double x);
+	VectorFloat update(float_t x);
     
     /**
      Computes the features from the input, the dimensionality of x should match that of this instance.
      
-     @param const vector<double> &x: a vector containing the values to be processed, must be the same size as the numInputDimensions
+     @param const vector<float_t> &x: a vector containing the values to be processed, must be the same size as the numInputDimensions
 	 @return a vector containing the features, an empty vector will be returned if the features were not computed
      */
-    VectorDouble update(const VectorDouble &x);
+    VectorFloat update(const VectorFloat &x);
     
     /**
      Get the circular buffer.
      
      @return a copy of the circular buffer
      */
-    CircularBuffer< VectorDouble > getBufferData();
+    CircularBuffer< VectorFloat > getBufferData();
     
     /**
      Gets a reference to the circular buffer.
      
      @return a reference to the circular buffer
      */
-    const CircularBuffer< VectorDouble > &getBufferData() const;
+    const CircularBuffer< VectorFloat > &getBufferData() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::train;
@@ -172,11 +172,11 @@ protected:
     bool useStdDev;
     bool useEuclideanNorm;
     bool useRMS;
-    CircularBuffer< VectorDouble > dataBuffer;
+    CircularBuffer< VectorFloat > dataBuffer;
     
     static RegisterFeatureExtractionModule< TimeDomainFeatures > registerModule;
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TIME_DOMAIN_FEATURES_HEADER

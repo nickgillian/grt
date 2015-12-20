@@ -31,7 +31,7 @@
 
 #include "../Util/GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class TimeSeriesPositionTracker{
 public:
@@ -152,6 +152,6 @@ protected:
 	UINT classLabel;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TIME_SERIES_POSITION_TRACKER_HEADER

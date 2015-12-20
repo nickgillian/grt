@@ -27,7 +27,7 @@
 
 #include "DecisionStump.h"
 
-using namespace GRT;
+GRT_BEGIN_NAMESPACE
     
 //Register the DecisionStump module with the WeakClassifier base class
 RegisterWeakClassifierModule< DecisionStump > DecisionStump::registerModule("DecisionStump");
@@ -74,33 +74,33 @@ bool DecisionStump::deepCopyFrom(const WeakClassifier *weakClassifer){
     return false;
 }
 
-bool DecisionStump::train(ClassificationData &trainingData, VectorDouble &weights){
+bool DecisionStump::train(ClassificationData &trainingData, VectorFloat &weights){
     
     trained = false;
     numInputDimensions = trainingData.getNumDimensions();
     
     //There should only be two classes in the dataset, the positive class (classLable==1) and the negative class (classLabel==2)
     if( trainingData.getNumClasses() != 2 ){
-        errorLog << "train(ClassificationData &trainingData, VectorDouble &weights) - There should only be 2 classes in the training data, but there are : " << trainingData.getNumClasses() << endl;
+        errorLog << "train(ClassificationData &trainingData, VectorFloat &weights) - There should only be 2 classes in the training data, but there are : " << trainingData.getNumClasses() << std::endl;
         return false;
     }
     
     //There should be one weight for every training sample
     if( trainingData.getNumSamples() != weights.size() ){
-        errorLog << "train(ClassificationData &trainingData, VectorDouble &weights) - There number of examples in the training data (" << trainingData.getNumSamples() << ") does not match the lenght of the weights vector (" << weights.size() << ")" << endl;
+        errorLog << "train(ClassificationData &trainingData, VectorFloat &weights) - There number of examples in the training data (" << trainingData.getNumSamples() << ") does not match the lenght of the weights vector (" << weights.getSize() << ")" << std::endl;
         return false;
     }
     
     //Pick the training sample to use as the stump feature
     const UINT M = trainingData.getNumSamples();
     UINT bestFeatureIndex = 0;
-    vector< MinMax > ranges = trainingData.getRanges();
-    double minError = numeric_limits<double>::max();
-    double minRange = 0;
-    double maxRange = 0;
-    double step = 0;
-    double threshold = 0;
-    double bestThreshold = 0;
+    Vector< MinMax > ranges = trainingData.getRanges();
+    float_t minError = grt_numeric_limits_max< float_t >();
+    float_t minRange = 0;
+    float_t maxRange = 0;
+    float_t step = 0;
+    float_t threshold = 0;
+    float_t bestThreshold = 0;
     Random random;
     
     for(UINT k=0; k<numRandomSplits; k++){
@@ -113,8 +113,8 @@ bool DecisionStump::train(ClassificationData &trainingData, VectorDouble &weight
             
         //Compute the error using the current threshold on the current input dimension
         //We need to check both sides of the threshold
-        double rhsError = 0;
-        double lhsError = 0;
+        float_t rhsError = 0;
+        float_t lhsError = 0;
         for(UINT i=0; i<M; i++){
             bool positiveClass = trainingData[ i ].getClassLabel() == WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL;
             bool rhs = trainingData[ i ][ n ] >= threshold;
@@ -143,100 +143,100 @@ bool DecisionStump::train(ClassificationData &trainingData, VectorDouble &weight
     decisionValue = bestThreshold;
     trained = true;
     
-    trainingLog << "Best Feature Index: " << decisionFeatureIndex << " Value: " << decisionValue << " Direction: " << direction << " Error: " << minError << endl;
+    trainingLog << "Best Feature Index: " << decisionFeatureIndex << " Value: " << decisionValue << " Direction: " << direction << " Error: " << minError << std::endl;
     return true;
 }
 
-double DecisionStump::predict(const VectorDouble &x){
+float_t DecisionStump::predict(const VectorFloat &x){
     if( direction == 1){
         if( x[ decisionFeatureIndex ] >= decisionValue ) return 1;
     }else if( x[ decisionFeatureIndex ] <= decisionValue ) return 1;
     return -1;
 }
     
-bool DecisionStump::saveModelToFile(fstream &file) const{
+bool DecisionStump::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-	errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
-	return false;
+        errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        return false;
     }
     
 	//Write the WeakClassifierType data
-    file << "WeakClassifierType: " << weakClassifierType << endl;
-    file << "Trained: "<< trained << endl;
-    file << "NumInputDimensions: " << numInputDimensions << endl;
+    file << "WeakClassifierType: " << weakClassifierType << std::endl;
+    file << "Trained: "<< trained << std::endl;
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
     
     //Write the DecisionStump data
-    file << "DecisionFeatureIndex: " << decisionFeatureIndex << endl;
-    file << "Direction: "<< direction << endl;
-    file << "NumRandomSplits: " << numRandomSplits << endl;
-    file << "DecisionValue: " << decisionValue << endl;
+    file << "DecisionFeatureIndex: " << decisionFeatureIndex << std::endl;
+    file << "Direction: "<< direction << std::endl;
+    file << "NumRandomSplits: " << numRandomSplits << std::endl;
+    file << "DecisionValue: " << decisionValue << std::endl;
     
     //We don't need to close the file as the function that called this function should handle that
     return true;
 }
 
-bool DecisionStump::loadModelFromFile(fstream &file){
+bool DecisionStump::loadModelFromFile( std::fstream &file ){
     
     if(!file.is_open())
     {
-	errorLog <<"loadModelFromFile(fstream &file) - The file is not open!" << endl;
-	return false;
+	   errorLog <<"loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+	   return false;
     }
     
-    string word;
+    std::string word;
     
     file >> word;
     if( word != "WeakClassifierType:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read WeakClassifierType header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read WeakClassifierType header!" << std::endl;
 	return false;
     }
     file >> word;
     
     if( word != weakClassifierType ){
-        errorLog <<"loadModelFromFile(fstream &file) - The weakClassifierType:" << word << " does not match: " << weakClassifierType << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - The weakClassifierType:" << word << " does not match: " << weakClassifierType << std::endl;
 	return false;
     }
     
     file >> word;
     if( word != "Trained:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read Trained header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read Trained header!" << std::endl;
 	return false;
     }
     file >> trained;
     
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
 	return false;
     }
     file >> numInputDimensions;
     
     file >> word;
     if( word != "DecisionFeatureIndex:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read DecisionFeatureIndex header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read DecisionFeatureIndex header!" << std::endl;
 	return false;
     }
     file >> decisionFeatureIndex;
     
     file >> word;
     if( word != "Direction:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read Direction header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read Direction header!" << std::endl;
 	return false;
     }
     file >> direction;
     
     file >> word;
     if( word != "NumRandomSplits:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumRandomSplits header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumRandomSplits header!" << std::endl;
 	return false;
     }
     file >> numRandomSplits;
     
     file >> word;
     if( word != "DecisionValue:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read DecisionValue header!" << endl;
+        errorLog <<"loadModelFromFile(fstream &file) - Failed to read DecisionValue header!" << std::endl;
 	return false;
     }
     file >> decisionValue;
@@ -246,10 +246,10 @@ bool DecisionStump::loadModelFromFile(fstream &file){
 }
 
 void DecisionStump::print() const{
-    cout << "Trained: " << trained;
-    cout << "\tDecisionValue: " << decisionValue;
-    cout << "\tDecisionFeatureIndex: " << decisionFeatureIndex;
-    cout << "\tDirection: " << direction << endl;
+    std::cout << "Trained: " << trained;
+    std::cout << "\tDecisionValue: " << decisionValue;
+    std::cout << "\tDecisionFeatureIndex: " << decisionFeatureIndex;
+    std::cout << "\tDirection: " << direction << std::endl;
 }
     
 UINT DecisionStump::getDecisionFeatureIndex() const{
@@ -264,7 +264,10 @@ UINT DecisionStump::getNumRandomSplits() const{
     return numRandomSplits;
 }
 
-double DecisionStump::getDecisionValue() const{
+float_t DecisionStump::getDecisionValue() const{
     return decisionValue;
 }
+
+GRT_END_NAMESPACE
+
 

@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "MatrixFloat.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
    
 MatrixFloat::MatrixFloat(){
     warningLog.setProceedingText("[WARNING MatrixFloat]");
@@ -75,14 +75,14 @@ MatrixFloat& MatrixFloat::operator=(const Matrix< float_t > &rhs){
     return *this;
 }
     
-MatrixFloat& MatrixFloat::operator=(const vector< VectorFloat > &rhs){
+MatrixFloat& MatrixFloat::operator=(const Vector< VectorFloat > &rhs){
     
     clear();
     
     if( rhs.size() == 0 ) return *this;
     
-    unsigned int M = (unsigned int)rhs.size();
-    unsigned int N = (unsigned int)rhs[0].size();
+    unsigned int M = rhs.getSize();
+    unsigned int N = (unsigned int)rhs[0].getSize();
     resize(M, N);
     
     for(unsigned int i=0; i<M; i++){
@@ -98,12 +98,12 @@ MatrixFloat& MatrixFloat::operator=(const vector< VectorFloat > &rhs){
     return *this;
 }
   
-bool MatrixFloat::print(const string title) const {
+bool MatrixFloat::print(const std::string title) const {
     
     if( dataPtr == NULL ) return false;
     
     if( title != "" ){
-        std::cout << title << endl;
+        std::cout << title << std::endl;
     }
     for(unsigned int i=0; i<rows; i++){
         for(unsigned int j=0; j<cols; j++){
@@ -135,12 +135,12 @@ bool MatrixFloat::scale(const float_t minTarget,const float_t maxTarget){
     
     if( dataPtr == NULL ) return false;
     
-    vector< MinMax > ranges = getRanges();
+    Vector< MinMax > ranges = getRanges();
     
     return scale(ranges,minTarget,maxTarget);
 }
     
-bool MatrixFloat::scale(const vector< MinMax > &ranges,const float_t minTarget,const float_t maxTarget){
+bool MatrixFloat::scale(const Vector< MinMax > &ranges,const float_t minTarget,const float_t maxTarget){
     if( dataPtr == NULL ) return false;
     
     if( ranges.size() != cols ){
@@ -150,7 +150,7 @@ bool MatrixFloat::scale(const vector< MinMax > &ranges,const float_t minTarget,c
     unsigned int i,j = 0;
     for(i=0; i<rows; i++){
         for(j=0; j<cols; j++){
-            dataPtr[i*cols+j] = Util::scale(dataPtr[i*cols+j],ranges[j].minValue,ranges[j].maxValue,minTarget,maxTarget);
+            dataPtr[i*cols+j] = grt_scale(dataPtr[i*cols+j],ranges[j].minValue,ranges[j].maxValue,minTarget,maxTarget);
         }
     }
     return true;
@@ -270,7 +270,7 @@ bool MatrixFloat::multiple(const MatrixFloat &a,const MatrixFloat &b,const bool 
     }
     
     if( !resize( M, L ) ){
-        errorLog << "multiple(const MatrixFloat &b,const MatrixFloat &c,const bool bTranspose) - Failed to resize matrix!" << endl;
+        errorLog << "multiple(const MatrixFloat &b,const MatrixFloat &c,const bool bTranspose) - Failed to resize matrix!" << std::endl;
         return false;
     }
     
@@ -310,12 +310,12 @@ bool MatrixFloat::multiple(const MatrixFloat &a,const MatrixFloat &b,const bool 
 bool MatrixFloat::add(const MatrixFloat &b){
     
     if( b.getNumRows() != rows ){
-        errorLog << "add(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << endl;
+        errorLog << "add(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << std::endl;
         return false;
     }
     
     if( b.getNumCols() != cols ){
-        errorLog << "add(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << endl;
+        errorLog << "add(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << std::endl;
         return false;
     }
     
@@ -338,13 +338,13 @@ bool MatrixFloat::add(const MatrixFloat &a,const MatrixFloat &b){
     
     if( M != b.getNumRows() ){
         errorLog << "add(const MatrixFloat &a,const MatrixFloat &b) - Failed to add matrix! The rows do not match!";
-        errorLog << " a rows: " << M << " b rows: " << b.getNumRows() << endl;
+        errorLog << " a rows: " << M << " b rows: " << b.getNumRows() << std::endl;
         return false;
     }
     
     if( N != b.getNumCols() ){
         errorLog << "add(const MatrixFloat &a,const MatrixFloat &b) - Failed to add matrix! The columns do not match!";
-        errorLog << " a cols: " << N << " b cols: " << b.getNumCols() << endl;
+        errorLog << " a cols: " << N << " b cols: " << b.getNumCols() << std::endl;
         return false;
     }
     
@@ -367,14 +367,14 @@ bool MatrixFloat::add(const MatrixFloat &a,const MatrixFloat &b){
 bool MatrixFloat::subtract(const MatrixFloat &b){
     
     if( b.getNumRows() != rows ){
-        errorLog << "subtract(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << endl;
-        errorLog << " rows: " << rows << " b rows: " << b.getNumRows() << endl;
+        errorLog << "subtract(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << std::endl;
+        errorLog << " rows: " << rows << " b rows: " << b.getNumRows() << std::endl;
         return false;
     }
     
     if( b.getNumCols() != cols ){
-        errorLog << "subtract(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << endl;
-        errorLog << "  cols: " << cols << " b cols: " << b.getNumCols() << endl;
+        errorLog << "subtract(const MatrixFloat &b) - Failed to add matrix! The rows do not match!" << std::endl;
+        errorLog << "  cols: " << cols << " b cols: " << b.getNumCols() << std::endl;
         return false;
     }
     
@@ -398,13 +398,13 @@ bool MatrixFloat::subtract(const MatrixFloat &a,const MatrixFloat &b){
     
     if( M != b.getNumRows() ){
         errorLog << "subtract(const MatrixFloat &a,const MatrixFloat &b) - Failed to add matrix! The rows do not match!";
-        errorLog << " a rows: " << M << " b rows: " << b.getNumRows() << endl;
+        errorLog << " a rows: " << M << " b rows: " << b.getNumRows() << std::endl;
         return false;
     }
     
     if( N != b.getNumCols() ){
         errorLog << "subtract(const MatrixFloat &a,const MatrixFloat &b) - Failed to add matrix! The columns do not match!";
-        errorLog << " a cols: " << N << " b cols: " << b.getNumCols() << endl;
+        errorLog << " a cols: " << N << " b cols: " << b.getNumCols() << std::endl;
         return false;
     }
     
@@ -472,7 +472,7 @@ VectorFloat MatrixFloat::getStdDev() const{
 
 MatrixFloat MatrixFloat::getCovarianceMatrix() const{
     
-    vector<float_t> mean = getMean();
+    Vector<float_t> mean = getMean();
     MatrixFloat covMatrix(cols,cols);
     
     for(unsigned int j=0; j<cols; j++){
@@ -488,11 +488,11 @@ MatrixFloat MatrixFloat::getCovarianceMatrix() const{
     return covMatrix;
 }
     
-std::vector< MinMax > MatrixFloat::getRanges() const{
+Vector< MinMax > MatrixFloat::getRanges() const{
     
-    if( rows == 0 ) return std::vector< MinMax >();
+    if( rows == 0 ) return Vector< MinMax >();
     
-    vector< MinMax > ranges(cols);
+    Vector< MinMax > ranges(cols);
     for(unsigned int i=0; i<rows; i++){
         for(unsigned int j=0; j<cols; j++){
             ranges[j].updateMinMax( dataPtr[i*cols+j] );
@@ -510,7 +510,7 @@ float_t MatrixFloat::getTrace() const{
     return t;
 }
   
-bool MatrixFloat::save(const string &filename) const{
+bool MatrixFloat::save(const std::string &filename) const{
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -529,22 +529,22 @@ bool MatrixFloat::save(const string &filename) const{
     return true;
 }
     
-bool MatrixFloat::load(const string &filename,const char seperator){
+bool MatrixFloat::load(const std::string &filename,const char seperator){
     
     //Clear any previous data
     clear();
     
     //Open the file
-    ifstream file( filename.c_str(), ifstream::in );
+    std::ifstream file( filename.c_str(), std::ifstream::in );
     if ( !file.is_open() ){
-        warningLog << "parseFile(...) - Failed to open file: " << filename << endl;
+        warningLog << "parseFile(...) - Failed to open file: " << filename << std::endl;
         return false;
     }
     
-    vector< string > vec;
-    vector< float_t > row;
-    string line;
-    string columnString = "";
+    Vector< std::string > vec;
+    VectorFloat row;
+    std::string line;
+    std::string columnString = "";
     const int sepValue = seperator;
     unsigned int rowCounter = 0;
     unsigned int columnCounter = 0;
@@ -552,7 +552,7 @@ bool MatrixFloat::load(const string &filename,const char seperator){
     
     //Count the number of columns in the first row
     if( !getline(file,line) ){
-        warningLog << "parseFile(...) - Failed to read first row!" << endl;
+        warningLog << "parseFile(...) - Failed to read first row!" << std::endl;
         return false;
     }
     
@@ -572,13 +572,13 @@ bool MatrixFloat::load(const string &filename,const char seperator){
     
     //Assign the memory
     if( !resize(rowCounter, columnCounter) ){
-        warningLog << "parseFile(...) - Failed to resize memory!" << endl;
+        warningLog << "parseFile(...) - Failed to resize memory!" << std::endl;
         return false;
     }
     
     //Reset the file read pointer
     file.close();
-    file.open( filename.c_str(), ifstream::in );
+    file.open( filename.c_str(), std::ifstream::in );
     rowCounter = 0;
     
     //Loop over each line of data and parse the contents
@@ -602,7 +602,7 @@ bool MatrixFloat::load(const string &filename,const char seperator){
         if( columnCounter != vec.size() ){
             clear();
             warningLog << "parseFile(...) - Found inconsistent column size in row " << rowCounter;
-            warningLog << " ColumnSize: " << columnCounter << " LastColumnSize: " << vec.size() << endl;
+            warningLog << " ColumnSize: " << columnCounter << " LastColumnSize: " << vec.size() << std::endl;
             return false;
         }
         
@@ -629,12 +629,12 @@ bool MatrixFloat::load(const string &filename,const char seperator){
     return true;
 }
     
-bool MatrixFloat::saveToCSVFile(const string &filename) const{
+bool MatrixFloat::saveToCSVFile(const std::string &filename) const{
     return save( filename );
 }
     
-bool MatrixFloat::loadFromCSVFile(const string &filename,const char seperator){
+bool MatrixFloat::loadFromCSVFile(const std::string &filename,const char seperator){
     return load( filename, seperator );
 }
     
-}; //End of namespace GRT
+GRT_END_NAMESPACE

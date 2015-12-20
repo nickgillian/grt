@@ -32,7 +32,7 @@
 
 #include "GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 #define BIG_POSITIVE_VALUE 99e+99
 #define BIG_NEGATIVE_VALUE -99e+99
@@ -111,7 +111,7 @@ public:
      
 	 @return true if the RangeTracker was correctly updated, false otherwise
      */
-	bool update(vector<double> sample);
+	bool update(VectorFloat sample);
     
     /**
      Returns if the range tracker is tracking the values of new samples.
@@ -126,14 +126,14 @@ public:
      
 	 @return true if the range data was saved to a file, false otherwise
      */
-    bool saveRangeDataToFile(string filename);
+    bool saveRangeDataToFile(std::string filename);
     
     /**
      Load the range data from a file.
      
 	 @return true if the range data was loaded from a file, false otherwise
      */
-    bool loadRangeDataFromFile(string filename);
+    bool loadRangeDataFromFile(std::string filename);
     
 	/**
      Gets the number of dimensions of the data.
@@ -152,18 +152,18 @@ public:
 	/**
      Gets the ranges of the data.
      
-	 @return a vector of minimum and maximum values for each dimension of the data
+	 @return a Vector of minimum and maximum values for each dimension of the data
     */
-	vector<MinMax> getRanges();
+	Vector<MinMax> getRanges();
 
 private:
     bool trackData;                                         ///< Sets if the range tracker will look at the incoming data
 	UINT numDimensions;										///< The number of dimensions in the data
 	ULONG totalNumSamplesViewed;                            ///< The total number of samples seen to compute the ranges
-    vector< MinMax > ranges;
+    Vector< MinMax > ranges;
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_RANGE_TRACKER_HEADER

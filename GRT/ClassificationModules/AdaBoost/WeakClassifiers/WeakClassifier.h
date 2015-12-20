@@ -32,7 +32,7 @@
 #include "../../../Util/GRTCommon.h"
 #include "../../../DataStructures/ClassificationData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 #define WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL 1
 #define WEAK_CLASSIFIER_NEGATIVE_CLASS_LABEL 2
@@ -52,7 +52,7 @@ public:
     /**
      Copy Constructor. Defines how the data from the rhs instance are copied to this instance.
      
-     @param const WeakClassifier &rhs: the rhs instance from which the data will be copied to this instance
+     @param rhs: the rhs instance from which the data will be copied to this instance
      */
     WeakClassifier(const WeakClassifier &rhs){
         *this = rhs;
@@ -61,7 +61,7 @@ public:
     /**
      Equals Operator. Defines how the data from the rhs instance are copied to this instance.
      
-     @param const WeakClassifier &rhs: the rhs instance from which the data will be copied to this instance
+     @param rhs: the rhs instance from which the data will be copied to this instance
      @return returns a reference to this WeakClassifier instance
      */
     WeakClassifier& operator=(const WeakClassifier &rhs);
@@ -69,7 +69,7 @@ public:
     /**
      This function copies the WeakClassifier base variables from the weakClassifer pointer to this instance.
      
-     @param const WeakClassifier *weakClassifer: the instance from which the data will be copied to this instance
+     @param weakClassifer: the instance from which the data will be copied to this instance
      @return returns true if the base variables were copied, false otherwise
      */
     bool copyBaseVariables(const WeakClassifier *weakClassifer);
@@ -89,11 +89,11 @@ public:
      This function is the main training interface for all the WeakClassifiers.
      This function should be overwritten in the inheriting class.
      
-     @param ClassificationData &trainingData: a reference to the training data that will be used to train the weak classifier model
-     @param VectorDouble &weights: the weight for each training sample, there should be as many weights as there are training samples
+     @param trainingData: a reference to the training data that will be used to train the weak classifier model
+     @param weights: the weight for each training sample, there should be as many weights as there are training samples
      @return returns true if the weak classifier model was trained successful, false otherwise
      */
-    virtual bool train(ClassificationData &trainingData, VectorDouble &weights){
+    virtual bool train(ClassificationData &trainingData, VectorFloat &weights){
         return false;
     }
     
@@ -101,10 +101,10 @@ public:
      This function is the main predict interface for all the WeakClassifiers.
      This function should be overwritten in the inheriting class.
      
-     @param const VectorDouble &x: the input vector to be classified, should have the same dimensionality as the data used to train the model
-     @return returns a double value representing the prediction, which is normally -1 or +1
+     @param x: the input vector to be classified, should have the same dimensionality as the data used to train the model
+     @return returns a float_t value representing the prediction, which is normally -1 or +1
      */
-    virtual double predict(const VectorDouble &x){
+    virtual float_t predict(const VectorFloat &x){
         return 0;
     }
     
@@ -112,19 +112,19 @@ public:
      This function can be used to save the WeakClassifier model and settings.
      This function should be overwritten in the inheriting class.
      
-     @param fstream &file: a reference to the file that the model will be saved to
+     @param file: a reference to the file that the model will be saved to
      @return returns true if the data was saved, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const{ return false; }
+    virtual bool saveModelToFile( std::fstream &file ) const{ return false; }
     
     /**
      This function can be used to load the WeakClassifier model and settings.
      This function should be overwritten in the inheriting class.
      
-     @param fstream &file: a reference to the file that the model will be saved to
+     @param file: a reference to the file that the model will be saved to
      @return returns true if the data was loaded, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file){ return false; }
+    virtual bool loadModelFromFile( std::fstream &file ){ return false; }
     
     /**
      This function can be used to print the WeakClassifier model and settings.
@@ -135,17 +135,17 @@ public:
     /**
      @return returns the positive class label for this WeakClassifier
      */
-    virtual double getPositiveClassLabel() const{ return 1; }
+    virtual float_t getPositiveClassLabel() const{ return 1; }
     
     /**
      @return returns the negative class label for this WeakClassifier
      */
-    virtual double getNegativeClassLabel() const{ return -1; }
+    virtual float_t getNegativeClassLabel() const{ return -1; }
     
     /**
      @return returns the weak classifier type as a string, e.g. DecisionStump
      */
-    string getWeakClassifierType() const{
+    std::string getWeakClassifierType() const{
         return weakClassifierType;
     }
     
@@ -166,15 +166,15 @@ public:
     /**
      Defines a map between a string (which will contain the name of the WeakClassifier, such as DecisionStump) and a function returns a new instance of that WeakClassifier
      */
-    typedef std::map< string, WeakClassifier*(*)() > StringWeakClassifierMap;
+    typedef std::map< std::string, WeakClassifier*(*)() > StringWeakClassifierMap;
     
     /**
      Creates a new WeakClassifier instance based on the input string (which should contain the name of a valid WeakClassifier such as DecisionStump).
      
-     @param string const &weakClassifierType: the name of the WeakClassifier
+     @param weakClassifierType: the name of the WeakClassifier
      @return WeakClassifier*: a pointer to the new instance of the WeakClassifier
      */
-    static WeakClassifier* createInstanceFromString(string const &weakClassifierType);
+    static WeakClassifier* createInstanceFromString( std::string const &weakClassifierType );
     
     /**
      Creates a new WeakClassifier instance based on the current weakClassifierType string value.
@@ -184,7 +184,7 @@ public:
     WeakClassifier* createNewInstance() const;
     
 protected:
-    string weakClassifierType;  ///<A string that represents the weak classifier type, e.g. DecisionStump
+    std::string weakClassifierType;  ///<A string that represents the weak classifier type, e.g. DecisionStump
     bool trained;               ///<A flag to show if the weak classifier model has been trained
     UINT numInputDimensions;    ///<The number of input dimensions to the weak classifier
     TrainingLog trainingLog;
@@ -207,11 +207,11 @@ template< typename T >  WeakClassifier *newWeakClassificationModuleInstance() { 
 template< typename T >
 class RegisterWeakClassifierModule : WeakClassifier {
 public:
-    RegisterWeakClassifierModule(string const &newWeakClassificationModuleName) {
-        getMap()->insert( std::pair<string, WeakClassifier*(*)()>(newWeakClassificationModuleName, &newWeakClassificationModuleInstance< T > ) );
+    RegisterWeakClassifierModule( std::string const &newWeakClassificationModuleName ) {
+        getMap()->insert( std::pair< std::string, WeakClassifier*(*)() >(newWeakClassificationModuleName, &newWeakClassificationModuleInstance< T > ) );
     }
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_WEAK_CLASSIFIER_HEADER

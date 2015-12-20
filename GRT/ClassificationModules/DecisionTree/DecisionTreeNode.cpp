@@ -18,7 +18,7 @@ DecisionTreeNode::~DecisionTreeNode(){
     clear();
 }
 
-bool DecisionTreeNode::predict(const VectorDouble &x,VectorDouble &classLikelihoods){
+bool DecisionTreeNode::predict(const VectorFloat &x,VectorFloat &classLikelihoods){
     
     predictedNodeID = 0;
     
@@ -37,7 +37,7 @@ bool DecisionTreeNode::predict(const VectorDouble &x,VectorDouble &classLikeliho
                 predictedNodeID = rightChild->getPredictedNodeID();
                 return true;
             }
-            warningLog << "predict(const VectorDouble &x,VectorDouble &classLikelihoods) - Right child failed prediction!" << endl;
+            warningLog << "predict(const VectorFloat &x,VectorFloat &classLikelihoods) - Right child failed prediction!" << std::endl;
             return false;
         }
     }else{
@@ -46,7 +46,7 @@ bool DecisionTreeNode::predict(const VectorDouble &x,VectorDouble &classLikeliho
                 predictedNodeID = leftChild->getPredictedNodeID();
                 return true;
             }
-            warningLog << "predict(const VectorDouble &x,VectorDouble &classLikelihoods) - Left child failed prediction!" << endl;
+            warningLog << "predict(const VectorFloat &x,VectorFloat &classLikelihoods) - Left child failed prediction!" << std::endl;
             return false;
         }
     }
@@ -54,7 +54,7 @@ bool DecisionTreeNode::predict(const VectorDouble &x,VectorDouble &classLikeliho
     return false;
 }
 
-bool DecisionTreeNode::computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+bool DecisionTreeNode::computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
     
     switch( trainingMode ){
         case Tree::BEST_ITERATIVE_SPILT:
@@ -64,7 +64,7 @@ bool DecisionTreeNode::computeBestSpilt( const UINT &trainingMode, const UINT &n
             return computeBestSpiltBestRandomSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError );
             break;
         default:
-            errorLog << "computeBestSpilt(...) - Uknown trainingMode!" << endl;
+            errorLog << "computeBestSpilt(...) - Uknown trainingMode!" << std::endl;
             return false;
             break;
     }
@@ -83,25 +83,25 @@ bool DecisionTreeNode::clear(){
     return true;
 }
     
-bool DecisionTreeNode::getModel(ostream &stream) const{
+bool DecisionTreeNode::getModel( std::ostream &stream ) const{
     
-    string tab = "";
+    std::string tab = "";
     for(UINT i=0; i<depth; i++) tab += "\t";
     
-    stream << tab << "depth: " << depth << " nodeSize: " << nodeSize << " isLeafNode: " << isLeafNode << endl;
+    stream << tab << "depth: " << depth << " nodeSize: " << nodeSize << " isLeafNode: " << isLeafNode << std::endl;
     stream << tab << "ClassProbabilities: ";
     for(UINT i=0; i<classProbabilities.size(); i++){
         stream << classProbabilities[i] << "\t";
     }
-    stream << endl;
+    stream << std::endl;
     
     if( leftChild != NULL ){
-        stream << tab << "LeftChild: " << endl;
+        stream << tab << "LeftChild: " << std::endl;
         leftChild->getModel( stream );
     }
     
     if( rightChild != NULL ){
-        stream << tab << "RightChild: " << endl;
+        stream << tab << "RightChild: " << std::endl;
         rightChild->getModel( stream );
     }
     
@@ -151,11 +151,11 @@ UINT DecisionTreeNode::getNumClasses() const{
     return (UINT)classProbabilities.size();
 }
 
-VectorDouble DecisionTreeNode::getClassProbabilities() const{
+VectorFloat DecisionTreeNode::getClassProbabilities() const{
     return classProbabilities;
 }
 
-bool DecisionTreeNode::setLeafNode( const UINT nodeSize, const VectorDouble &classProbabilities ){
+bool DecisionTreeNode::setLeafNode( const UINT nodeSize, const VectorFloat &classProbabilities ){
     this->nodeSize = nodeSize;
     this->classProbabilities = classProbabilities;
     this->isLeafNode = true;
@@ -167,13 +167,13 @@ bool DecisionTreeNode::setNodeSize(const UINT nodeSize){
     return true;
 }
 
-bool DecisionTreeNode::setClassProbabilities(const VectorDouble &classProbabilities){
+bool DecisionTreeNode::setClassProbabilities(const VectorFloat &classProbabilities){
     this->classProbabilities = classProbabilities;
     return true;
 }
     
-UINT DecisionTreeNode::getClassLabelIndexValue(UINT classLabel,const vector< UINT > &classLabels){
-    const UINT N = (UINT)classLabels.size();
+UINT DecisionTreeNode::getClassLabelIndexValue(UINT classLabel,const Vector< UINT > &classLabels){
+    const UINT N = classLabels.getSize();
     for(UINT i=0; i<N; i++){
         if( classLabel == classLabels[i] )
             return i;

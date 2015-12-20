@@ -1,7 +1,7 @@
 
 #include "DecisionTreeTripleFeatureNode.h"
 
-using namespace GRT;
+GRT_BEGIN_NAMESPACE
     
 //Register the DecisionTreeTripleFeatureNode module with the Node base class
 RegisterNode< DecisionTreeTripleFeatureNode > DecisionTreeTripleFeatureNode::registerModule("DecisionTreeTripleFeatureNode");
@@ -18,7 +18,7 @@ DecisionTreeTripleFeatureNode::~DecisionTreeTripleFeatureNode(){
     clear();
 }
 
-bool DecisionTreeTripleFeatureNode::predict(const VectorDouble &x) {
+bool DecisionTreeTripleFeatureNode::predict(const VectorFloat &x) {
 
     if( (x[ featureIndexA ] - x[ featureIndexB ]) >= (x[ featureIndexC ] - x[ featureIndexB ]) ) return true;
 
@@ -39,19 +39,19 @@ bool DecisionTreeTripleFeatureNode::clear(){
 
 bool DecisionTreeTripleFeatureNode::print() const{
     
-    ostringstream stream;
+    std::ostringstream stream;
     
     if( getModel( stream ) ){
-        cout << stream.str();
+        std::cout << stream.str();
         return true;
     }
     
     return false;
 }
     
-bool DecisionTreeTripleFeatureNode::getModel(ostream &stream) const{
+bool DecisionTreeTripleFeatureNode::getModel( std::ostream &stream ) const{
 
-    string tab = "";
+    std::string tab = "";
     for(UINT i=0; i<depth; i++) tab += "\t";
     
     stream << tab << "depth: " << depth;
@@ -59,21 +59,21 @@ bool DecisionTreeTripleFeatureNode::getModel(ostream &stream) const{
     stream << " featureIndexA: " << featureIndexA;
     stream << " featureIndexB: " << featureIndexB;
     stream << " featureIndexC: " << featureIndexC;
-    stream << " isLeafNode: " << isLeafNode << endl;
+    stream << " isLeafNode: " << isLeafNode << std::endl;
 
     stream << tab << "ClassProbabilities: ";
     for(UINT i=0; i<classProbabilities.size(); i++){
         stream << classProbabilities[i] << "\t";
     }
-    stream << endl;
+    stream << std::endl;
     
     if( leftChild != NULL ){
-        stream << tab << "LeftChild: " << endl;
+        stream << tab << "LeftChild: " << std::endl;
         leftChild->getModel( stream );
     }
     
     if( rightChild != NULL ){
-        stream << tab << "RightChild: " << endl;
+        stream << tab << "RightChild: " << std::endl;
         rightChild->getModel( stream );
     }
     
@@ -130,7 +130,7 @@ UINT DecisionTreeTripleFeatureNode::getFeatureIndexC() const{
     return featureIndexC;
 }
 
-bool DecisionTreeTripleFeatureNode::set(const UINT nodeSize,const UINT featureIndexA,const UINT featureIndexB,const UINT featureIndexC,const VectorDouble &classProbabilities){
+bool DecisionTreeTripleFeatureNode::set(const UINT nodeSize,const UINT featureIndexA,const UINT featureIndexB,const UINT featureIndexC,const VectorFloat &classProbabilities){
     this->nodeSize = nodeSize;
     this->featureIndexA = featureIndexA;
     this->featureIndexB = featureIndexB;
@@ -139,48 +139,48 @@ bool DecisionTreeTripleFeatureNode::set(const UINT nodeSize,const UINT featureIn
     return true;
 }
 
-bool DecisionTreeTripleFeatureNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+bool DecisionTreeTripleFeatureNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
     
     return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeTripleFeatureNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+bool DecisionTreeTripleFeatureNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
 
     return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError ){
+bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
 
     const UINT M = trainingData.getNumSamples();
-    const UINT N = (UINT)features.size();
-    const UINT K = (UINT)classLabels.size();
+    const UINT N = features.getSize();
+    const UINT K = classLabels.getSize();
     
     if( N == 0 ) return false;
     
-    minError = numeric_limits<double>::max();
+    minError = grt_numeric_limits_max< float_t >();
     Random random;
     UINT bestFeatureIndexA = 0;
     UINT bestFeatureIndexB = 0;
     UINT bestFeatureIndexC = 0;
-    double error = 0;
-    double giniIndexL = 0;
-    double giniIndexR = 0;
-    double weightL = 0;
-    double weightR = 0;
-    vector< UINT > groupIndex(M);
-    VectorDouble groupCounter(2,0);
-    vector< MinMax > ranges = trainingData.getRanges();
-    MatrixDouble classProbabilities(K,2);
-    MatrixDouble data(M,1); //This will store our temporary data for each dimension
+    float_t error = 0;
+    float_t giniIndexL = 0;
+    float_t giniIndexR = 0;
+    float_t weightL = 0;
+    float_t weightR = 0;
+    Vector< UINT > groupIndex(M);
+    VectorFloat groupCounter(2,0);
+    Vector< MinMax > ranges = trainingData.getRanges();
+    MatrixFloat classProbabilities(K,2);
+    MatrixFloat data(M,1); //This will store our temporary data for each dimension
     
     //Randomly select which features we want to use
     UINT numRandomFeatures = numSplittingSteps > N ? N : numSplittingSteps;
-    vector< UINT > randomFeatures = random.getRandomSubset( 0, N, numRandomFeatures );
+    Vector< UINT > randomFeatures = random.getRandomSubset( 0, N, numRandomFeatures );
 
     //Loop over each random feature and try and find the best split point
     for(UINT n=0; n<numRandomFeatures; n++){
         
-	//Randomly select 3 features to use
+        //Randomly select 3 features to use
         featureIndexB = features[ randomFeatures[n] ]; //B is the central feature
         featureIndexA = features[ randomFeatures[ random.getRandomNumberInt(0,numRandomFeatures) ] ];
         featureIndexC = features[ randomFeatures[ random.getRandomNumberInt(0,numRandomFeatures) ] ];
@@ -219,7 +219,7 @@ bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSt
         }
      }
 
-     trainingLog << "Best features indexs: [" << bestFeatureIndexA << "," << bestFeatureIndexB << "," << bestFeatureIndexC << "] Min Error: " << minError << endl;
+     trainingLog << "Best features indexs: [" << bestFeatureIndexA << "," << bestFeatureIndexB << "," << bestFeatureIndexC << "] Min Error: " << minError << std::endl;
      
      //Set the best feature index that will be returned to the DecisionTree that called this function
      featureIndex = bestFeatureIndexB;
@@ -230,65 +230,68 @@ bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSt
      return true;
 }
 
-bool DecisionTreeTripleFeatureNode::saveParametersToFile(fstream &file) const{
+bool DecisionTreeTripleFeatureNode::saveParametersToFile( std::fstream &file ) const{
     
     if( !file.is_open() )
     {
-        errorLog << "saveParametersToFile(fstream &file) - File is not open!" << endl;
+        errorLog << "saveParametersToFile(fstream &file) - File is not open!" << std::endl;
         return false;
     }
     
     //Save the DecisionTreeNode parameters
     if( !DecisionTreeNode::saveParametersToFile( file ) ){
-        errorLog << "saveParametersToFile(fstream &file) - Failed to save DecisionTreeNode parameters to file!" << endl;
+        errorLog << "saveParametersToFile(fstream &file) - Failed to save DecisionTreeNode parameters to file!" << std::endl;
         return false;
     }
     
     //Save the custom DecisionTreeThresholdNode parameters
-    file << "FeatureIndexA: " << featureIndexA << endl;
-    file << "FeatureIndexB: " << featureIndexB << endl;
-    file << "FeatureIndexC: " << featureIndexC << endl;
+    file << "FeatureIndexA: " << featureIndexA << std::endl;
+    file << "FeatureIndexB: " << featureIndexB << std::endl;
+    file << "FeatureIndexC: " << featureIndexC << std::endl;
     
     return true;
 }
 
-bool DecisionTreeTripleFeatureNode::loadParametersFromFile(fstream &file){
+bool DecisionTreeTripleFeatureNode::loadParametersFromFile( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << endl;
+        errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << std::endl;
         return false;
     }
     
     //Load the DecisionTreeNode parameters
     if( !DecisionTreeNode::loadParametersFromFile( file ) ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to load DecisionTreeNode parameters from file!" << endl;
+        errorLog << "loadParametersFromFile(fstream &file) - Failed to load DecisionTreeNode parameters from file!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     //Load the custom DecisionTreeThresholdNode Parameters
     file >> word;
     if( word != "FeatureIndexA:" ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndexA header!" << endl;
+        errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndexA header!" << std::endl;
         return false;
     }
     file >> featureIndexA;
     
     file >> word;
     if( word != "FeatureIndexB:" ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndexB header!" << endl;
+        errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndexB header!" << std::endl;
         return false;
     }
     file >> featureIndexB;
 
     file >> word;
     if( word != "FeatureIndexC:" ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndexC header!" << endl;
+        errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndexC header!" << std::endl;
         return false;
     }
     file >> featureIndexC;
  
     return true;
 }
+
+GRT_END_NAMESPACE
+
 

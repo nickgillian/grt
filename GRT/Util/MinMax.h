@@ -21,13 +21,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRT_MINMAX_HEADER
 #define GRT_MINMAX_HEADER
 
-namespace GRT{
+#include "GRTTypedefs.h"
+
+GRT_BEGIN_NAMESPACE
 
 //Common classes
 class MinMax{
 public:
 	MinMax():minValue(0),maxValue(0){};
-    MinMax(double minValue,double maxValue){
+    MinMax(float_t minValue,float_t maxValue){
         this->minValue = minValue;
         this->maxValue = maxValue;
     }
@@ -41,7 +43,7 @@ public:
 		return *this;
 	}
     
-    bool updateMinMax(double newValue){
+    bool updateMinMax(float_t newValue){
         if( newValue < minValue ){
             minValue = newValue;
             return true;
@@ -53,10 +55,10 @@ public:
         return false;
     }
 
-	double minValue;
-	double maxValue;
+	float_t minValue;
+	float_t maxValue;
 };
 
-}; //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MINMAX_HEADER

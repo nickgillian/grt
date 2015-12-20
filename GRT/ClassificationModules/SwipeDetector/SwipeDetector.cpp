@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "SwipeDetector.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 //Register the SwipeDetector module with the Classifier base class
 RegisterClassifierModule< SwipeDetector > SwipeDetector::registerModule("SwipeDetector");
@@ -161,7 +161,7 @@ bool SwipeDetector::train_(ClassificationData &trainingData){
     const unsigned int N = trainingData.getNumDimensions();
     
     if( M == 0 ){
-        errorLog << "train_(trainingData &labelledTrainingData) - Training data has zero samples!" << endl;
+        errorLog << "train_(trainingData &labelledTrainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
     
@@ -193,12 +193,12 @@ bool SwipeDetector::predict_(VectorDouble &inputVector){
     swipeDetected = false;
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - SwipeDetector Model Not Trained!" << endl;
+        errorLog << "predict_(VectorDouble &inputVector) - SwipeDetector Model Not Trained!" << std::endl;
         return false;
     }
     
 	if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << ")" << endl;
+        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << ")" << std::endl;
 		return false;
 	}
     
@@ -281,11 +281,11 @@ bool SwipeDetector::reset(){
     return true;
 }
     
-bool SwipeDetector::saveModelToFile(fstream &file) const{
+bool SwipeDetector::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open())
 	{
-		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << endl;
+		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
 		return false;
 	}
     
@@ -294,22 +294,22 @@ bool SwipeDetector::saveModelToFile(fstream &file) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
 		return false;
     }
     
     if( trained ){
     
-        file << "SwipeIndex: " << swipeIndex << endl;
-        file << "ContextFilterSize: " << contextFilterSize << endl;
-        file << "SwipeIntegrationCoeff: " << swipeIntegrationCoeff << endl;
-        file << "MovementIntegrationCoeff: " << movementIntegrationCoeff << endl;
-        file << "SwipeThreshold: " << swipeThreshold << endl;
+        file << "SwipeIndex: " << swipeIndex << std::endl;
+        file << "ContextFilterSize: " << contextFilterSize << std::endl;
+        file << "SwipeIntegrationCoeff: " << swipeIntegrationCoeff << std::endl;
+        file << "MovementIntegrationCoeff: " << movementIntegrationCoeff << std::endl;
+        file << "SwipeThreshold: " << swipeThreshold << std::endl;
         
-        file << "HysteresisThreshold: " << hysteresisThreshold << endl;
-        file << "SwipeThreshold: " << swipeThreshold << endl;
-        file << "MovementThreshold: " << movementThreshold << endl;
-        file << "SwipeThreshold: " << swipeThreshold << endl;
+        file << "HysteresisThreshold: " << hysteresisThreshold << std::endl;
+        file << "SwipeThreshold: " << swipeThreshold << std::endl;
+        file << "MovementThreshold: " << movementThreshold << std::endl;
+        file << "SwipeThreshold: " << swipeThreshold << std::endl;
         
         //TODO - need to save the thresholdDetector
         
@@ -318,7 +318,7 @@ bool SwipeDetector::saveModelToFile(fstream &file) const{
     return true;
 }
     
-bool SwipeDetector::loadModelFromFile(fstream &file){
+bool SwipeDetector::loadModelFromFile( std::fstream &file ){
     
     trained = false;
     numInputDimensions = 0;
@@ -327,7 +327,7 @@ bool SwipeDetector::loadModelFromFile(fstream &file){
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -337,13 +337,13 @@ bool SwipeDetector::loadModelFromFile(fstream &file){
 
     //Find the file type header
     if(word != "GRT_SWIPE_DETECTION_MODEL_FILE_V1.0"){
-        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << endl;
+        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
@@ -351,56 +351,56 @@ bool SwipeDetector::loadModelFromFile(fstream &file){
         
         file >> word;
         if( word != "SwipeIndex:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeIndex!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeIndex!" << std::endl;
             return false;
         }
         file >> swipeIndex;
         
         file >> word;
         if( word != "ContextFilterSize:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the ContextFilterSize!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not load the ContextFilterSize!" << std::endl;
             return false;
         }
         file >> contextFilterSize;
         
         file >> word;
         if( word != "SwipeIntegrationCoeff:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeIntegrationCoeff!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeIntegrationCoeff!" << std::endl;
             return false;
         }
         file >> swipeIntegrationCoeff;
         
         file >> word;
         if( word != "MovementIntegrationCoeff:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the MovementIntegrationCoeff!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not load the MovementIntegrationCoeff!" << std::endl;
             return false;
         }
         file >> movementIntegrationCoeff;
         
         file >> word;
         if( word != "SwipeThreshold:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeThreshold!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeThreshold!" << std::endl;
             return false;
         }
         file >> swipeThreshold;
         
         file >> word;
         if( word != "HysteresisThreshold:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the HysteresisThreshold!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not load the HysteresisThreshold!" << std::endl;
             return false;
         }
         file >> hysteresisThreshold;
         
         file >> word;
         if( word != "SwipeThreshold:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeThreshold!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeThreshold!" << std::endl;
             return false;
         }
         file >> swipeThreshold;
         
         file >> word;
         if( word != "MovementThreshold:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the MovementThreshold!" << endl;
+            errorLog << "loadModelFromFile(string filename) - Could not load the MovementThreshold!" << std::endl;
             return false;
         }
         file >> movementThreshold;
@@ -422,31 +422,31 @@ bool SwipeDetector::getSwipeDetected() const {
     return swipeDetected;
 }
 
-double SwipeDetector::getSwipeValue() const {
+float_t SwipeDetector::getSwipeValue() const {
     return thresholdDetector.getAnalysisValue();
 }
 
-double SwipeDetector::getSwipeThreshold() const {
+float_t SwipeDetector::getSwipeThreshold() const {
     return swipeThreshold;
 }
     
-double SwipeDetector::getHysteresisThreshold() const{
+float_t SwipeDetector::getHysteresisThreshold() const{
     return hysteresisThreshold;
 }
 
-double SwipeDetector::getMovementVelocity() const {
+float_t SwipeDetector::getMovementVelocity() const {
     return movementVelocity;
 }
 
-double SwipeDetector::getMovementThreshold() const {
+float_t SwipeDetector::getMovementThreshold() const {
     return movementThreshold;
 }
 
-double SwipeDetector::getContextValue() const {
+float_t SwipeDetector::getContextValue() const {
     return contextFilteredValue;
 }
 
-double SwipeDetector::getSwipeIntegrationCoeff() const{
+float_t SwipeDetector::getSwipeIntegrationCoeff() const{
     return swipeIntegrationCoeff;
 }
     
@@ -464,7 +464,7 @@ bool SwipeDetector::setSwipeIndex(const unsigned int swipeIndex){
 bool SwipeDetector::setSwipeDirection(const unsigned int swipeDirection){
     
     if( swipeDirection != POSITIVE_SWIPE && swipeDirection != NEGATIVE_SWIPE ){
-        errorLog << "setSwipeDirection(const unsigned int swipeDirection) - Unknown swipeDirection!" << endl;
+        errorLog << "setSwipeDirection(const unsigned int swipeDirection) - Unknown swipeDirection!" << std::endl;
         return false;
     }
     
@@ -474,29 +474,29 @@ bool SwipeDetector::setSwipeDirection(const unsigned int swipeDirection){
     return true;
 }
 
-bool SwipeDetector::setSwipeThreshold(const double swipeThreshold){
+bool SwipeDetector::setSwipeThreshold(const float_t swipeThreshold){
     this->swipeThreshold = swipeThreshold;
     reset();
     return true;
 }
 
-bool SwipeDetector::setHysteresisThreshold(const double hysteresisThreshold){
+bool SwipeDetector::setHysteresisThreshold(const float_t hysteresisThreshold){
     this->hysteresisThreshold = hysteresisThreshold;
     reset();
     return true;
 }
 
-bool SwipeDetector::setMovementThreshold(const double movementThreshold){
+bool SwipeDetector::setMovementThreshold(const float_t movementThreshold){
     this->movementThreshold = movementThreshold;
     reset();
     return true;
 }
 
-bool SwipeDetector::setSwipeIntegrationCoeff(const double swipeIntegrationCoeff){
+bool SwipeDetector::setSwipeIntegrationCoeff(const float_t swipeIntegrationCoeff){
     this->swipeIntegrationCoeff = swipeIntegrationCoeff;
     reset();
     return true;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

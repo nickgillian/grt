@@ -42,9 +42,9 @@
 #include "MixtureModel.h"
 
 #define GMM_MIN_SCALE_VALUE 0.0001
-#define GMM_MAX_SCALE_VALUE 1
+#define GMM_MAX_SCALE_VALUE 1.0
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 class GMM : public Classifier
 {
@@ -52,12 +52,12 @@ public:
     /**
      Default Constructor. Sets the number of mixture models to use for each model. 
      */
-	GMM(UINT numMixtureModels = 2,bool useScaling=false,bool useNullRejection=false,double nullRejectionCoeff=1.0,UINT maxIter=100,double minChange=1.0e-5);
+	GMM(UINT numMixtureModels = 2,bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=1.0,UINT maxIter=100,float_t minChange=1.0e-5);
     
     /**
      Defines the copy constructor.
      
-     @param const GMM &rhs: the instance from which all the data will be copied into this instance
+     @param rhs: the instance from which all the data will be copied into this instance
      */
     GMM(const GMM &rhs);
     
@@ -69,7 +69,7 @@ public:
     /**
      Defines how the data from the rhs GMM should be copied to this GMM
      
-     @param const GMM &rhs: another instance of a GMM
+     @param &rhs: another instance of a GMM
      @return returns a pointer to this instance of the GMM
      */
 	GMM &operator=(const GMM &rhs);
@@ -78,7 +78,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier method is called.  
      It clones the data from the Base Class GRT::Classifier pointer (which should be pointing to an GMM instance) into this instance
      
-     @param Classifier *classifier: a pointer to the GRT::Classifier Base Class, this should be pointing to another GMM instance
+     @param classifier: a pointer to the GRT::Classifier Base Class, this should be pointing to another GMM instance
      @return returns true if the clone was successfull, false otherwise
      */
     virtual bool deepCopyFrom(const Classifier *classifier);
@@ -88,7 +88,7 @@ public:
      This overrides the train function in the GRT::Classifier base class.
      The GMM is an unsupervised learning algorithm, it will therefore NOT use any class labels provided
      
-     @param ClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the GMM model was trained, false otherwise
      */
     virtual bool train_(ClassificationData &trainingData);
@@ -97,10 +97,10 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the GRT::Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
      */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This overrides the clear function in the Classifier base class.
@@ -114,19 +114,19 @@ public:
      This saves the trained GMM model to a file.
      This overrides the saveModelToFile function in the GRT::Classifier base class.
      
-     @param fstream &file: a reference to the file the GMM model will be saved to
+     @param file: a reference to the file the GMM model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained GMM model from a file.
      This overrides the loadModelFromFile function in the GRT::Classifier base class.
      
-     @param fstream &file: a reference to the file the GMM model will be loaded from
+     @param file: a reference to the file the GMM model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
    /**
     This function recomputes the null rejection thresholds for each model.
@@ -149,13 +149,13 @@ public:
      
      @return returns a vector of GRT::MixtureModel, an empty vector will be returned if the GRT::GMM has not been trained
      */
-    vector< MixtureModel > getModels();
+    Vector< MixtureModel > getModels();
     
     /**
      This function sets the number of mixture models used for class. You should call this function before you train the GMM model.
      The number of mixture models must be greater than 0.
      
-     @param UINT K: the number of mixture models
+     @param K: the number of mixture models
      @return returns true if the number of mixture models was successfully updated, false otherwise
      */
     bool setNumMixtureModels(UINT K);
@@ -163,16 +163,16 @@ public:
     /**
      This function sets the minChange parameter which controls when the GMM train function should stop. MinChange must be greater than zero.
      
-     @param double minChange: the new minChange value
+     @param minChange: the new minChange value
      @return returns true if the number of minChange was successfully updated, false otherwise
      */
-    bool setMinChange(double minChange);
+    bool setMinChange(float_t minChange);
     
     /**
      This function sets the maxIter parameter which controls when the maximum number of iterations parameter that controls when the GMM train 
      function should stop. MaxIter must be greater than zero.
      
-     @param double maxIter: the new maxIter value
+     @param maxIter: the new maxIter value
      @return returns true if the number of maxIter was successfully updated, false otherwise
      */
     bool setMaxIter(UINT maxIter);
@@ -184,13 +184,13 @@ public:
     using MLBase::predict;
     
 protected:
-    double computeMixtureLikelihood(const VectorDouble &x,UINT k);
-    bool loadLegacyModelFromFile( fstream &file );
+    float_t computeMixtureLikelihood(const VectorFloat &x,UINT k);
+    bool loadLegacyModelFromFile( std::fstream &file );
     
     UINT numMixtureModels;
     UINT maxIter;
-    double minChange;
-    vector< MixtureModel > models;
+    float_t minChange;
+    Vector< MixtureModel > models;
     
     DebugLog debugLog;
     ErrorLog errorLog;
@@ -200,6 +200,6 @@ protected:
 	
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_GMM_HEADER

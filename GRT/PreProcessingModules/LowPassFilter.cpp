@@ -20,12 +20,12 @@
 
 #include "LowPassFilter.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the LowPassFilter module with the PreProcessing base class
 RegisterPreProcessingModule< LowPassFilter > LowPassFilter::registerModule("LowPassFilter");
     
-LowPassFilter::LowPassFilter(double filterFactor,double gain,UINT numDimensions,double cutoffFrequency,double delta){
+LowPassFilter::LowPassFilter(float_t filterFactor,float_t gain,UINT numDimensions,float_t cutoffFrequency,float_t delta){
     
     classType = "LowPassFilter";
     preProcessingType = classType;
@@ -74,20 +74,20 @@ bool LowPassFilter::deepCopyFrom(const PreProcessing *preProcessing){
         return true;
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << endl;
+    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
     
-bool LowPassFilter::process(const VectorDouble &inputVector){
+bool LowPassFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
-        errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -103,10 +103,10 @@ bool LowPassFilter::reset(){
     return false;
 }
     
-bool LowPassFilter::saveModelToFile(string filename) const{
+bool LowPassFilter::saveModelToFile( std::string filename ) const{
     
     if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The HighPassFilter has not been initialized" << endl;
+        errorLog << "saveModelToFile(string filename) - The HighPassFilter has not been initialized" << std::endl;
         return false;
     }
     
@@ -123,24 +123,24 @@ bool LowPassFilter::saveModelToFile(string filename) const{
     return true;
 }
 
-bool LowPassFilter::saveModelToFile(fstream &file) const{
+bool LowPassFilter::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_LOW_PASS_FILTER_FILE_V1.0" << endl;
+    file << "GRT_LOW_PASS_FILTER_FILE_V1.0" << std::endl;
     
-    file << "NumInputDimensions: " << numInputDimensions << endl;
-    file << "NumOutputDimensions: " << numOutputDimensions << endl;
-    file << "FilterFactor: " << filterFactor << endl;
-    file << "Gain: " << gain << endl;
+    file << "NumInputDimensions: " << numInputDimensions << std::endl;
+    file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
+    file << "FilterFactor: " << filterFactor << std::endl;
+    file << "Gain: " << gain << std::endl;
     
     return true;
 }
 
-bool LowPassFilter::loadModelFromFile(string filename){
+bool LowPassFilter::loadModelFromFile( std::string filename ){
     
     std::fstream file; 
     file.open(filename.c_str(), std::ios::in);
@@ -156,27 +156,27 @@ bool LowPassFilter::loadModelFromFile(string filename){
     return true;
 }
 
-bool LowPassFilter::loadModelFromFile(fstream &file){
+bool LowPassFilter::loadModelFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load the header
     file >> word;
     
     if( word != "GRT_LOW_PASS_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
         return false;     
     }
     file >> numInputDimensions;
@@ -184,7 +184,7 @@ bool LowPassFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
         return false;     
     }
     file >> numOutputDimensions;
@@ -192,7 +192,7 @@ bool LowPassFilter::loadModelFromFile(fstream &file){
     //Load the filter factor
     file >> word;
     if( word != "FilterFactor:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterFactor header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterFactor header!" << std::endl;
         return false;     
     }
     file >> filterFactor;
@@ -200,7 +200,7 @@ bool LowPassFilter::loadModelFromFile(fstream &file){
     //Load the number of output dimensions
     file >> word;
     if( word != "Gain:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read Gain header!" << endl;
+        errorLog << "loadModelFromFile(fstream &file) - Failed to read Gain header!" << std::endl;
         return false;     
     }
     file >> gain;
@@ -209,22 +209,22 @@ bool LowPassFilter::loadModelFromFile(fstream &file){
     return init(filterFactor,gain,numInputDimensions);  
 }
     
-bool LowPassFilter::init(double filterFactor,double gain,UINT numDimensions){
+bool LowPassFilter::init(float_t filterFactor,float_t gain,UINT numDimensions){
     
     initialized = false;
     
     if( numDimensions == 0 ){
-        errorLog << "init(double filterFactor,double gain,UINT numDimensions) - NumDimensions must be greater than 0!" << endl;
+        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
     if( filterFactor <= 0 ){
-        errorLog << "init(double filterFactor,double gain,UINT numDimensions) - FilterFactor must be greater than 0!" << endl;
+        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - FilterFactor must be greater than 0!" << std::endl;
         return false;
     }
     
     if( gain <= 0 ){
-        errorLog << "init(double filterFactor,double gain,UINT numDimensions) - Gain must be greater than 0!" << endl;
+        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - Gain must be greater than 0!" << std::endl;
         return false;
     }
     
@@ -241,31 +241,31 @@ bool LowPassFilter::init(double filterFactor,double gain,UINT numDimensions){
     return true;
 }
 
-double LowPassFilter::filter(double x){
+float_t LowPassFilter::filter(float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(double x) - The filter has not been initialized!" << endl;
+        errorLog << "filter(float_t x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
-    VectorDouble y = filter(VectorDouble(1,x));
+    VectorFloat y = filter(VectorFloat(1,x));
     
     if( y.size() == 0 ) return 0;
     return y[0];
 
 }
     
-VectorDouble LowPassFilter::filter(const VectorDouble &x){
+VectorFloat LowPassFilter::filter(const VectorFloat &x){
     
     if( !initialized ){
-        errorLog << "filter(const VectorDouble &x) - Not Initialized!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - Not Initialized!" << std::endl;
+        return VectorFloat();
     }
     
     if( x.size() != numInputDimensions ){
-        errorLog << "filter(const VectorDouble &x) - The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << endl;
-        return VectorDouble();
+        errorLog << "filter(const VectorFloat &x) - The Number Of Input Dimensions (" << numInputDimensions << ") does not match the size of the input vector (" << x.size() << ")!" << std::endl;
+        return VectorFloat();
     }
     
     //Exponential moving average filter: lastOutput*alpha + (1.0f-alpha)*input;
@@ -276,29 +276,29 @@ VectorDouble LowPassFilter::filter(const VectorDouble &x){
     return processedData;
 }
     
-bool LowPassFilter::setGain(double gain){
+bool LowPassFilter::setGain(float_t gain){
     if( gain > 0 ){
         this->gain = gain;
         reset();
         return true;
     }
-    errorLog << "setGain(double gain) - Gain value must be greater than 0!" << endl;
+    errorLog << "setGain(float_t gain) - Gain value must be greater than 0!" << std::endl;
     return false;
 }
 
-bool LowPassFilter::setFilterFactor(double filterFactor){
+bool LowPassFilter::setFilterFactor(float_t filterFactor){
     if( filterFactor > 0 ){
         this->filterFactor = filterFactor;
         reset();
         return true;
     }
-    errorLog << "setFilterFactor(double filterFactor) - FilterFactor value must be greater than 0!" << endl;
+    errorLog << "setFilterFactor(float_t filterFactor) - FilterFactor value must be greater than 0!" << std::endl;
     return false;
 }
     
-bool LowPassFilter::setCutoffFrequency(double cutoffFrequency,double delta){
+bool LowPassFilter::setCutoffFrequency(float_t cutoffFrequency,float_t delta){
     if( cutoffFrequency > 0 && delta > 0 ){
-        double RC = (1.0/TWO_PI) /cutoffFrequency;
+        float_t RC = (1.0/TWO_PI) /cutoffFrequency;
         filterFactor = delta / (RC+delta);
         reset();
         return true;
@@ -306,5 +306,5 @@ bool LowPassFilter::setCutoffFrequency(double cutoffFrequency,double delta){
     return false;
 }
 
+GRT_END_NAMESPACE
 
-}//End of namespace GRT

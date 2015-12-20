@@ -33,7 +33,7 @@
 
 #include "../Util/GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class UnlabelledData{
 public:
@@ -46,7 +46,7 @@ public:
      @param datasetName: the name of the dataset, should not contain any spaces
      @param infoText: some info about the data in this dataset, this can contain spaces
      */
-    UnlabelledData(const UINT numDimensions = 0,const string datasetName = "NOT_SET",const string infoText = "");
+    UnlabelledData(const UINT numDimensions = 0,const std::string datasetName = "NOT_SET",const std::string infoText = "");
 
 	/**
      Copy Constructor, copies the UnlabelledData from the rhs instance to this instance
@@ -115,7 +115,7 @@ public:
      @param datasetName: the new name for the dataset
 	 @return returns true if the name is set, or false otherwise
      */
-    bool setDatasetName(const string datasetName);
+    bool setDatasetName(const std::string datasetName);
     
     /**
      Sets the info string.
@@ -124,7 +124,7 @@ public:
 	 @param infoText: the infoText
      @return true if the infoText was correctly updated, false otherwise
      */
-    bool setInfoText(const string infoText);
+    bool setInfoText(const std::string infoText);
 
 	/**
      Adds a new unlabelled sample to the dataset.  
@@ -160,7 +160,7 @@ public:
      @param useExternalRanges: sets if these ranges should be used to scale the dataset, default value is false.
 	 @return returns true if the external ranges were set, false otherwise
      */
-    bool setExternalRanges(const vector< MinMax > &externalRanges, const bool useExternalRanges = false);
+    bool setExternalRanges(const Vector< MinMax > &externalRanges, const bool useExternalRanges = false);
     
     /**
      Sets if the dataset should be scaled using an external range (if useExternalRanges == true) or the ranges of the dataset (if false).
@@ -188,7 +188,7 @@ public:
      @param maxTarget: the maximum target range for scaling
 	 @return true if the data was scaled correctly, false otherwise
     */
-	bool scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
+	bool scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
     
     /**
      Saves the data to a file.
@@ -198,7 +198,7 @@ public:
      @param filename: the name of the file the data will be saved to
      @return true if the data was saved successfully, false otherwise
      */
-    bool save(const string &filename) const;
+    bool save(const std::string &filename) const;
     
     /**
      Load the data from a file.
@@ -208,7 +208,7 @@ public:
      @param filename: the name of the file the data will be loaded from
      @return true if the data was loaded successfully, false otherwise
      */
-    bool load(const string &filename);
+    bool load(const std::string &filename);
 	
 	/**
      Saves the unlabeled classification data to a custom file format.
@@ -216,7 +216,7 @@ public:
 	 @param filenamee: the name of the file the data will be saved to
 	 @return true if the data was saved successfully, false otherwise
     */
-	bool saveDatasetToFile(const string &filename) const;
+	bool saveDatasetToFile(const std::string &filename) const;
 	
 	/**
      Loads the unlabeled classification data from a custom file format.
@@ -224,7 +224,7 @@ public:
 	 @param filename: the name of the file the data will be loaded from
 	 @return true if the data was loaded successfully, false otherwise
     */
-	bool loadDatasetFromFile(const string &filename);
+	bool loadDatasetFromFile(const std::string &filename);
     
     /**
      Saves the unlabeled classification data to a CSV file.
@@ -234,7 +234,7 @@ public:
 	 @param filename: the name of the file the data will be saved to
 	 @return true if the data was saved successfully, false otherwise
      */
-	bool saveDatasetToCSVFile(const string &filename) const;
+	bool saveDatasetToCSVFile(const std::string &filename) const;
 	
 	/**
      Loads the unlabelled classification data from a CSV file.
@@ -245,7 +245,7 @@ public:
 	 @param filename: the name of the file the data will be loaded from
 	 @return true if the data was loaded successfully, false otherwise
      */
-	bool loadDatasetFromCSVFile(const string &filename);
+	bool loadDatasetFromCSVFile(const std::string &filename);
 
 	/**
      Partitions the dataset into a training dataset (which is kept by this instance of the UnlabelledData) and
@@ -296,21 +296,21 @@ public:
      
 	 @return returns the name of the dataset
     */
-    string getDatasetName() const{ return datasetName; }
+    std::string getDatasetName() const{ return datasetName; }
     
     /**
      Gets the infotext for the dataset
      
 	 @return returns the infotext of the dataset
      */
-    string getInfoText() const{ return infoText; }
+    std::string getInfoText() const{ return infoText; }
 
     /**
     Gets the stats of the dataset as a string
 
     @return returns the stats of this dataset as a string
     */
-    string getStatsAsString() const;
+    std::string getStatsAsString() const;
     
 	/**
      Gets the number of dimensions of the labelled classification data.
@@ -331,14 +331,14 @@ public:
      
 	 @return a vector of minimum and maximum values for each dimension of the data
     */
-	vector<MinMax> getRanges() const;
+	Vector<MinMax> getRanges() const;
     
     /**
      Gets the unlabeled classification data as a vector of VectorFloats.
      
 	 @return a vector< VectorFloat > containing the UnlabeledClassificationSamples
      */
-	vector< VectorFloat > getData() const;
+	Vector< VectorFloat > getData() const;
     
 	/**
      Gets the unlabeled classification data as a MatrixDouble.
@@ -355,17 +355,17 @@ public:
     MatrixFloat getDataAsMatrixFloat() const;
 
 private:
-    string datasetName;                                     ///< The name of the dataset
-    string infoText;                                        ///< Some infoText about the dataset
+    std::string datasetName;                                ///< The name of the dataset
+    std::string infoText;                                   ///< Some infoText about the dataset
 	UINT numDimensions;										///< The number of dimensions in the dataset
 	UINT totalNumSamples;                                   ///< The total number of samples in the dataset
     UINT kFoldValue;                                        ///< The number of folds the dataset has been spilt into for cross valiation
     bool crossValidationSetup;                              ///< A flag to show if the dataset is ready for cross validation
     bool useExternalRanges;                                 ///< A flag to show if the dataset should be scaled using the externalRanges values
-    vector< MinMax > externalRanges;                        ///< A vector containing a set of externalRanges set by the user
+    Vector< MinMax > externalRanges;                        ///< A vector containing a set of externalRanges set by the user
 	
-	vector< VectorFloat > data;                            ///< The unlabeled classification data
-    vector< vector< UINT > >    crossValidationIndexs;      ///< A vector to hold the indexs of the dataset for the cross validation
+	Vector< VectorFloat > data;                            ///< The unlabeled classification data
+    Vector< Vector< UINT > >    crossValidationIndexs;      ///< A vector to hold the indexs of the dataset for the cross validation
     
     DebugLog debugLog;                                      ///< Default debugging log
     ErrorLog errorLog;                                      ///< Default error log
@@ -373,6 +373,6 @@ private:
         
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_UNLABLELLED_CLASSIFICATION_DATA_HEADER

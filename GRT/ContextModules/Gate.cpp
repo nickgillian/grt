@@ -20,7 +20,7 @@
 
 #include "Gate.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 	
 //Register the Gate module with the Context base class
 RegisterContextModule< Gate > Gate::registerModule("GATE");
@@ -48,4 +48,4 @@ bool Gate::reset(){
     return true;
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

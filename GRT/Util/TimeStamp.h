@@ -459,47 +459,47 @@ public:
             return false;
         }
         
-        year = Util::stringToInt( s[0] );
-        month = Util::stringToInt( s[1]  );
-        day = Util::stringToInt( s[2] );
-        hour = Util::stringToInt( s[3]  );
-        minute = Util::stringToInt( s[4] );
-        second = Util::stringToInt( s[5]  );
-        millisecond = Util::stringToInt( s[6]  );
+        year = grt_from_str< unsigned int >( s[0] );
+        month = grt_from_str <unsigned int >( s[1]  );
+        day = grt_from_str< unsigned int >( s[2] );
+        hour = grt_from_str< unsigned int >( s[3]  );
+        minute = grt_from_str< unsigned int >( s[4] );
+        second = grt_from_str< unsigned int >( s[5]  );
+        millisecond = grt_from_str< unsigned int >( s[6]  );
         
         return true;
     }
     
     std::string getTimeStampAsString() const{
         std::string timeString = "";
-        timeString += Util::toString(year) + "_" + Util::toString(month) + "_" + Util::toString(day);
-        timeString += "_" + Util::toString(hour) + "_" + Util::toString(minute) + "_" + Util::toString(second) + "_" + Util::toString(millisecond);
+        timeString += grt_to_str(year) + "_" + grt_to_str(month) + "_" + grt_to_str(day);
+        timeString += "_" + grt_to_str(hour) + "_" + grt_to_str(minute) + "_" + grt_to_str(second) + "_" + grt_to_str(millisecond);
         return timeString;
     }
     
     std::string getTimeStampAsJSONString() const{
         std::string timeString = "{";
-        timeString += "\"year\":" + Util::toString(year) + ",";
-        timeString += "\"month\":" + Util::toString(month) + ",";
-        timeString += "\"day\":" + Util::toString(day) + ",";
-        timeString += "\"hour\":" + Util::toString(hour) + ",";
-        timeString += "\"minute\":" + Util::toString(minute) + ",";
-        timeString += "\"second\":" + Util::toString(second) + ",";
-        timeString += "\"millisecond\":" + Util::toString(millisecond) + ",";
-        timeString += "\"timeInMS\":" + Util::toString(getTimeInMilliseconds());
+        timeString += "\"year\":" + grt_to_str(year) + ",";
+        timeString += "\"month\":" + grt_to_str(month) + ",";
+        timeString += "\"day\":" + grt_to_str(day) + ",";
+        timeString += "\"hour\":" + grt_to_str(hour) + ",";
+        timeString += "\"minute\":" + grt_to_str(minute) + ",";
+        timeString += "\"second\":" + grt_to_str(second) + ",";
+        timeString += "\"millisecond\":" + grt_to_str(millisecond) + ",";
+        timeString += "\"timeInMS\":" + grt_to_str(getTimeInMilliseconds());
         timeString += "}";
         return timeString;
     }
     
     std::string getTimeAsISOString() const{
         std::string s = "";
-        s += Util::toString(year) + "-";
-        s += pad( Util::toString(month) ) + "-";
-        s += pad( Util::toString(day) ) + "T";
-        s += pad( Util::toString( hour ) ) + ":";
-        s += pad( Util::toString( minute ) ) + ":";
-        s += pad( Util::toString( second ) ) + ".";
-        s += Util::toString( millisecond ) + "Z";
+        s += grt_to_str(year) + "-";
+        s += pad( grt_to_str(month) ) + "-";
+        s += pad( grt_to_str(day) ) + "T";
+        s += pad( grt_to_str( hour ) ) + ":";
+        s += pad( grt_to_str( minute ) ) + ":";
+        s += pad( grt_to_str( second ) ) + ".";
+        s += grt_to_str( millisecond ) + "Z";
         return s;
     }
     

@@ -102,7 +102,7 @@ int main(int argc, const char * argv[])
     }
     
     //Test the accuracy of the model on the test data
-    double accuracy = 0;
+    float_t accuracy = 0;
     for(UINT i=0; i<testData.getNumSamples(); i++){
         //Get the i'th test sample
         UINT classLabel = testData[i].getClassLabel();
@@ -127,7 +127,7 @@ int main(int argc, const char * argv[])
         cout << "TestSample: " << i <<  " ClassLabel: " << classLabel << " PredictedClassLabel: " << predictedClassLabel << endl;
     }
     
-    cout << "Test Accuracy: " << accuracy/double(testData.getNumSamples())*100.0 << "%" << endl;
+    cout << "Test Accuracy: " << accuracy/float_t(testData.getNumSamples())*100.0 << "%" << endl;
     
     return EXIT_SUCCESS;
 }

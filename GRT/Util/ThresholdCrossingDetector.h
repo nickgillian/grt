@@ -33,7 +33,7 @@
 #include "../PreProcessingModules/Derivative.h"
 #include "CircularBuffer.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class ThresholdCrossingDetector{
 public:
@@ -278,6 +278,6 @@ public:
 	
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_THRESHOLD_CROSSING_DETECTOR_HEADER

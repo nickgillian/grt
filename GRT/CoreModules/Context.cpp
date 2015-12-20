@@ -19,12 +19,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include "Context.h"
-namespace GRT{
+
+GRT_BEGIN_NAMESPACE
     
 Context::StringContextMap* Context::stringContextMap = NULL;
 UINT Context::numContextInstances = 0;
     
-Context* Context::createInstanceFromString(string const &contextType){
+Context* Context::createInstanceFromString( const std::string &contextType ){
     
     StringContextMap::iterator iter = getMap()->find( contextType );
     if( iter == getMap()->end() ){
@@ -43,7 +44,7 @@ bool Context::init(){
     data.clear();
     
     if( numOutputDimensions == 0 ){
-        errorLog << "init() - Failed to init module, the number of output dimensions is zero!" << endl;
+        errorLog << "init() - Failed to init module, the number of output dimensions is zero!" << std::endl;
         initialized = false;
         return false;
     }
@@ -60,24 +61,24 @@ bool Context::init(){
     return true;
 }
 
-bool Context::saveContextSettingsToFile(fstream &file) const{
+bool Context::saveContextSettingsToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveContextSettingsToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveContextSettingsToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     if( !MLBase::saveBaseSettingsToFile( file ) ) return false;
     
-    file << "Initialized: " << initialized << endl;
+    file << "Initialized: " << initialized << std::endl;
     
     return true;
 }
 
-bool Context::loadContextSettingsFromFile(fstream &file){
+bool Context::loadContextSettingsFromFile( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadContextSettingsFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadContextSettingsFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -86,12 +87,12 @@ bool Context::loadContextSettingsFromFile(fstream &file){
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Load if the filter has been initialized
     file >> word;
     if( word != "Initialized:" ){
-        errorLog << "loadContextSettingsFromFile(fstream &file) - Failed to read Initialized header!" << endl;
+        errorLog << "loadContextSettingsFromFile(fstream &file) - Failed to read Initialized header!" << std::endl;
         clear();
         return false;
     }
@@ -105,5 +106,5 @@ bool Context::loadContextSettingsFromFile(fstream &file){
     return true;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 

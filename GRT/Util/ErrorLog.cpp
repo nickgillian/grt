@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "ErrorLog.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 bool ErrorLog::errorLoggingEnabled = true;
 ObserverManager< ErrorLogMessage > ErrorLog::observerManager;
@@ -40,4 +40,4 @@ bool ErrorLog::removeObserver(Observer< ErrorLogMessage > &observer)
     return observerManager.removeObserver(observer);
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE

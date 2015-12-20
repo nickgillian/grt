@@ -20,14 +20,12 @@
 
 #include "DTW.h"
 
-using namespace std;
-
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 //Register the DTW module with the Classifier base class
 RegisterClassifierModule< DTW > DTW::registerModule("DTW");
 
-DTW::DTW(bool useScaling,bool useNullRejection,double nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,double radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,double nullRejectionLikelihoodThreshold)
+DTW::DTW(bool useScaling,bool useNullRejection,float_t nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,float_t radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,float_t nullRejectionLikelihoodThreshold)
 {
     this->useScaling=useScaling;
     this->useNullRejection = useNullRejection;
@@ -157,7 +155,7 @@ bool DTW::train_(TimeSeriesClassificationData &labelledTrainingData){
             if( timeSeriesTrimmer.trimTimeSeries( labelledTrainingData[i] ) ){
                 tempData.addSample(labelledTrainingData[i].getClassLabel(), labelledTrainingData[i].getData());
             }else{
-                trainingLog << "Removing training sample " << i << " from the dataset as it could not be trimmed!" << endl;
+                trainingLog << "Removing training sample " << i << " from the dataset as it could not be trimmed!" << std::endl;
             }
         }
         //Overwrite the original training data with the trimmed dataset
@@ -165,7 +163,7 @@ bool DTW::train_(TimeSeriesClassificationData &labelledTrainingData){
     }
     
     if( labelledTrainingData.getNumSamples() == 0 ){
-        errorLog << "train_(TimeSeriesClassificationData &labelledTrainingData) - Can't train model as there are no samples in training data!" << endl;
+        errorLog << "train_(TimeSeriesClassificationData &labelledTrainingData) - Can't train model as there are no samples in training data!" << std::endl;
         return false;
     }
 
@@ -200,16 +198,16 @@ bool DTW::train_(TimeSeriesClassificationData &labelledTrainingData){
         //Set the kth class label
         classLabels[k] = classLabel;
         
-        trainingLog << "Training Template: " << k << " Class: " << classLabel << endl;
+        trainingLog << "Training Template: " << k << " Class: " << classLabel << std::endl;
 
 		//Check to make sure we actually have some training examples
 		if( numExamples < 1 ){
-            errorLog << "train_(TimeSeriesClassificationData &labelledTrainingData) - Can not train model: Num of Example is < 1! Class: " << classLabel << ". Turn off null rejection if you want to use DTW with only 1 training sample per class." << endl;
+            errorLog << "train_(TimeSeriesClassificationData &labelledTrainingData) - Can not train model: Num of Example is < 1! Class: " << classLabel << ". Turn off null rejection if you want to use DTW with only 1 training sample per class." << std::endl;
 			return false;
 		}
         
         if( numExamples == 1 && useNullRejection ){
-            errorLog << "train_(TimeSeriesClassificationData &labelledTrainingData) - Can not train model as there is only 1 example in class: " << classLabel << ". Turn off null rejection if you want to use DTW with only 1 training sample per class." << endl;
+            errorLog << "train_(TimeSeriesClassificationData &labelledTrainingData) - Can not train model as there is only 1 example in class: " << classLabel << ". Turn off null rejection if you want to use DTW with only 1 training sample per class." << std::endl;
 			return false;
 		}
 
@@ -219,7 +217,7 @@ bool DTW::train_(TimeSeriesClassificationData &labelledTrainingData){
 		}else{
             //Search for the best training example for this class
 			if( !train_NDDTW(classData,templatesBuffer[k],bestIndex) ){
-                errorLog << "train_(LabelledTimeSeriesClassificationData &labelledTrainingData) - Failed to train template for class with label: " << classLabel << endl;
+                errorLog << "train_(LabelledTimeSeriesClassificationData &labelledTrainingData) - Failed to train template for class with label: " << classLabel << std::endl;
                 return false;
             }
 		}
@@ -237,7 +235,7 @@ bool DTW::train_(TimeSeriesClassificationData &labelledTrainingData){
 				smoothData(classData[ bestIndex ].getData(),smoothingFactor,templatesBuffer[k].timeSeries);
 				break;
 			default:
-				cout<<"Can not train model: Unknown training method \n";
+				errorLog << "Can not train model: Unknown training method "  << std::endl;
 				return false;
 				break;
 		}
@@ -259,7 +257,7 @@ bool DTW::train_(TimeSeriesClassificationData &labelledTrainingData){
 
     //Resize the prediction results to make sure it is setup for realtime prediction
     continuousInputDataBuffer.clear();
-    continuousInputDataBuffer.resize(averageTemplateLength,vector<double>(numInputDimensions,0));
+    continuousInputDataBuffer.resize(averageTemplateLength,VectorFloat(numInputDimensions,0));
     classLikelihoods.resize(numTemplates,DEFAULT_NULL_LIKELIHOOD_VALUE);
     classDistances.resize(numTemplates,0);
     predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
@@ -272,14 +270,14 @@ bool DTW::train_(TimeSeriesClassificationData &labelledTrainingData){
 bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dtwTemplate,UINT &bestIndex){
 
    UINT numExamples = trainingData.getNumSamples();
-   VectorDouble results(numExamples,0.0);
-   MatrixDouble distanceResults(numExamples,numExamples);
+   VectorFloat results(numExamples,0.0);
+   MatrixFloat distanceResults(numExamples,numExamples);
    dtwTemplate.averageTemplateLength = 0;
     
    for(UINT m=0; m<numExamples; m++){
        
-	   MatrixDouble templateA; //The m'th template
-	   MatrixDouble templateB; //The n'th template
+	   MatrixFloat templateA; //The m'th template
+	   MatrixFloat templateB; //The n'th template
 	   dtwTemplate.averageTemplateLength += trainingData[m].getLength();
 
 	   //Smooth the data if required
@@ -301,11 +299,11 @@ bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dt
             }
 
 			//Compute the distance between the two time series
-            MatrixDouble distanceMatrix(templateA.getNumRows(),templateB.getNumRows());
-            vector< IndexDist > warpPath;
-			double dist = computeDistance(templateA,templateB,distanceMatrix,warpPath);
+            MatrixFloat distanceMatrix(templateA.getNumRows(),templateB.getNumRows());
+            Vector< IndexDist > warpPath;
+			float_t dist = computeDistance(templateA,templateB,distanceMatrix,warpPath);
             
-            trainingLog << "Template: " << m << " Timeseries: " << n << " Dist: " << dist << endl;
+            trainingLog << "Template: " << m << " Timeseries: " << n << " Dist: " << dist << std::endl;
 
 			//Update the results values
 			distanceResults[m][n] = dist;
@@ -317,7 +315,7 @@ bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dt
 	for(UINT m=0; m<numExamples; m++) results[m]/=(numExamples-1);
 	//Find the best average result, this is the result with the minimum value
 	bestIndex = 0;
-	double bestAverage = results[0];
+	float_t bestAverage = results[0];
 	for(UINT m=1; m<numExamples; m++){
 		if( results[m] < bestAverage ){
 			bestAverage = results[m];
@@ -336,27 +334,27 @@ bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dt
                 dtwTemplate.trainingSigma += SQR( distanceResults[ bestIndex ][n] - dtwTemplate.trainingMu );
             }
         }
-        dtwTemplate.trainingSigma = sqrt( dtwTemplate.trainingSigma / double(numExamples-2) );
+        dtwTemplate.trainingSigma = sqrt( dtwTemplate.trainingSigma / float_t(numExamples-2) );
     }else{
-        warningLog << "_train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dtwTemplate,UINT &bestIndex - There are not enough examples to compute the trainingMu and trainingSigma for the template for class " << dtwTemplate.classLabel << endl;
+        warningLog << "_train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dtwTemplate,UINT &bestIndex - There are not enough examples to compute the trainingMu and trainingSigma for the template for class " << dtwTemplate.classLabel << std::endl;
         dtwTemplate.trainingMu = 0.0;
         dtwTemplate.trainingSigma = 0.0;
     }
 
 	//Set the average length of the training examples
-	dtwTemplate.averageTemplateLength = (UINT) (dtwTemplate.averageTemplateLength/double(numExamples));
+	dtwTemplate.averageTemplateLength = (UINT) (dtwTemplate.averageTemplateLength/float_t(numExamples));
     
-    trainingLog << "AverageTemplateLength: " << dtwTemplate.averageTemplateLength << endl;
+    trainingLog << "AverageTemplateLength: " << dtwTemplate.averageTemplateLength << std::endl;
 
     //Flag that the training was successfull
 	return true;
 }
 
 
-bool DTW::predict_(MatrixDouble &inputTimeSeries){
+bool DTW::predict_(MatrixFloat &inputTimeSeries){
 
     if( !trained ){
-        errorLog << "predict_(MatrixDouble &inputTimeSeries) - The DTW templates have not been trained!" << endl;
+        errorLog << "predict_(MatrixFloat &inputTimeSeries) - The DTW templates have not been trained!" << std::endl;
         return false;
     }
 
@@ -371,14 +369,14 @@ bool DTW::predict_(MatrixDouble &inputTimeSeries){
     }
 
 	if( numInputDimensions != inputTimeSeries.getNumCols() ){
-        errorLog << "predict_(MatrixDouble &inputTimeSeries) - The number of features in the model (" << numInputDimensions << ") do not match that of the input time series (" << inputTimeSeries.getNumCols() << ")" << endl;
+        errorLog << "predict_(MatrixFloat &inputTimeSeries) - The number of features in the model (" << numInputDimensions << ") do not match that of the input time series (" << inputTimeSeries.getNumCols() << ")" << std::endl;
         return false;
     }
 
 	//Perform any preprocessing if requried
-    MatrixDouble *timeSeriesPtr = &inputTimeSeries;
-    MatrixDouble processedTimeSeries;
-    MatrixDouble tempMatrix;
+    MatrixFloat *timeSeriesPtr = &inputTimeSeries;
+    MatrixFloat processedTimeSeries;
+    MatrixFloat tempMatrix;
 	if(useScaling){
         scaleData(*timeSeriesPtr,processedTimeSeries);
         timeSeriesPtr = &processedTimeSeries;
@@ -402,7 +400,7 @@ bool DTW::predict_(MatrixDouble &inputTimeSeries){
     }
 
 	//Make the prediction by finding the closest template
-    double sum = 0;
+    float_t sum = 0;
     if( distanceMatrices.size() != numTemplates ) distanceMatrices.resize( numTemplates );
     if( warpPaths.size() != numTemplates ) warpPaths.resize( numTemplates );
     
@@ -454,7 +452,7 @@ bool DTW::predict_(MatrixDouble &inputTimeSeries){
                 else predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
                 break;
             default:
-                errorLog << "predict_(MatrixDouble &timeSeries) - Unknown RejectionMode!" << endl;
+                errorLog << "predict_(MatrixFloat &timeSeries) - Unknown RejectionMode!" << std::endl;
                 return false;
                 break;
         }
@@ -464,10 +462,10 @@ bool DTW::predict_(MatrixDouble &inputTimeSeries){
     return true;
 }
 
-bool DTW::predict_(VectorDouble &inputVector){
+bool DTW::predict_( VectorFloat &inputVector ){
 
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - The model has not been trained!" << endl;
+        errorLog << "predict_(VectorFloat &inputVector) - The model has not been trained!" << std::endl;
         return false;
     }
     predictedClassLabel = 0;
@@ -476,7 +474,7 @@ bool DTW::predict_(VectorDouble &inputVector){
     std::fill(classDistances.begin(),classDistances.end(),0);
 
 	if( numInputDimensions != inputVector.size() ){
-        errorLog << "predict_(VectorDouble &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.size() << endl;
+        errorLog << "predict_(VectorFloat &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input Vector " << inputVector.size() << std::endl;
         return false;
     }
 
@@ -491,7 +489,7 @@ bool DTW::predict_(VectorDouble &inputVector){
     //Copy the data into a temporary matrix
     const UINT M = continuousInputDataBuffer.getSize();
     const UINT N = numInputDimensions;
-    MatrixDouble predictionTimeSeries(M,N);
+    MatrixFloat predictionTimeSeries(M,N);
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<N; j++){
             predictionTimeSeries[i][j] = continuousInputDataBuffer[i][j];
@@ -506,7 +504,7 @@ bool DTW::predict_(VectorDouble &inputVector){
 bool DTW::reset(){
     continuousInputDataBuffer.clear();
     if( trained ){
-        continuousInputDataBuffer.resize(averageTemplateLength,vector<double>(numInputDimensions,0));
+        continuousInputDataBuffer.resize(averageTemplateLength,VectorFloat(numInputDimensions,0));
         recomputeNullRejectionThresholds();
     }
     return true;
@@ -541,7 +539,7 @@ bool DTW::recomputeNullRejectionThresholds(){
 	return true;
 }
 
-bool DTW::setModels( vector< DTWTemplate > newTemplates ){
+bool DTW::setModels( Vector< DTWTemplate > newTemplates ){
 	
 	if( newTemplates.size() == templatesBuffer.size() ){
 		templatesBuffer = newTemplates;
@@ -557,13 +555,13 @@ bool DTW::setModels( vector< DTWTemplate > newTemplates ){
 
 ////////////////////////// computeDistance ///////////////////////////////////////////
 
-double DTW::computeDistance(MatrixDouble &timeSeriesA,MatrixDouble &timeSeriesB,MatrixDouble &distanceMatrix,vector< IndexDist > &warpPath){
+float_t DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,MatrixFloat &distanceMatrix,Vector< IndexDist > &warpPath){
 
 	const int M = timeSeriesA.getNumRows();
 	const int N = timeSeriesB.getNumRows();
 	const int C = timeSeriesA.getNumCols();
 	int i,j,k,index = 0;
-	double totalDist,v,normFactor = 0.;
+	float_t totalDist,v,normFactor = 0.;
     
     warpPath.clear();
     if( int(distanceMatrix.getNumRows()) != M || int(distanceMatrix.getNumCols()) != N ){
@@ -605,20 +603,20 @@ double DTW::computeDistance(MatrixDouble &timeSeriesA,MatrixDouble &timeSeriesB,
 			}
 			break;
 		default:
-			errorLog<<"ERROR: Unknown distance method: "<<distanceMethod<<endl;
+			errorLog<<"ERROR: Unknown distance method: "<<distanceMethod<< std::endl;
 			return -1;
 			break;
 	}
 
     //Run the recursive search function to build the cost matrix
-    double distance = sqrt( d(M-1,N-1,distanceMatrix,M,N) );
+    float_t distance = sqrt( d(M-1,N-1,distanceMatrix,M,N) );
 
     if( grt_isinf(distance) || grt_isnan(distance) ){
-        warningLog << "DTW computeDistance(...) - Distance Matrix Values are INF!" << endl;
+        warningLog << "DTW computeDistance(...) - Distance Matrix Values are INF!" << std::endl;
         return INFINITY;
     }
     
-    //cout << "DIST: " << distance << endl;
+    //cout << "DIST: " << distance << std::endl;
 
     //The distMatrix values are negative so make them positive
     for(i=0; i<M; i++){
@@ -642,7 +640,7 @@ double DTW::computeDistance(MatrixDouble &timeSeriesA,MatrixDouble &timeSeriesB,
             if( j==0 ) i--;
             else{
                 //Find the minimum cell to move to
-                v = numeric_limits<double>::max();
+                v = grt_numeric_limits_max< float_t >();
                 index = 0;
                 if( distanceMatrix[i-1][j] < v ){ v = distanceMatrix[i-1][j]; index = 1; }
                 if( distanceMatrix[i][j-1] < v ){ v = distanceMatrix[i][j-1]; index = 2; }
@@ -659,7 +657,7 @@ double DTW::computeDistance(MatrixDouble &timeSeriesA,MatrixDouble &timeSeriesB,
                         j--;
                         break;
                     default:
-                        warningLog << "DTW computeDistance(...) - Could not compute a warping path for the input matrix! Dist: " << distanceMatrix[i-1][j] << " i: " << i << " j: " << j << endl;
+                        warningLog << "DTW computeDistance(...) - Could not compute a warping path for the input matrix! Dist: " << distanceMatrix[i-1][j] << " i: " << i << " j: " << j << std::endl;
                         return INFINITY;
                         break;
                 }
@@ -673,8 +671,9 @@ double DTW::computeDistance(MatrixDouble &timeSeriesA,MatrixDouble &timeSeriesB,
 	return totalDist/normFactor;
 }
 
-double DTW::d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N){
-    double dist = 0;
+float_t DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
+
+    float_t dist = 0;
     //The following is based on Matlab code by Eamonn Keogh and Michael Pazzani
     
     //If this cell is NAN then it has already been flagged as unreachable
@@ -683,10 +682,10 @@ double DTW::d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N){
     }
 
     if( constrainWarpingPath ){
-        double r = ceil( min(M,N)*radius );
+        float_t r = ceil( grt_min(M,N)*radius );
         //Test to see if the current cell is outside of the warping window
-        if( fabs( n-((N-1)/((M-1)/double(m))) ) > r ){
-            if( n-((N-1)/((M-1)/double(m))) > 0 ){
+        if( fabs( n-((N-1)/((M-1)/float_t(m))) ) > r ){
+            if( n-((N-1)/((M-1)/float_t(m))) > 0 ){
                 for(int i=0; i<m; i++){
                     for(int j=n; j<N; j++){
                         distanceMatrix[i][j] = NAN;
@@ -723,7 +722,7 @@ double DTW::d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N){
     //Case 2: we are somewhere in the top row of the matrix
     //Only need to consider moving left
     if( m == 0 ){
-        double contribDist = d(m,n-1,distanceMatrix,M,N);
+        float_t contribDist = d(m,n-1,distanceMatrix,M,N);
 
         dist = distanceMatrix[m][n] + contribDist;
 
@@ -733,7 +732,7 @@ double DTW::d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N){
         //Case 3: we are somewhere in the left column of the matrix
         //Only need to consider moving down
         if ( n == 0) {
-            double contribDist = d(m-1,n,distanceMatrix,M,N);
+            float_t contribDist = d(m-1,n,distanceMatrix,M,N);
 
             dist = distanceMatrix[m][n] + contribDist;
 
@@ -741,10 +740,10 @@ double DTW::d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N){
             return dist;
         }else{
             //Case 4: We are somewhere away from the edges so consider moving in the three main directions
-            double contribDist1 = d(m-1,n-1,distanceMatrix,M,N);
-            double contribDist2 = d(m-1,n,distanceMatrix,M,N);
-            double contribDist3 = d(m,n-1,distanceMatrix,M,N);
-            double minValue = numeric_limits<double>::max();
+            float_t contribDist1 = d(m-1,n-1,distanceMatrix,M,N);
+            float_t contribDist2 = d(m-1,n,distanceMatrix,M,N);
+            float_t contribDist3 = d(m,n-1,distanceMatrix,M,N);
+            float_t minValue = grt_numeric_limits_max< float_t >();
             int index = 0;
             if( contribDist1 < minValue ){ minValue = contribDist1; index = 1; }
 			if( contribDist2 < minValue ){ minValue = contribDist2; index = 2; }
@@ -774,8 +773,8 @@ double DTW::d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N){
     return dist;
 }
 
-inline double DTW::MIN_(double a,double b, double c){
-	double v = a;
+inline float_t DTW::MIN_(float_t a,float_t b, float_t c){
+	float_t v = a;
 	if(b<v) v = b;
 	if(c<v) v = c;
 	return v;
@@ -793,7 +792,7 @@ void DTW::scaleData(TimeSeriesClassificationData &trainingData){
 
 }
 
-void DTW::scaleData(MatrixDouble &data,MatrixDouble &scaledData){
+void DTW::scaleData(MatrixFloat &data,MatrixFloat &scaledData){
 
 	const UINT R = data.getNumRows();
 	const UINT C = data.getNumCols();
@@ -805,7 +804,7 @@ void DTW::scaleData(MatrixDouble &data,MatrixDouble &scaledData){
 	//Scale the data using the min and max values
 	for(UINT i=0; i<R; i++)
 		for(UINT j=0; j<C; j++)
-			scaledData[i][j] = scale(data[i][j],ranges[j].minValue,ranges[j].maxValue,0.0,1.0);
+			scaledData[i][j] = grt_scale(data[i][j],ranges[j].minValue,ranges[j].maxValue,0.0,1.0);
 
 }
 
@@ -817,7 +816,7 @@ void DTW::znormData(TimeSeriesClassificationData &trainingData){
 
 }
 
-void DTW::znormData(MatrixDouble &data,MatrixDouble &normData){
+void DTW::znormData(MatrixFloat &data,MatrixFloat &normData){
 
 	const UINT R = data.getNumRows();
 	const UINT C = data.getNumCols();
@@ -827,17 +826,17 @@ void DTW::znormData(MatrixDouble &data,MatrixDouble &normData){
     }
 
 	for(UINT j=0; j<C; j++){
-		double mean = 0.0;
-		double stdDev = 0.0;
+		float_t mean = 0.0;
+		float_t stdDev = 0.0;
 
 		//Calculate Mean
 		for(UINT i=0; i<R; i++) mean += data[i][j];
-		mean /= double(R);
+		mean /= float_t(R);
 
 		//Calculate Std Dev
 		for(UINT i=0; i<R; i++)
-			stdDev += SQR(data[i][j]-mean);
-		stdDev = sqrt( stdDev / (R - 1.0) );
+			stdDev += grt_sqr(data[i][j]-mean);
+		stdDev = grt_sqrt( stdDev / (R - 1.0) );
 
 		if(constrainZNorm && stdDev < 0.01){
 			//Normalize the data to 0 mean
@@ -851,10 +850,10 @@ void DTW::znormData(MatrixDouble &data,MatrixDouble &normData){
 	}
 }
 
-void DTW::smoothData(VectorDouble &data,UINT smoothFactor,VectorDouble &resultsData){
+void DTW::smoothData(VectorFloat &data,UINT smoothFactor,VectorFloat &resultsData){
 
 	const UINT M = (UINT)data.size();
-	const UINT N = (UINT) floor(double(M)/double(smoothFactor));
+	const UINT N = (UINT) floor(float_t(M)/float_t(smoothFactor));
 	resultsData.resize(N,0);
 	for(UINT i=0; i<N; i++) resultsData[i]=0.0;
 
@@ -864,7 +863,7 @@ void DTW::smoothData(VectorDouble &data,UINT smoothFactor,VectorDouble &resultsD
 	}
 
 	for(UINT i=0; i<N; i++){
-	    double mean = 0.0;
+	    float_t mean = 0.0;
 		UINT index = i*smoothFactor;
 		for(UINT x=0; x<smoothFactor; x++){
 			mean += data[index+x];
@@ -873,11 +872,11 @@ void DTW::smoothData(VectorDouble &data,UINT smoothFactor,VectorDouble &resultsD
 	}
 	//Add on the data that does not fit into the window
 	if(M%smoothFactor!=0.0){
-		double mean = 0.0;
+		float_t mean = 0.0;
 			for(UINT i=N*smoothFactor; i<M; i++) mean += data[i];
         mean/=M-(N*smoothFactor);
-		//Add one to the end of the vector
-		VectorDouble tempVector(N+1);
+		//Add one to the end of the Vector
+		VectorFloat tempVector(N+1);
 		for(UINT i=0; i<N; i++) tempVector[i] = resultsData[i];
 		tempVector[N] = mean;
 		resultsData = tempVector;
@@ -885,11 +884,11 @@ void DTW::smoothData(VectorDouble &data,UINT smoothFactor,VectorDouble &resultsD
 
 }
 
-void DTW::smoothData(MatrixDouble &data,UINT smoothFactor,MatrixDouble &resultsData){
+void DTW::smoothData(MatrixFloat &data,UINT smoothFactor,MatrixFloat &resultsData){
 
 	const UINT M = data.getNumRows();
 	const UINT C = data.getNumCols();
-	const UINT N = (UINT) floor(double(M)/double(smoothFactor));
+	const UINT N = (UINT) floor(float_t(M)/float_t(smoothFactor));
 	resultsData.resize(N,C);
 
 	if(smoothFactor==1 || M<smoothFactor){
@@ -899,7 +898,7 @@ void DTW::smoothData(MatrixDouble &data,UINT smoothFactor,MatrixDouble &resultsD
 
 	for(UINT i=0; i<N; i++){
 		for(UINT j=0; j<C; j++){
-	     double mean = 0.0;
+	     float_t mean = 0.0;
 		 int index = i*smoothFactor;
 		 for(UINT x=0; x<smoothFactor; x++){
 			mean += data[index+x][j];
@@ -910,14 +909,14 @@ void DTW::smoothData(MatrixDouble &data,UINT smoothFactor,MatrixDouble &resultsD
 
 	//Add on the data that does not fit into the window
 	if(M%smoothFactor!=0.0){
-		VectorDouble mean(C,0.0);
+		VectorFloat mean(C,0.0);
 		for(UINT j=0; j<C; j++){
 		 for(UINT i=N*smoothFactor; i<M; i++) mean[j] += data[i][j];
 		 mean[j]/=M-(N*smoothFactor);
 		}
 
 		//Add one row to the end of the Matrix
-		MatrixDouble tempMatrix(N+1,C);
+		MatrixFloat tempMatrix(N+1,C);
 
 		for(UINT i=0; i<N; i++)
 			for(UINT j=0; j<C; j++)
@@ -931,60 +930,60 @@ void DTW::smoothData(MatrixDouble &data,UINT smoothFactor,MatrixDouble &resultsD
 
 ////////////////////////////// SAVE & LOAD FUNCTIONS ////////////////////////////////
     
-bool DTW::saveModelToFile( fstream &file ) const{
+bool DTW::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open()){
-        errorLog << "saveModelToFile( string fileName ) - Could not open file to save data" << endl;
+        errorLog << "saveModelToFile( string fileName ) - Could not open file to save data" << std::endl;
         return false;
     }
     
-    file << "GRT_DTW_Model_File_V2.0" <<endl;
+    file << "GRT_DTW_Model_File_V2.0" << std::endl;
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
 		return false;
     }
     
     file << "DistanceMethod: ";
     switch(distanceMethod){
         case(ABSOLUTE_DIST):
-            file <<ABSOLUTE_DIST<<endl;
+            file <<ABSOLUTE_DIST<< std::endl;
             break;
         case(EUCLIDEAN_DIST):
-            file <<EUCLIDEAN_DIST<<endl;
+            file <<EUCLIDEAN_DIST<< std::endl;
             break;
         default:
-            file <<ABSOLUTE_DIST<<endl;
+            file <<ABSOLUTE_DIST<< std::endl;
             break;
     }
-    file << "UseSmoothing: "<<useSmoothing<<endl;
-    file << "SmoothingFactor: "<<smoothingFactor<<endl;
-    file << "UseZNormalisation: "<<useZNormalisation<<endl;
-    file << "OffsetUsingFirstSample: " << offsetUsingFirstSample << endl;
-    file << "ConstrainWarpingPath: " << constrainWarpingPath << endl;
-    file << "Radius: " << radius << endl;
-    file << "RejectionMode: " << rejectionMode<< endl;
+    file << "UseSmoothing: "<<useSmoothing<< std::endl;
+    file << "SmoothingFactor: "<<smoothingFactor<< std::endl;
+    file << "UseZNormalisation: "<<useZNormalisation<< std::endl;
+    file << "OffsetUsingFirstSample: " << offsetUsingFirstSample << std::endl;
+    file << "ConstrainWarpingPath: " << constrainWarpingPath << std::endl;
+    file << "Radius: " << radius << std::endl;
+    file << "RejectionMode: " << rejectionMode<< std::endl;
     
     if( trained ){
-        file << "NumberOfTemplates: " << numTemplates << endl;
-        file << "OverallAverageTemplateLength: " << averageTemplateLength << endl;
+        file << "NumberOfTemplates: " << numTemplates << std::endl;
+        file << "OverallAverageTemplateLength: " << averageTemplateLength << std::endl;
         //Save each template
         for(UINT i=0; i<numTemplates; i++){
-            file << "***************TEMPLATE***************" << endl;
-            file << "Template: " << i+1 << endl;
-            file << "ClassLabel: " << templatesBuffer[i].classLabel << endl;
-            file << "TimeSeriesLength: " << templatesBuffer[i].timeSeries.getNumRows() << endl;
-            file << "TemplateThreshold: " << nullRejectionThresholds[i] << endl;
-            file << "TrainingMu: " << templatesBuffer[i].trainingMu << endl;
-            file << "TrainingSigma: " << templatesBuffer[i].trainingSigma << endl;
-            file << "AverageTemplateLength: " << templatesBuffer[i].averageTemplateLength << endl;
-            file << "TimeSeries: " << endl;
+            file << "***************TEMPLATE***************" << std::endl;
+            file << "Template: " << i+1 << std::endl;
+            file << "ClassLabel: " << templatesBuffer[i].classLabel << std::endl;
+            file << "TimeSeriesLength: " << templatesBuffer[i].timeSeries.getNumRows() << std::endl;
+            file << "TemplateThreshold: " << nullRejectionThresholds[i] << std::endl;
+            file << "TrainingMu: " << templatesBuffer[i].trainingMu << std::endl;
+            file << "TrainingSigma: " << templatesBuffer[i].trainingSigma << std::endl;
+            file << "AverageTemplateLength: " << templatesBuffer[i].averageTemplateLength << std::endl;
+            file << "TimeSeries: " << std::endl;
             for(UINT k=0; k<templatesBuffer[i].timeSeries.getNumRows(); k++){
                 for(UINT j=0; j<templatesBuffer[i].timeSeries.getNumCols(); j++){
                     file << templatesBuffer[i].timeSeries[k][j] << "\t";
                 }
-                file << endl;
+                file << std::endl;
             }
         }
     }
@@ -992,7 +991,7 @@ bool DTW::saveModelToFile( fstream &file ) const{
     return true;
 }
 
-bool DTW::loadModelFromFile( fstream &file ){
+bool DTW::loadModelFromFile( std::fstream &file ){
     
     std::string word;
     UINT timeSeriesLength;
@@ -1000,7 +999,7 @@ bool DTW::loadModelFromFile( fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to open file!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to open file!" << std::endl;
         return false;
     }
     
@@ -1013,20 +1012,20 @@ bool DTW::loadModelFromFile( fstream &file ){
     
     //Check to make sure this is a file with the DTW File Format
     if(word != "GRT_DTW_Model_File_V2.0"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Unknown file header!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Unknown file header!" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     //Check and load the Distance Method
     file >> word;
     if(word != "DistanceMethod:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find DistanceMethod!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find DistanceMethod!" << std::endl;
         return false;
     }
     file >> distanceMethod;
@@ -1034,7 +1033,7 @@ bool DTW::loadModelFromFile( fstream &file ){
     //Check and load if Smoothing is used
     file >> word;
     if(word != "UseSmoothing:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseSmoothing!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseSmoothing!" << std::endl;
         return false;
     }
     file >> useSmoothing;
@@ -1042,7 +1041,7 @@ bool DTW::loadModelFromFile( fstream &file ){
     //Check and load what the smoothing factor is
     file >> word;
     if(word != "SmoothingFactor:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find SmoothingFactor!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find SmoothingFactor!" << std::endl;
         return false;
     }
     file >> smoothingFactor;
@@ -1050,7 +1049,7 @@ bool DTW::loadModelFromFile( fstream &file ){
     //Check and load if ZNormalization is used
     file >> word;
     if(word != "UseZNormalisation:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseZNormalisation!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseZNormalisation!" << std::endl;
         return false;
     }
     file >> useZNormalisation;
@@ -1058,7 +1057,7 @@ bool DTW::loadModelFromFile( fstream &file ){
     //Check and load if OffsetUsingFirstSample is used
     file >> word;
     if(word != "OffsetUsingFirstSample:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OffsetUsingFirstSample!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OffsetUsingFirstSample!" << std::endl;
         return false;
     }
     file >> offsetUsingFirstSample;
@@ -1066,7 +1065,7 @@ bool DTW::loadModelFromFile( fstream &file ){
     //Check and load if ConstrainWarpingPath is used
     file >> word;
     if(word != "ConstrainWarpingPath:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ConstrainWarpingPath!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ConstrainWarpingPath!" << std::endl;
         return false;
     }
     file >> constrainWarpingPath;
@@ -1074,7 +1073,7 @@ bool DTW::loadModelFromFile( fstream &file ){
     //Check and load if ZNormalization is used
     file >> word;
     if(word != "Radius:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Radius!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Radius!" << std::endl;
         return false;
     }
     file >> radius;
@@ -1082,7 +1081,7 @@ bool DTW::loadModelFromFile( fstream &file ){
     //Check and load if Scaling is used
     file >> word;
     if(word != "RejectionMode:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find RejectionMode!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find RejectionMode!" << std::endl;
         return false;
     }
     file >> rejectionMode;
@@ -1092,7 +1091,7 @@ bool DTW::loadModelFromFile( fstream &file ){
         //Check and load the Number of Templates
         file >> word;
         if(word != "NumberOfTemplates:"){
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfTemplates!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfTemplates!" << std::endl;
             return false;
         }
         file >> numTemplates;
@@ -1100,7 +1099,7 @@ bool DTW::loadModelFromFile( fstream &file ){
         //Check and load the overall average template length
         file >> word;
         if(word != "OverallAverageTemplateLength:"){
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OverallAverageTemplateLength!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OverallAverageTemplateLength!" << std::endl;
             return false;
         }
         file >> averageTemplateLength;
@@ -1116,7 +1115,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> word;
             if( word != "***************TEMPLATE***************" ){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template header!" << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template header!" << std::endl;
                 return false;
             }
             
@@ -1124,7 +1123,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> word;
             if(word != "Template:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Template Number!" << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Template Number!" << std::endl;
                 return false;
             }
             
@@ -1132,7 +1131,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> ts;
             if(ts!=i+1){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Invalid Template Number: " << ts << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Invalid Template Number: " << ts << std::endl;
                 return false;
             }
             
@@ -1140,7 +1139,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> word;
             if(word != "ClassLabel:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ClassLabel!" << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ClassLabel!" << std::endl;
                 return false;
             }
             file >> templatesBuffer[i].classLabel;
@@ -1150,7 +1149,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> word;
             if(word != "TimeSeriesLength:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TimeSeriesLength!" << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TimeSeriesLength!" << std::endl;
                 return false;
             }
             file >> timeSeriesLength;
@@ -1162,7 +1161,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> word;
             if(word != "TemplateThreshold:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TemplateThreshold!" << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TemplateThreshold!" << std::endl;
                 return false;
             }
             file >> nullRejectionThresholds[i];
@@ -1171,7 +1170,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> word;
             if(word != "TrainingMu:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingMu!" << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingMu!" << std::endl;
                 return false;
             }
             file >> templatesBuffer[i].trainingMu;
@@ -1180,7 +1179,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> word;
             if(word != "TrainingSigma:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingSigma!" << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingSigma!" << std::endl;
                 return false;
             }
             file >> templatesBuffer[i].trainingSigma;
@@ -1189,7 +1188,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> word;
             if(word != "AverageTemplateLength:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find AverageTemplateLength!" << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find AverageTemplateLength!" << std::endl;
                 return false;
             }
             file >> templatesBuffer[i].averageTemplateLength;
@@ -1198,7 +1197,7 @@ bool DTW::loadModelFromFile( fstream &file ){
             file >> word;
             if(word != "TimeSeries:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template timeseries!" << endl;
+                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template timeseries!" << std::endl;
                 return false;
             }
             for(UINT k=0; k<timeSeriesLength; k++)
@@ -1208,7 +1207,7 @@ bool DTW::loadModelFromFile( fstream &file ){
         
         //Resize the prediction results to make sure it is setup for realtime prediction
         continuousInputDataBuffer.clear();
-        continuousInputDataBuffer.resize(averageTemplateLength,vector<double>(numInputDimensions,0));
+        continuousInputDataBuffer.resize(averageTemplateLength,VectorFloat(numInputDimensions,0));
         maxLikelihood = DEFAULT_NULL_LIKELIHOOD_VALUE;
         bestDistance = DEFAULT_NULL_DISTANCE_VALUE;
         classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
@@ -1225,7 +1224,7 @@ bool DTW::setRejectionMode(UINT rejectionMode){
     return false;
 }
 
-bool DTW::setNullRejectionThreshold(double nullRejectionLikelihoodThreshold)
+bool DTW::setNullRejectionThreshold(float_t nullRejectionLikelihoodThreshold)
 {
 	this->nullRejectionLikelihoodThreshold = nullRejectionLikelihoodThreshold;
 	return true;
@@ -1241,7 +1240,7 @@ bool DTW::setContrainWarpingPath(bool constrain){
     return true;
 }
     
-bool DTW::setWarpingRadius(double radius){
+bool DTW::setWarpingRadius(float_t radius){
     this->radius = radius;
     return true;
 }
@@ -1252,14 +1251,14 @@ bool DTW::enableZNormalization(bool useZNormalisation,bool constrainZNorm){
 	return true; 
 }
 
-bool DTW::enableTrimTrainingData(bool trimTrainingData,double trimThreshold,double maximumTrimPercentage){
+bool DTW::enableTrimTrainingData(bool trimTrainingData,float_t trimThreshold,float_t maximumTrimPercentage){
 	
 	if( trimThreshold < 0 || trimThreshold > 1 ){
-		warningLog << "Failed to set trimTrainingData.  The trimThreshold must be in the range of [0 1]" << endl;
+		warningLog << "Failed to set trimTrainingData.  The trimThreshold must be in the range of [0 1]" << std::endl;
 		return false;
 	}
 	if( maximumTrimPercentage < 0 || maximumTrimPercentage > 100 ){
-		warningLog << "Failed to set trimTrainingData.  The maximumTrimPercentage must be a valid percentage in the range of [0 100]" << endl;
+		warningLog << "Failed to set trimTrainingData.  The maximumTrimPercentage must be a valid percentage in the range of [0 100]" << std::endl;
 		return false;
 	}
 	
@@ -1269,8 +1268,8 @@ bool DTW::enableTrimTrainingData(bool trimTrainingData,double trimThreshold,doub
 	return true;
 }
     
-void DTW::offsetTimeseries(MatrixDouble &timeseries){
-    VectorDouble firstRow = timeseries.getRowVector(0);
+void DTW::offsetTimeseries(MatrixFloat &timeseries){
+    VectorFloat firstRow = timeseries.getRow(0);
     for(UINT i=0; i<timeseries.getNumRows(); i++){
         for(UINT j=0; j<timeseries.getNumCols(); j++){
             timeseries[i][j] -= firstRow[j];
@@ -1278,16 +1277,16 @@ void DTW::offsetTimeseries(MatrixDouble &timeseries){
     }
 }
     
-bool DTW::loadLegacyModelFromFile( fstream &file ){
+bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     
-    string word;
+    std::string word;
     UINT timeSeriesLength;
     UINT ts;
     
     //Check and load the Number of Dimensions
     file >> word;
     if(word != "NumberOfDimensions:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfDimensions!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfDimensions!" << std::endl;
         return false;
     }
     file >> numInputDimensions;
@@ -1295,7 +1294,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load the Number of Classes
     file >> word;
     if(word != "NumberOfClasses:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfClasses!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfClasses!" << std::endl;
         return false;
     }
     file >> numClasses;
@@ -1303,7 +1302,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load the Number of Templates
     file >> word;
     if(word != "NumberOfTemplates:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfTemplates!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfTemplates!" << std::endl;
         return false;
     }
     file >> numTemplates;
@@ -1311,7 +1310,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load the Distance Method
     file >> word;
     if(word != "DistanceMethod:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find DistanceMethod!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find DistanceMethod!" << std::endl;
         return false;
     }
     file >> distanceMethod;
@@ -1319,7 +1318,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load if UseNullRejection is used
     file >> word;
     if(word != "UseNullRejection:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseNullRejection!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseNullRejection!" << std::endl;
         return false;
     }
     file >> useNullRejection;
@@ -1327,7 +1326,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load if Smoothing is used
     file >> word;
     if(word != "UseSmoothing:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseSmoothing!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseSmoothing!" << std::endl;
         return false;
     }
     file >> useSmoothing;
@@ -1335,7 +1334,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load what the smoothing factor is
     file >> word;
     if(word != "SmoothingFactor:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find SmoothingFactor!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find SmoothingFactor!" << std::endl;
         return false;
     }
     file >> smoothingFactor;
@@ -1343,7 +1342,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load if Scaling is used
     file >> word;
     if(word != "UseScaling:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseScaling!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseScaling!" << std::endl;
         return false;
     }
     file >> useScaling;
@@ -1351,7 +1350,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load if ZNormalization is used
     file >> word;
     if(word != "UseZNormalisation:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseZNormalisation!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseZNormalisation!" << std::endl;
         return false;
     }
     file >> useZNormalisation;
@@ -1359,7 +1358,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load if OffsetUsingFirstSample is used
     file >> word;
     if(word != "OffsetUsingFirstSample:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OffsetUsingFirstSample!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OffsetUsingFirstSample!" << std::endl;
         return false;
     }
     file >> offsetUsingFirstSample;
@@ -1367,7 +1366,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load if ConstrainWarpingPath is used
     file >> word;
     if(word != "ConstrainWarpingPath:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ConstrainWarpingPath!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ConstrainWarpingPath!" << std::endl;
         return false;
     }
     file >> constrainWarpingPath;
@@ -1375,7 +1374,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load if ZNormalization is used
     file >> word;
     if(word != "Radius:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Radius!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Radius!" << std::endl;
         return false;
     }
     file >> radius;
@@ -1383,7 +1382,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load if Scaling is used
     file >> word;
     if(word != "RejectionMode:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find RejectionMode!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find RejectionMode!" << std::endl;
         return false;
     }
     file >> rejectionMode;
@@ -1391,7 +1390,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load gamma
     file >> word;
     if(word != "NullRejectionCoeff:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NullRejectionCoeff!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NullRejectionCoeff!" << std::endl;
         return false;
     }
     file >> nullRejectionCoeff;
@@ -1399,7 +1398,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     //Check and load the overall average template length
     file >> word;
     if(word != "OverallAverageTemplateLength:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OverallAverageTemplateLength!" << endl;
+        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OverallAverageTemplateLength!" << std::endl;
         return false;
     }
     file >> averageTemplateLength;
@@ -1422,7 +1421,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
         if(ts!=i+1){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Invalid Template Number!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Invalid Template Number!" << std::endl;
             return false;
         }
         
@@ -1431,7 +1430,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
         if(word != "ClassLabel:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ClassLabel!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ClassLabel!" << std::endl;
             return false;
         }
         file >> templatesBuffer[i].classLabel;
@@ -1442,7 +1441,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
         if(word != "TimeSeriesLength:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TimeSeriesLength!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TimeSeriesLength!" << std::endl;
             return false;
         }
         file >> timeSeriesLength;
@@ -1455,7 +1454,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
         if(word != "TemplateThreshold:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TemplateThreshold!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TemplateThreshold!" << std::endl;
             return false;
         }
         file >> nullRejectionThresholds[i];
@@ -1465,7 +1464,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
         if(word != "TrainingMu:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingMu!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingMu!" << std::endl;
             return false;
         }
         file >> templatesBuffer[i].trainingMu;
@@ -1475,7 +1474,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
         if(word != "TrainingSigma:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingSigma!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingSigma!" << std::endl;
             return false;
         }
         file >> templatesBuffer[i].trainingSigma;
@@ -1485,7 +1484,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
         if(word != "AverageTemplateLength:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find AverageTemplateLength!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find AverageTemplateLength!" << std::endl;
             return false;
         }
         file >> templatesBuffer[i].averageTemplateLength;
@@ -1495,7 +1494,7 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
         if(word != "TimeSeries:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template timeseries!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template timeseries!" << std::endl;
             return false;
         }
         for(UINT k=0; k<timeSeriesLength; k++)
@@ -1509,14 +1508,14 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
             numClasses = 0;
             numInputDimensions=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template footer!" << endl;
+            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template footer!" << std::endl;
             return false;
         }
     }
     
     //Resize the prediction results to make sure it is setup for realtime prediction
     continuousInputDataBuffer.clear();
-    continuousInputDataBuffer.resize(averageTemplateLength,vector<double>(numInputDimensions,0));
+    continuousInputDataBuffer.resize(averageTemplateLength,VectorFloat(numInputDimensions,0));
     maxLikelihood = DEFAULT_NULL_LIKELIHOOD_VALUE;
     bestDistance = DEFAULT_NULL_DISTANCE_VALUE;
     classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
@@ -1527,4 +1526,4 @@ bool DTW::loadLegacyModelFromFile( fstream &file ){
     return true;
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE

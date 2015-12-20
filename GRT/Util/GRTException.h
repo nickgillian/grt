@@ -23,6 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <iostream>
 #include <exception>
+#include "GRTTypedefs.h"
 
 GRT_BEGIN_NAMESPACE
 

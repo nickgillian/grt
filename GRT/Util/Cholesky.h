@@ -29,7 +29,13 @@
 
 #ifndef GRT_CHOLESKY_HEADER
 #define GRT_CHOLESKY_HEADER
-#include "GRTCommon.h"
+
+#include "Log.h"
+#include "DebugLog.h"
+#include "ErrorLog.h"
+#include "WarningLog.h"
+#include "../DataStructures/VectorFloat.h"
+#include "../DataStructures/MatrixFloat.h"
 
 GRT_BEGIN_NAMESPACE
 

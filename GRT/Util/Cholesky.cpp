@@ -44,7 +44,7 @@ Cholesky::Cholesky(MatrixFloat &a) : N(a.getNumRows()), el(a) {
  	VectorFloat tmp;
 	float_t sum = 0;
 	if( el.getNumCols() != N ){
-        errorLog << "The input matrix is not square!" << endl;
+        errorLog << "The input matrix is not square!" << std::endl;
 		return;
 	}
 
@@ -54,7 +54,7 @@ Cholesky::Cholesky(MatrixFloat &a) : N(a.getNumRows()), el(a) {
 			for (sum=el[i][j],k=i-1;k>=0;k--) sum -= el[i][k]*el[j][k];
 			if (i == j) {
 				if (sum <= 0.0){
-					errorLog << "Sum is <=0.0" << endl;
+					errorLog << "Sum is <=0.0" << std::endl;
                     return;
 				}
 				el[i][i]=sqrt(sum);
@@ -74,7 +74,7 @@ bool Cholesky::solve(VectorFloat &b,VectorFloat &x) {
 	float_t sum;
 	
 	if (b.size() != N || x.size() != N){
-		errorLog << ":solve(vector<float_t> &b, vector<float_t> &x) - The input vectors are not the same size!" << endl;
+		errorLog << ":solve(vector<float_t> &b, vector<float_t> &x) - The input vectors are not the same size!" << std::endl;
 		return false;
 	}
 	for(i=0; i<n; i++) {
@@ -91,7 +91,7 @@ bool Cholesky::solve(VectorFloat &b,VectorFloat &x) {
 bool Cholesky::elmult(VectorFloat &y,VectorFloat &b){
 	unsigned int i,j;
 	if (b.size() != N || y.size() != N){
-		errorLog << "elmult(vector<float_t> &y vector<float_t> &b) - The input vectors are not the same size!" << endl;
+		errorLog << "elmult(vector<float_t> &y vector<float_t> &b) - The input vectors are not the same size!" << std::endl;
 		return false;
 	}
 	for (i=0;i<N;i++) {
@@ -106,7 +106,7 @@ bool Cholesky::elsolve(VectorFloat &b,VectorFloat &y){
 	float_t sum = 0;
 	
 	if (b.size() != N || y.size() != N){
-		errorLog << "elsolve(vector<float_t> &b vector<float_t> &y) - The input vectors are not the same size!" << endl;
+		errorLog << "elsolve(vector<float_t> &b vector<float_t> &y) - The input vectors are not the same size!" << std::endl;
 		return false;
 	}
 	for (i=0; i<N; i++) {

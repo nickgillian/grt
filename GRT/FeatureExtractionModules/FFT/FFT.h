@@ -51,7 +51,7 @@
 #include "../../CoreModules/FeatureExtraction.h"
 #include "FastFourierTransform.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class FFT : public FeatureExtraction
 {
@@ -60,21 +60,21 @@ public:
      Constructor, sets the fftWindowSize, hopSize, fftWindowFunction, if the magnitude and phase should be computed during the FFT and the number
      of dimensions in the input signal.
      
-     @param UINT fftWindowSize: sets the size of the fft, this should be a power of two. Default fftWindowSize=512
-     @param UINT hopSize: sets how often the fft should be computed. If the hopSize parameter is set to 1 then the FFT will be computed everytime
+     @param fftWindowSize: sets the size of the fft, this should be a power of two. Default fftWindowSize=512
+     @param hopSize: sets how often the fft should be computed. If the hopSize parameter is set to 1 then the FFT will be computed everytime
      the classes computeFeatures(...) or computeFFT(...) functions are called. You may not want to compute the FFT of the input signal for every
      sample however, if this is the case then set the hopSize parameter to N, in which case the FFT will only be computed every N samples on the previous M values, where M is equal to the fftWindowSize. Default hopSize=1
-     @param UINT numDimensions: the dimensionality of the input data to the FFT.  Default numDimensions = 1
-     @param UINT fftWindowFunction: sets the window function of the FFT. This should be one of the FFTWindowFunctionOptions enumeration values. Default windowFunction=RECTANGULAR_WINDOW
-     @param bool computeMagnitude: sets if the magnitude (and power) of the spectrum should be computed on the results of the FFT. Default computeMagnitude=true
-     @param bool computePhase: sets if the phase of the spectrum should be computed on the results of the FFT. Default computePhase=true
+     @param numDimensions: the dimensionality of the input data to the FFT.  Default numDimensions = 1
+     @param fftWindowFunction: sets the window function of the FFT. This should be one of the FFTWindowFunctionOptions enumeration values. Default windowFunction=RECTANGULAR_WINDOW
+     @param computeMagnitude: sets if the magnitude (and power) of the spectrum should be computed on the results of the FFT. Default computeMagnitude=true
+     @param computePhase: sets if the phase of the spectrum should be computed on the results of the FFT. Default computePhase=true
      */
 	FFT(UINT fftWindowSize=512,UINT hopSize=1,UINT numDimensions=1,UINT fftWindowFunction=RECTANGULAR_WINDOW,bool computeMagnitude=true,bool computePhase=true);
     
     /**
      Copy Constructor, copies the FFT from the rhs instance to this instance
      
-	 @param const FFT &rhs: another instance of the FFT class from which the data will be copied to this instance
+	 @param rhs: another instance of the FFT class from which the data will be copied to this instance
      */
     FFT(const FFT &rhs);
     
@@ -86,7 +86,7 @@ public:
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance
      
-	 @param const FFT &rhs: another instance of the FFT class from which the data will be copied to this instance
+	 @param rhs: another instance of the FFT class from which the data will be copied to this instance
 	 @return a reference to this instance of FFT
      */
     FFT& operator=(const FFT &rhs);
@@ -96,7 +96,7 @@ public:
      This function is used to deep copy the values from the input pointer to this instance of the FeatureExtraction module.
      This function is called by the GestureRecognitionPipeline when the user adds a new FeatureExtraction module to the pipeline.
      
-	 @param FeatureExtraction *featureExtraction: a pointer to another instance of an FFT, the values of that instance will be cloned to this instance
+	 @param featureExtraction: a pointer to another instance of an FFT, the values of that instance will be cloned to this instance
 	 @return true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const FeatureExtraction *featureExtraction);
@@ -106,10 +106,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function calls the FFT's computeFFT(...) function.
      
-	 @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+	 @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
 	 @return true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector);
 
     /**
      Sets the FeatureExtraction clear function, overwriting the base FeatureExtraction function.
@@ -133,33 +133,33 @@ public:
      This saves the feature extraction settings to a file.
      This overrides the saveSettingsToFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads the feature extraction settings from a file.
      This overrides the loadSettingsFromFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      Initializes the FFT. 
      Should be called before calling the computeFFT(...) or computeFeatures(...) methods.
      This function is automatically called by the constructor.
      
-     @param UINT fftWindowSize: sets the size of the fft, this must be a power of two
-     @param UINT hopSize: sets how often the fft should be computed. If the hopSize parameter is set to 1 then the FFT will be computed everytime
+     @param fftWindowSize: sets the size of the fft, this must be a power of two
+     @param hopSize: sets how often the fft should be computed. If the hopSize parameter is set to 1 then the FFT will be computed everytime
      the classes computeFeatures(...) or computeFFT(...) functions are called. You may not want to compute the FFT of the input signal for every
      sample however, if this is the case then set the hopSize parameter to N, in which case the FFT will only be computed every N samples on the previous M values, where M is equal to the fftWindowSize
-     @param UINT numDimensions: the dimensionality of the input data to the FFT
-     @param UINT windowFunction: sets the window function of the FFT. This should be one of the WindowFunctionOptions enumeration values
-     @param bool computeMagnitude: sets if the magnitude (and power) of the spectrum should be computed on the results of the FFT
-     @param bool computePhase: sets if the phase of the spectrum should be computed on the results of the FFT
+     @param numDimensions: the dimensionality of the input data to the FFT
+     @param windowFunction: sets the window function of the FFT. This should be one of the WindowFunctionOptions enumeration values
+     @param computeMagnitude: sets if the magnitude (and power) of the spectrum should be computed on the results of the FFT
+     @param computePhase: sets if the phase of the spectrum should be computed on the results of the FFT
 	 @return true if the FTT was initialized, false otherwise
      */   
     bool init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT windowFunction,bool computeMagnitude,bool computePhase);
@@ -169,20 +169,20 @@ public:
      The FFT of the input will only be computed if the current hop counter value matches the hopSize.
      This function should only be used if the dimensionality of the FFT has been set to 1.
      
-     @param const double x: the new sample, this will be added to a buffer and the FFT will be computed for the data in the buffer
+     @param x: the new sample, this will be added to a buffer and the FFT will be computed for the data in the buffer
 	 @return true if the FTT was updated successfully, false otherwise
      */   
-    bool update(const double x);
+    bool update(const float_t x);
     
     /**
      Computes the FFT of the previous M input samples, where M is the size of the fft window set by the constructor.
      The FFT of the input will only be computed if the current hop counter value matches the hopSize.
      The dimensionality of the input vector must match the number of dimensions for the FFT.
      
-     @param const VectorDouble &x: the new N-dimensional sample, this will be added to a buffer and the FFT will be computed for the data in the buffer
+     @param x: the new N-dimensional sample, this will be added to a buffer and the FFT will be computed for the data in the buffer
 	 @return true if the FTT was updated successfully, false otherwise
      */   
-    bool update(const VectorDouble &x);
+    bool update(const VectorFloat &x);
     
     /**
      Returns the current hopSize.
@@ -238,16 +238,16 @@ public:
      
 	 @return returns a vector of FastFourierTransform (where the size of the vector is equal to the number of input dimensions for the FFT).  An empty vector will be returned if the FFT was not computed
      */
-    vector< FastFourierTransform > getFFTResults(){ return fft; }
+    Vector< FastFourierTransform > getFFTResults(){ return fft; }
     
     /**
      Returns a pointer to the FFT results computed from the last FFT of the input signal.
      
 	 @return returns a pointer to the vector of FastFourierTransform (where the size of the vector is equal to the number of input dimensions for the FFT).  An empty vector will be returned if the FFT was not computed
      */
-    vector< FastFourierTransform >& getFFTResultsPtr(){ return fft; }
+    Vector< FastFourierTransform >& getFFTResultsPtr(){ return fft; }
     
-    VectorDouble getFrequencyBins(const unsigned int sampleRate);
+    VectorFloat getFrequencyBins(const unsigned int sampleRate);
     
     /**
      Sets the hopSize parameter, this sets how often the fft should be computed. 
@@ -256,7 +256,7 @@ public:
      The hopSize must be greater than zero.
      Setting the hopSize will also reset the hop counter.
      
-     @param UINT hopSize: the new hopSize parameter, must be greater than zero
+     @param hopSize: the new hopSize parameter, must be greater than zero
 	 @return returns true if the hopSize parameter was successfully updated, false otherwise
      */
     bool setHopSize(UINT hopSize);
@@ -265,7 +265,7 @@ public:
      Sets the fftWindowSize parameter, this sets the size of the fft, this must be a power of two.
      Setting this value will also re-initialize the FFT.
      
-     @param UINT fftWindowSize: the new fftWindowSize parameter, this must be a power of two.
+     @param fftWindowSize: the new fftWindowSize parameter, this must be a power of two.
 	 @return returns true if the fftWindowSize parameter was successfully updated, false otherwise
      */
     bool setFFTWindowSize(UINT fftWindowSize);
@@ -273,7 +273,7 @@ public:
     /**
      Sets the fftWindowFunction parameter, this should be one of the FFTWindowFunctionOptions enumeration values.
      
-     @param UINT fftWindowFunction: the new fftWindowFunction parameter, must be one of the FFTWindowFunctionOptions enumeration values
+     @param fftWindowFunction: the new fftWindowFunction parameter, must be one of the FFTWindowFunctionOptions enumeration values
 	 @return returns true if the fftWindowFunction parameter was successfully updated, false otherwise
      */
     bool setFFTWindowFunction(UINT fftWindowFunction);
@@ -281,7 +281,7 @@ public:
     /**
      Sets if the magnitude (and power) of the FFT spectrum should be computed.
      
-     @param bool computeMagnitude: the new computeMagnitude parameter
+     @param computeMagnitude: the new computeMagnitude parameter
 	 @return returns true if the computeMagnitude parameter was successfully updated, false otherwise
      */
     bool setComputeMagnitude(bool computeMagnitude);
@@ -289,7 +289,7 @@ public:
     /**
      Sets if the phase of the FFT spectrum should be computed.
      
-     @param bool computePhase: the new computeMagnitude parameter
+     @param computePhase: the new computeMagnitude parameter
 	 @return returns true if the computePhase parameter was successfully updated, false otherwise
      */
     bool setComputePhase(bool computePhase);
@@ -308,9 +308,9 @@ protected:
     UINT hopCounter;                                            ///< Keeps track of how many input samples the FFT has seen
     bool computeMagnitude;                                      ///< Tracks if the magnitude (and power) of the FFT need to be computed
     bool computePhase;                                          ///< Tracks if the phase of the FFT needs to be computed
-    GRT::VectorDouble tempBuffer;                               ///< A temporary buffer used to store the input data for the FFT
-    CircularBuffer< VectorDouble > dataBuffer;                  ///< A circular buffer used to store the previous M inputs
-    vector< FastFourierTransform > fft;                         ///< A buffer used to store the FFT results
+    VectorFloat tempBuffer;                                     ///< A temporary buffer used to store the input data for the FFT
+    CircularBuffer< VectorFloat > dataBuffer;                  ///< A circular buffer used to store the previous M inputs
+    Vector< FastFourierTransform > fft;                         ///< A buffer used to store the FFT results
     std::map< unsigned int, unsigned int > windowSizeMap;       ///< A map to relate the FFTWindowSize enumerations to actual values
     
     static RegisterFeatureExtractionModule< FFT > registerModule;
@@ -319,6 +319,6 @@ public:
     enum FFTWindowFunctionOptions{RECTANGULAR_WINDOW=0,BARTLETT_WINDOW,HAMMING_WINDOW,HANNING_WINDOW};
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_FFT_HEADER

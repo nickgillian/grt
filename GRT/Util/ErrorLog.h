@@ -21,10 +21,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRT_ERROR_LOG_HEADER
 #define GRT_ERROR_LOG_HEADER
 
-#include "Log.h"
 #include "ObserverManager.h"
+#include "Log.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class ErrorLogMessage{
 public:
@@ -48,7 +48,7 @@ public:
     std::string message;
 };
     
-class ErrorLog : public Log{
+class ErrorLog : public Log {
 public:
     ErrorLog(std::string proceedingText = ""){
         setProceedingText(proceedingText);
@@ -88,6 +88,6 @@ protected:
     static bool errorLoggingEnabled;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_ERROR_LOG_HEADER

@@ -37,7 +37,7 @@
 
 #include "DecisionTreeNode.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class DecisionTreeThresholdNode : public DecisionTreeNode{
 public:
@@ -58,10 +58,10 @@ public:
      NOTE: The threshold and featureIndex should be set first BEFORE this function is called. The threshold and featureIndex can be set by
      training the node through the DecisionTree class.
      
-     @param const VectorDouble &x: the input vector that will be used for the prediction
+     @param const VectorFloat &x: the input vector that will be used for the prediction
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorDouble &x);
+    virtual bool predict(const VectorFloat &x);
     
     /**
      This functions cleans up any dynamic memory assigned by the node.
@@ -83,10 +83,10 @@ public:
      This function adds the current model to the formatted stream.
      This function should be overwritten by the derived class.
      
-     @param ostream &file: a reference to the stream the model will be added to
+     @param file: a reference to the stream the model will be added to
      @return returns true if the model was added successfully, false otherwise
      */
-    virtual bool getModel(ostream &stream) const;
+    virtual bool getModel( std::ostream &stream ) const;
     
     /**
      This function returns a deep copy of the DecisionTreeThresholdNode and all it's children.
@@ -115,49 +115,49 @@ public:
      
      @return returns the threshold
      */
-    double getThreshold() const;
+    float_t getThreshold() const;
     
     /**
      This function sets the Decision Tree Threshold Node.
      
-     @param const UINT nodeSize: sets the node size, this is the number of training samples at that node
-     @param const UINT featureIndex: sets the index of the feature that should be used for the threshold spilt
-     @param const double threshold: set the threshold value used for the spilt
-     @param const VectorDouble &classProbabilities: the vector of class probabilities at this node
+     @param nodeSize: sets the node size, this is the number of training samples at that node
+     @param featureIndex: sets the index of the feature that should be used for the threshold spilt
+     @param threshold: set the threshold value used for the spilt
+     @param classProbabilities: the vector of class probabilities at this node
      @return returns true if the node was set, false otherwise
      */
-    bool set(const UINT nodeSize,const UINT featureIndex,const double threshold,const VectorDouble &classProbabilities);
+    bool set(const UINT nodeSize,const UINT featureIndex,const float_t threshold,const VectorFloat &classProbabilities);
     
 protected:
     
-    virtual bool computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError );
+    virtual bool computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError );
     
-    virtual bool computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError );
+    virtual bool computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError );
     
     /**
      This saves the DecisionTreeNode custom parameters to a file. It will be called automatically by the Node base class
      if the saveToFile function is called.
      
-     @param fstream &file: a reference to the file the parameters will be saved to
+     @param file: a reference to the file the parameters will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveParametersToFile(fstream &file) const;
+    virtual bool saveParametersToFile( std::fstream &file ) const;
     
     /**
      This loads the Decision Tree Node parameters from a file.
      
-     @param fstream &file: a reference to the file the parameters will be loaded from
+     @param file: a reference to the file the parameters will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadParametersFromFile(fstream &file);
+    virtual bool loadParametersFromFile( std::fstream &file );
     
     UINT featureIndex;
-    double threshold;
+    float_t threshold;
     
     static RegisterNode< DecisionTreeThresholdNode > registerModule;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_DECISION_TREE_THRESHOLD_NODE_HEADER
 

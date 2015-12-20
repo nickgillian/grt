@@ -35,7 +35,7 @@
 #include "../../Util/GRTCommon.h"
 #include "../../CoreModules/MLBase.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 //This class is used for the HMM batch training
 class HMMTrainingObject{
@@ -44,10 +44,10 @@ public:
 		pk = 0.0;
 	}
 	~HMMTrainingObject(){}
-	MatrixDouble alpha;     //The forward estimate matrix
-	MatrixDouble beta;      //The backward estimate matrix
-	VectorDouble c;         //The scaling coefficient vector
-	double pk;				//P( O | Model )
+	MatrixFloat alpha;     //The forward estimate matrix
+	MatrixFloat beta;      //The backward estimate matrix
+	VectorFloat c;         //The scaling coefficient Vector
+	float_t pk;				//P( O | Model )
 };
 
 class DiscreteHiddenMarkovModel : public MLBase {
@@ -57,60 +57,60 @@ public:
 
 	DiscreteHiddenMarkovModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta);
     
-	DiscreteHiddenMarkovModel(const MatrixDouble &a,const MatrixDouble &b,const VectorDouble &pi,const UINT modelType,const UINT delta);
+	DiscreteHiddenMarkovModel(const MatrixFloat &a,const MatrixFloat &b,const VectorFloat &pi,const UINT modelType,const UINT delta);
     
     DiscreteHiddenMarkovModel(const DiscreteHiddenMarkovModel &rhs);
     
     virtual ~DiscreteHiddenMarkovModel();
     
-    double predict(const UINT newSample);
-    double predict(const vector<UINT> &obs);
+    float_t predict(const UINT newSample);
+    float_t predict(const Vector<UINT> &obs);
     
     bool resetModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta);
-    bool train(const vector< vector<UINT> > &trainingData);
+    bool train(const Vector< Vector<UINT> > &trainingData);
     
     virtual bool reset();
     
     /**
      This saves the trained model to a file.
      
-     @param fstream &file: a reference to the file the model will be saved to
+     @param file: a reference to the file the model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained model from a file.
      
-     @param fstream &file: a reference to the file the model will be loaded from
+     @param file: a reference to the file the model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
 
     bool randomizeMatrices(const UINT numStates,const UINT numSymbols);
-	double predictLogLikelihood(const vector<UINT> &obs);
-	bool forwardBackward(HMMTrainingObject &trainingObject,const vector<UINT> &obs);
-    bool train_(const vector< vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,double &newLoglikelihood);
+	float_t predictLogLikelihood(const Vector<UINT> &obs);
+	bool forwardBackward(HMMTrainingObject &trainingObject,const Vector<UINT> &obs);
+    bool train_(const Vector< Vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,float_t &newLoglikelihood);
     virtual bool print() const;
     
-    VectorDouble getTrainingIterationLog() const;
+    VectorFloat getTrainingIterationLog() const;
     
 	UINT numStates;             //The number of states for this model
 	UINT numSymbols;            //The number of symbols for this model
-	MatrixDouble a;             //The transitions probability matrix
-	MatrixDouble b;             //The emissions probability matrix
-	VectorDouble pi;            //The state start probability vector
-    VectorDouble trainingIterationLog;   //Stores the loglikelihood at each iteration the BaumWelch algorithm
+	MatrixFloat a;             //The transitions probability matrix
+	MatrixFloat b;             //The emissions probability matrix
+	VectorFloat pi;            //The state start probability Vector
+    VectorFloat trainingIterationLog;   //Stores the loglikelihood at each iteration the BaumWelch algorithm
 
 	UINT modelType;
 	UINT delta;				//The number of states a model can move to in a LeftRight model
 	UINT numRandomTrainingIterations;		//The number of training loops to find the best starting values
-	double logLikelihood;	//The log likelihood of an observation sequence given the modal, calculated by the forward method
-	double cThreshold;		//The classification threshold for this model
+	float_t logLikelihood;	//The log likelihood of an observation sequence given the modal, calculated by the forward method
+	float_t cThreshold;		//The classification threshold for this model
     CircularBuffer<UINT> observationSequence;
-    vector< UINT > estimatedStates;
+    Vector< UINT > estimatedStates;
 };
 
-}//end of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_HIDDEN_MARKOV_MODEL_HEADER

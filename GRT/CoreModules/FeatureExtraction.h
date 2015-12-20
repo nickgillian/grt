@@ -33,7 +33,7 @@
 
 #include "MLBase.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class FeatureExtraction : public MLBase
 {
@@ -51,7 +51,7 @@ public:
     /**
      This is the base deepCopyFrom function for the FeatureExtraction modules. This function should be overwritten by the derived class.
      
-     @param const FeatureExtraction *featureExtraction: a pointer to the FeatureExtraction base class, this should be pointing to another instance of a matching derived class
+     @param featureExtraction: a pointer to the FeatureExtraction base class, this should be pointing to another instance of a matching derived class
      @return returns true if the deep copy was successfull, false otherwise (the FeatureExtraction base class will always return flase)
      */
     virtual bool deepCopyFrom(const FeatureExtraction *rhs){ return false; };
@@ -59,7 +59,7 @@ public:
     /**
      This copies the FeatureExtraction variables from featureExtractionModule to the instance that calls the function.
      
-     @param const FeatureExtraction *featureExtractionModule: a pointer to a feature extraction module from which the values will be copied
+     @param featureExtractionModule: a pointer to a feature extraction module from which the values will be copied
      @return returns true if the copy was successfull, false otherwise
      */
     bool copyBaseVariables(const FeatureExtraction *featureExtractionModule);
@@ -68,7 +68,7 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This function should be overwritten by the derived class.
      
-     @param const VectorFloat &inputVector: the inputVector that should be processed
+     @param inputVector: the inputVector that should be processed
      @return returns true if the data was processed, false otherwise (the base class always returns false)
      */
     virtual bool computeFeatures(const VectorFloat &inputVector){ return false; }
@@ -92,26 +92,26 @@ public:
      This saves the feature extraction settings to a file.
      This function should be overwritten by the derived class.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise (the base class always returns false)
      */
-    virtual bool saveModelToFile(fstream &file) const{ return false; }
+    virtual bool saveModelToFile( std::fstream &file ) const{ return false; }
     
     /**
      This loads the feature extraction settings from a file.
      This function should be overwritten by the derived class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise (the base class always returns false)
      */
-    virtual bool loadModelFromFile(fstream &file){ return false; }
+    virtual bool loadModelFromFile( std::fstream &file ){ return false; }
 	
     /**
      Returns the feature extraction type as a string.
      
      @return returns the feature extraction type as a string
      */
-    string getFeatureExtractionType() const;
+    std::string getFeatureExtractionType() const;
     
     /**
      Returns the size of the input vector expected by the feature extraction module.
@@ -151,15 +151,15 @@ public:
     /**
      Defines a map between a string (which will contain the name of the featureExtraction module, such as FFT) and a function returns a new instance of that featureExtraction
      */
-    typedef std::map< string, FeatureExtraction*(*)() > StringFeatureExtractionMap;
+    typedef std::map< std::string, FeatureExtraction*(*)() > StringFeatureExtractionMap;
     
     /*
      Creates a new feature extraction instance based on the input string (which should contain the name of a valid feature extraction such as FFT).
     
-    @param string const &featureExtractionType: the name of the feature extraction module
+    @param featureExtractionType: the name of the feature extraction module
     @return FeatureExtraction*: a pointer to the new instance of the feature extraction
     */
-    static FeatureExtraction* createInstanceFromString(string const &featureExtractionType);
+    static FeatureExtraction* createInstanceFromString( const std::string &featureExtractionType );
     
     /**
      Creates a new feature extraction instance based on the current featureExtractionType string value.
@@ -184,16 +184,16 @@ protected:
      
      @return returns true if the base settings were saved, false otherwise
      */
-    bool saveFeatureExtractionSettingsToFile(fstream &file) const;
+    bool saveFeatureExtractionSettingsToFile( std::fstream &file ) const;
     
     /**
      Loads the core base settings from a file.
      
      @return returns true if the base settings were loaded, false otherwise
      */
-    bool loadFeatureExtractionSettingsFromFile(fstream &file);
+    bool loadFeatureExtractionSettingsFromFile( std::fstream &file );
 
-    string featureExtractionType;
+    std::string featureExtractionType;
     bool initialized;
     bool featureDataReady;
     VectorFloat featureVector;
@@ -215,11 +215,11 @@ template< typename T >  FeatureExtraction *newFeatureExtractionModuleInstance() 
 template< typename T > 
 class RegisterFeatureExtractionModule : FeatureExtraction { 
 public:
-    RegisterFeatureExtractionModule(string const &newFeatureExtractionModuleName) { 
-        getMap()->insert( std::pair<string, FeatureExtraction*(*)()>(newFeatureExtractionModuleName, &newFeatureExtractionModuleInstance< T > ) );
+    RegisterFeatureExtractionModule( const std::string &newFeatureExtractionModuleName ) { 
+        getMap()->insert( std::pair< std::string, FeatureExtraction*(*)()>(newFeatureExtractionModuleName, &newFeatureExtractionModuleInstance< T > ) );
     }
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_FEATURE_EXTRACTION_HEADER

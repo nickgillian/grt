@@ -15,6 +15,8 @@
 //Include the GRTVersionInfo header to find which operating system we are building for
 #include "GRTVersionInfo.h"
 #include "GRTTypedefs.h"
+#include "../DataStructures/VectorFloat.h"
+#include "../DataStructures/MatrixFloat.h"
 
 #ifdef __GRT_WINDOWS_BUILD__
 //Include any Windows specific headers
@@ -38,7 +40,7 @@
 #include <dirent.h>
 #endif
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class Util{
 public:
@@ -397,6 +399,6 @@ public:
 
 };
     
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif // GRT_UTIL_HEADER

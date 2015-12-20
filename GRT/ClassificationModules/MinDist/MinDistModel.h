@@ -32,7 +32,7 @@
 #include "../../Util/GRTCommon.h"
 #include "../../ClusteringModules/KMeans/KMeans.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class MinDistModel
 {
@@ -61,40 +61,40 @@ public:
      */
 	MinDistModel &operator=(const MinDistModel &rhs);
 	
-	bool train(UINT classLabel,MatrixDouble &trainingData,UINT numClusters,double minChange,UINT maxNumEpochs);
-	double predict(const VectorDouble &observation);
+	bool train(UINT classLabel,MatrixFloat &trainingData,UINT numClusters,float_t minChange,UINT maxNumEpochs);
+	float_t predict(const VectorFloat &observation);
 	void recomputeThresholdValue();
 	
 	UINT getClassLabel() const;
 	UINT getNumFeatures() const;
 	UINT getNumClusters() const;
 	UINT getDistanceMode() const;
-    double getRejectionThreshold() const;
-    double getGamma() const;
-    double getTrainingMu() const;
-    double getTrainingSigma() const;
-    MatrixDouble getClusters() const;
+    float_t getRejectionThreshold() const;
+    float_t getGamma() const;
+    float_t getTrainingMu() const;
+    float_t getTrainingSigma() const;
+    MatrixFloat getClusters() const;
     
     bool setClassLabel(UINT classLabel);
-    bool setClusters(MatrixDouble &clusters);
-    bool setGamma(double gamma);
-    bool setRejectionThreshold(double rejectionThreshold);
-    bool setTrainingSigma(double trainingSigma);
-    bool setTrainingMu(double trainingMu);
+    bool setClusters(MatrixFloat &clusters);
+    bool setGamma(float_t gamma);
+    bool setRejectionThreshold(float_t rejectionThreshold);
+    bool setTrainingSigma(float_t trainingSigma);
+    bool setTrainingMu(float_t trainingMu);
     
 private:
-    double SQR(double x){ return x*x; }
+    float_t SQR(float_t x){ return x*x; }
 	UINT classLabel;
 	UINT numFeatures;
 	UINT numClusters;
-	double rejectionThreshold;			//The classification threshold value
-	double gamma;				//The number of standard deviations to use for the threshold
-	double trainingMu;			//The average confidence value in the training data
-	double trainingSigma;		//The simga confidence value in the training data
-	MatrixDouble clusters;
+	float_t rejectionThreshold;			//The classification threshold value
+	float_t gamma;				//The number of standard deviations to use for the threshold
+	float_t trainingMu;			//The average confidence value in the training data
+	float_t trainingSigma;		//The simga confidence value in the training data
+	MatrixFloat clusters;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_MINDISTMODEL_HEADER
 

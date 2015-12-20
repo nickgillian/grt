@@ -32,7 +32,7 @@
 
 #include "../../CoreModules/Clusterer.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 class GaussianMixtureModels : public Clusterer
 {
@@ -40,12 +40,12 @@ public:
     /**
      Default Constructor.
      */
-	GaussianMixtureModels(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const double minChange=1.0e-5);
+	GaussianMixtureModels(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const float_t minChange=1.0e-5);
     
     /**
      Defines how the data from the rhs instance should be copied to this instance
      
-     @param const GaussianMixtureModels &rhs: another instance of a GaussianMixtureModels
+     @param rhs: another instance of a GaussianMixtureModels
      */
     GaussianMixtureModels(const GaussianMixtureModels &rhs);
     
@@ -57,7 +57,7 @@ public:
     /**
      Defines how the data from the rhs instance should be copied to this instance
      
-     @param const GaussianMixtureModels &rhs: another instance of a GaussianMixtureModels
+     @param rhs: another instance of a GaussianMixtureModels
      @return returns a reference to this instance of the GaussianMixtureModels
      */
     GaussianMixtureModels &operator=(const GaussianMixtureModels &rhs);
@@ -66,7 +66,7 @@ public:
      This deep copies the variables and models from the Clusterer pointer to this GaussianMixtureModels instance.
      This overrides the base deep copy function for the Clusterer modules.
      
-     @param const Clusterer *clusterer: a pointer to the Clusterer base class, this should be pointing to another GaussianMixtureModels instance
+     @param clusterer: a pointer to the Clusterer base class, this should be pointing to another GaussianMixtureModels instance
      @return returns true if the clone was successfull, false otherwise
      */
     virtual bool deepCopyFrom(const Clusterer *clusterer);
@@ -87,17 +87,17 @@ public:
     virtual bool clear();
     
     /**
-     This is the main training interface for referenced MatrixDouble data. It overrides the train_ function in the ML base class.
+     This is the main training interface for referenced MatrixFloat data. It overrides the train_ function in the ML base class.
      
-     @param MatrixDouble &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
-    virtual bool train_(MatrixDouble &data);
+    virtual bool train_(MatrixFloat &trainingData);
     
     /**
      This is the main training interface for reference ClassificationData data. It overrides the train_ function in the ML base class.
      
-     @param ClassificationData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
     virtual bool train_(ClassificationData &trainingData);
@@ -105,7 +105,7 @@ public:
     /**
      This is the main training interface for reference UnlabelledData data. It overrides the train_ function in the ML base class.
      
-     @param UnlabelledData &trainingData: a reference to the training data that will be used to train the ML model
+     @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
 	virtual bool train_(UnlabelledData &trainingData);
@@ -120,7 +120,7 @@ public:
      @param fstream &file: a reference to the file the GaussianMixtureModels model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained GaussianMixtureModels model from a file.
@@ -129,39 +129,39 @@ public:
      @param fstream &file: a reference to the file the GaussianMixtureModels model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      This function returns the mu matrix which is built during the training phase.
-     If the GMM model has not been trained, then this function will return an empty MatrixDouble.
+     If the GMM model has not been trained, then this function will return an empty MatrixFloat.
      If the GMM model has been trained, then each row in the mu matrix represents a cluster and each column represents an input dimension.
      
-     @return returns the mu matrix if the model has been trained, otherwise an empty MatrixDouble will be returned
+     @return returns the mu matrix if the model has been trained, otherwise an empty MatrixFloat will be returned
      */
-    MatrixDouble getMu() const { if( trained ){ return mu; } return MatrixDouble(); }
+    MatrixFloat getMu() const { if( trained ){ return mu; } return MatrixFloat(); }
     
     /**
      This function returns the sigma matrix which is built during the training phase.
-     If the GMM model has not been trained, then this function will return an empty vector< MatrixDouble >.
+     If the GMM model has not been trained, then this function will return an empty vector< MatrixFloat >.
      If the GMM model has been trained, then each element in the returned vector represents a cluster.
-     Each element is a MatrixDouble, which will have N rows and N columns, where N is the number of input dimensions to the model.
+     Each element is a MatrixFloat, which will have N rows and N columns, where N is the number of input dimensions to the model.
      
-     @return returns the sigma matrix if the model has been trained, otherwise an empty vector< MatrixDouble > will be returned
+     @return returns the sigma matrix if the model has been trained, otherwise an empty vector< MatrixFloat > will be returned
      */
-    vector< MatrixDouble > getSigma() const { if( trained ){ return sigma; } return vector< MatrixDouble >(); }
+    Vector< MatrixFloat > getSigma() const { if( trained ){ return sigma; } return Vector< MatrixFloat >(); }
     
     /**
      This function returns the sigma matrix for a specific cluster.
-     If the GMM model has not been trained, then this function will return an empty MatrixDouble.
-     If the GMM model has been trained, then the returned MatrixDouble will have N rows and N columns, where N is the number of input dimensions to the model.
+     If the GMM model has not been trained, then this function will return an empty MatrixFloat.
+     If the GMM model has been trained, then the returned MatrixFloat will have N rows and N columns, where N is the number of input dimensions to the model.
      
-     @return returns the sigma matrix for a specific cluster if the model has been trained, otherwise an empty MatrixDouble will be returned
+     @return returns the sigma matrix for a specific cluster if the model has been trained, otherwise an empty MatrixFloat will be returned
      */
-    MatrixDouble getSigma(const UINT k) const{
+    MatrixFloat getSigma(const UINT k) const{
         if( k < numClusters && trained ){
             return sigma[k];
         }
-        return MatrixDouble();
+        return MatrixFloat();
     }
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
@@ -169,16 +169,16 @@ public:
     using MLBase::loadModelFromFile;
 	
 protected:
-    bool estep( const MatrixDouble &data, VectorDouble &u, VectorDouble &v, double &change );
-	bool mstep( const MatrixDouble &data );
+    bool estep( const MatrixFloat &data, VectorDouble &u, VectorDouble &v, float_t &change );
+	bool mstep( const MatrixFloat &data );
 	bool computeInvAndDet();
 	inline void SWAP(UINT &a,UINT &b);
-	inline double SQR(const double v){ return v*v; }
+	inline float_t SQR(const float_t v){ return v*v; }
     
-    double gauss(const VectorDouble &x,const UINT clusterIndex,const VectorDouble &det,const MatrixDouble &mu,const vector< MatrixDouble > &invSigma){
+    float_t gauss(const VectorDouble &x,const UINT clusterIndex,const VectorDouble &det,const MatrixFloat &mu,const Vector< MatrixFloat > &invSigma){
         
-        double y = 0;
-        double sum = 0;
+        float_t y = 0;
+        float_t sum = 0;
         UINT i,j = 0;
         const UINT N = (UINT)x.size();
         VectorDouble temp(N,0);
@@ -198,20 +198,20 @@ protected:
     }
     
 	UINT numTrainingSamples;                    ///< The number of samples in the training data
-	double loglike;                             ///< The current loglikelihood value of the models given the data
-	MatrixDouble mu;                            ///< A matrix holding the estimated mean values of each Gaussian
-	MatrixDouble resp;                          ///< The responsibility matrix
+	float_t loglike;                             ///< The current loglikelihood value of the models given the data
+	MatrixFloat mu;                            ///< A matrix holding the estimated mean values of each Gaussian
+	MatrixFloat resp;                          ///< The responsibility matrix
 	VectorDouble frac;                          ///< A vector holding the P(k)'s
 	VectorDouble lndets;                        ///< A vector holding the log detminants of SIGMA'k
 	VectorDouble det;                         
-	vector< MatrixDouble > sigma;
-	vector< MatrixDouble > invSigma;
+	Vector< MatrixFloat > sigma;
+	Vector< MatrixFloat > invSigma;
     
 private:
     static RegisterClustererModule< GaussianMixtureModels > registerModule;
 };
     
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_GAUSSIAN_MIXTURE_MODELS_HEADER
 

@@ -20,9 +20,7 @@
 
 #include "DiscreteHiddenMarkovModel.h"
 
-using namespace std;
-
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 //Default constructor
 DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(){
@@ -62,7 +60,7 @@ DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const UINT numStates,const 
 }
 
 //Init the model with a pre-trained a, b, and pi matrices
-DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const MatrixDouble &a,const MatrixDouble &b,const VectorDouble &pi,const UINT modelType,const UINT delta){
+DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const MatrixFloat &a,const MatrixFloat &b,const VectorFloat &pi,const UINT modelType,const UINT delta){
     
     numStates = 0;
     numSymbols = 0;
@@ -87,7 +85,7 @@ DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const MatrixDouble &a,const
         numSymbols = b.getNumCols();
         trained = true;
     }else{
-        errorLog << "DiscreteHiddenMarkovModel(...) - The a,b,pi sizes are invalid!" << endl;
+        errorLog << "DiscreteHiddenMarkovModel(...) - The a,b,pi sizes are invalid!" << std::endl;
     }
 }
     
@@ -176,7 +174,7 @@ bool DiscreteHiddenMarkovModel::randomizeMatrices(const UINT numStates,const UIN
 	}	
 
 	//Normalize the matrices
-	double sum=0.0;
+	float_t sum=0.0;
 	for (UINT i=0; i<numStates; i++) {
 		sum = 0.;
 		for (UINT j=0; j<numStates; j++) sum += a[i][j];
@@ -196,7 +194,7 @@ bool DiscreteHiddenMarkovModel::randomizeMatrices(const UINT numStates,const UIN
     return true;
 }
     
-double DiscreteHiddenMarkovModel::predict(const UINT newSample){
+float_t DiscreteHiddenMarkovModel::predict(const UINT newSample){
     
     if( !trained ){
         return 0;
@@ -204,21 +202,21 @@ double DiscreteHiddenMarkovModel::predict(const UINT newSample){
     
     observationSequence.push_back( newSample );
     
-    vector< UINT > obs = observationSequence.getDataAsVector();
+    Vector< UINT > obs = observationSequence.getData();
     
     return predict(obs);
 }
   
-/*double predictLogLikelihood(Vector<UINT> &obs)
+/*float_t predictLogLikelihood(Vector<UINT> &obs)
  - This method computes P(O|A,B,Pi) using the forward algorithm
  */
-double DiscreteHiddenMarkovModel::predict(const vector<UINT> &obs){
+float_t DiscreteHiddenMarkovModel::predict(const Vector<UINT> &obs){
     
 	const int N = (int)numStates;
     const int T = (int)obs.size();
 	int t,i,j = 0;
-    MatrixDouble alpha(T,numStates);
-    VectorDouble c(T);
+    MatrixFloat alpha(T,numStates);
+    VectorFloat c(T);
     
 	////////////////// Run the forward algorithm ////////////////////////
 	//Step 1: Init at t=0
@@ -256,7 +254,7 @@ double DiscreteHiddenMarkovModel::predict(const vector<UINT> &obs){
     
     if( int(estimatedStates.size()) != T ) estimatedStates.resize(T);
     for(t=0; t<T; t++){
-        double maxValue = 0;
+        float_t maxValue = 0;
         for(i=0; i<N; i++){
             if( alpha[t][i] > maxValue ){
                 maxValue = alpha[t][i];
@@ -266,21 +264,21 @@ double DiscreteHiddenMarkovModel::predict(const vector<UINT> &obs){
     }
     
 	//Termination
-	double loglikelihood = 0.0;
+	float_t loglikelihood = 0.0;
     for(t=0; t<T; t++) loglikelihood += log( c[t] );
     return -loglikelihood; //Return the negative log likelihood
 }
 
-/*double predictLogLikelihood(Vector<UINT> &obs)
+/*float_t predictLogLikelihood(Vector<UINT> &obs)
 - This method computes P(O|A,B,Pi) using the forward algorithm
 */
-double DiscreteHiddenMarkovModel::predictLogLikelihood(const vector<UINT> &obs){
+float_t DiscreteHiddenMarkovModel::predictLogLikelihood(const Vector<UINT> &obs){
 
 	const UINT T = (unsigned int)obs.size();
 	UINT t,i,j,minState = 0;
-	MatrixDouble alpha(T,numStates);
-    double minWeight = 0;
-    double weight = 0;
+	MatrixFloat alpha(T,numStates);
+    float_t minWeight = 0;
+    float_t weight = 0;
 
     // Base
 	t = 0;
@@ -325,10 +323,10 @@ double DiscreteHiddenMarkovModel::predictLogLikelihood(const vector<UINT> &obs){
     return exp(-minWeight);
 }
 
-/*double forwardBackward(Vector<UINT> &obs)
+/*float_t forwardBackward(Vector<UINT> &obs)
 - This method runs one pass of the forward backward algorithm, the hmm training object needs to be resized BEFORE calling this function!
 */
-bool DiscreteHiddenMarkovModel::forwardBackward(HMMTrainingObject &hmm,const vector<UINT> &obs){
+bool DiscreteHiddenMarkovModel::forwardBackward(HMMTrainingObject &hmm,const Vector<UINT> &obs){
 
 	const int N = (int)numStates;
 	const int T = (int)obs.size();
@@ -404,7 +402,7 @@ bool DiscreteHiddenMarkovModel::forwardBackward(HMMTrainingObject &hmm,const vec
 /*bool batchTrain(Vector<UINT> &obs)
 - This method 
 */
-bool DiscreteHiddenMarkovModel::train(const vector< vector<UINT> > &trainingData){
+bool DiscreteHiddenMarkovModel::train(const Vector< Vector<UINT> > &trainingData){
 
     //Clear any previous models
     trained = false;
@@ -413,14 +411,14 @@ bool DiscreteHiddenMarkovModel::train(const vector< vector<UINT> > &trainingData
     trainingIterationLog.clear();
     
 	UINT n,currentIter, bestIndex = 0;
-	double newLoglikelihood, bestLogValue = 0;
+	float_t newLoglikelihood, bestLogValue = 0;
     
     if( numRandomTrainingIterations > 1 ){
 
         //A buffer to keep track each AB matrix
-        vector< MatrixDouble > aTracker( numRandomTrainingIterations );
-        vector< MatrixDouble > bTracker( numRandomTrainingIterations );
-        vector< double > loglikelihoodTracker( numRandomTrainingIterations );
+        Vector< MatrixFloat > aTracker( numRandomTrainingIterations );
+        Vector< MatrixFloat > bTracker( numRandomTrainingIterations );
+        Vector< float_t > loglikelihoodTracker( numRandomTrainingIterations );
         
         UINT maxNumTestIter = maxNumEpochs > 10 ? 10 : maxNumEpochs;
 
@@ -469,7 +467,7 @@ bool DiscreteHiddenMarkovModel::train(const vector< vector<UINT> > &trainingData
 		averageObsLength += T;
 	}
     
-    averageObsLength = (UINT)floor( averageObsLength/double(numObs) );
+    averageObsLength = (UINT)floor( averageObsLength/float_t(numObs) );
     observationSequence.resize( averageObsLength );
     estimatedStates.resize( averageObsLength );
     
@@ -479,20 +477,20 @@ bool DiscreteHiddenMarkovModel::train(const vector< vector<UINT> > &trainingData
 	return true;
 }
 
-bool DiscreteHiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,double &newLoglikelihood){
+bool DiscreteHiddenMarkovModel::train_(const Vector< Vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,float_t &newLoglikelihood){
     
     const UINT numObs = (unsigned int)obs.size();
     UINT i,j,k,t = 0;
-    double num,denom,oldLoglikelihood = 0;
+    float_t num,denom,oldLoglikelihood = 0;
     bool keepTraining = true;
     trainingIterationLog.clear();
     
     //Create the array to hold the data for each training instance
-    vector< HMMTrainingObject > hmms( numObs );
+    Vector< HMMTrainingObject > hmms( numObs );
     
     //Create epislon and gamma to hold the re-estimation variables
-    vector< vector< MatrixDouble > > epsilon( numObs );
-    vector< MatrixDouble > gamma( numObs );
+    Vector< Vector< MatrixFloat > > epsilon( numObs );
+    Vector< MatrixFloat > gamma( numObs );
     
     //Resize the hmms, epsilon and gamma matrices so they are ready to be filled
     for(k=0; k<numObs; k++){
@@ -529,11 +527,11 @@ bool DiscreteHiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const U
         
         trainingIterationLog.push_back( newLoglikelihood );
         
-        if( ++currentIter >= maxIter ){ keepTraining = false; trainingLog << "Max Iter Reached! Stopping Training" << endl; }
-        if( fabs(newLoglikelihood-oldLoglikelihood) < minChange && currentIter > 1 ){ keepTraining = false; trainingLog << "Min Improvement Reached! Stopping Training" << endl; }
+        if( ++currentIter >= maxIter ){ keepTraining = false; trainingLog << "Max Iter Reached! Stopping Training" << std::endl; }
+        if( fabs(newLoglikelihood-oldLoglikelihood) < minChange && currentIter > 1 ){ keepTraining = false; trainingLog << "Min Improvement Reached! Stopping Training" << std::endl; }
         //if( newLoglikelihood < oldLoglikelihood ){ cout<<"Warning: Inverted Training!\n";}
         
-        trainingLog << "Iter: " << currentIter << " logLikelihood: " << newLoglikelihood << " change: " << oldLoglikelihood - newLoglikelihood << endl;
+        trainingLog << "Iter: " << currentIter << " logLikelihood: " << newLoglikelihood << " change: " << oldLoglikelihood - newLoglikelihood << std::endl;
         
         print();
         //PAUSE;
@@ -568,7 +566,7 @@ bool DiscreteHiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const U
                         a[i][j] = num/denom;
                     }
                 }else{
-                    errorLog << "Denom is zero for A!" << endl;
+                    errorLog << "Denom is zero for A!" << std::endl;
                     return false;
                 }
             }
@@ -590,7 +588,7 @@ bool DiscreteHiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const U
                     }
                     
                     if( denom == 0 ){
-                        errorLog << "Denominator is zero for B!" << endl;
+                        errorLog << "Denominator is zero for B!" << std::endl;
                         return false;
                     }
                     //Update b[i][j]
@@ -602,7 +600,7 @@ bool DiscreteHiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const U
             }
             
             if( renormB ){
-                double sum;
+                float_t sum;
                 for (UINT i=0; i<numStates; i++) {
                     sum = 0.;
                     for (UINT k=0; k<numSymbols; k++){
@@ -645,7 +643,7 @@ bool DiscreteHiddenMarkovModel::train_(const vector< vector<UINT> > &obs,const U
                     }
                 }
                 
-                double sum = 0;
+                float_t sum = 0;
                 for(i=0; i<numStates; i++){
                     sum=0.0;
                     for(k=0; k<numObs; k++){
@@ -671,11 +669,11 @@ bool DiscreteHiddenMarkovModel::reset(){
     return true;
 }
     
-bool DiscreteHiddenMarkovModel::saveModelToFile(fstream &file) const{
+bool DiscreteHiddenMarkovModel::saveModelToFile( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog << "saveModelToFile( fstream &file ) - File is not open!" << endl;
+        errorLog << "saveModelToFile( fstream &file ) - File is not open!" << std::endl;
         return false;
     }
     
@@ -684,23 +682,23 @@ bool DiscreteHiddenMarkovModel::saveModelToFile(fstream &file) const{
     
     //Write the base settings to the file
     if( !MLBase::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << endl;
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
-    file << "NumStates: " << numStates << endl;
-    file << "NumSymbols: " << numSymbols << endl;
-    file << "ModelType: " << modelType << endl;
-    file << "Delta: " << delta << endl;
-    file << "Threshold: " << cThreshold << endl;
-    file << "NumRandomTrainingIterations: " << numRandomTrainingIterations << endl;
+    file << "NumStates: " << numStates << std::endl;
+    file << "NumSymbols: " << numSymbols << std::endl;
+    file << "ModelType: " << modelType << std::endl;
+    file << "Delta: " << delta << std::endl;
+    file << "Threshold: " << cThreshold << std::endl;
+    file << "NumRandomTrainingIterations: " << numRandomTrainingIterations << std::endl;
     
     file << "A:\n";
     for(UINT i=0; i<numStates; i++){
         for(UINT j=0; j<numStates; j++){
             file << a[i][j];
             if( j+1 < numStates ) file << "\t";
-        }file << endl;
+        }file << std::endl;
     }
     
     file << "B:\n";
@@ -708,7 +706,7 @@ bool DiscreteHiddenMarkovModel::saveModelToFile(fstream &file) const{
         for(UINT j=0; j<numSymbols; j++){
             file << b[i][j];
             if( j+1 < numSymbols ) file << "\t";
-        }file << endl;
+        }file << std::endl;
     }
     
     file<<"Pi:\n";
@@ -716,18 +714,18 @@ bool DiscreteHiddenMarkovModel::saveModelToFile(fstream &file) const{
         file << pi[i];
         if( i+1 < numStates ) file << "\t";
     }
-    file << endl;
+    file << std::endl;
     
     return true;
 }
 
-bool DiscreteHiddenMarkovModel::loadModelFromFile(fstream &file){
+bool DiscreteHiddenMarkovModel::loadModelFromFile( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile( fstream &file ) - File is not open!" << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - File is not open!" << std::endl;
         return false;
     }
     
@@ -737,54 +735,54 @@ bool DiscreteHiddenMarkovModel::loadModelFromFile(fstream &file){
     
     //Find the file type header
     if(word != "DISCRETE_HMM_MODEL_FILE_V1.0"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header!" << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header!" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !MLBase::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << endl;
+        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "NumStates:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumStates header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumStates header." << std::endl;
         return false;
     }
     file >> numStates;
     
     file >> word;
     if(word != "NumSymbols:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumSymbols header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumSymbols header." << std::endl;
         return false;
     }
     file >> numSymbols;
     
     file >> word;
     if(word != "ModelType:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the modelType for the header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the modelType for the header." << std::endl;
         return false;
     }
     file >> modelType;
     
     file >> word;
     if(word != "Delta:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Delta for the header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Delta for the header." << std::endl;
         return false;
     }
     file >> delta;
     
     file >> word;
     if(word != "Threshold:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Threshold for the header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Threshold for the header." << std::endl;
         return false;
     }
     file >> cThreshold;
     
     file >> word;
     if(word != "NumRandomTrainingIterations:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the numRandomTrainingIterations header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the numRandomTrainingIterations header." << std::endl;
         return false;
     }
     file >> numRandomTrainingIterations;
@@ -796,7 +794,7 @@ bool DiscreteHiddenMarkovModel::loadModelFromFile(fstream &file){
     //Load the A, B and Pi matrices
     file >> word;
     if(word != "A:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the A matrix header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the A matrix header." << std::endl;
         return false;
     }
     
@@ -809,7 +807,7 @@ bool DiscreteHiddenMarkovModel::loadModelFromFile(fstream &file){
     
     file >> word;
     if(word != "B:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the B matrix header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the B matrix header." << std::endl;
         return false;
     }
     
@@ -822,7 +820,7 @@ bool DiscreteHiddenMarkovModel::loadModelFromFile(fstream &file){
     
     file >> word;
     if(word != "Pi:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi matrix header." << endl;
+        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi matrix header." << std::endl;
         return false;
     }
     
@@ -836,49 +834,50 @@ bool DiscreteHiddenMarkovModel::loadModelFromFile(fstream &file){
 
 bool DiscreteHiddenMarkovModel::print() const{
 
-	trainingLog << "A: " << endl;
+	trainingLog << "A: " << std::endl;
 	for(UINT i=0; i<a.getNumRows(); i++){
 		for(UINT j=0; j<a.getNumCols(); j++){
 			trainingLog << a[i][j] << "\t";
 		}
-        trainingLog << endl;
+        trainingLog << std::endl;
 	}
 
-	trainingLog << "B: " << endl;
+	trainingLog << "B: " << std::endl;
 	for(UINT i=0; i<b.getNumRows(); i++){
 		for(UINT j=0; j<b.getNumCols(); j++){
 			trainingLog << b[i][j] << "\t";
 		}
-        trainingLog << endl;
+        trainingLog << std::endl;
 	}
     
     trainingLog << "Pi: ";
 	for(UINT i=0; i<pi.size(); i++){
         trainingLog << pi[i] << "\t";
     }
-    trainingLog<<endl;
+    trainingLog << std::endl;
 
     //Check the weights all sum to 1
     if( true ){
-        double sum=0.0;
+        float_t sum=0.0;
         for(UINT i=0; i<a.getNumRows(); i++){
           sum=0.0;
           for(UINT j=0; j<a.getNumCols(); j++) sum += a[i][j];
-          if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: A Row " << i <<" Sum: "<< sum << endl;
+          if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: A Row " << i <<" Sum: "<< sum << std::endl;
         }
 
         for(UINT i=0; i<b.getNumRows(); i++){
           sum=0.0;
           for(UINT j=0; j<b.getNumCols(); j++) sum += b[i][j];
-          if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: B Row " << i << " Sum: " << sum << endl;
+          if( sum <= 0.99 || sum >= 1.01 ) warningLog << "WARNING: B Row " << i << " Sum: " << sum << std::endl;
         }
     }
 
     return true;
 }
     
-VectorDouble DiscreteHiddenMarkovModel::getTrainingIterationLog() const{
+VectorFloat DiscreteHiddenMarkovModel::getTrainingIterationLog() const{
     return trainingIterationLog;
 }
 
-}
+GRT_END_NAMESPACE
+

@@ -36,7 +36,7 @@
 #include "../../CoreModules/Classifier.h"
 #include "SoftmaxModel.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class Softmax : public Classifier
 {
@@ -44,17 +44,17 @@ public:
     /**
      Default Constructor
 
-     @param const bool useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
-     @param double learningRate: the learningRate value used during the training phase. Default = 0.1
-     @param double minChange: sets the minimum change that must be achieved between two training epochs for the training to continue. Default = 1.0e-10
-     @param UINT maxNumEpochs: sets the maximum number of iterations that can be run during the training phase. Default = 1000
+     @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
+     @param learningRate: the learningRate value used during the training phase. Default = 0.1
+     @param minChange: sets the minimum change that must be achieved between two training epochs for the training to continue. Default = 1.0e-10
+     @param maxNumEpochs: sets the maximum number of iterations that can be run during the training phase. Default = 1000
      */
-	Softmax(const bool useScaling=false,const double learningRate = 0.1,const double minChange = 1.0e-10,const UINT maxNumEpochs = 1000);
+	Softmax(const bool useScaling=false,const float_t learningRate = 0.1,const float_t minChange = 1.0e-10,const UINT maxNumEpochs = 1000);
     
     /**
      Defines the copy constructor.
      
-     @param const Softmax &rhs: the instance from which all the data will be copied into this instance
+     @param rhs: the instance from which all the data will be copied into this instance
      */
     Softmax(const Softmax &rhs);
     
@@ -66,7 +66,7 @@ public:
     /**
      Defines how the data from the rhs Softmax should be copied to this Softmax
      
-     @param const Softmax &rhs: another instance of a Softmax
+     @param rhs: another instance of a Softmax
      @return returns a pointer to this instance of the Softmax
      */
 	Softmax &operator=(const Softmax &rhs);
@@ -75,7 +75,7 @@ public:
      This is required for the Gesture Recognition Pipeline for when the pipeline.setClassifier(...) method is called.  
      It clones the data from the Base Class Classifier pointer (which should be pointing to an Softmax instance) into this instance
      
-     @param Classifier *classifier: a pointer to the Classifier Base Class, this should be pointing to another Softmax instance
+     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another Softmax instance
      @return returns true if the clone was successfull, false otherwise
     */
 	virtual bool deepCopyFrom(const Classifier *classifier);
@@ -84,7 +84,7 @@ public:
      This trains the Softmax model, using the labelled classification data.
      This overrides the train function in the Classifier base class.
      
-     @param ClassificationData trainingData: a reference to the training data
+     @param trainingData: a reference to the training data
      @return returns true if the Softmax model was trained, false otherwise
     */
     virtual bool train_(ClassificationData &trainingData);
@@ -93,10 +93,10 @@ public:
      This predicts the class of the inputVector.
      This overrides the predict function in the Classifier base class.
      
-     @param VectorDouble inputVector: the input vector to classify
+     @param inputVector: the input vector to classify
      @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorDouble &inputVector);
+    virtual bool predict_(VectorFloat &inputVector);
     
     /**
      This overrides the clear function in the Classifier base class.
@@ -110,26 +110,26 @@ public:
      This saves the trained Softmax model to a file.
      This overrides the saveModelToFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the Softmax model will be saved to
+     @param file: a reference to the file the Softmax model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile(fstream &file) const;
+    virtual bool saveModelToFile( std::fstream &file ) const;
     
     /**
      This loads a trained Softmax model from a file.
      This overrides the loadModelFromFile function in the Classifier base class.
      
-     @param fstream &file: a reference to the file the Softmax model will be loaded from
+     @param file: a reference to the file the Softmax model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile(fstream &file);
+    virtual bool loadModelFromFile( std::fstream &file );
     
     /**
      Get the softmax models for each class. The Softmax class must be trained first.
      
      @return returns a vector of softmax models, with each element representing the model for a specific class
      */
-    vector< SoftmaxModel > getModels() const;
+    Vector< SoftmaxModel > getModels() const;
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -137,14 +137,14 @@ public:
     
 protected:
     bool trainSoftmaxModel(UINT classLabel,SoftmaxModel &model,ClassificationData &data);
-    bool loadLegacyModelFromFile( fstream &file );
+    bool loadLegacyModelFromFile( std::fstream &file );
     
-    vector< SoftmaxModel > models;
+    Vector< SoftmaxModel > models;
     
     static RegisterClassifierModule< Softmax > registerModule;
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_SOFTMAX_HEADER
 

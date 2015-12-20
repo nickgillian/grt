@@ -20,9 +20,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "UnlabelledData.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
-UnlabelledData::UnlabelledData(const UINT numDimensions,const string datasetName,const string infoText):debugLog("[DEBUG ULCD]"),errorLog("[ERROR ULCD]"),warningLog("[WARNING ULCD]"){
+UnlabelledData::UnlabelledData(const UINT numDimensions,const std::string datasetName,const std::string infoText):debugLog("[DEBUG ULCD]"),errorLog("[ERROR ULCD]"),warningLog("[WARNING ULCD]"){
     this->datasetName = datasetName;
     this->numDimensions = numDimensions;
     this->infoText = infoText;
@@ -82,10 +82,10 @@ bool UnlabelledData::setNumDimensions(const UINT numDimensions){
     return false;
 }
 
-bool UnlabelledData::setDatasetName(const string datasetName){
+bool UnlabelledData::setDatasetName(const std::string datasetName){
 
-    //Make sure there are no spaces in the string
-    if( datasetName.find(" ") == string::npos ){
+    //Make sure there are no spaces in the std::string
+    if( datasetName.find(" ") == std::string::npos ){
         this->datasetName = datasetName;
         return true;
     }
@@ -93,7 +93,7 @@ bool UnlabelledData::setDatasetName(const string datasetName){
     return false;
 }
 
-bool UnlabelledData::setInfoText(const string infoText){
+bool UnlabelledData::setInfoText(const std::string infoText){
     this->infoText = infoText;
     return true;
 }
@@ -143,7 +143,7 @@ bool UnlabelledData::reserve(const UINT N){
     return false;
 }
     
-bool UnlabelledData::setExternalRanges(const vector< MinMax > &externalRanges,const bool useExternalRanges){
+bool UnlabelledData::setExternalRanges(const Vector< MinMax > &externalRanges,const bool useExternalRanges){
 
     if( externalRanges.size() != numDimensions ) return false;
 
@@ -162,11 +162,11 @@ bool UnlabelledData::enableExternalRangeScaling(const bool useExternalRanges){
 }
 
 bool UnlabelledData::scale(const float_t minTarget,const float_t maxTarget){
-    vector< MinMax > ranges = getRanges();
+    Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool UnlabelledData::scale(const vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
+bool UnlabelledData::scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
     if( ranges.size() != numDimensions ) return false;
 
     //Scale the training data
@@ -179,7 +179,7 @@ bool UnlabelledData::scale(const vector<MinMax> &ranges,const float_t minTarget,
     return true;
 }
     
-bool UnlabelledData::save(const string &filename) const{
+bool UnlabelledData::save(const std::string &filename) const{
     
     //Check if the file should be saved as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -190,7 +190,7 @@ bool UnlabelledData::save(const string &filename) const{
     return saveDatasetToFile( filename );
 }
 
-bool UnlabelledData::load(const string &filename){
+bool UnlabelledData::load(const std::string &filename){
     
     //Check if the file should be loaded as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -201,27 +201,27 @@ bool UnlabelledData::load(const string &filename){
     return loadDatasetFromFile( filename );
 }
 
-bool UnlabelledData::saveDatasetToFile(const string &filename) const{
+bool UnlabelledData::saveDatasetToFile(const std::string &filename) const{
 
 	std::fstream file;
 	file.open(filename.c_str(), std::ios::out);
 
 	if( !file.is_open() ){
-        errorLog << "saveDatasetToFile(const string &filename) - Failed to open file!" << endl;
+        errorLog << "saveDatasetToFile(const std::string &filename) - Failed to open file!" << std::endl;
 		return false;
 	}
 
 	file << "GRT_UNLABELLED_DATA_FILE_V1.0\n";
-    file << "DatasetName: " << datasetName << endl;
-    file << "InfoText: " << infoText << endl;
-	file << "NumDimensions: " << numDimensions << endl;
-	file << "TotalNumTrainingExamples: " << totalNumSamples << endl;
+    file << "DatasetName: " << datasetName << std::endl;
+    file << "InfoText: " << infoText << std::endl;
+	file << "NumDimensions: " << numDimensions << std::endl;
+	file << "TotalNumTrainingExamples: " << totalNumSamples << std::endl;
 
-    file << "UseExternalRanges: " << useExternalRanges << endl;
+    file << "UseExternalRanges: " << useExternalRanges << std::endl;
 
     if( useExternalRanges ){
         for(UINT i=0; i<externalRanges.size(); i++){
-            file << externalRanges[i].minValue << "\t" << externalRanges[i].maxValue << endl;
+            file << externalRanges[i].minValue << "\t" << externalRanges[i].maxValue << std::endl;
         }
     }
 
@@ -232,30 +232,30 @@ bool UnlabelledData::saveDatasetToFile(const string &filename) const{
             if( j != 0 ) file << "\t";
 			file << data[i][j];
 		}
-		file << endl;
+		file << std::endl;
 	}
 
 	file.close();
 	return true;
 }
 
-bool UnlabelledData::loadDatasetFromFile(const string &filename){
+bool UnlabelledData::loadDatasetFromFile(const std::string &filename){
 
 	std::fstream file;
 	file.open(filename.c_str(), std::ios::in);
 	clear();
 
 	if( !file.is_open() ){
-        errorLog << "loadDatasetFromFile(const string &filename) - could not open file!" << endl;
+        errorLog << "loadDatasetFromFile(const std::string &filename) - could not open file!" << std::endl;
 		return false;
 	}
 
-	string word;
+	std::string word;
 
 	//Check to make sure this is a file with the Training File Format
 	file >> word;
 	if( word != "GRT_UNLABELLED_DATA_FILE_V1.0" && word != "GRT_UNLABELLED_CLASSIFICATION_DATA_FILE_V1.0" ){
-        errorLog << "loadDatasetFromFile(const string &filename) - could not find file header!" << endl;
+        errorLog << "loadDatasetFromFile(const std::string &filename) - could not find file header!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -263,7 +263,7 @@ bool UnlabelledData::loadDatasetFromFile(const string &filename){
     //Get the name of the dataset
 	file >> word;
 	if(word != "DatasetName:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(const std::string &filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -271,7 +271,7 @@ bool UnlabelledData::loadDatasetFromFile(const string &filename){
 
     file >> word;
 	if(word != "InfoText:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - failed to find InfoText!" << endl;
+        errorLog << "loadDatasetFromFile(const std::string &filename) - failed to find InfoText!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -286,7 +286,7 @@ bool UnlabelledData::loadDatasetFromFile(const string &filename){
 
 	//Get the number of dimensions in the training data
 	if(word != "NumDimensions:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(const std::string &filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -295,7 +295,7 @@ bool UnlabelledData::loadDatasetFromFile(const string &filename){
 	//Get the total number of training examples in the training data
 	file >> word;
 	if(word != "TotalNumTrainingExamples:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(const std::string &filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -304,7 +304,7 @@ bool UnlabelledData::loadDatasetFromFile(const string &filename){
     //Check if the dataset should be scaled using external ranges
 	file >> word;
 	if(word != "UseExternalRanges:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(const std::string &filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -322,7 +322,7 @@ bool UnlabelledData::loadDatasetFromFile(const string &filename){
 	//Get the main training data
 	file >> word;
 	if(word != "UnlabelledTrainingData:"){
-        errorLog << "loadDatasetFromFile(const string &filename) - failed to find DatasetName!" << endl;
+        errorLog << "loadDatasetFromFile(const std::string &filename) - failed to find DatasetName!" << std::endl;
 		file.close();
 		return false;
 	}
@@ -339,13 +339,13 @@ bool UnlabelledData::loadDatasetFromFile(const string &filename){
 }
 
 
-bool UnlabelledData::saveDatasetToCSVFile(const string &filename) const{
+bool UnlabelledData::saveDatasetToCSVFile(const std::string &filename) const{
 
     std::fstream file;
 	file.open(filename.c_str(), std::ios::out );
 
 	if( !file.is_open() ){
-        errorLog << "saveDatasetToCSVFile(const string &filename) - Failed to open file!" << endl;
+        errorLog << "saveDatasetToCSVFile(const std::string &filename) - Failed to open file!" << std::endl;
 		return false;
 	}
 
@@ -355,7 +355,7 @@ bool UnlabelledData::saveDatasetToCSVFile(const string &filename) const{
             if( j != 0 ) file << ",";
 			file << data[i][j];
 		}
-		file << endl;
+		file << std::endl;
 	}
 
 	file.close();
@@ -363,9 +363,9 @@ bool UnlabelledData::saveDatasetToCSVFile(const string &filename) const{
     return true;
 }
 
-bool UnlabelledData::loadDatasetFromCSVFile(const string &filename){
+bool UnlabelledData::loadDatasetFromCSVFile(const std::string &filename){
 
-    string value;
+    std::string value;
     datasetName = "NOT_SET";
     infoText = "";
 
@@ -376,12 +376,12 @@ bool UnlabelledData::loadDatasetFromCSVFile(const string &filename){
     FileParser parser;
     
     if( !parser.parseCSVFile(filename,true) ){
-        errorLog << "loadDatasetFromCSVFile(const string &filename) - Failed to parse CSV file!" << endl;
+        errorLog << "loadDatasetFromCSVFile(const std::string &filename) - Failed to parse CSV file!" << std::endl;
         return false;
     }
     
     if( !parser.getConsistentColumnSize() ){
-        errorLog << "loadDatasetFromCSVFile(const string &filename) - The CSV file does not have a consistent number of columns!" << endl;
+        errorLog << "loadDatasetFromCSVFile(const std::string &filename) - The CSV file does not have a consistent number of columns!" << std::endl;
         return false;
     }
     
@@ -404,7 +404,7 @@ bool UnlabelledData::loadDatasetFromCSVFile(const string &filename){
         
         //Add the labelled sample to the dataset
         if( !addSample(sample) ){
-            warningLog << "loadDatasetFromCSVFile(const string &filename) - Could not add sample " << i << " to the dataset!" << endl;
+            warningLog << "loadDatasetFromCSVFile(const std::string &filename) - Could not add sample " << i << " to the dataset!" << std::endl;
         }
     }
     
@@ -426,7 +426,7 @@ UnlabelledData UnlabelledData::partition(const UINT trainingSizePercentage){
 
 	UnlabelledData trainingSet(numDimensions);
 	UnlabelledData testSet(numDimensions);
-	vector< UINT > indexs( totalNumSamples );
+	Vector< UINT > indexs( totalNumSamples );
 
 	//Create the random partion indexs
 	Random random;
@@ -460,7 +460,7 @@ UnlabelledData UnlabelledData::partition(const UINT trainingSizePercentage){
 bool UnlabelledData::merge(const UnlabelledData &unlabelledData){
 
     if( unlabelledData.getNumDimensions() != numDimensions ){
-        errorLog << "merge(const UnlabelledData &unlabelledData) - The number of dimensions in the unlabelledData (" << unlabelledData.getNumDimensions() << ") does not match the number of dimensions of this dataset (" << numDimensions << ")" << endl;
+        errorLog << "merge(const UnlabelledData &unlabelledData) - The number of dimensions in the unlabelledData (" << unlabelledData.getNumDimensions() << ") does not match the number of dimensions of this dataset (" << numDimensions << ")" << std::endl;
         return false;
     }
 
@@ -485,19 +485,19 @@ bool UnlabelledData::spiltDataIntoKFolds(const UINT K){
 
     //K can not be zero
     if( K > totalNumSamples ){
-        errorLog << "spiltDataIntoKFolds(const UINT K) - K can not be zero!" << endl;
+        errorLog << "spiltDataIntoKFolds(const UINT K) - K can not be zero!" << std::endl;
         return false;
     }
 
     //K can not be larger than the number of examples
     if( K > totalNumSamples ){
-        errorLog << "spiltDataIntoKFolds(const UINT K) - K can not be larger than the total number of samples in the dataset!" << endl;
+        errorLog << "spiltDataIntoKFolds(const UINT K) - K can not be larger than the total number of samples in the dataset!" << std::endl;
         return false;
     }
 
     //Setup the dataset for k-fold cross validation
     kFoldValue = K;
-    vector< UINT > indexs( totalNumSamples );
+    Vector< UINT > indexs( totalNumSamples );
 
     //Work out how many samples are in each fold, the last fold might have more samples than the others
     UINT numSamplesPerFold = (UINT) floor( totalNumSamples/float_t(K) );
@@ -516,7 +516,7 @@ bool UnlabelledData::spiltDataIntoKFolds(const UINT K){
         randomIndex = random.getRandomNumberInt(0,totalNumSamples);
 
         //Swap the indexs
-        SWAP( indexs[ x ] , indexs[ randomIndex ] );
+        grt_swap( indexs[ x ] , indexs[ randomIndex ] );
     }
 
     UINT counter = 0;
@@ -541,7 +541,7 @@ UnlabelledData UnlabelledData::getTrainingFoldData(const UINT foldIndex) const{
     UnlabelledData trainingData;
 
     if( !crossValidationSetup ){
-        errorLog << "getTrainingFoldData(const UINT foldIndex) - Cross Validation has not been setup! You need to call the spiltDataIntoKFolds(UINT K) function first before calling this function!" << endl;
+        errorLog << "getTrainingFoldData(const UINT foldIndex) - Cross Validation has not been setup! You need to call the spiltDataIntoKFolds(UINT K) function first before calling this function!" << std::endl;
        return trainingData;
     }
 
@@ -598,14 +598,14 @@ UnlabelledData UnlabelledData::getTestFoldData(const UINT foldIndex) const{
     return testData;
 }
 
-string UnlabelledData::getStatsAsString() const{
-    string statsText;
+std::string UnlabelledData::getStatsAsString() const{
+    std::string statsText;
     statsText += "DatasetName:\t" + datasetName + "\n";
     statsText += "DatasetInfo:\t" + infoText + "\n";
     statsText += "Number of Dimensions:\t" + Util::toString( numDimensions ) + "\n";
     statsText += "Number of Samples:\t" + Util::toString( totalNumSamples ) + "\n";
 
-    vector< MinMax > ranges = getRanges();
+    Vector< MinMax > ranges = getRanges();
 
     statsText += "Dataset Ranges:\n";
     for(UINT j=0; j<ranges.size(); j++){
@@ -615,12 +615,12 @@ string UnlabelledData::getStatsAsString() const{
     return statsText;
 }
 
-vector<MinMax> UnlabelledData::getRanges() const{
+Vector<MinMax> UnlabelledData::getRanges() const{
 
     //If the dataset should be scaled using the external ranges then return the external ranges
     if( useExternalRanges ) return externalRanges;
     
-    vector< MinMax > ranges(numDimensions);
+    Vector< MinMax > ranges(numDimensions);
 
     //Otherwise return the min and max values for each column in the dataset
     if( totalNumSamples > 0 ){
@@ -636,7 +636,7 @@ vector<MinMax> UnlabelledData::getRanges() const{
     return ranges;
 }
     
-vector< VectorFloat > UnlabelledData::getData() const{
+Vector< VectorFloat > UnlabelledData::getData() const{
     return data;
 }
 
@@ -668,4 +668,5 @@ MatrixFloat UnlabelledData::getDataAsMatrixFloat() const {
     return d;
 }
 
-}; //End of namespace GRT
+GRT_END_NAMESPACE
+

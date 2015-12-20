@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "TestingLog.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 bool TestingLog::testingLoggingEnabled = true;
 ObserverManager< TestingLogMessage > TestingLog::observerManager;
@@ -40,4 +40,4 @@ bool TestingLog::removeObserver(Observer< TestingLogMessage > &observer)
     return observerManager.removeObserver(observer);
 }
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
