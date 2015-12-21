@@ -6,6 +6,7 @@ project(GRT C CXX)
 set(GRT_LIB_NAME grt)
 
 #set the main options
+option(BUILD_TESTS “build-unit-tests” OFF)
 option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
@@ -78,21 +79,19 @@ endif()
 endif() #end of else(APPLE)
 
 #Set the main directory locations
-set(GRT_SRC_DIR
-    ${PROJECT_SOURCE_DIR}/../GRT
-)
+set(GRT_SRC_DIR ${PROJECT_SOURCE_DIR}/../GRT)
 
-set(GRT_EXAMPLES_DIR
-    ${PROJECT_SOURCE_DIR}/../examples
-)
+set(GRT_UNIT_TEST_DIR ${PROJECT_SOURCE_DIR}/../tests)
 
-set(GRT_EXAMPLES_OUTPUT_DIR
-    ${PROJECT_SOURCE_DIR}/examples
-)
+set(GTEST_DIR ${PROJECT_SOURCE_DIR}/../third_party/gtest)
+set(GTEST_INCLUDE_DIR ${GTEST_DIR}/googletest/include)
+set(GTEST_LIB_DIR ${PROJECT_SOURCE_DIR}/gtest/googlemock)
 
-set(GRT_TOOLS_DIR
-    ${PROJECT_SOURCE_DIR}/../tools
-)
+set(GRT_EXAMPLES_DIR ${PROJECT_SOURCE_DIR}/../examples)
+
+set(GRT_EXAMPLES_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/examples)
+
+set(GRT_TOOLS_DIR ${PROJECT_SOURCE_DIR}/../tools)
 
 #Add all the project files
 file(GLOB GRT_CLASSIFICATION_MODULES
@@ -221,12 +220,49 @@ if(NOT EXCLUDE_FROM_INSTALL)
 	)
 endif()
 
+# GRT Unit Tests
+if( BUILD_TESTS )
+
+    add_custom_command(TARGET ${GRT_LIB_NAME}
+                                PRE_BUILD
+                                COMMAND ${CMAKE_CURRENT_BINARY_DIR}/../build_gtest.sh
+                                COMMENT "Building gtest..."
+                                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
+            )
+
+    message(STATUS "Adding unit tests...")
+    file(GLOB_RECURSE GRT_UNIT_TESTS "${GRT_UNIT_TEST_DIR}/*.cpp")
+    foreach(unit_test ${GRT_UNIT_TESTS})
+        message(STATUS "Adding unit test: " ${unit_test})
+
+        #Remove the file extension
+        GET_FILENAME_COMPONENT(unit_test_name ${unit_test} NAME_WE) 
+
+        #Add the example as a new executable application
+        add_executable(${unit_test_name} ${unit_test})
+
+        #Include the main GRT include directory
+        include_directories( "${GRT_SRC_DIR}" )
+        include_directories( "${GTEST_INCLUDE_DIR}" )
+
+        #Link against the main GRT library 
+        target_link_libraries(${unit_test_name} ${GRT_LIB_NAME} ${GTEST_LIB_DIR}/libgmock.a)
+
+        add_custom_command(TARGET ${unit_test_name}
+                            POST_BUILD
+                            COMMAND ${unit_test_name}
+                            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                            COMMENT "Running ${unit_test_name}" VERBATIM
+            )
+    endforeach()
+endif()
+
 # GRT examples
 if( BUILD_EXAMPLES )
 	function(grt_add_example _example_name _example_sub_directory)
 	    
-            #Search for any source files in the example directory
-            file(GLOB sources
+        #Search for any source files in the example directory
+        file(GLOB sources
 	        "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.cpp"
 	        "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.h"
 	    )
