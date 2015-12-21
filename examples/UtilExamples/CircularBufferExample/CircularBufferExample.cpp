@@ -18,8 +18,10 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -48,7 +50,7 @@ int main (int argc, const char * argv[])
 	}
 	
 	//Get all the data in the buffer as a vector
-	vector<UINT> data = buffer.getDataAsVector();
+	Vector<UINT> data = buffer.getDataAsVector();
 	cout << "Data: \t\t\t";
 	for(UINT j=0; j<data.size(); j++){
 		cout << data[j] << "\t";

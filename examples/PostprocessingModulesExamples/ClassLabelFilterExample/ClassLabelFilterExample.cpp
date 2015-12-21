@@ -43,8 +43,9 @@
 */
 
 //You might need to set the specific path of the GRT header relative to your project
-#include "GRT.h"
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 { 
@@ -61,12 +62,12 @@ int main (int argc, const char * argv[])
     ClassificationData trainingData;
     ClassificationData testData;
     
-    if( !trainingData.loadDatasetFromFile("ClassLabelFilterTrainingData.grt") ){
+    if( !trainingData.load("ClassLabelFilterTrainingData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
     
-    if( !testData.loadDatasetFromFile("ClassLabelFilterTestData.grt") ){
+    if( !testData.load("ClassLabelFilterTestData.grt") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -79,7 +80,7 @@ int main (int argc, const char * argv[])
     
     //Use the test dataset to demonstrate the output of the ClassLabelFilter    
     for(UINT i=0; i<testData.getNumSamples(); i++){
-        VectorDouble inputVector = testData[i].getSample();
+        VectorFloat inputVector = testData[i].getSample();
         
         if( !pipeline.predict( inputVector ) ){
             cout << "Failed to perform prediction for test sampel: " << i <<"\n";

@@ -25,7 +25,7 @@ namespace GRT{
 //Register the Accumulator module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< Accumulator > Accumulator::registerModule("Accumulator");
     
-Accumulator::Accumulator(UINT numDimensions,double lastValueWeight){
+Accumulator::Accumulator(UINT numDimensions,float_t lastValueWeight){
     featureExtractionType = "Accumulator";
     debugLog.setProceedingText("[DEBUG Accumulator]");
     errorLog.setProceedingText("[ERROR Accumulator]");
@@ -66,27 +66,27 @@ bool Accumulator::deepCopyFrom(const FeatureExtraction *featureExtraction){
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << endl;
+    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
     
-bool Accumulator::computeFeatures(const VectorDouble &inputVector){
+bool Accumulator::computeFeatures(const VectorFloat &inputVector){
     
 #ifdef GRT_SAFE_CHECKING
     if( !initialized ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
 #endif
     
     //Add up the input vector, then add this to the last value
-    double sum = 0;
+    float_t sum = 0;
     for(UINT i=0; i<numInputDimensions; i++){
         sum += fabs( inputVector[i] );
     }
@@ -106,83 +106,54 @@ bool Accumulator::reset(){
     if( !initialized ) return false;
     return init(numInputDimensions,lastValueWeight);
 }
-    
-bool Accumulator::saveSettingsToFile(const string filename) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveSettingsToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool Accumulator::loadSettingsFromFile(const string filename){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadSettingsFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
-}
-
-bool Accumulator::saveSettingsToFile(fstream &file) const{
+bool Accumulator::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveSettingsToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveSettingsToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //Here is where you should add your own custom code to save any settings to a file, this should be done in three steps...
     
     //First, you should add a header (with no spaces) e.g.
-    file << "CUSTOM_FEATURE_EXTRACTION_FILE_V1.0" << endl;
+    file << "CUSTOM_FEATURE_EXTRACTION_FILE_V1.0" << std::endl;
 	
     //Second, you should save the base feature extraction settings to the file
     if( !saveBaseSettingsToFile( file ) ){
-        errorLog << "saveSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+        errorLog << "saveSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
         return false;
     }
     
     //Finally, you should add anything needed for your custom feature extraction module
     //For the accumulator we only need to save the lastValueWeight
-    file << "LastValueWeight: " << lastValueWeight << endl;
+    file << "LastValueWeight: " << lastValueWeight << std::endl;
     
     //NOTE: You should not close the file as this will be done by the function that calls this function
     return true;
 }
 
-bool Accumulator::loadSettingsFromFile(fstream &file){
+bool Accumulator::load( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadSettingsFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadSettingsFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Here is where you should add your own custom code to load any settings to a file, this should be done in three steps...
     
     //First, you should read and validate the header
     file >> word;
     if( word != "CUSTOM_FEATURE_EXTRACTION_FILE_V1.0" ){
-        errorLog << "loadSettingsFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadSettingsFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;
     }
     
     //Second, you should load the base feature extraction settings to the file
     if( !loadBaseSettingsFromFile( file ) ){
-        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
         return false;
     }
     
@@ -190,7 +161,7 @@ bool Accumulator::loadSettingsFromFile(fstream &file){
     //For the accumulator we only need to load the lastValueWeight
     file >> word;
     if( word != "LastValueWeight:" ){
-        errorLog << "loadSettingsFromFile(fstream &file) - Failed to load last value weight!" << endl;
+        errorLog << "loadSettingsFromFile(fstream &file) - Failed to load last value weight!" << std::endl;
         return false;
     }
     file >> lastValueWeight;
@@ -199,12 +170,12 @@ bool Accumulator::loadSettingsFromFile(fstream &file){
     return init(numInputDimensions,lastValueWeight);
 }
     
-bool Accumulator::init(UINT numDimensions,double lastValueWeight){
+bool Accumulator::init(UINT numDimensions,float_t lastValueWeight){
     
     initialized = false;
     
     if( numDimensions == 0 ){
-        errorLog << "init( UINT numDimensions ) - The number of input dimensions must be greater than zero!" << endl;
+        errorLog << "init( UINT numDimensions ) - The number of input dimensions must be greater than zero!" << std::endl;
         return false;
     }
     
@@ -224,22 +195,22 @@ bool Accumulator::init(UINT numDimensions,double lastValueWeight){
     return true;
 }
     
-double Accumulator::getLastValueWeight(){
+float_t Accumulator::getLastValueWeight(){
     if( !initialized ) return 0;
     return lastValueWeight;
 }
 
-double Accumulator::getLastValue(){
+float_t Accumulator::getLastValue(){
     if( !initialized ) return 0;
     return lastValue;
 }
     
-bool Accumulator::setLastValueWeight(double lastValueWeight){
+bool Accumulator::setLastValueWeight(float_t lastValueWeight){
     this->lastValueWeight = lastValueWeight;
     return true;
 }
     
-bool Accumulator::setLastValue(double lastValue){
+bool Accumulator::setLastValue(float_t lastValue){
     this->lastValue = lastValue;
     return true;
 }

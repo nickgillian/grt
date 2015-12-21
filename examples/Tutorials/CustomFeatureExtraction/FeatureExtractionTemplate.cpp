@@ -73,21 +73,21 @@ bool FeatureExtractionTemplate::deepCopyFrom(const FeatureExtraction *featureExt
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << endl;
+    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
     
-bool FeatureExtractionTemplate::computeFeatures(const VectorDouble &inputVector){
+bool FeatureExtractionTemplate::computeFeatures(const VectorFloat &inputVector){
     
 #ifdef GRT_SAFE_CHECKING
     if( !initialized ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - Not initialized!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << std::endl;
         return false;
     }
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << endl;
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
 #endif
@@ -104,51 +104,22 @@ bool FeatureExtractionTemplate::reset(){
     //Add your own custom reset code here, make sure this function returns true otherwise the pipeline reset will not work!
     return true;
 }
-    
-bool FeatureExtractionTemplate::saveSettingsToFile(const string filename) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveSettingsToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool FeatureExtractionTemplate::loadSettingsFromFile(const string filename){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadSettingsFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
-}
-
-bool FeatureExtractionTemplate::saveSettingsToFile(fstream &file) const{
+bool FeatureExtractionTemplate::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveSettingsToFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "saveSettingsToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //Here is where you should add your own custom code to save any settings to a file, this should be done in three steps...
     
     //First, you should add a header (with no spaces) e.g.
-    file << "CUSTOM_FEATURE_EXTRACTION_FILE_V1.0" << endl;
+    file << "CUSTOM_FEATURE_EXTRACTION_FILE_V1.0" << std::endl;
 	
     //Second, you should save the base feature extraction settings to the file
     if( !saveBaseSettingsToFile( file ) ){
-        errorLog << "saveSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << endl;
+        errorLog << "saveSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
         return false;
     }
     
@@ -158,14 +129,14 @@ bool FeatureExtractionTemplate::saveSettingsToFile(fstream &file) const{
     return true;
 }
 
-bool FeatureExtractionTemplate::loadSettingsFromFile(fstream &file){
+bool FeatureExtractionTemplate::load( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadSettingsFromFile(fstream &file) - The file is not open!" << endl;
+        errorLog << "loadSettingsFromFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    string word;
+    std::string word;
     
     //Here is where you should add your own custom code to load any settings to a file, this should be done in three steps...
     
@@ -173,13 +144,13 @@ bool FeatureExtractionTemplate::loadSettingsFromFile(fstream &file){
     file >> word;
     
     if( word != "CUSTOM_FEATURE_EXTRACTION_FILE_V1.0" ){
-        errorLog << "loadSettingsFromFile(fstream &file) - Invalid file format!" << endl;
+        errorLog << "loadSettingsFromFile(fstream &file) - Invalid file format!" << std::endl;
         return false;
     }
     
     //Second, you should load the base feature extraction settings to the file
     if( !loadBaseSettingsFromFile( file ) ){
-        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << endl;
+        errorLog << "loadBaseSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
         return false;
     }
     

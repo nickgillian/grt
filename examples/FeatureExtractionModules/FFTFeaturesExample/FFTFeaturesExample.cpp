@@ -18,9 +18,10 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-//Include the GRT header, you may have to change the path of this to match where the GRT is on your system
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -55,7 +56,7 @@ int main (int argc, const char * argv[])
         fftFeatures.computeFeatures( fft.getFeatureVector() );
 
         //Get the feature vector from the FFT features instance and print the values
-        vector< double > featureVector = fftFeatures.getFeatureVector();
+        VectorFloat featureVector = fftFeatures.getFeatureVector();
         for(UINT j=0; j<featureVector.size(); j++){
                 cout << featureVector[j] << "\t";
         }
@@ -66,13 +67,13 @@ int main (int argc, const char * argv[])
     }
     
     //Save the settings to a file
-    if( !fftFeatures.saveModelToFile( "FFTFeatures.grt" ) ){
+    if( !fftFeatures.save( "FFTFeatures.grt" ) ){
         cout << "Error: Failed to save fft features to settings file!" << endl;
         return EXIT_FAILURE;
     }
     
     //Load the setting back from a file again
-    if( !fftFeatures.loadModelFromFile( "FFTFeatures.grt" ) ){
+    if( !fftFeatures.load( "FFTFeatures.grt" ) ){
         cout << "Error: Failed to load fft features from settings file!" << endl;
         return EXIT_FAILURE;
     }

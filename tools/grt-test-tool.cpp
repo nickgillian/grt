@@ -3,8 +3,10 @@
  @brief This file implements a basic tool for testing classification models.
 */
 
+//You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 InfoLog infoLog("[grt-test-tool]");
 WarningLog warningLog("[WARNING grt-test-tool]");
@@ -132,7 +134,7 @@ bool saveResults( const GestureRecognitionPipeline &pipeline, const string &file
 
     file << pipeline.getTestAccuracy() << endl;
 
-    vector< UINT > classLabels = pipeline.getClassLabels();
+    Vector< UINT > classLabels = pipeline.getClassLabels();
 
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
         file << pipeline.getTestPrecision( classLabels[k] );
@@ -152,7 +154,7 @@ bool saveResults( const GestureRecognitionPipeline &pipeline, const string &file
         else file << endl;
     }
 
-    MatrixDouble confusionMatrix = pipeline.getTestConfusionMatrix();
+    MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
     for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
         for(UINT j=0; j<confusionMatrix.getNumCols(); j++){
             file << confusionMatrix[i][j];

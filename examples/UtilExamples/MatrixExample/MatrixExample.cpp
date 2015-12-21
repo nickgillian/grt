@@ -18,13 +18,15 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
     //Create an empty matrix for double data
-    Matrix<double> mat;
+    Matrix< double > mat;
     
     //Resize the matrix
     mat.resize( 100, 2 );
@@ -47,7 +49,7 @@ int main (int argc, const char * argv[])
     }
     
     //Add a new row at the very end of the matrix
-    VectorDouble newRow(2);
+    Vector< double > newRow(2);
     newRow[0] = 1000;
     newRow[1] = 2000;
     mat.push_back( newRow );
@@ -69,28 +71,28 @@ int main (int argc, const char * argv[])
     cout << endl;
     
     //Get the second row as a vector
-    VectorDouble rowVector = mat.getRowVector( 1 );
+    Vector< double > rowVector = mat.getRowVector( 1 );
     
     cout << "Row Vector Data: \n";
-    for(UINT i=0; i<rowVector.size(); i++){
+    for(UINT i=0; i<rowVector.getSize(); i++){
         cout << rowVector[i] << "\t";
     }
     cout << endl;
     
     //Get the second column as a vector
-    VectorDouble colVector = mat.getColVector( 1 );
+    Vector< double > colVector = mat.getColVector( 1 );
     
     cout << "Column Vector Data: \n";
-    for(UINT i=0; i<colVector.size(); i++){
+    for(UINT i=0; i<colVector.getSize(); i++){
         cout << colVector[i] << "\n";
     }
     cout << endl;
     
     //Get the entire matrix as a concatenated vector
-    VectorDouble concatVector = mat.getConcatenatedVector();
+    Vector< double > concatVector = mat.getConcatenatedVector();
     
     cout << "Concatenated Vector Data: \n";
-    for(UINT i=0; i<concatVector.size(); i++){
+    for(UINT i=0; i<concatVector.getSize(); i++){
         cout << concatVector[i] << "\n";
     }
     cout << endl;

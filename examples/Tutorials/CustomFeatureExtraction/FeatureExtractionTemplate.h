@@ -37,7 +37,7 @@
 #pragma once
 
 //Include the main GRT header to get access to the FeatureExtraction base class
-#include "GRT.h"
+#include <GRT/GRT.h>
 
 namespace GRT{
     
@@ -82,10 +82,10 @@ public:
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      This is where you should add your main feature extraction code.
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @param const VectorFloat &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector);
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -98,38 +98,25 @@ public:
     
     /**
      This saves the feature extraction settings to a file.
-     
-     @param const string filename: the filename to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveSettingsToFile(const string filename) const;
-    
-    /**
-     This saves the feature extraction settings to a file.
-     
-     @param fstream &file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool loadSettingsFromFile(const string filename);
-    
-    /**
-     This saves the feature extraction settings to a file.
      This overrides the saveSettingsToFile function in the FeatureExtraction base class.
      You should add your own custom code to this function to define how your feature extraction module is saved to a file.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveSettingsToFile(fstream &file) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads the feature extraction settings from a file.
      This overrides the loadSettingsFromFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadSettingsFromFile(fstream &file);
+    virtual bool load( std::fstream &file );
+
+    using FeatureExtraction::save;
+    using FeatureExtraction::load;
 
     //You should add any custom public methods here...
 

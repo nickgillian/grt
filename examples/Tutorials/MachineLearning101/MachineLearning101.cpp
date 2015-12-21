@@ -30,8 +30,10 @@
  - get some test metrics (accuracy, precision, recall, confusion matrix) about how successful the classification was
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -95,7 +97,7 @@ int main (int argc, const char * argv[])
     cout << endl;
     
     //Print the confusion matrix
-    MatrixDouble confusionMatrix = pipeline.getTestConfusionMatrix();
+    MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
     cout << "Confusion Matrix: \n";
     for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
         for(UINT j=0; j<confusionMatrix.getNumCols(); j++){

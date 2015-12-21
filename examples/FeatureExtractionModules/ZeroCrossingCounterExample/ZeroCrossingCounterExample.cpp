@@ -42,8 +42,10 @@
  - Load the ZeroCrossingCounter settings from a file
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -51,7 +53,7 @@ int main (int argc, const char * argv[])
     //Load the example data
     ClassificationData data;
     
-    if( !data.loadDatasetFromFile("WiiAccShakeData.grt") ){
+    if( !data.load("WiiAccShakeData.grt") ){
         cout << "ERROR: Failed to load data from file!\n";
         return EXIT_FAILURE;
     }
@@ -78,22 +80,22 @@ int main (int argc, const char * argv[])
         }
         
         //Get the latest feature vector
-        VectorDouble featureVector = zeroCrossingCounter.getFeatureVector();
+        VectorFloat featureVector = zeroCrossingCounter.getFeatureVector();
         
         //Write the features to the file
         cout << "FeatureVector: ";
-        for(UINT j=0; j<featureVector.size(); j++){
+        for(UINT j=0; j<featureVector.getSize(); j++){
             cout << featureVector[j];
-            if( j != featureVector.size()-1 ) cout << "\t";
+            if( j != featureVector.getSize()-1 ) cout << "\t";
         }
         cout << endl;
     }
     
     //Save the zero crossing counter settings to a file
-    zeroCrossingCounter.saveModelToFile("ZeroCrossingCounterSettings.grt");
+    zeroCrossingCounter.save("ZeroCrossingCounterSettings.grt");
     
     //You can then load the settings again if you need them
-    zeroCrossingCounter.loadModelFromFile("ZeroCrossingCounterSettings.grt");
+    zeroCrossingCounter.load("ZeroCrossingCounterSettings.grt");
     
     return EXIT_SUCCESS;
 }

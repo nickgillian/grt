@@ -29,8 +29,10 @@
  This example provides a basic makefile template for the GRT.
 */
 
+//You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {

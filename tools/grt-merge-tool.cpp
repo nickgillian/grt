@@ -3,8 +3,10 @@
  @brief This file implements a basic tool for merging multiple data files into one dataset and saving the new dataset to a file.
 */
 
+//You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 InfoLog infoLog("[grt-merge-tool]");
 WarningLog warningLog("[WARNING grt-merge-tool]");
@@ -28,7 +30,7 @@ int main(int argc, char * argv[])
     const string outputFilename = argv[2];
 
     //Parse the data directory for files
-    vector< string > filenames;
+    Vector< string > filenames;
     infoLog << "- Parsing data directory: " << inputDirectory << endl;
 
     if( !Util::parseDirectory( inputDirectory, ".csv", filenames ) ){
@@ -36,13 +38,13 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE; 
     }
 
-    if( filenames.size() == 0 ){
+    if( filenames.getSize() == 0 ){
         errorLog << "Failed to find any files in the input directory: " << inputDirectory << endl;
         return EXIT_FAILURE; 
     }
 
     ClassificationData data;
-    unsigned int numFiles = (unsigned int)filenames.size();
+    unsigned int numFiles = filenames.getSize();
     bool dataLoaded = false;
     for(unsigned int i=0; i<numFiles; i++){
         //Load the data

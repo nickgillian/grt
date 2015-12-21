@@ -18,8 +18,10 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -39,8 +41,8 @@ int main (int argc, const char * argv[])
 	cout << "Random Gaussian: " << valueGauss << endl;
 
 	//Generate a random weighted value
-	vector< int > values(3);
-	vector< double > weights(3);
+	Vector< int > values(3);
+	VectorFloat weights(3);
 
 	//Set the possible values that can be picked
 	values[0] = 1;

@@ -3,8 +3,10 @@
  @brief This file implements a basic tool for processing data files and training a logistic regression model.
 */
 
+//You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 InfoLog infoLog("[grt-log-reg-tool]");
 WarningLog warningLog("[WARNING grt-log-reg-tool]");

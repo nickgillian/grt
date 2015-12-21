@@ -22,18 +22,17 @@
  GRT KMeans Example
  This examples demonstrates how to use the KMeans module for unsupervised clustering.
 
- The LabelledClusterData.csv data contains 1000 training samples, randomly generated from 3 clusters.
+ The ClusterData.csv data contains 1000 training samples, randomly generated from 3 clusters.
  The 3 clusters are centered at:
  1: 2 6
  2: 6 4
  3: 7 8
-
- 
 */
 
 //You might need to set the specific path of the GRT header relative to your project
-#include "GRT.h"
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -55,7 +54,7 @@ int main (int argc, const char * argv[])
 	//Load some training data to train the KMeans algorithm
     ClassificationData trainingData;
     
-    if( !trainingData.loadDatasetFromCSVFile("LabelledClusterData.csv") ){
+    if( !trainingData.load("LabelledClusterData.csv") ){
         cout << "Failed to load training data!\n";
         return EXIT_FAILURE;
     }
@@ -68,7 +67,7 @@ int main (int argc, const char * argv[])
 	
 	//Get the K clusters from the KMeans instance and print them
 	cout << "\nClusters:\n";
-	Matrix< double > clusters = kmeans.getClusters();
+	MatrixFloat clusters = kmeans.getClusters();
     for(unsigned int k=0; k<clusters.getNumRows(); k++){
 		for(unsigned int n=0; n<clusters.getNumCols(); n++){
 			cout << clusters[k][n] << "\t";

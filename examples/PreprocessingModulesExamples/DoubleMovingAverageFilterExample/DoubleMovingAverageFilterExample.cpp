@@ -35,8 +35,10 @@
  - Load the DoubleMovingAverageFilter settings from a file
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -58,10 +60,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the filter settings to a file
-    filter.saveModelToFile("DoubleMovingAverageFilterSettings.grt");
+    filter.save("DoubleMovingAverageFilterSettings.grt");
     
     //We can then load the settings later if needed
-    filter.loadModelFromFile("DoubleMovingAverageFilterSettings.grt");
+    filter.load("DoubleMovingAverageFilterSettings.grt");
     
     return EXIT_SUCCESS;
 }

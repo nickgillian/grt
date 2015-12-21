@@ -36,8 +36,10 @@
  - Load the LowPassFilter settings from a file
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -88,10 +90,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the LowPassFilter settings to a file
-    lpf.saveModelToFile("LowPassFilterSettings.grt");
+    lpf.save("LowPassFilterSettings.grt");
     
     //We can then load the settings later if needed
-    lpf.loadModelFromFile("LowPassFilterSettings.grt");
+    lpf.load("LowPassFilterSettings.grt");
 
     return EXIT_SUCCESS;
 }

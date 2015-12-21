@@ -18,13 +18,15 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
     //Create an empty matrix double
-    MatrixDouble matrix;
+    MatrixFloat matrix;
     
     //Resize the matrix
     matrix.resize( 100, 2 );
@@ -41,7 +43,7 @@ int main (int argc, const char * argv[])
     }
     
     //Add a new row at the very end of the matrix
-    VectorDouble newRow(2);
+    VectorFloat newRow(2);
     newRow[0] = 1000;
     newRow[1] = 2000;
     matrix.push_back( newRow );
@@ -57,7 +59,7 @@ int main (int argc, const char * argv[])
     cout << endl;
     
     //Get the second row as a vector
-    VectorDouble rowVector = matrix.getRowVector( 1 );
+    VectorFloat rowVector = matrix.getRow( 1 );
     
     cout << "Row Vector Data: \n";
     for(UINT i=0; i<rowVector.size(); i++){
@@ -66,7 +68,7 @@ int main (int argc, const char * argv[])
     cout << endl;
     
     //Get the second column as a vector
-    VectorDouble colVector = matrix.getColVector( 1 );
+    VectorFloat colVector = matrix.getCol( 1 );
     
     cout << "Column Vector Data: \n";
     for(UINT i=0; i<colVector.size(); i++){
@@ -75,7 +77,7 @@ int main (int argc, const char * argv[])
     cout << endl;
     
     //Get the mean of each column
-	VectorDouble mean = matrix.getMean();
+	VectorFloat mean = matrix.getMean();
 	
 	cout << "Mean: \n";
     for(UINT i=0; i<mean.size(); i++){
@@ -84,7 +86,7 @@ int main (int argc, const char * argv[])
     cout << endl;
 	
 	//Get the Standard Deviation of each column
-	VectorDouble stdDev = matrix.getStdDev();
+	VectorFloat stdDev = matrix.getStdDev();
 	
 	cout << "StdDev: \n";
     for(UINT i=0; i<stdDev.size(); i++){
@@ -93,7 +95,7 @@ int main (int argc, const char * argv[])
     cout << endl;
 	
 	//Get the covariance matrix
-	MatrixDouble cov = matrix.getCovarianceMatrix();
+	MatrixFloat cov = matrix.getCovarianceMatrix();
 	
 	cout << "Covariance Matrix: \n";
     for(UINT i=0; i<cov.getNumRows(); i++){
@@ -104,7 +106,7 @@ int main (int argc, const char * argv[])
     }
     cout << endl;
 
-	vector< MinMax > ranges = matrix.getRanges();
+	Vector< MinMax > ranges = matrix.getRanges();
 	
 	cout << "Ranges: \n";
     for(UINT i=0; i<ranges.size(); i++){

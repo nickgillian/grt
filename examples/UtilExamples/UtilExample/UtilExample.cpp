@@ -29,12 +29,14 @@
  instance, you can directly call: Util::sleep( 1000 ); to use the sleep function.  
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
-void print(const string &info,const vector< double > &d){
+void print(const string &info,const VectorFloat &d){
 	cout << info << " ";
-	for(size_t i=0; i<d.size(); i++)
+	for(size_t i=0; i<d.getSize(); i++)
 		cout << d[i] << "\t";
 	cout << endl;
 }
@@ -61,7 +63,7 @@ int main (int argc, const char * argv[])
 	cout << "String as value: " << Util::stringToBool( "true" ) << endl;
 	
 	//Perform some functions on the following vector
-	vector< double > data;
+	VectorFloat data;
 	data.push_back(1.0); 
 	data.push_back(1.4); 
 	data.push_back(2.5); 
@@ -69,15 +71,15 @@ int main (int argc, const char * argv[])
 	data.push_back(5.2);
 	
 	//Scale the data 
-	vector< double > scaledData = Util::scale(data,1,5,0,1);
+	VectorFloat scaledData = Util::scale(data,1,5,0,1);
 	print( "ScaledData:", scaledData);
 	
 	//Normalize the data
-	vector< double > normData = Util::normalize(data);
+	VectorFloat normData = Util::normalize(data);
 	print( "NormData:", normData);
 	
 	//Limit the data
-	vector< double > limitData = Util::scale(data,2,4);
+	VectorFloat limitData = Util::scale(data,2,4);
 	print( "LimitData:", limitData);
 	
 	//Get the sum, min and max values

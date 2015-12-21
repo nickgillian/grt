@@ -53,6 +53,7 @@
 //You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -99,7 +100,7 @@ int main (int argc, const char * argv[])
     }
 
     //Use the test dataset to test the AdaBoost model
-    float_t accuracy = 0;
+    double accuracy = 0;
     for(UINT i=0; i<testData.getNumSamples(); i++){
         //Get the i'th test sample
         UINT classLabel = testData[i].getClassLabel();
@@ -113,7 +114,7 @@ int main (int argc, const char * argv[])
 
         //Get the predicted class label
         UINT predictedClassLabel = adaBoost.getPredictedClassLabel();
-        float_t maximumLikelhood = adaBoost.getMaximumLikelihood();
+        double maximumLikelhood = adaBoost.getMaximumLikelihood();
         VectorFloat classLikelihoods = adaBoost.getClassLikelihoods();
         VectorFloat classDistances = adaBoost.getClassDistances();
 
@@ -125,7 +126,7 @@ int main (int argc, const char * argv[])
         cout << endl;
     }
 
-    cout << "Test Accuracy: " << accuracy/float_t(testData.getNumSamples())*100.0 << "%" << endl;
+    cout << "Test Accuracy: " << accuracy/double(testData.getNumSamples())*100.0 << "%" << endl;
 
     return EXIT_SUCCESS;
 }

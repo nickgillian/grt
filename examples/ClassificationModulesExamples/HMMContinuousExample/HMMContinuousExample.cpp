@@ -41,8 +41,9 @@
 */
 
 //You might need to set the specific path of the GRT header relative to your project
-#include "GRT.h"
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main(int argc, const char * argv[]){
     
@@ -100,8 +101,8 @@ int main(int argc, const char * argv[]){
     }
 
     //Compute the accuracy of the HMM models using the test data
-    float_t numCorrect = 0;
-    float_t numTests = 0;
+    double numCorrect = 0;
+    double numTests = 0;
     for(UINT i=0; i<testData.getNumSamples(); i++){
         
         UINT classLabel = testData[i].getClassLabel();
@@ -110,8 +111,8 @@ int main(int argc, const char * argv[]){
         if( classLabel == hmm.getPredictedClassLabel() ) numCorrect++;
         numTests++;
         
-        VectorDouble classLikelihoods = hmm.getClassLikelihoods();
-        VectorDouble classDistances = hmm.getClassDistances();
+        VectorFloat classLikelihoods = hmm.getClassLikelihoods();
+        VectorFloat classDistances = hmm.getClassDistances();
         
         cout << "ClassLabel: " << classLabel;
         cout << " PredictedClassLabel: " << hmm.getPredictedClassLabel();

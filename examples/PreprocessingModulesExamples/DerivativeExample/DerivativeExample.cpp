@@ -37,8 +37,10 @@
  - Load the Derivative settings from a file
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -65,12 +67,12 @@ int main (int argc, const char * argv[])
     }
     
     //Save the derivative settings to a file
-    deriv1.saveModelToFile("Derivative1Settings.grt");
-    deriv2.saveModelToFile("Derivative2Settings.grt");
+    deriv1.save("Derivative1Settings.grt");
+    deriv2.save("Derivative2Settings.grt");
     
     //We can then load the settings later if needed
-    deriv1.loadModelFromFile("Derivative1Settings.grt");
-    deriv2.loadModelFromFile("Derivative2Settings.grt");
+    deriv1.load("Derivative1Settings.grt");
+    deriv2.load("Derivative2Settings.grt");
 
     return EXIT_SUCCESS;
 }

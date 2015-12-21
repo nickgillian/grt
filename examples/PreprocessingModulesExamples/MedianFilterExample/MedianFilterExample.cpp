@@ -37,8 +37,10 @@
  - Load the MedianFilter settings from a file
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -54,7 +56,7 @@ int main (int argc, const char * argv[])
         double filteredValue = filter.filter( i );
         
         //Get the current data in the circular buffer
-        vector< VectorDouble > data = filter.getDataBuffer();
+        Vector< VectorFloat > data = filter.getDataBuffer();
         
         //Print the results
         cout << "input value: " << i;
@@ -69,10 +71,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the filter settings to a file
-    filter.saveModelToFile("MedianFilterSettings.grt");
+    filter.save("MedianFilterSettings.grt");
     
     //We can then load the settings later if needed
-    filter.loadModelFromFile("MedianFilterSettings.grt");
+    filter.load("MedianFilterSettings.grt");
     
     return EXIT_SUCCESS;
 }

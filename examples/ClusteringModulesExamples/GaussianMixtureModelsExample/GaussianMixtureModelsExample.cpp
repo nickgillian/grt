@@ -24,11 +24,12 @@
  */
 
 //You might need to set the specific path of the GRT header relative to your project
-#include "GRT.h"
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 //This is a helper function to generate some dummy training data
-MatrixDouble generateTrainingData(const UINT numClusters,const UINT numDimensions=3,const UINT numSamples=1000);
+MatrixFloat generateTrainingData(const UINT numClusters,const UINT numDimensions=3,const UINT numSamples=1000);
 
 int main (int argc, const char * argv[])
 {
@@ -38,7 +39,7 @@ int main (int argc, const char * argv[])
     UINT numSamples = 10000;
     
 	//Generate some training data to train the GMM algorithm
-    MatrixDouble trainingData = generateTrainingData( numClusters, numDimensions, numSamples );
+    MatrixFloat trainingData = generateTrainingData( numClusters, numDimensions, numSamples );
     
     //Setup the GMM instance
     GaussianMixtureModels gmm;
@@ -58,21 +59,21 @@ int main (int argc, const char * argv[])
     cout << "GMM Trained in " << gmm.getNumTrainingIterationsToConverge() << " iterations.\n\n";
     
     //Save the model to a file
-    if( !gmm.saveModelToFile( "GMM.grt" ) ){
+    if( !gmm.save( "GMM.grt" ) ){
         cout << "Failed to save model to file!\n";
         return EXIT_FAILURE;
     }
     
     //Load the model back from a file
-    if( !gmm.loadModelFromFile( "GMM.grt" ) ){
+    if( !gmm.load( "GMM.grt" ) ){
         cout << "Failed to load model from file!\n";
         return EXIT_FAILURE;
     }
     
 	//Get the clusters from the GMM instance and print them
     //Note that the clusters may not be in the same order as they appear in the original model used to generate the training data
-    MatrixDouble mu = gmm.getMu();
-    vector< MatrixDouble > sigma = gmm.getSigma();
+    MatrixFloat mu = gmm.getMu();
+    Vector< MatrixFloat > sigma = gmm.getSigma();
 	
     cout << "Mu:\n";
     for(unsigned int k=0; k<mu.getNumRows(); k++){
@@ -97,14 +98,14 @@ int main (int argc, const char * argv[])
     return EXIT_SUCCESS;
 }
 
-MatrixDouble generateTrainingData(const UINT numClusters,const UINT numDimensions,const UINT numSamples){
+MatrixFloat generateTrainingData(const UINT numClusters,const UINT numDimensions,const UINT numSamples){
     
     Random rand;
-    MatrixDouble data(numSamples,numDimensions);
+    MatrixFloat data(numSamples,numDimensions);
     
     //Generate a random model
-    MatrixDouble mu(numClusters,numDimensions);
-    MatrixDouble sigma(numClusters,numDimensions);
+    MatrixFloat mu(numClusters,numDimensions);
+    MatrixFloat sigma(numClusters,numDimensions);
     for(UINT k=0; k<numClusters; k++){
         for(UINT n=0; n<numDimensions; n++){
             mu[k][n] = rand.getRandomNumberUniform(-10,10);

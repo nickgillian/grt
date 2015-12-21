@@ -3,8 +3,10 @@
  @brief This file implements a basic tool for processing data files and training a random forest model.
 */
 
+//You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 InfoLog infoLog("[grt-rf-tool]");
 WarningLog warningLog("[WARNING grt-rf-tool]");
@@ -175,12 +177,12 @@ bool train( CommandLineParser &parser ){
     }
 
     const unsigned int N = trainingData.getNumDimensions();
-    std::vector< ClassTracker > tracker = trainingData.getClassTracker();
+    Vector< ClassTracker > tracker = trainingData.getClassTracker();
     infoLog << "- Num training samples: " << trainingData.getNumSamples() << endl;
     infoLog << "- Num dimensions: " << N << endl;
     infoLog << "- Num classes: " << trainingData.getNumClasses() << endl;
     infoLog << "- Class stats: " << endl;
-    for(size_t i=0; i<tracker.size(); i++){
+    for(unsigned int i=0; i<tracker.getSize(); i++){
         infoLog << "- class " << tracker[i].classLabel << " number of samples: " << tracker[i].counter << endl;
     }
     
@@ -254,7 +256,7 @@ bool combineModels( CommandLineParser &parser ){
         return false;
     }
 
-    vector< string > files;
+    Vector< string > files;
 
     infoLog << "- Parsing data directory: " << directoryPath << endl;
 
@@ -266,9 +268,9 @@ bool combineModels( CommandLineParser &parser ){
 
     RandomForests forest; //Used to validate the random forest type
     GestureRecognitionPipeline *mainPipeline = NULL; // Points to the first valid pipeline that all the models will be merged to
-    std::vector< GestureRecognitionPipeline* > pipelineBuffer; //Stores the pipeline for each file that is loaded
+    Vector< GestureRecognitionPipeline* > pipelineBuffer; //Stores the pipeline for each file that is loaded
     unsigned int inputVectorSize = 0; //Set to zero to mark we haven't loaded any models yet
-    const unsigned int numFiles = (unsigned int)files.size();
+    const unsigned int numFiles = files.getSize();
     bool mainPipelineSet = false;
     bool combineModelsSuccessful = false;
 
@@ -313,7 +315,7 @@ bool combineModels( CommandLineParser &parser ){
     if( mainPipelineSet ){
 
         //Combine the random forest models with the main pipeline model
-        const unsigned int numPipelines = (unsigned int)pipelineBuffer.size();
+        const unsigned int numPipelines = pipelineBuffer.getSize();
         RandomForests *mainForest = mainPipeline->getClassifier< RandomForests >();
 
         for(unsigned int i=0; i<numPipelines; i++){
@@ -337,7 +339,7 @@ bool combineModels( CommandLineParser &parser ){
     }
 
     //Cleanup the pipeline buffer
-    for(size_t i=0; i<pipelineBuffer.size(); i++){
+    for(unsigned int i=0; i<pipelineBuffer.getSize(); i++){
         delete pipelineBuffer[i];
         pipelineBuffer[i] = NULL;
     }
@@ -396,8 +398,8 @@ bool computeFeatureWeights( CommandLineParser &parser ){
 
     //Compute the feature weights
     if( combineWeights ){
-        VectorDouble weights = forest->getFeatureWeights();
-        if( weights.size() == 0 ){
+        VectorFloat weights = forest->getFeatureWeights();
+        if( weights.getSize() == 0 ){
             errorLog << "Failed to compute feature weights!" << endl;
             printUsage();
             return false;
@@ -407,7 +409,7 @@ bool computeFeatureWeights( CommandLineParser &parser ){
         fstream file;
         file.open( resultsFilename.c_str(), fstream::out );
         
-        const size_t N = weights.size();
+        const unsigned int N = weights.getSize();
         for(unsigned int i=0; i<N; i++){
             file << weights[i] << endl;
         }
@@ -418,7 +420,7 @@ bool computeFeatureWeights( CommandLineParser &parser ){
         double norm = 0.0;
         const unsigned int K = forest->getForestSize();
         const unsigned int N = forest->getNumInputDimensions();
-        VectorDouble tmp( N, 0.0 );
+        VectorFloat tmp( N, 0.0 );
         MatrixDouble weights(K,N);
 
         for(unsigned int i=0; i<K; i++){

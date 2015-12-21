@@ -48,7 +48,6 @@ You should run this example with one argument pointing to the data you want to l
 #include <GRT/GRT.h>
 using namespace GRT;
 using namespace std;
-using GRT::float_t;
 
 int main (int argc, const char * argv[])
 {
@@ -95,7 +94,7 @@ int main (int argc, const char * argv[])
     }
     
     //Use the test dataset to test the ANBC model
-    float_t accuracy = 0;
+    double accuracy = 0;
     for(UINT i=0; i<testData.getNumSamples(); i++){
         //Get the i'th test sample
         UINT classLabel = testData[i].getClassLabel();
@@ -120,7 +119,7 @@ int main (int argc, const char * argv[])
         cout << "TestSample: " << i <<  " ClassLabel: " << classLabel << " PredictedClassLabel: " << predictedClassLabel << endl;
     }
     
-    cout << "Test Accuracy: " << accuracy/float_t(testData.getNumSamples())*100.0 << "%" << endl;
+    cout << "Test Accuracy: " << accuracy/double(testData.getNumSamples())*100.0 << "%" << endl;
     
     return EXIT_SUCCESS;
 }

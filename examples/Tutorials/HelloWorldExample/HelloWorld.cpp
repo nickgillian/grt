@@ -18,8 +18,10 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -72,7 +74,7 @@ int main (int argc, const char * argv[])
     cout << "Test Accuracy: " << pipeline.getTestAccuracy() << endl;
     
     //Get the class labels
-    vector< UINT > classLabels = pipeline.getClassLabels();
+    Vector< UINT > classLabels = pipeline.getClassLabels();
     
     cout << "Precision: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
@@ -89,7 +91,7 @@ int main (int argc, const char * argv[])
         cout << "\t" << pipeline.getTestFMeasure( classLabels[k] );
     }cout << endl;
     
-    MatrixDouble confusionMatrix = pipeline.getTestConfusionMatrix();
+    MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
     cout << "ConfusionMatrix: \n";
     for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
         for(UINT j=0; j<confusionMatrix.getNumCols(); j++){

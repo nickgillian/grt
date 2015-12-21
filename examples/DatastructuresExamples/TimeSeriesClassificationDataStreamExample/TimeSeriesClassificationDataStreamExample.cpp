@@ -17,8 +17,11 @@
  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "GRT.h"
+
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -43,7 +46,7 @@ int main (int argc, const char * argv[])
         gestureLabel = k+1;
         
         //Get the init random walk position for this gesture
-        VectorDouble startPos( trainingData.getNumDimensions() );
+        VectorFloat startPos( trainingData.getNumDimensions() );
         for(UINT j=0; j<startPos.size(); j++){
             startPos[j] = random.getRandomNumberUniform(-1.0,1.0);
         }
@@ -52,7 +55,7 @@ int main (int argc, const char * argv[])
         for(UINT x=0; x<20; x++){
             //Generate the random walk
             UINT randomWalkLength = random.getRandomNumberInt(90, 110);
-            VectorDouble sample = startPos;
+            VectorFloat sample = startPos;
             for(UINT i=0; i<randomWalkLength; i++){
                 for(UINT j=0; j<sample.size(); j++){
                     sample[j] += random.getRandomNumberUniform(-0.1,0.1);
@@ -101,7 +104,7 @@ int main (int argc, const char * argv[])
     cout << "NumberOfClasses: " << numClasses << endl;
     
     //Print the start and end indexs of each time series
-    vector< TimeSeriesPositionTracker > positionTracker = trainingData.getTimeSeriesPositionTracker();
+    Vector< TimeSeriesPositionTracker > positionTracker = trainingData.getTimeSeriesPositionTracker();
     for(UINT i=0; i<positionTracker.size(); i++){
         cout << "Class Label: " << positionTracker[i].getClassLabel() << "\t";
         cout << "Start Index: " << positionTracker[i].getStartIndex() << "\t";
@@ -110,7 +113,7 @@ int main (int argc, const char * argv[])
     }
     
     //You can also get the minimum and maximum ranges of the data
-    vector< MinMax > ranges = trainingData.getRanges();
+    Vector< MinMax > ranges = trainingData.getRanges();
     
     cout << "The ranges of the dataset are: \n";
     for(UINT j=0; j<ranges.size(); j++){

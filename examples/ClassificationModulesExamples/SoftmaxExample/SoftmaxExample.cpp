@@ -40,6 +40,7 @@ You should run this example with one argument pointing to the data you want to l
 //You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -83,7 +84,7 @@ int main (int argc, const char * argv[])
     }
     
     //Use the test dataset to test the softmax model
-    float_t accuracy = 0;
+    double accuracy = 0;
     for(UINT i=0; i<testData.getNumSamples(); i++){
         //Get the i'th test sample
         UINT classLabel = testData[i].getClassLabel();
@@ -106,7 +107,7 @@ int main (int argc, const char * argv[])
         cout << "TestSample: " << i <<  " ClassLabel: " << classLabel << " PredictedClassLabel: " << predictedClassLabel << endl;
     }
     
-    cout << "Test Accuracy: " << accuracy/float_t(testData.getNumSamples())*100.0 << "%" << endl;
+    cout << "Test Accuracy: " << accuracy/double(testData.getNumSamples())*100.0 << "%" << endl;
     
     return EXIT_SUCCESS;
 }

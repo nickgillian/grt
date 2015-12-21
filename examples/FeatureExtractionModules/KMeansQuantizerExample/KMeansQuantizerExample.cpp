@@ -18,15 +18,17 @@
  demonstration.
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main(int argc, const char * argv[])
 {
 	//Load a basic dataset from a file
 	ClassificationData data;
 	
-	if( !data.loadDatasetFromFile("KMeansQuantizerTrainingData.txt") ){
+	if( !data.load("KMeansQuantizerTrainingData.txt") ){
 		cout << "ERROR: Failed to load training data!\n";
 		return EXIT_FAILURE;
 	}
@@ -41,13 +43,13 @@ int main(int argc, const char * argv[])
 	}
 	
 	//Save the model and settings to a file
-	if( !quantizer.saveModelToFile("KMeansQuantizerSettings.grt") ){
+	if( !quantizer.save("KMeansQuantizerSettings.grt") ){
 		cout << "ERROR: Failed to save settings to file!\n";
 		return EXIT_FAILURE;
 	}
 	
 	//Load the model and settings from a file
-	if( !quantizer.loadModelFromFile("KMeansQuantizerSettings.grt") ){
+	if( !quantizer.load("KMeansQuantizerSettings.grt") ){
 		cout << "ERROR: Failed to load settings from file!\n";
 		return EXIT_FAILURE;
 	}

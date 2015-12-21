@@ -3,8 +3,10 @@
  @brief This file implements a basic tool for spliting data and saving the new data to two files.
 */
 
+//You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 InfoLog infoLog("[grt-split-tool]");
 WarningLog warningLog("[WARNING grt-split-tool]");

@@ -35,8 +35,10 @@
  - Load the SavitzkyGolayFilter settings from a file
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -85,10 +87,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the filter settings to a file
-    sgf.saveModelToFile("SavitzkyGolayFilterSettings.grt");
+    sgf.save("SavitzkyGolayFilterSettings.grt");
     
     //We can then load the settings later if needed
-    sgf.loadModelFromFile("SavitzkyGolayFilterSettings.grt");
+    sgf.load("SavitzkyGolayFilterSettings.grt");
     
     return EXIT_SUCCESS;
 }

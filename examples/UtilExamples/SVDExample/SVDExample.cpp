@@ -18,13 +18,15 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
 	//Create a matrix for the test data
-	Matrix<double> data(4,2);
+	MatrixFloat data(4,2);
 	
 	//Populate the test data
 	data[0][0] = 1;	data[0][1] = 2;
@@ -50,9 +52,9 @@ int main (int argc, const char * argv[])
 	}
 	
 	//Get the U, V, and W results (V is sometimes called S in other packages like Matlab)
-	Matrix<double> u = svd.getU();
-	Matrix<double> v = svd.getV();
-	vector<double> w = svd.getW();
+	MatrixFloat u = svd.getU();
+	MatrixFloat v = svd.getV();
+	VectorFloat w = svd.getW();
 	
 	cout << "U:\n";
 	for(UINT i=0; i<u.getNumRows(); i++){
@@ -71,7 +73,7 @@ int main (int argc, const char * argv[])
 	}
 	
 	cout << "W:\n";
-	for(UINT i=0; i<w.size(); i++){
+	for(UINT i=0; i<w.getSize(); i++){
 		cout << w[i] << "\t";
 	}
 	cout << endl;

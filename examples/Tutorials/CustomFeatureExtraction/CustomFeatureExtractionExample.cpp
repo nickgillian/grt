@@ -13,7 +13,9 @@
 */
 
 #include "Accumulator.h"
+
 using namespace GRT;
+using namespace std;
 
 bool independentTest();
 bool pipelineTest();
@@ -44,13 +46,13 @@ bool independentTest(){
     Accumulator accumulator( N );
     
     //Save the accumulator to a file to test if this works
-    if( !accumulator.saveSettingsToFile( "AccumulatorSettings.txt" ) ){
+    if( !accumulator.save( "AccumulatorSettings.txt" ) ){
         cout << "ERROR: Failed to save features!\n";
         return false;
     }
     
     //Load the accumulator from a file to test if this works
-    if( !accumulator.loadSettingsFromFile( "AccumulatorSettings.txt" ) ){
+    if( !accumulator.load( "AccumulatorSettings.txt" ) ){
         cout << "ERROR: Failed to load features!\n";
         return false;
     }
@@ -72,7 +74,7 @@ bool independentTest(){
     
     //Run some dummy data through the feature extraction
     for(UINT i=0; i<100; i++){
-        VectorDouble inputVector(N);
+        VectorFloat inputVector(N);
         
         for(UINT j=0; j<N; j++){
             inputVector[j] = random.getRandomNumberUniform(-1,1);
@@ -84,7 +86,7 @@ bool independentTest(){
         }
         
         //Get the features and print the values
-        VectorDouble featureData = accumulator.getFeatureVector();
+        VectorFloat featureData = accumulator.getFeatureVector();
         
         cout << "i: " << i << "\t";
         cout << "input vector: ";
@@ -111,7 +113,7 @@ bool pipelineTest(){
     
     //Run some dummy data through the feature extraction
     for(UINT i=0; i<100; i++){
-        VectorDouble inputVector(N);
+        VectorFloat inputVector(N);
         
         for(UINT j=0; j<N; j++){
             inputVector[j] = random.getRandomNumberUniform(-1,1);
@@ -124,7 +126,7 @@ bool pipelineTest(){
         }
         
         //Get the features and print the values
-        VectorDouble featureData = pipeline.getFeatureExtractionData();
+        VectorFloat featureData = pipeline.getFeatureExtractionData();
         
         cout << "i: " << i << "\t";
         cout << "input vector: ";

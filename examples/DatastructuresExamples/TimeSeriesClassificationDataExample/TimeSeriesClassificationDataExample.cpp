@@ -18,8 +18,10 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -37,7 +39,7 @@ int main (int argc, const char * argv[])
     
     //Here you would record a time series, when you have finished recording the time series then add the training sample to the training data
     UINT gestureLabel = 1;
-    MatrixDouble trainingSample;
+    MatrixFloat trainingSample;
     
     //For now we will just add 10 x 20 random walk data timeseries
     Random random;
@@ -45,7 +47,7 @@ int main (int argc, const char * argv[])
         gestureLabel = k+1;
         
         //Get the init random walk position for this gesture
-        VectorDouble startPos( trainingData.getNumDimensions() );
+        VectorFloat startPos( trainingData.getNumDimensions() );
         for(UINT j=0; j<startPos.size(); j++){
             startPos[j] = random.getRandomNumberUniform(-1.0,1.0);
         }
@@ -58,7 +60,7 @@ int main (int argc, const char * argv[])
             
             //Generate the random walk
             UINT randomWalkLength = random.getRandomNumberInt(90, 110);
-            VectorDouble sample = startPos;
+            VectorFloat sample = startPos;
             for(UINT i=0; i<randomWalkLength; i++){
                 for(UINT j=0; j<startPos.size(); j++){
                     sample[j] += random.getRandomNumberUniform(-0.1,0.1);
@@ -100,7 +102,7 @@ int main (int argc, const char * argv[])
     cout << "NumberOfClasses: " << numClasses << endl;
     
     //You can also get the minimum and maximum ranges of the data
-    vector< MinMax > ranges = trainingData.getRanges();
+    Vector< MinMax > ranges = trainingData.getRanges();
     
     cout << "The ranges of the dataset are: \n";
     for(UINT j=0; j<ranges.size(); j++){

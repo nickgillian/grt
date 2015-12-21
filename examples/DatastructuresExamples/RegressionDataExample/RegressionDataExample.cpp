@@ -18,8 +18,10 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -41,8 +43,8 @@ int main (int argc, const char * argv[])
     Random random;
     for(UINT i=0; i<M; i++){
         if( i % (M/10) == 0 ) cout << ". ";
-        VectorDouble inputVector(N);
-        VectorDouble targetVector(T);
+        VectorFloat inputVector(N);
+        VectorFloat targetVector(T);
         
         //Generate the input vector
         for(UINT j=0; j<N; j++){

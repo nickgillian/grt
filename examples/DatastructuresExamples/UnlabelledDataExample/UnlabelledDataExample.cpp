@@ -18,8 +18,10 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
@@ -37,7 +39,7 @@ int main (int argc, const char * argv[])
     trainingData.setInfoText("This data contains some dummy data");
     
     //Here you would grab some data from your sensor and add it to the dataset
-    VectorDouble sample(3);
+    VectorFloat sample(3);
     
     //For now we will just add some random data
     Random random;
@@ -86,10 +88,10 @@ int main (int argc, const char * argv[])
     cout << "NumberOfDimensions: " << numDimensions << endl;
     
     //You can also get the minimum and maximum ranges of the data
-    vector< MinMax > ranges = trainingData.getRanges();
+    Vector< MinMax > ranges = trainingData.getRanges();
     
     cout << "The ranges of the dataset are: \n";
-    for(UINT j=0; j<ranges.size(); j++){
+    for(UINT j=0; j<ranges.getSize(); j++){
         cout << "Dimension: " << j << " Min: " << ranges[j].minValue << " Max: " << ranges[j].maxValue << endl;
     }
     

@@ -42,15 +42,17 @@
  - Load the MovementIndex settings from a file
 */
 
-#include "GRT.h"
+//You might need to set the specific path of the GRT header relative to your project
+#include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
     //Load the example data
     ClassificationData data;
     
-    if( !data.loadDatasetFromFile("WiiAccShakeData.grt") ){
+    if( !data.load("WiiAccShakeData.grt") ){
         cout << "ERROR: Failed to load data from file!\n";
         return EXIT_FAILURE;
     }
@@ -75,7 +77,7 @@ int main (int argc, const char * argv[])
         }
         
         //Get the latest feature vector
-        VectorDouble featureVector = movementIndex.getFeatureVector();
+        VectorFloat featureVector = movementIndex.getFeatureVector();
         
         //Write the features
         cout << "FeatureVector: ";
@@ -87,10 +89,10 @@ int main (int argc, const char * argv[])
     }
     
     //Save the MovementIndex settings to a file
-    movementIndex.saveModelToFile("MovementIndexSettings.grt");
+    movementIndex.save("MovementIndexSettings.grt");
     
     //You can then load the settings again if you need them
-    movementIndex.loadModelFromFile("MovementIndexSettings.grt");
+    movementIndex.load("MovementIndexSettings.grt");
     
     return EXIT_SUCCESS;
 }

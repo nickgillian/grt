@@ -34,7 +34,7 @@
 #pragma once
 
 //Include the main GRT header to get access to the FeatureExtraction base class
-#include "GRT.h"
+#include <GRT/GRT.h>
 
 namespace GRT{
     
@@ -43,15 +43,15 @@ public:
     /**
      Default Constructor.
      
-     @param UINT numDimensions: the number of dimensions in the input data, must be greater than 0. Default value = 1
-     @param double lastValueWeight: the weight assigned to the last input value. Default value = 0.9
+     @param numDimensions: the number of dimensions in the input data, must be greater than 0. Default value = 1
+     @param lastValueWeight: the weight assigned to the last input value. Default value = 0.9
      */
-    Accumulator(UINT numDimensions=1,double lastValueWeight=0.9);
+    Accumulator(UINT numDimensions=1,float_t lastValueWeight=0.9);
 	
     /**
      Copy constructor, copies the Accumulator from the rhs instance to this instance.
      
-     @param const Accumulator &rhs: another instance of this class from which the data will be copied to this instance
+     @param rhs: another instance of this class from which the data will be copied to this instance
      */
     Accumulator(const Accumulator &rhs);
     
@@ -63,7 +63,7 @@ public:
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance.
      
-     @param const Accumulator &rhs: another instance of this class from which the data will be copied to this instance
+     @param rhs: another instance of this class from which the data will be copied to this instance
      @return a reference to this instance
      */
     Accumulator& operator=(const Accumulator &rhs);
@@ -73,7 +73,7 @@ public:
      This function is used to deep copy the values from the input pointer to this instance of the FeatureExtraction module.
      This function is called by the GestureRecognitionPipeline when the user adds a new FeatureExtraction module to the pipeleine.
      
-     @param const FeatureExtraction *featureExtraction: a pointer to another instance of this class, the values of that instance will be cloned to this instance
+     @param featureExtraction: a pointer to another instance of this class, the values of that instance will be cloned to this instance
      @return returns true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const FeatureExtraction *featureExtraction);
@@ -82,10 +82,10 @@ public:
      Sets the FeatureExtraction computeFeatures function, overwriting the base FeatureExtraction function.
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
      
-     @param const VectorDouble &inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorDouble &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector);
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -97,80 +97,67 @@ public:
     
     /**
      This saves the feature extraction settings to a file.
-     
-     @param const string filename: the filename to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveSettingsToFile(const string filename) const;
-    
-    /**
-     This saves the feature extraction settings to a file.
-     
-     @param fstream &file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool loadSettingsFromFile(const string filename);
-    
-    /**
-     This saves the feature extraction settings to a file.
      This overrides the saveSettingsToFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to save the settings to
+     @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveSettingsToFile(fstream &file) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads the feature extraction settings from a file.
      This overrides the loadSettingsFromFile function in the FeatureExtraction base class.
      
-     @param fstream &file: a reference to the file to load the settings from
+     @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadSettingsFromFile(fstream &file);
+    virtual bool load( std::fstream &file );
 
     ///////////////////// Here are the custom methods for the accumulator /////////////////////
     
     /**
      This initilizes the accumulator instance.
      
-     @param UINT numDimensions: the number of dimensions in the input data, must be greater than 0
-     @param double lastValueWeight: the weight assigned to the last input value
+     @param numDimensions: the number of dimensions in the input data, must be greater than 0
+     @param lastValueWeight: the weight assigned to the last input value
      @return returns true if the instance was initilized successfully, false otherwise
      */
-    bool init(UINT numDimensions,double lastValueWeight);
+    bool init(UINT numDimensions,float_t lastValueWeight);
     
     /**
      Gets the last weight value. The lastWeightValue is the weight assigned to the last input.
      
      @return returns the lastValueWeight if the instance is initilized, 0 otherwise
      */
-    double getLastValueWeight();
+    float_t getLastValueWeight();
     
     /**
      Gets the last value. The lastValue is the (weighted) last value of the accumulator instance.
      
      @return returns the lastValue if the instance is initilized, 0 otherwise
      */
-    double getLastValue();
+    float_t getLastValue();
     
     /**
      Sets the lastValueWeight. The lastWeightValue is the weight assigned to the last input.
      
      @return returns true if the lastValueWeight was updated successfully, false otherwise
      */
-    bool setLastValueWeight(double lastValueWeight);
+    bool setLastValueWeight(float_t lastValueWeight);
     
     /**
      Sets the lastValue. The lastValue is the value added to the current input.
      
      @return returns true if the lastValue was updated successfully, false otherwise
      */
-    bool setLastValue(double lastValue);
+    bool setLastValue(float_t lastValue);
+
+    using FeatureExtraction::save;
+    using FeatureExtraction::load;
 
 protected:
-    double lastValueWeight;
-    double lastValue;
+    float_t lastValueWeight;
+    float_t lastValue;
     
     static RegisterFeatureExtractionModule< Accumulator > registerModule; //This is used to register the Accumulator module with the FeatureExtraction base class
 };
