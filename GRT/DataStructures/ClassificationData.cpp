@@ -1336,7 +1336,7 @@ MatrixDouble ClassificationData::getClassMean() const{
 	
 	for(UINT k=0; k<getNumClasses(); k++){
 		for(UINT j=0; j<numDimensions; j++){
-			mean[k][j] = counter[j] > 0 ? mean[k][j]/counter[j] : 0;
+			mean[k][j] = counter[k] > 0 ? mean[k][j]/counter[k] : 0;
 		}
 	}
 	
