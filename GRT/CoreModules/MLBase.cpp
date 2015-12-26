@@ -31,6 +31,7 @@ MLBase::MLBase(void){
     minNumEpochs = 0;
     maxNumEpochs = 100;
     validationSetSize = 20;
+    validationSetAccuracy = 0;
     minChange = 1.0e-5;
     learningRate = 0.1;
     useValidationSet = false;
@@ -63,6 +64,9 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     this->minNumEpochs = mlBase->minNumEpochs;
     this->maxNumEpochs = mlBase->maxNumEpochs;
     this->validationSetSize = mlBase->validationSetSize;
+    this->validationSetAccuracy = mlBase->validationSetAccuracy;
+    this->validationSetPrecision = mlBase->validationSetPrecision;
+    this->validationSetRecall = mlBase->validationSetRecall;
     this->minChange = mlBase->minChange;
     this->learningRate = mlBase->learningRate;
     this->rootMeanSquaredTrainingError = mlBase->rootMeanSquaredTrainingError;
@@ -123,6 +127,9 @@ bool MLBase::clear(){
     rootMeanSquaredTrainingError = 0;
     totalSquaredTrainingError = 0;
     trainingResults.clear();
+    validationSetPrecision.clear();
+    validationSetRecall.clear();
+    validationSetAccuracy = 0;
     return true;
 }
 
@@ -218,6 +225,18 @@ double MLBase::getRootMeanSquaredTrainingError() const{
 
 double MLBase::getTotalSquaredTrainingError() const{
     return totalSquaredTrainingError;
+}
+
+double MLBase::getValidationSetAccuracy() const {
+    return validationSetAccuracy;
+}
+
+VectorDouble MLBase::getValidationSetPrecision() const {
+    return validationSetPrecision;
+}
+
+VectorDouble MLBase::getValidationSetRecall() const {
+    return validationSetRecall;
 }
 
 bool MLBase::getTrained() const{ return trained; }

@@ -22,6 +22,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace GRT{
 
+#ifdef GRT_CXX11_ENABLED
+std::mutex Log::logMutex;
+#endif
+
 bool InfoLog::infoLoggingEnabled = true;
 ObserverManager< InfoLogMessage > InfoLog::observerManager;
     

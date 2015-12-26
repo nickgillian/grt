@@ -95,6 +95,31 @@ typedef unsigned int UINT;
 typedef signed int SINT;
 typedef unsigned long ULONG;
 #endif
+
+/**
+  @brief returns the filename (stripped of the system path) of the file using this macro
+*/
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
+/**
+  @brief converts x to a string for printing
+*/
+#define grt_to_str(x) (#x)
+
+#if !defined NDEBUG
+/**
+  @brief custom GRT assert function
+*/
+#define grt_assert(x) \
+do { \
+if (0 == (x)) { \
+fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __func__, __LINE__, grt_to_str(x) ); \
+abort(); \
+} \
+} while (0)
+#else
+#define grt_assert(x)
+#endif
     
 //Define any common GRT OS independent typedefs
 typedef std::vector<double> VectorDouble;

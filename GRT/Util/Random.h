@@ -269,9 +269,9 @@ public:
         unsigned int i = 0;
         const unsigned int rangeSize = endRange - startRange;
         
-        assert( rangeSize > 0 );
-        assert( endRange > startRange );
-        assert( subsetSize <= rangeSize );
+        grt_assert( rangeSize > 0 );
+        grt_assert( endRange > startRange );
+        grt_assert( subsetSize <= rangeSize );
         
         std::vector< unsigned int > indexs( rangeSize );
         std::vector< unsigned int > subset ( subsetSize );

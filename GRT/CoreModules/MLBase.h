@@ -440,6 +440,27 @@ public:
      @return returns the total squared error (on the training data during the training phase)
      */
     double getTotalSquaredTrainingError() const;
+
+    /**
+     Gets the accuracy of the validation set on the trained model, only valid if the model was trained with useValidationSet=true.
+     
+     @return returns the accuracy of validation set on the trained model
+     */
+    double getValidationSetAccuracy() const;
+
+    /**
+     Gets the precision of the validation set on the trained model, only valid if the model was trained with useValidationSet=true.
+     
+     @return returns the precision of the validation set on the trained model
+     */
+    VectorDouble getValidationSetPrecision() const;
+
+    /**
+     Gets the recall of the validation set on the trained model, only valid if the model was trained with useValidationSet=true.
+     
+     @return returns the recall of the validation set on the trained model
+     */
+    VectorDouble getValidationSetRecall() const;
     
     /**
      Returns true if a validation set should be used for training. If true, then the training dataset will be partitioned into a smaller training dataset
@@ -686,8 +707,11 @@ protected:
     double minChange;
     double rootMeanSquaredTrainingError;
     double totalSquaredTrainingError;
+    double validationSetAccuracy;
     bool useValidationSet;
     bool randomiseTrainingOrder;
+    VectorDouble validationSetPrecision;
+    VectorDouble validationSetRecall;
     Random random;
     vector< TrainingResult > trainingResults;
     TrainingResultsObserverManager trainingResultsObserverManager;

@@ -1,4 +1,5 @@
 #include "ThreadPool.h"
+#include <iostream>
 
 using namespace GRT;
 
@@ -26,11 +27,9 @@ ThreadPool::ThreadPool(const unsigned int poolSize)
 // the destructor joins all threads
 ThreadPool::~ThreadPool()
 {
+std::cout << "~ThreadPool()\n";
 #ifdef GRT_CXX11_ENABLED
-    {
-        std::unique_lock<std::mutex> lock(queue_mutex);
-        stop = true;
-    }
+    stop = true;
     condition.notify_all();
     for(std::thread &worker: workers)
         worker.join();
@@ -38,26 +37,37 @@ ThreadPool::~ThreadPool()
 }
 
 #ifdef GRT_CXX11_ENABLED
-void ThreadPool::launchThreads(const unsigned int poolSize){
+void ThreadPool::launchThreads( const unsigned int poolSize ){
     
-    for(unsigned int i = 0;i<poolSize; ++i)
+    //Start the worker thread, each thread will wait for incoming tasks and pop them off the queue when ready
+    for(unsigned int i = 0; i<poolSize; ++i)
         workers.emplace_back(
                              [this]
                              {
-                                 for(;;)
+                                 while( true )
                                  {
-                                     std::function<void()> task;
-                                     
-                                     {
-                                         std::unique_lock<std::mutex> lock(this->queue_mutex);
-                                         this->condition.wait(lock,[this]{ return this->stop || !this->tasks.empty(); });
-                                         if(this->stop && this->tasks.empty())
-                                             return;
+                                    std::function< void() > task;
+
+                                    //Lock the queue and wait for the condition to change
+                                    {
+                                        std::unique_lock<std::mutex> lock(this->queue_mutex);
+                                         this->condition.wait(lock,
+                                                              [this]{ return this->stop || !this->tasks.empty(); });
+                                         if(this->stop && this->tasks.empty()){
+                                            std::cout << "stopping worker!" << std::endl;
+                                            return;
+                                         }
                                          task = std::move(this->tasks.front());
                                          this->tasks.pop();
-                                     }
-                                     
-                                     task();
+                                    }
+                                    
+
+                                    //Otherwise grab the task from the front of the buffer
+                                    if( task ){
+                                        //Run the task
+                                        task();
+                                    }
+                                    
                                  }
                              }
                              );
