@@ -154,7 +154,8 @@ protected:
     
     bool computeBestSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const vector< UINT > &features, const vector< UINT > &classLabels, UINT &featureIndex, double &minError );
     bool computeError( const ClassificationData &trainingData, MatrixDouble &data, const vector< UINT > &classLabels, const UINT featureIndex, double &threshold, double &error );
-    
+    bool computeError( const ClassificationData &trainingData, MatrixDouble &data, const vector< UINT > &classLabels, vector< MinMax > ranges, vector< UINT > groupIndex, const UINT featureIndex, double &threshold, double &error );
+
     /**
      This saves the DecisionTreeNode custom parameters to a file. It will be called automatically by the Node base class
      if the saveToFile function is called.

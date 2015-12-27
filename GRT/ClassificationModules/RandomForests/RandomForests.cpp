@@ -183,6 +183,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
     if( useValidationSet ){
         validationSetAccuracy = 0;
         validationSetPrecision.resize( useNullRejection ? K+1 : K, 0 );
+        validationSetRecall.resize( useNullRejection ? K+1 : K, 0 );
     }
     
     //Flag that the main algorithm has been trained encase we need to trigger any callbacks
@@ -196,6 +197,9 @@ bool RandomForests::train_(ClassificationData &trainingData){
         //Get a balanced bootstrapped dataset
         UINT datasetSize = (UINT)(trainingData.getNumSamples() * bootstrappedDatasetWeight);
         ClassificationData data = trainingData.getBootstrappedDataset( datasetSize, true );
+
+        Timer timer;
+        timer.start();
  
         DecisionTree tree;
         tree.setDecisionTreeNode( *decisionTreeNode );
@@ -217,6 +221,9 @@ bool RandomForests::train_(ClassificationData &trainingData){
             clear();
             return false;
         }
+
+        double computeTime = timer.getMilliSeconds();
+        trainingLog << "Forest trained in " << (computeTime*0.001)/60.0 << " minutes" << endl;
 
         if( useValidationSet ){
             validationSetAccuracy += tree.getValidationSetAccuracy();

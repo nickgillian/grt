@@ -215,14 +215,8 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
     UINT bestFeatureIndex = 0;
     double bestThreshold = 0;
     double error = 0;
-    double giniIndexL = 0;
-    double giniIndexR = 0;
-    double weightL = 0;
-    double weightR = 0;
     vector< UINT > groupIndex(M);
-    VectorDouble groupCounter(2,0);
     vector< MinMax > ranges = trainingData.getRanges();
-    MatrixDouble classProbabilities(K,2);
     MatrixDouble data(M,1); //This will store our temporary data for each dimension
 
     //Randomly select which features we want to use
@@ -239,7 +233,7 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
             data[i][0] = trainingData[i][featureIndex];
         }
 
-        if( computeError( trainingData, data, classLabels, featureIndex, threshold, error ) ){
+        if( computeError( trainingData, data, classLabels, ranges, groupIndex, featureIndex, threshold, error ) ){
             //Store the best threshold and feature index
             if( error < minError ){
                 minError = error;
@@ -322,7 +316,7 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
      return true;
 }
 
-bool DecisionTreeClusterNode::computeError( const ClassificationData &trainingData, MatrixDouble &data, const vector< UINT > &classLabels, const UINT featureIndex, double &threshold, double &error ){
+bool DecisionTreeClusterNode::computeError( const ClassificationData &trainingData, MatrixDouble &data, const vector< UINT > &classLabels, vector< MinMax > ranges, vector< UINT > groupIndex, const UINT featureIndex, double &threshold, double &error ){
 
     error = 0;
     threshold = 0;
@@ -334,9 +328,7 @@ bool DecisionTreeClusterNode::computeError( const ClassificationData &trainingDa
     double giniIndexR = 0;
     double weightL = 0;
     double weightR = 0;
-    vector< UINT > groupIndex(M);
     VectorDouble groupCounter(2,0);
-    vector< MinMax > ranges = trainingData.getRanges();
     MatrixDouble classProbabilities(K,2);
 
     //Use this data to train a KMeans cluster with 2 clusters

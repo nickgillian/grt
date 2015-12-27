@@ -21,12 +21,12 @@
 /**
  GRT Util Example.
 
- This example demonstrates how to the GRT ThreadPool class to run multiple tasks in parrell.
+ This example demonstrates how to the GRT ThreadPool class to run multiple tasks in parrell. To use this example,
+ you need to compile the GRT with C++11 support.
 */
 
 #include "GRT.h"
 using namespace GRT;
-
 
 #ifdef GRT_CXX11_ENABLED
 
@@ -35,14 +35,13 @@ InfoLog infoLog;
 void task( const unsigned int numSteps, double &bestValue ){
 	infoLog << "starting task..." << std::endl;
 	Random random;
-	double value = random.getRandomNumberUniform( 0.0, 1.0 );
-	double maxValue = value;
+	bestValue = 0;
+	double value = 0;
 	for(unsigned int i=0; i<numSteps; i++){
 		value = random.getRandomNumberUniform( 0.0, 1.0 );
-		if( value > maxValue ) maxValue = value;
+		if( value > bestValue ) bestValue = value;
 	}
-	bestValue = maxValue;
-	infoLog << "end of task, maxValue: " << maxValue << std::endl;
+	infoLog << "end of task, maxValue: " << bestValue << std::endl;
 }
 
 int main (int argc, const char * argv[])
@@ -62,7 +61,7 @@ int main (int argc, const char * argv[])
 
 	//Add some tasks to the pool
 	for(unsigned int i=0; i<numTasks; i++){
-		status[i] = pool.enqueue( task, 10000, results[i] );
+		status[i] = pool.enqueue( task, 99999, results[i] );
 	}
 
 	//Wait for the tasks to complex
