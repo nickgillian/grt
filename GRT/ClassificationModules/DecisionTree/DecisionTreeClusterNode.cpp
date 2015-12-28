@@ -316,7 +316,7 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
      featureIndex = bestFeatureIndex;
 
      //Store the node size, feature index, best threshold and class probabilities for this node
-     set(M,featureIndex,bestThreshold,trainingData.getClassProbabilities(classLabels));
+     set( M, featureIndex, bestThreshold, trainingData.getClassProbabilities(classLabels) );
 
      return true;
 }
@@ -353,7 +353,7 @@ bool DecisionTreeClusterNode::computeError( const ClassificationData &trainingDa
     }
 
     //Set the split threshold as the mid point between the two clusters
-    MatrixFloat clusters = kmeans.getClusters();
+    const MatrixFloat &clusters = kmeans.getClusters();
     threshold = 0;
     for(UINT i=0; i<clusters.getNumRows(); i++){
         threshold += clusters[i][0];

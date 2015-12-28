@@ -194,7 +194,7 @@ public:
      
      @return returns a vector of DecisionTreeNodes
      */
-    const Vector< DecisionTreeNode* > getForest() const;
+    const Vector< DecisionTreeNode* > &getForest() const;
     
     /**
      Gets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be

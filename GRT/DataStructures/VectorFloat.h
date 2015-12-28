@@ -121,23 +121,38 @@ public:
      
      @return returns true if the vector was scaled, false otherwise
      */
-    bool scale(const float_t minTarget,const float_t maxTarget,const bool constrain);
+    bool scale(const float_t minTarget,const float_t maxTarget,const bool constrain = true);
     
     /**
      Scales the vector to a new range given by the min and max targets using the ranges as the source ranges.
      
      @return returns true if the vector was scaled, false otherwise
      */
-    bool scale(const float_t minSource,const float_t maxSource,const float_t minTarget,const float_t maxTarget,const bool constrain);
+    bool scale(const float_t minSource,const float_t maxSource,const float_t minTarget,const float_t maxTarget,const bool constrain = true);
 
+    /**
+     @return returns the minimum value in the vector
+     */
     float_t getMinValue() const;
 
+    /**
+     @return returns the maximum value in the vector
+     */
     float_t getMaxValue() const;
     
+    /**
+     @return returns the mean of the vector
+     */
     float_t getMean() const;
     
+    /**
+     @return returns the standard deviation of the vector
+     */
     float_t getStdDev() const;
     
+    /**
+     @return returns the minimum and maximum values in the vector
+     */
     MinMax getMinMax() const;
     
 protected:

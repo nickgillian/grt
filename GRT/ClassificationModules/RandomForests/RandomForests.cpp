@@ -636,7 +636,7 @@ float_t RandomForests::getBootstrappedDatasetWeight() const {
     return bootstrappedDatasetWeight;
 }
 
-const Vector< DecisionTreeNode* > RandomForests::getForest() const {
+const Vector< DecisionTreeNode* >& RandomForests::getForest() const {
     return forest;
 }
     
@@ -716,8 +716,8 @@ MatrixDouble RandomForests::getLeafNodeFeatureWeights( const bool normWeights ) 
     
 bool RandomForests::setForestSize(const UINT forestSize){
     if( forestSize > 0 ){
-        this->forestSize = forestSize;
         clear();
+        this->forestSize = forestSize;
         return true;
     }
     return false;

@@ -155,10 +155,10 @@ public:
     float_t getTheta(){ return finalTheta; }
     bool getModelTrained(){ return trained; }
 
-    VectorFloat getTrainingThetaLog() const{ return thetaTracker; }
-    MatrixFloat getClusters() const{ return clusters; }
-    Vector< UINT > getClassLabelsVector() const{ return assign; }
-    Vector< UINT > getClassCountVector() const{ return count; }
+    const VectorFloat& getTrainingThetaLog() const { return thetaTracker; }
+    const MatrixFloat& getClusters() const { return clusters; }
+    const Vector< UINT >& getClassLabelsVector() const { return assign; }
+    const Vector< UINT >& getClassCountVector() const { return count; }
     
     //Setters
     bool setComputeTheta(const bool computeTheta);

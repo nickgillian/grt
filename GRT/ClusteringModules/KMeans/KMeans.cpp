@@ -208,12 +208,12 @@ bool KMeans::predict_(VectorFloat &inputVector){
     
     if( useScaling ){
         for(UINT n=0; n<numInputDimensions; n++){
-            inputVector[n] = scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0, 1);
+            inputVector[n] = grt_scale(inputVector[n], ranges[n].minValue, ranges[n].maxValue, 0.0, 1.0);
         }
     }
 	
     const float_t sigma = 1.0;
-    const float_t gamma = 1.0 / (2*SQR(sigma));
+    const float_t gamma = 1.0 / (2.0*grt_sqr(sigma));
     float_t sum = 0;
     float_t dist = 0;
 	UINT minIndex = 0;
@@ -360,7 +360,7 @@ UINT KMeans::estep(const MatrixFloat &data) {
 			for (k=0; k < numClusters; k++) {
 				d = 0.0;
 				for (n=0; n < numInputDimensions; n++)
-					d += SQR( data[m][n]-clusters[k][n] );
+					d += grt_sqr( data[m][n]-clusters[k][n] );
 				if (d <= dmin){ dmin = d; kmin = k; }
 			}
 			if ( kmin != assign[m] ){
@@ -387,8 +387,9 @@ void KMeans::mstep(const MatrixFloat &data) {
 
     for (k=0; k < numClusters; k++) {
         if (count[k] > 0){
+            float_t countNorm = 1.0 / count[k];
             for (n=0; n < numInputDimensions; n++){
-                clusters[k][n] /= float_t(count[k]);
+                clusters[k][n] *= countNorm;
             }
         }
     }
@@ -403,9 +404,9 @@ float_t KMeans::calculateTheta(const MatrixFloat &data){
 		k = assign[m];
         sum = 0;
 		for(n=0; n < numInputDimensions; n++){
-				sum += SQR(clusters[k][n] - data[m][n]);
+		  sum += grt_sqr(clusters[k][n] - data[m][n]);
 		}
-		theta += sqrt(sum);
+		theta += grt_sqrt(sum);
 	}
     theta /= numTrainingSamples;
 
@@ -431,7 +432,7 @@ bool KMeans::saveModelToFile( std::fstream &file ) const{
         file << "Clusters:\n";
 
         for(UINT k=0; k<numClusters; k++){
-           for(UINT n=0; n<numInputDimensions; n++){
+            for(UINT n=0; n<numInputDimensions; n++){
                 file << clusters[k][n] << "\t";
            }file << std::endl;
         }
