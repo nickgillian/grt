@@ -33,10 +33,12 @@ public:
             x.resize(numDimensions,0);
         }
     }
+    
     Particle(const Particle &rhs){
         this->w = rhs.w;
         this->x = rhs.x;
     }
+
     virtual ~Particle(){
         
     }
@@ -50,6 +52,10 @@ public:
     }
     
     float_t& operator[](const unsigned int &i){
+        return x[i];
+    }
+
+    const float_t& operator[](const unsigned int &i) const {
         return x[i];
     }
     

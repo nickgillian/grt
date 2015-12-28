@@ -43,21 +43,21 @@ public:
     /**
      Default Constructor
     */
-	Vector(){}
+	//Vector(){}
     
     /**
     Constructor, sets the size of the vector
      
      @param size: the size of the vector
     */
-	Vector( const unsigned int size ):data(size){}
+	Vector( const unsigned int size = 0 ):std::vector< T >(size){}
 
     /**
     Constructor, sets the size of the vector and sets all elements to value
      
      @param size: the size of the vector
     */
-    Vector( const unsigned int size, const T &value ):data(size, value){}
+    Vector( const unsigned int size, const T &value ):std::vector< T >(size, value){}
     
     /**
      Copy Constructor, copies the values from the rhs Vector to this Vector instance
@@ -65,7 +65,11 @@ public:
      @param rhs: the Vector from which the values will be copied
     */
 	Vector( const Vector &rhs ){
-        this->data = rhs.data;
+        UINT N = rhs.getSize();
+        if( N > 0 ){
+            this->resize( N );
+            std::copy( rhs.begin(), rhs.end(), this->begin() );
+        }else this->clear();
 	}
     
     /**
@@ -74,7 +78,11 @@ public:
      @param rhs: the base class instance from which the values will be copied
     */
     Vector( const std::vector< T > &rhs ){
-        this->data = rhs;
+        UINT N = (UINT)rhs.size();
+        if( N > 0 ){
+            this->resize( N );
+            std::copy( rhs.begin(), rhs.end(), this->begin() );
+        }else this->clear();
     }
     
     /**
@@ -90,7 +98,11 @@ public:
     */
 	Vector& operator=(const Vector &rhs){
 		if(this!=&rhs){
-            this->data = rhs.data;
+            UINT N = rhs.getSize();
+            if( N > 0 ){
+                this->resize( N );
+                std::copy( rhs.begin(), rhs.end(), this->begin() );
+            }else this->clear();
 		}
 		return *this;
 	}
@@ -103,29 +115,36 @@ public:
     */
     Vector& operator=(const std::vector< T > &rhs){
         if(this!=&rhs){
-            this->data = rhs;
+            UINT N = rhs.getSize();
+            if( N > 0 ){
+                this->resize( N );
+                std::copy( rhs.begin(), rhs.end(), this->begin() );
+            }else this->clear();
         }
         return *this;
     }
-    
+
     /**
-     Returns a pointer to the data at element i
+     Defines how the vector should be resized
      
-     @param i: the index of the element you want, should be in the range [0 size-1]
-     @return a pointer to the data at element i
+     @param size: the new size of the vector
+     @return returns true if the vector was resized correctly, false otherwise
     */
-	inline T& operator[](const unsigned int i){
-		return data[i];
-	}
-    
+    virtual bool resize( const unsigned int size ){
+        std::vector< T >::resize( size );
+        return getSize() == size;
+    }
+
     /**
-     Returns a pointer to the data at element i
+     Defines how the vector should be resized, this will also set all the values in the vector to [value]
      
-     @param i: the index of the element you want, should be in the range [0 size-1]
-     @return a const pointer to the data at element i
+     @param size: the new size of the vector
+     @param value: the value that will be copied to all elements in the vector
+     @return returns true if the vector was resized correctly, false otherwise
     */
-    inline const T& operator[](const unsigned int i) const {
-        return data[i];
+    virtual bool resize( const unsigned int size, const T& value ){
+        std::vector< T >::resize( size, value );
+        return getSize() == size;
     }
               
     /**
@@ -137,8 +156,11 @@ public:
     virtual bool copy( const Vector<T> &rhs ){
         
         if( this != &rhs ){
-            //Copy the data
-            this->data = rhs.data;
+            UINT N = rhs.getSize();
+            if( N > 0 ){
+                this->resize( N );
+                std::copy( rhs.begin(), rhs.end(), this->begin() );
+            }
         }
         
         return true;
@@ -152,12 +174,13 @@ public:
     */
 	bool setAll(const T &value){
 
-        const size_t N = data.size();
+        const size_t N = this->size();
 
 		if( N == 0 ) return false;
 
+        T *data = &(*this)[0];
         for(size_t i=0; i<N; i++)
-                data[i] = value;
+            data[i] = value;
 
         return true;
 	}
@@ -167,7 +190,7 @@ public:
      
      @return returns the size of the Vector
     */
-	inline unsigned int getSize() const{ return (unsigned int)data.size(); }
+	inline unsigned int getSize() const{ return (unsigned int)this->size(); }
 
     /**
      Gets a pointer to the first element in the vector
@@ -175,8 +198,8 @@ public:
      @return returns a pointer to the raw data
      */
     T* getData() {
-        if( data.size() == 0 ) return NULL;
-        return &data[0];
+        if( this->size() == 0 ) return NULL;
+        return &(*this)[0];
     }
 
     /**
@@ -185,12 +208,12 @@ public:
      @return returns a pointer to the raw data
      */
     const T* getData() const {
-        if( data.size() == 0 ) return NULL;
-        return &data[0];
+        if( this->size() == 0 ) return NULL;
+        return &(*this)[0];
     }
 
 protected:
-    std::vector< T > data;
+    //std::vector< T > data;
 };
 
 GRT_END_NAMESPACE

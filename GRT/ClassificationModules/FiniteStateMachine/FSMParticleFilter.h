@@ -38,6 +38,12 @@ public:
         pt = NULL;
         pe = NULL;
     }
+
+    FSMParticleFilter( const FSMParticleFilter &rhs ):errorLog("[ERROR FSMParticleFilter]"){
+        pt = NULL;
+        pe = NULL;
+        //TODO: Need to handle copy better
+    }
     
     virtual ~FSMParticleFilter(){
         

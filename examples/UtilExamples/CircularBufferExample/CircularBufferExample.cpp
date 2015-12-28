@@ -50,7 +50,7 @@ int main (int argc, const char * argv[])
 	}
 	
 	//Get all the data in the buffer as a vector
-	Vector<UINT> data = buffer.getDataAsVector();
+	Vector< UINT > data = buffer.getData();
 	cout << "Data: \t\t\t";
 	for(UINT j=0; j<data.size(); j++){
 		cout << data[j] << "\t";

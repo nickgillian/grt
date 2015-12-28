@@ -160,6 +160,15 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     numClasses = K;
     classLabels = trainingData.getClassLabels();
     ranges = trainingData.getRanges();
+
+    //Get the validation set if needed
+    ClassificationData validationData;
+    if( useValidationSet ){
+        validationData = trainingData.partition( validationSetSize );
+        validationSetAccuracy = 0;
+        validationSetPrecision.resize( useNullRejection ? K+1 : K, 0 );
+        validationSetRecall.resize( useNullRejection ? K+1 : K, 0 );
+    }
     
     //Scale the training data if needed
     if( useScaling ){
@@ -237,7 +246,50 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         
         //Compute the null rejection thresholds using the class mean and std dev
         recomputeNullRejectionThresholds();
-        
+    }
+
+    if( useValidationSet ){
+        const UINT numTestSamples = validationData.getNumSamples();
+        double numCorrect = 0;
+        UINT testLabel = 0;
+        VectorDouble testSample;
+        VectorDouble validationSetPrecisionCounter( validationSetPrecision.size(), 0.0 );
+        VectorDouble validationSetRecallCounter( validationSetRecall.size(), 0.0 );
+        Classifier::trainingLog << "Testing model with validation set..." << std::endl;
+        for(UINT i=0; i<numTestSamples; i++){
+            testLabel = validationData[i].getClassLabel();
+            testSample = validationData[i].getSample();
+            predict_( testSample );
+            if( predictedClassLabel == testLabel ){
+                numCorrect++;
+                validationSetPrecision[ getClassLabelIndexValue( testLabel ) ]++;
+                validationSetRecall[ getClassLabelIndexValue( testLabel ) ]++;
+            } 
+            validationSetPrecisionCounter[ getClassLabelIndexValue( predictedClassLabel ) ]++;
+            validationSetRecallCounter[ getClassLabelIndexValue( testLabel ) ]++;
+        }
+
+        validationSetAccuracy = (numCorrect / numTestSamples) * 100.0;
+        for(size_t i=0; i<validationSetPrecision.size(); i++){
+            validationSetPrecision[i] /= validationSetPrecisionCounter[i] > 0 ? validationSetPrecisionCounter[i] : 1;
+        }
+        for(size_t i=0; i<validationSetRecall.size(); i++){
+            validationSetRecall[i] /= validationSetRecallCounter[i] > 0 ? validationSetRecallCounter[i] : 1;
+        }
+
+        Classifier::trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+
+        Classifier::trainingLog << "Validation set precision: ";
+        for(size_t i=0; i<validationSetPrecision.size(); i++){
+            Classifier::trainingLog << validationSetPrecision[i] << " ";
+        }
+        Classifier::trainingLog << std::endl;
+
+        Classifier::trainingLog << "Validation set recall: ";
+        for(size_t i=0; i<validationSetRecall.size(); i++){
+            Classifier::trainingLog << validationSetRecall[i] << " ";
+        }
+        Classifier::trainingLog << std::endl;
     }
 
     return true;

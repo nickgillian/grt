@@ -31,19 +31,18 @@ VectorFloat::VectorFloat(){
 VectorFloat::VectorFloat(const unsigned int size){
     warningLog.setProceedingText("[WARNING VectorFloat]");
     errorLog.setProceedingText("[ERROR VectorFloat]");
-    data.resize( size );
+    resize( size );
 }
 
 VectorFloat::VectorFloat( const unsigned int size, const float_t &value ){
     warningLog.setProceedingText("[WARNING VectorFloat]");
     errorLog.setProceedingText("[ERROR VectorFloat]");
-    data.resize( size, value );
+    resize( size, value );
 }
     
-VectorFloat::VectorFloat(const VectorFloat &rhs){
+VectorFloat::VectorFloat(const VectorFloat &rhs):Vector(rhs){
     warningLog.setProceedingText("[WARNING VectorFloat]");
     errorLog.setProceedingText("[ERROR VectorFloat]");
-    this->data = rhs.data;
 }
 
 VectorFloat::~VectorFloat(){
@@ -52,17 +51,22 @@ VectorFloat::~VectorFloat(){
     
 VectorFloat& VectorFloat::operator=(const VectorFloat &rhs){
     if( this != &rhs ){
-        this->data = rhs.data;
+        UINT N = rhs.getSize();
+        if( N > 0 ){
+            resize( N );
+            std::copy( rhs.begin(), rhs.end(), this->begin() );
+        }else this->clear();
     }
     return *this;
 }
     
 VectorFloat& VectorFloat::operator=(const Vector< float_t > &rhs){
     if( this != &rhs ){
-        const size_t N = rhs.getSize();
-        data.resize( N );
-        for(size_t i=0; i<N; i++)
-            this->data[i] = rhs[i];
+        UINT N = rhs.getSize();
+        if( N > 0 ){
+            resize( N );
+            std::copy( rhs.begin(), rhs.end(), this->begin() );
+        }else this->clear();
     }
     return *this;
 }
@@ -72,8 +76,9 @@ bool VectorFloat::print(const std::string title) const {
     if( title != "" ){
         std::cout << title << std::endl;
     }
-    unsigned int size = data.size();
-    for(unsigned int i=0; i<size; i++){
+    const size_t size = this->size();
+    const float_t *data = getData();
+    for(size_t i=0; i<size; i++){
         std::cout << data[i] << "\t";
     }
     std::cout << std::endl;
@@ -90,13 +95,14 @@ bool VectorFloat::scale( const float_t minTarget, const float_t maxTarget, const
     
 bool VectorFloat::scale( const float_t minSource, const float_t maxSource, const float_t minTarget, const float_t maxTarget, const bool constrain ){
     
-    const size_t N = data.size();
+    const size_t N = this->size();
     
     if( N == 0 ){
         return false;
     }
     
     unsigned int i = 0;
+    float_t *data = getData();
     for( i=0; i<N; i++ ){
         data[i] = grt_scale(data[i],minSource,maxSource,minTarget,maxTarget,constrain);
     }
@@ -106,7 +112,8 @@ bool VectorFloat::scale( const float_t minSource, const float_t maxSource, const
     
 float_t VectorFloat::getMinValue() const{
     float_t minValue = 99e+99;
-    const size_t N = data.size();
+    const size_t N = this->size();
+    const float_t *data = getData();
     for(size_t i=0; i<N; i++){
         if( data[i] < minValue ) minValue = data[i];
     }
@@ -115,17 +122,19 @@ float_t VectorFloat::getMinValue() const{
 
 float_t VectorFloat::getMaxValue() const{
     float_t maxValue = -99e99;
-    const size_t N = data.size();
+    const size_t N = this->size();
+    const float_t *data = getData();
     for(size_t i=0; i<N; i++){
         if( data[i] > maxValue ) maxValue = data[i];
     }
     return maxValue;
 }
     
-float_t VectorFloat::getMean() const{
+float_t VectorFloat::getMean() const {
     
     float_t mean = 0.0;
-    const size_t N = data.size();
+    const size_t N = this->size();
+    const float_t *data = getData();
     for(size_t i=0; i<N; i++){
         mean += data[i];
     }
@@ -134,11 +143,12 @@ float_t VectorFloat::getMean() const{
     return mean;
 }
     
-float_t VectorFloat::getStdDev() const{
+float_t VectorFloat::getStdDev() const {
     
     float_t mean = getMean();
 	float_t stdDev = 0.0;
-    const size_t N = data.size();
+    const size_t N = this->size();
+    const float_t *data = getData();
 	
 	for(size_t i=0; i<N; i++){
 		stdDev += (data[i]-mean)*(data[i]-mean);
@@ -148,12 +158,14 @@ float_t VectorFloat::getStdDev() const{
     return stdDev;
 }
     
-MinMax VectorFloat::getMinMax() const{
+MinMax VectorFloat::getMinMax() const {
 
-    const size_t N = data.size();
+    const size_t N = this->size();
     MinMax range;
     
     if( N == 0 ) return range;
+
+    const float_t *data = getData();
     
     for(unsigned int i=0; i<N; i++){
         range.updateMinMax( data[ i ] );
@@ -162,7 +174,16 @@ MinMax VectorFloat::getMinMax() const{
     return range;
 }
   
-bool VectorFloat::save(const std::string &filename) const{
+bool VectorFloat::save(const std::string &filename) const {
+
+    std::cout << "save()" << std::endl;
+
+    const size_t N = this->size();
+
+    if( N == 0 ){
+        warningLog << "save(...) - Vector is empty, nothing to save!" << std::endl;
+        return false;
+    }
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -171,118 +192,93 @@ bool VectorFloat::save(const std::string &filename) const{
         return false;
     }
 
-    const size_t N = data.size();
+    std::cout << "size: " << N << std::endl;
     
-    for(UINT i=0; i<N; i++){
+    const float_t *data = getData();
+    for(size_t i=0; i<N; i++){
+        std::cout << "value: " << this->at(i) << std::endl;
         file << data[i] << (i<N-1 ? "," : "\n");
     }
+
+    std::cout << "got here" << std::endl;
     
     file.close();
+
+    std::cout << "end of function" << std::endl;
+
     return true;
 }
     
 bool VectorFloat::load(const std::string &filename,const char seperator){
+
+    std::cout << "load()" << std::endl;
     
     //Clear any previous data
     clear();
 
-    return false;
-    
-/*
     //Open the file
-    ifstream file( filename.c_str(), ifstream::in );
+    std::ifstream file( filename.c_str(), std::ifstream::in );
     if ( !file.is_open() ){
-        warningLog << "parseFile(...) - Failed to open file: " << filename << endl;
+        warningLog << "load(...) - Failed to open file: " << filename << std::endl;
         return false;
     }
     
-    vector< string > vec;
-    vector< float_t > row;
-    string line;
-    string columnString = "";
+    Vector< std::string > vec;
+    Vector< float_t > row;
+    std::string line;
+    std::string columnString = "";
     const int sepValue = seperator;
-    unsigned int rowCounter = 0;
-    unsigned int columnCounter = 0;
+    unsigned int numElements = 0;
     unsigned int length = 0;
     
-    //Count the number of columns in the first row
+    //Get the data, for a vector it should just be one line
     if( !getline(file,line) ){
-        warningLog << "parseFile(...) - Failed to read first row!" << endl;
+        warningLog << "load(...) - Failed to read first row!" << std::endl;
         return false;
     }
     
-    length = (unsigned int)line.length();
+    //Scan the line contents for the seperator token and parse the contents between each token
+    columnString = "";
+    length = line.length();
+    vec.reserve( length );
     for(unsigned int i=0; i<length; i++){
         if( int(line[i]) == sepValue ){
-            columnCounter++;
+            vec.push_back( columnString );
+            columnString = "";
+        }else columnString += line[i];
+    }
+        
+    //Add the last column
+    vec.push_back( columnString );
+            
+    //Remove the new line character from the string in the last column
+    if( vec.size() >= 1 ){
+        size_t K = vec.size()-1;
+        size_t foundA = vec[ K ].find('\n');
+        size_t foundB = vec[K ].find('\r');
+        if( foundA != std::string::npos || foundB != std::string::npos ){
+            vec[ K ] = vec[ K ].substr(0,vec[ K ].length()-1);
         }
     }
-    columnCounter++;
     
-    //Count the number of rows in the file
-    rowCounter = 1;
-    while ( getline(file,line) ){
-        rowCounter++;
-    }
+    numElements = vec.getSize();
     
     //Assign the memory
-    if( !resize(rowCounter, columnCounter) ){
-        warningLog << "parseFile(...) - Failed to resize memory!" << endl;
+    if( !resize( numElements ) ){
+        warningLog << "load(...) - Failed to resize memory!" << std::endl;
         return false;
     }
-    
-    //Reset the file read pointer
-    file.close();
-    file.open( filename.c_str(), ifstream::in );
-    rowCounter = 0;
-    
-    //Loop over each line of data and parse the contents
-    while ( getline(file,line) )
-    {
-        //Scan the line contents for the seperator token and parse the contents between each token
-        vec.clear();
-        columnString = "";
-        length = (unsigned int)line.length();
-        for(unsigned int i=0; i<length; i++){
-            if( int(line[i]) == sepValue ){
-                vec.push_back( columnString );
-                columnString = "";
-            }else columnString += line[i];
-        }
         
-        //Add the last column
-        vec.push_back( columnString );
-        
-        //Check to make sure all the columns are consistent
-        if( columnCounter != vec.size() ){
-            clear();
-            warningLog << "parseFile(...) - Found inconsistent column size in row " << rowCounter;
-            warningLog << " ColumnSize: " << columnCounter << " LastColumnSize: " << vec.size() << endl;
-            return false;
-        }
-        
-        //Remove the new line character from the string in the last column
-        if( vec.size() >= 1 ){
-            size_t K = vec.size()-1;
-            size_t foundA = vec[ K ].find('\n');
-            size_t foundB = vec[K ].find('\r');
-            if( foundA != std::string::npos || foundB != std::string::npos ){
-                vec[ K ] = vec[ K ].substr(0,vec[ K ].length()-1);
-            }
-        }
-        
-        //Convert the string column values to float_t values
-        for(unsigned int j=0; j<columnCounter; j++){
-            dataPtr[rowCounter*cols+j] = stringToFloat(vec[j]);
-        }
-        rowCounter++;
+    //Convert the string column values to float_t values
+    float_t *data = getData();
+    for(unsigned int i=0; i<numElements; i++){
+        data[i] = grt_from_str< float_t >( vec[i] );
     }
     
     //Close the file
     file.close();
     
     return true;
-*/
 }
     
 GRT_END_NAMESPACE

@@ -440,6 +440,27 @@ public:
      @return returns the total squared error (on the training data during the training phase)
      */
     float_t getTotalSquaredTrainingError() const;
+
+    /**
+     Gets the accuracy of the validation set on the trained model, only valid if the model was trained with useValidationSet=true.
+     
+     @return returns the accuracy of validation set on the trained model
+     */
+    float_t getValidationSetAccuracy() const;
+
+    /**
+     Gets the precision of the validation set on the trained model, only valid if the model was trained with useValidationSet=true.
+     
+     @return returns the precision of the validation set on the trained model
+     */
+    VectorFloat getValidationSetPrecision() const;
+
+    /**
+     Gets the recall of the validation set on the trained model, only valid if the model was trained with useValidationSet=true.
+     
+     @return returns the recall of the validation set on the trained model
+     */
+    VectorFloat getValidationSetRecall() const;
     
     /**
      Returns true if a validation set should be used for training. If true, then the training dataset will be partitioned into a smaller training dataset
@@ -507,7 +528,7 @@ public:
      
      @return returns true the scaling parameter was updated, false otherwise
      */
-    bool enableScaling(bool useScaling);
+    bool enableScaling(const bool useScaling);
     
     /**
      Sets the maximum number of epochs (a complete iteration of all training samples) that can be run during the training phase.
@@ -542,7 +563,7 @@ public:
      @param learningRate: the learningRate value used during the training phase, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
-    bool setLearningRate(float_t learningRate);
+    bool setLearningRate(const float_t learningRate);
     
     /**
      Sets the size of the validation set used by some learning algorithms for training. This value represents the percentage of the main
@@ -663,7 +684,7 @@ public:
      
      @return returns a vector of TrainingResult instances containing the training results from the most recent training phase
      */
-    std::vector< TrainingResult > getTrainingResults() const;
+    Vector< TrainingResult > getTrainingResults() const;
 
 protected:
     
@@ -694,8 +715,11 @@ protected:
     float_t minChange;
     float_t rootMeanSquaredTrainingError;
     float_t totalSquaredTrainingError;
+    float_t validationSetAccuracy;
     bool useValidationSet;
     bool randomiseTrainingOrder;
+    VectorFloat validationSetPrecision;
+    VectorFloat validationSetRecall;
     Random random;
     std::vector< TrainingResult > trainingResults;
     TrainingResultsObserverManager trainingResultsObserverManager;

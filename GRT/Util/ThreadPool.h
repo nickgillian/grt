@@ -108,7 +108,7 @@ protected:
     // synchronization
     std::mutex queue_mutex;
     std::condition_variable condition;
-    bool stop;
+    std::atomic< bool > stop;
     
     static std::atomic< unsigned int > threadPoolSize;
 #endif //GRT_CXX11_ENABLED
@@ -123,15 +123,15 @@ template<class F, class... Args> auto ThreadPool::enqueue(F&& func, Args&&... ar
     
     auto task = std::make_shared< std::packaged_task< return_type() > >( std::bind(std::forward<F>( func ), std::forward<Args>(args)...) );
     
-    std::future<return_type> res = task->get_future();
+    std::future< return_type > res = task->get_future();
     {
-        std::unique_lock<std::mutex> lock(queue_mutex);
+        std::unique_lock< std::mutex > lock( queue_mutex );
         
         // don't allow enqueueing after stopping the pool
         if( stop )
             throw std::runtime_error("enqueue on stopped ThreadPool");
         
-        tasks.emplace([task](){ (*task)(); });
+        tasks.emplace( [task](){ (*task)(); } );
     }
     condition.notify_one();
     return res;

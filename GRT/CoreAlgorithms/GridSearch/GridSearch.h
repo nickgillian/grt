@@ -38,8 +38,8 @@ GRT_BEGIN_NAMESPACE
 template< class T > 
 class GridSearchRange {
 public:
-    GridSearchRange(){}
-    GridSearchRange( const T _min, const T _max, const T _inc ):min(_min),max(_max),inc(_inc){ value = min; expired = false; }
+    GridSearchRange( const T _min = T(), const T _max = T(), const T _inc = T() ):min(_min),max(_max),inc(_inc){ value = min; expired = false; }
+
     GridSearchRange( const GridSearchRange &rhs ){
         this->value = rhs.value;
         this->min = rhs.min;
@@ -76,7 +76,7 @@ template < class T >
 class GridSearchParam {
 public:
 
-    GridSearchParam( std::function< bool(T) > func, GridSearchRange<T> range ){
+    GridSearchParam( std::function< bool(T) > func = nullptr, GridSearchRange<T> range = GridSearchRange<T>() ){
         this->func = func;
         this->range = range;
     }

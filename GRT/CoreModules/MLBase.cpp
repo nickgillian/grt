@@ -31,6 +31,7 @@ MLBase::MLBase(void){
     minNumEpochs = 0;
     maxNumEpochs = 100;
     validationSetSize = 20;
+    validationSetAccuracy = 0;
     minChange = 1.0e-5;
     learningRate = 0.1;
     useValidationSet = false;
@@ -63,6 +64,9 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     this->minNumEpochs = mlBase->minNumEpochs;
     this->maxNumEpochs = mlBase->maxNumEpochs;
     this->validationSetSize = mlBase->validationSetSize;
+    this->validationSetAccuracy = mlBase->validationSetAccuracy;
+    this->validationSetPrecision = mlBase->validationSetPrecision;
+    this->validationSetRecall = mlBase->validationSetRecall;
     this->minChange = mlBase->minChange;
     this->learningRate = mlBase->learningRate;
     this->rootMeanSquaredTrainingError = mlBase->rootMeanSquaredTrainingError;
@@ -123,6 +127,9 @@ bool MLBase::clear(){
     rootMeanSquaredTrainingError = 0;
     totalSquaredTrainingError = 0;
     trainingResults.clear();
+    validationSetPrecision.clear();
+    validationSetRecall.clear();
+    validationSetAccuracy = 0;
     return true;
 }
 
@@ -220,6 +227,18 @@ float_t MLBase::getTotalSquaredTrainingError() const{
     return totalSquaredTrainingError;
 }
 
+float_t MLBase::getValidationSetAccuracy() const {
+    return validationSetAccuracy;
+}
+
+VectorFloat MLBase::getValidationSetPrecision() const {
+    return validationSetPrecision;
+}
+
+VectorFloat MLBase::getValidationSetRecall() const {
+    return validationSetRecall;
+}
+
 bool MLBase::getTrained() const{ return trained; }
 
 bool MLBase::getModelTrained() const{ return getTrained(); }
@@ -257,7 +276,7 @@ bool MLBase::setMinChange(const float_t minChange){
     return true;
 }
     
-bool MLBase::setLearningRate(float_t learningRate){
+bool MLBase::setLearningRate(const float_t learningRate){
     if( learningRate > 0 ){
         this->learningRate = learningRate;
         return true;
@@ -332,7 +351,7 @@ const MLBase* MLBase::getMLBasePointer() const{
     return this;
 }
 
-std::vector< TrainingResult > MLBase::getTrainingResults() const{
+Vector< TrainingResult > MLBase::getTrainingResults() const{
     return trainingResults;
 }
 

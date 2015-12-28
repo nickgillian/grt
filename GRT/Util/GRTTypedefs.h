@@ -177,6 +177,31 @@ typedef unsigned long ULONG;
 #define GRT_DEPRECATED_MSG(message, func) func
 #define GRT_DEPRECATED(func) func
 #endif
+
+/**
+  @brief returns the filename (stripped of the system path) of the file using this macro
+*/
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
+/**
+  @brief converts x to a string for printing
+*/
+#define grt_to_str(x) (#x)
+
+#if !defined NDEBUG
+/**
+  @brief custom GRT assert function
+*/
+#define grt_assert(x) \
+do { \
+if (0 == (x)) { \
+fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __func__, __LINE__, grt_to_str(x) ); \
+abort(); \
+} \
+} while (0)
+#else
+#define grt_assert(x)
+#endif
     
 //Declare typedefs for the legacy data types
 class ClassificationData;

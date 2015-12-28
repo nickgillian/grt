@@ -41,6 +41,8 @@ RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT
     classifierMode = STANDARD_CLASSIFIER_MODE;
     useNullRejection = false;
     supportsNullRejection = false;
+    useValidationSet = true;
+    validationSetSize = 20;
     debugLog.setProceedingText("[DEBUG RandomForests]");
     errorLog.setProceedingText("[ERROR RandomForests]");
     trainingLog.setProceedingText("[TRAINING RandomForests]");
@@ -177,21 +179,33 @@ bool RandomForests::train_(ClassificationData &trainingData){
         //Scale the training data between 0 and 1
         trainingData.scale(0, 1);
     }
+
+    if( useValidationSet ){
+        validationSetAccuracy = 0;
+        validationSetPrecision.resize( useNullRejection ? K+1 : K, 0 );
+        validationSetRecall.resize( useNullRejection ? K+1 : K, 0 );
+    }
     
     //Flag that the main algorithm has been trained encase we need to trigger any callbacks
     trained = true;
     
     //Train the random forest
     forest.reserve( forestSize );
+
     for(UINT i=0; i<forestSize; i++){
         
         //Get a balanced bootstrapped dataset
         UINT datasetSize = (UINT)(trainingData.getNumSamples() * bootstrappedDatasetWeight);
         ClassificationData data = trainingData.getBootstrappedDataset( datasetSize, true );
+
+        Timer timer;
+        timer.start();
  
         DecisionTree tree;
         tree.setDecisionTreeNode( *decisionTreeNode );
         tree.enableScaling( false ); //We have already scaled the training data so we do not need to scale it again
+        tree.setUseValidationSet( useValidationSet );
+        tree.setValidationSetSize( validationSetSize );
         tree.setTrainingMode( trainingMode );
         tree.setNumSplittingSteps( numRandomSplits );
         tree.setMinNumSamplesPerNode( minNumSamplesPerNode );
@@ -202,14 +216,60 @@ bool RandomForests::train_(ClassificationData &trainingData){
         trainingLog << "Training forest " << i+1 << "/" << forestSize << "..." << std::endl;
         
         //Train this tree
-        if( !tree.train( data ) ){
-            errorLog << "train_(ClassificationData &labelledTrainingData) - Failed to train tree at forest index: " << i << std::endl;
+        if( !tree.train_( data ) ){
+            errorLog << "train_(ClassificationData &trainingData) - Failed to train tree at forest index: " << i << std::endl;
             clear();
             return false;
+        }
+
+        float_t computeTime = timer.getMilliSeconds();
+        trainingLog << "Forest trained in " << (computeTime*0.001)/60.0 << " minutes" << std::endl;
+
+        if( useValidationSet ){
+            validationSetAccuracy += tree.getValidationSetAccuracy();
+            VectorDouble precision = tree.getValidationSetPrecision();
+            VectorDouble recall = tree.getValidationSetRecall();
+
+            grt_assert( precision.size() == validationSetPrecision.size() );
+            grt_assert( recall.size() == validationSetRecall.size() );
+
+            for(size_t i=0; i<validationSetPrecision.size(); i++){
+                validationSetPrecision[i] += precision[i];
+            }
+
+            for(size_t i=0; i<validationSetPrecision.size(); i++){
+                validationSetPrecision[i] += precision[i];
+            }
+
+            for(size_t i=0; i<validationSetRecall.size(); i++){
+                validationSetRecall[i] += recall[i];
+            }
+
         }
         
         //Deep copy the tree into the forest
         forest.push_back( tree.deepCopyTree() );
+    }
+
+    if( useValidationSet ){
+        validationSetAccuracy /= forestSize;
+        for(size_t i=0; i<validationSetPrecision.size(); i++){
+            validationSetPrecision[i] /= forestSize;
+        }
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+
+        trainingLog << "Validation set precision: ";
+        for(size_t i=0; i<validationSetPrecision.size(); i++){
+            trainingLog << validationSetPrecision[i] << " ";
+        }
+        trainingLog << std::endl;
+
+        trainingLog << "Validation set recall: ";
+        for(size_t i=0; i<validationSetRecall.size(); i++){
+            trainingLog << validationSetRecall[i] << " ";
+        }
+        trainingLog << std::endl;
+
     }
 
     return true;

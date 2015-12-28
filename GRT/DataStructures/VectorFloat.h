@@ -89,15 +89,6 @@ public:
     VectorFloat& operator=(const vector< VectorFloat > &rhs);
     
     /**
-     Resizes the VectorFloat to the new size of [rows cols]
-     
-     @param rows: the number of rows, must be greater than zero
-     @param cols: the number of columns, must be greater than zero
-     @return returns true or false, indicating if the resize was successful
-     */
-    //virtual bool resize(const unsigned int rows,const unsigned int cols);
-    
-    /**
      Saves the vector to a CSV file.  This replaces the deprecated saveToCSVFile function.
      
      @param filename: the name of the CSV file
