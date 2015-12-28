@@ -65,7 +65,7 @@ template< class T >
 class grt_numeric_limits{
 public:
     static T min() { return std::numeric_limits< T >::min(); }
-    static T max() { return std::numeric_limits< T >::min(); }
+    static T max() { return std::numeric_limits< T >::max(); }
 };
 
 inline float_t grt_sqr( const float &x ){ return x*x; }

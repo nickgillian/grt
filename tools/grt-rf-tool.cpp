@@ -214,7 +214,7 @@ bool train( CommandLineParser &parser ){
     GestureRecognitionPipeline pipeline;
     pipeline.setClassifier( forest );
 
-    infoLog << "- Training model...\n";
+    infoLog << "- Training model..." << endl;
 
     //Train the classifier
     if( !pipeline.train( trainingData ) ){
@@ -223,15 +223,14 @@ bool train( CommandLineParser &parser ){
     }
 
     infoLog << "- Model trained!" << endl;
+    infoLog << "- Training time: " << (pipeline.getTrainingTime() * 0.001) / 60.0 << " (minutes)" << endl;
 
     infoLog << "- Saving model to: " << modelFilename << endl;
 
     //Save the pipeline
-    if( pipeline.save( modelFilename ) ){
-        infoLog << "- Model saved." << endl;
-    }else warningLog << "Failed to save model to file: " << modelFilename << endl;
-
-    infoLog << "- TrainingTime: " << pipeline.getTrainingTime() << endl;
+    if( !pipeline.save( modelFilename ) ){
+        warningLog << "Failed to save model to file: " << modelFilename << endl;
+    } 
 
     return true;
 }

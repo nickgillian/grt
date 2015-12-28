@@ -176,8 +176,6 @@ MinMax VectorFloat::getMinMax() const {
   
 bool VectorFloat::save(const std::string &filename) const {
 
-    std::cout << "save()" << std::endl;
-
     const size_t N = this->size();
 
     if( N == 0 ){
@@ -191,27 +189,18 @@ bool VectorFloat::save(const std::string &filename) const {
     if( !file.is_open() ){
         return false;
     }
-
-    std::cout << "size: " << N << std::endl;
     
     const float_t *data = getData();
     for(size_t i=0; i<N; i++){
-        std::cout << "value: " << this->at(i) << std::endl;
         file << data[i] << (i<N-1 ? "," : "\n");
     }
-
-    std::cout << "got here" << std::endl;
     
     file.close();
-
-    std::cout << "end of function" << std::endl;
 
     return true;
 }
     
 bool VectorFloat::load(const std::string &filename,const char seperator){
-
-    std::cout << "load()" << std::endl;
     
     //Clear any previous data
     clear();

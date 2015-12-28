@@ -213,7 +213,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
         tree.enableNullRejection( useNullRejection );
         tree.setRemoveFeaturesAtEachSpilt( removeFeaturesAtEachSpilt );
 
-        trainingLog << "Training forest " << i+1 << "/" << forestSize << "..." << std::endl;
+        trainingLog << "Training decision tree " << i+1 << "/" << forestSize << "..." << std::endl;
         
         //Train this tree
         if( !tree.train_( data ) ){
@@ -223,26 +223,23 @@ bool RandomForests::train_(ClassificationData &trainingData){
         }
 
         float_t computeTime = timer.getMilliSeconds();
-        trainingLog << "Forest trained in " << (computeTime*0.001)/60.0 << " minutes" << std::endl;
+        trainingLog << "Decision tree trained in " << (computeTime*0.001)/60.0 << " minutes" << std::endl;
 
         if( useValidationSet ){
+            float_t forestNorm = 1.0 / forestSize;
             validationSetAccuracy += tree.getValidationSetAccuracy();
-            VectorDouble precision = tree.getValidationSetPrecision();
-            VectorDouble recall = tree.getValidationSetRecall();
+            VectorFloat precision = tree.getValidationSetPrecision();
+            VectorFloat recall = tree.getValidationSetRecall();
 
-            grt_assert( precision.size() == validationSetPrecision.size() );
-            grt_assert( recall.size() == validationSetRecall.size() );
+            grt_assert( precision.getSize() == validationSetPrecision.getSize() );
+            grt_assert( recall.getSize() == validationSetRecall.getSize() );
 
-            for(size_t i=0; i<validationSetPrecision.size(); i++){
-                validationSetPrecision[i] += precision[i];
+            for(UINT i=0; i<validationSetPrecision.getSize(); i++){
+                validationSetPrecision[i] += precision[i] * forestNorm;
             }
 
-            for(size_t i=0; i<validationSetPrecision.size(); i++){
-                validationSetPrecision[i] += precision[i];
-            }
-
-            for(size_t i=0; i<validationSetRecall.size(); i++){
-                validationSetRecall[i] += recall[i];
+            for(UINT i=0; i<validationSetRecall.getSize(); i++){
+                validationSetRecall[i] += recall[i] * forestNorm;
             }
 
         }
@@ -253,23 +250,19 @@ bool RandomForests::train_(ClassificationData &trainingData){
 
     if( useValidationSet ){
         validationSetAccuracy /= forestSize;
-        for(size_t i=0; i<validationSetPrecision.size(); i++){
-            validationSetPrecision[i] /= forestSize;
-        }
         trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
 
         trainingLog << "Validation set precision: ";
-        for(size_t i=0; i<validationSetPrecision.size(); i++){
+        for(UINT i=0; i<validationSetPrecision.getSize(); i++){
             trainingLog << validationSetPrecision[i] << " ";
         }
         trainingLog << std::endl;
 
         trainingLog << "Validation set recall: ";
-        for(size_t i=0; i<validationSetRecall.size(); i++){
+        for(UINT i=0; i<validationSetRecall.getSize(); i++){
             trainingLog << validationSetRecall[i] << " ";
         }
         trainingLog << std::endl;
-
     }
 
     return true;

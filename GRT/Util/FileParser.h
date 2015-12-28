@@ -28,6 +28,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <algorithm>    // copy
 #include <iterator>     // ostream_operator
 #include <sstream>
+#include <deque>
 #include "../DataStructures/Vector.h"
 #include "InfoLog.h"
 
@@ -69,7 +70,7 @@ public:
 	  return columnSize;
     }
   
-    Vector< Vector< std::string > >& getFileContents(){
+    std::deque< Vector< std::string > >& getFileContents(){
         return fileContents;
     }
     
@@ -83,16 +84,15 @@ public:
     
     static bool parseColumn( const std::string &row, Vector< std::string > &cols, const char seperator = ',' ){
 
-        std::cout << "parse column!" << std::endl;
-
         const unsigned int N = (unsigned int)row.length();
         if( N == 0 ) return false;
         
+        size_t lastSize = cols.size();
         cols.clear();
+        if( lastSize > 0 ) cols.reserve( lastSize ); //Reserve the previous column size
         std::string columnString = "";
         const int sepValue = seperator;
         for(unsigned int i=0; i<N; i++){
-            std::cout << "i: " << i << std::endl;
             if( int(row[i]) == sepValue ){
                 cols.push_back( columnString );
                 columnString = "";
@@ -118,8 +118,6 @@ public:
 protected:
     
     bool parseFile(const std::string &filename,const bool removeNewLineCharacter,const char seperator){
-
-        infoLog << "parsefile!" << std::endl;
         
         //Clear any previous data
         clear();
@@ -130,22 +128,25 @@ protected:
             return false;
         }
 
-        infoLog << "got here!" << std::endl;
+        //Get the size of the file
+        std::streampos begin,end;
+        begin = file.tellg();
+        file.seekg (0, std::ios::end);
+        end = file.tellg();
+        file.seekg (0, std::ios::beg); //Reset the file pointer to the start of the file so we can read it
+        unsigned long fileSize = end-begin;
+        std::cout << "File size: " << fileSize << std::endl;
         
         Vector< std::string > vec;
-        infoLog << "got here!" << std::endl;
         std::string line;
-        infoLog << "got here!" << std::endl;
         unsigned int lineCounter = 0;
 
-        infoLog << "parsing file " << std::endl;
+        infoLog << "Parsing file..." << std::endl;
         
         //Loop over each line of data and parse the contents
         while ( getline( file, line ) )
         {
-            infoLog << "top of while loop!" << std::endl;
-
-            if( !parseColumn(line, vec,seperator) ){
+            if( !parseColumn(line, vec, seperator) ){
                 clear();
                 warningLog << "parseFile(...) - Failed to parse column!" << std::endl;
                 file.close();
@@ -155,17 +156,12 @@ protected:
             //Check to make sure all the columns are consistent
             if( columnSize == 0 ){
                 consistentColumnSize = true;
-                columnSize = (unsigned int)vec.size();
-            }else if( columnSize != vec.size() ) consistentColumnSize = false;
+                columnSize = vec.getSize();
+            }else if( columnSize != vec.getSize() ) consistentColumnSize = false;
 
             fileContents.push_back( vec );
-
-            if( ++lineCounter % 1000 == 0 ){
-                infoLog << "* ";
-            }
         }
 
-        infoLog << std::endl;
         infoLog << "File parsed, num rows: " << lineCounter << std::endl;
         
         //Close the file
@@ -182,7 +178,7 @@ protected:
     unsigned int columnSize;
     InfoLog infoLog;
     WarningLog warningLog;
-    Vector< Vector< std::string > > fileContents;
+    std::deque< Vector< std::string > > fileContents;
 
 };
     

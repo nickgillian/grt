@@ -563,12 +563,16 @@ bool MatrixFloat::load(const std::string &filename,const char seperator){
         }
     }
     columnCounter++;
+
+    std::cout << "counting rows..." << std::endl;
     
     //Count the number of rows in the file
     rowCounter = 1;
     while ( getline(file,line) ){
         rowCounter++;
     }
+
+    std::cout << "matrix size: " << rowCounter << " " << columnCounter << std::endl;
     
     //Assign the memory
     if( !resize(rowCounter, columnCounter) ){
@@ -618,7 +622,7 @@ bool MatrixFloat::load(const std::string &filename,const char seperator){
         
         //Convert the string column values to float_t values
         for(unsigned int j=0; j<columnCounter; j++){
-            dataPtr[rowCounter*cols+j] = stringToFloat(vec[j]);
+            dataPtr[rowCounter*cols+j] = grt_from_str< float_t >( vec[j] );
         }
         rowCounter++;
     }
