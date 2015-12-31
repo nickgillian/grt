@@ -135,13 +135,10 @@ protected:
         end = file.tellg();
         file.seekg (0, std::ios::beg); //Reset the file pointer to the start of the file so we can read it
         unsigned long fileSize = end-begin;
-        std::cout << "File size: " << fileSize << std::endl;
         
         Vector< std::string > vec;
         std::string line;
         unsigned int lineCounter = 0;
-
-        infoLog << "Parsing file..." << std::endl;
         
         //Loop over each line of data and parse the contents
         while ( getline( file, line ) )
@@ -161,8 +158,6 @@ protected:
 
             fileContents.push_back( vec );
         }
-
-        infoLog << "File parsed, num rows: " << lineCounter << std::endl;
         
         //Close the file
         file.close();
