@@ -3039,8 +3039,7 @@ bool GestureRecognitionPipeline::addPostProcessingModule(const PostProcessing &p
     
     postProcessingModules.insert(iter, newInstance);
 
-    //The pipeline has been changed, so flag that the pipeline is no longer trained
-    trained = false;
+    //Note, we don't change the trained state of the pipeline for post processing modules, as they are added after the core ML module
 
     return true;
 }
