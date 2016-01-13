@@ -609,8 +609,6 @@ bool ClassificationData::loadDatasetFromCSVFile(const std::string &filename,cons
     Timer timer;
 
     timer.start();
-
-    infoLog << "loading dataset from csv file..." << std::endl;
     
     if( !parser.parseCSVFile(filename,true) ){
         errorLog << "loadDatasetFromCSVFile(const std::string &filename,const UINT classLabelColumnIndex) - Failed to parse CSV file!" << std::endl;
@@ -626,22 +624,16 @@ bool ClassificationData::loadDatasetFromCSVFile(const std::string &filename,cons
         errorLog << "loadDatasetFromCSVFile(const std::string &filename,const UINT classLabelColumnIndex) - The CSV file does not have enough columns! It should contain at least two columns!" << std::endl;
         return false;
     }
-
-    infoLog << "done in: " << timer.getMilliSeconds() << std::endl;
     
     //Set the number of dimensions
     numDimensions = parser.getColumnSize()-1;
 
     timer.start();
-    infoLog << "resizing matrix..." << std::endl;
 
     //Reserve the memory for the data
     data.resize( parser.getRowSize(), ClassificationSample(numDimensions) );
 
-    infoLog << "done in: " << timer.getMilliSeconds() << std::endl;
-
     timer.start();
-    infoLog << "converting string to float..." << std::endl;
    
     //Loop over the samples and add them to the data set
     UINT classLabel = 0;
@@ -685,8 +677,6 @@ bool ClassificationData::loadDatasetFromCSVFile(const std::string &filename,cons
             }
         }
     }
-
-    infoLog << "done in: " << timer.getMilliSeconds() << std::endl;
 
     //Sort the class labels
     sortClassLabels();
