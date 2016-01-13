@@ -2417,12 +2417,12 @@ bool GestureRecognitionPipeline::preProcessData(VectorDouble inputVector,bool co
     if( getIsFeatureExtractionSet() && computeFeatures ){
         for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
             if( inputVector.size() != featureExtractionModules[ moduleIndex ]->getNumInputDimensions() ){
-                errorLog << "preProcessData(VectorDouble inputVector) - The size of the input vector (" << featureExtractionModules[ moduleIndex ]->getNumInputDimensions() << ") does not match that of the FeatureExtraction Module at moduleIndex: " << moduleIndex << endl;
+                errorLog << "FeatureExtraction(VectorDouble inputVector) - The size of the input vector (" << featureExtractionModules[ moduleIndex ]->getNumInputDimensions() << ") does not match that of the FeatureExtraction Module at moduleIndex: " << moduleIndex << endl;
                 return false;
             }
             
             if( !featureExtractionModules[ moduleIndex ]->computeFeatures( inputVector ) ){
-                errorLog << "preProcessData(VectorDouble inputVector) - Failed To Compute Features from Input Vector. FeatureExtraction moduleIndex: " << moduleIndex << endl;
+                errorLog << "FeatureExtraction(VectorDouble inputVector) - Failed To Compute Features from Input Vector. FeatureExtraction moduleIndex: " << moduleIndex << endl;
                 return false;
             }
             inputVector = featureExtractionModules[ moduleIndex ]->getFeatureVector();
