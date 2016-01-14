@@ -35,7 +35,7 @@ Key things to know about the GRT:
 To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set 
 of core **modules** and a central **gesture recognition pipeline**.
 
-The input to both the modules and pipeline consists of an **N-dimensional double-precision vector**, making the toolkit flexible to the type of input signal. 
+The input to both the modules and pipeline consists of an **N-dimensional floating-point vector**, making the toolkit flexible to the type of input signal. 
 The algorithms in each module can be used as standalone classes; alternatively a pipeline can be used to chain modules together to create a more sophisticated gesture-recognition system. The GRT includes modules for preprocessing, feature extraction, clustering, classification, regression and post processing.
 
 The toolkit's source code is structured as following:
@@ -68,20 +68,24 @@ You can find this source code and a large number of other examples and tutorials
 //Include the main GRT header
 #include <GRT/GRT.h>
 using namespace GRT;
+using namespace std;
 
 int main (int argc, const char * argv[])
 {
-    //Generate a basic dummy dataset with 1000 samples, 5 classes, and 3 dimensions
-    cout << "Generating dataset..." << endl;
-    ClassificationData::generateGaussDataset( "data.csv", 1000, 5, 3 );
-	
+    //Parse the training data filename from the command line
+    if( argc != 2 ){
+      cout << "Error: failed to parse data filename from command line. You should run this example with one argument pointing to a data file\n";
+      return EXIT_FAILURE;
+    }
+    const string filename = argv[1];
+
     //Load some training data from a file
     ClassificationData trainingData;
 
     cout << "Loading dataset..." << endl;
-    if( !trainingData.load( "data.csv" ) ){
-		cout << "ERROR: Failed to load training data from file\n";
-		return EXIT_FAILURE;
+    if( !trainingData.load( filename ) ){
+	cout << "ERROR: Failed to load training data from file\n";
+	return EXIT_FAILURE;
     }
 
     cout << "Data Loaded" << endl;
@@ -106,13 +110,13 @@ int main (int argc, const char * argv[])
     }
 
     //Save the pipeline to a file
-    if( !pipeline.save( "HelloWorldPipeline" ) ){
+    if( !pipeline.save( "HelloWorldPipeline.grt" ) ){
         cout << "ERROR: Failed to save the pipeline!\n";
         return EXIT_FAILURE;
     }
 
     //Load the pipeline from a file
-    if( !pipeline.load( "HelloWorldPipeline" ) ){
+    if( !pipeline.load( "HelloWorldPipeline.grt" ) ){
         cout << "ERROR: Failed to load the pipeline!\n";
         return EXIT_FAILURE;
     }
@@ -127,7 +131,7 @@ int main (int argc, const char * argv[])
     //Print some stats about the testing
     cout << "Test Accuracy: " << pipeline.getTestAccuracy() << endl;
    
-    vector< UINT > classLabels = pipeline.getClassLabels();
+    Vector< UINT > classLabels = pipeline.getClassLabels();
 
     cout << "Precision: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
@@ -144,7 +148,7 @@ int main (int argc, const char * argv[])
         cout << "\t" << pipeline.getTestFMeasure( classLabels[k] );
     }cout << endl;
 
-    MatrixDouble confusionMatrix = pipeline.getTestConfusionMatrix();
+    MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
     cout << "ConfusionMatrix: \n";
     for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
         for(UINT j=0; j<confusionMatrix.getNumCols(); j++){
