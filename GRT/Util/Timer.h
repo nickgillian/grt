@@ -45,7 +45,11 @@ public:
     /**
      Default constructor. 
     */
-    Timer(){}
+    Timer(){
+        timerMode = NORMAL_MODE;
+        timerState = NOT_RUNNING;
+        timerRunning = false;
+    }
 
     /**
      Default destructor.
@@ -61,22 +65,33 @@ public:
         startTime = getSystemTime();
         timerRunning = true;
         timerMode = NORMAL_MODE;
+        timerState = RUNNING;
         return true;
     }
 
     /**
      Starts the timer. This starts the timer in COUNTDOWN_MODE, in this mode the timer will start at the specified countdown time and count down until it reaches zero.
-     At zero, the timer will set its state to timerRunning = false, however the timer will continue to countdown resulting in a negative query time.
+     At zero, the timer will set its state to timerRunning = false, however the timer will continue to countdown resulting in a negative query time.  The second option
+     controls the preperation time, this is useful if you are recording a gesture and want to have a short pause after triggering the recording before data is actually
+     recorded/tagged.  If the prepTime parameter is larger than zero, then the timer will enter the PREP_STATE for the specified prepTime before entering the COUNTDOWN_STATE.
 	
      @param countDownTime: sets the countdown time, this should be in milliseconds (i.e. start(5000) would start the timer with a countdown time of 5 seconds)
      @return returns true if the timer was started successfully, false otherwise
 	*/
-    bool start(unsigned long countDownTime){
+    bool start(unsigned long countDownTime,unsigned long prepTime = 0){
         if( countDownTime > 0 ){
             startTime = getSystemTime();
             timerRunning = true;
-            timerMode = COUNTDOWN_MODE;
             this->countDownTime = countDownTime;
+            this->prepTime = prepTime;
+            timerMode = COUNTDOWN_MODE;
+
+            if( prepTime > 0 ){
+                timerState = PREP_STATE;
+            }else{
+                timerState = COUNTDOWN_STATE;
+            }
+            
             return true;
         }
         return false;
@@ -89,6 +104,7 @@ public:
 	*/
     bool stop(){
         timerRunning = false;
+        timerState = NOT_RUNNING;
         return true;
     }
 
@@ -108,7 +124,8 @@ public:
                 return (now-startTime);
                 break;
             case COUNTDOWN_MODE:
-                return (countDownTime - (now-startTime));
+                if( timerState == PREP_STATE ) return countDownTime;
+                if( timerState == COUNTDOWN_STATE ) return (countDownTime - (now-startTime));
                 break;
             default:
                 return 0;
@@ -150,6 +167,14 @@ public:
         if( getMilliSeconds() > 0 ) return false;
         return true;
 	}
+
+    bool getInPrepState() const {
+        return timerState == PREP_STATE;
+    }
+
+    bool getInCountdownState() const {
+        return timerState == COUNTDOWN_STATE;
+    }
 	
 	/**
 	This function is now deprecated, you should use getTimerReached() instead.
@@ -183,12 +208,15 @@ public:
     }
 
 protected:
+    enum TimerMode {NORMAL_MODE=0,COUNTDOWN_MODE};
+    enum TimerState {NOT_RUNNING=0,RUNNING,COUNTDOWN_STATE,PREP_STATE};
+
     unsigned long startTime;
     unsigned long countDownTime;
-    unsigned int timerMode;
+    unsigned long prepTime;
     bool timerRunning;
-
-    enum TimerModes{NORMAL_MODE=0,COUNTDOWN_MODE};
+    TimerMode timerMode;
+    TimerState timerState;
 
 };
 
