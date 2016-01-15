@@ -215,11 +215,13 @@ bool GestureRecognitionPipeline::train(const ClassificationData &trainingData){
     timer.start();
     
     ClassificationData processedTrainingData( numDimensions );
-    
+    processedTrainingData.reserve( trainingData.getNumSamples() );
+    UINT classLabel = 0;
+    VectorFloat trainingSample;
     for(UINT i=0; i<trainingData.getNumSamples(); i++){
         bool okToAddProcessedData = true;
-        UINT classLabel = trainingData[i].getClassLabel();
-        VectorFloat trainingSample = trainingData[i].getSample();
+        classLabel = trainingData[i].getClassLabel();
+        trainingSample = trainingData[i].getSample();
         
         //Perform any preprocessing
         if( getIsPreProcessingSet() ){
@@ -260,7 +262,6 @@ bool GestureRecognitionPipeline::train(const ClassificationData &trainingData){
     }
     
     if( processedTrainingData.getNumSamples() != trainingData.getNumSamples() ){
-        
         warningLog << "train(ClassificationData trainingData) - Lost " << trainingData.getNumSamples()-processedTrainingData.getNumSamples() << " of " << trainingData.getNumSamples() << " training samples due to the processing stage!" << std::endl;
     }
 
