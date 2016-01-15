@@ -132,7 +132,7 @@ public:
     /**
      @return gets the current search timeout counter value
      */
-    UINT getSearchTimeoutCounter() const;
+    UINT getSearchTimeoutCounter();
     
     /**
      @return gets the search timeout duration

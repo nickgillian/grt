@@ -299,7 +299,7 @@ UINT ThresholdCrossingDetector::getSearchWindowIndex() const{
     return searchWindowIndex;
 }
 
-UINT ThresholdCrossingDetector::getSearchTimeoutCounter() const{
+UINT ThresholdCrossingDetector::getSearchTimeoutCounter() {
     return (UINT)searchTimeoutCounter.getMilliSeconds();
 }
 

@@ -114,7 +114,7 @@ public:
 	
 	@return returns the current time elapsed in milliseconds (1000 milliseconds == 1 second) or 0 if the timer is not running
 	*/
-    signed long getMilliSeconds() const {
+    signed long getMilliSeconds() {
         if( !timerRunning ) return 0;
 
         unsigned long now = getSystemTime();
@@ -124,7 +124,14 @@ public:
                 return (now-startTime);
                 break;
             case COUNTDOWN_MODE:
-                if( timerState == PREP_STATE ) return countDownTime;
+                if( timerState == PREP_STATE ){
+                    if( now-startTime >= prepTime ){
+                        timerState = COUNTDOWN_STATE;
+                        startTime = now;
+                        return countDownTime;
+                    }
+                    return countDownTime;
+                }
                 if( timerState == COUNTDOWN_STATE ) return (countDownTime - (now-startTime));
                 break;
             default:
@@ -143,7 +150,7 @@ public:
      
      @return returns the current time elapsed in seconds or 0 if the timer is not running
     */
-    float_t getSeconds() const {
+    float_t getSeconds() {
         if( !timerRunning ) return 0;
         return getMilliSeconds()/1000.0;
     }
@@ -153,14 +160,27 @@ public:
 	
 	@return returns true if the timer is running, false otherwise
 	*/
-    bool running() const { return timerRunning; }
+    bool running() { return getTimerRunning(); }
+
+    /**
+    Gets if the timer is running.
+    
+    @return returns true if the timer is running, false otherwise
+    */
+    bool getTimerRunning() {
+        if( !timerRunning ){
+            return false;
+        }
+        if( getMilliSeconds() > 0 ) return false;
+        return true;
+    }
 
     /**
 	Gets if the countdown time has been reached.
 	
 	@return returns true if the countdown time has been reached, false otherwise
 	*/
-    bool getTimerReached() const {
+    bool getTimerReached() {
 	    if( !timerRunning ){
             return false;
         }
@@ -179,7 +199,7 @@ public:
 	/**
 	This function is now deprecated, you should use getTimerReached() instead.
 	*/
-	bool timerReached() const {
+	bool timerReached() {
 		return getTimerReached();
     }
 
