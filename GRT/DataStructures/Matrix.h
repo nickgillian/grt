@@ -1,7 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
 
  @brief The Matrix class is a basic class for storing any type of data.  This class is a template and can therefore be used with any generic data type.
  */
@@ -115,7 +114,7 @@ public:
 		if( resize(tempRows,tempCols) ){
 			for(unsigned int i=0; i<tempRows; i++){
 				for(unsigned int j=0; j<tempCols; j++){
-                	dataPtr[i][j] = data[i][j];
+                	dataPtr[(i*cols)+j] = data[i][j];
 				}
 			}
 		}
@@ -326,20 +325,33 @@ public:
     }
 
     /**
+     @deprecated
+     This function is now depreciated! You should use setAll(const T &value) instead.
+
      Sets all the values in the Matrix to the input value
      
      @param value: the value you want to set all the Matrix values to
      @return returns true or false, indicating if the set was successful 
     */
-	bool setAllValues(const T &value){
-		if(dataPtr!=NULL){
+    bool setAllValues(const T &value){
+        return setAll( value );
+    }
+
+    /**
+     Sets all the values in the Matrix to the input value
+     
+     @param value: the value you want to set all the Matrix values to
+     @return returns true or false, indicating if the set was successful 
+    */
+    bool setAll(const T &value){
+        if(dataPtr!=NULL){
             unsigned int i =0;
-			for(i=0; i<size; i++)
+            for(i=0; i<size; i++)
                 dataPtr[i] = value;
             return true;
-		}
+        }
         return false;
-	}
+    }
 	
 	/**
      Sets all the values in the row at rowIndex with the values in the vector called row.

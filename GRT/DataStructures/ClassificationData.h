@@ -450,7 +450,7 @@ public:
      
      @return an unsigned int representing the number of classes
     */
-	UINT inline getNumClasses() const{ return (UINT)classTracker.size(); }
+	UINT inline getNumClasses() const{ return classTracker.getSize(); }
     
     /**
      Gets the minimum class label in the dataset. If there are no values in the dataset then the value 99999 will be returned.

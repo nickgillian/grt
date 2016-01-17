@@ -13,15 +13,17 @@ using namespace GRT;
 %include "std_string.i"
 
 // ———— Vector ————————————
-%template(VectorDoubleBase) std::vector<double>;
+%template(VectorFloatBase) GRT::VectorFloat;
 %include "../GRT/Util/GRTTypedefs.h"
+// instantiate Vector, just to give SWIG something to do with it
+// %template(VectorFloatBase) GRT::VectorFloat;
+// %include "../GRT/DataStructures/VectorFloat.h"
 
 // ———— Matrix ———————————–
-%include "../GRT/Util/Matrix.h"
+%include "../GRT/DataStructures/Matrix.h"
 // instantiate Matrix, just to give SWIG something to do with it
-// %template(MatrixDoubleBase) GRT::Matrix<double>;
-// %include "../GRT/Util/MatrixDouble.h"
-
+// %template(MatrixFloatBase) GRT::MatrixFloat;
+// %include "../GRT/DataStructures/MatrixFloat.h"
 
 // ——————————————————-
 /* For the rest, let’s just grab the original header files here and

@@ -14,8 +14,8 @@ Key things to know about the GRT:
 * The toolkit consists of two parts: a comprehensive **C++ API** and a front-end **graphical user interface (GUI)**. You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded [here](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * Both the C++ API and GUI are designed to work with real-time sensor data, but they can also be used for more conventional offline machine-learning tasks 
 * The input to the GRT can be any *N*-dimensional floating-point vector - this means you can use the GRT with Cameras, Kinect, Leap Motion, accelerometers, or any other custom sensor you might have built
-* The toolkit defines a generic **float_t** type, this defaults to double precision float, but can easily be changed to single precision via the main GRT Typedefs header
-* The precision of the GRT VectorFloat and MatrixFloat classes is automatically updated based on the main float_t precision
+* The toolkit defines a generic **Float** type, this defaults to double precision float, but can easily be changed to single precision via the main GRT Typedefs header
+* The precision of the GRT VectorFloat and MatrixFloat classes is automatically updated based on the main Float precision
 * The toolkit reserves the class label value of zero as a special **null gesture** class label for automatic gesture spotting, so if you want to use gesture spotting avoid labelling any of your gestures with the class label of zero
 * Training data and models are saved as custom **.grt** files.  These consist of a simple header followed by the main dataset.  In addition to the grt files, you can also import/export data via CSV files by using the *.csv* file extension when saving/loading files
 * Almost all the GRT classes support the following functions: 
@@ -78,8 +78,8 @@ int main (int argc, const char * argv[])
 {
     //Parse the training data filename from the command line
     if( argc != 2 ){
-      cout << "Error: failed to parse data filename from command line. You should run this example with one argument pointing to a data file\n";
-      return EXIT_FAILURE;
+        cout << "Error: failed to parse data filename from command line. You should run this example with one argument pointing to a data file\n";
+        return EXIT_FAILURE;
     }
     const string filename = argv[1];
 
@@ -88,8 +88,8 @@ int main (int argc, const char * argv[])
 
     cout << "Loading dataset..." << endl;
     if( !trainingData.load( filename ) ){
-	cout << "ERROR: Failed to load training data from file\n";
-	return EXIT_FAILURE;
+	   cout << "ERROR: Failed to load training data from file\n";
+	   return EXIT_FAILURE;
     }
 
     cout << "Data Loaded" << endl;

@@ -68,9 +68,9 @@ public:
     static T max() { return std::numeric_limits< T >::max(); }
 };
 
-inline Float grt_sqr( const float &x ){ return x*x; }
+inline Float grt_sqr( const Float &x ){ return x*x; }
 
-inline Float grt_sqrt( const float &x ){ return sqrt(x); }
+inline Float grt_sqrt( const Float &x ){ return sqrt(x); }
 
 inline Float grt_antilog( const Float &x ){ return exp( x ); }
 

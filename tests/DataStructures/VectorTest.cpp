@@ -1,49 +1,40 @@
-
 #include <GRT.h>
 #include "gtest/gtest.h"
+using namespace GRT;
 
 //Unit tests for the GRT Vector class
 
-// Tests the square function
-TEST(Typedefs, Sqr) {
-  Float a = 0.0;
-  Float b = 1.0;
-  Float c = 2.0;
-  Float d = -2.0;
-  Float e = 1000.0;
+// Tests the default c'tor.
+TEST(Vector, DefaultConstructor) {
+  Vector< int > vec;
 
-  Float expectedA = 0.0 * 0.0;
-  Float expectedB = 1.0 * 1.0;
-  Float expectedC = 2.0 * 2.0;
-  Float expectedD = -2.0 * -2.0;
-  Float expectedE = 1000.0 * 1000.0;
-
-  EXPECT_EQ(grt_sqr(a), expectedA);
-  EXPECT_EQ(grt_sqr(b), expectedB);
-  EXPECT_EQ(grt_sqr(c), expectedC);
-  EXPECT_EQ(grt_sqr(d), expectedD);
-  EXPECT_EQ(grt_sqr(e), expectedE);
+  EXPECT_EQ(0, vec.getSize());
 }
 
-// Tests the square root function
-TEST(Typedefs, Sqrt) {
-  Float a = 0.0;
-  Float b = 1.0;
-  Float c = 2.0;
-  Float d = -2.0;
-  Float e = 1000.0;
+// Tests the resize c'tor.
+TEST(Vector, ResizeConstructor) {
+	const UINT size = 100;
+	Vector< int > vec( size );
+	EXPECT_EQ(size, vec.getSize());
+}
 
-  Float expectedA = sqrt( a );
-  Float expectedB = sqrt( b );
-  Float expectedC = sqrt( c );
-  Float expectedD = sqrt( d );
-  Float expectedE = sqrt( e );
+// Tests the copy c'tor.
+TEST(Vector, CopyConstructor) {
+	const UINT size = 100;
+	Vector< int > vec1( size );
+	EXPECT_EQ(size, vec1.getSize());
+	Vector< int > vec2( vec1 );
+	EXPECT_EQ(vec1.getSize(), vec2.getSize());
+}
 
-  EXPECT_EQ(grt_sqrt(a), expectedA);
-  EXPECT_EQ(grt_sqrt(b), expectedB);
-  EXPECT_EQ(grt_sqrt(c), expectedC);
-  EXPECT_EQ(grt_sqrt(d), expectedD);
-  EXPECT_EQ(grt_sqrt(e), expectedE);
+// Tests the equals operator.
+TEST(Vector, EqualsConstructor) {
+	const UINT size = 100;
+	Vector< int > vec1( size );
+	EXPECT_EQ(size, vec1.getSize());
+	Vector< int > vec2;
+	vec2 = vec1;
+	EXPECT_EQ(vec1.getSize(), vec2.getSize());
 }
 
 int main(int argc, char **argv) {

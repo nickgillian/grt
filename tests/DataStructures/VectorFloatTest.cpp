@@ -1,4 +1,3 @@
-
 #include <GRT.h>
 #include "gtest/gtest.h"
 using namespace GRT;
