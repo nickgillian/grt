@@ -30,7 +30,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-class VectorFloat : public Vector< float_t >{
+class VectorFloat : public Vector< Float >{
 public:
     /**
      Default Constructor
@@ -50,7 +50,7 @@ public:
      @param size: sets the size of the vector
      @param value: the value that will be written to all elements in the vector
      */
-    VectorFloat( const unsigned int size, const float_t &value );
+    VectorFloat( const unsigned int size, const Float &value );
     
     /**
      Copy Constructor, copies the values from the rhs VectorFloat to this VectorFloat instance
@@ -73,12 +73,12 @@ public:
     VectorFloat& operator=(const VectorFloat &rhs);
     
     /**
-     Defines how the data from the rhs Vector< float_t > should be copied to this VectorFloat
+     Defines how the data from the rhs Vector< Float > should be copied to this VectorFloat
      
-     @param rhs: an instance of a Vector< float_t >
+     @param rhs: an instance of a Vector< Float >
      @return returns a reference to this instance of the VectorFloat
      */
-    VectorFloat& operator=(const Vector< float_t > &rhs);
+    VectorFloat& operator=(const Vector< Float > &rhs);
     
     /**
      Defines how the data from the rhs vector of VectorFloats should be copied to this VectorFloat
@@ -121,34 +121,34 @@ public:
      
      @return returns true if the vector was scaled, false otherwise
      */
-    bool scale(const float_t minTarget,const float_t maxTarget,const bool constrain = true);
+    bool scale(const Float minTarget,const Float maxTarget,const bool constrain = true);
     
     /**
      Scales the vector to a new range given by the min and max targets using the ranges as the source ranges.
      
      @return returns true if the vector was scaled, false otherwise
      */
-    bool scale(const float_t minSource,const float_t maxSource,const float_t minTarget,const float_t maxTarget,const bool constrain = true);
+    bool scale(const Float minSource,const Float maxSource,const float_t minTarget,const float_t maxTarget,const bool constrain = true);
 
     /**
      @return returns the minimum value in the vector
      */
-    float_t getMinValue() const;
+    Float getMinValue() const;
 
     /**
      @return returns the maximum value in the vector
      */
-    float_t getMaxValue() const;
+    Float getMaxValue() const;
     
     /**
      @return returns the mean of the vector
      */
-    float_t getMean() const;
+    Float getMean() const;
     
     /**
      @return returns the standard deviation of the vector
      */
-    float_t getStdDev() const;
+    Float getStdDev() const;
     
     /**
      @return returns the minimum and maximum values in the vector

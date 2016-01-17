@@ -49,7 +49,7 @@ bool ANBC_Model::train( UINT classLabel, const MatrixFloat &trainingData, const 
 			mu[j] += trainingData[i][j];
         }
 
-		mu[j] /= float_t(M);
+		mu[j] /= Float(M);
         
         if( mu[j] == 0 ){
             return false;
@@ -64,7 +64,7 @@ bool ANBC_Model::train( UINT classLabel, const MatrixFloat &trainingData, const 
 			sigma[j] += grt_sqr( trainingData[i][j]-mu[j] );
         }
         sigma[j] += 0.01; //Add a small amount to the standard deviation to ensure it is not zero
-        sigma[j] = grt_sqrt( sigma[j]/float_t(M-1) );
+        sigma[j] = grt_sqrt( sigma[j]/Float(M-1) );
         
         if( sigma[j] == 0 ){
             return false;
@@ -72,7 +72,7 @@ bool ANBC_Model::train( UINT classLabel, const MatrixFloat &trainingData, const 
 	}
 
 	//Now compute the threshold
-    float_t meanPrediction = 0.0;
+    Float meanPrediction = 0.0;
 	VectorFloat predictions(M);
 	VectorFloat testData(N);
 	for(UINT i=0; i<M; i++){
@@ -86,14 +86,14 @@ bool ANBC_Model::train( UINT classLabel, const MatrixFloat &trainingData, const 
 	}
 
 	//Calculate the mean prediction value
-	meanPrediction /= float_t(M);
+	meanPrediction /= Float(M);
 
 	//Calculate the standard deviation
-	float_t stdDev = 0.0;
+	Float stdDev = 0.0;
 	for(UINT i=0; i<M; i++) {
 		stdDev += grt_sqr( predictions[i]-meanPrediction );
     }
-	stdDev = grt_sqrt( stdDev / (float_t(M)-1.0) );
+	stdDev = grt_sqrt( stdDev / (Float(M)-1.0) );
 
 	threshold = meanPrediction-(stdDev*gamma);
 
@@ -104,8 +104,8 @@ bool ANBC_Model::train( UINT classLabel, const MatrixFloat &trainingData, const 
 	return true;
 }
 
-float_t ANBC_Model::predict( const VectorFloat &x ){
-	float_t prediction = 0.0;
+Float ANBC_Model::predict( const VectorFloat &x ){
+	Float prediction = 0.0;
 	for(UINT j=0; j<N; j++){
 		if(weights[j]>0)
 			prediction += grt_log(gauss(x[j],mu[j],sigma[j]) * weights[j]);
@@ -113,8 +113,8 @@ float_t ANBC_Model::predict( const VectorFloat &x ){
 	return prediction;
 }
 
-float_t ANBC_Model::predictUnnormed( const VectorFloat &x ){
-	float_t prediction = 0.0;
+Float ANBC_Model::predictUnnormed( const VectorFloat &x ){
+	Float prediction = 0.0;
 	for(UINT j=0; j<N; j++){
 		if(weights[j]>0)
 			prediction += grt_log( unnormedGauss(x[j], mu[j], sigma[j]) * weights[j] );
@@ -122,15 +122,15 @@ float_t ANBC_Model::predictUnnormed( const VectorFloat &x ){
 	return prediction;
 }
 
-inline float_t ANBC_Model::gauss(const float_t x,const float_t mu,const float_t sigma){
+inline Float ANBC_Model::gauss(const float_t x,const float_t mu,const float_t sigma){
 	return ( 1.0/(sigma*sqrt(TWO_PI)) ) * exp( - ( ((x-mu)*(x-mu))/(2*(sigma*sigma)) ) );
 }
 
-inline float_t ANBC_Model::unnormedGauss(const float_t x,const float_t mu,const float_t sigma){
+inline Float ANBC_Model::unnormedGauss(const float_t x,const float_t mu,const float_t sigma){
 	return exp( - ( ((x-mu)*(x-mu))/(2*(sigma*sigma)) ) );
 }
 
-void ANBC_Model::recomputeThresholdValue(const float_t gamma){
+void ANBC_Model::recomputeThresholdValue(const Float gamma){
 	this->gamma = gamma;
 	threshold = trainingMu-(trainingSigma*gamma);
 }

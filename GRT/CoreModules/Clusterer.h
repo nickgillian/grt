@@ -133,7 +133,7 @@ public:
      
      @return returns the current maximumLikelihood value
      */
-    float_t getMaximumLikelihood() const;
+    Float getMaximumLikelihood() const;
     
     /**
      Returns the current bestDistance value.
@@ -142,7 +142,7 @@ public:
      
      @return returns the current bestDistance value
      */
-    float_t getBestDistance() const;
+    Float getBestDistance() const;
     
     /**
      Gets a Vector of the cluster likelihoods from the last prediction, this will be an N-dimensional Vector, where N is the number of clusters in the model.
@@ -248,8 +248,8 @@ protected:
     std::string clustererType;
     UINT numClusters;                   ///< Number of clusters in the model
     UINT predictedClusterLabel;         ///< Stores the predicted cluster label from the most recent predict( )
-    float_t maxLikelihood;
-    float_t bestDistance;
+    Float maxLikelihood;
+    Float bestDistance;
     VectorFloat clusterLikelihoods;
     VectorFloat clusterDistances;
     Vector< UINT > clusterLabels;

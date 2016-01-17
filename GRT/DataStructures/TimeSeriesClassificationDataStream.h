@@ -190,7 +190,7 @@ public:
      @param maxTarget: the maximum value of the target range
 	 @return true if the data was scaled correctly, false otherwise
      */
-    bool scale(const float_t minTarget,const float_t maxTarget);
+    bool scale(const Float minTarget,const Float maxTarget);
     
 	/**
      Scales the dataset to the new target range, using the Vector of ranges as the min and max source ranges.
@@ -200,7 +200,7 @@ public:
      @param maxTarget: the maximum value of the target range
 	 @return true if the data was scaled correctly, false otherwise
      */
-	bool scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
+	bool scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget);
     
     /**
      Sets the playback index to a specific index.  The index should be within the range [0 totalNumSamples-1].

@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the Softmax module with the Classifier base class
 RegisterClassifierModule< Softmax >  Softmax::registerModule("Softmax");
 
-Softmax::Softmax(const bool useScaling,const float_t learningRate,const float_t minChange,const UINT maxNumEpochs)
+Softmax::Softmax(const bool useScaling,const Float learningRate,const float_t minChange,const UINT maxNumEpochs)
 {
     this->useScaling = useScaling;
     this->learningRate = learningRate;
@@ -157,11 +157,11 @@ bool Softmax::predict_(VectorFloat &inputVector){
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
     //Loop over each class and compute the likelihood of the input data coming from class k. Pick the class with the highest likelihood
-    float_t sum = 0;
-    float_t bestEstimate = -grt_numeric_limits< float_t >::max();
+    Float sum = 0;
+    Float bestEstimate = -grt_numeric_limits< float_t >::max();
     UINT bestIndex = 0;
     for(UINT k=0; k<numClasses; k++){
-        float_t estimate = models[k].compute( inputVector );
+        Float estimate = models[k].compute( inputVector );
         
         if( estimate > bestEstimate ){
             bestEstimate = estimate;
@@ -191,10 +191,10 @@ bool Softmax::predict_(VectorFloat &inputVector){
     
 bool Softmax::trainSoftmaxModel(UINT classLabel,SoftmaxModel &model,ClassificationData &data){
     
-    float_t error = 0;
-    float_t errorSum = 0;
-    float_t lastErrorSum = 0;
-    float_t delta = 0;
+    Float error = 0;
+    Float errorSum = 0;
+    Float lastErrorSum = 0;
+    Float delta = 0;
     UINT N = data.getNumDimensions();
     UINT M = data.getNumSamples();
     UINT iter = 0;

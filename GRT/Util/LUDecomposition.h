@@ -36,14 +36,14 @@ public:
 	bool solve_vector(const VectorFloat &b,VectorFloat &x);
 	bool solve(const MatrixFloat &b,MatrixFloat &x);
 	bool inverse(MatrixFloat &ainv);
-	float_t det();
+	Float det();
 	bool mprove(const VectorFloat &b,VectorFloat &x);
 	bool getIsSingular();
 	MatrixFloat getLU();
 	
 private:
 	unsigned int N;
-	float_t d;
+	Float d;
 	bool sing;
 	Vector< int > indx;
 	MatrixFloat aref;

@@ -336,7 +336,7 @@ public:
      @param constrain: sets if the scaled value should be constrained to the target range
      @return returns a new value that has been scaled based on the input parameters
      */
-    float_t inline scale(const float_t &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain=false){
+    Float inline scale(const Float &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain=false){
         if( constrain ){
             if( x <= minSource ) return minTarget;
             if( x >= maxSource ) return maxTarget;
@@ -418,35 +418,35 @@ public:
      
      @return returns the minimum change value
      */
-	float_t getMinChange() const;
+	Float getMinChange() const;
     
     /**
      Gets the current learningRate value, this is value used to update the weights at each step of a learning algorithm such as stochastic gradient descent.
      
      @return returns the current learningRate value
      */
-    float_t getLearningRate() const;
+    Float getLearningRate() const;
     
     /**
      Gets the root mean squared error on the training data during the training phase.
      
      @return returns the RMS error (on the training data during the training phase)
      */
-    float_t getRootMeanSquaredTrainingError() const;
+    Float getRootMeanSquaredTrainingError() const;
     
     /**
      Gets the total squared error on the training data during the training phase.
      
      @return returns the total squared error (on the training data during the training phase)
      */
-    float_t getTotalSquaredTrainingError() const;
+    Float getTotalSquaredTrainingError() const;
 
     /**
      Gets the accuracy of the validation set on the trained model, only valid if the model was trained with useValidationSet=true.
      
      @return returns the accuracy of validation set on the trained model
      */
-    float_t getValidationSetAccuracy() const;
+    Float getValidationSetAccuracy() const;
 
     /**
      Gets the precision of the validation set on the trained model, only valid if the model was trained with useValidationSet=true.
@@ -554,7 +554,7 @@ public:
      @param minChange: the minimum change value, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
-    bool setMinChange(const float_t minChange);
+    bool setMinChange(const Float minChange);
     
     /**
      Sets the learningRate. This is used to update the weights at each step of learning algorithms such as stochastic gradient descent.
@@ -563,7 +563,7 @@ public:
      @param learningRate: the learningRate value used during the training phase, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
-    bool setLearningRate(const float_t learningRate);
+    bool setLearningRate(const Float learningRate);
     
     /**
      Sets the size of the validation set used by some learning algorithms for training. This value represents the percentage of the main
@@ -711,11 +711,11 @@ protected:
     UINT minNumEpochs;
     UINT maxNumEpochs;
     UINT validationSetSize;
-    float_t learningRate;
-    float_t minChange;
-    float_t rootMeanSquaredTrainingError;
-    float_t totalSquaredTrainingError;
-    float_t validationSetAccuracy;
+    Float learningRate;
+    Float minChange;
+    Float rootMeanSquaredTrainingError;
+    Float totalSquaredTrainingError;
+    Float validationSetAccuracy;
     bool useValidationSet;
     bool randomiseTrainingOrder;
     VectorFloat validationSetPrecision;

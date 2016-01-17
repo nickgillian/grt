@@ -138,39 +138,39 @@ public:
     /**
      @return returns the swipe analysis value, this is the value that the swipe threshold is matched against
      */
-    float_t getSwipeValue() const;
+    Float getSwipeValue() const;
     
     /**
      @return returns the swipe threshold, this is the value that the swipe analysis value must cross for a swipe to be trigger
      */
-    float_t getSwipeThreshold() const ;
+    Float getSwipeThreshold() const ;
     
     /**
      @return returns the hysteresis threshold, this is the value that the swipe analysis value must cross (after a valid swipe detection), before the next swipe will be detected
      */
-    float_t getHysteresisThreshold() const;
+    Float getHysteresisThreshold() const;
     
     /**
      This function returns the movement velocity.  This is the integrated difference between each of the additional inputs (that are not the swipe index) that is used to detected a valid swipe.
      The movement velocity must be below the movement threshold for a valid swipe to be detected.
      @return returns the movement velocity
      */
-    float_t getMovementVelocity() const;
+    Float getMovementVelocity() const;
     
     /**
      @return returns the movement threshold, the movement velocity must be below this value for a valid swipe to be detected
      */
-    float_t getMovementThreshold() const;
+    Float getMovementThreshold() const;
     
     /**
      @return returns the context value, this is the latest output of the context filter
      */
-    float_t getContextValue() const;
+    Float getContextValue() const;
     
     /**
      @return returns the swipe integration coeff
      */
-    float_t getSwipeIntegrationCoeff() const;
+    Float getSwipeIntegrationCoeff() const;
     
     /**
      This function lets you set the current context input.  This should be called before you call the predict function.
@@ -200,7 +200,7 @@ public:
      @param swipeThreshold: the new swipe threshold
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setSwipeThreshold(const float_t swipeThreshold);
+    bool setSwipeThreshold(const Float swipeThreshold);
     
     /**
      This function lets you set the swipe hysteresisThreshold, this is the threshold that the swipe analysis value must pass after a valid swipe before a new swipe can be detected.
@@ -208,7 +208,7 @@ public:
      @param hysteresisThreshold: the new hysteresis threshold
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setHysteresisThreshold(const float_t hysteresisThreshold);
+    bool setHysteresisThreshold(const Float hysteresisThreshold);
     
     /**
      This function lets you set the swipe movementThreshold.  The movement index must be below the movementThreshold for 
@@ -217,7 +217,7 @@ public:
      @param movementThreshold: the new movement threshold
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setMovementThreshold(const float_t movementThreshold);
+    bool setMovementThreshold(const Float movementThreshold);
     
     /**
      This function lets you set the swipe integration coeff.  This controls how much 'memory' is used to when integrating the input data.
@@ -225,7 +225,7 @@ public:
      @param swipeIntegrationCoeff: the new integration coefficient
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setSwipeIntegrationCoeff(const float_t swipeIntegrationCoeff);
+    bool setSwipeIntegrationCoeff(const Float swipeIntegrationCoeff);
 
 protected:
     
@@ -235,14 +235,14 @@ protected:
     unsigned int swipeIndex;
     unsigned int swipeDirection;
     unsigned int contextFilterSize;
-    float_t swipeIntegrationCoeff;
-    float_t movementIntegrationCoeff;
-    float_t swipeThreshold;
-    float_t hysteresisThreshold;
-    float_t swipeVelocity;
-    float_t movementVelocity;
-    float_t movementThreshold;
-    float_t contextFilteredValue;
+    Float swipeIntegrationCoeff;
+    Float movementIntegrationCoeff;
+    Float swipeThreshold;
+    Float hysteresisThreshold;
+    Float swipeVelocity;
+    Float movementVelocity;
+    Float movementThreshold;
+    Float contextFilteredValue;
     VectorFloat lastX;
     GRT::ThresholdCrossingDetector thresholdDetector;
     GRT::MedianFilter contextFilter;

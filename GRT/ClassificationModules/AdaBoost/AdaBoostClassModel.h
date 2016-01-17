@@ -84,7 +84,7 @@ public:
         return true;
     }
     
-    bool addClassifierToCommitee(const WeakClassifier *weakClassifier,float_t weight){
+    bool addClassifierToCommitee(const WeakClassifier *weakClassifier,Float weight){
         if( weakClassifier == NULL ) return false;
         
         //Deep copy the weak classifier
@@ -101,8 +101,8 @@ public:
         return true;
     }
     
-    float_t predict(const VectorFloat &inputVector){
-        float_t v = 0;
+    Float predict(const VectorFloat &inputVector){
+        Float v = 0;
         UINT N = (UINT)weakClassifiers.getSize();
         for(UINT i=0; i<N; i++){
             v += weakClassifiers[i]->predict( inputVector ) * weights[i];
@@ -272,7 +272,7 @@ public:
     
     bool normalizeWeights(){
         if( weights.size() == 0 ) return false;
-        float_t sum = 0;
+        Float sum = 0;
         UINT N = (UINT)weights.size();
         for(UINT i=0; i<N; i++){
             sum += weights[i];

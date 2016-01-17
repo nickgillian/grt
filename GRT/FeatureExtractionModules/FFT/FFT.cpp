@@ -259,15 +259,15 @@ bool FFT::computeFeatures(const VectorFloat &inputVector){
     return update(inputVector);
 }
     
-bool FFT::update(const float_t x){
+bool FFT::update(const Float x){
 
     if( !initialized ){
-        errorLog << "update(const float_t x) - Not initialized!" << std::endl;
+        errorLog << "update(const Float x) - Not initialized!" << std::endl;
         return false;
     }
     
     if( numInputDimensions != 1 ){
-        errorLog << "update(const float_t x) - The size of the input (1) does not match that of the FeatureExtraction (" << numInputDimensions << ")!" << std::endl;
+        errorLog << "update(const Float x) - The size of the input (1) does not match that of the FeatureExtraction (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -315,13 +315,13 @@ bool FFT::update(const VectorFloat &x){
         UINT index = 0;
         for(UINT j=0; j<numInputDimensions; j++){
             if( computeMagnitude ){
-                float_t *mag = fft[j].getMagnitudeDataPtr();
+                Float *mag = fft[j].getMagnitudeDataPtr();
                 for(UINT i=0; i<fft[j].getFFTSize()/2; i++){
                     featureVector[index++] = *mag++;
                 }
             }
             if( computePhase ){
-                float_t *phase = fft[j].getPhaseDataPtr();
+                Float *phase = fft[j].getPhaseDataPtr();
                 for(UINT i=0; i<fft[j].getFFTSize()/2; i++){
                     featureVector[index++] = *phase++;
                 }

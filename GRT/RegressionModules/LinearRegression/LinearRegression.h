@@ -128,7 +128,7 @@ public:
 protected:
     bool loadLegacyModelFromFile( std::fstream &file );
     
-    float_t w0;
+    Float w0;
     VectorFloat w;
     static RegisterRegressifierModule< LinearRegression > registerModule;
 };

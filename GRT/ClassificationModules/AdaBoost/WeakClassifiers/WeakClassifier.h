@@ -102,9 +102,9 @@ public:
      This function should be overwritten in the inheriting class.
      
      @param x: the input vector to be classified, should have the same dimensionality as the data used to train the model
-     @return returns a float_t value representing the prediction, which is normally -1 or +1
+     @return returns a Float value representing the prediction, which is normally -1 or +1
      */
-    virtual float_t predict(const VectorFloat &x){
+    virtual Float predict(const VectorFloat &x){
         return 0;
     }
     
@@ -135,12 +135,12 @@ public:
     /**
      @return returns the positive class label for this WeakClassifier
      */
-    virtual float_t getPositiveClassLabel() const{ return 1; }
+    virtual Float getPositiveClassLabel() const{ return 1; }
     
     /**
      @return returns the negative class label for this WeakClassifier
      */
-    virtual float_t getNegativeClassLabel() const{ return -1; }
+    virtual Float getNegativeClassLabel() const{ return -1; }
     
     /**
      @return returns the weak classifier type as a string, e.g. DecisionStump

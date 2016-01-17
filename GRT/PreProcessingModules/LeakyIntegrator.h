@@ -41,7 +41,7 @@ public:
      @param leakRate: sets the leak rate of the filter, this should be in the range [0 1].  Default delta = 0.99
      @param numDimensions: the dimensionality of the input data.  Default numDimensions = 1
      */
-    LeakyIntegrator(const float_t leakRate = 0.99,const UINT numDimensions = 1);
+    LeakyIntegrator(const Float leakRate = 0.99,const UINT numDimensions = 1);
     
     /**
      Copy Constructor, copies the LeakyIntegrator from the rhs instance to this instance
@@ -117,7 +117,7 @@ public:
      @param numDimensions: the dimensionality of the input data.  Default numDimensions = 1
 	 @return true if the instance was initiliazed, false otherwise
      */
-    bool init(const float_t leakRate,const UINT numDimensions);
+    bool init(const Float leakRate,const UINT numDimensions);
     
     /**
      Computes the LeakyIntegrator of the input, this should only be called if the dimensionality of the instance was set to 1.
@@ -125,7 +125,7 @@ public:
      @param x: the value to compute the LeakyIntegrator of, this should only be called if the dimensionality of the filter was set to 1
 	 @return the LeakyIntegrator of the input.  Zero will be returned if the value was not computed
      */
-	float_t update(const float_t x);
+	Float update(const Float x);
     
     /**
      Computes the LeakyIntegrator of the input, the dimensionality of the input should match the number of inputs for the LeakyIntegrator
@@ -142,20 +142,20 @@ public:
      @param leakRate: the new leak rate value
 	 @return returns true if delta was set, false otherwise
      */
-    bool setLeakRate(const float_t leakRate);
+    bool setLeakRate(const Float leakRate);
     
     /**
      Gets the leak rate.
      
 	 @return returns the current leak rate
      */
-    float_t getLeakRate();
+    Float getLeakRate();
     
     using PreProcessing::saveModelToFile;
     using PreProcessing::loadModelFromFile;
 
 protected:
-    float_t leakRate;                        ///< The current leak rate
+    Float leakRate;                        ///< The current leak rate
 	VectorFloat y;                        ///< A buffer holding the previous input value(s)
     
     static RegisterPreProcessingModule< LeakyIntegrator > registerModule;

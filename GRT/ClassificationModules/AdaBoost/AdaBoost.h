@@ -67,7 +67,7 @@ public:
      @param numBoostingIterations: sets the number of boosting iterations to use during training. Default value = 20
      @param predictionMethod: sets the prediction method for AdaBoost, this should be one of the PredictionMethods. Default value = MAX_VALUE
      */
-    AdaBoost(const WeakClassifier &weakClassifier = DecisionStump(),bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=10.0,UINT numBoostingIterations=20,UINT predictionMethod=MAX_VALUE);
+    AdaBoost(const WeakClassifier &weakClassifier = DecisionStump(),bool useScaling=false,bool useNullRejection=false,Float nullRejectionCoeff=10.0,UINT numBoostingIterations=20,UINT predictionMethod=MAX_VALUE);
     
     /**
      Defines the copy constructor.
@@ -144,7 +144,7 @@ public:
     
     /**
      This recomputes the null rejection thresholds for each of the classes in the AdaBoost model.
-     This will be called automatically if the setGamma(float_t gamma) function is called.
+     This will be called automatically if the setGamma(Float gamma) function is called.
      The AdaBoost model needs to be trained first before this function can be called.
      
      @return returns true if the null rejection thresholds were updated successfully, false otherwise
@@ -158,7 +158,7 @@ public:
      
      @return returns true if the gamma parameter was updated successfully, false otherwise
      */
-    bool setNullRejectionCoeff(float_t nullRejectionCoeff);
+    bool setNullRejectionCoeff(Float nullRejectionCoeff);
     
     /**
      Sets the WeakClassifier to use for boosting.  

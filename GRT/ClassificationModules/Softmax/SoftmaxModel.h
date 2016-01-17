@@ -61,8 +61,8 @@ public:
         return true;
     }
     
-    float_t compute(const VectorFloat &x){
-        float_t sum = w0;
+    Float compute(const VectorFloat &x){
+        Float sum = w0;
         for(UINT i=0; i<N; i++){
             sum += x[i]*w[i];
         }
@@ -72,7 +72,7 @@ public:
     UINT classLabel;
     UINT N; //The number of dimensions
     VectorFloat w; //The coefficents
-    float_t w0;
+    Float w0;
     
 };
 

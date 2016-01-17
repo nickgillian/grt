@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the LeakyIntegrator module with the PreProcessing base class
 RegisterPreProcessingModule< LeakyIntegrator > LeakyIntegrator::registerModule("LeakyIntegrator");
     
-LeakyIntegrator::LeakyIntegrator(const float_t leakRate,const UINT numDimensions){
+LeakyIntegrator::LeakyIntegrator(const Float leakRate,const UINT numDimensions){
     classType = "LeakyIntegrator";
     preProcessingType = classType;
     debugLog.setProceedingText("[DEBUG LeakyIntegrator]");
@@ -158,17 +158,17 @@ bool LeakyIntegrator::loadModelFromFile( std::fstream &file ){
     return init(leakRate,numInputDimensions);
 }
     
-bool LeakyIntegrator::init(const float_t leakRate,const UINT numDimensions){
+bool LeakyIntegrator::init(const Float leakRate,const UINT numDimensions){
 
     initialized = false;
     
     if( leakRate < 0 || leakRate > 1 ){
-        errorLog << "init(const float_t leakRate,const UINT numDimensions) - leakRate must be between [0 1]!" << std::endl;
+        errorLog << "init(const Float leakRate,const UINT numDimensions) - leakRate must be between [0 1]!" << std::endl;
         return false;
     }
     
     if( numDimensions == 0 ){
-        errorLog << "init(const float_t leakRate,const UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
+        errorLog << "init(const Float leakRate,const UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
@@ -183,10 +183,10 @@ bool LeakyIntegrator::init(const float_t leakRate,const UINT numDimensions){
     return true;
 }
 
-float_t LeakyIntegrator::update(const float_t x){
+Float LeakyIntegrator::update(const float_t x){
     
     if( numInputDimensions != 1 ){
-        errorLog << "update(const float_t x) - The Number Of Input Dimensions is not 1! NumInputDimensions: " << numInputDimensions << std::endl;
+        errorLog << "update(const Float x) - The Number Of Input Dimensions is not 1! NumInputDimensions: " << numInputDimensions << std::endl;
         return 0;
     }
     
@@ -217,17 +217,17 @@ VectorFloat LeakyIntegrator::update(const VectorFloat &x){
     return processedData;
 }
     
-bool LeakyIntegrator::setLeakRate(const float_t leakRate){
+bool LeakyIntegrator::setLeakRate(const Float leakRate){
     if( leakRate >= 0 && leakRate <= 1 ){
         this->leakRate = leakRate;
         if( initialized ) init(leakRate, numInputDimensions);
         return true;
     }
-    errorLog << "setLeakRate(const float_t leakRate) - The leak rate must be between [0 1]!" << std::endl;
+    errorLog << "setLeakRate(const Float leakRate) - The leak rate must be between [0 1]!" << std::endl;
     return false;
 }
 
-float_t LeakyIntegrator::getLeakRate(){
+Float LeakyIntegrator::getLeakRate(){
     return leakRate;
 }
 

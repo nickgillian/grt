@@ -18,8 +18,8 @@ GRT_BEGIN_NAMESPACE
 struct PeakInfo{
     unsigned int peakType;
     unsigned int peakIndex;
-    float_t peakValue;
-    PeakInfo(unsigned int peakType = 0,unsigned int peakIndex = 0,float_t peakValue = 0){
+    Float peakValue;
+    PeakInfo(unsigned int peakType = 0,unsigned int peakIndex = 0,Float peakValue = 0){
         this->peakType = peakType;
         this->peakIndex = peakIndex;
         this->peakValue = peakValue;
@@ -42,7 +42,7 @@ public:
     
     bool setSearchWindowSize(const UINT searchWindowSize);
 	
-    bool update( const float_t x );
+    bool update( const Float x );
     
     bool reset();
     
@@ -57,12 +57,12 @@ public:
     unsigned int lowPassFilterSize;
     unsigned int searchWindowSize;
     unsigned int searchHistorySize;
-    float_t deadZoneThreshold;
+    Float deadZoneThreshold;
     DoubleMovingAverageFilter lowPassFilter;
     DeadZone deadZoneFilter;
-    CircularBuffer< float_t > filteredDataBuffer;
-    CircularBuffer< float_t > firstDerivBuffer;
-    CircularBuffer< float_t > secondDerivBuffer;
+    CircularBuffer< Float > filteredDataBuffer;
+    CircularBuffer< Float > firstDerivBuffer;
+    CircularBuffer< Float > secondDerivBuffer;
     CircularBuffer< unsigned int > peakTypesBuffer;
     Vector< PeakInfo > peakInfo;
     PeakInfo globalMaximaPeakInfo;

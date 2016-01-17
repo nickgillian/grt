@@ -42,7 +42,7 @@ GRT_BEGIN_NAMESPACE
 class BernoulliRBM : public MLBase{
 
 public:
-    BernoulliRBM(const UINT numHiddenUnits = 100,const UINT maxNumEpochs = 1000,const float_t learningRate = 1,const float_t learningRateUpdate = 1,const float_t momentum = 0.5,const bool useScaling = true,const bool randomiseTrainingOrder = true);
+    BernoulliRBM(const UINT numHiddenUnits = 100,const UINT maxNumEpochs = 1000,const Float learningRate = 1,const Float learningRateUpdate = 1,const float_t momentum = 0.5,const bool useScaling = true,const bool randomiseTrainingOrder = true);
   
     virtual ~BernoulliRBM();
     
@@ -129,8 +129,8 @@ public:
     const MatrixFloat& getWeights() const;
     
     bool setNumHiddenUnits(const UINT numHiddenUnits);
-    bool setMomentum(const float_t momentum);
-    bool setLearningRateUpdate(const float_t learningRateUpdate);
+    bool setMomentum(const Float momentum);
+    bool setLearningRateUpdate(const Float learningRateUpdate);
     bool setRandomizeWeightsForTraining(const bool randomizeWeightsForTraining);
     bool setBatchSize(const UINT batchSize);
     bool setBatchStepSize(const UINT batchStepSize);
@@ -146,7 +146,7 @@ public:
 protected:
     bool loadLegacyModelFromFile( std::fstream &file );
     
-    inline float_t sigmoidRandom(const float_t &x){
+    inline Float sigmoidRandom(const Float &x){
         return (1.0 / (1.0 + exp(-x)) > rand.getRandomNumberUniform(0.0,1.0)) ? 1.0 : 0.0;
     }
 
@@ -155,8 +155,8 @@ protected:
     UINT numHiddenUnits;
     UINT batchSize;
     UINT batchStepSize;
-    float_t momentum;
-    float_t learningRateUpdate;
+    Float momentum;
+    Float learningRateUpdate;
     MatrixFloat weightsMatrix;
     VectorFloat visibleLayerBias;
     VectorFloat hiddenLayerBias;

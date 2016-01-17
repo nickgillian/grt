@@ -32,7 +32,7 @@ GRT_BEGIN_NAMESPACE
 //Register the RadialBasisFunction module with the WeakClassifier base class
 RegisterWeakClassifierModule< RadialBasisFunction > RadialBasisFunction::registerModule("RadialBasisFunction");
     
-RadialBasisFunction::RadialBasisFunction(UINT numSteps,float_t positiveClassificationThreshold,float_t minAlphaSearchRange,float_t maxAlphaSearchRange){
+RadialBasisFunction::RadialBasisFunction(UINT numSteps,Float positiveClassificationThreshold,float_t minAlphaSearchRange,float_t maxAlphaSearchRange){
     this->numSteps = numSteps;
     this->positiveClassificationThreshold = positiveClassificationThreshold;
     this->minAlphaSearchRange = minAlphaSearchRange;
@@ -103,7 +103,7 @@ bool RadialBasisFunction::train(ClassificationData &trainingData, VectorFloat &w
     rbfCentre.resize(numInputDimensions,0);
     
     //Search for the sample(s) with the maximum weight(s)
-    float_t maxWeight = 0;
+    Float maxWeight = 0;
     Vector< UINT > bestWeights;
     for(UINT i=0; i<M; i++){
         if( trainingData[i].getClassLabel() == WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL ){
@@ -133,13 +133,13 @@ bool RadialBasisFunction::train(ClassificationData &trainingData, VectorFloat &w
     
     //Normalize the RBF centre by the positiveWeightSum so we get the weighted mean 
     for(UINT j=0; j<numInputDimensions; j++){
-        rbfCentre[j] /= float_t(N);
+        rbfCentre[j] /= Float(N);
     }
     
     //STEP 2: Estimate the best value for alpha
-    float_t step = (maxAlphaSearchRange-minAlphaSearchRange)/numSteps;
-    float_t bestAlpha = 0;
-    float_t minError = grt_numeric_limits< float_t >::max();
+    Float step = (maxAlphaSearchRange-minAlphaSearchRange)/numSteps;
+    Float bestAlpha = 0;
+    Float minError = grt_numeric_limits< float_t >::max();
     
     alpha = minAlphaSearchRange;
     while( alpha <= maxAlphaSearchRange ){
@@ -148,10 +148,10 @@ bool RadialBasisFunction::train(ClassificationData &trainingData, VectorFloat &w
         gamma = -1.0/(2.0*grt_sqr(alpha));
         
         //Compute the weighted error over all the training samples given the current alpha value
-        float_t error = 0;
+        Float error = 0;
         for(UINT i=0; i<M; i++){
             bool positiveSample = trainingData[ i ].getClassLabel() == WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL;
-            float_t v = rbf(trainingData[ i ].getSample(),rbfCentre);
+            Float v = rbf(trainingData[ i ].getSample(),rbfCentre);
             
             if( (v >= positiveClassificationThreshold && !positiveSample) || (v<positiveClassificationThreshold && positiveSample) ){
                 error += weights[i];
@@ -181,15 +181,15 @@ bool RadialBasisFunction::train(ClassificationData &trainingData, VectorFloat &w
     return true;
 }
 
-float_t RadialBasisFunction::predict(const VectorFloat &x){
+Float RadialBasisFunction::predict(const VectorFloat &x){
     if( rbf(x,rbfCentre) >= positiveClassificationThreshold ) return 1;
     return -1;
 }
     
-float_t RadialBasisFunction::rbf(const VectorFloat &a,const VectorFloat &b){
+Float RadialBasisFunction::rbf(const VectorFloat &a,const VectorFloat &b){
     const UINT N = (UINT)a.size();
     //Compute the RBF distance, this uses the squared euclidean distance
-    float_t r = 0;
+    Float r = 0;
     for(UINT i=0; i<N; i++){
         r += SQR(a[i]-b[i]);
     }
@@ -328,19 +328,19 @@ UINT RadialBasisFunction::getNumSteps() const{
     return numSteps;
 }
 
-float_t RadialBasisFunction::getPositiveClassificationThreshold() const{
+Float RadialBasisFunction::getPositiveClassificationThreshold() const{
     return positiveClassificationThreshold;
 }
 
-float_t RadialBasisFunction::getAlpha() const{
+Float RadialBasisFunction::getAlpha() const{
     return alpha;
 }
 
-float_t RadialBasisFunction::getMinAlphaSearchRange() const{
+Float RadialBasisFunction::getMinAlphaSearchRange() const{
     return minAlphaSearchRange;
 }
 
-float_t RadialBasisFunction::getMaxAlphaSearchRange() const{
+Float RadialBasisFunction::getMaxAlphaSearchRange() const{
     return maxAlphaSearchRange;
 }
 

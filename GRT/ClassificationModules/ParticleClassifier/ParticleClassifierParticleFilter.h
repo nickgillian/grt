@@ -58,7 +58,7 @@ public:
     virtual bool preFilterUpdate( VectorFloat &data ){
         
         //Randomly reset a small number of particles to ensure the classifier does not get stuck on one gesture
-        unsigned int numRandomFlipParticles = 0;//(unsigned int)floor( processNoise[0] * float_t(numParticles) );
+        unsigned int numRandomFlipParticles = 0;//(unsigned int)floor( processNoise[0] * Float(numParticles) );
         
         for(unsigned int i=0; i<numRandomFlipParticles; i++){
             //unsigned int randomParticleIndex = rand.getRandomNumberInt(0, numParticles);
@@ -80,8 +80,8 @@ public:
     virtual bool predict( Particle &p ){
         
         //Given the prior set of particles, randomly generate new state estimations using the process model
-        const float_t phase = p.x[1];
-        const float_t velocity = p.x[2];
+        const Float phase = p.x[1];
+        const Float velocity = p.x[2];
             
         //Update the phase
         p.x[1] = Util::limit( phase + rand.getRandomNumberGauss(0.0,processNoise[1]) , 0, 1);
@@ -110,7 +110,7 @@ public:
         
         //Get the current position in the template
         const unsigned int templateLength = gestureTemplates[templateIndex].timeseries.getNumRows();
-        const unsigned int templatePos = (unsigned int)(p.x[1] * float_t(templateLength-1));
+        const unsigned int templatePos = (unsigned int)(p.x[1] * Float(templateLength-1));
         
         if( templatePos >= templateLength ){
             errorLog << "update( Particle &p, VectorFloat &data ) - Template position out of bounds! templatePos: " << templatePos << " templateLength: " << templateLength << std::endl;
@@ -138,7 +138,7 @@ public:
         return true;
     }
     
-    bool train( const unsigned int numParticles, const TimeSeriesClassificationData &trainingData, float_t sensorNoise, float_t transitionSigma, float_t phaseSigma, float_t velocitySigma){
+    bool train( const unsigned int numParticles, const TimeSeriesClassificationData &trainingData, Float sensorNoise, Float transitionSigma, float_t phaseSigma, float_t velocitySigma){
         
         //Clear any previous model
         clear();

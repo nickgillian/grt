@@ -215,19 +215,19 @@ UINT MLBase::getValidationSetSize() const{
     return validationSetSize;
 }
     
-float_t MLBase::getLearningRate() const{
+Float MLBase::getLearningRate() const{
     return learningRate;
 }
 
-float_t MLBase::getRootMeanSquaredTrainingError() const{
+Float MLBase::getRootMeanSquaredTrainingError() const{
     return rootMeanSquaredTrainingError;
 }
 
-float_t MLBase::getTotalSquaredTrainingError() const{
+Float MLBase::getTotalSquaredTrainingError() const{
     return totalSquaredTrainingError;
 }
 
-float_t MLBase::getValidationSetAccuracy() const {
+Float MLBase::getValidationSetAccuracy() const {
     return validationSetAccuracy;
 }
 
@@ -267,16 +267,16 @@ bool MLBase::setMinNumEpochs(const UINT minNumEpochs){
     return true;
 }
 
-bool MLBase::setMinChange(const float_t minChange){
+bool MLBase::setMinChange(const Float minChange){
     if( minChange < 0 ){
-        warningLog << "setMinChange(const float_t minChange) - The minChange must be greater than or equal to 0!" << std::endl;
+        warningLog << "setMinChange(const Float minChange) - The minChange must be greater than or equal to 0!" << std::endl;
         return false;
     }
     this->minChange = minChange;
     return true;
 }
     
-bool MLBase::setLearningRate(const float_t learningRate){
+bool MLBase::setLearningRate(const Float learningRate){
     if( learningRate > 0 ){
         this->learningRate = learningRate;
         return true;

@@ -40,7 +40,7 @@ public:
     /**
      Default Constructor.
      */
-	GaussianMixtureModels(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const float_t minChange=1.0e-5);
+	GaussianMixtureModels(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const Float minChange=1.0e-5);
     
     /**
      Defines how the data from the rhs instance should be copied to this instance
@@ -169,16 +169,16 @@ public:
     using MLBase::loadModelFromFile;
 	
 protected:
-    bool estep( const MatrixFloat &data, VectorDouble &u, VectorDouble &v, float_t &change );
+    bool estep( const MatrixFloat &data, VectorDouble &u, VectorDouble &v, Float &change );
 	bool mstep( const MatrixFloat &data );
 	bool computeInvAndDet();
 	inline void SWAP(UINT &a,UINT &b);
-	inline float_t SQR(const float_t v){ return v*v; }
+	inline Float SQR(const Float v){ return v*v; }
     
-    float_t gauss(const VectorDouble &x,const UINT clusterIndex,const VectorDouble &det,const MatrixFloat &mu,const Vector< MatrixFloat > &invSigma){
+    Float gauss(const VectorDouble &x,const UINT clusterIndex,const VectorDouble &det,const MatrixFloat &mu,const Vector< MatrixFloat > &invSigma){
         
-        float_t y = 0;
-        float_t sum = 0;
+        Float y = 0;
+        Float sum = 0;
         UINT i,j = 0;
         const UINT N = (UINT)x.size();
         VectorDouble temp(N,0);
@@ -198,7 +198,7 @@ protected:
     }
     
 	UINT numTrainingSamples;                    ///< The number of samples in the training data
-	float_t loglike;                             ///< The current loglikelihood value of the models given the data
+	Float loglike;                             ///< The current loglikelihood value of the models given the data
 	MatrixFloat mu;                            ///< A matrix holding the estimated mean values of each Gaussian
 	MatrixFloat resp;                          ///< The responsibility matrix
 	VectorDouble frac;                          ///< A vector holding the P(k)'s

@@ -153,9 +153,9 @@ public:
         
         if( !initialized ) return false;
         
-        float_t r1 = 0;
-        float_t r2 = 0;
-        float_t vMax = 0;
+        Float r1 = 0;
+        Float r2 = 0;
+        Float vMax = 0;
         for(unsigned int k=0; k<K; k++){
             r1 = random.getRandomNumberUniform(0.0,1.0);
             r2 = random.getRandomNumberUniform(0.0,1.0);
@@ -188,13 +188,13 @@ public:
      @param observation: a reference to the latest observation
      @return returns the particles evaluation, -1 will be returned if the evaluation fails
      */
-    virtual float_t evaluate(OBSERVATION_TYPE &observation){
+    virtual Float evaluate(OBSERVATION_TYPE &observation){
         if( !initialized ) return -1;
         
         if( observation.size() != K ) return -1;
         
         //A cost of 1.0 is best, 0 is the worse
-        float_t cost = 0;
+        Float cost = 0;
         for(UINT i=0; i<K; i++){
             cost += SQR(x[i]-observation[i]);
         }
@@ -249,7 +249,7 @@ public:
      @param sigma: the sigma parameter for the Gaussian distrubution
      @return returns the likelihood of x, given mu and sigma
      */
-    inline float_t normal(float_t x,float_t mu,float_t sigma){
+    inline Float normal(Float x,float_t mu,float_t sigma){
         return ( 1.0/(sigma*SQRT_TWO_PI) ) * exp( - ( SQR(x-mu)/(2.0*SQR(sigma)) ) );
     }
     
@@ -261,7 +261,7 @@ public:
      @param sigma: the sigma parameter for the Gaussian distrubution
      @return returns the likelihood of x, given mu and sigma
      */
-    inline float_t gauss(float_t x,float_t mu,float_t sigma){
+    inline Float gauss(Float x,float_t mu,float_t sigma){
         return exp( - ( SQR(x-mu)/(2.0*SQR(sigma)) ) );
     }
     
@@ -271,14 +271,14 @@ public:
      @param double x: the value you want to square
      @return returns the square of x
      */
-    inline float_t SQR(float_t x){ return x*x; }
+    inline Float SQR(Float x){ return x*x; }
     
     bool initialized;
     unsigned int K;
-    float_t w;
-    float_t c1;
-    float_t c2;
-    float_t localBestCost;
+    Float w;
+    Float c1;
+    Float c2;
+    Float localBestCost;
     VectorFloat x;
     VectorFloat v;
     VectorFloat localBestX;

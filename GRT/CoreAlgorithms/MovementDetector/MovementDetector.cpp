@@ -3,7 +3,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-MovementDetector::MovementDetector( const UINT numDimensions, const float_t upperThreshold, const float_t lowerThreshold, const float_t gamma, const UINT searchTimeout ) {
+MovementDetector::MovementDetector( const UINT numDimensions, const Float upperThreshold, const float_t lowerThreshold, const float_t gamma, const UINT searchTimeout ) {
     classType = "MovementDetector";
     infoLog.setProceedingText("[MovementDetector]");
     debugLog.setProceedingText("[DEBUG MovementDetector]");
@@ -42,7 +42,7 @@ bool MovementDetector::predict_( VectorFloat &input ){
     }
     
     //Compute the movement index, unless we are in the first sample
-    float_t x = 0;
+    Float x = 0;
     if( !firstSample ){
         for(UINT n=0; n<numInputDimensions; n++){
             x += SQR( input[n] - lastSample[n] );
@@ -179,19 +179,19 @@ bool MovementDetector::loadModelFromFile( std::fstream &file ){
     return true;
 }
 
-float_t MovementDetector::getUpperThreshold() const {
+Float MovementDetector::getUpperThreshold() const {
     return upperThreshold;
 }
 
-float_t MovementDetector::getLowerThreshold() const {
+Float MovementDetector::getLowerThreshold() const {
     return lowerThreshold;
 }
 
-float_t MovementDetector::getMovementIndex() const {
+Float MovementDetector::getMovementIndex() const {
     return movementIndex;
 }
 
-float_t MovementDetector::getGamma() const {
+Float MovementDetector::getGamma() const {
     return gamma;
 }
 
@@ -211,17 +211,17 @@ UINT MovementDetector::getSearchTimeout() const {
     return searchTimeout;
 }
 
-bool MovementDetector::setUpperThreshold(const float_t upperThreshold) {
+bool MovementDetector::setUpperThreshold(const Float upperThreshold) {
     this->upperThreshold = upperThreshold;
     return true;
 }
 
-bool MovementDetector::setLowerThreshold(const float_t lowerThreshold) {
+bool MovementDetector::setLowerThreshold(const Float lowerThreshold) {
     this->lowerThreshold = lowerThreshold;
     return true;
 }
 
-bool MovementDetector::setGamma(const float_t gamma) {
+bool MovementDetector::setGamma(const Float gamma) {
     this->gamma = gamma;
     return true;
 }

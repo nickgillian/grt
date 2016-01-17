@@ -95,12 +95,12 @@ bool DecisionStump::train(ClassificationData &trainingData, VectorFloat &weights
     const UINT M = trainingData.getNumSamples();
     UINT bestFeatureIndex = 0;
     Vector< MinMax > ranges = trainingData.getRanges();
-    float_t minError = grt_numeric_limits< float_t >::max();
-    float_t minRange = 0;
-    float_t maxRange = 0;
-    float_t step = 0;
-    float_t threshold = 0;
-    float_t bestThreshold = 0;
+    Float minError = grt_numeric_limits< float_t >::max();
+    Float minRange = 0;
+    Float maxRange = 0;
+    Float step = 0;
+    Float threshold = 0;
+    Float bestThreshold = 0;
     Random random;
     
     for(UINT k=0; k<numRandomSplits; k++){
@@ -113,8 +113,8 @@ bool DecisionStump::train(ClassificationData &trainingData, VectorFloat &weights
             
         //Compute the error using the current threshold on the current input dimension
         //We need to check both sides of the threshold
-        float_t rhsError = 0;
-        float_t lhsError = 0;
+        Float rhsError = 0;
+        Float lhsError = 0;
         for(UINT i=0; i<M; i++){
             bool positiveClass = trainingData[ i ].getClassLabel() == WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL;
             bool rhs = trainingData[ i ][ n ] >= threshold;
@@ -147,7 +147,7 @@ bool DecisionStump::train(ClassificationData &trainingData, VectorFloat &weights
     return true;
 }
 
-float_t DecisionStump::predict(const VectorFloat &x){
+Float DecisionStump::predict(const VectorFloat &x){
     if( direction == 1){
         if( x[ decisionFeatureIndex ] >= decisionValue ) return 1;
     }else if( x[ decisionFeatureIndex ] <= decisionValue ) return 1;
@@ -264,7 +264,7 @@ UINT DecisionStump::getNumRandomSplits() const{
     return numRandomSplits;
 }
 
-float_t DecisionStump::getDecisionValue() const{
+Float DecisionStump::getDecisionValue() const{
     return decisionValue;
 }
 

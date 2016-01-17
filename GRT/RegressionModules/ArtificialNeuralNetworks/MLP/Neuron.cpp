@@ -69,9 +69,9 @@ void Neuron::clear(){
 	previousUpdate.clear();
 }
 
-float_t Neuron::fire(const VectorFloat &x){
+Float Neuron::fire(const VectorFloat &x){
     
-    float_t y = 0;
+    Float y = 0;
     UINT i=0;
     
     switch( activationFunction ){
@@ -111,9 +111,9 @@ float_t Neuron::fire(const VectorFloat &x){
     
 }
 
-float_t Neuron::getDerivative(const float_t &y){
+Float Neuron::getDerivative(const float_t &y){
 
-	float_t yy = 0;
+	Float yy = 0;
 	switch( activationFunction ){
         case(LINEAR):
 			yy = 1.0;

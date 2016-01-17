@@ -58,7 +58,7 @@ public:
      @param numDimensions: the dimensionality of the input data to filter.  Default numDimensions = 1
      @param featureMode: sets how the features are added to the feature vector, shoule be either INDEPENDANT_FEATURE_MODE or COMBINED_FEATURE_MODE.  Default is featureMode = INDEPENDANT_FEATURE_MODE
      */
-    ZeroCrossingCounter(UINT searchWindowSize = 20,float_t deadZoneThreshold = 0.01,UINT numDimensions = 1,UINT featureMode = INDEPENDANT_FEATURE_MODE);
+    ZeroCrossingCounter(UINT searchWindowSize = 20,Float deadZoneThreshold = 0.01,UINT numDimensions = 1,UINT featureMode = INDEPENDANT_FEATURE_MODE);
 	
     /**
      Copy constructor, copies the ZeroCrossingCounter from the rhs instance to this instance.
@@ -154,7 +154,7 @@ public:
      @param featureMode: sets how the features are added to the feature vector, shoule be either INDEPENDANT_FEATURE_MODE or COMBINED_FEATURE_MODE
 	 @return true if the filter was initiliazed, false otherwise
      */
-    bool init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode);
+    bool init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode);
     
     /**
      Computes the ZeroCrossingCounter features from the input, this should only be called if the dimensionality of this instance was set to 1.
@@ -162,7 +162,7 @@ public:
      @param x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
 	 @return a vector containing the ZeroCrossingCounter features, an empty vector will be returned if the features were not computed
      */
-	VectorFloat update(float_t x);
+	VectorFloat update(Float x);
     
     /**
      Computes the ZeroCrossingCounter features from the input, the dimensionality of x should match that of this instance.
@@ -197,7 +197,7 @@ public:
      @param deadZoneThreshold: sets the dead zone threshold value
 	 @return true if the deadZoneThreshold value was updated, false otherwise
      */
-    bool setDeadZoneThreshold(float_t deadZoneThreshold);
+    bool setDeadZoneThreshold(Float deadZoneThreshold);
 
     /**
      Gets the search window size.
@@ -224,9 +224,9 @@ public:
     /**
      Gets the deadZoneThreshold value.
      
-     @return returns a float_t representing the deadZoneThreshold, returns zero if the feature extraction module has not been initialized
+     @return returns a Float representing the deadZoneThreshold, returns zero if the feature extraction module has not been initialized
      */
-    float_t getDeadZoneThreshold(){ if( initialized ){ return deadZoneThreshold; } return 0; }
+    Float getDeadZoneThreshold(){ if( initialized ){ return deadZoneThreshold; } return 0; }
     
     /** 
      Gets the current values in the data buffer.  
@@ -247,7 +247,7 @@ public:
 protected:
     UINT searchWindowSize;                                  ///< The size of the search window, i.e. the amount of previous data stored and searched
     UINT featureMode;                                       ///< The featureMode controls how the features are added to the feature vector
-    float_t deadZoneThreshold;                               ///< The threshold value used for the dead zone filter
+    Float deadZoneThreshold;                               ///< The threshold value used for the dead zone filter
     Derivative derivative;                                  ///< Used to compute the derivative of the input signal
     DeadZone deadZone;                                      ///< Used to remove small amounts of noise from the data
     CircularBuffer< VectorFloat > dataBuffer;              ///< A buffer used to store the previous derivative data

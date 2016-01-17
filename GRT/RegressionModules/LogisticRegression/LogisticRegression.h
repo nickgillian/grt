@@ -126,10 +126,10 @@ public:
     using MLBase::loadModelFromFile;
 
 protected:
-	inline float_t sigmoid(const float_t x) const;
+	inline Float sigmoid(const Float x) const;
     bool loadLegacyModelFromFile( std::fstream &file );
 	
-    float_t w0; ///<The bias
+    Float w0; ///<The bias
     VectorFloat w; ///<The weights vector
     static RegisterRegressifierModule< LogisticRegression > registerModule;
 };

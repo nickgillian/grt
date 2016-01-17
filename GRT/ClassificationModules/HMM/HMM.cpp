@@ -201,13 +201,13 @@ bool HMM::train_discrete(TimeSeriesClassificationData &trainingData){
         }
         
         //Test the model
-        float_t loglikelihood = 0;
-        float_t avgLoglikelihood = 0;
+        Float loglikelihood = 0;
+        Float avgLoglikelihood = 0;
         for(UINT i=0; i<observationSequences.size(); i++){
             loglikelihood = discreteModels[k].predict( observationSequences[i] );
             avgLoglikelihood += fabs( loglikelihood );
         }
-        nullRejectionThresholds[k] = -( avgLoglikelihood / float_t( observationSequences.size() ) );
+        nullRejectionThresholds[k] = -( avgLoglikelihood / Float( observationSequences.size() ) );
     }
     
     //Flag that the model has been trained
@@ -313,7 +313,7 @@ bool HMM::predict_discrete( VectorFloat &inputVector ){
     if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
-    float_t sum = 0;
+    Float sum = 0;
     bestDistance = -99e+99;
     UINT bestIndex = 0;
     UINT newObservation = (UINT)inputVector[0];
@@ -382,7 +382,7 @@ bool HMM::predict_continuous( VectorFloat &inputVector ){
     
     bestDistance = -1000;
     UINT bestIndex = 0;
-    float_t minValue = -1000;
+    Float minValue = -1000;
     
     const UINT numModels = (UINT)continuousModels.size();
     Vector< IndexedDouble > results(numModels);
@@ -420,13 +420,13 @@ bool HMM::predict_continuous( VectorFloat &inputVector ){
     std::sort(results.begin(),results.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
     
     //Run the majority vote
-    const float_t committeeWeight = 1.0 / committeeSize;
+    const Float committeeWeight = 1.0 / committeeSize;
     for(UINT i=0; i<committeeSize; i++){
         classDistances[ getClassLabelIndexValue( results[i].index ) ] += Util::scale(results[i].value, -1000, 0, 0, committeeWeight, true);
     }
     
     //Turn the class distances into likelihoods
-    float_t sum = Util::sum(classDistances);
+    Float sum = Util::sum(classDistances);
     if( sum > 0 ){
         for(UINT k=0; k<numClasses; k++){
             classLikelihoods[k] = classDistances[k] / sum;
@@ -480,7 +480,7 @@ bool HMM::predict_discrete(MatrixFloat &timeseries){
         return false;
     }
     
-    //Covert the matrix float_t to observations
+    //Covert the matrix Float to observations
     const UINT M = timeseries.getNumRows();
     Vector<UINT> observationSequence( M );
     
@@ -498,7 +498,7 @@ bool HMM::predict_discrete(MatrixFloat &timeseries){
     
     bestDistance = -99e+99;
     UINT bestIndex = 0;
-    float_t sum = 0;
+    Float sum = 0;
 	for(UINT k=0; k<numClasses; k++){
 		classDistances[k] = discreteModels[k].predict( observationSequence );
         
@@ -562,7 +562,7 @@ bool HMM::predict_continuous(MatrixFloat &timeseries){
     
     bestDistance = -1000;
     UINT bestIndex = 0;
-    float_t minValue = -1000;
+    Float minValue = -1000;
     
     const UINT numModels = (UINT)continuousModels.size();
     Vector< IndexedDouble > results(numModels);
@@ -594,13 +594,13 @@ bool HMM::predict_continuous(MatrixFloat &timeseries){
     std::sort(results.begin(),results.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
     
     //Run the majority vote
-    const float_t committeeWeight = 1.0 / committeeSize;
+    const Float committeeWeight = 1.0 / committeeSize;
     for(UINT i=0; i<committeeSize; i++){
         classDistances[ getClassLabelIndexValue( results[i].index ) ] += Util::scale(results[i].value, -1000, 0, 0, committeeWeight, true);
     }
     
     //Turn the class distances into likelihoods
-    float_t sum = Util::sum(classDistances);
+    Float sum = Util::sum(classDistances);
     if( sum > 0 ){
         for(UINT k=0; k<numClasses; k++){
             classLikelihoods[k] = classDistances[k] / sum;
@@ -1052,7 +1052,7 @@ bool HMM::setNumRandomTrainingIterations(const UINT numRandomTrainingIterations)
     return false;
 }
     
-bool HMM::setSigma(const float_t sigma){
+bool HMM::setSigma(const Float sigma){
     if( sigma > 0 ){
         this->sigma = sigma;
         for(size_t i=0; i<continuousModels.size(); i++){

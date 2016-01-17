@@ -50,17 +50,17 @@ public:
 	VectorFloat getMagnitudeData();
 	VectorFloat getPhaseData();
 	VectorFloat getPowerData();
-	float_t getAveragePower();
-	float_t *getMagnitudeDataPtr();
-	float_t *getPhaseDataPtr();
-	float_t *getPowerDataPtr();
+	Float getAveragePower();
+	Float *getMagnitudeDataPtr();
+	Float *getPhaseDataPtr();
+	Float *getPowerDataPtr();
     
 	UINT getFFTSize(){ return windowSize; }
     
 protected:
     bool windowData( VectorFloat &data );
-    bool realFFT( const VectorFloat &realIn, float_t *realOut, float_t *imagOut );
-    bool FFT(int NumSamples,bool InverseTransform,float_t *realIn, float_t *imagIn, float_t *realOut, float_t *imagOut);
+    bool realFFT( const VectorFloat &realIn, Float *realOut, Float *imagOut );
+    bool FFT(int NumSamples,bool InverseTransform,Float *realIn, Float *imagIn, float_t *realOut, float_t *imagOut);
     int numberOfBitsNeeded(int PowerOfTwo);
     int reverseBits(int index, int NumBits);
     void initFFT();
@@ -80,7 +80,7 @@ protected:
     VectorFloat magnitude;
     VectorFloat phase;
     VectorFloat power;
-    float_t averagePower;
+    Float averagePower;
     const static int MAX_FAST_BITS = 16;
     Vector< Vector< int > > bitTable;
     

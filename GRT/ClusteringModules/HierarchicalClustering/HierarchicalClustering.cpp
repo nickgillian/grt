@@ -163,7 +163,7 @@ bool HierarchicalClustering::train_(MatrixFloat &data){
     //Build the distance matrix
     for(UINT i=0; i<M; i++){
         for(UINT j=0; j<M; j++){
-            if( i== j ) distanceMatrix[i][j] = grt_numeric_limits< float_t >::max();
+            if( i== j ) distanceMatrix[i][j] = grt_numeric_limits< Float >::max();
             else{
                 distanceMatrix[i][j] = squaredEuclideanDistance(data[i], data[j]);
             }
@@ -196,13 +196,13 @@ bool HierarchicalClustering::train_(MatrixFloat &data){
     while( keepClustering ){
         
         //Find the closest two clusters within the cluster data
-        float_t minDist = grt_numeric_limits< float_t >::max();
+        Float minDist = grt_numeric_limits< float_t >::max();
         Vector< Vector< UINT > > clusterPairs;
         UINT K = (UINT)clusterData.size();
         for(UINT i=0; i<K; i++){
             for(UINT j=0; j<K; j++){
                 if( i != j ){
-                    float_t dist = computeClusterDistance( clusterData[i], clusterData[j]  );
+                    Float dist = computeClusterDistance( clusterData[i], clusterData[j]  );
              
                     if( dist < minDist ){
                         minDist = dist;
@@ -217,7 +217,7 @@ bool HierarchicalClustering::train_(MatrixFloat &data){
             }
         }
         
-        if( minDist == grt_numeric_limits< float_t >::max() ){
+        if( minDist == grt_numeric_limits< Float >::max() ){
             keepClustering = false;
             warningLog << "train_(MatrixFloat &data) - Failed to find any cluster at level: " << level << std::endl;
             return false;
@@ -329,17 +329,17 @@ bool HierarchicalClustering::printModel(){
     return true;
 }
     
-float_t HierarchicalClustering::squaredEuclideanDistance(const float_t *a,const float_t *b){
-    float_t dist = 0;
+Float HierarchicalClustering::squaredEuclideanDistance(const float_t *a,const float_t *b){
+    Float dist = 0;
     for(UINT i=0; i<N; i++){
         dist += SQR( a[i] - b[i] );
     }
     return dist;
 }
     
-float_t HierarchicalClustering::computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB ){
+Float HierarchicalClustering::computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB ){
     
-    float_t minDist = grt_numeric_limits< float_t >::max();
+    Float minDist = grt_numeric_limits< float_t >::max();
     const UINT numSamplesA = clusterA.getNumSamplesInCluster();
     const UINT numSamplesB = clusterB.getNumSamplesInCluster();
     
@@ -355,7 +355,7 @@ float_t HierarchicalClustering::computeClusterDistance( const ClusterInfo &clust
     return minDist;
 }
     
-float_t HierarchicalClustering::computeClusterVariance( const ClusterInfo &cluster, const MatrixFloat &data ){
+Float HierarchicalClustering::computeClusterVariance( const ClusterInfo &cluster, const MatrixFloat &data ){
     
     VectorFloat mean(N,0);
     VectorFloat std(N,0);
@@ -367,7 +367,7 @@ float_t HierarchicalClustering::computeClusterVariance( const ClusterInfo &clust
             UINT index = cluster[i];
             mean[j] += data[ index ][j];
         }
-        mean[j] /= float_t( numSamples );
+        mean[j] /= Float( numSamples );
     }
     
     //Compute the std dev
@@ -375,10 +375,10 @@ float_t HierarchicalClustering::computeClusterVariance( const ClusterInfo &clust
         for(UINT i=0; i<numSamples; i++){
             std[j] += grt_sqr( data[ cluster[i] ][j] - mean[j] );
         }
-        std[j] = grt_sqrt( std[j] / float_t( numSamples-1 ) );
+        std[j] = grt_sqrt( std[j] / Float( numSamples-1 ) );
     }
     
-    float_t variance = 0;
+    Float variance = 0;
     for(UINT j=0; j<N; j++){
         variance += std[j];
     }

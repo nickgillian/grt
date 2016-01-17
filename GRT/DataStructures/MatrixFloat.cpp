@@ -47,7 +47,7 @@ MatrixFloat::MatrixFloat(const MatrixFloat &rhs){
     this->copy( rhs );
 }
     
-MatrixFloat::MatrixFloat(const Matrix< float_t > &rhs){
+MatrixFloat::MatrixFloat(const Matrix< Float > &rhs){
     warningLog.setProceedingText("[WARNING MatrixFloat]");
     errorLog.setProceedingText("[ERROR MatrixFloat]");
     this->dataPtr = NULL;
@@ -67,7 +67,7 @@ MatrixFloat& MatrixFloat::operator=(const MatrixFloat &rhs){
     return *this;
 }
     
-MatrixFloat& MatrixFloat::operator=(const Matrix< float_t > &rhs){
+MatrixFloat& MatrixFloat::operator=(const Matrix< Float > &rhs){
     if( this != &rhs ){
         this->clear();
         this->copy( rhs );
@@ -131,7 +131,7 @@ bool MatrixFloat::transpose(){
     return true;
 }
     
-bool MatrixFloat::scale(const float_t minTarget,const float_t maxTarget){
+bool MatrixFloat::scale(const Float minTarget,const float_t maxTarget){
     
     if( dataPtr == NULL ) return false;
     
@@ -140,7 +140,7 @@ bool MatrixFloat::scale(const float_t minTarget,const float_t maxTarget){
     return scale(ranges,minTarget,maxTarget);
 }
     
-bool MatrixFloat::scale(const Vector< MinMax > &ranges,const float_t minTarget,const float_t maxTarget){
+bool MatrixFloat::scale(const Vector< MinMax > &ranges,const Float minTarget,const float_t maxTarget){
     if( dataPtr == NULL ) return false;
     
     if( ranges.size() != cols ){
@@ -156,11 +156,11 @@ bool MatrixFloat::scale(const Vector< MinMax > &ranges,const float_t minTarget,c
     return true;
 }
     
-bool MatrixFloat::znorm(const float_t alpha){
+bool MatrixFloat::znorm(const Float alpha){
     if( dataPtr == NULL ) return false;
     
     UINT i,j = 0;
-    float_t mean, std = 0;
+    Float mean, std = 0;
     for(i=0; i<rows; i++){
         mean = 0;
         std = 0;
@@ -187,12 +187,12 @@ bool MatrixFloat::znorm(const float_t alpha){
     return true;
 }
     
-MatrixFloat MatrixFloat::multiple(const float_t value) const{
+MatrixFloat MatrixFloat::multiple(const Float value) const{
     
     if( dataPtr == NULL ) return MatrixFloat();
     
     MatrixFloat d(rows,cols);
-    float_t *d_p = &(d[0][0]);
+    Float *d_p = &(d[0][0]);
     
     unsigned int i = 0;
     for(i=0; i<rows*cols; i++){
@@ -214,8 +214,8 @@ VectorFloat MatrixFloat::multiple(const VectorFloat &b) const{
     }
     
     VectorFloat c(M);
-    const float_t *pb = &b[0];
-    float_t *pc = &c[0];
+    const Float *pb = &b[0];
+    Float *pc = &c[0];
     
     unsigned int i,j = 0;
     for(i=0; i<rows; i++){
@@ -241,8 +241,8 @@ MatrixFloat MatrixFloat::multiple(const MatrixFloat &b) const{
     }
     
     MatrixFloat c(M,L);
-    float_t **pb = b.getDataPointer();
-    float_t **pc = c.getDataPointer();
+    Float **pb = b.getDataPointer();
+    Float **pc = c.getDataPointer();
     
     unsigned int i,j,k = 0;
     for(i=0; i<M; i++){
@@ -277,8 +277,8 @@ bool MatrixFloat::multiple(const MatrixFloat &a,const MatrixFloat &b,const bool 
     unsigned int i, j, k = 0;
     
     //Using direct pointers really helps speed up the computation time
-    float_t **pa = a.getDataPointer();
-    float_t **pb = b.getDataPointer();
+    Float **pa = a.getDataPointer();
+    Float **pb = b.getDataPointer();
     
     if( aTranspose ){
         
@@ -322,7 +322,7 @@ bool MatrixFloat::add(const MatrixFloat &b){
     unsigned int i = 0;
     
     //Using direct pointers really helps speed up the computation time
-    const float_t *p_b = &(b[0][0]);
+    const Float *p_b = &(b[0][0]);
     
     for(i=0; i<rows*cols; i++){
         dataPtr[i] += p_b[i];
@@ -353,8 +353,8 @@ bool MatrixFloat::add(const MatrixFloat &a,const MatrixFloat &b){
     UINT i,j;
     
     //Using direct pointers really helps speed up the computation time
-    float_t *pa = a.getData();
-    float_t *pb = b.getData();
+    Float *pa = a.getData();
+    Float *pb = b.getData();
     
     const unsigned int size = M*N;
     for(i=0; i<size; i++){
@@ -381,7 +381,7 @@ bool MatrixFloat::subtract(const MatrixFloat &b){
     unsigned int i,j;
     
     //Using direct pointers really helps speed up the computation time
-    float_t *pb = b.getData();
+    Float *pb = b.getData();
     
     const unsigned int size = rows*cols;
     for(i=0; i<size; i++){
@@ -413,8 +413,8 @@ bool MatrixFloat::subtract(const MatrixFloat &a,const MatrixFloat &b){
     UINT i,j;
     
     //Using direct pointers really helps speed up the computation time
-    float_t **pa = a.getDataPointer();
-    float_t **pb = b.getDataPointer();
+    Float **pa = a.getDataPointer();
+    Float **pb = b.getDataPointer();
     
     for(i=0; i<M; i++){
         for(j=0; j<N; j++){
@@ -425,16 +425,16 @@ bool MatrixFloat::subtract(const MatrixFloat &a,const MatrixFloat &b){
     return true;
 }
     
-float_t MatrixFloat::getMinValue() const{
-    float_t minValue = 99e+99;
+Float MatrixFloat::getMinValue() const{
+    Float minValue = 99e+99;
     for(unsigned int i=0; i<rows*cols; i++){
         if( dataPtr[i] < minValue ) minValue = dataPtr[i];
     }
     return minValue;
 }
 
-float_t MatrixFloat::getMaxValue() const{
-    float_t maxValue = 99e-99;
+Float MatrixFloat::getMaxValue() const{
+    Float maxValue = 99e-99;
     for(unsigned int i=0; i<rows*cols; i++){
         if( dataPtr[i] > maxValue ) maxValue = dataPtr[i];
     }
@@ -450,7 +450,7 @@ VectorFloat MatrixFloat::getMean() const{
         for(unsigned int r=0; r<rows; r++){
             mean[c] += dataPtr[r*cols+c];
         }
-        mean[c] /= float_t( rows );
+        mean[c] /= Float( rows );
     }
     
     return mean;
@@ -465,14 +465,14 @@ VectorFloat MatrixFloat::getStdDev() const{
 		for(unsigned int i=0; i<rows; i++){
 			stdDev[j] += (dataPtr[i*cols+j]-mean[j])*(dataPtr[i*cols+j]-mean[j]);
 		}
-		stdDev[j] = sqrt( stdDev[j] / float_t(rows-1) );
+		stdDev[j] = sqrt( stdDev[j] / Float(rows-1) );
 	}
     return stdDev;
 }
 
 MatrixFloat MatrixFloat::getCovarianceMatrix() const{
     
-    Vector<float_t> mean = getMean();
+    Vector<Float> mean = getMean();
     MatrixFloat covMatrix(cols,cols);
     
     for(unsigned int j=0; j<cols; j++){
@@ -481,7 +481,7 @@ MatrixFloat MatrixFloat::getCovarianceMatrix() const{
             for(unsigned int i=0; i<rows; i++){
                 covMatrix[j][k] += (dataPtr[i*cols+j]-mean[j]) * (dataPtr[i*cols+k]-mean[k]);
             }
-            covMatrix[j][k] /= float_t(rows-1);
+            covMatrix[j][k] /= Float(rows-1);
         }
     }
     
@@ -501,8 +501,8 @@ Vector< MinMax > MatrixFloat::getRanges() const{
     return ranges;
 }
     
-float_t MatrixFloat::getTrace() const{
-    float_t t = 0;
+Float MatrixFloat::getTrace() const{
+    Float t = 0;
     unsigned int K = (rows < cols ? rows : cols);
     for(unsigned int i=0; i < K; i++) {
         t += dataPtr[i*cols+i];
@@ -620,9 +620,9 @@ bool MatrixFloat::load(const std::string &filename,const char seperator){
             }
         }
         
-        //Convert the string column values to float_t values
+        //Convert the string column values to Float values
         for(unsigned int j=0; j<columnCounter; j++){
-            dataPtr[rowCounter*cols+j] = grt_from_str< float_t >( vec[j] );
+            dataPtr[rowCounter*cols+j] = grt_from_str< Float >( vec[j] );
         }
         rowCounter++;
     }

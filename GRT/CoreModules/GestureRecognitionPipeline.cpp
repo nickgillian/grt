@@ -315,7 +315,7 @@ bool GestureRecognitionPipeline::train(const ClassificationData &trainingData,co
     }
     
     //Run the k-fold training and testing
-    float_t crossValidationAccuracy = 0;
+    Float crossValidationAccuracy = 0;
     ClassificationData foldTrainingData;
     ClassificationData foldTestData;
     Vector< TestResult > cvResults(kFoldValue);
@@ -343,7 +343,7 @@ bool GestureRecognitionPipeline::train(const ClassificationData &trainingData,co
     trained = true;
     
     //Set the accuracy of the classification system averaged over the kfolds
-    testAccuracy = crossValidationAccuracy / float_t(kFoldValue);
+    testAccuracy = crossValidationAccuracy / Float(kFoldValue);
     crossValidationResults = cvResults;
     
     //Store the training time
@@ -581,7 +581,7 @@ bool GestureRecognitionPipeline::train(const TimeSeriesClassificationData &train
     }
     
     //Run the k-fold training and testing
-    float_t crossValidationAccuracy = 0;
+    Float crossValidationAccuracy = 0;
     TimeSeriesClassificationData foldTrainingData;
     TimeSeriesClassificationData foldTestData;
     
@@ -609,7 +609,7 @@ bool GestureRecognitionPipeline::train(const TimeSeriesClassificationData &train
     trained = true;
     
     //Set the accuracy of the classification system averaged over the kfolds
-    testAccuracy = crossValidationAccuracy / float_t(kFoldValue);
+    testAccuracy = crossValidationAccuracy / Float(kFoldValue);
     
     //Store the training time
     trainingTime = timer.getMilliSeconds();
@@ -746,7 +746,7 @@ bool GestureRecognitionPipeline::train(const RegressionData &trainingData,const 
     }
     
     //Run the k-fold training and testing
-    float_t crossValidationAccuracy = 0;
+    Float crossValidationAccuracy = 0;
     RegressionData foldTrainingData;
     RegressionData foldTestData;
     for(UINT k=0; k<kFoldValue; k++){
@@ -771,7 +771,7 @@ bool GestureRecognitionPipeline::train(const RegressionData &trainingData,const 
     //Flag that the model has been trained
     trained = true;
 
-    testAccuracy = crossValidationAccuracy / float_t(kFoldValue);
+    testAccuracy = crossValidationAccuracy / Float(kFoldValue);
     
     //Store the training time
     trainingTime = timer.getMilliSeconds();
@@ -933,8 +933,8 @@ bool GestureRecognitionPipeline::test(const ClassificationData &testData){
         return false;
     }
 
-    float_t rejectionPrecisionCounter = 0;
-    float_t rejectionRecallCounter = 0;
+    Float rejectionPrecisionCounter = 0;
+    Float rejectionRecallCounter = 0;
     unsigned int confusionMatrixSize = classifier->getNullRejectionEnabled() ? classifier->getNumClasses()+1 : classifier->getNumClasses();
     VectorFloat precisionCounter(classifier->getNumClasses(), 0);
     VectorFloat recallCounter(classifier->getNumClasses(), 0);
@@ -1020,8 +1020,8 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationData &testDa
     //Reset all the modules
     reset();
     
-    float_t rejectionPrecisionCounter = 0;
-    float_t rejectionRecallCounter = 0;
+    Float rejectionPrecisionCounter = 0;
+    Float rejectionRecallCounter = 0;
     const UINT K = classifier->getNumClasses();
     UINT confusionMatrixSize = classifier->getNullRejectionEnabled() ? K+1 : K;
     VectorFloat precisionCounter(K, 0);
@@ -1099,8 +1099,8 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationDataStream &
     //Reset all the modules
     reset();
     
-    //float_t rejectionPrecisionCounter = 0;
-    //float_t rejectionRecallCounter = 0;
+    //Float rejectionPrecisionCounter = 0;
+    //Float rejectionRecallCounter = 0;
     UINT confusionMatrixSize = classifier->getNullRejectionEnabled() ? classifier->getNumClasses()+1 : classifier->getNumClasses();
     VectorFloat precisionCounter(getNumClassesInModel(), 0);
     VectorFloat recallCounter(getNumClassesInModel(), 0);
@@ -1171,7 +1171,7 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationDataStream &
      */
     
     testTime = timer.getMilliSeconds();
-    testAccuracy = testAccuracy / float_t( testData.getNumSamples() ) * 100.0;
+    testAccuracy = testAccuracy / Float( testData.getNumSamples() ) * 100.0;
     
     testingLog << "Test complete. Total testing time: " << testTime << std::endl;
     
@@ -1229,7 +1229,7 @@ bool GestureRecognitionPipeline::test(const RegressionData &testData){
         }
         
         //Update the RMS error
-        float_t sum = 0;
+        Float sum = 0;
         VectorFloat regressionData = regressifier->getRegressionData();
         for(UINT j=0; j<targetVector.size(); j++){
             sum += SQR( regressionData[j]-targetVector[j] );
@@ -1245,7 +1245,7 @@ bool GestureRecognitionPipeline::test(const RegressionData &testData){
     }
     
     //Compute the test metrics
-    testRMSError = sqrt( testSquaredError / float_t( testData.getNumSamples() ) );
+    testRMSError = sqrt( testSquaredError / Float( testData.getNumSamples() ) );
     
     testTime = timer.getMilliSeconds();
     
@@ -2572,7 +2572,7 @@ UINT GestureRecognitionPipeline::getNumTestSamples() const{
     return numTestSamples;
 }
 
-float_t GestureRecognitionPipeline::getMaximumLikelihood() const{
+Float GestureRecognitionPipeline::getMaximumLikelihood() const{
     if( getIsClassifierSet() ){
         return classifier->getMaximumLikelihood();
     }
@@ -2582,30 +2582,30 @@ float_t GestureRecognitionPipeline::getMaximumLikelihood() const{
     return 0;
 }
  
-float_t GestureRecognitionPipeline::getPhase() const{
+Float GestureRecognitionPipeline::getPhase() const{
     if( getIsClassifierSet() ){
         return classifier->getPhase();
     }
     return 0;
 }
     
-float_t GestureRecognitionPipeline::getCrossValidationAccuracy() const{ 
+Float GestureRecognitionPipeline::getCrossValidationAccuracy() const{ 
     return (getIsClassifierSet()||getIsRegressifierSet() ? testAccuracy : 0);
 }
     
-float_t GestureRecognitionPipeline::getTestAccuracy() const{ 
+Float GestureRecognitionPipeline::getTestAccuracy() const{ 
     return testAccuracy; 
 }
     
-float_t GestureRecognitionPipeline::getTestRMSError() const{ 
+Float GestureRecognitionPipeline::getTestRMSError() const{ 
     return testRMSError; 
 }
 
-float_t GestureRecognitionPipeline::getTestSSError() const{
+Float GestureRecognitionPipeline::getTestSSError() const{
     return testSquaredError;
 }
     
-float_t GestureRecognitionPipeline::getTestFMeasure(const UINT classLabel) const{
+Float GestureRecognitionPipeline::getTestFMeasure(const UINT classLabel) const{
     
     if( !getIsClassifierSet() ) return -1;
     if( getClassLabels().size() != testFMeasure.size() ) return -1;
@@ -2618,7 +2618,7 @@ float_t GestureRecognitionPipeline::getTestFMeasure(const UINT classLabel) const
     return -1;
 }
 
-float_t GestureRecognitionPipeline::getTestPrecision(const UINT classLabel) const{
+Float GestureRecognitionPipeline::getTestPrecision(const UINT classLabel) const{
     
     if( !getIsClassifierSet() ) return -1;
     if( getClassLabels().size() != testPrecision.size() ) return -1;
@@ -2631,7 +2631,7 @@ float_t GestureRecognitionPipeline::getTestPrecision(const UINT classLabel) cons
     return -1;
 }
 
-float_t GestureRecognitionPipeline::getTestRecall(const UINT classLabel) const{
+Float GestureRecognitionPipeline::getTestRecall(const UINT classLabel) const{
     
     if( !getIsClassifierSet() ) return -1;
     if( getClassLabels().getSize() != testRecall.getSize() ) return -1;
@@ -2644,27 +2644,27 @@ float_t GestureRecognitionPipeline::getTestRecall(const UINT classLabel) const{
     return -1;
 }
 
-float_t GestureRecognitionPipeline::getTestRejectionPrecision() const{ 
+Float GestureRecognitionPipeline::getTestRejectionPrecision() const{ 
     return testRejectionPrecision; 
 }
     
-float_t GestureRecognitionPipeline::getTestRejectionRecall() const{ 
+Float GestureRecognitionPipeline::getTestRejectionRecall() const{ 
     return testRejectionRecall; 
 }
     
-float_t GestureRecognitionPipeline::getTestTime() const{
+Float GestureRecognitionPipeline::getTestTime() const{
     return testTime;
 }
 
-float_t GestureRecognitionPipeline::getTrainingTime() const{
+Float GestureRecognitionPipeline::getTrainingTime() const{
     return trainingTime;
 }
 
-float_t GestureRecognitionPipeline::getTrainingRMSError() const{
+Float GestureRecognitionPipeline::getTrainingRMSError() const{
     return getIsRegressifierSet() ? regressifier->getRootMeanSquaredTrainingError() : 0;
 }
 
-float_t GestureRecognitionPipeline::getTrainingSSError() const{
+Float GestureRecognitionPipeline::getTrainingSSError() const{
     return getIsRegressifierSet() ? regressifier->getTotalSquaredTrainingError() : 0;
 }
     
@@ -3303,7 +3303,7 @@ void GestureRecognitionPipeline::deleteAllContextModules(){
     }
 }
     
-bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorFloat &precisionCounter,VectorFloat &recallCounter,float_t &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter){
+bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter){
 
 	const bool nullRejectionEnabled = classifier->getNullRejectionEnabled();
 
@@ -3404,10 +3404,10 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
     return true;
 }
 
-bool GestureRecognitionPipeline::computeTestMetrics(VectorFloat &precisionCounter,VectorFloat &recallCounter,float_t &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter,const UINT numTestSamples){
+bool GestureRecognitionPipeline::computeTestMetrics(VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter,const UINT numTestSamples){
         
     //Compute the test metrics
-    testAccuracy = testAccuracy/float_t(numTestSamples) * 100.0;
+    testAccuracy = testAccuracy/Float(numTestSamples) * 100.0;
     
     for(UINT k=0; k<getNumClassesInModel(); k++){
         if( precisionCounter[k] > 0 ) testPrecision[k] /= precisionCounter[k];

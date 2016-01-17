@@ -160,7 +160,7 @@ public:
      @param classifier: a reference to the classifier you want to add to the ensemble
      @return returns true if a copy of the classifier was successfully added to the ensemble, false otherwise
      */
-    bool addClassifierToEnsemble(const Classifier &classifier,float_t weight=1);
+    bool addClassifierToEnsemble(const Classifier &classifier,Float weight=1);
     
     /**
      This functions clears the current ensemble, removing all classifiers and weights.

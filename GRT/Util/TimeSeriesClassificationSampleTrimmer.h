@@ -53,7 +53,7 @@ public:
 	/**
      Default Constructor.
   */
-  TimeSeriesClassificationSampleTrimmer(float_t trimThreshold=0.1,float_t maximumTrimPercentage=80);
+  TimeSeriesClassificationSampleTrimmer(Float trimThreshold=0.1,Float maximumTrimPercentage=80);
 
 	/**
     Default Destructor
@@ -94,8 +94,8 @@ public:
   bool trimTimeSeries(TimeSeriesClassificationSample &timeSeries);
 
 protected:
-    float_t trimThreshold;
-    float_t maximumTrimPercentage;
+    Float trimThreshold;
+    Float maximumTrimPercentage;
     DebugLog debugLog;
     WarningLog warningLog;
     ErrorLog errorLog;

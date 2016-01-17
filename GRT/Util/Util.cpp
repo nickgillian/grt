@@ -49,7 +49,7 @@ bool Util::sleep(const unsigned int &numMilliseconds){
     
 }
     
-float_t Util::scale(const float_t &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain){
+Float Util::scale(const float_t &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain){
     if( constrain ){
         if( x <= minSource ) return minTarget;
         if( x >= maxSource ) return maxTarget;
@@ -104,7 +104,7 @@ std::string Util::toString(const bool &b){
     return b ? "1" : "0";
 }
 
-std::string Util::toString(const float_t &v){
+std::string Util::toString(const Float &v){
 	std::stringstream s;
     s << v;
     return s.str();
@@ -129,9 +129,9 @@ int Util::stringToInt(const std::string &value){
     return i;
 }
 
-float_t Util::stringToFloat(const std::string &value){
+Float Util::stringToFloat(const std::string &value){
     std::stringstream s( value );
-    float_t d;
+    Float d;
     s >> d;
     return d;
 }
@@ -161,56 +161,56 @@ bool Util::stringEndsWith(const std::string &str, const std::string &ending) {
     }
 }
     
-float_t Util::limit(const float_t value,const float_t minValue,const float_t maxValue){
+Float Util::limit(const float_t value,const float_t minValue,const float_t maxValue){
     if( value <= minValue ) return minValue;
     if( value >= maxValue ) return maxValue;
     return value;
 }
     
-float_t Util::sum(const VectorFloat &x){
-    float_t s = 0;
+Float Util::sum(const VectorFloat &x){
+    Float s = 0;
 	std::size_t N = x.size();
     for(std::size_t i=0; i<N; i++)
         s += x[i];
     return s;
 }
 
-float_t Util::dotProduct(const VectorFloat &a,const VectorFloat &b){
-	if( a.size() != b.size() ) return std::numeric_limits< float_t >::max();
+Float Util::dotProduct(const VectorFloat &a,const VectorFloat &b){
+	if( a.size() != b.size() ) return std::numeric_limits< Float >::max();
 	std::size_t N = a.size();
-	float_t d = 0;
+	Float d = 0;
 	for(std::size_t i=0; i<N; i++){
 		d += a[i]*b[i];
 	}
 	return d;
 }
 
-float_t Util::euclideanDistance(const VectorFloat &a,const VectorFloat &b){
-	if( a.size() != b.size() ) return std::numeric_limits< float_t >::max();
+Float Util::euclideanDistance(const VectorFloat &a,const VectorFloat &b){
+	if( a.size() != b.size() ) return std::numeric_limits< Float >::max();
 	std::size_t N = a.size();
-	float_t d = 0;
+	Float d = 0;
 	for(std::size_t i=0; i<N; i++){
 		d += (a[i]-b[i])*(a[i]-b[i]);
 	}
 	return sqrt( d );
 }
 
-float_t Util::manhattanDistance(const VectorFloat &a,const VectorFloat &b){
-	if( a.size() != b.size() ) return std::numeric_limits< float_t >::max();
+Float Util::manhattanDistance(const VectorFloat &a,const VectorFloat &b){
+	if( a.size() != b.size() ) return std::numeric_limits< Float >::max();
 	std::size_t N = a.size();
-	float_t d = 0;
+	Float d = 0;
 	for(std::size_t i=0; i<N; i++){
 		d += fabs(a[i]-b[i]);
 	}
 	return d;
 }
 
-float_t Util::cosineDistance(const VectorFloat &a,const VectorFloat &b){
-	if( a.size() != b.size() ) return std::numeric_limits< float_t >::max();
+Float Util::cosineDistance(const VectorFloat &a,const VectorFloat &b){
+	if( a.size() != b.size() ) return std::numeric_limits< Float >::max();
 	std::size_t N = a.size();
-	float_t dotProduct = 0;
-	float_t aSum = 0;
-	float_t bSum = 0;
+	Float dotProduct = 0;
+	Float aSum = 0;
+	Float bSum = 0;
 	for(std::size_t i=0; i<N; i++){
 		dotProduct += a[i]*b[i];
 		aSum += a[i]*a[i];
@@ -219,7 +219,7 @@ float_t Util::cosineDistance(const VectorFloat &a,const VectorFloat &b){
 	return dotProduct / sqrt(aSum*bSum);
 }
     
-VectorFloat Util::scale(const VectorFloat &x,const float_t minSource,const float_t maxSource,const float_t minTarget,const float_t maxTarget,const bool constrain){
+VectorFloat Util::scale(const VectorFloat &x,const Float minSource,const float_t maxSource,const float_t minTarget,const float_t maxTarget,const bool constrain){
     std::size_t N = x.size();
 	VectorFloat y(N);
     for(std::size_t i=0; i<N; i++){
@@ -231,7 +231,7 @@ VectorFloat Util::scale(const VectorFloat &x,const float_t minSource,const float
 VectorFloat Util::normalize(const VectorFloat &x){
 	std::size_t N = x.size();
 	VectorFloat y(N);
-	float_t s = 0;
+	Float s = 0;
     for(std::size_t i=0; i<N; i++)
         s += x[i];
 	
@@ -245,7 +245,7 @@ VectorFloat Util::normalize(const VectorFloat &x){
 	return y;
 }
     
-VectorFloat Util::limit(const VectorFloat &x,const float_t minValue,const float_t maxValue){
+VectorFloat Util::limit(const VectorFloat &x,const Float minValue,const float_t maxValue){
     std::size_t N = x.size();
 	VectorFloat y(N);
     for(std::size_t i=0; i<N; i++)
@@ -253,8 +253,8 @@ VectorFloat Util::limit(const VectorFloat &x,const float_t minValue,const float_
     return y;
 }
 
-float_t Util::getMin(const VectorFloat &x){
-    float_t min = std::numeric_limits< float_t >::max();
+Float Util::getMin(const VectorFloat &x){
+    Float min = std::numeric_limits< float_t >::max();
     std::size_t N = x.size();
     for(std::size_t i=0; i<N; i++){
         if( x[i] < min ){
@@ -266,7 +266,7 @@ float_t Util::getMin(const VectorFloat &x){
     
 unsigned int getMinIndex(const VectorFloat &x){
     unsigned int minIndex = 0;
-    float_t min = std::numeric_limits< float_t >::max();
+    Float min = std::numeric_limits< float_t >::max();
     unsigned int N = (unsigned int)x.size();
     for(unsigned int i=0; i<N; i++){
         if( x[i] < min ){
@@ -277,8 +277,8 @@ unsigned int getMinIndex(const VectorFloat &x){
     return minIndex;
 }
 
-float_t Util::getMax(const VectorFloat &x){
-    float_t max = std::numeric_limits< float_t >::min();
+Float Util::getMax(const VectorFloat &x){
+    Float max = std::numeric_limits< float_t >::min();
     std::size_t N = x.size();
     for(std::size_t i=0; i<N; i++){
         if( x[i] > max ){
@@ -290,7 +290,7 @@ float_t Util::getMax(const VectorFloat &x){
     
 unsigned int Util::getMaxIndex(const VectorFloat &x){
     unsigned int maxIndex = 0;
-    float_t max = std::numeric_limits< float_t >::min();
+    Float max = std::numeric_limits< float_t >::min();
     unsigned int N = (unsigned int)x.size();
     for(unsigned int i=0; i<N; i++){
         if( x[i] > max ){
@@ -339,14 +339,14 @@ unsigned int Util::getOS(){
 	return OS_UNKNOWN;
 }
     
-void Util::cartToPolar(const float_t x,const float_t y,float_t &r, float_t &theta){
+void Util::cartToPolar(const Float x,const float_t y,float_t &r, float_t &theta){
     
 #ifndef PI
-    float_t PI = 3.14159265358979323846;
+    Float PI = 3.14159265358979323846;
 #endif
     
 #ifndef TWO_PI
-    float_t TWO_PI = 6.28318530718;
+    Float TWO_PI = 6.28318530718;
 #endif
     
     r = 0;
@@ -389,7 +389,7 @@ void Util::cartToPolar(const float_t x,const float_t y,float_t &r, float_t &thet
     } 
 }
     
-void Util::polarToCart(const float_t r,const float_t theta,float_t &x, float_t &y){
+void Util::polarToCart(const Float r,const float_t theta,float_t &x, float_t &y){
     x = r * cos(theta);
     y = r * sin(theta);
 }

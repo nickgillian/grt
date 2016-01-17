@@ -25,7 +25,7 @@ namespace GRT{
 //Register the Accumulator module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< Accumulator > Accumulator::registerModule("Accumulator");
     
-Accumulator::Accumulator(UINT numDimensions,float_t lastValueWeight){
+Accumulator::Accumulator(UINT numDimensions,Float lastValueWeight){
     featureExtractionType = "Accumulator";
     debugLog.setProceedingText("[DEBUG Accumulator]");
     errorLog.setProceedingText("[ERROR Accumulator]");
@@ -86,7 +86,7 @@ bool Accumulator::computeFeatures(const VectorFloat &inputVector){
 #endif
     
     //Add up the input vector, then add this to the last value
-    float_t sum = 0;
+    Float sum = 0;
     for(UINT i=0; i<numInputDimensions; i++){
         sum += fabs( inputVector[i] );
     }
@@ -170,7 +170,7 @@ bool Accumulator::load( std::fstream &file ){
     return init(numInputDimensions,lastValueWeight);
 }
     
-bool Accumulator::init(UINT numDimensions,float_t lastValueWeight){
+bool Accumulator::init(UINT numDimensions,Float lastValueWeight){
     
     initialized = false;
     
@@ -195,22 +195,22 @@ bool Accumulator::init(UINT numDimensions,float_t lastValueWeight){
     return true;
 }
     
-float_t Accumulator::getLastValueWeight(){
+Float Accumulator::getLastValueWeight(){
     if( !initialized ) return 0;
     return lastValueWeight;
 }
 
-float_t Accumulator::getLastValue(){
+Float Accumulator::getLastValue(){
     if( !initialized ) return 0;
     return lastValue;
 }
     
-bool Accumulator::setLastValueWeight(float_t lastValueWeight){
+bool Accumulator::setLastValueWeight(Float lastValueWeight){
     this->lastValueWeight = lastValueWeight;
     return true;
 }
     
-bool Accumulator::setLastValue(float_t lastValue){
+bool Accumulator::setLastValue(Float lastValue){
     this->lastValue = lastValue;
     return true;
 }

@@ -150,7 +150,7 @@ public:
      
      @return returns the current time elapsed in seconds or 0 if the timer is not running
     */
-    float_t getSeconds() {
+    Float getSeconds() {
         if( !timerRunning ) return 0;
         return getMilliSeconds()/1000.0;
     }

@@ -244,7 +244,7 @@ bool MedianFilter::init(UINT filterSize,UINT numDimensions){
     return initialized;
 }
 
-float_t MedianFilter::filter(const float_t x){
+Float MedianFilter::filter(const float_t x){
     
     VectorFloat y = filter(VectorFloat(1,x));
     

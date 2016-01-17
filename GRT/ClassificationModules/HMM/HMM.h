@@ -325,7 +325,7 @@ public:
      @param sigma: the new sigma parameter
      @return returns true if the parameter was set correctly, false otherwise
      */
-    bool setSigma(const float_t sigma);
+    bool setSigma(const Float sigma);
     
     bool setAutoEstimateSigma(const bool autoEstimateSigma);
     
@@ -358,7 +358,7 @@ protected:
     //Continuous HMM variables
     UINT downsampleFactor;
     UINT committeeSize;
-    float_t sigma;
+    Float sigma;
     bool autoEstimateSigma;
     Vector< ContinuousHiddenMarkovModel > continuousModels;
     

@@ -220,7 +220,7 @@ bool MovementIndex::init(UINT bufferLength,UINT numDimensions){
 }
 
 
-VectorFloat MovementIndex::update(float_t x){
+VectorFloat MovementIndex::update(Float x){
 	return update(VectorFloat(1,x));
 }
     
@@ -258,7 +258,7 @@ VectorFloat MovementIndex::update(const VectorFloat &x){
         for(UINT i=0; i<dataBuffer.getSize(); i++){
             mu[j] += dataBuffer[i][j];
         }
-        mu[j] /= float_t(dataBuffer.getSize());
+        mu[j] /= Float(dataBuffer.getSize());
     }
     
     for(UINT j=0; j<numInputDimensions; j++){
@@ -266,7 +266,7 @@ VectorFloat MovementIndex::update(const VectorFloat &x){
         for(UINT i=0; i<dataBuffer.getSize(); i++){
             featureVector[j] += grt_sqr( dataBuffer[i][j] - mu[j] );
         }
-        featureVector[j] = grt_sqrt( featureVector[j]/float_t(dataBuffer.getSize()) );
+        featureVector[j] = grt_sqrt( featureVector[j]/Float(dataBuffer.getSize()) );
     }
     
     return featureVector;

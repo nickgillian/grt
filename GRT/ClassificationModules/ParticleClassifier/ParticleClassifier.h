@@ -33,7 +33,7 @@ public:
     /**
      Default Constructor
      */
-	ParticleClassifier(const unsigned int numParticles = 2000,const float_t sensorNoise = 20.0,const float_t transitionSigma = 0.005,const float_t phaseSigma = 0.1,const float_t velocitySigma = 0.01);
+	ParticleClassifier(const unsigned int numParticles = 2000,const Float sensorNoise = 20.0,const Float transitionSigma = 0.005,const float_t phaseSigma = 0.1,const float_t velocitySigma = 0.01);
 	
     /**
      Default copy constructor
@@ -122,9 +122,9 @@ public:
     
     VectorFloat getStateEstimation() const;
     
-    float_t getPhase() const;
+    Float getPhase() const;
     
-    float_t getVelocity() const;
+    Float getVelocity() const;
     
     bool setNumParticles(const unsigned int numParticles);
 
@@ -141,10 +141,10 @@ public:
     
 protected:
     unsigned int numParticles;
-    float_t sensorNoise;
-    float_t transitionSigma;
-    float_t phaseSigma;
-    float_t velocitySigma;
+    Float sensorNoise;
+    Float transitionSigma;
+    Float phaseSigma;
+    Float velocitySigma;
 	ParticleClassifierParticleFilter particleFilter;
     
 private:

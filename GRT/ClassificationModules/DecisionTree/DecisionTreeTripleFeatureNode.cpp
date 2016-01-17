@@ -139,17 +139,17 @@ bool DecisionTreeTripleFeatureNode::set(const UINT nodeSize,const UINT featureIn
     return true;
 }
 
-bool DecisionTreeTripleFeatureNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
+bool DecisionTreeTripleFeatureNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
     
     return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeTripleFeatureNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
+bool DecisionTreeTripleFeatureNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
 
     return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
+bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
 
     const UINT M = trainingData.getNumSamples();
     const UINT N = features.getSize();
@@ -157,16 +157,16 @@ bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSt
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits< float_t >::max();
+    minError = grt_numeric_limits< Float >::max();
     Random random;
     UINT bestFeatureIndexA = 0;
     UINT bestFeatureIndexB = 0;
     UINT bestFeatureIndexC = 0;
-    float_t error = 0;
-    float_t giniIndexL = 0;
-    float_t giniIndexR = 0;
-    float_t weightL = 0;
-    float_t weightR = 0;
+    Float error = 0;
+    Float giniIndexL = 0;
+    Float giniIndexR = 0;
+    Float weightL = 0;
+    Float weightR = 0;
     Vector< UINT > groupIndex(M);
     VectorFloat groupCounter(2,0);
     Vector< MinMax > ranges = trainingData.getRanges();

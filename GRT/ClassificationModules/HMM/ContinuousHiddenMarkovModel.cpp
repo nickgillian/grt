@@ -24,7 +24,7 @@
 GRT_BEGIN_NAMESPACE
 
 //Init the model with a set number of states and symbols
-ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFactor,const UINT delta,const bool autoEstimateSigma,const float_t sigma){
+ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFactor,const UINT delta,const bool autoEstimateSigma,const Float sigma){
 
     clear();
 	this->downsampleFactor = downsampleFactor;
@@ -145,12 +145,12 @@ bool ContinuousHiddenMarkovModel::predict_( MatrixFloat &timeseries ){
     }
     
     unsigned int t,i,j,k,index = 0;
-    float_t maxAlpha = 0;
-    float_t norm = 0;
+    Float maxAlpha = 0;
+    Float norm = 0;
     
     //Downsample the observation timeseries using the same downsample factor of the training data
     const unsigned int timeseriesLength = (int)timeseries.getNumRows();
-    const unsigned int T = (int)floor( timeseriesLength / float_t(downsampleFactor) );
+    const unsigned int T = (int)floor( timeseriesLength / Float(downsampleFactor) );
     MatrixFloat obs(T,numInputDimensions);
     for(j=0; j<numInputDimensions; j++){
         index = 0;
@@ -227,7 +227,7 @@ bool ContinuousHiddenMarkovModel::predict_( MatrixFloat &timeseries ){
     loglikelihood = -loglikelihood; //Store the negative log likelihood
     
     //Set the phase as the last estimated state, this will give a phase between [0 1]
-    phase = (estimatedStates[T-1]+1.0)/float_t(numStates);
+    phase = (estimatedStates[T-1]+1.0)/Float(numStates);
 
     return true;
 }
@@ -255,7 +255,7 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
     b.resize(numStates, numInputDimensions);
     
     unsigned int index = 0;
-    float_t norm = 0;
+    Float norm = 0;
     for(unsigned int j=0; j<numInputDimensions; j++){
         index = 0;
         for(unsigned int i=0; i<numStates; i++){
@@ -439,7 +439,7 @@ bool ContinuousHiddenMarkovModel::print() const{
 
         //Check the weights all sum to 1
         if( true ){
-            float_t sum=0.0;
+            Float sum=0.0;
             for(UINT i=0; i<a.getNumRows(); i++){
               sum=0.0;
               for(UINT j=0; j<a.getNumCols(); j++) sum += a[i][j];
@@ -482,7 +482,7 @@ bool ContinuousHiddenMarkovModel::setDelta(const UINT delta){
     return false;
 }
     
-bool ContinuousHiddenMarkovModel::setSigma(const float_t sigma){
+bool ContinuousHiddenMarkovModel::setSigma(const Float sigma){
     if( sigma > 0 ){
         this->sigma = sigma;
         
@@ -491,7 +491,7 @@ bool ContinuousHiddenMarkovModel::setSigma(const float_t sigma){
         }
         return true;
     }
-    warningLog << "setSigma(const float_t sigma) - Failed to set sigma, it must be greater than zero!" << std::endl;
+    warningLog << "setSigma(const Float sigma) - Failed to set sigma, it must be greater than zero!" << std::endl;
     return false;
 }
 
@@ -504,8 +504,8 @@ bool ContinuousHiddenMarkovModel::setAutoEstimateSigma(const bool autoEstimateSi
     return true;
 }
 
-float_t ContinuousHiddenMarkovModel::gauss( const MatrixFloat &x, const MatrixFloat &y, const MatrixFloat &sigma, const unsigned int i,const unsigned int j,const unsigned int N ){
-    float_t z = 1;
+Float ContinuousHiddenMarkovModel::gauss( const MatrixFloat &x, const MatrixFloat &y, const MatrixFloat &sigma, const unsigned int i,const unsigned int j,const unsigned int N ){
+    Float z = 1;
     for(unsigned int n=0; n<N; n++){
         z *= (1.0/( sigma[i][n] * SQRT_TWO_PI )) * exp( - SQR(x[i][n]-y[j][n])/(2.0*SQR(sigma[i][n])) );
     }

@@ -157,7 +157,7 @@ public:
      @param bestIndex: a reference that will return the index of the individual with the best fitness
      @return returns true if the population fitness was estimated, false otherwise
      */
-    virtual bool estimatePopulationFitness( const MatrixFloat &trainingData, float_t &bestFitness, UINT &bestIndex ){
+    virtual bool estimatePopulationFitness( const MatrixFloat &trainingData, Float &bestFitness, UINT &bestIndex ){
         
         UINT index = 0;
         bestFitness = 0;
@@ -304,7 +304,7 @@ public:
      @param trainingData: a reference to the training data that will be used to compute the individual's fitness
      @return returns the fitness of the individual
      */
-    virtual float_t evaluateFitness( INDIVIDUAL &individual, const MatrixFloat &trainingData ){
+    virtual Float evaluateFitness( INDIVIDUAL &individual, const MatrixFloat &trainingData ){
         
         individual.fitness = 0;
         
@@ -313,8 +313,8 @@ public:
         if( trainingData.getNumCols() != geneSize ) return 0;
         
         UINT M = trainingData.getNumRows();
-        float_t error = 0;
-        float_t minError = grt_numeric_limits< float_t >::max();
+        Float error = 0;
+        Float minError = grt_numeric_limits< Float >::max();
         
         for(UINT i=0; i<M; i++){
             error = 0;
@@ -326,7 +326,7 @@ public:
         }
         //Make sure the minError is not zero
         minError += 0.00001;
-        minError /= float_t(geneSize);
+        minError /= Float(geneSize);
         
         //Good individuals should have a high fitness
         individual.fitness = 1.0/(minError*minError);
@@ -341,7 +341,7 @@ public:
         UINT currentIteration = 0;
         UINT numIterationsNoChange = 0;
         bool keepTraining = true;
-        float_t lastBestFitness = 0;
+        Float lastBestFitness = 0;
         
         if( storeHistory ){
             populationHistory.reserve( maxIteration/storeRate );
@@ -374,7 +374,7 @@ public:
                 return false;
             }
             
-            float_t delta = fabs( bestIndividualFitness-lastBestFitness );
+            Float delta = fabs( bestIndividualFitness-lastBestFitness );
             lastBestFitness = bestIndividualFitness;
             
             trainingLog << "Iteration: " << currentIteration << "\tBestFitness: " << bestIndividualFitness << "\tBestIndex: " << bestIndividualIndex << "\tDelta: " << delta << "\tNumIterationsNoChange: " << numIterationsNoChange << std::endl;
@@ -453,17 +453,17 @@ public:
         return true;
     }
     
-    bool setBaiseCoeff(const float_t baiseCoeff){
+    bool setBaiseCoeff(const Float baiseCoeff){
         this->baiseCoeff = baiseCoeff;
         return true;
     }
     
-    bool setMutationRate(const float_t mutationRate){
+    bool setMutationRate(const Float mutationRate){
         this->mutationRate = mutationRate;
         return true;
     }
     
-    bool setMinChange(const float_t minChange){
+    bool setMinChange(const Float minChange){
         this->minChange = minChange;
         return true;
     }
@@ -493,7 +493,7 @@ public:
         return true;
     }
     
-    virtual inline float_t generateRandomGeneValue(){
+    virtual inline Float generateRandomGeneValue(){
         return rand.getRandomNumberUniform(0.0,1.0);
     }
     
@@ -524,10 +524,10 @@ public:
     UINT maxIteration;
     UINT storeRate;
     UINT bestIndividualIndex;
-    float_t bestIndividualFitness;
-    float_t mutationRate;
-    float_t minChange;
-    float_t baiseCoeff;
+    Float bestIndividualFitness;
+    Float mutationRate;
+    Float minChange;
+    Float baiseCoeff;
     Random rand;
     Vector< INDIVIDUAL > population;
     Vector< INDIVIDUAL > parents;

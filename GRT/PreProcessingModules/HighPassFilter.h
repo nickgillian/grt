@@ -49,7 +49,7 @@ public:
      @param cutoffFrequency: sets the cutoffFrequency of the filter (in Hz). If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.  Default value cutoffFrequency = -1.0
      @param delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor.  Default value delta = -1.0
      */
-    HighPassFilter(float_t filterFactor = 0.1,float_t gain = 1,UINT numDimensions = 1,float_t cutoffFrequency = -1,float_t delta = -1);
+    HighPassFilter(Float filterFactor = 0.1,Float gain = 1,UINT numDimensions = 1,float_t cutoffFrequency = -1,float_t delta = -1);
     
     /**
      Copy Constructor, copies the HighPassFilter from the rhs instance to this instance
@@ -145,7 +145,7 @@ public:
      @param numDimensions: the dimensionality of the input data to filter
 	 @return true if the filter was initiliazed, false otherwise
      */
-    bool init(float_t filterFactor,float_t gain,UINT numDimensions);
+    bool init(Float filterFactor,Float gain,UINT numDimensions);
     
 	/**
      Filters the input, this should only be called if the dimensionality of the filter was set to 1.
@@ -153,7 +153,7 @@ public:
      @param x: the value to filter, this should only be called if the dimensionality of the filter was set to 1
 	 @return the filtered value.  Zero will be returned if the value was not filtered
      */
-    float_t filter(const float_t x);
+    Float filter(const Float x);
     
     /**
      Filters the input, the dimensionality of the input vector should match that of the filter.
@@ -170,7 +170,7 @@ public:
      @param gain: the new gain value, this multiples the filtered values by a constant ampltidue
 	 @return true if the gain value was set, false otherwise
      */
-    bool setGain(float_t gain);
+    bool setGain(Float gain);
     
     /**
      Sets the filter factor, this controls the high pass filter, a smaller value will result in a more aggresive attenuation of low frequency signals in the input signal.
@@ -180,7 +180,7 @@ public:
      @param filterFactor: the new filterFactor value
 	 @return true if the filterFactor value was set, false otherwise
      */
-    bool setFilterFactor(float_t filterFactor);
+    bool setFilterFactor(Float filterFactor);
     
     /**
      Sets the cutoff frequency of the filter, this updates the filterFactor.  The cutoffFrequency should in Hz.
@@ -190,21 +190,21 @@ public:
      @param delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor
 	 @return true if the filterFactor value was set, false otherwise
      */
-    bool setCutoffFrequency(float_t cutoffFrequency,float_t delta);
+    bool setCutoffFrequency(Float cutoffFrequency,Float delta);
     
     /**
      Gets the current filter factor if the filter has been initialized.
      
 	 @return the current filter factor if the filter has been initialized, zero otherwise
      */
-    float_t getFilterFactor(){ if( initialized ){ return filterFactor; } return 0; }
+    Float getFilterFactor(){ if( initialized ){ return filterFactor; } return 0; }
     
     /**
      Gets the current gain value if the filter has been initialized.
      
 	 @return the currentgain value if the filter has been initialized, zero otherwise
      */
-    float_t getGain(){ if( initialized ){ return gain; } return 0; }
+    Float getGain(){ if( initialized ){ return gain; } return 0; }
     
     /**
      Returns the last value(s) that were filtered.
@@ -214,8 +214,8 @@ public:
     VectorFloat getFilteredValues(){ if( initialized ){ return yy; } return VectorFloat(); }
 
 protected:
-    float_t filterFactor;        ///< The filter factor (alpha) of the filter
-    float_t gain;                ///< The gain factor of the filter
+    Float filterFactor;        ///< The filter factor (alpha) of the filter
+    Float gain;                ///< The gain factor of the filter
     VectorFloat xx;        ///< The previous input value(s)
 	VectorFloat yy;        ///< The previous output value(s)
     

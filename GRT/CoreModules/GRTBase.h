@@ -154,7 +154,7 @@ public:
     const GRTBase* getGRTBasePointer() const;
 
 protected:
-    inline float_t SQR(const float_t &x) const{ return x*x; }
+    inline Float SQR(const Float &x) const{ return x*x; }
 
     std::string classType;
     DebugLog debugLog;

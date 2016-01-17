@@ -143,7 +143,7 @@ public:
      @param x: the value to add to the buffer, this should only be called if the dimensionality of the filter was set to 1
 	 @return a vector containing the timeseries buffer, an empty vector will be returned if the buffer is not initialized
      */
-	VectorFloat update(float_t x);
+	VectorFloat update(Float x);
     
     /**
      Updates the timeseries buffer with the new data x, the dimensionality of x should match that of this instance.

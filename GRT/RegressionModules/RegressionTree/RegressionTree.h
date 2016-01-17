@@ -51,7 +51,7 @@ public:
      @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      @param minRMSErrorPerNode: sets the minimum RMS error that allowed per node, if the RMS error is below that, the node will become a leafNode. Default value = 0.01
      */
-	RegressionTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false,const float_t minRMSErrorPerNode = 0.01);
+	RegressionTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false,const Float minRMSErrorPerNode = 0.01);
     
     /**
      Defines the copy constructor.
@@ -155,7 +155,7 @@ public:
      
      @return returns the minimum RMS error per node
      */
-    float_t getMinRMSErrorPerNode() const;
+    Float getMinRMSErrorPerNode() const;
     
     /**
      Sets the minimum RMS error that needs to be exceeded for the tree to continue growing at a specific node.
@@ -163,7 +163,7 @@ public:
      @param minRMSErrorPerNode: sets the minRMSErrorPerNode parameter
      @return returns true if the parameter was updated
      */
-    bool setMinRMSErrorPerNode(const float_t minRMSErrorPerNode);
+    bool setMinRMSErrorPerNode(const Float minRMSErrorPerNode);
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -172,12 +172,12 @@ public:
     using MLBase::predict; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
     
 protected:
-    float_t minRMSErrorPerNode;
+    Float minRMSErrorPerNode;
     
     RegressionTreeNode* buildTree( const RegressionData &trainingData, RegressionTreeNode *parent, Vector< UINT > features, UINT nodeID );
-    bool computeBestSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError );
-    bool computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError );
-    //bool computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &threshold, float_t &minError );
+    bool computeBestSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
+    bool computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
+    //bool computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &threshold, Float &minError );
     bool computeNodeRegressionData( const RegressionData &trainingData, VectorFloat &regressionData );
 
     static RegisterRegressifierModule< RegressionTree > registerModule;

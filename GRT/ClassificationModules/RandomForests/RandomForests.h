@@ -62,7 +62,7 @@ public:
                   const UINT trainingMode = DecisionTree::BEST_RANDOM_SPLIT,
                   const bool removeFeaturesAtEachSpilt = true,
                   const bool useScaling=false,
-                  const float_t bootstrappedDatasetWeight = 0.8);
+                  const Float bootstrappedDatasetWeight = 0.8);
     
     /**
      Defines the copy constructor.
@@ -211,7 +211,7 @@ public:
      
      @return returns the bootstrappedDatasetWeight parameter
      */
-    float_t getBootstrappedDatasetWeight() const;
+    Float getBootstrappedDatasetWeight() const;
 
     /**
      Gets a pointer to the tree at the specific index in the forest. NULL will be returned if the model has not been trained or
@@ -326,7 +326,7 @@ public:
      
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setBootstrappedDatasetWeight( const float_t bootstrappedDatasetWeight );
+    bool setBootstrappedDatasetWeight( const Float bootstrappedDatasetWeight );
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -340,7 +340,7 @@ protected:
     UINT maxDepth;
     UINT trainingMode;
     bool removeFeaturesAtEachSpilt;
-    float_t bootstrappedDatasetWeight;
+    Float bootstrappedDatasetWeight;
     DecisionTreeNode* decisionTreeNode;
     Vector< DecisionTreeNode* > forest;
     

@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the GMM module with the Classifier base class
 RegisterClassifierModule< GMM > GMM::registerModule("GMM");
     
-GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,float_t nullRejectionCoeff,UINT maxIter,float_t minChange){
+GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT maxIter,float_t minChange){
     classType = "GMM";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -122,7 +122,7 @@ bool GMM::predict_(VectorFloat &x){
 	UINT bestIndex = 0;
 	maxLikelihood = 0;
     bestDistance = 0;
-    float_t sum = 0;
+    Float sum = 0;
 	for(UINT k=0; k<numClasses; k++){
         classDistances[k] = computeMixtureLikelihood(x,k);
         
@@ -223,8 +223,8 @@ bool GMM::train_(ClassificationData &trainingData){
         models[k].recomputeNormalizationFactor();
         
         //Compute the rejection thresholds
-        float_t mu = 0;
-        float_t sigma = 0;
+        Float mu = 0;
+        Float sigma = 0;
         VectorFloat predictionResults(classData.getNumSamples(),0);
         for(UINT i=0; i<classData.getNumSamples(); i++){
             VectorFloat sample = classData[i].getSample();
@@ -233,12 +233,12 @@ bool GMM::train_(ClassificationData &trainingData){
         }
         
         //Update mu
-        mu /= float_t( classData.getNumSamples() );
+        mu /= Float( classData.getNumSamples() );
         
         //Calculate the standard deviation
         for(UINT i=0; i<classData.getNumSamples(); i++) 
             sigma += grt_sqr( (predictionResults[i]-mu) );
-        sigma = grt_sqrt( sigma / (float_t(classData.getNumSamples())-1.0) );
+        sigma = grt_sqrt( sigma / (Float(classData.getNumSamples())-1.0) );
         sigma = 0.2;
         
         //Set the models training mu and sigma 
@@ -270,7 +270,7 @@ bool GMM::train_(ClassificationData &trainingData){
     return true;
 }
     
-float_t GMM::computeMixtureLikelihood(const VectorFloat &x,const UINT k){
+Float GMM::computeMixtureLikelihood(const VectorFloat &x,const UINT k){
     if( k >= numClasses ){
         errorLog << "computeMixtureLikelihood(const VectorFloat x,const UINT k) - Invalid k value!" << std::endl;
         return 0;
@@ -404,10 +404,10 @@ bool GMM::loadModelFromFile( std::fstream &file ){
         for(UINT k=0; k<numClasses; k++){
             UINT classLabel = 0;
             UINT K = 0;
-            float_t normalizationFactor;
-            float_t trainingMu;
-            float_t trainingSigma;
-            float_t rejectionThreshold;
+            Float normalizationFactor;
+            Float trainingMu;
+            Float trainingSigma;
+            Float rejectionThreshold;
             
             file >> word;
             if(word != "ClassLabel:"){
@@ -570,7 +570,7 @@ bool GMM::setNumMixtureModels(UINT K){
     }
     return false;
 }
-bool GMM::setMinChange(float_t minChange){
+bool GMM::setMinChange(Float minChange){
     if( minChange > 0 ){
         this->minChange = minChange;
         return true;
@@ -676,10 +676,10 @@ bool GMM::loadLegacyModelFromFile( std::fstream &file ){
     for(UINT k=0; k<numClasses; k++){
         UINT classLabel = 0;
         UINT K = 0;
-        float_t normalizationFactor;
-        float_t trainingMu;
-        float_t trainingSigma;
-        float_t rejectionThreshold;
+        Float normalizationFactor;
+        Float trainingMu;
+        Float trainingSigma;
+        Float rejectionThreshold;
         
         file >> word;
         if(word != "ClassLabel:"){

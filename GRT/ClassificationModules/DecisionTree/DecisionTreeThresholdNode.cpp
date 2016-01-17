@@ -114,11 +114,11 @@ UINT DecisionTreeThresholdNode::getFeatureIndex() const{
     return featureIndex;
 }
 
-float_t DecisionTreeThresholdNode::getThreshold() const{
+Float DecisionTreeThresholdNode::getThreshold() const{
     return threshold;
 }
 
-bool DecisionTreeThresholdNode::set(const UINT nodeSize,const UINT featureIndex,const float_t threshold,const VectorFloat &classProbabilities){
+bool DecisionTreeThresholdNode::set(const UINT nodeSize,const UINT featureIndex,const Float threshold,const VectorFloat &classProbabilities){
     this->nodeSize = nodeSize;
     this->featureIndex = featureIndex;
     this->threshold = threshold;
@@ -126,7 +126,7 @@ bool DecisionTreeThresholdNode::set(const UINT nodeSize,const UINT featureIndex,
     return true;
 }
 
-bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
+bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = features.getSize();
@@ -134,17 +134,17 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits< float_t >::max();
+    minError = grt_numeric_limits< Float >::max();
     UINT bestFeatureIndex = 0;
-    float_t bestThreshold = 0;
-    float_t error = 0;
-    float_t minRange = 0;
-    float_t maxRange = 0;
-    float_t step = 0;
-    float_t giniIndexL = 0;
-    float_t giniIndexR = 0;
-    float_t weightL = 0;
-    float_t weightR = 0;
+    Float bestThreshold = 0;
+    Float error = 0;
+    Float minRange = 0;
+    Float maxRange = 0;
+    Float step = 0;
+    Float giniIndexL = 0;
+    Float giniIndexR = 0;
+    Float weightL = 0;
+    Float weightR = 0;
     Vector< UINT > groupIndex(M);
     VectorFloat groupCounter(2,0);
     Vector< MinMax > ranges = trainingData.getRanges();
@@ -155,7 +155,7 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &
     for(UINT n=0; n<N; n++){
         minRange = ranges[n].minValue;
         maxRange = ranges[n].maxValue;
-        step = (maxRange-minRange)/float_t(numSplittingSteps);
+        step = (maxRange-minRange)/Float(numSplittingSteps);
         threshold = minRange;
         featureIndex = features[n];
         while( threshold <= maxRange ){
@@ -206,7 +206,7 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &
     return true;
 }
 
-bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
+bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();
@@ -214,14 +214,14 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &num
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits< float_t >::max();
+    minError = grt_numeric_limits< Float >::max();
     UINT bestFeatureIndex = 0;
-    float_t bestThreshold = 0;
-    float_t error = 0;
-    float_t giniIndexL = 0;
-    float_t giniIndexR = 0;
-    float_t weightL = 0;
-    float_t weightR = 0;
+    Float bestThreshold = 0;
+    Float error = 0;
+    Float giniIndexL = 0;
+    Float giniIndexR = 0;
+    Float weightL = 0;
+    Float weightR = 0;
     Random random;
     Vector< UINT > groupIndex(M);
     VectorFloat groupCounter(2,0);

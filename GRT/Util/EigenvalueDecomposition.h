@@ -32,7 +32,7 @@ public:
     EigenvalueDecomposition();
     ~EigenvalueDecomposition();
     
-    bool decompose(const MatrixDouble &a);
+    bool decompose(const MatrixFloat &a);
     
     /**
      Returns the eigenvector matrix
@@ -102,7 +102,7 @@ protected:
     /**
       Complex scalar division.
      */
-    void cdiv(float_t xr, float_t xi, float_t yr, float_t yi);
+    void cdiv(Float xr, Float xi, float_t yr, float_t yi);
 
     template< class T >
     inline T findMax(const T &a,const T &b){
@@ -119,8 +119,8 @@ protected:
     
     int n;
     bool issymmetric;
-    float_t cdivr;
-    float_t cdivi;
+    Float cdivr;
+    Float cdivi;
     MatrixFloat eigenvectors;
     MatrixFloat h;
     VectorFloat realEigenvalues;

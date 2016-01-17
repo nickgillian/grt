@@ -286,7 +286,7 @@ bool SOMQuantizer::train_(MatrixFloat &trainingData){
     return true;
 }
 
-UINT SOMQuantizer::quantize(const float_t inputValue){
+UINT SOMQuantizer::quantize(const Float inputValue){
 	return quantize( VectorFloat(1,inputValue) );
 }
 
@@ -311,7 +311,7 @@ UINT SOMQuantizer::quantize(const VectorFloat &inputVector){
     
     //Search for the neuron with the maximum output
     UINT quantizedValue = 0;
-    float_t maxValue = 0;
+    Float maxValue = 0;
     for(UINT k=0; k<numClusters; k++){
         if( quantizationDistances[k] > maxValue ){
             maxValue = quantizationDistances[k];

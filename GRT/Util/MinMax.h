@@ -29,7 +29,7 @@ GRT_BEGIN_NAMESPACE
 class MinMax{
 public:
 	MinMax():minValue(0),maxValue(0){};
-    MinMax(float_t minValue,float_t maxValue){
+    MinMax(Float minValue,Float maxValue){
         this->minValue = minValue;
         this->maxValue = maxValue;
     }
@@ -43,7 +43,7 @@ public:
 		return *this;
 	}
     
-    bool updateMinMax(float_t newValue){
+    bool updateMinMax(Float newValue){
         if( newValue < minValue ){
             minValue = newValue;
             return true;
@@ -55,8 +55,8 @@ public:
         return false;
     }
 
-	float_t minValue;
-	float_t maxValue;
+	Float minValue;
+	Float maxValue;
 };
 
 GRT_END_NAMESPACE

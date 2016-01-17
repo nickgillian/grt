@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the FiniteStateMachine module with the Classifier base class
 RegisterClassifierModule< FiniteStateMachine > FiniteStateMachine::registerModule("FiniteStateMachine");
 
-FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClustersPerState,const float_t stateTransitionSmoothingCoeff,const float_t measurementNoise)
+FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClustersPerState,const Float stateTransitionSmoothingCoeff,const float_t measurementNoise)
 {
     this->numParticles = numParticles;
     this->numClustersPerState = numClustersPerState;
@@ -216,7 +216,7 @@ bool FiniteStateMachine::train_( TimeSeriesClassificationDataStream &data ){
     }
     
     //Normalize the state transitions
-    float_t sum = 0;
+    Float sum = 0;
     for(UINT i=0; i<K; i++){
         sum = 0;
         for(UINT j=0; j<K; j++){
@@ -307,7 +307,7 @@ bool FiniteStateMachine::predict_(VectorFloat &inputVector){
     particles.filter( inputVector );
     
     //Compute the state estimation
-    float_t sum = 0;
+    Float sum = 0;
     for(UINT i=0; i<numParticles; i++){
         sum += particles[i].w;
         classLikelihoods[ particles[i].currentState ] += particles[i].w;
@@ -552,7 +552,7 @@ bool FiniteStateMachine::recomputePT(){
     
     pt.clear();
     
-    //Build pt, this is simply the state transitions formated as indexed float_ts to make the prediction stage more efficient
+    //Build pt, this is simply the state transitions formated as indexed Floats to make the prediction stage more efficient
     const UINT K = stateTransitions.getNumRows();
     for(UINT i=0; i<K; i++){
         Vector< IndexedDouble > model(K);
@@ -648,7 +648,7 @@ bool FiniteStateMachine::setNumClustersPerState(const UINT numClustersPerState){
     return true;
 }
 
-bool FiniteStateMachine::setStateTransitionSmoothingCoeff(const float_t stateTransitionSmoothingCoeff){
+bool FiniteStateMachine::setStateTransitionSmoothingCoeff(const Float stateTransitionSmoothingCoeff){
     
     clear();
     
@@ -657,7 +657,7 @@ bool FiniteStateMachine::setStateTransitionSmoothingCoeff(const float_t stateTra
     return true;
 }
     
-bool FiniteStateMachine::setMeasurementNoise(const float_t measurementNoise){
+bool FiniteStateMachine::setMeasurementNoise(const Float measurementNoise){
     
     clear();
     

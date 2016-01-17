@@ -169,20 +169,20 @@ bool Classifier::getNullRejectionEnabled() const{
     return useNullRejection; 
 }
 
-float_t Classifier::getNullRejectionCoeff() const{ 
+Float Classifier::getNullRejectionCoeff() const{ 
     return nullRejectionCoeff; 
 }
     
-float_t Classifier::getMaximumLikelihood() const{ 
+Float Classifier::getMaximumLikelihood() const{ 
     if( trained ) return maxLikelihood; 
     return DEFAULT_NULL_LIKELIHOOD_VALUE; 
 }
   
-float_t Classifier::getPhase() const{
+Float Classifier::getPhase() const{
     return phase;
 }
     
-float_t Classifier::getBestDistance() const{ 
+Float Classifier::getBestDistance() const{ 
     if( trained ) return bestDistance; 
     return DEFAULT_NULL_DISTANCE_VALUE; 
 }
@@ -232,7 +232,7 @@ bool Classifier::enableNullRejection(bool useNullRejection){
     return true;
 }
 
-bool Classifier::setNullRejectionCoeff(float_t nullRejectionCoeff){ 
+bool Classifier::setNullRejectionCoeff(Float nullRejectionCoeff){ 
     if( nullRejectionCoeff > 0 ){ 
         this->nullRejectionCoeff = nullRejectionCoeff; 
         return true; 

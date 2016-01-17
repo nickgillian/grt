@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the DeadZone module with the PreProcessing base class
 RegisterPreProcessingModule< DeadZone > DeadZone::registerModule("DeadZone");
     
-DeadZone::DeadZone(float_t lowerLimit,float_t upperLimit,UINT numDimensions){
+DeadZone::DeadZone(Float lowerLimit,float_t upperLimit,UINT numDimensions){
     classType = "DeadZone";
     preProcessingType = classType;
     debugLog.setProceedingText("[DEBUG DeadZone]");
@@ -205,17 +205,17 @@ bool DeadZone::loadModelFromFile(std::fstream &file){
     return init(lowerLimit,upperLimit,numInputDimensions);
 }
     
-bool DeadZone::init(float_t lowerLimit,float_t upperLimit,UINT numDimensions){
+bool DeadZone::init(Float lowerLimit,float_t upperLimit,UINT numDimensions){
     
     initialized = false;
     
     if( numDimensions == 0 ){
-        errorLog << "init(float_t lowerLimit,float_t upperLimit,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
+        errorLog << "init(Float lowerLimit,float_t upperLimit,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
     if( lowerLimit >= upperLimit ){
-        errorLog << "init(float_t lowerLimit,float_t upperLimit,UINT numDimensions) - The lower limit must be less than the upperlimit!" << std::endl;
+        errorLog << "init(Float lowerLimit,float_t upperLimit,UINT numDimensions) - The lower limit must be less than the upperlimit!" << std::endl;
         return false;
     }
     
@@ -230,7 +230,7 @@ bool DeadZone::init(float_t lowerLimit,float_t upperLimit,UINT numDimensions){
     return true;
 }
 
-float_t DeadZone::filter(const float_t x){
+Float DeadZone::filter(const float_t x){
     VectorFloat y = filter(VectorFloat(1,x));
     if( y.getSize() == 0 ) return 0;
 	return y[0];
@@ -259,12 +259,12 @@ VectorFloat DeadZone::filter(const VectorFloat &x){
     return processedData;
 }
 
-bool DeadZone::setLowerLimit(float_t lowerLimit){ 
+bool DeadZone::setLowerLimit(Float lowerLimit){ 
 	this->lowerLimit = lowerLimit; 
 	return true; 
 }
 
-bool DeadZone::setUpperLimit(float_t upperLimit){ 
+bool DeadZone::setUpperLimit(Float upperLimit){ 
 	this->upperLimit = upperLimit; 
 	return true; 
 }

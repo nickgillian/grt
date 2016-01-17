@@ -245,14 +245,14 @@ public:
 
      @return true if the data was scaled correctly, false otherwise
     */
-    bool scale(const float_t minTarget,const float_t maxTarget);
+    bool scale(const Float minTarget,const Float maxTarget);
     
     /**
      Scales the dataset to the new target range, using the Vector of ranges as the min and max source ranges.
 
      @return true if the data was scaled correctly, false otherwise
     */
-    bool scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
+    bool scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget);
 	
     /**
      Saves the classification data to a file.
@@ -615,7 +615,7 @@ public:
      @param sigma: the amount of Gaussian noise
      @return returns true if the dataset was created successfully, false otherwise
      */
-    static bool generateGaussDataset( const std::string filename, const UINT numSamples = 10000, const UINT numClasses = 10, const UINT numDimensions = 3, const float_t range = 10, const float_t sigma = 1 );
+    static bool generateGaussDataset( const std::string filename, const UINT numSamples = 10000, const UINT numClasses = 10, const UINT numDimensions = 3, const Float range = 10, const Float sigma = 1 );
 
 private:
     

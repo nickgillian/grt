@@ -63,13 +63,13 @@ public:
     
     unsigned int numTrainingSamples;
     unsigned int numTestSamples;
-    float_t accuracy;
-    float_t rmsError;
-    float_t totalSquaredError;
-    float_t trainingTime;
-    float_t testTime;
-    float_t rejectionPrecision;
-    float_t rejectionRecall;
+    Float accuracy;
+    Float rmsError;
+    Float totalSquaredError;
+    Float trainingTime;
+    Float testTime;
+    Float rejectionPrecision;
+    Float rejectionRecall;
     VectorFloat precision;
     VectorFloat recall;
     VectorFloat fMeasure;

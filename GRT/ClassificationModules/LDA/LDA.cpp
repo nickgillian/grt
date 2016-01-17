@@ -22,7 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-LDA::LDA(bool useScaling,bool useNullRejection,float_t nullRejectionCoeff)
+LDA::LDA(bool useScaling,bool useNullRejection,Float nullRejectionCoeff)
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
@@ -99,7 +99,7 @@ bool LDA::train(ClassificationData trainingData){
             for(UINT i=0; i<classData.getNumSamples(); i++){
                 groupMeans[k][j] += classData[i][j];
             }
-            groupMeans[k][j] /= float_t(classData.getNumSamples());
+            groupMeans[k][j] /= Float(classData.getNumSamples());
         }
         
         //Compute the class covariance
@@ -109,7 +109,7 @@ bool LDA::train(ClassificationData trainingData){
                 for(UINT i=0; i<classData.getNumSamples(); i++){
                     cov[m][n] += (classData[i][m]-groupMeans[k][m]) * (classData[i][n]-groupMeans[k][n]);
                 }
-                cov[m][n] /= float_t(classData.getNumSamples()-1);
+                cov[m][n] /= Float(classData.getNumSamples()-1);
             }
         }
         
@@ -121,10 +121,10 @@ bool LDA::train(ClassificationData trainingData){
         }debugLog << std::endl;
         
         //Set the prior probability for this class (which is just 1/numClasses)
-        priorProb[k] = 1.0/float_t(numClasses);
+        priorProb[k] = 1.0/Float(numClasses);
         
         //Update the main covariance matrix
-        float_t weight = ((classData.getNumSamples() - 1) / float_t(trainingData.getNumSamples() - numClasses) );
+        Float weight = ((classData.getNumSamples() - 1) / float_t(trainingData.getNumSamples() - numClasses) );
         debugLog << "Weight: " << weight << std::endl;
         for(UINT m=0; m<numFeatures; m++){
             for(UINT n=0; n<numFeatures; n++){
@@ -155,8 +155,8 @@ bool LDA::train(ClassificationData trainingData){
     }
     
     //Loop over classes to calculate linear discriminant coefficients
-    float_t sum = 0;
-    vector< float_t > temp(numFeatures);
+    Float sum = 0;
+    vector< Float > temp(numFeatures);
     for(UINT k=0; k<numClasses; k++){
         //Compute the temporary vector
         for(UINT j=0; j<numFeatures; j++){
@@ -199,7 +199,7 @@ bool LDA::train(ClassificationData trainingData){
 bool LDA::predict(VectorDouble inputVector){
     
     if( !trained ){
-        errorLog << "predict(vector< float_t > inputVector) - LDA Model Not Trained!" << std::endl;
+        errorLog << "predict(vector< Float > inputVector) - LDA Model Not Trained!" << std::endl;
         return false;
     }
     
@@ -209,7 +209,7 @@ bool LDA::predict(VectorDouble inputVector){
     if( !trained ) return false;
     
 	if( inputVector.getSize() != numInputDimensions ){
-        errorLog << "predict(vector< float_t > inputVector) - The size of the input vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
+        errorLog << "predict(vector< Float > inputVector) - The size of the input vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
 		return false;
 	}
     
@@ -223,7 +223,7 @@ bool LDA::predict(VectorDouble inputVector){
     bestDistance = 0;
     maxLikelihood = 0;
     UINT bestIndex = 0;
-    float_t sum = 0;
+    Float sum = 0;
     for(UINT k=0; k<numClasses; k++){
         
         for(UINT j=0; j<numInputDimensions+1; j++){
@@ -387,7 +387,7 @@ bool LDA::loadModelFromFile( std::fstream &file ){
         
         //Load Weights
         for(UINT j=0; j<numInputDimensions+1; j++){
-            float_t value;
+            Float value;
             file >> value;
             models[k].weights[j] = value;
         }
@@ -417,7 +417,7 @@ MatrixFloat LDA::computeBetweenClassScatterMatrix( ClassificationData &data ){
 	
 		for(UINT m=0; m<numInputDimensions; m++){
 			for(UINT n=0; n<numInputDimensions; n++){
-				sb[m][n] += (classMean[k][m]-totalMean[m]) * (classMean[k][n]-totalMean[n]) * float_t(numSamplesInClass);
+				sb[m][n] += (classMean[k][m]-totalMean[m]) * (classMean[k][n]-totalMean[n]) * Float(numSamplesInClass);
 			}
 		}
 	}

@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the SelfOrganizingMap class with the Clusterer base class
 RegisterClustererModule< SelfOrganizingMap > SelfOrganizingMap::registerModule("SelfOrganizingMap");
 
-SelfOrganizingMap::SelfOrganizingMap( const UINT networkSize, const UINT networkTypology, const UINT maxNumEpochs, const float_t alphaStart, const float_t alphaEnd ){
+SelfOrganizingMap::SelfOrganizingMap( const UINT networkSize, const UINT networkTypology, const UINT maxNumEpochs, const Float alphaStart, const float_t alphaEnd ){
     
     this->numClusters = networkSize;
     this->networkTypology = networkTypology;
@@ -160,7 +160,7 @@ bool SelfOrganizingMap::train_( MatrixFloat &data ){
             //Randomize the other weights
             UINT indexA = 0;
             UINT indexB = 0;
-            float_t weight = 0;
+            Float weight = 0;
             for(UINT i=0; i<numClusters*numClusters; i++){
                 indexA = rand.getRandomNumberInt(0, numClusters);
                 indexB = rand.getRandomNumberInt(0, numClusters);
@@ -188,15 +188,15 @@ bool SelfOrganizingMap::train_( MatrixFloat &data ){
         }
     }
     
-    float_t error = 0;
-    float_t lastError = 0;
-    float_t trainingSampleError = 0;
-    float_t delta = 0;
-    float_t minChange = 0;
-    float_t weightUpdate = 0;
-    float_t weightUpdateSum = 0;
-    float_t alpha = 1.0;
-    float_t neuronDiff = 0;
+    Float error = 0;
+    Float lastError = 0;
+    Float trainingSampleError = 0;
+    Float delta = 0;
+    Float minChange = 0;
+    Float weightUpdate = 0;
+    Float weightUpdateSum = 0;
+    Float alpha = 1.0;
+    Float neuronDiff = 0;
     UINT iter = 0;
     bool keepTraining = true;
     VectorFloat trainingSample;
@@ -226,8 +226,8 @@ bool SelfOrganizingMap::train_( MatrixFloat &data ){
             trainingSample = data.getRowVector( randomTrainingOrder[i] );
             
             //Find the best matching unit
-            float_t dist = 0;
-            float_t bestDist = grt_numeric_limits< float_t >::max();
+            Float dist = 0;
+            Float bestDist = grt_numeric_limits< float_t >::max();
             UINT bestIndex = 0;
             for(UINT j=0; j<numClusters; j++){
                 dist = neurons[j].getSquaredWeightDistance( trainingSample );
@@ -441,11 +441,11 @@ UINT SelfOrganizingMap::getNetworkSize() const{
     return numClusters;
 }
     
-float_t SelfOrganizingMap::getAlphaStart() const{
+Float SelfOrganizingMap::getAlphaStart() const{
     return alphaStart;
 }
 
-float_t SelfOrganizingMap::getAlphaEnd() const{
+Float SelfOrganizingMap::getAlphaEnd() const{
     return alphaEnd;
 }
     
@@ -484,26 +484,26 @@ bool SelfOrganizingMap::setNetworkTypology( const UINT networkTypology ){
     return false;
 }
     
-bool SelfOrganizingMap::setAlphaStart( const float_t alphaStart ){
+bool SelfOrganizingMap::setAlphaStart( const Float alphaStart ){
     
     if( alphaStart > 0 ){
         this->alphaStart = alphaStart;
         return true;
     }
     
-    warningLog << "setAlphaStart(const float_t alphaStart) - AlphaStart must be greater than zero!" << std::endl;
+    warningLog << "setAlphaStart(const Float alphaStart) - AlphaStart must be greater than zero!" << std::endl;
     
     return false;
 }
     
-bool SelfOrganizingMap::setAlphaEnd( const float_t alphaEnd ){
+bool SelfOrganizingMap::setAlphaEnd( const Float alphaEnd ){
     
     if( alphaEnd > 0 ){
         this->alphaEnd = alphaEnd;
         return true;
     }
     
-    warningLog << "setAlphaEnd(const float_t alphaEnd) - AlphaEnd must be greater than zero!" << std::endl;
+    warningLog << "setAlphaEnd(const Float alphaEnd) - AlphaEnd must be greater than zero!" << std::endl;
     
     return false;
 }

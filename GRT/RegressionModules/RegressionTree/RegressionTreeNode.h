@@ -204,7 +204,7 @@ public:
      @param regressionData: the regression data at this node
      @return returns true if the node was set, false otherwise
      */
-    bool set(const UINT nodeSize,const UINT featureIndex,const float_t threshold,const VectorFloat &regressionData){
+    bool set(const UINT nodeSize,const UINT featureIndex,const Float threshold,const VectorFloat &regressionData){
         this->nodeSize = nodeSize;
         this->featureIndex = featureIndex;
         this->threshold = threshold;
@@ -303,7 +303,7 @@ protected:
     
     UINT nodeSize;
     UINT featureIndex;
-    float_t threshold;
+    Float threshold;
     VectorFloat regressionData;
     
     static RegisterNode< RegressionTreeNode > registerModule;

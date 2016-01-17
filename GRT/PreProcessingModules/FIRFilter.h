@@ -48,7 +48,7 @@ public:
      @param cutoffFrequency: sets the cutoffFrequency of the filter (in Hz). If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.  Default value cutoffFrequency = -1.0
      @param delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor.  Default value delta = -1.0
      */
-    FIRFilter(const UINT filterType = LPF,const UINT numTaps = 50,const float_t sampleRate = 100,const float_t cutoffFrequency = 10,const float_t gain = 1,const UINT numDimensions = 1);
+    FIRFilter(const UINT filterType = LPF,const UINT numTaps = 50,const Float sampleRate = 100,const Float cutoffFrequency = 10,const float_t gain = 1,const UINT numDimensions = 1);
     
     /**
      Copy Constructor, copies the FIRFilter from the rhs instance to this instance
@@ -156,7 +156,7 @@ public:
      @param x: the value to filter, this should only be called if the dimensionality of the filter was set to 1
 	 @return the filtered value.  Zero will be returned if the value was not filtered
      */
-    float_t filter(const float_t x);
+    Float filter(const Float x);
     
     /**
      Filters the input, the dimensionality of the input vector should match that of the filter.
@@ -183,37 +183,37 @@ public:
     /**
      Gets the sample rate that was used to design the filter.
      
-	 @return a float_t representing the sample rate that was used to design the filter
+	 @return a Float representing the sample rate that was used to design the filter
      */
-    float_t getSampleRate() const;
+    Float getSampleRate() const;
     
     /**
      Gets the cutoff frequency that was used to design the filter.  This is only relevant for a low-pass or high-pass filter.
      
-	 @return a float_t representing the cutoff frequency that was used to design the filter
+	 @return a Float representing the cutoff frequency that was used to design the filter
      */
-    float_t getCutoffFrequency() const;
+    Float getCutoffFrequency() const;
     
     /**
      Gets the lower cutoff frequency that was used to design the filter.  This is only relevant for a band-pass filter.
      
-	 @return a float_t representing the lower cutoff frequency that was used to design the filter
+	 @return a Float representing the lower cutoff frequency that was used to design the filter
      */
-    float_t getCutoffFrequencyLower() const;
+    Float getCutoffFrequencyLower() const;
     
     /**
      Gets the upper cutoff frequency that was used to design the filter.  This is only relevant for a band-pass filter.
      
-	 @return a float_t representing the upper cutoff frequency that was used to design the filter
+	 @return a Float representing the upper cutoff frequency that was used to design the filter
      */
-    float_t getCutoffFrequencyUpper() const;
+    Float getCutoffFrequencyUpper() const;
     
     /**
      Gets the current gain value.
      
 	 @return the current gain value
      */
-    float_t getGain() const;
+    Float getGain() const;
     
     /**
      Returns the last N value(s) that were input to the filter.
@@ -250,46 +250,46 @@ public:
     /**
      Sets the sample rate of your signal.  This will deinitalize the filter, you should rebuild the filter after changing this value.
      
-     @param const float_t sampleRate: the new sampleRate value
+     @param const Float sampleRate: the new sampleRate value
 	 @return true if the sampleRate value was set, false otherwise
      */
-    bool setSampleRate(const float_t sampleRate);
+    bool setSampleRate(const Float sampleRate);
     
     /**
      Sets the cutoff frequency of the filter.  This should be used with either a low-pass or high-pass filter.  The cutoffFrequency should be in Hz.
      This will deinitalize the filter, you should rebuild the filter after changing this value.
      
-     @param const float_t cutoffFrequency: the cutoff frequency of the filter in Hz
+     @param const Float cutoffFrequency: the cutoff frequency of the filter in Hz
 	 @return true if the cutoffFrequency value was set, false otherwise
      */
-    bool setCutoffFrequency(const float_t cutoffFrequency);
+    bool setCutoffFrequency(const Float cutoffFrequency);
     
     /**
      Sets the lower and upper cutoff frequency for a band-pass filter.  The cutoffFrequencies should be in Hz.
      This will deinitalize the filter, you should rebuild the filter after changing this value.
      
-     @param const float_t cutoffFrequencyLower: the lower cutoff frequency of the band-pass filter in Hz
-     @param const float_t cutoffFrequencyUpper: the upper cutoff frequency of the band-pass filter in Hz
+     @param const Float cutoffFrequencyLower: the lower cutoff frequency of the band-pass filter in Hz
+     @param const Float cutoffFrequencyUpper: the upper cutoff frequency of the band-pass filter in Hz
 	 @return true if the parameters were set, false otherwise
      */
-    bool setCutoffFrequency(const float_t cutoffFrequencyLower,const float_t cutoffFrequencyUpper);
+    bool setCutoffFrequency(const Float cutoffFrequencyLower,const Float cutoffFrequencyUpper);
     
     /**
      Sets the gain of the low pass filter.
      
-     @param float_t gain: the new gain value, this multiples the filtered values by a constant ampltidue
+     @param Float gain: the new gain value, this multiples the filtered values by a constant ampltidue
 	 @return true if the gain value was set, false otherwise
      */
-    bool setGain(const float_t gain);
+    bool setGain(const Float gain);
 
 protected:
     UINT filterType;
     UINT numTaps;
-    float_t sampleRate;
-    float_t cutoffFrequency;
-    float_t cutoffFrequencyLower;
-    float_t cutoffFrequencyUpper;
-    float_t gain;
+    Float sampleRate;
+    Float cutoffFrequency;
+    Float cutoffFrequencyLower;
+    Float cutoffFrequencyUpper;
+    Float gain;
     CircularBuffer< VectorFloat > y;
     VectorFloat z;
     

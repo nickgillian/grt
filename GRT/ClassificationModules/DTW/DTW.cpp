@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the DTW module with the Classifier base class
 RegisterClassifierModule< DTW > DTW::registerModule("DTW");
 
-DTW::DTW(bool useScaling,bool useNullRejection,float_t nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,float_t radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,float_t nullRejectionLikelihoodThreshold)
+DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,float_t radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,float_t nullRejectionLikelihoodThreshold)
 {
     this->useScaling=useScaling;
     this->useNullRejection = useNullRejection;
@@ -301,7 +301,7 @@ bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dt
 			//Compute the distance between the two time series
             MatrixFloat distanceMatrix(templateA.getNumRows(),templateB.getNumRows());
             Vector< IndexDist > warpPath;
-			float_t dist = computeDistance(templateA,templateB,distanceMatrix,warpPath);
+			Float dist = computeDistance(templateA,templateB,distanceMatrix,warpPath);
             
             trainingLog << "Template: " << m << " Timeseries: " << n << " Dist: " << dist << std::endl;
 
@@ -315,7 +315,7 @@ bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dt
 	for(UINT m=0; m<numExamples; m++) results[m]/=(numExamples-1);
 	//Find the best average result, this is the result with the minimum value
 	bestIndex = 0;
-	float_t bestAverage = results[0];
+	Float bestAverage = results[0];
 	for(UINT m=1; m<numExamples; m++){
 		if( results[m] < bestAverage ){
 			bestAverage = results[m];
@@ -334,7 +334,7 @@ bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dt
                 dtwTemplate.trainingSigma += SQR( distanceResults[ bestIndex ][n] - dtwTemplate.trainingMu );
             }
         }
-        dtwTemplate.trainingSigma = sqrt( dtwTemplate.trainingSigma / float_t(numExamples-2) );
+        dtwTemplate.trainingSigma = sqrt( dtwTemplate.trainingSigma / Float(numExamples-2) );
     }else{
         warningLog << "_train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dtwTemplate,UINT &bestIndex - There are not enough examples to compute the trainingMu and trainingSigma for the template for class " << dtwTemplate.classLabel << std::endl;
         dtwTemplate.trainingMu = 0.0;
@@ -342,7 +342,7 @@ bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dt
     }
 
 	//Set the average length of the training examples
-	dtwTemplate.averageTemplateLength = (UINT) (dtwTemplate.averageTemplateLength/float_t(numExamples));
+	dtwTemplate.averageTemplateLength = (UINT) (dtwTemplate.averageTemplateLength/Float(numExamples));
     
     trainingLog << "AverageTemplateLength: " << dtwTemplate.averageTemplateLength << std::endl;
 
@@ -400,7 +400,7 @@ bool DTW::predict_(MatrixFloat &inputTimeSeries){
     }
 
 	//Make the prediction by finding the closest template
-    float_t sum = 0;
+    Float sum = 0;
     if( distanceMatrices.size() != numTemplates ) distanceMatrices.resize( numTemplates );
     if( warpPaths.size() != numTemplates ) warpPaths.resize( numTemplates );
     
@@ -555,13 +555,13 @@ bool DTW::setModels( Vector< DTWTemplate > newTemplates ){
 
 ////////////////////////// computeDistance ///////////////////////////////////////////
 
-float_t DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,MatrixFloat &distanceMatrix,Vector< IndexDist > &warpPath){
+Float DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,MatrixFloat &distanceMatrix,Vector< IndexDist > &warpPath){
 
 	const int M = timeSeriesA.getNumRows();
 	const int N = timeSeriesB.getNumRows();
 	const int C = timeSeriesA.getNumCols();
 	int i,j,k,index = 0;
-	float_t totalDist,v,normFactor = 0.;
+	Float totalDist,v,normFactor = 0.;
     
     warpPath.clear();
     if( int(distanceMatrix.getNumRows()) != M || int(distanceMatrix.getNumCols()) != N ){
@@ -609,7 +609,7 @@ float_t DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,M
 	}
 
     //Run the recursive search function to build the cost matrix
-    float_t distance = sqrt( d(M-1,N-1,distanceMatrix,M,N) );
+    Float distance = sqrt( d(M-1,N-1,distanceMatrix,M,N) );
 
     if( grt_isinf(distance) || grt_isnan(distance) ){
         warningLog << "DTW computeDistance(...) - Distance Matrix Values are INF!" << std::endl;
@@ -640,7 +640,7 @@ float_t DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,M
             if( j==0 ) i--;
             else{
                 //Find the minimum cell to move to
-                v = grt_numeric_limits< float_t >::max();
+                v = grt_numeric_limits< Float >::max();
                 index = 0;
                 if( distanceMatrix[i-1][j] < v ){ v = distanceMatrix[i-1][j]; index = 1; }
                 if( distanceMatrix[i][j-1] < v ){ v = distanceMatrix[i][j-1]; index = 2; }
@@ -671,9 +671,9 @@ float_t DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,M
 	return totalDist/normFactor;
 }
 
-float_t DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
+Float DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
 
-    float_t dist = 0;
+    Float dist = 0;
     //The following is based on Matlab code by Eamonn Keogh and Michael Pazzani
     
     //If this cell is NAN then it has already been flagged as unreachable
@@ -682,10 +682,10 @@ float_t DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
     }
 
     if( constrainWarpingPath ){
-        float_t r = ceil( grt_min(M,N)*radius );
+        Float r = ceil( grt_min(M,N)*radius );
         //Test to see if the current cell is outside of the warping window
-        if( fabs( n-((N-1)/((M-1)/float_t(m))) ) > r ){
-            if( n-((N-1)/((M-1)/float_t(m))) > 0 ){
+        if( fabs( n-((N-1)/((M-1)/Float(m))) ) > r ){
+            if( n-((N-1)/((M-1)/Float(m))) > 0 ){
                 for(int i=0; i<m; i++){
                     for(int j=n; j<N; j++){
                         distanceMatrix[i][j] = NAN;
@@ -722,7 +722,7 @@ float_t DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
     //Case 2: we are somewhere in the top row of the matrix
     //Only need to consider moving left
     if( m == 0 ){
-        float_t contribDist = d(m,n-1,distanceMatrix,M,N);
+        Float contribDist = d(m,n-1,distanceMatrix,M,N);
 
         dist = distanceMatrix[m][n] + contribDist;
 
@@ -732,7 +732,7 @@ float_t DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
         //Case 3: we are somewhere in the left column of the matrix
         //Only need to consider moving down
         if ( n == 0) {
-            float_t contribDist = d(m-1,n,distanceMatrix,M,N);
+            Float contribDist = d(m-1,n,distanceMatrix,M,N);
 
             dist = distanceMatrix[m][n] + contribDist;
 
@@ -740,10 +740,10 @@ float_t DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
             return dist;
         }else{
             //Case 4: We are somewhere away from the edges so consider moving in the three main directions
-            float_t contribDist1 = d(m-1,n-1,distanceMatrix,M,N);
-            float_t contribDist2 = d(m-1,n,distanceMatrix,M,N);
-            float_t contribDist3 = d(m,n-1,distanceMatrix,M,N);
-            float_t minValue = grt_numeric_limits< float_t >::max();
+            Float contribDist1 = d(m-1,n-1,distanceMatrix,M,N);
+            Float contribDist2 = d(m-1,n,distanceMatrix,M,N);
+            Float contribDist3 = d(m,n-1,distanceMatrix,M,N);
+            Float minValue = grt_numeric_limits< float_t >::max();
             int index = 0;
             if( contribDist1 < minValue ){ minValue = contribDist1; index = 1; }
 			if( contribDist2 < minValue ){ minValue = contribDist2; index = 2; }
@@ -773,8 +773,8 @@ float_t DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
     return dist;
 }
 
-inline float_t DTW::MIN_(float_t a,float_t b, float_t c){
-	float_t v = a;
+inline Float DTW::MIN_(float_t a,float_t b, float_t c){
+	Float v = a;
 	if(b<v) v = b;
 	if(c<v) v = c;
 	return v;
@@ -826,12 +826,12 @@ void DTW::znormData(MatrixFloat &data,MatrixFloat &normData){
     }
 
 	for(UINT j=0; j<C; j++){
-		float_t mean = 0.0;
-		float_t stdDev = 0.0;
+		Float mean = 0.0;
+		Float stdDev = 0.0;
 
 		//Calculate Mean
 		for(UINT i=0; i<R; i++) mean += data[i][j];
-		mean /= float_t(R);
+		mean /= Float(R);
 
 		//Calculate Std Dev
 		for(UINT i=0; i<R; i++)
@@ -853,7 +853,7 @@ void DTW::znormData(MatrixFloat &data,MatrixFloat &normData){
 void DTW::smoothData(VectorFloat &data,UINT smoothFactor,VectorFloat &resultsData){
 
 	const UINT M = (UINT)data.size();
-	const UINT N = (UINT) floor(float_t(M)/float_t(smoothFactor));
+	const UINT N = (UINT) floor(Float(M)/float_t(smoothFactor));
 	resultsData.resize(N,0);
 	for(UINT i=0; i<N; i++) resultsData[i]=0.0;
 
@@ -863,7 +863,7 @@ void DTW::smoothData(VectorFloat &data,UINT smoothFactor,VectorFloat &resultsDat
 	}
 
 	for(UINT i=0; i<N; i++){
-	    float_t mean = 0.0;
+	    Float mean = 0.0;
 		UINT index = i*smoothFactor;
 		for(UINT x=0; x<smoothFactor; x++){
 			mean += data[index+x];
@@ -872,7 +872,7 @@ void DTW::smoothData(VectorFloat &data,UINT smoothFactor,VectorFloat &resultsDat
 	}
 	//Add on the data that does not fit into the window
 	if(M%smoothFactor!=0.0){
-		float_t mean = 0.0;
+		Float mean = 0.0;
 			for(UINT i=N*smoothFactor; i<M; i++) mean += data[i];
         mean/=M-(N*smoothFactor);
 		//Add one to the end of the Vector
@@ -888,7 +888,7 @@ void DTW::smoothData(MatrixFloat &data,UINT smoothFactor,MatrixFloat &resultsDat
 
 	const UINT M = data.getNumRows();
 	const UINT C = data.getNumCols();
-	const UINT N = (UINT) floor(float_t(M)/float_t(smoothFactor));
+	const UINT N = (UINT) floor(Float(M)/float_t(smoothFactor));
 	resultsData.resize(N,C);
 
 	if(smoothFactor==1 || M<smoothFactor){
@@ -898,7 +898,7 @@ void DTW::smoothData(MatrixFloat &data,UINT smoothFactor,MatrixFloat &resultsDat
 
 	for(UINT i=0; i<N; i++){
 		for(UINT j=0; j<C; j++){
-	     float_t mean = 0.0;
+	     Float mean = 0.0;
 		 int index = i*smoothFactor;
 		 for(UINT x=0; x<smoothFactor; x++){
 			mean += data[index+x][j];
@@ -1224,7 +1224,7 @@ bool DTW::setRejectionMode(UINT rejectionMode){
     return false;
 }
 
-bool DTW::setNullRejectionThreshold(float_t nullRejectionLikelihoodThreshold)
+bool DTW::setNullRejectionThreshold(Float nullRejectionLikelihoodThreshold)
 {
 	this->nullRejectionLikelihoodThreshold = nullRejectionLikelihoodThreshold;
 	return true;
@@ -1240,7 +1240,7 @@ bool DTW::setContrainWarpingPath(bool constrain){
     return true;
 }
     
-bool DTW::setWarpingRadius(float_t radius){
+bool DTW::setWarpingRadius(Float radius){
     this->radius = radius;
     return true;
 }
@@ -1251,7 +1251,7 @@ bool DTW::enableZNormalization(bool useZNormalisation,bool constrainZNorm){
 	return true; 
 }
 
-bool DTW::enableTrimTrainingData(bool trimTrainingData,float_t trimThreshold,float_t maximumTrimPercentage){
+bool DTW::enableTrimTrainingData(bool trimTrainingData,Float trimThreshold,float_t maximumTrimPercentage){
 	
 	if( trimThreshold < 0 || trimThreshold > 1 ){
 		warningLog << "Failed to set trimTrainingData.  The trimThreshold must be in the range of [0 1]" << std::endl;

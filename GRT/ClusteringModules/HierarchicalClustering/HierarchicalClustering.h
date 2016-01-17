@@ -77,12 +77,12 @@ public:
         return (UINT)indexs.size();
     }
     
-    float_t getClusterVariance() const{
+    Float getClusterVariance() const{
         return clusterVariance;
     }
     
     unsigned int uniqueClusterID;
-    float_t clusterVariance;
+    Float clusterVariance;
     Vector< UINT > indexs;
 };
     
@@ -234,10 +234,10 @@ public:
     using MLBase::loadModelFromFile;
 
 protected:
-	inline float_t SQR(const float_t &a) {return a*a;};
-    float_t squaredEuclideanDistance(const float_t *a,const float_t *b);
-    float_t computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB );
-    float_t computeClusterVariance( const ClusterInfo &cluster, const MatrixFloat &data );
+	inline Float SQR(const Float &a) {return a*a;};
+    Float squaredEuclideanDistance(const Float *a,const float_t *b);
+    Float computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB );
+    Float computeClusterVariance( const ClusterInfo &cluster, const MatrixFloat &data );
 
 	UINT M;                             //Number of training examples
 	UINT N;                             //Number of dimensions

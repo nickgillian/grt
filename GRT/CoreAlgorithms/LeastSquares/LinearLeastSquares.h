@@ -69,12 +69,12 @@ public:
         }
         
         const unsigned int N = (unsigned int)x.size();
-        float_t sumx = 0.0;    //Stores the sum of x
-        float_t sumx2 = 0.0;   //Stores the sum of x^2
-        float_t sumxy = 0.0;   //Stores the sum of x * y
-        float_t sumy = 0.0;    //Stores the sum of y
-        float_t sumy2 = 0.0;   //Stores the sum of y**2
-        float_t denom = 0;
+        Float sumx = 0.0;    //Stores the sum of x
+        Float sumx2 = 0.0;   //Stores the sum of x^2
+        Float sumxy = 0.0;   //Stores the sum of x * y
+        Float sumy = 0.0;    //Stores the sum of y
+        Float sumy2 = 0.0;   //Stores the sum of y**2
+        Float denom = 0;
         
         m = 0;
         b = 0;
@@ -106,9 +106,9 @@ public:
     
 protected:
 
-    float_t m;
-    float_t b;
-    float_t r;
+    Float m;
+    Float b;
+    Float r;
     
 };
 

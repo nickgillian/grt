@@ -50,7 +50,7 @@ public:
     UINT getNumDimensions() const { return weights.getSize(); }
     
     UINT classLabel;
-    float_t priorProb;
+    Float priorProb;
     VectorDouble weights;
     
 };
@@ -61,7 +61,7 @@ public:
     /**
      Default Constructor
      */
-	LDA(bool useScaling=false,bool useNullRejection=true,float_t nullRejectionCoeff=10.0);
+	LDA(bool useScaling=false,bool useNullRejection=true,Float nullRejectionCoeff=10.0);
     
     /**
      Default Destructor

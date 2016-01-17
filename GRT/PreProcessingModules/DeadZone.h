@@ -45,7 +45,7 @@ public:
 	 @param upperLimit: sets the upper limit of the dead-zone region.  Default upperLimit = 0.1
      @param numDimensions: the dimensionality of the input data.  Default numDimensions = 1
      */
-    DeadZone(float_t lowerLimit = -0.1,float_t upperLimit = 0.1,UINT numDimensions = 1);
+    DeadZone(Float lowerLimit = -0.1,Float upperLimit = 0.1,UINT numDimensions = 1);
 
 	/**
      Copy Constructor, copies the DeadZone from the rhs instance to this instance
@@ -135,20 +135,20 @@ public:
 	/**
      Initializes the instance, sets the lower and upper limits of the dead-zone region and the dimensionality of the input data.
 
-	 @param float_t lowerLimit: sets the lower limit of the dead-zone region
+	 @param Float lowerLimit: sets the lower limit of the dead-zone region
 	 @param UINT upperLimit: sets the upper limit of the dead-zone region
      @param UINT numDimensions: the dimensionality of the input data
 	 @return true if the instance was initiliazed, false otherwise
      */
-    bool init(float_t lowerLimit,float_t upperLimit,UINT numDimensions);
+    bool init(Float lowerLimit,Float upperLimit,UINT numDimensions);
 
 	/**
      Filters the value x using the dead-zone values, this should only be called if the dimensionality of the instance was set to 1.
      
-     @param const float_t x: the value to be filtered, this should only be called if the dimensionality of the filter was set to 1
+     @param const Float x: the value to be filtered, this should only be called if the dimensionality of the filter was set to 1
 	 @return the filtered input value.  Zero will be returned if the value was not computed
      */
-	float_t filter(const float_t x);
+	Float filter(const Float x);
 	
 	/**
      Filters x using the dead-zone values, the dimensionality of the input should match the number of inputs for the dead zone
@@ -161,36 +161,36 @@ public:
     /**
      Sets the lower limit of the dead-zone region.
      
-     @param float_t lowerLimit: the new lower limit for the dead zone
+     @param Float lowerLimit: the new lower limit for the dead zone
 	 @return returns true if the lowerLimit value was set, false otherwise
      */
-	bool setLowerLimit(float_t lowerLimit);
+	bool setLowerLimit(Float lowerLimit);
 
 	/**
      Sets the upper limit of the dead-zone region.
      
-     @param float_t upperLimit: the new upper limit for the dead zone
+     @param Float upperLimit: the new upper limit for the dead zone
 	 @return returns true if the upperLimit value was set, false otherwise
      */
-	bool setUpperLimit(float_t upperLimit);
+	bool setUpperLimit(Float upperLimit);
     
     /**
      Gets the lower limit of the dead-zone region.
      
 	 @return returns the lower limit if the DeadZone has been initialized, zero otherwise
      */
-    float_t getLowerLimit(){ if( initialized ){ return lowerLimit; } return 0; }
+    Float getLowerLimit(){ if( initialized ){ return lowerLimit; } return 0; }
 
 	/**
      Gets the upper limit of the dead-zone region.
      
 	 @return returns the upper limit if the DeadZone has been initialized, zero otherwise
      */
-    float_t getUpperLimit(){ if( initialized ){ return upperLimit; } return 0; }
+    Float getUpperLimit(){ if( initialized ){ return upperLimit; } return 0; }
 
 protected:
-    float_t lowerLimit;				///< The lower limit of the dead-zone region
-    float_t upperLimit;				///< The upper limit of the dead-zone region
+    Float lowerLimit;				///< The lower limit of the dead-zone region
+    Float upperLimit;				///< The upper limit of the dead-zone region
     
     static RegisterPreProcessingModule< DeadZone > registerModule;
 	

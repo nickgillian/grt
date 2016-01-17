@@ -110,7 +110,7 @@ public:
      
      @return returns the current nullRejectionCoeff value
      */
-    float_t getNullRejectionCoeff() const;
+    Float getNullRejectionCoeff() const;
     
     /**
      Returns the current maximumLikelihood value.
@@ -119,7 +119,7 @@ public:
      
      @return returns the current maximumLikelihood value
      */
-    float_t getMaximumLikelihood() const;
+    Float getMaximumLikelihood() const;
     
     /**
      Returns the current bestDistance value.
@@ -128,14 +128,14 @@ public:
      
      @return returns the current bestDistance value
      */
-    float_t getBestDistance() const;
+    Float getBestDistance() const;
     
     /**
 	 This function returns the estimated gesture phase from the most recent prediction.  This value is only relevant if the classifier supports timeseries classification.
      
-     @return float_t representing the gesture phase value from the most likely class from the most recent prediction
+     @return Float representing the gesture phase value from the most likely class from the most recent prediction
      */
-    float_t getPhase() const;
+    Float getPhase() const;
     
     /**
      Gets the number of classes in trained model.
@@ -215,7 +215,7 @@ public:
      
      @return returns true if nullRejectionCoeff was updated successfully, false otherwise
      */
-    virtual bool setNullRejectionCoeff(float_t nullRejectionCoeff);
+    virtual bool setNullRejectionCoeff(Float nullRejectionCoeff);
 
 	/**
      Manually sets the nullRejectionThresholds, these are the thresholds used for null rejection for each class.
@@ -313,10 +313,10 @@ protected:
     UINT numClasses;
     UINT predictedClassLabel;
     UINT classifierMode;
-    float_t nullRejectionCoeff;
-    float_t maxLikelihood;
-    float_t bestDistance;
-    float_t phase;
+    Float nullRejectionCoeff;
+    Float maxLikelihood;
+    Float bestDistance;
+    Float phase;
     VectorFloat classLikelihoods;
     VectorFloat classDistances;
     VectorFloat nullRejectionThresholds;

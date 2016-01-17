@@ -180,11 +180,11 @@ UINT DecisionTreeClusterNode::getFeatureIndex() const{
     return featureIndex;
 }
 
-float_t DecisionTreeClusterNode::getThreshold() const{
+Float DecisionTreeClusterNode::getThreshold() const{
     return threshold;
 }
 
-bool DecisionTreeClusterNode::set(const UINT nodeSize,const UINT featureIndex,const float_t threshold,const VectorFloat &classProbabilities){
+bool DecisionTreeClusterNode::set(const UINT nodeSize,const UINT featureIndex,const Float threshold,const VectorFloat &classProbabilities){
     this->nodeSize = nodeSize;
     this->featureIndex = featureIndex;
     this->threshold = threshold;
@@ -192,17 +192,17 @@ bool DecisionTreeClusterNode::set(const UINT nodeSize,const UINT featureIndex,co
     return true;
 }
 
-bool DecisionTreeClusterNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
+bool DecisionTreeClusterNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
 
     return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeClusterNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
+bool DecisionTreeClusterNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
 
     return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
+bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
 
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();
@@ -210,11 +210,11 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
 
     if( N == 0 ) return false;
 
-    minError = grt_numeric_limits< float_t >::max();
+    minError = grt_numeric_limits< Float >::max();
     Random random;
     UINT bestFeatureIndex = 0;
-    float_t bestThreshold = 0;
-    float_t error = 0;
+    Float bestThreshold = 0;
+    Float error = 0;
     Vector< UINT > groupIndex(M);
     Vector< MinMax > ranges = trainingData.getRanges();
     MatrixDouble data(M,1); //This will store our temporary data for each dimension
@@ -321,7 +321,7 @@ bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, c
      return true;
 }
 
-bool DecisionTreeClusterNode::computeError( const ClassificationData &trainingData, MatrixFloat &data, const Vector< UINT > &classLabels, Vector< MinMax > ranges, Vector< UINT > groupIndex, const UINT featureIndex, float_t &threshold, float_t &error ){
+bool DecisionTreeClusterNode::computeError( const ClassificationData &trainingData, MatrixFloat &data, const Vector< UINT > &classLabels, Vector< MinMax > ranges, Vector< UINT > groupIndex, const UINT featureIndex, Float &threshold, float_t &error ){
 
     error = 0;
     threshold = 0;
@@ -329,10 +329,10 @@ bool DecisionTreeClusterNode::computeError( const ClassificationData &trainingDa
     const UINT M = trainingData.getNumSamples();
     const UINT K = (UINT)classLabels.size();
 
-    float_t giniIndexL = 0;
-    float_t giniIndexR = 0;
-    float_t weightL = 0;
-    float_t weightR = 0;
+    Float giniIndexL = 0;
+    Float giniIndexR = 0;
+    Float weightL = 0;
+    Float weightR = 0;
     VectorFloat groupCounter(2,0);
     MatrixFloat classProbabilities(K,2);
 

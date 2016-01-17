@@ -39,7 +39,7 @@ GRT_BEGIN_NAMESPACE
 
 class ContinuousHiddenMarkovModel : public MLBase {
 public:
-	ContinuousHiddenMarkovModel(const UINT downsampleFactor = 5,const UINT delta = 1,const bool autoEstimateSigma = true,const float_t sigma = 10.0);
+	ContinuousHiddenMarkovModel(const UINT downsampleFactor = 5,const UINT delta = 1,const bool autoEstimateSigma = true,const Float sigma = 10.0);
     
     ContinuousHiddenMarkovModel(const ContinuousHiddenMarkovModel &rhs);
     
@@ -91,9 +91,9 @@ public:
     
     UINT getClassLabel() const { return classLabel; }
     
-    float_t getLoglikelihood() const { return loglikelihood; }
+    Float getLoglikelihood() const { return loglikelihood; }
     
-    float_t getPhase() const { return phase; }
+    Float getPhase() const { return phase; }
     
     Vector< UINT > getEstimatedStates() const { return estimatedStates; }
     
@@ -125,21 +125,21 @@ public:
      */
     bool setDelta(const UINT delta);
     
-    bool setSigma(const float_t sigma);
+    bool setSigma(const Float sigma);
     
     bool setAutoEstimateSigma(const bool autoEstimateSigma);
     
 protected:
     
-    float_t gauss( const MatrixFloat &x, const MatrixFloat &y, const MatrixFloat &sigma, const unsigned int i,const unsigned int j,const unsigned int N );
+    Float gauss( const MatrixFloat &x, const MatrixFloat &y, const MatrixFloat &sigma, const unsigned int i,const unsigned int j,const unsigned int N );
     
     UINT downsampleFactor;
 	UINT numStates;             ///<The number of states for this model
     UINT classLabel;            ///<The class label associated with this model
     UINT timeseriesLength;      ///<The length of the training timeseries
     bool autoEstimateSigma;
-    float_t sigma;
-    float_t phase;
+    Float sigma;
+    Float phase;
 	MatrixFloat a;             ///<The transitions probability matrix
 	MatrixFloat b;             ///<The emissions probability matrix
 	VectorFloat pi;            ///<The state start probability vector
@@ -152,8 +152,8 @@ protected:
 
 	UINT modelType;         ///<The model type (LEFTRIGHT, or ERGODIC)
 	UINT delta;				///<The number of states a model can move to in a LEFTRIGHT model
-	float_t loglikelihood;	///<The log likelihood of an observation sequence given the modal, calculated by the forward method
-	float_t cThreshold;		///<The classification threshold for this model
+	Float loglikelihood;	///<The log likelihood of an observation sequence given the modal, calculated by the forward method
+	Float cThreshold;		///<The classification threshold for this model
     
 };
 

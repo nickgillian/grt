@@ -49,11 +49,11 @@ public:
 		return *this;
 	}
 
-	inline float_t* operator[] (const UINT &n){
+	inline Float* operator[] (const UINT &n){
 		return data[n];
 	}
     
-    inline const float_t* operator[] (const UINT &n) const {
+    inline const Float* operator[] (const UINT &n) const {
 		return data[n];
 	}
 

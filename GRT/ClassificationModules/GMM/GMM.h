@@ -52,7 +52,7 @@ public:
     /**
      Default Constructor. Sets the number of mixture models to use for each model. 
      */
-	GMM(UINT numMixtureModels = 2,bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=1.0,UINT maxIter=100,float_t minChange=1.0e-5);
+	GMM(UINT numMixtureModels = 2,bool useScaling=false,bool useNullRejection=false,Float nullRejectionCoeff=1.0,UINT maxIter=100,Float minChange=1.0e-5);
     
     /**
      Defines the copy constructor.
@@ -166,7 +166,7 @@ public:
      @param minChange: the new minChange value
      @return returns true if the number of minChange was successfully updated, false otherwise
      */
-    bool setMinChange(float_t minChange);
+    bool setMinChange(Float minChange);
     
     /**
      This function sets the maxIter parameter which controls when the maximum number of iterations parameter that controls when the GMM train 
@@ -184,12 +184,12 @@ public:
     using MLBase::predict;
     
 protected:
-    float_t computeMixtureLikelihood(const VectorFloat &x,UINT k);
+    Float computeMixtureLikelihood(const VectorFloat &x,UINT k);
     bool loadLegacyModelFromFile( std::fstream &file );
     
     UINT numMixtureModels;
     UINT maxIter;
-    float_t minChange;
+    Float minChange;
     Vector< MixtureModel > models;
     
     DebugLog debugLog;

@@ -48,7 +48,7 @@ public:
      @param filterData: a flag that sets if the data should be filtered before computing the derivative.  Default filterData = true
      @param filterSize: the size of the filter if the data is to be filtered
      */
-    Derivative(UINT derivativeOrder=FIRST_DERIVATIVE,float_t delta = 1,UINT numDimensions = 1,bool filterData = true,UINT filterSize = 3);
+    Derivative(UINT derivativeOrder=FIRST_DERIVATIVE,Float delta = 1,UINT numDimensions = 1,bool filterData = true,UINT filterSize = 3);
     
     /**
      Copy Constructor, copies the Derivative from the rhs instance to this instance
@@ -146,7 +146,7 @@ public:
      @param filterSize: the size of the filter if the data is to be filtered
 	 @return true if the instance was initiliazed, false otherwise
      */
-    bool init(UINT derivativeOrder,float_t delta,UINT numDimensions,bool filterData,UINT filterSize); 
+    bool init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize); 
     
     /**
      Computes the derivative of the input, this should only be called if the dimensionality of the instance was set to 1.
@@ -154,7 +154,7 @@ public:
      @param x: the value to compute the derivative of, this should only be called if the dimensionality of the filter was set to 1
 	 @return the derivative of the input.  Zero will be returned if the value was not computed
      */
-	float_t computeDerivative(const float_t x);
+	Float computeDerivative(const Float x);
     
     /**
      Computes the derivative of the input, the dimensionality of the input should match the number of inputs for the derivative
@@ -192,7 +192,7 @@ public:
      @param delta: the estimated sampling time between sensor samples, must be greater than zero
 	 @return returns true if delta was set, false otherwise
      */
-    bool setDelta(float_t delta);
+    bool setDelta(Float delta);
     
     /**
      Sets if the input data will be filtered using a moving average filter before the derivative is computed.
@@ -217,7 +217,7 @@ public:
      @param derivativeOrder: flags which derivative order you want, the default value is 0 which will return whatever the current derivativeOrder is
 	 @return returns the last computed derivative value, will return 0 if no values have been computed
      */
-    float_t getDerivative(UINT derivativeOrder = 0);
+    Float getDerivative(UINT derivativeOrder = 0);
     
     /**
      Gets the last computed derivative values.
@@ -231,7 +231,7 @@ public:
 protected:
     UINT derivativeOrder;                   ///< The order of the derivative that will be computed (either FIRST_DERIVATIVE or SECOND_DERIVATIVE)
     UINT filterSize;                        ///< The size of the filter used to filter the input data before the derivative is computed
-    float_t delta;                           ///< The estimated time between sensor samples
+    Float delta;                           ///< The estimated time between sensor samples
     bool filterData;                        ///< Flags if the input data should be filtered before the derivative is computed
     MovingAverageFilter filter;             ///< The filter used to low pass filter the input data
 	VectorFloat yy;                        ///< A buffer holding the previous input value(s)

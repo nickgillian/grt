@@ -47,7 +47,7 @@ public:
 	bool elmult(VectorFloat &y,VectorFloat &b);
 	bool elsolve(VectorFloat &b,VectorFloat &y);
 	bool inverse(MatrixFloat &ainv);
-	float_t logdet();
+	Float logdet();
     
     bool getSuccess(){ return success; }
 

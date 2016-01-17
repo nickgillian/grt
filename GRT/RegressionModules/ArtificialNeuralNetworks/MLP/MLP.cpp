@@ -22,8 +22,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-const float_t MLP_NEURON_MIN_TARGET = -1.0;
-const float_t MLP_NEURON_MAX_TARGET = 1.0;
+const Float MLP_NEURON_MIN_TARGET = -1.0;
+const Float MLP_NEURON_MAX_TARGET = 1.0;
     
 //Register the MLP module with the Regressifier base class
 RegisterRegressifierModule< MLP > MLP::registerModule("MLP");
@@ -182,13 +182,13 @@ bool MLP::predict_(VectorFloat &inputVector){
         classLikelihoods = regressionData;
         
         //Make sure all the values are greater than zero, we do this by finding the min value and adding this onto all the values
-        float_t minValue = Util::getMin( classLikelihoods );
+        Float minValue = Util::getMin( classLikelihoods );
         for(UINT i=0; i<K; i++){
             classLikelihoods[i] += minValue;
         }
         
         //Normalize the likelihoods so they sum to 1
-        float_t sum = Util::sum(classLikelihoods);
+        Float sum = Util::sum(classLikelihoods);
         if( sum > 0 ){
             for(UINT i=0; i<K; i++){
                 classLikelihoods[i] /= sum;
@@ -196,7 +196,7 @@ bool MLP::predict_(VectorFloat &inputVector){
         }
         
         //Find the best value
-        float_t bestValue = classLikelihoods[0];
+        Float bestValue = classLikelihoods[0];
         UINT bestIndex = 0;
         for(UINT i=1; i<K; i++){
             if( classLikelihoods[i] > bestValue ){
@@ -416,20 +416,20 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     UINT bestIter = 0;
     UINT bestIndex = 0;
     UINT classLabel = 0;
-    float_t alpha = learningRate;
-    float_t beta = momentum;
-    float_t error = 0;
-    float_t lastError = 0;
-    float_t accuracy = 0;
-    float_t trainingSetAccuracy = 0;
-    float_t trainingSetTotalSquaredError = 0;
-    float_t bestError = grt_numeric_limits< float_t >::max();
-    float_t bestTSError = grt_numeric_limits< float_t >::max();
-    float_t bestRMSError = grt_numeric_limits< float_t >::max();
-    float_t bestAccuracy = 0;
-    float_t delta = 0;
-    float_t backPropError = 0;
-    float_t bestValue = 0;
+    Float alpha = learningRate;
+    Float beta = momentum;
+    Float error = 0;
+    Float lastError = 0;
+    Float accuracy = 0;
+    Float trainingSetAccuracy = 0;
+    Float trainingSetTotalSquaredError = 0;
+    Float bestError = grt_numeric_limits< float_t >::max();
+    Float bestTSError = grt_numeric_limits< float_t >::max();
+    Float bestRMSError = grt_numeric_limits< float_t >::max();
+    Float bestAccuracy = 0;
+    Float delta = 0;
+    Float backPropError = 0;
+    Float bestValue = 0;
     VectorFloat y;
     Vector< UINT > indexList(M);
     Vector< VectorFloat > tempTrainingErrorLog;
@@ -567,12 +567,12 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
                     }
 				}
                 
-                accuracy = (accuracy/float_t(numValidationSamples))*float_t(numValidationSamples);
-                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / float_t(numValidationSamples) );
+                accuracy = (accuracy/Float(numValidationSamples))*float_t(numValidationSamples);
+                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
                 
 			}else{//We are not using a validation set
-                accuracy = (accuracy/float_t(M))*float_t(M);
-                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / float_t(M) );
+                accuracy = (accuracy/Float(M))*float_t(M);
+                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
             }
             
             //Store the errors
@@ -634,7 +634,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     //Compute the rejection threshold
     if( useNullRejection ){
 
-        float_t averageValue = 0;
+        Float averageValue = 0;
         VectorFloat classificationPredictions, inputVector, targetVector;
         
         for(UINT i=0; i<numTestingExamples; i++){
@@ -673,12 +673,12 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             }
         }
         
-        averageValue /= float_t(classificationPredictions.size());
-        float_t stdDev = 0;
+        averageValue /= Float(classificationPredictions.size());
+        Float stdDev = 0;
         for(UINT i=0; i<classificationPredictions.size(); i++){
             stdDev += SQR(classificationPredictions[i]-averageValue);
         }
-        stdDev = sqrt( stdDev / float_t(classificationPredictions.size()-1) );
+        stdDev = sqrt( stdDev / Float(classificationPredictions.size()-1) );
         
         nullRejectionThreshold = averageValue-(stdDev*nullRejectionCoeff);
     }
@@ -696,20 +696,20 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     //Setup the training loop
     bool keepTraining = true;
     UINT epoch = 0;
-    float_t alpha = learningRate;
-    float_t beta = momentum;
+    Float alpha = learningRate;
+    Float beta = momentum;
     UINT bestIter = 0;
     MLP bestNetwork;
     totalSquaredTrainingError = 0;
     rootMeanSquaredTrainingError = 0;
     trainingError = 0;
-    float_t error = 0;
-    float_t lastError = 0;
-    float_t trainingSetTotalSquaredError = 0;
-    float_t bestError = grt_numeric_limits< float_t >::max();
-    float_t bestTSError = grt_numeric_limits< float_t >::max();
-    float_t bestRMSError = grt_numeric_limits< float_t >::max();
-    float_t delta = 0;
+    Float error = 0;
+    Float lastError = 0;
+    Float trainingSetTotalSquaredError = 0;
+    Float bestError = grt_numeric_limits< float_t >::max();
+    Float bestTSError = grt_numeric_limits< float_t >::max();
+    Float bestRMSError = grt_numeric_limits< float_t >::max();
+    Float delta = 0;
     Vector< UINT > indexList(M);
     Vector< VectorFloat > tempTrainingErrorLog;
     TrainingResult result;
@@ -744,7 +744,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
                 const VectorFloat &targetVector = trainingData[ indexList[i] ].getTargetVector();
                 
                 //Perform the back propagation
-                float_t backPropError = back_prop(trainingExample,targetVector,alpha,beta);
+                Float backPropError = back_prop(trainingExample,targetVector,alpha,beta);
                 
                 //debugLog << "i: " << i << " backPropError: " << backPropError << std::endl;
                 
@@ -782,10 +782,10 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
                     
                 }
             
-                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / float_t(numValidationSamples) );
+                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
                 
             }else{//We are not using a validation set
-                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / float_t(M) );
+                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
             }
             
             //Store the errors
@@ -848,11 +848,11 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     return true;
 }
     
-float_t MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targetVector,const float_t alpha,const float_t beta){
+Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targetVector,const float_t alpha,const float_t beta){
         
-    float_t update = 0;
-    float_t sum = 0;
-    float_t omBeta = 1.0 - beta;
+    Float update = 0;
+    Float sum = 0;
+    Float omBeta = 1.0 - beta;
         
     //Forward propagation
     feedforward(trainingExample,inputNeuronsOuput,hiddenNeuronsOutput,outputNeuronsOutput);
@@ -928,7 +928,7 @@ float_t MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &tar
     }
     
     //Compute the squared error between the output of the network and the target Vector
-    float_t error = 0;
+    Float error = 0;
     for(UINT i=0; i<numOutputNeurons; i++){
         error += SQR( targetVector[i] - outputNeuronsOutput[i] );
     }
@@ -1064,7 +1064,7 @@ bool MLP::checkForNAN() const{
     return false;
 }
 
-bool inline MLP::isNAN(const float_t v) const{
+bool inline MLP::isNAN(const Float v) const{
     if( v != v ) return true;
     return false;
 }
@@ -1519,19 +1519,19 @@ UINT MLP::getNumRandomTrainingIterations() const{
     return numRandomTrainingIterations;
 }
     
-float_t MLP::getTrainingRate() const{
+Float MLP::getTrainingRate() const{
     return learningRate;
 }
     
-float_t MLP::getMomentum() const{
+Float MLP::getMomentum() const{
     return momentum;
 }
     
-float_t MLP::getGamma() const{
+Float MLP::getGamma() const{
     return gamma;
 }
     
-float_t MLP::getTrainingError() const{
+Float MLP::getTrainingError() const{
     return trainingError;
 }
     
@@ -1563,15 +1563,15 @@ bool MLP::getNullRejectionEnabled() const{
     return useNullRejection;
 }
 
-float_t MLP::getNullRejectionCoeff() const{
+Float MLP::getNullRejectionCoeff() const{
     return nullRejectionCoeff;
 }
     
-float_t MLP::getNullRejectionThreshold() const{
+Float MLP::getNullRejectionThreshold() const{
     return nullRejectionThreshold;
 }
     
-float_t MLP::getMaximumLikelihood() const{
+Float MLP::getMaximumLikelihood() const{
     if( trained ) return maxLikelihood;
     return DEFAULT_NULL_LIKELIHOOD_VALUE;
 }
@@ -1683,11 +1683,11 @@ bool MLP::setOutputLayerActivationFunction(const UINT activationFunction){
     return true;
 }
     
-bool MLP::setTrainingRate(const float_t trainingRate){
+bool MLP::setTrainingRate(const Float trainingRate){
     return setLearningRate( trainingRate );
 }
 
-bool MLP::setMomentum(const float_t momentum){
+bool MLP::setMomentum(const Float momentum){
 	if( momentum >= 0 && momentum <= 1.0 ){
 		this->momentum = momentum;
 		return true;
@@ -1695,10 +1695,10 @@ bool MLP::setMomentum(const float_t momentum){
 	return false;
 }
 
-bool MLP::setGamma(const float_t gamma){
+bool MLP::setGamma(const Float gamma){
 	
     if( gamma < 0 ){
-        warningLog << "setGamma(const float_t gamma) - Gamma must be greater than zero!" << std::endl;
+        warningLog << "setGamma(const Float gamma) - Gamma must be greater than zero!" << std::endl;
     }
     
     this->gamma = gamma;
@@ -1723,7 +1723,7 @@ bool MLP::setNullRejection(const bool useNullRejection){
     return true;
 }
     
-bool MLP::setNullRejectionCoeff(const float_t nullRejectionCoeff){
+bool MLP::setNullRejectionCoeff(const Float nullRejectionCoeff){
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;
         return true;

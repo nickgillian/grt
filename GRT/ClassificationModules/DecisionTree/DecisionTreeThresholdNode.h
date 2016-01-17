@@ -115,7 +115,7 @@ public:
      
      @return returns the threshold
      */
-    float_t getThreshold() const;
+    Float getThreshold() const;
     
     /**
      This function sets the Decision Tree Threshold Node.
@@ -126,13 +126,13 @@ public:
      @param classProbabilities: the vector of class probabilities at this node
      @return returns true if the node was set, false otherwise
      */
-    bool set(const UINT nodeSize,const UINT featureIndex,const float_t threshold,const VectorFloat &classProbabilities);
+    bool set(const UINT nodeSize,const UINT featureIndex,const Float threshold,const VectorFloat &classProbabilities);
     
 protected:
     
-    virtual bool computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError );
+    virtual bool computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError );
     
-    virtual bool computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError );
+    virtual bool computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError );
     
     /**
      This saves the DecisionTreeNode custom parameters to a file. It will be called automatically by the Node base class
@@ -152,7 +152,7 @@ protected:
     virtual bool loadParametersFromFile( std::fstream &file );
     
     UINT featureIndex;
-    float_t threshold;
+    Float threshold;
     
     static RegisterNode< DecisionTreeThresholdNode > registerModule;
 };

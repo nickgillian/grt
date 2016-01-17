@@ -317,12 +317,12 @@ bool TimeSeriesClassificationDataStream::enableExternalRangeScaling(const bool u
     return false;
 }
 
-bool TimeSeriesClassificationDataStream::scale(const float_t minTarget,const float_t maxTarget){
+bool TimeSeriesClassificationDataStream::scale(const Float minTarget,const float_t maxTarget){
     Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool TimeSeriesClassificationDataStream::scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
+bool TimeSeriesClassificationDataStream::scale(const Vector<MinMax> &ranges,const Float minTarget,const float_t maxTarget){
     if( ranges.size() != numDimensions ) return false;
     
     //Scale the training data
@@ -353,7 +353,7 @@ TimeSeriesClassificationData TimeSeriesClassificationDataStream::getAllTrainingE
 	TimeSeriesClassificationData classData(numDimensions);
 	for(UINT x=0; x<timeSeriesPositionTracker.size(); x++){
 		if( timeSeriesPositionTracker[x].getClassLabel() == classLabel && timeSeriesPositionTracker[x].getEndIndex() > 0){
-			Matrix<float_t> timeSeries;
+			Matrix<Float> timeSeries;
 			for(UINT i=timeSeriesPositionTracker[x].getStartIndex(); i<timeSeriesPositionTracker[x].getEndIndex(); i++){
 				timeSeries.push_back( data[ i ].getSample() );
 			}

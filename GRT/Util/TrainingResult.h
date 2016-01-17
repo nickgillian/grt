@@ -91,7 +91,7 @@ public:
 
      @return returns the accuracy
      */
-    float_t getAccuracy() const{
+    Float getAccuracy() const{
         return accuracy;
     }
     
@@ -101,7 +101,7 @@ public:
 
      @return returns the totalSquaredTrainingError
      */
-    float_t getTotalSquaredTrainingError() const{
+    Float getTotalSquaredTrainingError() const{
         return totalSquaredTrainingError;
     }
     
@@ -111,7 +111,7 @@ public:
 
      @return returns the rootMeanSquaredTrainingError
      */
-    float_t getRootMeanSquaredTrainingError() const{
+    Float getRootMeanSquaredTrainingError() const{
         return rootMeanSquaredTrainingError;
     }
     
@@ -132,7 +132,7 @@ public:
      @param trainer: a pointer to the class used to generate the result
      @return returns true if the training result was set successfully
      */
-    bool setClassificationResult(unsigned int trainingIteration,float_t accuracy,MLBase *trainer){
+    bool setClassificationResult(unsigned int trainingIteration,Float accuracy,MLBase *trainer){
         this->trainingMode = CLASSIFICATION_MODE;
         this->trainingIteration = trainingIteration;
         this->accuracy = accuracy;
@@ -149,7 +149,7 @@ public:
      @param trainer: a pointer to the class used to generate the result
      @return returns true if the training result was set successfully
      */
-    bool setRegressionResult(unsigned int trainingIteration,float_t totalSquaredTrainingError,float_t rootMeanSquaredTrainingError,MLBase *trainer){
+    bool setRegressionResult(unsigned int trainingIteration,Float totalSquaredTrainingError,Float rootMeanSquaredTrainingError,MLBase *trainer){
         this->trainingMode = REGRESSION_MODE;
         this->trainingIteration = trainingIteration;
         this->totalSquaredTrainingError = totalSquaredTrainingError;
@@ -162,9 +162,9 @@ protected:
     
     unsigned int trainingMode;
     unsigned int trainingIteration;
-    float_t accuracy;
-    float_t totalSquaredTrainingError;
-    float_t rootMeanSquaredTrainingError;
+    Float accuracy;
+    Float totalSquaredTrainingError;
+    Float rootMeanSquaredTrainingError;
     MLBase *trainer;
     
 public:

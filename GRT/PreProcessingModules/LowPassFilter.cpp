@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the LowPassFilter module with the PreProcessing base class
 RegisterPreProcessingModule< LowPassFilter > LowPassFilter::registerModule("LowPassFilter");
     
-LowPassFilter::LowPassFilter(float_t filterFactor,float_t gain,UINT numDimensions,float_t cutoffFrequency,float_t delta){
+LowPassFilter::LowPassFilter(Float filterFactor,float_t gain,UINT numDimensions,float_t cutoffFrequency,float_t delta){
     
     classType = "LowPassFilter";
     preProcessingType = classType;
@@ -209,22 +209,22 @@ bool LowPassFilter::loadModelFromFile( std::fstream &file ){
     return init(filterFactor,gain,numInputDimensions);  
 }
     
-bool LowPassFilter::init(float_t filterFactor,float_t gain,UINT numDimensions){
+bool LowPassFilter::init(Float filterFactor,float_t gain,UINT numDimensions){
     
     initialized = false;
     
     if( numDimensions == 0 ){
-        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
+        errorLog << "init(Float filterFactor,float_t gain,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
     if( filterFactor <= 0 ){
-        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - FilterFactor must be greater than 0!" << std::endl;
+        errorLog << "init(Float filterFactor,float_t gain,UINT numDimensions) - FilterFactor must be greater than 0!" << std::endl;
         return false;
     }
     
     if( gain <= 0 ){
-        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - Gain must be greater than 0!" << std::endl;
+        errorLog << "init(Float filterFactor,float_t gain,UINT numDimensions) - Gain must be greater than 0!" << std::endl;
         return false;
     }
     
@@ -241,11 +241,11 @@ bool LowPassFilter::init(float_t filterFactor,float_t gain,UINT numDimensions){
     return true;
 }
 
-float_t LowPassFilter::filter(float_t x){
+Float LowPassFilter::filter(float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(float_t x) - The filter has not been initialized!" << std::endl;
+        errorLog << "filter(Float x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
@@ -276,29 +276,29 @@ VectorFloat LowPassFilter::filter(const VectorFloat &x){
     return processedData;
 }
     
-bool LowPassFilter::setGain(float_t gain){
+bool LowPassFilter::setGain(Float gain){
     if( gain > 0 ){
         this->gain = gain;
         reset();
         return true;
     }
-    errorLog << "setGain(float_t gain) - Gain value must be greater than 0!" << std::endl;
+    errorLog << "setGain(Float gain) - Gain value must be greater than 0!" << std::endl;
     return false;
 }
 
-bool LowPassFilter::setFilterFactor(float_t filterFactor){
+bool LowPassFilter::setFilterFactor(Float filterFactor){
     if( filterFactor > 0 ){
         this->filterFactor = filterFactor;
         reset();
         return true;
     }
-    errorLog << "setFilterFactor(float_t filterFactor) - FilterFactor value must be greater than 0!" << std::endl;
+    errorLog << "setFilterFactor(Float filterFactor) - FilterFactor value must be greater than 0!" << std::endl;
     return false;
 }
     
-bool LowPassFilter::setCutoffFrequency(float_t cutoffFrequency,float_t delta){
+bool LowPassFilter::setCutoffFrequency(Float cutoffFrequency,float_t delta){
     if( cutoffFrequency > 0 && delta > 0 ){
-        float_t RC = (1.0/TWO_PI) /cutoffFrequency;
+        Float RC = (1.0/TWO_PI) /cutoffFrequency;
         filterFactor = delta / (RC+delta);
         reset();
         return true;

@@ -163,8 +163,8 @@ public:
 
      @return returns the maximum likelihood
      */
-    float_t getMaximumLikelihood() const{
-        float_t maxLikelihood = 0;
+    Float getMaximumLikelihood() const{
+        Float maxLikelihood = 0;
         for(size_t i=0; i<classLikelihoods.size(); i++){
             if( classLikelihoods[i] > maxLikelihood ){
                 maxLikelihood = classLikelihoods[i];
@@ -178,8 +178,8 @@ public:
      
      @return returns the squared error between the regression estimate and the target data
      */
-    float_t getSquaredError() const{
-        float_t sum = 0;
+    Float getSquaredError() const{
+        Float sum = 0;
         if( regressionData.size() != targetData.size() ) return 0;
         for(size_t i=0; i<regressionData.size(); i++){
             sum += (regressionData[i]-targetData[i])*(regressionData[i]-targetData[i]);

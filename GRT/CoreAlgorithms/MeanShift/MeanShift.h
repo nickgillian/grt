@@ -52,19 +52,19 @@ public:
         
     }
     
-    bool search( const VectorFloat &meanStart, const Vector< VectorFloat > &points, const float_t searchRadius, const float_t sigma = 20.0 ){
+    bool search( const VectorFloat &meanStart, const Vector< VectorFloat > &points, const Float searchRadius, const Float sigma = 20.0 ){
         
         //clear the results from any previous search
         clear();
         
         const unsigned int numDimensions = (unsigned int)meanStart.size();
         const unsigned int numPoints = (unsigned int)points.size();
-        const float_t gamma = 1.0 / (2 * SQR(sigma) );
+        const Float gamma = 1.0 / (2 * SQR(sigma) );
         unsigned int iteration = 0;
         VectorFloat numer(2,0);
         VectorFloat denom(2,0);
         VectorFloat kernelDist(2,0);
-        float_t pointsWithinSearchRadius = 0;
+        Float pointsWithinSearchRadius = 0;
         
         mean = meanStart;
         VectorFloat lastMean = mean;
@@ -82,7 +82,7 @@ public:
             for(unsigned int i=0; i<numPoints; i++){
                 
                 //Compute the distance of the current point to the mean
-                float_t distToMean = euclideanDist( mean, points[i] );
+                Float distToMean = euclideanDist( mean, points[i] );
                 
                 //If the point is within the search radius then update numer and denom
                 if( distToMean < searchRadius ){
@@ -98,7 +98,7 @@ public:
             }
             
             //Update the mean
-            float_t change = 0;
+            Float change = 0;
             for(unsigned int j=0; j<numDimensions; j++){
                 
                 mean[j] = numer[j] / denom[j];
@@ -137,13 +137,13 @@ public:
         return mean;
     }
     
-    float_t gaussKernel( const float_t &x, const float_t &mu, const float_t gamma ){
+    Float gaussKernel( const Float &x, const float_t &mu, const float_t gamma ){
         return exp( gamma * grt_sqr(x-mu) );
     }
     
-    float_t gaussKernel( const VectorFloat &x, const VectorFloat &mu, const float_t gamma ){
+    Float gaussKernel( const VectorFloat &x, const VectorFloat &mu, const Float gamma ){
         
-        float_t y = 0;
+        Float y = 0;
         const UINT N = x.getSize();
         for(UINT i=0; i<N; i++){
             y += grt_sqr(x[i]-mu[i]);
@@ -151,9 +151,9 @@ public:
         return exp( gamma * y );
     }
     
-    float_t euclideanDist( const VectorFloat &x, const VectorFloat &y ){
+    Float euclideanDist( const VectorFloat &x, const VectorFloat &y ){
         
-        float_t z = 0;
+        Float z = 0;
         const UINT N = x.getSize();
         for(UINT i=0; i<N; i++){
             z += grt_sqr(x[i]-y[i]);

@@ -73,7 +73,7 @@ public:
         return true;
     }
     
-    float_t det;
+    Float det;
     VectorFloat mu;
     MatrixFloat sigma;
     MatrixFloat invSigma;
@@ -102,8 +102,8 @@ public:
         return gaussModels[i];
 	}
     
-    float_t computeMixtureLikelihood( const VectorFloat &x ){
-        float_t sum = 0;
+    Float computeMixtureLikelihood( const VectorFloat &x ){
+        Float sum = 0;
         for(UINT k=0; k<K; k++){
             sum += gauss(x,gaussModels[k].det,gaussModels[k].mu,gaussModels[k].invSigma);
         }
@@ -121,8 +121,8 @@ public:
         return false;
     }
     
-    bool recomputeNullRejectionThreshold(float_t gamma){
-        float_t newRejectionThreshold = 0;
+    bool recomputeNullRejectionThreshold(Float gamma){
+        Float newRejectionThreshold = 0;
         //TODO - Need a way of improving the null rejection threshold for the GMMs!!!!
         newRejectionThreshold = trainingMu - (trainingSigma*gamma);
         newRejectionThreshold = 0.02;
@@ -157,19 +157,19 @@ public:
     
     UINT getClassLabel() const { return classLabel; }
     
-    float_t getTrainingMu() const {
+    Float getTrainingMu() const {
         return trainingMu;
     }
     
-    float_t getTrainingSigma() const {
+    Float getTrainingSigma() const {
         return trainingSigma;
     }
     
-    float_t getNullRejectionThreshold() const {
+    Float getNullRejectionThreshold() const {
         return nullRejectionThreshold;
     }
     
-    float_t getNormalizationFactor() const {
+    Float getNormalizationFactor() const {
         return normFactor;
     }
     
@@ -178,27 +178,27 @@ public:
         return true;
     }
     
-    bool setNormalizationFactor(const float_t normFactor){
+    bool setNormalizationFactor(const Float normFactor){
         this->normFactor = normFactor;
         return true;
     }
     
-    bool setTrainingMuAndSigma(const float_t trainingMu,const float_t trainingSigma){
+    bool setTrainingMuAndSigma(const Float trainingMu,const Float trainingSigma){
         this->trainingMu = trainingMu;
         this->trainingSigma = trainingSigma;
         return true;
     }
     
-    bool setNullRejectionThreshold(const float_t nullRejectionThreshold){
+    bool setNullRejectionThreshold(const Float nullRejectionThreshold){
         this->nullRejectionThreshold = nullRejectionThreshold;
         return true;
     }
     
 private:    
-    float_t gauss(const VectorFloat &x,float_t det,const VectorFloat &mu,const MatrixFloat &invSigma){
+    Float gauss(const VectorFloat &x,Float det,const VectorFloat &mu,const MatrixFloat &invSigma){
         
-        float_t y = 0;
-        float_t sum = 0;
+        Float y = 0;
+        Float sum = 0;
         const UINT N = x.getSize();
         VectorFloat temp(N,0);
         
@@ -218,11 +218,11 @@ private:
     
     UINT classLabel;
     UINT K;
-    float_t nullRejectionThreshold;
-    float_t gamma;                           //The number of standard deviations to use for the threshold
-	float_t trainingMu;                      //The average confidence value in the training data
-	float_t trainingSigma;                   //The simga confidence value in the training data
-    float_t normFactor;
+    Float nullRejectionThreshold;
+    Float gamma;                           //The number of standard deviations to use for the threshold
+	Float trainingMu;                      //The average confidence value in the training data
+	Float trainingSigma;                   //The simga confidence value in the training data
+    Float normFactor;
     Vector< GuassModel > gaussModels;
     
 };

@@ -42,7 +42,7 @@ Cholesky::Cholesky(MatrixFloat &a) : N(a.getNumRows()), el(a) {
     
 	int i,j,k; //k has to an int (rather than a UINT)
  	VectorFloat tmp;
-	float_t sum = 0;
+	Float sum = 0;
 	if( el.getNumCols() != N ){
         errorLog << "The input matrix is not square!" << std::endl;
 		return;
@@ -71,10 +71,10 @@ Cholesky::Cholesky(MatrixFloat &a) : N(a.getNumRows()), el(a) {
 bool Cholesky::solve(VectorFloat &b,VectorFloat &x) {
 	int i,k;
 	const int n = int(N);
-	float_t sum;
+	Float sum;
 	
 	if (b.size() != N || x.size() != N){
-		errorLog << ":solve(vector<float_t> &b, vector<float_t> &x) - The input vectors are not the same size!" << std::endl;
+		errorLog << ":solve(vector<Float> &b, vector<float_t> &x) - The input vectors are not the same size!" << std::endl;
 		return false;
 	}
 	for(i=0; i<n; i++) {
@@ -91,7 +91,7 @@ bool Cholesky::solve(VectorFloat &b,VectorFloat &x) {
 bool Cholesky::elmult(VectorFloat &y,VectorFloat &b){
 	unsigned int i,j;
 	if (b.size() != N || y.size() != N){
-		errorLog << "elmult(vector<float_t> &y vector<float_t> &b) - The input vectors are not the same size!" << std::endl;
+		errorLog << "elmult(vector<Float> &y vector<float_t> &b) - The input vectors are not the same size!" << std::endl;
 		return false;
 	}
 	for (i=0;i<N;i++) {
@@ -103,10 +103,10 @@ bool Cholesky::elmult(VectorFloat &y,VectorFloat &b){
 
 bool Cholesky::elsolve(VectorFloat &b,VectorFloat &y){
 	UINT i,j;
-	float_t sum = 0;
+	Float sum = 0;
 	
 	if (b.size() != N || y.size() != N){
-		errorLog << "elsolve(vector<float_t> &b vector<float_t> &y) - The input vectors are not the same size!" << std::endl;
+		errorLog << "elsolve(vector<Float> &b vector<float_t> &y) - The input vectors are not the same size!" << std::endl;
 		return false;
 	}
 	for (i=0; i<N; i++) {
@@ -119,7 +119,7 @@ bool Cholesky::elsolve(VectorFloat &b,VectorFloat &y){
 bool Cholesky::inverse(MatrixFloat &ainv){
 	int i,j,k;
 	const int n = int(N);
-	float_t sum = 0;
+	Float sum = 0;
 	ainv.resize(N,N);
 	
 	for(i=0; i<n; i++) for(j=0; j<=i; j++){
@@ -135,8 +135,8 @@ bool Cholesky::inverse(MatrixFloat &ainv){
     return true;
 }
 
-float_t Cholesky::logdet(){
-	float_t sum = 0.;
+Float Cholesky::logdet(){
+	Float sum = 0.;
 	for(unsigned int i=0; i<N; i++) sum += log(el[i][i]);
 	return 2.*sum;
 }

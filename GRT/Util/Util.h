@@ -78,7 +78,7 @@ public:
      @param constrain: if true, then the value will be constrained to the minSource and maxSource
 	 @return the scaled value
      */
-    static float_t scale(const float_t &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain=false);
+    static Float scale(const Float &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain=false);
 
     /**
     Converts an int to a string.
@@ -190,7 +190,7 @@ public:
     @param s: the value you want to convert to a float
     @return the value as a float
     */
-    static float_t stringToFloat(const std::string &s);
+    static Float stringToFloat(const std::string &s);
     
     /**
      Converts a string to a boolean. Any string that matches true, True, TRUE, t, T, or 1 will return true, anything else will return false.
@@ -220,7 +220,7 @@ public:
      @param maxValue: the maximum value that should be limited
      @return the limited double input value
      */
-    static float_t limit(const float_t value,const float_t minValue,const float_t maxValue);
+    static Float limit(const Float value,const float_t minValue,const float_t maxValue);
 
     /**
     Computes the sum of the vector x.
@@ -228,7 +228,7 @@ public:
     @param x: the vector of values you want to sum
 	@return double: the sum of the input vector x
 	*/
-    static float_t sum(const VectorFloat &x);
+    static Float sum(const VectorFloat &x);
 
     /**
     Computes the dot product between the two input vectors. The two input vectors must have the same size.
@@ -237,7 +237,7 @@ public:
     @param a: the second vector for the dot product
 	@return double: the dot product between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
-    static float_t dotProduct(const VectorFloat &a,const VectorFloat &b);
+    static Float dotProduct(const VectorFloat &a,const VectorFloat &b);
 
     /**
     Computes the euclidean distance between the two input vectors. The two input vectors must have the same size.
@@ -246,7 +246,7 @@ public:
     @param a: the second vector for the euclidean distance
 	@return the euclidean distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
-    static float_t euclideanDistance(const VectorFloat &a,const VectorFloat &b);
+    static Float euclideanDistance(const VectorFloat &a,const VectorFloat &b);
 
     /**
     Computes the manhattan distance between the two input vectors. The two input vectors must have the same size.
@@ -256,7 +256,7 @@ public:
     @param a: the second vector for the manhattan distance
 	@return the manhattan distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
-    static float_t manhattanDistance(const VectorFloat &a,const VectorFloat &b);
+    static Float manhattanDistance(const VectorFloat &a,const VectorFloat &b);
 
     /**
     Computes the cosine distance between the two input vectors. The two input vectors must have the same size.
@@ -267,7 +267,7 @@ public:
     @param a: the second vector for the cosine distance
 	@return the cosine distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
-    static float_t cosineDistance(const VectorFloat &a,const VectorFloat &b);
+    static Float cosineDistance(const VectorFloat &a,const VectorFloat &b);
     
     /**
      Scales the vector from a source range to the new target range
@@ -280,7 +280,7 @@ public:
      @param constrain: if true, then the value will be constrained to the minSource and maxSource
      @return the scaled input vector
      */
-	static VectorFloat scale(const VectorFloat &x,const float_t minSource,const float_t maxSource,const float_t minTarget=0,const float_t maxTarget=1,const bool constrain=false);
+	static VectorFloat scale(const VectorFloat &x,const Float minSource,const Float maxSource,const float_t minTarget=0,const float_t maxTarget=1,const bool constrain=false);
     
     /**
     Normalizes the input vector x so the sum is 1.
@@ -299,7 +299,7 @@ public:
      @param maxValue: the maximum value
      @return the limited input vector
      */
-	static VectorFloat limit(const VectorFloat &x,const float_t minValue,const float_t maxValue);
+	static VectorFloat limit(const VectorFloat &x,const Float minValue,const Float maxValue);
 	
 	/**
     Gets the minimum value in the input vector.
@@ -307,7 +307,7 @@ public:
     @param x: the vector of values you want to find the minimum value for
 	@return the minimum value in the input vector, this will be INF if the input vector size is 0
 	*/
-    static float_t getMin(const VectorFloat &x);
+    static Float getMin(const VectorFloat &x);
     
     /**
      Gets the index of the minimum value in the input vector.
@@ -323,7 +323,7 @@ public:
     @param x: the vector of values you want to find the maximum value for
 	@return the maximum value in the input vector, this will be INF if the input vector size is 0
 	*/
-    static float_t getMax(const VectorFloat &x);
+    static Float getMax(const VectorFloat &x);
     
     /**
      Gets the index of the maximum value in the input vector.
@@ -365,7 +365,7 @@ public:
      @param theta: the return theta value
      @return void
      */
-    static void cartToPolar(const float_t x,const float_t y,float_t &r, float_t &theta);
+    static void cartToPolar(const Float x,const Float y,float_t &r, float_t &theta);
     
     /**
      Converts the polar values {r theta} into the cartesian values {x y}.
@@ -376,7 +376,7 @@ public:
      @param y: the return y value
      @return void
      */
-    static void polarToCart(const float_t r,const float_t theta,float_t &x, float_t &y);
+    static void polarToCart(const Float r,const Float theta,float_t &x, float_t &y);
 
     /**
      @brief Parses a directory and returns a list of filenames in that directory that match the file type.

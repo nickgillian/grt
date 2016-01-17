@@ -58,7 +58,7 @@ MinDistModel& MinDistModel:: operator=(const MinDistModel &rhs){
 	return *this;
 }
 	
-bool MinDistModel::train(UINT classLabel,MatrixFloat &trainingData,UINT numClusters,float_t minChange,UINT maxNumEpochs){
+bool MinDistModel::train(UINT classLabel,MatrixFloat &trainingData,UINT numClusters,Float minChange,UINT maxNumEpochs){
 	
 	if( trainingData.getNumRows() < numClusters ){
         return false;
@@ -101,23 +101,23 @@ bool MinDistModel::train(UINT classLabel,MatrixFloat &trainingData,UINT numClust
 	}
     
 	//Calculate the mean prediction value
-	trainingMu /= float_t(M);
+	trainingMu /= Float(M);
     
 	//Calculate the standard deviation
 	for(UINT i=0; i<M; i++) {
 		trainingSigma += SQR( predictions[i]-trainingMu );
     }
-	trainingSigma = sqrt( trainingSigma / (float_t(M)-1.0) );
+	trainingSigma = sqrt( trainingSigma / (Float(M)-1.0) );
     
 	rejectionThreshold = trainingMu + ( trainingSigma * gamma );
 	return true;
 	
 }
 
-float_t MinDistModel::predict(const VectorFloat &inputVector){
+Float MinDistModel::predict(const VectorFloat &inputVector){
 	
-	float_t minDist = grt_numeric_limits< float_t >::max();
-	float_t dist = 0;
+	Float minDist = grt_numeric_limits< float_t >::max();
+	Float dist = 0;
 	
 	for(UINT k=0; k<numClusters; k++){
 		dist = 0;
@@ -150,19 +150,19 @@ UINT MinDistModel::getNumClusters() const{
 	return numClusters;
 }
     
-float_t MinDistModel::getRejectionThreshold() const{
+Float MinDistModel::getRejectionThreshold() const{
     return rejectionThreshold;
 }
 
-float_t MinDistModel::getGamma() const{
+Float MinDistModel::getGamma() const{
     return gamma;
 }
     
-float_t MinDistModel::getTrainingMu() const{
+Float MinDistModel::getTrainingMu() const{
     return trainingMu;
 }
     
-float_t MinDistModel::getTrainingSigma() const{
+Float MinDistModel::getTrainingSigma() const{
     return trainingSigma;
 }
 
@@ -182,22 +182,22 @@ bool MinDistModel::setClusters(MatrixFloat &clusters){
     return true;
 }
 
-bool MinDistModel::setGamma(float_t gamma){
+bool MinDistModel::setGamma(Float gamma){
     this->gamma = gamma;
     return true;
 }
 
-bool MinDistModel::setRejectionThreshold(float_t rejectionThreshold){
+bool MinDistModel::setRejectionThreshold(Float rejectionThreshold){
     this->rejectionThreshold = rejectionThreshold;
     return true;
 }
 
-bool MinDistModel::setTrainingSigma(float_t trainingSigma){
+bool MinDistModel::setTrainingSigma(Float trainingSigma){
     this->trainingSigma = trainingSigma;
     return true;
 }
 
-bool MinDistModel::setTrainingMu(float_t trainingMu){
+bool MinDistModel::setTrainingMu(Float trainingMu){
     this->trainingMu = trainingMu;
     return true;
 }

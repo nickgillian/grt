@@ -83,7 +83,7 @@ public:
      @param weights: a reference to the vector used for prediction
      @return returns the estimated class label, which will be positive or negative
      */
-    virtual float_t predict(const VectorFloat &x);
+    virtual Float predict(const VectorFloat &x);
     
     /**
      This function saves the current model to a file.
@@ -124,13 +124,13 @@ public:
     /**
      @return returns the decision spilt threshold
      */
-    float_t getDecisionValue() const;
+    Float getDecisionValue() const;
 
 protected:
     UINT decisionFeatureIndex;  ///< The dimension that the data will be spilt on
     UINT direction;             ///< Indicates if the decision spilt threshold is greater than (1), or less than (0)
     UINT numRandomSplits;       ///< The number of random splits used to search for the best decision spilt
-    float_t decisionValue;       ///< The decision spilt threshold
+    Float decisionValue;       ///< The decision spilt threshold
     
     static RegisterWeakClassifierModule< DecisionStump > registerModule; ///< This is used to register the DecisionStump with the WeakClassifier base class
 };

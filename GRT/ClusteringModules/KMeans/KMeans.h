@@ -44,7 +44,7 @@ public:
      /**
        Default Constructor.
      */
-    KMeans(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const float_t minChange=1.0e-5,const bool computeTheta=true);
+    KMeans(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const Float minChange=1.0e-5,const bool computeTheta=true);
 
     /**
      Defines how the data from the rhs KMeans should be copied to this KMeans
@@ -149,10 +149,10 @@ public:
      */
     virtual bool loadModelFromFile( std::fstream &file );
     
-    //bool predict(VectorFloat inputVector,UINT &predictedClusterLabel,float_t &maxLikelihood,VectorFloat &clusterLikelihoods);
+    //bool predict(VectorFloat inputVector,UINT &predictedClusterLabel,Float &maxLikelihood,VectorFloat &clusterLikelihoods);
 
     //Getters
-    float_t getTheta(){ return finalTheta; }
+    Float getTheta(){ return finalTheta; }
     bool getModelTrained(){ return trained; }
 
     const VectorFloat& getTrainingThetaLog() const { return thetaTracker; }
@@ -183,13 +183,13 @@ public:
 protected:
     UINT estep(const MatrixFloat &data);
     void mstep(const MatrixFloat &data);
-    float_t calculateTheta(const MatrixFloat &data);
-    inline float_t SQR(const float_t a) {return a*a;};
+    Float calculateTheta(const MatrixFloat &data);
+    inline Float SQR(const Float a) {return a*a;};
 
     bool computeTheta;
     UINT numTrainingSamples;            ///<Number of training examples
     UINT nchg;                          ///<Number of values changes
-    float_t finalTheta;
+    Float finalTheta;
     MatrixFloat clusters;
     Vector< UINT > assign, count;
     VectorFloat thetaTracker;

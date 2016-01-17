@@ -270,7 +270,7 @@ bool SavitzkyGolayFilter::init(UINT numLeftHandPoints,UINT numRightHandPoints,UI
     initialized = false;
     
     if( numDimensions == 0 ){
-        errorLog << "init(float_t filterFactor,float_t gain,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
+        errorLog << "init(Float filterFactor,float_t gain,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
@@ -298,11 +298,11 @@ bool SavitzkyGolayFilter::init(UINT numLeftHandPoints,UINT numRightHandPoints,UI
     return true;
 }
 
-float_t SavitzkyGolayFilter::filter(const float_t x){
+Float SavitzkyGolayFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(float_t x) - The filter has not been initialized!" << std::endl;
+        errorLog << "filter(Float x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
@@ -345,7 +345,7 @@ bool SavitzkyGolayFilter::calCoeff(){
     int ld = (int)derivativeOrder;
     int m = (int)smoothingPolynomialOrder;
     int i,j,k,imj,ipj,kk,mm,pos;
-    float_t fac,sum;
+    Float fac,sum;
     VectorFloat indx(m+1);
     MatrixDouble a(m+1,m+1);
     VectorFloat b(m+1);
@@ -354,8 +354,8 @@ bool SavitzkyGolayFilter::calCoeff(){
     for (ipj=0; ipj<=(m << 1); ipj++) {
         sum=(ipj ? 0.0 : 1.0);
         
-        for (k=1; k<=nr; k++) sum += pow(float_t(k),float_t(ipj));
-        for (k=1; k<=nl; k++) sum += pow(float_t(-k),float_t(ipj));
+        for (k=1; k<=nr; k++) sum += pow(Float(k),float_t(ipj));
+        for (k=1; k<=nl; k++) sum += pow(Float(-k),float_t(ipj));
         
         mm = min_(ipj,2*m-ipj);
         

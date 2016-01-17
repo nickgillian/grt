@@ -44,13 +44,13 @@ public:
      Otherwise the fiterFactor will control the low pass filter, with a smaller filterFactor (i.e. 0.1) resulting in a more aggresive smoothing
      of the input signal.  The filterFactor should be in the range [0.0 1.0].
 	 
-     @param float_t filterFactor: controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal. Default value filterFactor = 0.1
-     @param float_t gain: multiples the filtered values by a constant ampltidue. Default value = 1.0
+     @param Float filterFactor: controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal. Default value filterFactor = 0.1
+     @param Float gain: multiples the filtered values by a constant ampltidue. Default value = 1.0
      @param UINT numDimensions: the dimensionality of the input data to filter.  Default numDimensions = 1
-     @param float_t cutoffFrequency: sets the cutoffFrequency of the filter (in Hz). If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.  Default value cutoffFrequency = -1.0
-     @param float_t delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor.  Default value delta = -1.0
+     @param Float cutoffFrequency: sets the cutoffFrequency of the filter (in Hz). If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.  Default value cutoffFrequency = -1.0
+     @param Float delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor.  Default value delta = -1.0
      */
-    LowPassFilter(float_t filterFactor = 0.1,float_t gain = 1,UINT numDimensions = 1,float_t cutoffFrequency = -1,float_t delta = -1);
+    LowPassFilter(Float filterFactor = 0.1,Float gain = 1,UINT numDimensions = 1,float_t cutoffFrequency = -1,float_t delta = -1);
     
     /**
      Copy Constructor, copies the LowPassFilter from the rhs instance to this instance
@@ -146,7 +146,7 @@ public:
      @param numDimensions: the dimensionality of the input data to filter
 	 @return true if the filter was initiliazed, false otherwise
      */
-    bool init(float_t filterFactor,float_t gain,UINT numDimensions);
+    bool init(Float filterFactor,Float gain,UINT numDimensions);
     
     /**
      Filters the input, this should only be called if the dimensionality of the filter was set to 1.
@@ -154,7 +154,7 @@ public:
      @param x: the value to filter, this should only be called if the dimensionality of the filter was set to 1
 	 @return the filtered value.  Zero will be returned if the value was not filtered
      */
-    float_t filter(const float_t x);
+    Float filter(const Float x);
     
     /**
      Filters the input, the dimensionality of the input vector should match that of the filter.
@@ -168,44 +168,44 @@ public:
      Sets the gain of the low pass filter.
      This will also reset the filter.
      
-     @param float_t gain: the new gain value, this multiples the filtered values by a constant ampltidue
+     @param Float gain: the new gain value, this multiples the filtered values by a constant ampltidue
 	 @return true if the gain value was set, false otherwise
      */
-    bool setGain(float_t gain);
+    bool setGain(Float gain);
     
     /**
      Sets the filter factor, this controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal. 
      This should be a value in the range [0.0 1.0].
      This will also reset the filter.
      
-     @param float_t filterFactor: the new filterFactor value
+     @param Float filterFactor: the new filterFactor value
 	 @return true if the filterFactor value was set, false otherwise
      */
-    bool setFilterFactor(float_t filterFactor);
+    bool setFilterFactor(Float filterFactor);
     
     /**
      Sets the cutoff frequency of the filter, this updates the filterFactor.  The cutoffFrequency should in Hz.
      This will also reset the filter.
      
-     @param float_t cutoffFrequency: the cutoff frequency of the filter in Hz
-     @param float_t delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor
+     @param Float cutoffFrequency: the cutoff frequency of the filter in Hz
+     @param Float delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor
 	 @return true if the filterFactor value was set, false otherwise
      */
-    bool setCutoffFrequency(float_t cutoffFrequency,float_t delta);
+    bool setCutoffFrequency(Float cutoffFrequency,Float delta);
     
     /**
      Gets the current filter factor if the filter has been initialized.
      
 	 @return the current filter factor if the filter has been initialized, zero otherwise
      */
-    float_t getFilterFactor(){ if( initialized ){ return filterFactor; } return 0; }
+    Float getFilterFactor(){ if( initialized ){ return filterFactor; } return 0; }
     
     /**
      Gets the current gain value if the filter has been initialized.
      
 	 @return the currentgain value if the filter has been initialized, zero otherwise
      */
-    float_t getGain(){ if( initialized ){ return gain; } return 0; }
+    Float getGain(){ if( initialized ){ return gain; } return 0; }
     
     /**
      Returns the last value(s) that were filtered.
@@ -215,8 +215,8 @@ public:
     VectorFloat getFilteredValues(){ if( initialized ){ return yy; } return VectorFloat(); }
 
 protected:
-    float_t filterFactor;                ///< The filter factor (alpha) of the filter
-    float_t gain;                        ///< The gain factor of the filter
+    Float filterFactor;                ///< The filter factor (alpha) of the filter
+    Float gain;                        ///< The gain factor of the filter
 	VectorFloat yy;                ///< The previous output value(s)
     
     static RegisterPreProcessingModule< LowPassFilter > registerModule;

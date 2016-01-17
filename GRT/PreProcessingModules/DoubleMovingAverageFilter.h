@@ -3,7 +3,7 @@
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
  
- @brief The class implements a float_t moving average filter.
+ @brief The class implements a Float moving average filter.
  
  @example PreprocessingModulesExamples/DoubleMovingAverageFilterExample/DoubleMovingAverageFilterExample.cpp
  */
@@ -39,7 +39,7 @@ GRT_BEGIN_NAMESPACE
 class DoubleMovingAverageFilter : public PreProcessing {
 public:
     /**
-     Constructor, sets the size of the float_t moving average filter and the dimensionality of the data it will filter.
+     Constructor, sets the size of the Float moving average filter and the dimensionality of the data it will filter.
 	 
      @param filterSize: the size of the moving average filter, should be a value greater than zero. Default filterSize = 5
      @param numDimensions: the dimensionality of the data to filter.  Default numDimensions = 1
@@ -135,7 +135,7 @@ public:
      Initializes the filter, setting the filter size and dimensionality of the data it will filter.
      Sets all the filter values to zero.
      
-     @param filterSize: the size of the float_t moving average filter, should be a value greater than zero
+     @param filterSize: the size of the Float moving average filter, should be a value greater than zero
      @param numDimensions: the dimensionality of the data to filter
 	 @return true if the filter was initiliazed, false otherwise
      */
@@ -147,7 +147,7 @@ public:
      @param x: the value to filter, this should only be called if the dimensionality of the filter was set to 1
 	 @return the filtered value.  Zero will be returned if the value was not filtered
      */
-    float_t filter(const float_t x);
+    Float filter(const Float x);
     
     /**
      Filters the input, the dimensionality of the input vector should match that of the filter.

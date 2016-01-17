@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the ZeroCrossingCounter module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< ZeroCrossingCounter > ZeroCrossingCounter::registerModule("ZeroCrossingCounter");
     
-ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode){
+ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode){
     
     classType = "ZeroCrossingCounter";
     featureExtractionType = classType;
@@ -205,28 +205,28 @@ bool ZeroCrossingCounter::loadModelFromFile( std::fstream &file ){
     return init(searchWindowSize,deadZoneThreshold,numInputDimensions,featureMode);
 }
     
-bool ZeroCrossingCounter::init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode){
+bool ZeroCrossingCounter::init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode){
     
     initialized = false;
     featureDataReady = false;
     
     if( searchWindowSize == 0 ){
-        errorLog << "init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode) - The searchWindowSize must be greater than zero!" << std::endl;
+        errorLog << "init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode) - The searchWindowSize must be greater than zero!" << std::endl;
         return false;
     }
     
     if( deadZoneThreshold < 0 ){
-        errorLog << "init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode) - The deadZoneThreshold must be greater than zero!" << std::endl;
+        errorLog << "init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode) - The deadZoneThreshold must be greater than zero!" << std::endl;
         return false;
     }
     
     if( numDimensions == 0 ){
-        errorLog << "init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode) - The numDimensions must be greater than zero!" << std::endl;
+        errorLog << "init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode) - The numDimensions must be greater than zero!" << std::endl;
         return false;
     }
     
     if( featureMode != INDEPENDANT_FEATURE_MODE && featureMode != COMBINED_FEATURE_MODE ){
-        errorLog << "init(UINT searchWindowSize,float_t deadZoneThreshold,UINT numDimensions,UINT featureMode) - Unkown feature mode!" << std::endl;
+        errorLog << "init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode) - Unkown feature mode!" << std::endl;
         return false;
     }
     
@@ -248,7 +248,7 @@ bool ZeroCrossingCounter::init(UINT searchWindowSize,float_t deadZoneThreshold,U
 }
 
 
-VectorFloat ZeroCrossingCounter::update(float_t x){
+VectorFloat ZeroCrossingCounter::update(Float x){
 	return update(VectorFloat(1,x));
 }
     
@@ -286,10 +286,10 @@ VectorFloat ZeroCrossingCounter::update(const VectorFloat &x){
                 featureVector[ NUM_ZERO_CROSSINGS_COUNTED + colIndex ]++;
                 
                 //Update the magnitude, search the last 5 values around the zero crossing to make sure we get the maxima of the peak
-                float_t maxValue = 0;
+                Float maxValue = 0;
                 UINT searchSize = i > 5 ? 5 : i;
                 for(UINT n=0; n<searchSize; n++){
-                    float_t value = fabs( dataBuffer[ i-n ][j] );
+                    Float value = fabs( dataBuffer[ i-n ][j] );
                     if( value > maxValue ) maxValue = value;
                 }
                 featureVector[ ZERO_CROSSING_MAGNITUDE + colIndex ] += maxValue;
@@ -323,13 +323,13 @@ bool ZeroCrossingCounter::setFeatureMode(UINT featureMode){
     return false;
 }
 
-bool ZeroCrossingCounter::setDeadZoneThreshold(float_t deadZoneThreshold){
+bool ZeroCrossingCounter::setDeadZoneThreshold(Float deadZoneThreshold){
     if( deadZoneThreshold > 0 ){
         this->deadZoneThreshold = deadZoneThreshold;
         if( initialized ) return reset();
         return true;
     }
-    errorLog << "setDeadZoneThreshold(float_t deadZoneThreshold) - The deadZoneThreshold must be larger than zero!" << std::endl;
+    errorLog << "setDeadZoneThreshold(Float deadZoneThreshold) - The deadZoneThreshold must be larger than zero!" << std::endl;
     return false;
 }
     

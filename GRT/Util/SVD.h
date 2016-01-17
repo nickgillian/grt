@@ -40,23 +40,23 @@ class SVD {
 	VectorFloat getW(){ return w; }
 	
 protected:
-	bool solveVector(VectorFloat &b, VectorFloat &x, float_t thresh = -1.);
-	bool solve(MatrixFloat &b, MatrixFloat &x, float_t thresh = -1.);
+	bool solveVector(VectorFloat &b, VectorFloat &x, Float thresh = -1.);
+	bool solve(MatrixFloat &b, MatrixFloat &x, Float thresh = -1.);
 
-	UINT rank(float_t thresh = -1.);
-	UINT nullity(float_t thresh = -1.);
-	MatrixFloat range(float_t thresh = -1.);
-	MatrixFloat nullspace(float_t thresh = -1.);
+	UINT rank(Float thresh = -1.);
+	UINT nullity(Float thresh = -1.);
+	MatrixFloat range(Float thresh = -1.);
+	MatrixFloat nullspace(Float thresh = -1.);
 
-	float_t inv_condition();
+	Float inv_condition();
 	bool decompose();
 	bool reorder();
-	float_t pythag(const float_t a, const float_t b);
+	Float pythag(const Float a, const float_t b);
 	
 	UINT m,n;
 	MatrixFloat u,v;
 	VectorFloat w;
-	float_t eps, tsh;
+	Float eps, tsh;
 };
 
 GRT_END_NAMESPACE

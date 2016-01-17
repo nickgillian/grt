@@ -28,7 +28,7 @@ RegisterNode< RegressionTreeNode > RegressionTreeNode::registerModule("Regressio
 //Register the RegressionTree module with the Regressifier base class
 RegisterRegressifierModule< RegressionTree >  RegressionTree::registerModule("RegressionTree");
 
-RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const float_t minRMSErrorPerNode)
+RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode)
 {
     tree = NULL;
     this->numSplittingSteps = numSplittingSteps;
@@ -355,11 +355,11 @@ const RegressionTreeNode* RegressionTree::getTree() const{
     return dynamic_cast< RegressionTreeNode* >( tree );
 }
     
-float_t RegressionTree::getMinRMSErrorPerNode() const{
+Float RegressionTree::getMinRMSErrorPerNode() const{
     return minRMSErrorPerNode;
 }
 
-bool RegressionTree::setMinRMSErrorPerNode(const float_t minRMSErrorPerNode){
+bool RegressionTree::setMinRMSErrorPerNode(const Float minRMSErrorPerNode){
     this->minRMSErrorPerNode = minRMSErrorPerNode;
     return true;
 }
@@ -411,8 +411,8 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
     
     //Compute the best spilt point
     UINT featureIndex = 0;
-    float_t threshold = 0;
-    float_t minError = 0;
+    Float threshold = 0;
+    Float minError = 0;
     if( !computeBestSpilt( trainingData, features, featureIndex, threshold, minError ) ){
         delete node;
         return NULL;
@@ -463,7 +463,7 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
     return node;
 }
     
-bool RegressionTree::computeBestSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError ){
+bool RegressionTree::computeBestSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
     
     switch( trainingMode ){
         case BEST_ITERATIVE_SPILT:
@@ -481,21 +481,21 @@ bool RegressionTree::computeBestSpilt( const RegressionData &trainingData, const
     return false;
 }
     
-bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError ){
+bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits< float_t >::max();
+    minError = grt_numeric_limits< Float >::max();
     UINT bestFeatureIndex = 0;
     UINT groupID = 0;
-    float_t bestThreshold = 0;
-    float_t error = 0;
-    float_t minRange = 0;
-    float_t maxRange = 0;
-    float_t step = 0;
+    Float bestThreshold = 0;
+    Float error = 0;
+    Float minRange = 0;
+    Float maxRange = 0;
+    Float step = 0;
     Vector< UINT > groupIndex(M);
     VectorFloat groupCounter(2,0);
     VectorFloat groupMean(2,0);
@@ -506,7 +506,7 @@ bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &t
     for(UINT n=0; n<N; n++){
         minRange = ranges[n].minValue;
         maxRange = ranges[n].maxValue;
-        step = (maxRange-minRange)/float_t(numSplittingSteps);
+        step = (maxRange-minRange)/Float(numSplittingSteps);
         threshold = minRange;
         featureIndex = features[n];
         while( threshold <= maxRange ){
@@ -550,7 +550,7 @@ bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &t
 }
     
     /*
-bool RegressionTree::computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &threshold, float_t &minError ){
+bool RegressionTree::computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &threshold, float_t &minError ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();
@@ -558,14 +558,14 @@ bool RegressionTree::computeBestSpiltBestRandomSpilt( const RegressionData &trai
     
     if( N == 0 ) return false;
     
-    minError = numeric_limits<float_t>::max();
+    minError = numeric_limits<Float>::max();
     UINT bestFeatureIndex = 0;
-    float_t bestThreshold = 0;
-    float_t error = 0;
-    float_t giniIndexL = 0;
-    float_t giniIndexR = 0;
-    float_t weightL = 0;
-    float_t weightR = 0;
+    Float bestThreshold = 0;
+    Float error = 0;
+    Float giniIndexL = 0;
+    Float giniIndexR = 0;
+    Float weightL = 0;
+    Float weightR = 0;
     Vector< UINT > groupIndex(M);
     VectorFloat groupCounter(2,0);
     Vector< MinMax > ranges = trainingData.getRanges();

@@ -271,21 +271,21 @@ public:
      
      @return returns the training rate
      */
-	float_t getTrainingRate() const;
+	Float getTrainingRate() const;
     
     /**
      Gets the momentum rate. This should be a value between [0 1]
      
      @return returns the momentum
      */
-	float_t getMomentum() const;
+	Float getMomentum() const;
     
     /**
      Gets the gamma value. This controls the gamma parameter for the neurons.
      
      @return returns the gamma value for the neurons
      */
-	float_t getGamma() const;
+	Float getGamma() const;
     
     /**
      Gets training error from the last round of training. If the MLP is in classification mode, the training error will be the classification
@@ -293,7 +293,7 @@ public:
      
      @return returns the training error from the last round of training
      */
-	float_t getTrainingError() const;
+	Float getTrainingError() const;
 
     /**
      Returns true if the MLP is in classification mode.
@@ -352,7 +352,7 @@ public:
      
      @return returns the current null rejection coefficient
      */
-    float_t getNullRejectionCoeff() const;
+    Float getNullRejectionCoeff() const;
     
     /**
      Returns the current null rejection threshold value.
@@ -361,7 +361,7 @@ public:
      
      @return returns the current null rejection threshold
      */
-    float_t getNullRejectionThreshold() const;
+    Float getNullRejectionThreshold() const;
     
     /**
      Returns the current maximumLikelihood value.
@@ -371,7 +371,7 @@ public:
      
      @return returns the current maximumLikelihood value
      */
-    float_t getMaximumLikelihood() const;
+    Float getMaximumLikelihood() const;
     
     /**
      Gets a Vector of the class likelihoods from the last prediction, this will be an N-dimensional Vector, where N is the number of classes in the model.
@@ -429,7 +429,7 @@ public:
      @param trainingRate: the learningRate value used during the training phase, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
-    bool setTrainingRate(const float_t trainingRate);
+    bool setTrainingRate(const Float trainingRate);
     
     /**
      Sets the momentum parameter. This is used to update the weights at each step of the stochastic gradient descent.
@@ -438,7 +438,7 @@ public:
      @param momentum: the momentum value used during the training phase, must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
-	bool setMomentum(const float_t momentum);
+	bool setMomentum(const Float momentum);
     
     /**
      Sets the gamma parameter for the Neurons. Gamma must be greater than zero.
@@ -447,7 +447,7 @@ public:
      @param gamma: the gamma value for each Neuron, gamma must be greater than zero
      @return returns true if the value was updated successfully, false otherwise
      */
-	bool setGamma(const float_t gamma);
+	bool setGamma(const Float gamma);
 	
 	/**
      Sets number of times the MLP model should be trained to find the best model.  This value must be greater than zero.
@@ -478,7 +478,7 @@ public:
      @param nullRejectionCoeff: the new null rejection threshold
      @return returns true if the value was updated successfully, false otherwise
      */
-    bool setNullRejectionCoeff(const float_t nullRejectionCoeff);
+    bool setNullRejectionCoeff(const Float nullRejectionCoeff);
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -489,7 +489,7 @@ public:
     using MLBase::predict_;
     
 protected:
-    bool inline isNAN(const float_t v) const;
+    bool inline isNAN(const Float v) const;
     
     bool trainModel(RegressionData &trainingData);
     
@@ -508,7 +508,7 @@ protected:
      @param beta: the momentum
      @return returns the squared error for the current training example
      */
-    float_t back_prop(const VectorFloat &inputVector,const VectorFloat &targetVector,const float_t alpha,const float_t beta);
+    Float back_prop(const VectorFloat &inputVector,const VectorFloat &targetVector,const Float alpha,const float_t beta);
     
     /**
      Performs the feedforward step using the current model and the input training example.
@@ -536,9 +536,9 @@ protected:
     UINT outputLayerActivationFunction;
     UINT numRandomTrainingIterations;
     UINT trainingMode;
-	float_t momentum;
-	float_t gamma;
-    float_t trainingError;
+	Float momentum;
+	Float gamma;
+    Float trainingError;
     bool initialized;
     Random random;
     
@@ -551,9 +551,9 @@ protected:
     bool classificationModeActive;
     bool useNullRejection;
     UINT predictedClassLabel;
-    float_t nullRejectionThreshold;
-    float_t nullRejectionCoeff;
-    float_t maxLikelihood;
+    Float nullRejectionThreshold;
+    Float nullRejectionCoeff;
+    Float maxLikelihood;
     VectorFloat classLikelihoods;
     
     static RegisterRegressifierModule< MLP > registerModule;

@@ -163,9 +163,9 @@ public:
         
         unsigned int iterCounter = 0;
         unsigned int numIterNoChangeCounter = 0;
-        float_t currentMaxima = 0;
-        float_t lastMaxima = 0;
-        float_t delta = 0;
+        Float currentMaxima = 0;
+        Float lastMaxima = 0;
+        Float delta = 0;
         bool keepSearching = true;
         
         //Decrement the global best cost
@@ -206,14 +206,14 @@ public:
      @param observation: a reference to the observation data used for the search
      @return returns true if the search ran successfully, false otherwise
      */
-    virtual float_t searchIteration(OBSERVATION_TYPE &observation){
+    virtual Float searchIteration(OBSERVATION_TYPE &observation){
         
         if( !initialized ) return 0;
         
         unsigned int index = 0;
         unsigned int bestIndex = 0;
-        float_t currentBestMaxima = 0;
-        float_t epsilon = 0;
+        Float currentBestMaxima = 0;
+        Float epsilon = 0;
         typename Vector< PARTICLE_TYPE >::iterator pIter;
         
         //Compute the cost for each particle, tracking the best cost of all the particles in the swarm
@@ -262,10 +262,10 @@ public:
 
     bool initialized;   ///< A flag to indicate if the PSO algorithm has been initialized
     unsigned int K;     ///< The size of the particles state Vector
-    float_t minImprovement;
+    Float minImprovement;
     unsigned int maxIter;
     unsigned int maxNumIterNoChange;
-    float_t globalBestCost;  ///< The current global best cost over all the particles
+    Float globalBestCost;  ///< The current global best cost over all the particles
     VectorFloat finalX;  ///< The final estimate
     VectorFloat globalBestX;   ///< The state Vector of the particle with the best cost
     VectorFloat xMin;  ///< The minimum range of the state space

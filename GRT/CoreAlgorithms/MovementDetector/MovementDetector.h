@@ -37,7 +37,7 @@ GRT_BEGIN_NAMESPACE
 
 class MovementDetector : public MLBase{
 public:
-    MovementDetector( const UINT numDimensions = 1, const float_t upperThreshold = 1, const float_t lowerThreshold = 0.9, const float_t gamma = 0.95, const UINT searchTimeout = 0);
+    MovementDetector( const UINT numDimensions = 1, const Float upperThreshold = 1, const Float lowerThreshold = 0.9, const float_t gamma = 0.95, const UINT searchTimeout = 0);
     
     virtual ~MovementDetector();
     
@@ -77,13 +77,13 @@ public:
      */
     virtual bool loadModelFromFile( std::fstream &file );
     
-    float_t getUpperThreshold() const;
+    Float getUpperThreshold() const;
     
-    float_t getLowerThreshold() const;
+    Float getLowerThreshold() const;
     
-    float_t getMovementIndex() const;
+    Float getMovementIndex() const;
     
-    float_t getGamma() const;
+    Float getGamma() const;
     
     bool getMovementDetected() const;
     
@@ -93,11 +93,11 @@ public:
     
     UINT getSearchTimeout() const;
     
-    bool setUpperThreshold(const float_t upperThreshold);
+    bool setUpperThreshold(const Float upperThreshold);
     
-    bool setLowerThreshold(const float_t lowerThreshold);
+    bool setLowerThreshold(const Float lowerThreshold);
     
-    bool setGamma(const float_t gamma);
+    bool setGamma(const Float gamma);
     
     bool setSearchTimeout(const UINT searchTimeout);
     
@@ -109,10 +109,10 @@ protected:
 
     UINT state;
     UINT searchTimeout;
-    float_t upperThreshold;
-    float_t lowerThreshold;
-    float_t movementIndex;
-    float_t gamma;
+    Float upperThreshold;
+    Float lowerThreshold;
+    Float movementIndex;
+    Float gamma;
     bool firstSample;
     bool movementDetected;
     bool noMovementDetected;

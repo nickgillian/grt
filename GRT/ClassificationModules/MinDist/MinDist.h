@@ -49,7 +49,7 @@ public:
      @param nullRejectionCoeff: sets the null rejection coefficient, this is a multipler controlling the null rejection threshold for each class.  This will only be used if the useNullRejection parameter is set to true.  Default value is nullRejectionCoeff = 10.0
      @param numClusters: sets how many clusters each model will try to find during the training phase.  Default value = 10
      */
-	MinDist(bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=10.0,UINT numClusters=10);
+	MinDist(bool useScaling=false,bool useNullRejection=false,Float nullRejectionCoeff=10.0,UINT numClusters=10);
     
     /**
      Defines the copy constructor.
@@ -126,7 +126,7 @@ public:
     
     /**
      This recomputes the null rejection thresholds for each of the classes in the MinDist model.
-     This will be called automatically if the setGamma(float_t gamma) function is called.
+     This will be called automatically if the setGamma(Float gamma) function is called.
      The MinDist model needs to be trained first before this function can be called.
      
      @return returns true if the null rejection thresholds were updated successfully, false otherwise
@@ -154,7 +154,7 @@ public:
      
      @return returns true if the gamma parameter was updated successfully, false otherwise
     */
-	virtual bool setNullRejectionCoeff(float_t nullRejectionCoeff);
+	virtual bool setNullRejectionCoeff(Float nullRejectionCoeff);
     
     /**
      Sets the numClusters parameter.

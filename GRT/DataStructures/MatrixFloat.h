@@ -33,7 +33,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-class MatrixFloat : public Matrix< float_t >{
+class MatrixFloat : public Matrix< Float >{
 public:
     /**
      Default Constructor
@@ -58,9 +58,9 @@ public:
     /**
      Copy Constructor, copies the values from the rhs Matrix to this MatrixFloat instance
      
-     @param const Matrix< float_t > &rhs: the Matrix from which the values will be copied
+     @param const Matrix< Float > &rhs: the Matrix from which the values will be copied
      */
-    MatrixFloat(const Matrix< float_t > &rhs);
+    MatrixFloat(const Matrix< Float > &rhs);
     
     /**
      Destructor, cleans up any memory
@@ -76,12 +76,12 @@ public:
     MatrixFloat& operator=(const MatrixFloat &rhs);
     
     /**
-     Defines how the data from the rhs Matrix< float_t > should be copied to this MatrixFloat
+     Defines how the data from the rhs Matrix< Float > should be copied to this MatrixFloat
      
-     @param rhs: an instance of a Matrix< float_t >
+     @param rhs: an instance of a Matrix< Float >
      @return returns a reference to this instance of the MatrixFloat
      */
-    MatrixFloat& operator=(const Matrix< float_t > &rhs);
+    MatrixFloat& operator=(const Matrix< Float > &rhs);
     
     /**
      Defines how the data from the rhs Vector of VectorFloats should be copied to this MatrixFloat
@@ -182,14 +182,14 @@ public:
      
      @return returns true if the matrix was scaled, false otherwise
      */
-    bool scale(const float_t minTarget,const float_t maxTarget);
+    bool scale(const Float minTarget,const Float maxTarget);
     
     /**
      Scales the matrix to a new range given by the min and max targets using the ranges as the source ranges.
      
      @return returns true if the matrix was scaled, false otherwise
      */
-    bool scale(const Vector< MinMax > &ranges,const float_t minTarget,const float_t maxTarget);
+    bool scale(const Vector< MinMax > &ranges,const Float minTarget,const Float maxTarget);
     
     /**
      Normalizes each row in the matrix by subtracting the row mean and dividing by the row standard deviation.
@@ -198,14 +198,14 @@ public:
      @param alpha: a small value that will be added to the standard deviation
      @return returns true if the matrix was normalized, false otherwise
      */
-    bool znorm(const float_t alpha = 0.001);
+    bool znorm(const Float alpha = 0.001);
     
     /**
      Performs the multiplication of the data by the scalar value.
      
      @return returns a new MatrixFloat with the results from the multiplcation
      */
-    MatrixFloat multiple(const float_t value) const;
+    MatrixFloat multiple(const Float value) const;
     
     /**
      Performs the multiplcation of this matrix (a) by the vector b.
@@ -282,16 +282,16 @@ public:
     /**
      Gets the ranges min value throughout the entire matrix.
      
-     @return a float_t value containing the minimum matrix value
+     @return a Float value containing the minimum matrix value
      */
-    float_t getMinValue() const;
+    Float getMinValue() const;
     
     /**
      Gets the ranges max value throughout the entire matrix.
      
-     @return a float_t value containing the maximum matrix value
+     @return a Float value containing the maximum matrix value
      */
-    float_t getMaxValue() const;
+    Float getMaxValue() const;
     
     /**
      Gets the mean of each column in the matrix and returns this as a VectorFloat.
@@ -324,15 +324,15 @@ public:
     /**
      Gets the trace of this matrix.
      
-     @return the trace of this matrix as a float_t
+     @return the trace of this matrix as a Float
      */
-    float_t getTrace() const;
+    Float getTrace() const;
     
 protected:
     
-    float_t stringToFloat(const std::string &value){
+    Float stringToFloat(const std::string &value){
         std::stringstream s( value );
-        float_t d;
+        Float d;
         s >> d;
         return d;
     }

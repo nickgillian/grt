@@ -160,9 +160,9 @@ protected:
     bool computeTopNFreqFeatures;
     
     UINT N;
-    float_t maxFreqFeature;
-    float_t maxFreqSpectrumRatio;
-    float_t centroidFeature;
+    Float maxFreqFeature;
+    Float maxFreqSpectrumRatio;
+    Float centroidFeature;
     VectorFloat topNFreqFeatures;
     
     static RegisterFeatureExtractionModule< FFTFeatures > registerModule;

@@ -51,15 +51,15 @@ public:
         return *this;
     }
     
-    float_t& operator[](const unsigned int &i){
+    Float& operator[](const unsigned int &i){
         return x[i];
     }
 
-    const float_t& operator[](const unsigned int &i) const {
+    const Float& operator[](const unsigned int &i) const {
         return x[i];
     }
     
-    float_t w;
+    Float w;
     VectorFloat x;
 };
 

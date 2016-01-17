@@ -46,7 +46,7 @@ public:
      @param classLikelihoods: sets the class likelihoods corresponding to this instance. Default value = empty vector
      @param classDistances: sets the class label corresponding to this instance. Default value = empty vector
      */
-    ClassificationResult(UINT classLabel=0,UINT predictedClassLabel=0,UINT unprocessedPredictedClassLabel=0,float_t maximumLikelihood=0,VectorFloat classLikelihoods=VectorDouble(),VectorFloat classDistances = VectorFloat()){
+    ClassificationResult(UINT classLabel=0,UINT predictedClassLabel=0,UINT unprocessedPredictedClassLabel=0,Float maximumLikelihood=0,VectorFloat classLikelihoods=VectorDouble(),VectorFloat classDistances = VectorFloat()){
         this->classLabel = classLabel;
         this->predictedClassLabel = predictedClassLabel;
         this->unprocessedPredictedClassLabel = unprocessedPredictedClassLabel;
@@ -139,7 +139,7 @@ public:
      
      @return returns the maximum likelihood
      */
-    float_t getMaximumLikelihood() const {
+    Float getMaximumLikelihood() const {
         return maximumLikelihood;
     }
     
@@ -164,7 +164,7 @@ public:
     UINT classLabel;
     UINT predictedClassLabel;
     UINT unprocessedPredictedClassLabel;
-    float_t maximumLikelihood;
+    Float maximumLikelihood;
     VectorFloat classLikelihoods;
     VectorFloat classDistances;
 };

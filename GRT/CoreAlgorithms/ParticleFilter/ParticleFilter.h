@@ -388,20 +388,20 @@ public:
     
     /**
      Gets how sure the particle filter is about the estimated state.
-     This will be a float_t in the range of [0 1] (or INF if the likelihood is INF).
+     This will be a Float in the range of [0 1] (or INF if the likelihood is INF).
      
-     @return returns a float_t representing the estimation likelihood
+     @return returns a Float representing the estimation likelihood
      */
-    float_t getEstimationLikelihood() const{
+    Float getEstimationLikelihood() const{
         return estimationLikelihood;
     }
     
     /**
      Gets this sum of all the weights. This is the value that is used to normalize the weights.
      
-     @return returns a float_t representing the sum of all the weights
+     @return returns a Float representing the sum of all the weights
      */
-    float_t getWeightSum() const {
+    Float getWeightSum() const {
         return wNorm;
     }
     
@@ -435,7 +435,7 @@ public:
     /**
      Gets the process noise Vector.
      
-     @return returns a float_t Vector containing the process noise
+     @return returns a Float Vector containing the process noise
      */
     VectorFloat setProcessNoise() const{
         return processNoise;
@@ -468,10 +468,10 @@ public:
      The particles will be resampled if the wNorm value is less than the resampleThreshold.
      The resampleThreshold should be in the range [0 1], normally something like: 1.0e-20 works well.
      
-     @param const float_t resampleThreshold: the new resampleThreshold
+     @param const Float resampleThreshold: the new resampleThreshold
      @return returns true if the parameter was successfully updated, false otherwise
      */
-    bool setResampleThreshold(const float_t resampleThreshold){
+    bool setResampleThreshold(const Float resampleThreshold){
         this->resampleThreshold = resampleThreshold;
         return true;
     }
@@ -608,7 +608,7 @@ protected:
         }
         
         //Normalized the weights so they sum to 1
-        float_t weightUpdate = 1.0 / wNorm;
+        Float weightUpdate = 1.0 / wNorm;
         for( iter = particles.begin(); iter != particles.end(); ++iter ){
             
             //Normalize the weights (so they sum to 1)
@@ -637,8 +637,8 @@ protected:
         const unsigned int N = (unsigned int)x.size();
         unsigned int bestIndex = 0;
         unsigned int robustMeanParticleCounter = 0;
-        float_t bestWeight = 0;
-        float_t sum = 0;
+        Float bestWeight = 0;
+        Float sum = 0;
         estimationLikelihood = 0;
         switch( estimationMode ){
             case MEAN:
@@ -654,9 +654,9 @@ protected:
                 }
                 
                 for(unsigned int j=0; j<N; j++){
-                    x[j] /= float_t(numParticles);
+                    x[j] /= Float(numParticles);
                 }
-                estimationLikelihood /= float_t(numParticles);
+                estimationLikelihood /= Float(numParticles);
                 break;
             case WEIGHTED_MEAN:
                 for(unsigned int j=0; j<N; j++){
@@ -672,7 +672,7 @@ protected:
                 for( iter = particles.begin(); iter != particles.end(); ++iter ){
                     estimationLikelihood += grt_isnan(iter->w) ? 0 : iter->w;
                 }
-                estimationLikelihood /= float_t(numParticles);
+                estimationLikelihood /= Float(numParticles);
                 break;
             case ROBUST_MEAN:
                 //Reset x
@@ -705,7 +705,7 @@ protected:
                 for(unsigned int j=0; j<N; j++){
                     x[j] /= sum;
                 }
-                estimationLikelihood /= float_t(robustMeanParticleCounter);
+                estimationLikelihood /= Float(robustMeanParticleCounter);
                 break;
             case BEST_PARTICLE:
                 for(unsigned int i=0; i<numParticles; i++){
@@ -786,7 +786,7 @@ protected:
             if( numParticles-n > numParticles-numRandomParticles){
             
                 //Pick a random number between 0 and the max cumsum
-                float_t randValue = rand.getRandomNumberUniform(0,cumsum[numWeights-1]);
+                Float randValue = rand.getRandomNumberUniform(0,cumsum[numWeights-1]);
                 randIndex = 0;
                 
                 //Find which bin the rand value falls into, set the random index to this value
@@ -847,12 +847,12 @@ protected:
     /**
      Computes the Gaussian likelihood for the input x, given mu and sigma.
      
-     @param float_t x: the x value for the Gaussian distrubution
-     @param float_t mu: the mu value for the Gaussian distrubution
-     @param float_t sigma: the sigma value for the Gaussian distrubution
+     @param Float x: the x value for the Gaussian distrubution
+     @param Float mu: the mu value for the Gaussian distrubution
+     @param Float sigma: the sigma value for the Gaussian distrubution
      @return returns the Gaussian probabilty for the input x, given mu and sigma
      */
-    float_t gauss(float_t x,float_t mu,float_t sigma){
+    Float gauss(Float x,float_t mu,float_t sigma){
         return 1.0/(SQRT_TWO_PI*sigma) * exp( -SQR(x-mu)/(2.0*SQR(sigma)) );
     }
     
@@ -861,13 +861,13 @@ protected:
      For speed, this function does not check to make sure the size of x and mu are the same. The user
      must therefore ensure that mu has the same size as x before they call this function.
      
-     @param const float_t x: the x value for the RBF function
-     @param const float_t mu: the center of the RBF function
-     @param float_t sigma: the sigma value for the RBF function
-     @param float_t weight: the weight for this RBF function. Default value=1.0
+     @param const Float x: the x value for the RBF function
+     @param const Float mu: the center of the RBF function
+     @param Float sigma: the sigma value for the RBF function
+     @param Float weight: the weight for this RBF function. Default value=1.0
      @return returns the RBF function output for input x, given mu, alpha and the weight
      */
-    float_t rbf(const float_t x,const float_t mu,float_t sigma,float_t weight=1.0){
+    Float rbf(const Float x,const float_t mu,float_t sigma,float_t weight=1.0){
         return weight * exp( -SQR( fabs(x-mu) / sigma ) );
     }
     
@@ -878,12 +878,12 @@ protected:
      
      @param const VectorFloat &x: the x value for the RBF function
      @param const VectorFloat &mu: the center of the RBF function
-     @param float_t sigma: the sigma value for the RBF function
-     @param float_t weight: the weight for this RBF function. Default value=1.0
+     @param Float sigma: the sigma value for the RBF function
+     @param Float weight: the weight for this RBF function. Default value=1.0
      @return returns the RBF function output for input x, given mu, alpha and the weight
      */
-    float_t rbf(const VectorFloat &x,const VectorFloat &mu,float_t sigma,float_t weight=1.0){
-        float_t sum = 0;
+    Float rbf(const VectorFloat &x,const VectorFloat &mu,Float sigma,float_t weight=1.0){
+        Float sum = 0;
         const unsigned int N = (unsigned int)x.size();
         for(UINT i=0; i<N; i++){
             sum += fabs(x[i]-mu[i]);
@@ -894,10 +894,10 @@ protected:
     /**
      Computes the square of the input.
      
-     @param const float_t x: the value you want to compute the square of
+     @param const Float x: the value you want to compute the square of
      @return returns the square of the input
      */
-    float_t SQR(const float_t x){ return x*x; }
+    Float SQR(const Float x){ return x*x; }
 
     bool initialized;                               ///<A flag that indicates if the filter has been initialized
     bool verbose;                                   ///<A flag that indicates if warning and info messages should be printed
@@ -907,12 +907,12 @@ protected:
     unsigned int initMode;                          ///<The mode used to initialize the particles, this should be one of the InitModes enums.
     unsigned int estimationMode;                    ///<The estimation mode (used to compute the state estimation)
     unsigned int numDeadParticles;
-    float_t minimumWeightThreshold;                  ///<Any weight below this value will not be resampled
-    float_t robustMeanWeightDistance;                ///<The distance parameter used in the ROBUST_MEAN estimation mode
-    float_t estimationLikelihood;                    ///<The likelihood of the estimated state
-    float_t wNorm;                                   ///<Stores the total weight norm value
-    float_t wDotProduct;                             ///<Stores the dot product of all the weights, used to test for degeneracy
-    float_t resampleThreshold;                       ///<The threshold below which the particles will be resampled
+    Float minimumWeightThreshold;                  ///<Any weight below this value will not be resampled
+    Float robustMeanWeightDistance;                ///<The distance parameter used in the ROBUST_MEAN estimation mode
+    Float estimationLikelihood;                    ///<The likelihood of the estimated state
+    Float wNorm;                                   ///<Stores the total weight norm value
+    Float wDotProduct;                             ///<Stores the dot product of all the weights, used to test for degeneracy
+    Float resampleThreshold;                       ///<The threshold below which the particles will be resampled
     VectorFloat x;                                 ///<The state estimation
     Vector< VectorFloat > initModel;           ///<The noise model for the initial starting guess
     VectorFloat processNoise;                      ///<The noise covariance in the system

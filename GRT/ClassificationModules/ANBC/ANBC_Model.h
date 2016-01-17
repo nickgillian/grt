@@ -42,19 +42,19 @@ public:
 	~ANBC_Model(void){};
 
 	bool train( const UINT classLabel, const MatrixDouble &trainingData, const VectorFloat &weightsVector );
-	float_t predict( const VectorFloat &x );
-	float_t predictUnnormed( const VectorFloat &x );
-	inline float_t gauss(const float_t x,const float_t mu,const float_t sigma);
-	inline float_t unnormedGauss(const float_t x,const float_t mu,const float_t sigma);
-	void recomputeThresholdValue(const float_t gamma);
+	Float predict( const VectorFloat &x );
+	Float predictUnnormed( const VectorFloat &x );
+	inline Float gauss(const Float x,const float_t mu,const float_t sigma);
+	inline Float unnormedGauss(const Float x,const float_t mu,const float_t sigma);
+	void recomputeThresholdValue(const Float gamma);
 
 public:
 	UINT	N;					//The number of dimensions in the problem
     UINT classLabel;            //The label of the class this model represents
-	float_t threshold;			//The classification threshold value
-	float_t gamma;				//The number of standard deviations to use for the threshold
-	float_t trainingMu;			//The average confidence value in the training data
-	float_t trainingSigma;		//The simga confidence value in the training data
+	Float threshold;			//The classification threshold value
+	Float gamma;				//The number of standard deviations to use for the threshold
+	Float trainingMu;			//The average confidence value in the training data
+	Float trainingSigma;		//The simga confidence value in the training data
 	VectorFloat mu;			//A vector to hold the mean values for each dimension
 	VectorFloat sigma;		//A vector to hold the sigma values for each dimension
 	VectorFloat weights;		//A vector to hold the weights for each dimension

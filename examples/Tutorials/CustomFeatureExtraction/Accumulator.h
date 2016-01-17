@@ -46,7 +46,7 @@ public:
      @param numDimensions: the number of dimensions in the input data, must be greater than 0. Default value = 1
      @param lastValueWeight: the weight assigned to the last input value. Default value = 0.9
      */
-    Accumulator(UINT numDimensions=1,float_t lastValueWeight=0.9);
+    Accumulator(UINT numDimensions=1,Float lastValueWeight=0.9);
 	
     /**
      Copy constructor, copies the Accumulator from the rhs instance to this instance.
@@ -122,42 +122,42 @@ public:
      @param lastValueWeight: the weight assigned to the last input value
      @return returns true if the instance was initilized successfully, false otherwise
      */
-    bool init(UINT numDimensions,float_t lastValueWeight);
+    bool init(UINT numDimensions,Float lastValueWeight);
     
     /**
      Gets the last weight value. The lastWeightValue is the weight assigned to the last input.
      
      @return returns the lastValueWeight if the instance is initilized, 0 otherwise
      */
-    float_t getLastValueWeight();
+    Float getLastValueWeight();
     
     /**
      Gets the last value. The lastValue is the (weighted) last value of the accumulator instance.
      
      @return returns the lastValue if the instance is initilized, 0 otherwise
      */
-    float_t getLastValue();
+    Float getLastValue();
     
     /**
      Sets the lastValueWeight. The lastWeightValue is the weight assigned to the last input.
      
      @return returns true if the lastValueWeight was updated successfully, false otherwise
      */
-    bool setLastValueWeight(float_t lastValueWeight);
+    bool setLastValueWeight(Float lastValueWeight);
     
     /**
      Sets the lastValue. The lastValue is the value added to the current input.
      
      @return returns true if the lastValue was updated successfully, false otherwise
      */
-    bool setLastValue(float_t lastValue);
+    bool setLastValue(Float lastValue);
 
     using FeatureExtraction::save;
     using FeatureExtraction::load;
 
 protected:
-    float_t lastValueWeight;
-    float_t lastValue;
+    Float lastValueWeight;
+    Float lastValue;
     
     static RegisterFeatureExtractionModule< Accumulator > registerModule; //This is used to register the Accumulator module with the FeatureExtraction base class
 };

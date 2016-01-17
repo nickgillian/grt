@@ -62,8 +62,8 @@ public:
 
     UINT getNumInputDimensions() const;
     UINT getNumTargetDimensions() const;
-    float_t getInputVectorValue(const UINT index) const;
-    float_t getTargetVectorValue(const UINT index) const;
+    Float getInputVectorValue(const UINT index) const;
+    Float getTargetVectorValue(const UINT index) const;
     const VectorFloat& getInputVector() const;
     const VectorFloat& getTargetVector() const;
 

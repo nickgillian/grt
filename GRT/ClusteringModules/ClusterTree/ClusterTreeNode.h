@@ -214,7 +214,7 @@ public:
      
      @return returns the threshold
      */
-    float_t getThreshold() const{
+    Float getThreshold() const{
         return threshold;
     }
     
@@ -236,7 +236,7 @@ public:
      @param clusterLabel: the cluster label for this node
      @return returns true if the node was set, false otherwise
      */
-    bool set(const UINT nodeSize,const UINT featureIndex,const float_t threshold,const UINT clusterLabel){
+    bool set(const UINT nodeSize,const UINT featureIndex,const Float threshold,const UINT clusterLabel){
         this->nodeSize = nodeSize;
         this->featureIndex = featureIndex;
         this->threshold = threshold;
@@ -320,7 +320,7 @@ protected:
     UINT clusterLabel;
     UINT nodeSize;
     UINT featureIndex;
-    float_t threshold;
+    Float threshold;
     
     static RegisterNode< ClusterTreeNode > registerModule;
 };

@@ -217,7 +217,7 @@ bool train( CommandLineParser &parser ){
     infoLog << "- Training model..." << endl;
 
     //Train the classifier
-    if( !pipeline.train_( trainingData ) ){
+    if( !pipeline.train( trainingData ) ){
         errorLog << "Failed to train classifier!" << endl;
         return false;
     }

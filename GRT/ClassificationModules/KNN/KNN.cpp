@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the DTW module with the Classifier base class
 RegisterClassifierModule< KNN > KNN::registerModule("KNN");
 
-KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,float_t nullRejectionCoeff,bool searchForBestKValue,UINT minKSearchValue,UINT maxKSearchValue){
+KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,bool searchForBestKValue,UINT minKSearchValue,UINT maxKSearchValue){
     this->K = K;
     this->distanceMethod = EUCLIDEAN_DISTANCE;
     this->useScaling = useScaling;
@@ -138,7 +138,7 @@ bool KNN::train_(ClassificationData &trainingData){
 
     //If we have got this far then we are going to search for the best K value
     UINT index = 0;
-    float_t bestAccuracy = 0;
+    Float bestAccuracy = 0;
     Vector< IndexedDouble > trainingAccuracyLog;
 
     for(UINT k=minKSearchValue; k<=maxKSearchValue; k++){
@@ -151,7 +151,7 @@ bool KNN::train_(ClassificationData &trainingData){
         }else{
 
             //Compute the classification error
-            float_t accuracy = 0;
+            Float accuracy = 0;
             for(UINT i=0; i<testSet.getNumSamples(); i++){
 
                 VectorFloat sample = testSet[i].getSample();
@@ -166,7 +166,7 @@ bool KNN::train_(ClassificationData &trainingData){
                 }
             }
 
-            accuracy = accuracy /float_t( testSet.getNumSamples() ) * 100.0;
+            accuracy = accuracy /Float( testSet.getNumSamples() ) * 100.0;
             trainingAccuracyLog.push_back( IndexedDouble(k,accuracy) );
 			
 			trainingLog << "K:\t" << k << "\tAccuracy:\t" << accuracy << std::endl;
@@ -262,7 +262,7 @@ bool KNN::train_(const ClassificationData &trainingData,const UINT K){
         }
 
         for(UINT j=0; j<numClasses; j++){
-            float_t count = counter[j];
+            Float count = counter[j];
             if( count > 1 ){
                 trainingSigma[ j ] = sqrt( trainingSigma[j] / (count-1) );
             }else{
@@ -356,7 +356,7 @@ bool KNN::predict(const VectorFloat &inputVector,const UINT K){
     Vector< IndexedDouble > neighbours;
 
     for(UINT i=0; i<M; i++){
-        float_t dist = 0;
+        Float dist = 0;
         UINT classLabel = trainingData[i].getClassLabel();
         VectorFloat trainingSample = trainingData[i].getSample();
 
@@ -371,7 +371,7 @@ bool KNN::predict(const VectorFloat &inputVector,const UINT K){
                 dist = computeManhattanDistance(inputVector, trainingSample);
                 break;
             default:
-                errorLog << "predict(vector< float_t > inputVector) - unkown distance measure!" << std::endl;
+                errorLog << "predict(vector< Float > inputVector) - unkown distance measure!" << std::endl;
                 return false;
                 break;
         }
@@ -380,7 +380,7 @@ bool KNN::predict(const VectorFloat &inputVector,const UINT K){
             neighbours.push_back( IndexedDouble(classLabel,dist) );
         }else{
             //Find the maximum value in the neighbours buffer
-            float_t maxValue = neighbours[0].value;
+            Float maxValue = neighbours[0].value;
             UINT maxIndex = 0;
             for(UINT n=1; n<neighbours.size(); n++){
                 if( neighbours[n].value > maxValue ){
@@ -424,7 +424,7 @@ bool KNN::predict(const VectorFloat &inputVector,const UINT K){
     }
 
     //Get the max count
-    float_t maxCount = classLikelihoods[0];
+    Float maxCount = classLikelihoods[0];
     UINT maxIndex = 0;
     for(UINT i=1; i<classLikelihoods.size(); i++){
         if( classLikelihoods[i] > maxCount ){
@@ -441,7 +441,7 @@ bool KNN::predict(const VectorFloat &inputVector,const UINT K){
 
     //Normalize the likelihoods
     for(UINT i=0; i<numClasses; i++){
-        classLikelihoods[i] /= float_t( neighbours.size() );
+        classLikelihoods[i] /= Float( neighbours.size() );
     }
 
     //Set the maximum likelihood value
@@ -702,7 +702,7 @@ bool KNN::enableBestKValueSearch(bool searchForBestKValue){
     return true;
 }
 
-bool KNN::setNullRejectionCoeff(float_t nullRejectionCoeff){
+bool KNN::setNullRejectionCoeff(Float nullRejectionCoeff){
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;
         recomputeNullRejectionThresholds();
@@ -719,20 +719,20 @@ bool KNN::setDistanceMethod(UINT distanceMethod){
     return false;
 }
 
-float_t KNN::computeEuclideanDistance(const VectorFloat &a,const VectorFloat &b){
-    float_t dist = 0;
+Float KNN::computeEuclideanDistance(const VectorFloat &a,const VectorFloat &b){
+    Float dist = 0;
     for(UINT j=0; j<numInputDimensions; j++){
         dist += SQR( a[j] - b[j] );
     }
     return sqrt( dist );
 }
 
-float_t KNN::computeCosineDistance(const VectorFloat &a,const VectorFloat &b){
-    float_t dist = 0;
+Float KNN::computeCosineDistance(const VectorFloat &a,const VectorFloat &b){
+    Float dist = 0;
 
-    float_t dotAB = 0;
-    float_t magA = 0;
-    float_t magB = 0;
+    Float dotAB = 0;
+    Float magA = 0;
+    Float magB = 0;
 
     for(UINT j=0; j<numInputDimensions; j++){
         dotAB += a[j] * b[j];
@@ -745,8 +745,8 @@ float_t KNN::computeCosineDistance(const VectorFloat &a,const VectorFloat &b){
     return dist;
 }
 
-float_t KNN::computeManhattanDistance(const VectorFloat &a,const VectorFloat &b){
-    float_t dist = 0;
+Float KNN::computeManhattanDistance(const VectorFloat &a,const VectorFloat &b){
+    Float dist = 0;
 
     for(UINT j=0; j<numInputDimensions; j++){
         dist += fabs( a[j] - b[j] );

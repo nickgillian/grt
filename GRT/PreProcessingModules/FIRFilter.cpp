@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the FIRFilter module with the PreProcessing base class
 RegisterPreProcessingModule< FIRFilter > FIRFilter::registerModule("FIRFilter");
     
-FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const float_t sampleRate,const float_t cutoffFrequency,const float_t gain,const UINT numDimensions){
+FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sampleRate,const float_t cutoffFrequency,const float_t gain,const UINT numDimensions){
     classType = "FIRFilter";
     preProcessingType = classType;
     debugLog.setProceedingText("[DEBUG FIRFilter]");
@@ -357,10 +357,10 @@ bool FIRFilter::buildFilter(){
     z.resize( numTaps, 0 );
     
     //Design the filter coeffients (z)
-    float_t alpha = 0;
-    float_t lambda = 0;
-    float_t phi = 0;
-    const float_t nyquist = sampleRate / 2.0;
+    Float alpha = 0;
+    Float lambda = 0;
+    Float phi = 0;
+    const Float nyquist = sampleRate / 2.0;
     
     switch( filterType ){
         case LPF:
@@ -403,11 +403,11 @@ bool FIRFilter::buildFilter(){
     return true;
 }
 
-float_t FIRFilter::filter(const float_t x){
+Float FIRFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const float_t x) - The filter has not been initialized!" << std::endl;
+        errorLog << "filter(const Float x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
@@ -415,7 +415,7 @@ float_t FIRFilter::filter(const float_t x){
     VectorFloat result = filter( VectorFloat(1,x) );
     
     if( result.size() == 0 ){
-        errorLog << "filter(const float_t x) - Something went wrong, the size of the filtered vector is zero" << std::endl;
+        errorLog << "filter(const Float x) - Something went wrong, the size of the filtered vector is zero" << std::endl;
         return 0;
     }
     
@@ -460,23 +460,23 @@ UINT FIRFilter::getNumTaps() const{
     return numTaps;
 }
 
-float_t FIRFilter::getSampleRate() const{
+Float FIRFilter::getSampleRate() const{
     return sampleRate;
 }
 
-float_t FIRFilter::getCutoffFrequency() const{
+Float FIRFilter::getCutoffFrequency() const{
     return cutoffFrequency;
 }
 
-float_t FIRFilter::getCutoffFrequencyLower() const{
+Float FIRFilter::getCutoffFrequencyLower() const{
     return cutoffFrequencyLower;
 }
 
-float_t FIRFilter::getCutoffFrequencyUpper() const{
+Float FIRFilter::getCutoffFrequencyUpper() const{
     return cutoffFrequencyUpper;
 }
 
-float_t FIRFilter::getGain() const{
+Float FIRFilter::getGain() const{
     return gain;
 }
 
@@ -520,7 +520,7 @@ bool FIRFilter::setNumTaps(const UINT numTaps){
     return false;
 }
 
-bool FIRFilter::setSampleRate(const float_t sampleRate){
+bool FIRFilter::setSampleRate(const Float sampleRate){
     
     if( sampleRate > 0 ){
         this->sampleRate = sampleRate;
@@ -528,15 +528,15 @@ bool FIRFilter::setSampleRate(const float_t sampleRate){
         return true;
     }
     
-    errorLog << "setSampleRate(const float_t sampleRate) - The sample rate should be a positive number greater than zero!" << std::endl;
+    errorLog << "setSampleRate(const Float sampleRate) - The sample rate should be a positive number greater than zero!" << std::endl;
     
     return false;
 }
 
-bool FIRFilter::setCutoffFrequency(const float_t cutoffFrequency){
+bool FIRFilter::setCutoffFrequency(const Float cutoffFrequency){
     
     if( filterType == BPF ){
-        warningLog << "setCutoffFrequency(const float_t cutoffFrequency) - Setting the cutoff frequency has no effect if you are using a BPF. You should set the lower and upper cutoff frequencies instead!" << std::endl;
+        warningLog << "setCutoffFrequency(const Float cutoffFrequency) - Setting the cutoff frequency has no effect if you are using a BPF. You should set the lower and upper cutoff frequencies instead!" << std::endl;
     }
     
     if( cutoffFrequency > 0 ){
@@ -545,19 +545,19 @@ bool FIRFilter::setCutoffFrequency(const float_t cutoffFrequency){
         return true;
     }
     
-    errorLog << "setCutoffFrequency(const float_t cutoffFrequency) - The cutoffFrequency should be a positive number greater than zero!" << std::endl;
+    errorLog << "setCutoffFrequency(const Float cutoffFrequency) - The cutoffFrequency should be a positive number greater than zero!" << std::endl;
     
     return false;
 }
 
-bool FIRFilter::setCutoffFrequency(const float_t cutoffFrequencyLower,const float_t cutoffFrequencyUpper){
+bool FIRFilter::setCutoffFrequency(const Float cutoffFrequencyLower,const float_t cutoffFrequencyUpper){
     
     if( filterType == LPF ){
-        warningLog << "setCutoffFrequency(const float_t cutoffFrequencyLower,const float_t cutoffFrequencyUpper) - Setting the lower and upper cutoff frequency has no effect if you are using a LPF. You should set the cutoff frequency instead!" << std::endl;
+        warningLog << "setCutoffFrequency(const Float cutoffFrequencyLower,const float_t cutoffFrequencyUpper) - Setting the lower and upper cutoff frequency has no effect if you are using a LPF. You should set the cutoff frequency instead!" << std::endl;
     }
     
     if( filterType == HPF ){
-        warningLog << "setCutoffFrequency(const float_t cutoffFrequencyLower,const float_t cutoffFrequencyUpper) - Setting the lower and upper cutoff frequency has no effect if you are using a HPF. You should set the cutoff frequency instead!" << std::endl;
+        warningLog << "setCutoffFrequency(const Float cutoffFrequencyLower,const float_t cutoffFrequencyUpper) - Setting the lower and upper cutoff frequency has no effect if you are using a HPF. You should set the cutoff frequency instead!" << std::endl;
     }
     
     if( cutoffFrequencyLower > 0 && cutoffFrequencyUpper > 0 ){
@@ -567,19 +567,19 @@ bool FIRFilter::setCutoffFrequency(const float_t cutoffFrequencyLower,const floa
         return true;
     }
     
-    errorLog << "setCutoffFrequency(const float_t cutoffFrequencyLower,const float_t cutoffFrequencyUpper) - The cutoffFrequency should be a positive number greater than zero!" << std::endl;
+    errorLog << "setCutoffFrequency(const Float cutoffFrequencyLower,const float_t cutoffFrequencyUpper) - The cutoffFrequency should be a positive number greater than zero!" << std::endl;
     
     return false;
 }
 
-bool FIRFilter::setGain(const float_t gain){
+bool FIRFilter::setGain(const Float gain){
     
     if( gain > 0 ){
         this->gain = gain;
         return true;
     }
     
-    errorLog << "setGain(const float_t gain) - The gain should be a positive number greater than zero!" << std::endl;
+    errorLog << "setGain(const Float gain) - The gain should be a positive number greater than zero!" << std::endl;
     
     return false;
 }

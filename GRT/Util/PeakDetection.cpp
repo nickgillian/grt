@@ -59,7 +59,7 @@ PeakDetection& PeakDetection::operator=(const PeakDetection &rhs){
     return *this;
 }
 
-bool PeakDetection::update( const float_t x){
+bool PeakDetection::update( const Float x){
     
     //Update the input counter
     if( ++inputTimeoutCounter >= inputTimeoutLimit ){
@@ -71,13 +71,13 @@ bool PeakDetection::update( const float_t x){
     peakInfo.clear();
     
     //Low pass filter the input data to remove some noise
-    float_t filteredValue = lowPassFilter.filter(x);
+    Float filteredValue = lowPassFilter.filter(x);
     
     //Compute the first deriv
-    float_t firstDeriv = filteredValue - filteredDataBuffer.getBack();
+    Float firstDeriv = filteredValue - filteredDataBuffer.getBack();
     
     //Compute the second deriv
-    float_t secondDeriv = firstDeriv - firstDerivBuffer.getBack();
+    Float secondDeriv = firstDeriv - firstDerivBuffer.getBack();
     
     //Filter the second deriv using the deadzone filter, this removes any jitter around the 0
     secondDeriv = deadZoneFilter.filter( secondDeriv );

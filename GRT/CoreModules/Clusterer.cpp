@@ -236,11 +236,11 @@ UINT Clusterer::getNumClusters() const { return numClusters; }
 UINT Clusterer::getPredictedClusterLabel() const { return predictedClusterLabel; }
     
 
-float_t Clusterer::getMaximumLikelihood() const{
+Float Clusterer::getMaximumLikelihood() const{
     return maxLikelihood;
 }
 
-float_t Clusterer::getBestDistance() const{
+Float Clusterer::getBestDistance() const{
     return bestDistance;
 }
 

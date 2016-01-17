@@ -66,7 +66,7 @@ public:
      @param useCrossValidation: sets if the SVM model will be trained using cross validation. The default value is useCrossValidation=false
      @param kFoldValue: sets the number of folds that will be used for cross validation. The default value is kFoldValue=10
      */
-	SVM(UINT kernelType = LINEAR_KERNEL,UINT svmType = C_SVC,bool useScaling = true,bool useNullRejection = false,bool useAutoGamma = true,float_t gamma = 0.1,UINT degree = 3,float_t coef0 = 0,float_t nu = 0.5,float_t C = 1,bool useCrossValidation = false,UINT kFoldValue = 10);
+	SVM(UINT kernelType = LINEAR_KERNEL,UINT svmType = C_SVC,bool useScaling = true,bool useNullRejection = false,bool useAutoGamma = true,Float gamma = 0.1,UINT degree = 3,Float coef0 = 0,float_t nu = 0.5,float_t C = 1,bool useCrossValidation = false,UINT kFoldValue = 10);
     
     /**
      Default copy constructor.  Copies the settings from the rhs SVM instance to this instance
@@ -154,7 +154,7 @@ public:
      @param kFoldValue: sets the number of folds that will be used for cross validation
      @return returns true if the SVM was initialized, false otherwise
      */
-    bool init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,float_t gamma,UINT degree,float_t coef0,float_t nu,float_t C,bool useCrossValidation,UINT kFoldValue);
+    bool init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,float_t nu,float_t C,bool useCrossValidation,UINT kFoldValue);
     
     /**
      This initializes the default SVM settings and parameters. Any previous model, settings, or problems will be cleared.
@@ -215,35 +215,35 @@ public:
      
      @return returns the current gamma value.
      */ 
-    float_t getGamma() const;
+    Float getGamma() const;
     
     /**
      Gets the current nu value.
      
      @return returns the current nu value.
      */
-    float_t getNu() const;
+    Float getNu() const;
     
     /**
      Gets the current coef0 value.
      
      @return returns the current coef0 value.
      */
-    float_t getCoef0() const;
+    Float getCoef0() const;
     
     /**
      Gets the current C value.
      
      @return returns the current C value.
      */
-    float_t getC() const;
+    Float getC() const;
     
     /**
      Gets the last cross validation result, if the model has been trained and cross validation was enabled.
      
      @return returns the last cross validation result.
      */
-    float_t getCrossValidationResult() const;
+    Float getCrossValidationResult() const;
     
     struct svm_model *getModel() const { return model; }
     
@@ -271,7 +271,7 @@ public:
      @param gamma: the new gamma value
      @return returns true if the gamma parameter was updated, false otherwise
      */
-    bool setGamma(const float_t gamma);
+    bool setGamma(const Float gamma);
     
     /**
      Sets the SVM degree parameter.
@@ -289,7 +289,7 @@ public:
      @param nu: the new nu value
      @return returns true if the nu parameter was updated, false otherwise
      */
-    bool setNu(const float_t nu);
+    bool setNu(const Float nu);
     
     /**
      Sets the SVM coef0 parameter.  
@@ -298,7 +298,7 @@ public:
      @param coef0: the new coef0 value
      @return returns true if the gamcoef0ma parameter was updated, false otherwise
      */
-    bool setCoef0(const float_t coef0);
+    bool setCoef0(const Float coef0);
     
     /**
      Sets the SVM C parameter.  
@@ -307,7 +307,7 @@ public:
      @param C: the new C value
      @return returns true if the C parameter was updated, false otherwise
      */
-    bool setC(const float_t C);
+    bool setC(const Float C);
     
     /**
      Sets the kFold cross validation value.
@@ -350,7 +350,7 @@ protected:
 	bool trainSVM();
     
     bool predictSVM(VectorFloat &inputVector);
-	bool predictSVM(VectorFloat &inputVector,float_t &maxProbability, VectorFloat &probabilites);
+	bool predictSVM(VectorFloat &inputVector,Float &maxProbability, VectorFloat &probabilites);
     bool loadLegacyModelFromFile( std::fstream &file );
     
     struct svm_model *deepCopyModel() const;
@@ -362,8 +362,8 @@ protected:
 	struct svm_parameter param;
 	struct svm_problem prob;
 	UINT kFoldValue;
-	float_t classificationThreshold;
-	float_t crossValidationResult;
+	Float classificationThreshold;
+	Float crossValidationResult;
 	bool useAutoGamma;
     bool useCrossValidation;
     

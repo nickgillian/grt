@@ -113,9 +113,9 @@ bool LogisticRegression::train_(RegressionData &trainingData){
         w[j] = rand.getRandomNumberUniform(-0.1,0.1);
     }
 
-    float_t error = 0;
-    float_t lastSquaredError = 0;
-    float_t delta = 0;
+    Float error = 0;
+    Float lastSquaredError = 0;
+    Float delta = 0;
     UINT iter = 0;
     bool keepTraining = true;
     Random random;
@@ -144,7 +144,7 @@ bool LogisticRegression::train_(RegressionData &trainingData){
             //Compute the error, given the current weights
             VectorFloat x = trainingData[i].getInputVector();
             VectorFloat y = trainingData[i].getTargetVector();
-            float_t h = w0;
+            Float h = w0;
             for(UINT j=0; j<N; j++){
                 h += x[j] * w[j];
             }
@@ -177,7 +177,7 @@ bool LogisticRegression::train_(RegressionData &trainingData){
         }
         
         //Store the training results
-        rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / float_t(M) );
+        rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
         result.setRegressionResult(iter,totalSquaredTrainingError,rootMeanSquaredTrainingError,this);
         trainingResults.push_back( result );
         
@@ -217,7 +217,7 @@ bool LogisticRegression::predict_(VectorFloat &inputVector){
     for(UINT j=0; j<numInputDimensions; j++){
         regressionData[0] += inputVector[j] * w[j];
     }
-    float_t sum = regressionData[0];
+    Float sum = regressionData[0];
 	regressionData[0] = sigmoid( regressionData[0] );
     std::cout << "reg sum: " << sum << " sig: " << regressionData[0] << std::endl; 
     if( useScaling ){
@@ -322,7 +322,7 @@ bool LogisticRegression::setMaxNumIterations(const UINT maxNumIterations){
 return setMaxNumEpochs( maxNumIterations );
 }
 
-float_t LogisticRegression::sigmoid(const float_t x) const{
+Float LogisticRegression::sigmoid(const float_t x) const{
 	return 1.0 / (1 + exp(-x));
 }
     

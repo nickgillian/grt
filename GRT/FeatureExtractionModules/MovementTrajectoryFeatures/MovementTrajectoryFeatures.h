@@ -39,8 +39,8 @@ struct AngleMagnitude{
         angle = 0;
         magnitude = 0;
     }
-    float_t angle;
-    float_t magnitude;
+    Float angle;
+    Float magnitude;
 };
 typedef struct AngleMagnitude AngleMagnitude;
     
@@ -145,7 +145,7 @@ public:
      @param x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
 	 @return a vector containing the features, an empty vector will be returned if the features were not computed
      */
-	VectorFloat update(float_t x);
+	VectorFloat update(Float x);
     
     /**
      Computes the features from the input, the dimensionality of x should match that of this instance.

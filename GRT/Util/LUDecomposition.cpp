@@ -36,9 +36,9 @@ LUDecomposition::LUDecomposition(const MatrixFloat &a) : sing(false){
 	aref = a;
 	indx.resize( N );
 
-	const float_t TINY=1.0e-20;
+	const Float TINY=1.0e-20;
 	unsigned int i,imax,j,k;
-	float_t big,temp;
+	Float big,temp;
 	VectorFloat vv(N);
 	d=1.0;
     imax = 0;
@@ -90,7 +90,7 @@ bool LUDecomposition::solve_vector(const VectorFloat &b,VectorFloat &x)
 {
 	int i=0,ii=0,ip=0,j=0; //This must be an int (as opposed to an UINT)
 	const int n = int(N);
-	float_t sum=0;
+	Float sum=0;
     
 	if (b.size() != N || x.size() != N){
         errorLog << "solve_vector(const VectorFloat &b,VectorFloat &x) - the size of the two vectors does not match!" << std::endl;
@@ -143,9 +143,9 @@ bool LUDecomposition::inverse(MatrixFloat &ainv)
 	return solve(ainv,ainv);
 }
     
-float_t LUDecomposition::det()
+Float LUDecomposition::det()
 {
-	float_t dd = d;
+	Float dd = d;
 	for (unsigned int i=0;i<N;i++) dd *= lu[i][i];
 	return dd;
 }
@@ -157,7 +157,7 @@ bool LUDecomposition::mprove(const VectorFloat &b,VectorFloat &x)
 	for (i=0;i<N;i++) {
 		long double sdp = -b[i];
 		for (j=0;j<N;j++)
-			sdp += (long_float_t) aref[i][j] * (long_float_t)x[j];
+			sdp += (LongFloat) aref[i][j] * (long_float_t)x[j];
 		r[i]=sdp;
 	}
 	if( !solve_vector(r,r) ){

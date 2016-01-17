@@ -41,7 +41,7 @@ public:
      Default constructor.
      
      */
-	FiniteStateMachine(const UINT numParticles = 200,const UINT numClustersPerState = 20,const float_t stateTransitionSmoothingCoeff = 0.0,const float_t measurementNoise = 10.0);
+	FiniteStateMachine(const UINT numParticles = 200,const UINT numClustersPerState = 20,const Float stateTransitionSmoothingCoeff = 0.0,const Float measurementNoise = 10.0);
     
     /**
      Defines the copy constructor.
@@ -156,8 +156,8 @@ public:
     
     bool setNumParticles(const UINT numParticles);
     bool setNumClustersPerState(const UINT numClustersPerState);
-    bool setStateTransitionSmoothingCoeff(const float_t stateTransitionSmoothingCoeff);
-    bool setMeasurementNoise(const float_t measurementNoise);
+    bool setStateTransitionSmoothingCoeff(const Float stateTransitionSmoothingCoeff);
+    bool setMeasurementNoise(const Float measurementNoise);
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -174,8 +174,8 @@ protected:
    
     UINT numParticles;
     UINT numClustersPerState;
-    float_t stateTransitionSmoothingCoeff;
-    float_t measurementNoise;
+    Float stateTransitionSmoothingCoeff;
+    Float measurementNoise;
     FSMParticleFilter particles;
     MatrixFloat stateTransitions;
     Vector< MatrixFloat > stateEmissions;

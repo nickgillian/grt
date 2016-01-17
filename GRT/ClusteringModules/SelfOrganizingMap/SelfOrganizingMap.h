@@ -47,11 +47,11 @@ public:
         
     }
     
-    float_t& operator[](const UINT index){
+    Float& operator[](const UINT index){
         return weights[ index ];
     }
     
-    bool init(const UINT numInputs,const float_t sigma = 2.0){
+    bool init(const UINT numInputs,const Float sigma = 2.0){
         
         this->numInputs = numInputs;
         this->sigma = sigma;
@@ -84,9 +84,9 @@ public:
         return initialized;
     }
     
-    float_t getWeightDistance( const VectorFloat &x ) const {
+    Float getWeightDistance( const VectorFloat &x ) const {
         
-        float_t dist = 0;
+        Float dist = 0;
         
         for(UINT i=0; i<numInputs; i++){
             dist += x[i]- weights[i];
@@ -95,9 +95,9 @@ public:
         return dist;
     }
     
-    float_t getSquaredWeightDistance( const VectorFloat &x ) const {
+    Float getSquaredWeightDistance( const VectorFloat &x ) const {
         
-        float_t dist = 0;
+        Float dist = 0;
         
         for(UINT i=0; i<numInputs; i++){
             dist += grt_sqr( x[i]- weights[i] );
@@ -106,8 +106,8 @@ public:
         return dist;
     }
     
-    float_t fire( const VectorFloat &x ) const {
-        float_t y = 0;
+    Float fire( const VectorFloat &x ) const {
+        Float y = 0;
         
         for(UINT i=0; i<numInputs; i++){
             y += grt_sqr( x[i]- weights[i] );
@@ -190,7 +190,7 @@ public:
 
     UINT numInputs;
     VectorFloat weights;
-    float_t sigma;
+    Float sigma;
     bool initialized;
 };
 
@@ -200,7 +200,7 @@ public:
 	/**
      Default Constructor.
      */
-	SelfOrganizingMap(const UINT networkSize = 20, const UINT networkTypology = RANDOM_NETWORK, const UINT maxNumEpochs = 1000,const float_t alphaStart = 0.8, const float_t alphaEnd = 0.1);
+	SelfOrganizingMap(const UINT networkSize = 20, const UINT networkTypology = RANDOM_NETWORK, const UINT maxNumEpochs = 1000,const Float alphaStart = 0.8, const Float alphaEnd = 0.1);
     
     /**
      Defines how the data from the rhs SelfOrganizingMap should be copied to this SelfOrganizingMap
@@ -318,9 +318,9 @@ public:
      */
     UINT getNetworkSize() const;
     
-    float_t getAlphaStart() const;
+    Float getAlphaStart() const;
     
-    float_t getAlphaEnd() const;
+    Float getAlphaEnd() const;
     
     VectorFloat getMappedData() const;
     
@@ -334,9 +334,9 @@ public:
     
     bool setNetworkTypology( const UINT networkTypology );
     
-    bool setAlphaStart( const float_t alphaStart );
+    bool setAlphaStart( const Float alphaStart );
     
-    bool setAlphaEnd( const float_t alphaEnd );
+    bool setAlphaEnd( const Float alphaEnd );
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
@@ -344,8 +344,8 @@ public:
     
 protected:
     UINT networkTypology;
-    float_t alphaStart;
-    float_t alphaEnd;
+    Float alphaStart;
+    Float alphaEnd;
     VectorFloat mappedData;
     Vector< GaussNeuron > neurons;
     MatrixFloat networkWeights;

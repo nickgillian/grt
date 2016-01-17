@@ -142,7 +142,7 @@ public:
                 bestResult = 0;
             break;
             case MinValueSearch:
-                bestResult = grt_numeric_limits< float_t >::max();
+                bestResult = grt_numeric_limits< Float >::max();
             break;
             default:
                errorLog << "recursive_search( unsigned int paramIndex ) - Unknown eval type!" << std::endl;
@@ -155,7 +155,7 @@ public:
         return recursive_search( paramIndex );
     }
 
-    float_t getBestResult() const { return bestResult; }
+    Float getBestResult() const { return bestResult; }
 
     T getBestModel() const { return bestModel; }
 
@@ -164,7 +164,7 @@ public:
         return true;
     }
 
-    bool setEvaluationFunction( std::function< float_t () > f, SearchType type = MaxValueSearch ){
+    bool setEvaluationFunction( std::function< Float () > f, SearchType type = MaxValueSearch ){
         evalFunc = f;
         evalType = type;
         return true;
@@ -183,7 +183,7 @@ protected:
         recursive_reset( paramIndex );
 
         bool stopAfterNextIter = false;
-        float_t result = 0.0;
+        Float result = 0.0;
         while( true ){
 
             //Make sure the parameter is set
@@ -242,9 +242,9 @@ protected:
     }
 
     Vector< GridSearchParam<unsigned int> > params;
-    std::function< float_t () >  evalFunc; 
+    std::function< Float () >  evalFunc; 
     SearchType evalType;
-    float_t bestResult;
+    Float bestResult;
     T model;
     T bestModel;
 };

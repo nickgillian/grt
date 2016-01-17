@@ -49,7 +49,7 @@ public:
      @param minChange: sets the minimum change that must be achieved between two training epochs for the training to continue. Default = 1.0e-10
      @param maxNumEpochs: sets the maximum number of iterations that can be run during the training phase. Default = 1000
      */
-	Softmax(const bool useScaling=false,const float_t learningRate = 0.1,const float_t minChange = 1.0e-10,const UINT maxNumEpochs = 1000);
+	Softmax(const bool useScaling=false,const Float learningRate = 0.1,const Float minChange = 1.0e-10,const UINT maxNumEpochs = 1000);
     
     /**
      Defines the copy constructor.

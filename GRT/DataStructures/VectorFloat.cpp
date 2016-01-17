@@ -34,7 +34,7 @@ VectorFloat::VectorFloat(const unsigned int size){
     resize( size );
 }
 
-VectorFloat::VectorFloat( const unsigned int size, const float_t &value ){
+VectorFloat::VectorFloat( const unsigned int size, const Float &value ){
     warningLog.setProceedingText("[WARNING VectorFloat]");
     errorLog.setProceedingText("[ERROR VectorFloat]");
     resize( size, value );
@@ -60,7 +60,7 @@ VectorFloat& VectorFloat::operator=(const VectorFloat &rhs){
     return *this;
 }
     
-VectorFloat& VectorFloat::operator=(const Vector< float_t > &rhs){
+VectorFloat& VectorFloat::operator=(const Vector< Float > &rhs){
     if( this != &rhs ){
         UINT N = rhs.getSize();
         if( N > 0 ){
@@ -77,7 +77,7 @@ bool VectorFloat::print(const std::string title) const {
         std::cout << title << std::endl;
     }
     const size_t size = this->size();
-    const float_t *data = getData();
+    const Float *data = getData();
     for(size_t i=0; i<size; i++){
         std::cout << data[i] << "\t";
     }
@@ -86,14 +86,14 @@ bool VectorFloat::print(const std::string title) const {
     return true;
 }
     
-bool VectorFloat::scale( const float_t minTarget, const float_t maxTarget, const bool constrain ){
+bool VectorFloat::scale( const Float minTarget, const float_t maxTarget, const bool constrain ){
     
     MinMax range = getMinMax();
     
     return scale( range.minValue, range.maxValue, minTarget, maxTarget, constrain );
 }
     
-bool VectorFloat::scale( const float_t minSource, const float_t maxSource, const float_t minTarget, const float_t maxTarget, const bool constrain ){
+bool VectorFloat::scale( const Float minSource, const float_t maxSource, const float_t minTarget, const float_t maxTarget, const bool constrain ){
     
     const size_t N = this->size();
     
@@ -102,7 +102,7 @@ bool VectorFloat::scale( const float_t minSource, const float_t maxSource, const
     }
     
     unsigned int i = 0;
-    float_t *data = getData();
+    Float *data = getData();
     for( i=0; i<N; i++ ){
         data[i] = grt_scale(data[i],minSource,maxSource,minTarget,maxTarget,constrain);
     }
@@ -110,31 +110,31 @@ bool VectorFloat::scale( const float_t minSource, const float_t maxSource, const
     return true;
 }
     
-float_t VectorFloat::getMinValue() const{
-    float_t minValue = 99e+99;
+Float VectorFloat::getMinValue() const{
+    Float minValue = 99e+99;
     const size_t N = this->size();
-    const float_t *data = getData();
+    const Float *data = getData();
     for(size_t i=0; i<N; i++){
         if( data[i] < minValue ) minValue = data[i];
     }
     return minValue;
 }
 
-float_t VectorFloat::getMaxValue() const{
-    float_t maxValue = -99e99;
+Float VectorFloat::getMaxValue() const{
+    Float maxValue = -99e99;
     const size_t N = this->size();
-    const float_t *data = getData();
+    const Float *data = getData();
     for(size_t i=0; i<N; i++){
         if( data[i] > maxValue ) maxValue = data[i];
     }
     return maxValue;
 }
     
-float_t VectorFloat::getMean() const {
+Float VectorFloat::getMean() const {
     
-    float_t mean = 0.0;
+    Float mean = 0.0;
     const size_t N = this->size();
-    const float_t *data = getData();
+    const Float *data = getData();
     for(size_t i=0; i<N; i++){
         mean += data[i];
     }
@@ -143,17 +143,17 @@ float_t VectorFloat::getMean() const {
     return mean;
 }
     
-float_t VectorFloat::getStdDev() const {
+Float VectorFloat::getStdDev() const {
     
-    float_t mean = getMean();
-	float_t stdDev = 0.0;
+    Float mean = getMean();
+	Float stdDev = 0.0;
     const size_t N = this->size();
-    const float_t *data = getData();
+    const Float *data = getData();
 	
 	for(size_t i=0; i<N; i++){
 		stdDev += (data[i]-mean)*(data[i]-mean);
 	}
-    stdDev = sqrt( stdDev / float_t(N-1) );
+    stdDev = sqrt( stdDev / Float(N-1) );
 
     return stdDev;
 }
@@ -165,7 +165,7 @@ MinMax VectorFloat::getMinMax() const {
     
     if( N == 0 ) return range;
 
-    const float_t *data = getData();
+    const Float *data = getData();
     
     for(unsigned int i=0; i<N; i++){
         range.updateMinMax( data[ i ] );
@@ -190,7 +190,7 @@ bool VectorFloat::save(const std::string &filename) const {
         return false;
     }
     
-    const float_t *data = getData();
+    const Float *data = getData();
     for(size_t i=0; i<N; i++){
         file << data[i] << (i<N-1 ? "," : "\n");
     }
@@ -213,7 +213,7 @@ bool VectorFloat::load(const std::string &filename,const char seperator){
     }
     
     Vector< std::string > vec;
-    Vector< float_t > row;
+    Vector< Float > row;
     std::string line;
     std::string columnString = "";
     const int sepValue = seperator;
@@ -258,10 +258,10 @@ bool VectorFloat::load(const std::string &filename,const char seperator){
         return false;
     }
         
-    //Convert the string column values to float_t values
-    float_t *data = getData();
+    //Convert the string column values to Float values
+    Float *data = getData();
     for(unsigned int i=0; i<numElements; i++){
-        data[i] = grt_from_str< float_t >( vec[i] );
+        data[i] = grt_from_str< Float >( vec[i] );
     }
     
     //Close the file

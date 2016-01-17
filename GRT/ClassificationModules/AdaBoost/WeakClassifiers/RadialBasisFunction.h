@@ -51,7 +51,7 @@ public:
      @param minAlphaSearchRange: the minimum value used to search for the best alpha value. Default value = 0.001
      @param maxAlphaSearchRange: the maximum value used to search for the best alpha value. Default value = 1.0
      */
-    RadialBasisFunction(UINT numSteps=100,float_t positiveClassificationThreshold=0.9,float_t minAlphaSearchRange=0.001,float_t maxAlphaSearchRange=1.0);
+    RadialBasisFunction(UINT numSteps=100,Float positiveClassificationThreshold=0.9,Float minAlphaSearchRange=0.001,float_t maxAlphaSearchRange=1.0);
     
     /**
      Default Destructor.
@@ -92,7 +92,7 @@ public:
      @param x: the vector used for prediction
      @return returns the predicted class label, which will be either positive or negative
      */
-    virtual float_t predict(const VectorFloat &x);
+    virtual Float predict(const VectorFloat &x);
     
     /**
      This function saves the current RBF model to a file.
@@ -129,28 +129,28 @@ public:
      
      @return returns the positiveClassificationThreshold
      */
-    float_t getPositiveClassificationThreshold() const;
+    Float getPositiveClassificationThreshold() const;
     
     /**
      Gets the current alpha value, this is used in the RBF. You can compute the RBF gamma parameter by: -1.0/(2.0*SQR(alpha)).
      
      @return returns the alpha value
      */
-    float_t getAlpha() const;
+    Float getAlpha() const;
     
     /**
      Gets the minAlphaSearchRange value, this is the minimum value used to search for the best alpha value.
      
      @return returns the minAlphaSearchRange value
      */
-    float_t getMinAlphaSearchRange() const;
+    Float getMinAlphaSearchRange() const;
     
     /**
      Gets the maxAlphaSearchRange value, this is the maximum value used to search for the best alpha value.
      
      @return returns the maxAlphaSearchRange value
      */
-    float_t getMaxAlphaSearchRange() const;
+    Float getMaxAlphaSearchRange() const;
     
     /**
      Gets the RBF center.
@@ -160,14 +160,14 @@ public:
     VectorFloat getRBFCentre() const;
     
 protected:
-    float_t rbf(const VectorFloat &a,const VectorFloat &b);
+    Float rbf(const VectorFloat &a,const VectorFloat &b);
   
     UINT numSteps;
-    float_t positiveClassificationThreshold;
-    float_t alpha;
-    float_t gamma;
-    float_t minAlphaSearchRange;
-    float_t maxAlphaSearchRange;
+    Float positiveClassificationThreshold;
+    Float alpha;
+    Float gamma;
+    Float minAlphaSearchRange;
+    Float maxAlphaSearchRange;
     VectorFloat rbfCentre;
     
     static RegisterWeakClassifierModule< RadialBasisFunction > registerModule; ///< This is used to register the DecisionStump with the WeakClassifier base class

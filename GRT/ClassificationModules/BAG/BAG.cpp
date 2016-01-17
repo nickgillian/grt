@@ -189,7 +189,7 @@ bool BAG::predict_(VectorFloat &inputVector){
     }
     
     //Run the prediction for each classifier
-    float_t sum = 0;
+    Float sum = 0;
     UINT ensembleSize = ensemble.getSize();
     for(UINT i=0; i<ensembleSize; i++){
         
@@ -205,7 +205,7 @@ bool BAG::predict_(VectorFloat &inputVector){
     }
     
     //Set the predicted class label as the most common class
-    float_t maxCount = 0;
+    Float maxCount = 0;
     UINT maxIndex = 0;
     for(UINT i=0; i<numClasses; i++){
         if( classLikelihoods[i] > maxCount ){
@@ -213,7 +213,7 @@ bool BAG::predict_(VectorFloat &inputVector){
             maxCount = classLikelihoods[i];
         }
         classLikelihoods[i] /= sum;
-        classDistances[i] /= float_t(ensembleSize);
+        classDistances[i] /= Float(ensembleSize);
     }
     
     predictedClassLabel = classLabels[ maxIndex ];
@@ -418,7 +418,7 @@ const Vector< Classifier* > BAG::getEnsemble() const{
     return ensemble;
 }
     
-bool BAG::addClassifierToEnsemble(const Classifier &classifier,float_t weight){
+bool BAG::addClassifierToEnsemble(const Classifier &classifier,Float weight){
     
     trained = false;
     

@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register your module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< KMeansFeatures > KMeansFeatures::registerModule("KMeansFeatures");
     
-KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const float_t alpha,const bool useScaling){
+KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Float alpha,const bool useScaling){
     
     classType = "KMeansFeatures";
     featureExtractionType = classType;
@@ -451,8 +451,8 @@ bool KMeansFeatures::projectDataThroughLayer( const VectorFloat &input, VectorFl
     }
     
     UINT i,j = 0;
-    //float_t gamma = 2.0*SQR(alpha);
-    //float_t gamma = 2.0*SQR( 1 );
+    //Float gamma = 2.0*SQR(alpha);
+    //Float gamma = 2.0*SQR( 1 );
     for(i=0; i<M; i++){
         output[i] = 0;
         for(j=0; j<N; j++){

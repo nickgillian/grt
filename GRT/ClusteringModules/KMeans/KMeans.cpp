@@ -26,7 +26,7 @@ GRT_BEGIN_NAMESPACE
 RegisterClustererModule< KMeans > KMeans::registerModule("KMeans");
 
 //Constructor,destructor
-KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const float_t minChange,const bool computeTheta){
+KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange,const bool computeTheta){
     
     this->numClusters = numClusters;
     this->minNumEpochs = minNumEpochs;
@@ -212,12 +212,12 @@ bool KMeans::predict_(VectorFloat &inputVector){
         }
     }
 	
-    const float_t sigma = 1.0;
-    const float_t gamma = 1.0 / (2.0*grt_sqr(sigma));
-    float_t sum = 0;
-    float_t dist = 0;
+    const Float sigma = 1.0;
+    const Float gamma = 1.0 / (2.0*grt_sqr(sigma));
+    Float sum = 0;
+    Float dist = 0;
 	UINT minIndex = 0;
-	bestDistance = grt_numeric_limits< float_t >::max();
+	bestDistance = grt_numeric_limits< Float >::max();
 	predictedClusterLabel = 0;
 	maxLikelihood = 0;
 	if( clusterLikelihoods.getSize() != numClusters )
@@ -276,10 +276,10 @@ bool KMeans::trainModel(MatrixFloat &data){
 	UINT currentIter = 0;
     UINT numChanged = 0;
 	bool keepTraining = true;
-    float_t theta = 0;
-    float_t lastTheta = 0;
-    float_t delta = 0;
-    float_t startTime = 0;
+    Float theta = 0;
+    Float lastTheta = 0;
+    Float delta = 0;
+    Float startTime = 0;
     thetaTracker.clear();
     finalTheta = 0;
     numTrainingIterationsToConverge = 0;
@@ -347,7 +347,7 @@ bool KMeans::trainModel(MatrixFloat &data){
 
 UINT KMeans::estep(const MatrixFloat &data) {
 		UINT k,m,n,kmin;
-		float_t dmin,d;
+		Float dmin,d;
 		nchg = 0;
 		kmin = 0;
 
@@ -387,7 +387,7 @@ void KMeans::mstep(const MatrixFloat &data) {
 
     for (k=0; k < numClusters; k++) {
         if (count[k] > 0){
-            float_t countNorm = 1.0 / count[k];
+            Float countNorm = 1.0 / count[k];
             for (n=0; n < numInputDimensions; n++){
                 clusters[k][n] *= countNorm;
             }
@@ -395,10 +395,10 @@ void KMeans::mstep(const MatrixFloat &data) {
     }
 }
 
-float_t KMeans::calculateTheta(const MatrixFloat &data){
+Float KMeans::calculateTheta(const MatrixFloat &data){
 
-	float_t theta = 0;
-    float_t sum = 0;
+	Float theta = 0;
+    Float sum = 0;
     UINT m,n,k = 0;
 	for(m=0; m < numTrainingSamples; m++){
 		k = assign[m];

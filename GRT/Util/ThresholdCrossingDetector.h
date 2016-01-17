@@ -48,7 +48,7 @@ public:
      @param searchTimeoutDuration: sets the duration (in samples) that the threshold detector will ignore any new threshold crossings after detecting a valid threshold crossing
      @param offsetFilterSize: sets the size of the moving average filter used to offset the input value (if the analysisMode is set to MOVING_OFFSET_ANALYSIS_MODE)
      */
-    ThresholdCrossingDetector(UINT analysisMode = RAW_DATA_ANALYSIS_MODE,UINT thresholdCrossingMode = UPPER_THRESHOLD_CROSSING,UINT detectionTimeoutMode = TIMEOUT_COUNTER,float_t lowerThreshold = -1,float_t upperThreshold = 1,float_t hysteresisThreshold = 0,UINT searchWindowSize = 20,UINT searchTimeoutDuration = 1000,UINT offsetFilterSize = 10);
+    ThresholdCrossingDetector(UINT analysisMode = RAW_DATA_ANALYSIS_MODE,UINT thresholdCrossingMode = UPPER_THRESHOLD_CROSSING,UINT detectionTimeoutMode = TIMEOUT_COUNTER,Float lowerThreshold = -1,Float upperThreshold = 1,float_t hysteresisThreshold = 0,UINT searchWindowSize = 20,UINT searchTimeoutDuration = 1000,UINT offsetFilterSize = 10);
     
     /**
      Default Destructor.
@@ -76,7 +76,7 @@ public:
      @param x: the new value that will be pushed through the threshold crossing algorithm
      @return returns true if a threshold crossing was detected, false otherwise
      */
-    bool update( const float_t x );
+    bool update( const Float x );
     
     /**
      This function resets the threshold crossing detector.
@@ -142,22 +142,22 @@ public:
     /**
      @return gets the most recent analysis value used to compute the threshold crossing
      */
-    float_t getAnalysisValue() const;
+    Float getAnalysisValue() const;
     
     /**
      @return gets the upper threshold value
      */
-    float_t getUpperThreshold() const;
+    Float getUpperThreshold() const;
     
     /**
      @return gets the lower threshold value
      */
-    float_t getLowerThreshold() const;
+    Float getLowerThreshold() const;
     
     /**
      @return gets the hysteresis threshold value
      */
-    float_t getHysteresisThreshold() const;
+    Float getHysteresisThreshold() const;
     
     /**
      Sets if the algorithm can perform the threshold crossing search. If enableSearch is set to false, then the algorithm will never 
@@ -226,7 +226,7 @@ public:
      @param lowerThreshold: the new lowerThreshold
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setLowerThreshold(const float_t lowerThreshold);
+    bool setLowerThreshold(const Float lowerThreshold);
     
     /**
      Sets the upperThreshold value, this upper threshold that must be crossed to trigger a UPPER_THRESHOLD_CROSSING.
@@ -234,7 +234,7 @@ public:
      @param upperThreshold: the new upperThreshold
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setUpperThreshold(const float_t upperThreshold);
+    bool setUpperThreshold(const Float upperThreshold);
     
     /**
      Sets the hysteresisThreshold value, this threshold is used to debounce triggers if the detectionTimeoutMode is set to HYSTERESIS_THRESHOLD.
@@ -242,13 +242,13 @@ public:
      @param hysteresisThreshold: the new hysteresisThreshold
      @return returns true if the parameter was updated, false otherwise
      */
-    bool setHysteresisThreshold(const float_t hysteresisThreshold);
+    bool setHysteresisThreshold(const Float hysteresisThreshold);
     
 protected:
-    float_t analysisValue;
-    float_t lowerThreshold;
-    float_t upperThreshold;
-    float_t hysteresisThreshold;
+    Float analysisValue;
+    Float lowerThreshold;
+    Float upperThreshold;
+    Float hysteresisThreshold;
     bool enableSearch;
     bool thresholdCrossingDetected;
     unsigned int analysisMode;

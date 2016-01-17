@@ -204,7 +204,7 @@ bool WeightedAverageFilter::init(UINT filterSize,UINT numDimensions){
     weights.resize(filterSize);
     initialized = dataBuffer.resize( filterSize, VectorFloat(numInputDimensions,0) );
     
-    const float_t norm = 1.0 / filterSize;
+    const Float norm = 1.0 / filterSize;
     for(UINT i=0; i<filterSize; i++){
         weights[i] = (i+1)*norm;
     }
@@ -216,11 +216,11 @@ bool WeightedAverageFilter::init(UINT filterSize,UINT numDimensions){
     return initialized;
 }
 
-float_t WeightedAverageFilter::filter(const float_t x){
+Float WeightedAverageFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const float_t x) - The filter has not been initialized!" << std::endl;
+        errorLog << "filter(const Float x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
@@ -248,7 +248,7 @@ VectorFloat WeightedAverageFilter::filter(const VectorFloat &x){
     //Add the new value to the buffer
     dataBuffer.push_back( x );
     
-    float_t weightSum = 0;
+    Float weightSum = 0;
     for(unsigned int j=0; j<numInputDimensions; j++){
         processedData[j] = 0;
         weightSum = 0;

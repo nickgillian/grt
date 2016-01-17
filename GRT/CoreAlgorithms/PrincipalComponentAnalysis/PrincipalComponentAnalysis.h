@@ -73,7 +73,7 @@ class PrincipalComponentAnalysis : public MLBase{
      @return returns true if the principal components of the input matrix could be computed, false otherwise
      value
      */
-    bool computeFeatureVector(const MatrixFloat &data,float_t maxVariance=0.95,bool normData=false);
+    bool computeFeatureVector(const MatrixFloat &data,Float maxVariance=0.95,bool normData=false);
 
     /**
      Runs the principal component analysis algorithm on the input data and builds the resulting feature vector
@@ -154,7 +154,7 @@ class PrincipalComponentAnalysis : public MLBase{
      Returns the maxVariance parameter, set by the user when the computeFeatureVector was called.
      returns the maxVariance parameter, set by the user when the computeFeatureVector was called
      */
-    float_t getMaxVariance() const { return maxVariance; }
+    Float getMaxVariance() const { return maxVariance; }
     
     /**
      Returns the mean shift vector, computed during the computeFeatureVector function. New data will be subtracted
@@ -202,7 +202,7 @@ protected:
 
     bool normData;
     UINT numPrincipalComponents;
-    float_t maxVariance;
+    Float maxVariance;
     VectorFloat mean;
     VectorFloat stdDev;
     VectorFloat componentWeights;

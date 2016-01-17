@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the SVM module with the Classifier base class
 RegisterClassifierModule< SVM > SVM::registerModule("SVM");
 
-SVM::SVM(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,float_t gamma,UINT degree,float_t coef0,float_t nu,float_t C,bool useCrossValidation,UINT kFoldValue){
+SVM::SVM(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,float_t coef0,float_t nu,float_t C,bool useCrossValidation,UINT kFoldValue){
     
     //Setup the default SVM parameters
     model = NULL;
@@ -196,7 +196,7 @@ bool SVM::predict_(VectorFloat &inputVector){
     return true;
 }
     
-bool SVM::init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,float_t gamma,UINT degree,float_t coef0,float_t nu,float_t C,bool useCrossValidation,UINT kFoldValue){
+bool SVM::init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,float_t coef0,float_t nu,float_t C,bool useCrossValidation,UINT kFoldValue){
     
     //Clear any previous models or problems
     clear();
@@ -318,18 +318,18 @@ bool SVM::trainSVM(){
 
     if( useCrossValidation ){
         int i;
-        float_t total_correct = 0;
-        float_t total_error = 0;
-        float_t sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
-        float_t *target = new float_t[prob.l];
+        Float total_correct = 0;
+        Float total_error = 0;
+        Float sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
+        Float *target = new float_t[prob.l];
 
         svm_cross_validation(&prob,&param,kFoldValue,target);
         if( param.svm_type == EPSILON_SVR || param.svm_type == NU_SVR )
         {
             for(i=0;i<prob.l;i++)
             {
-                float_t y = prob.y[i];
-                float_t v = target[i];
+                Float y = prob.y[i];
+                Float v = target[i];
                 total_error += (v-y)*(v-y);
                 sumv += v;
                 sumy += y;
@@ -396,7 +396,7 @@ bool SVM::predictSVM(VectorFloat &inputVector){
 		}
 
 		//Perform the SVM prediction
-		float_t predict_label = svm_predict(model,x);
+		Float predict_label = svm_predict(model,x);
 
         //We can't do null rejection without the probabilities, so just set the predicted class
         predictedClassLabel = (UINT)predict_label;
@@ -407,15 +407,15 @@ bool SVM::predictSVM(VectorFloat &inputVector){
 		return true;
 }
 
-bool SVM::predictSVM(VectorFloat &inputVector,float_t &maxProbability, VectorFloat &probabilites){
+bool SVM::predictSVM(VectorFloat &inputVector,Float &maxProbability, VectorFloat &probabilites){
 
 		if( !trained || param.probability == 0 || inputVector.size() != numInputDimensions ) return false;
 
-		float_t *prob_estimates = NULL;
+		Float *prob_estimates = NULL;
 		svm_node *x = NULL;
 
 		//Setup the memory for the probability estimates
-		prob_estimates = new float_t[ model->nr_class ];
+		prob_estimates = new Float[ model->nr_class ];
 
 		//Copy the input data into the SVM format
 		x = new svm_node[numInputDimensions+1];
@@ -434,7 +434,7 @@ bool SVM::predictSVM(VectorFloat &inputVector,float_t &maxProbability, VectorFlo
 		}
 
 		//Perform the SVM prediction
-		float_t predict_label = svm_predict_probability(model,x,prob_estimates);
+		Float predict_label = svm_predict_probability(model,x,prob_estimates);
 
 		predictedClassLabel = 0;
 		maxProbability = 0;
@@ -476,7 +476,7 @@ bool SVM::convertClassificationDataToLIBSVMFormat(ClassificationData &trainingDa
     //Init the memory
     prob.l = numTrainingExamples;
     prob.x = new svm_node*[numTrainingExamples];
-    prob.y = new float_t[numTrainingExamples];
+    prob.y = new Float[numTrainingExamples];
     problemSet = true;
     
     for(UINT i=0; i<numTrainingExamples; i++){
@@ -601,7 +601,7 @@ bool SVM::saveModelToFile( std::fstream &file ) const{
         
         file << "SupportVectors: \n";
         
-        const float_t * const *sv_coef = model->sv_coef;
+        const Float * const *sv_coef = model->sv_coef;
         const svm_node * const *SV = model->SV;
         
         for(UINT i=0;i<numSV;i++){
@@ -831,7 +831,7 @@ bool SVM::loadModelFromFile( std::fstream &file ){
             clear();
             return false;
         }
-        model->rho = new float_t[ halfNumClasses ];
+        model->rho = new Float[ halfNumClasses ];
         for(UINT i=0;i<numClasses*(numClasses-1)/2;i++) file >> model->rho[i];
         
         //See if we can load the Labels
@@ -850,7 +850,7 @@ bool SVM::loadModelFromFile( std::fstream &file ){
         if(word != "ProbA:"){
             model->probA = NULL;
         }else{
-            model->probA = new float_t[ halfNumClasses ];
+            model->probA = new Float[ halfNumClasses ];
             for(UINT i=0;i<numClasses*(numClasses-1)/2;i++) file >> model->probA[i];
             //We only need to read a new line if we found the label!
             file >> word;
@@ -861,7 +861,7 @@ bool SVM::loadModelFromFile( std::fstream &file ){
         if(word != "ProbB:"){
             model->probB = NULL;
         }else{
-            model->probB = new float_t[ halfNumClasses ];
+            model->probB = new Float[ halfNumClasses ];
             for(UINT i=0;i<numClasses*(numClasses-1)/2;i++) file >> model->probB[i];
             //We only need to read a new line if we found the label!
             file >> word;
@@ -887,8 +887,8 @@ bool SVM::loadModelFromFile( std::fstream &file ){
         }
         
         //Setup the memory
-        model->sv_coef = new float_t*[numClasses-1];
-        for(UINT j=0;j<numClasses-1;j++) model->sv_coef[j] = new float_t[numSV];
+        model->sv_coef = new Float*[numClasses-1];
+        for(UINT j=0;j<numClasses-1;j++) model->sv_coef[j] = new Float[numSV];
         model->SV = new svm_node*[numSV];
         
         for(UINT i=0; i<numSV; i++){
@@ -1023,35 +1023,35 @@ UINT SVM::getDegree() const{
     return (UINT)param.gamma;
 }
     
-float_t SVM::getGamma() const{
+Float SVM::getGamma() const{
     if( trained ){
         return model->param.gamma;
     }
     return param.gamma;
 }
     
-float_t SVM::getNu() const{
+Float SVM::getNu() const{
     if( trained ){
         return model->param.nu;
     }
     return param.gamma;
 }
 
-float_t SVM::getCoef0() const{
+Float SVM::getCoef0() const{
     if( trained ){
         return model->param.coef0;
     }
     return param.gamma;
 }
 
-float_t SVM::getC() const{
+Float SVM::getC() const{
     if( trained ){
         return model->param.C;
     }
     return param.gamma;
 }
     
-float_t SVM::getCrossValidationResult() const{ return crossValidationResult; }
+Float SVM::getCrossValidationResult() const{ return crossValidationResult; }
 
 bool SVM::setSVMType(const UINT svmType){
     if( validateSVMType(svmType) ){
@@ -1070,12 +1070,12 @@ bool SVM::setKernelType(const UINT kernelType){
     return false;
 }
     
-bool SVM::setGamma(const float_t gamma){
+bool SVM::setGamma(const Float gamma){
     if( !useAutoGamma ){
         this->param.gamma = gamma;
         return true;
     }
-    warningLog << "setGamma(float_t gamma) - Failed to set gamma, useAutoGamma is enabled, setUseAutoGamma to false first!" << std::endl;
+    warningLog << "setGamma(Float gamma) - Failed to set gamma, useAutoGamma is enabled, setUseAutoGamma to false first!" << std::endl;
     return false;
 }
     
@@ -1084,17 +1084,17 @@ bool SVM::setDegree(const UINT degree){
     return true;
 }
     
-bool SVM::setNu(const float_t nu){
+bool SVM::setNu(const Float nu){
     this->param.nu = nu;
     return true;
 }
 
-bool SVM::setCoef0(const float_t coef0){
+bool SVM::setCoef0(const Float coef0){
     this->param.coef0 = coef0;
     return true;
 }
 
-bool SVM::setC(const float_t C){
+bool SVM::setC(const Float C){
     this->param.C = C;
     return true;
 }
@@ -1208,7 +1208,7 @@ struct svm_model* SVM::deepCopyModel() const{
     //Setup the values
     halfNumClasses = model->nr_class*(model->nr_class-1)/2;
 
-    m->rho = new float_t[ halfNumClasses ];
+    m->rho = new Float[ halfNumClasses ];
     for(int i=0;i <model->nr_class*(model->nr_class-1)/2; i++) m->rho[i] = model->rho[i];
     
     if( model->label != NULL ){
@@ -1217,12 +1217,12 @@ struct svm_model* SVM::deepCopyModel() const{
     }
     
     if( model->probA != NULL ){
-        m->probA = new float_t[ halfNumClasses ];
+        m->probA = new Float[ halfNumClasses ];
         for(UINT i=0;i<halfNumClasses; i++) m->probA[i] = model->probA[i];
     }
     
     if( model->probB != NULL ){
-        m->probB = new float_t[ halfNumClasses ];
+        m->probB = new Float[ halfNumClasses ];
         for(UINT i=0; i<halfNumClasses; i++) m->probB[i] = model->probB[i];
     }
     
@@ -1232,8 +1232,8 @@ struct svm_model* SVM::deepCopyModel() const{
     }
     
     //Setup the memory
-    m->sv_coef = new float_t*[numClasses-1];
-    for(UINT j=0;j<numClasses-1;j++) m->sv_coef[j] = new float_t[model->l];
+    m->sv_coef = new Float*[numClasses-1];
+    for(UINT j=0;j<numClasses-1;j++) m->sv_coef[j] = new Float[model->l];
     m->SV = new svm_node*[model->l];
     
     for(int i=0; i<model->l; i++){
@@ -1288,7 +1288,7 @@ bool SVM::deepCopyProblem( const struct svm_problem &source, struct svm_problem 
     }
 
     if( source.y != NULL ){
-        target.y = new float_t[ target.l ];
+        target.y = new Float[ target.l ];
         for(int i=0; i<target.l; i++){
             target.y[i] = source.y[i];
         }
@@ -1549,7 +1549,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
         clear();
         return false;
     }
-    model->rho = new float_t[ halfNumClasses ];
+    model->rho = new Float[ halfNumClasses ];
     for(UINT i=0;i<numClasses*(numClasses-1)/2;i++) file >> model->rho[i];
     
     //See if we can load the Labels
@@ -1568,7 +1568,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     if(word != "ProbA:"){
         model->probA = NULL;
     }else{
-        model->probA = new float_t[ halfNumClasses ];
+        model->probA = new Float[ halfNumClasses ];
         for(UINT i=0;i<numClasses*(numClasses-1)/2;i++) file >> model->probA[i];
         //We only need to read a new line if we found the label!
         file >> word;
@@ -1579,7 +1579,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     if(word != "ProbB:"){
         model->probB = NULL;
     }else{
-        model->probB = new float_t[ halfNumClasses ];
+        model->probB = new Float[ halfNumClasses ];
         for(UINT i=0;i<numClasses*(numClasses-1)/2;i++) file >> model->probB[i];
         //We only need to read a new line if we found the label!
         file >> word;
@@ -1605,8 +1605,8 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     }
     
     //Setup the memory
-    model->sv_coef = new float_t*[numClasses-1];
-    for(UINT j=0;j<numClasses-1;j++) model->sv_coef[j] = new float_t[numSV];
+    model->sv_coef = new Float*[numClasses-1];
+    for(UINT j=0;j<numClasses-1;j++) model->sv_coef[j] = new Float[numSV];
     model->SV = new svm_node*[numSV];
     
     for(UINT i=0; i<numSV; i++){

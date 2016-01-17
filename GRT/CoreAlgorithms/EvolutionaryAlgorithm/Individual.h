@@ -47,7 +47,7 @@ public:
         return *this;
     }
     
-    float_t fitness;
+    Float fitness;
     VectorFloat gene;
 };
     

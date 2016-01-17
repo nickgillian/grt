@@ -46,7 +46,7 @@ public:
 	@param numDimensions: the number of dimensions in the input data
     @param numClusters: the number of quantization clusters
      */
-    KMeansFeatures(const Vector< UINT > numClustersPerLayer = Vector< UINT >(1,100),const float_t alpha = 0.2,const bool useScaling = true);
+    KMeansFeatures(const Vector< UINT > numClustersPerLayer = Vector< UINT >(1,100),const Float alpha = 0.2,const bool useScaling = true);
 	
     /**
      Copy constructor, copies the KMeansQuantizer from the rhs instance to this instance.
@@ -189,7 +189,7 @@ public:
     using MLBase::predict_;
     
 protected:
-    float_t alpha;
+    Float alpha;
     Vector< UINT > numClustersPerLayer;
     Vector< MinMax > ranges;
     Vector< MatrixFloat > clusters;

@@ -47,7 +47,7 @@ public:
 	MatrixFloat alpha;     //The forward estimate matrix
 	MatrixFloat beta;      //The backward estimate matrix
 	VectorFloat c;         //The scaling coefficient Vector
-	float_t pk;				//P( O | Model )
+	Float pk;				//P( O | Model )
 };
 
 class DiscreteHiddenMarkovModel : public MLBase {
@@ -63,8 +63,8 @@ public:
     
     virtual ~DiscreteHiddenMarkovModel();
     
-    float_t predict(const UINT newSample);
-    float_t predict(const Vector<UINT> &obs);
+    Float predict(const UINT newSample);
+    Float predict(const Vector<UINT> &obs);
     
     bool resetModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta);
     bool train(const Vector< Vector<UINT> > &trainingData);
@@ -88,9 +88,9 @@ public:
     virtual bool loadModelFromFile( std::fstream &file );
 
     bool randomizeMatrices(const UINT numStates,const UINT numSymbols);
-	float_t predictLogLikelihood(const Vector<UINT> &obs);
+	Float predictLogLikelihood(const Vector<UINT> &obs);
 	bool forwardBackward(HMMTrainingObject &trainingObject,const Vector<UINT> &obs);
-    bool train_(const Vector< Vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,float_t &newLoglikelihood);
+    bool train_(const Vector< Vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,Float &newLoglikelihood);
     virtual bool print() const;
     
     VectorFloat getTrainingIterationLog() const;
@@ -105,8 +105,8 @@ public:
 	UINT modelType;
 	UINT delta;				//The number of states a model can move to in a LeftRight model
 	UINT numRandomTrainingIterations;		//The number of training loops to find the best starting values
-	float_t logLikelihood;	//The log likelihood of an observation sequence given the modal, calculated by the forward method
-	float_t cThreshold;		//The classification threshold for this model
+	Float logLikelihood;	//The log likelihood of an observation sequence given the modal, calculated by the forward method
+	Float cThreshold;		//The classification threshold for this model
     CircularBuffer<UINT> observationSequence;
     Vector< UINT > estimatedStates;
 };

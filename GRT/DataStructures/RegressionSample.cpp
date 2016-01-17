@@ -56,11 +56,11 @@ UINT RegressionSample::getNumTargetDimensions() const{
     return targetVector.getSize();
 }
     
-float_t RegressionSample::getInputVectorValue(const UINT index) const{
+Float RegressionSample::getInputVectorValue(const UINT index) const{
     if( index < inputVector.getSize() ) return inputVector[index];
     else return 0;
 }
-float_t RegressionSample::getTargetVectorValue(const UINT index) const{
+Float RegressionSample::getTargetVectorValue(const UINT index) const{
     if( index < targetVector.getSize() ) return targetVector[index];
     else return 0;
 }

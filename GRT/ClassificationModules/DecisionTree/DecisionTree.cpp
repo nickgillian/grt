@@ -347,7 +347,7 @@ bool DecisionTree::predict_(VectorFloat &inputVector){
     if( useNullRejection ){
         
         //Get the distance between the input and the leaf mean
-        float_t leafDistance = getNodeDistance( inputVector, tree->getPredictedNodeID() );
+        Float leafDistance = getNodeDistance( inputVector, tree->getPredictedNodeID() );
         
         if( grt_isnan(leafDistance) ){
             Classifier::errorLog << "predict_(VectorFloat &inputVector) - Failed to match leaf node ID to compute node distance!" << std::endl;
@@ -795,7 +795,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     
     //Compute the best spilt point
     UINT featureIndex = 0;
-    float_t minError = 0;
+    Float minError = 0;
     
     if( !node->computeBestSpilt( trainingMode, numSplittingSteps, trainingData, features, classLabels, featureIndex, minError ) ){
         delete node;
@@ -853,7 +853,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     return node;
 }
     
-float_t DecisionTree::getNodeDistance( const VectorFloat &x, const UINT nodeID ){
+Float DecisionTree::getNodeDistance( const VectorFloat &x, const UINT nodeID ){
     
     //Use the node ID to find the node cluster
     std::map< UINT,VectorFloat >::iterator iter = nodeClusters.find( nodeID );
@@ -865,9 +865,9 @@ float_t DecisionTree::getNodeDistance( const VectorFloat &x, const UINT nodeID )
     return getNodeDistance( x, iter->second );
 }
     
-float_t DecisionTree::getNodeDistance( const VectorFloat &x, const VectorFloat &y ){
+Float DecisionTree::getNodeDistance( const VectorFloat &x, const VectorFloat &y ){
     
-    float_t distance = 0;
+    Float distance = 0;
     const size_t N = x.size();
     
     for(size_t i=0; i<N; i++){

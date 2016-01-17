@@ -286,7 +286,7 @@ bool FFTFeatures::computeFeatures(const VectorFloat &inputVector){
     Vector< IndexedDouble > fftMagData(fftWindowSize);
     
     for(UINT i=0; i<numChannelsInFFTSignal; i++){
-        float_t spectrumSum = 0;
+        Float spectrumSum = 0;
         maxFreq.value = 0;
         maxFreq.index = 0;
         centroidFeature = 0;

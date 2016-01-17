@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the ANBC module with the Classifier base class
 RegisterClassifierModule< ANBC > ANBC::registerModule("ANBC");
 
-ANBC::ANBC(bool useScaling,bool useNullRejection,float_t nullRejectionCoeff)
+ANBC::ANBC(bool useScaling,bool useNullRejection,Float nullRejectionCoeff)
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
@@ -222,8 +222,8 @@ bool ANBC::predict_(VectorFloat &inputVector){
     if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
-    float_t classLikelihoodsSum = 0;
-    float_t minDist = -99e+99;
+    Float classLikelihoodsSum = 0;
+    Float minDist = -99e+99;
 	for(UINT k=0; k<numClasses; k++){
 		classDistances[k] = models[k].predict( inputVector );
         
@@ -463,7 +463,7 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
             
             //Load Mu
             for(UINT j=0; j<models[k].N; j++){
-                float_t value;
+                Float value;
                 file >> value;
                 models[k].mu[j] = value;
             }
@@ -476,7 +476,7 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
             
             //Load Sigma
             for(UINT j=0; j<models[k].N; j++){
-                float_t value;
+                Float value;
                 file >> value;
                 models[k].sigma[j] = value;
             }
@@ -489,7 +489,7 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
             
             //Load Weights
             for(UINT j=0; j<models[k].N; j++){
-                float_t value;
+                Float value;
                 file >> value;
                 models[k].weights[j] = value;
             }
@@ -513,7 +513,7 @@ VectorFloat ANBC::getNullRejectionThresholds() const{
     return nullRejectionThresholds;
 }
     
-bool ANBC::setNullRejectionCoeff(float_t nullRejectionCoeff){
+bool ANBC::setNullRejectionCoeff(Float nullRejectionCoeff){
     
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;
@@ -663,7 +663,7 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
         
         //Load Mu
         for(UINT j=0; j<models[k].N; j++){
-            float_t value;
+            Float value;
             file >> value;
             models[k].mu[j] = value;
         }
@@ -676,7 +676,7 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
         
         //Load Sigma
         for(UINT j=0; j<models[k].N; j++){
-            float_t value;
+            Float value;
             file >> value;
             models[k].sigma[j] = value;
         }
@@ -689,7 +689,7 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
         
         //Load Weights
         for(UINT j=0; j<models[k].N; j++){
-            float_t value;
+            Float value;
             file >> value;
             models[k].weights[j] = value;
         }

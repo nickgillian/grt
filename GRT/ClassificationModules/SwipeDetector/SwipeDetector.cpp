@@ -422,31 +422,31 @@ bool SwipeDetector::getSwipeDetected() const {
     return swipeDetected;
 }
 
-float_t SwipeDetector::getSwipeValue() const {
+Float SwipeDetector::getSwipeValue() const {
     return thresholdDetector.getAnalysisValue();
 }
 
-float_t SwipeDetector::getSwipeThreshold() const {
+Float SwipeDetector::getSwipeThreshold() const {
     return swipeThreshold;
 }
     
-float_t SwipeDetector::getHysteresisThreshold() const{
+Float SwipeDetector::getHysteresisThreshold() const{
     return hysteresisThreshold;
 }
 
-float_t SwipeDetector::getMovementVelocity() const {
+Float SwipeDetector::getMovementVelocity() const {
     return movementVelocity;
 }
 
-float_t SwipeDetector::getMovementThreshold() const {
+Float SwipeDetector::getMovementThreshold() const {
     return movementThreshold;
 }
 
-float_t SwipeDetector::getContextValue() const {
+Float SwipeDetector::getContextValue() const {
     return contextFilteredValue;
 }
 
-float_t SwipeDetector::getSwipeIntegrationCoeff() const{
+Float SwipeDetector::getSwipeIntegrationCoeff() const{
     return swipeIntegrationCoeff;
 }
     
@@ -474,25 +474,25 @@ bool SwipeDetector::setSwipeDirection(const unsigned int swipeDirection){
     return true;
 }
 
-bool SwipeDetector::setSwipeThreshold(const float_t swipeThreshold){
+bool SwipeDetector::setSwipeThreshold(const Float swipeThreshold){
     this->swipeThreshold = swipeThreshold;
     reset();
     return true;
 }
 
-bool SwipeDetector::setHysteresisThreshold(const float_t hysteresisThreshold){
+bool SwipeDetector::setHysteresisThreshold(const Float hysteresisThreshold){
     this->hysteresisThreshold = hysteresisThreshold;
     reset();
     return true;
 }
 
-bool SwipeDetector::setMovementThreshold(const float_t movementThreshold){
+bool SwipeDetector::setMovementThreshold(const Float movementThreshold){
     this->movementThreshold = movementThreshold;
     reset();
     return true;
 }
 
-bool SwipeDetector::setSwipeIntegrationCoeff(const float_t swipeIntegrationCoeff){
+bool SwipeDetector::setSwipeIntegrationCoeff(const Float swipeIntegrationCoeff){
     this->swipeIntegrationCoeff = swipeIntegrationCoeff;
     reset();
     return true;

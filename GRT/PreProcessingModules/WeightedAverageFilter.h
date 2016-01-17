@@ -126,7 +126,7 @@ public:
      @param x: the value to filter, this should only be called if the dimensionality of the filter was set to 1
      @return the filtered value.  Zero will be returned if the value was not filtered
     */
-    float_t filter(const float_t x);
+    Float filter(const Float x);
     
     /**
      Filters the input, the dimensionality of the input vector should match that of the filter.

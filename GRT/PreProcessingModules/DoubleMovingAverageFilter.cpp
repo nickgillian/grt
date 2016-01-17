@@ -23,7 +23,7 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  
  @section DESCRIPTION
- The DoubleMovingAverageFilter implements a low pass float_t moving average filter.
+ The DoubleMovingAverageFilter implements a low pass Float moving average filter.
  
  */
 
@@ -255,11 +255,11 @@ bool DoubleMovingAverageFilter::init(UINT filterSize,UINT numDimensions){
     return true;
 }
 
-float_t DoubleMovingAverageFilter::filter(const float_t x){
+Float DoubleMovingAverageFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const float_t x) - The filter has not been initialized!" << std::endl;
+        errorLog << "filter(const Float x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     

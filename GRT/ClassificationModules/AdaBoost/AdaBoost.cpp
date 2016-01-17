@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the AdaBoost module with the Classifier base class
 RegisterClassifierModule< AdaBoost > AdaBoost::registerModule("AdaBoost");
 
-AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool useNullRejection,float_t nullRejectionCoeff,UINT numBoostingIterations,UINT predictionMethod)
+AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numBoostingIterations,UINT predictionMethod)
 {
     setWeakClassifier( weakClassifier );
     this->useScaling = useScaling;
@@ -126,9 +126,9 @@ bool AdaBoost::train_(ClassificationData &trainingData){
     const UINT M = trainingData.getNumSamples();
     const UINT POSITIVE_LABEL = WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL;
     const UINT NEGATIVE_LABEL = WEAK_CLASSIFIER_NEGATIVE_CLASS_LABEL;
-    float_t alpha = 0;
-    const float_t beta = 0.001;
-    float_t epsilon = 0;
+    Float alpha = 0;
+    const Float beta = 0.001;
+    Float epsilon = 0;
     TrainingResult trainingResult;
     
     const UINT K = (UINT)weakClassifiers.size();
@@ -180,7 +180,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
             
             //Pick the classifier from the family of classifiers that minimizes the total error
             UINT bestClassifierIndex = 0;
-            float_t minError = grt_numeric_limits< float_t >::max();
+            Float minError = grt_numeric_limits< float_t >::max();
             for(UINT k=0; k<K; k++){
                 //Get the k'th possible classifier
                 WeakClassifier *weakLearner = weakClassifiers[k];
@@ -192,13 +192,13 @@ bool AdaBoost::train_(ClassificationData &trainingData){
                 }
                 
                 //Compute the weighted error for this clasifier
-                float_t e = 0;
-                float_t positiveLabel = weakLearner->getPositiveClassLabel();
-                float_t numCorrect = 0;
-                float_t numIncorrect = 0;
+                Float e = 0;
+                Float positiveLabel = weakLearner->getPositiveClassLabel();
+                Float numCorrect = 0;
+                Float numIncorrect = 0;
                 for(UINT i=0; i<M; i++){
                     //Only penalize errors
-                    float_t prediction = weakLearner->predict( classData[i].getSample() );
+                    Float prediction = weakLearner->predict( classData[i].getSample() );
                     
                     if( (prediction == positiveLabel && classData[i].getClassLabel() != POSITIVE_LABEL) ||        //False positive
                         (prediction != positiveLabel && classData[i].getClassLabel() == POSITIVE_LABEL) ){       //False negative
@@ -241,9 +241,9 @@ bool AdaBoost::train_(ClassificationData &trainingData){
                 models[ classIter ].addClassifierToCommitee( weakClassifiers[bestClassifierIndex], alpha );
                 
                 //Update the weights for the next boosting iteration
-                float_t reWeight = (1.0 - epsilon) / epsilon;
-                float_t oldSum = 0;
-                float_t newSum = 0;
+                Float reWeight = (1.0 - epsilon) / epsilon;
+                Float oldSum = 0;
+                Float newSum = 0;
                 for(UINT i=0; i<M; i++){
                     oldSum += weights[i];
                     //Only update the weights that resulted in an incorrect prediction
@@ -314,11 +314,11 @@ bool AdaBoost::predict_(VectorFloat &inputVector){
     
     UINT bestClassIndex = 0;
     UINT numPositivePredictions = 0;
-    bestDistance = -grt_numeric_limits< float_t >::max();
-    float_t worstDistance = grt_numeric_limits< float_t >::max();
-    float_t sum = 0;
+    bestDistance = -grt_numeric_limits< Float >::max();
+    Float worstDistance = grt_numeric_limits< float_t >::max();
+    Float sum = 0;
     for(UINT k=0; k<numClasses; k++){
-        float_t result = models[k].predict( inputVector );
+        Float result = models[k].predict( inputVector );
         
         switch ( predictionMethod ) {
             case MAX_POSITIVE_VALUE:
@@ -386,7 +386,7 @@ bool AdaBoost::recomputeNullRejectionThresholds(){
     return false;
 }
     
-bool AdaBoost::setNullRejectionCoeff(float_t nullRejectionCoeff){
+bool AdaBoost::setNullRejectionCoeff(Float nullRejectionCoeff){
     
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;

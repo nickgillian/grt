@@ -115,13 +115,13 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,c
     }
 
     //Sort the eigenvalues and compute the component weights
-    float_t sum = 0;
+    Float sum = 0;
     UINT componentIndex = 0;
     sortedEigenvalues.clear();
     componentWeights.resize(N,0);
 
     while( true ){
-        float_t maxValue = 0;
+        Float maxValue = 0;
         UINT index = 0;
         for(UINT i=0; i<eigenvalues.size(); i++){
             if( eigenvalues[i] > maxValue ){
@@ -138,7 +138,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,c
         eigenvalues[ index ] = 0; //Set the maxValue to zero so it won't be used again
     }
 
-    float_t cumulativeVariance = 0;
+    Float cumulativeVariance = 0;
     switch( analysisMode ){
         case MAX_VARIANCE:
             //Normalize the component weights and workout how many components we need to use to reach the maxVariance

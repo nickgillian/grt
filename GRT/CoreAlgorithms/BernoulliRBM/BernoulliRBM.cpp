@@ -3,7 +3,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-BernoulliRBM::BernoulliRBM(const UINT numHiddenUnits,const UINT maxNumEpochs,const float_t learningRate,const float_t learningRateUpdate,const float_t momentum,const bool useScaling,const bool randomiseTrainingOrder){
+BernoulliRBM::BernoulliRBM(const UINT numHiddenUnits,const UINT maxNumEpochs,const Float learningRate,const float_t learningRateUpdate,const float_t momentum,const bool useScaling,const bool randomiseTrainingOrder){
 
     this->numHiddenUnits = numHiddenUnits;
     this->maxNumEpochs = maxNumEpochs;
@@ -63,7 +63,7 @@ bool BernoulliRBM::predict_(VectorFloat &inputData,VectorFloat &outputData){
     }
     
     //Propagate the data up through the RBM
-    float_t x = 0.0;
+    Float x = 0.0;
     for(UINT i=0; i<numHiddenUnits; i++){
         for(UINT j=0; j<numVisibleUnits; j++) {
             x += weightsMatrix[i][j] * inputData[j];
@@ -96,7 +96,7 @@ bool BernoulliRBM::predict_(const MatrixFloat &inputData,MatrixFloat &outputData
     }
     
     //Propagate the data up through the RBM
-    float_t x = 0.0;
+    Float x = 0.0;
     for(UINT j=0; j<numHiddenUnits; j++){
         x = 0;
         for(UINT i=0; i<numVisibleUnits; i++) {
@@ -123,7 +123,7 @@ bool BernoulliRBM::train_(MatrixFloat &data){
         //Init the weights matrix
         weightsMatrix.resize(numHiddenUnits, numVisibleUnits);
         
-        float_t a = 1.0 / numVisibleUnits;
+        Float a = 1.0 / numVisibleUnits;
         for(UINT i=0; i<numHiddenUnits; i++) {
             for(UINT j=0; j<numVisibleUnits; j++) {
                 weightsMatrix[i][j] = rand.getRandomNumberUniform(-a, a);
@@ -169,7 +169,7 @@ bool BernoulliRBM::train_(MatrixFloat &data){
     }
     
 
-    const UINT numBatches = static_cast<UINT>( ceil( float_t(numTrainingSamples)/batchSize ) );
+    const UINT numBatches = static_cast<UINT>( ceil( Float(numTrainingSamples)/batchSize ) );
     
     //Setup the batch indexs
     Vector< BatchIndexs > batchIndexs( numBatches );
@@ -192,12 +192,12 @@ bool BernoulliRBM::train_(MatrixFloat &data){
     
     Timer timer;
     UINT i,j,n,epoch,noChangeCounter = 0;
-    float_t startTime = 0;
-    float_t alpha = learningRate;
-    float_t error = 0;
-    float_t err = 0;
-    float_t delta = 0;
-    float_t lastError = 0;
+    Float startTime = 0;
+    Float alpha = learningRate;
+    Float error = 0;
+    Float err = 0;
+    Float delta = 0;
+    Float lastError = 0;
     Vector< UINT > indexList(numTrainingSamples);
     TrainingResult trainingResult;
     MatrixFloat wT( numVisibleUnits, numHiddenUnits );       //Stores a transposed copy of the weights vector
@@ -247,16 +247,16 @@ bool BernoulliRBM::train_(MatrixFloat &data){
             h2.resize( batchIndexs[k].batchSize, numHiddenUnits );
             
             //Setup the data pointers, using data pointers saves a few ms on large matrix updates
-            float_t **w_p = weightsMatrix.getDataPointer();
-            float_t **wT_p = wT.getDataPointer();
-            float_t **vW_p = vW.getDataPointer();
-            float_t **data_p = data.getDataPointer();
-            float_t **v1_p = v1.getDataPointer();
-            float_t **v2_p = v2.getDataPointer();
-            float_t **h1_p = h1.getDataPointer();
-            float_t **h2_p = h2.getDataPointer();
-            float_t *vlb_p = &visibleLayerBias[0];
-            float_t *hlb_p = &hiddenLayerBias[0];
+            Float **w_p = weightsMatrix.getDataPointer();
+            Float **wT_p = wT.getDataPointer();
+            Float **vW_p = vW.getDataPointer();
+            Float **data_p = data.getDataPointer();
+            Float **v1_p = v1.getDataPointer();
+            Float **v2_p = v2.getDataPointer();
+            Float **h1_p = h1.getDataPointer();
+            Float **h2_p = h2.getDataPointer();
+            Float *vlb_p = &visibleLayerBias[0];
+            Float *hlb_p = &hiddenLayerBias[0];
             
             //Get the batch data
             UINT index = 0;
@@ -685,12 +685,12 @@ bool BernoulliRBM::setNumHiddenUnits(const UINT numHiddenUnits){
     return true;
 }
     
-bool BernoulliRBM::setMomentum(const float_t momentum){
+bool BernoulliRBM::setMomentum(const Float momentum){
     this->momentum = momentum;
     return true;
 }
 
-bool BernoulliRBM::setLearningRateUpdate(const float_t learningRateUpdate){
+bool BernoulliRBM::setLearningRateUpdate(const Float learningRateUpdate){
     this->learningRateUpdate = learningRateUpdate;
     return true;
 }

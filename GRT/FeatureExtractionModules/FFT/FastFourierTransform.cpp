@@ -209,7 +209,7 @@ bool FastFourierTransform::computeFFT( VectorFloat &data ){
     }
 
     //Compute the average power
-    averagePower = averagePower / (float_t)(windowSize/2);
+    averagePower = averagePower / (Float)(windowSize/2);
     
     return true;
 }
@@ -225,8 +225,8 @@ bool FastFourierTransform::windowData( VectorFloat &data ){
             break;
         case BARTLETT_WINDOW:
             for(unsigned int i=0; i<K; i++) {
-                data[i] *= (i / (float_t) (K));
-                data[i + K] *= (1.0 - (i / (float_t)K));
+                data[i] *= (i / (Float) (K));
+                data[i + K] *= (1.0 - (i / (Float)K));
             }
             return true;
             break;
@@ -287,19 +287,19 @@ VectorFloat FastFourierTransform::getPowerData(){
     return powerData;
 }
     
-float_t FastFourierTransform::getAveragePower(){
+Float FastFourierTransform::getAveragePower(){
     return averagePower;
 }
     
-float_t* FastFourierTransform::getMagnitudeDataPtr(){
+Float* FastFourierTransform::getMagnitudeDataPtr(){
     return &magnitude[0];
 }
 
-float_t* FastFourierTransform::getPhaseDataPtr(){
+Float* FastFourierTransform::getPhaseDataPtr(){
     return &phase[0];
 }
 
-float_t* FastFourierTransform::getPowerDataPtr(){
+Float* FastFourierTransform::getPowerDataPtr(){
     return &power[0];
 }
     
@@ -318,12 +318,12 @@ float_t* FastFourierTransform::getPowerDataPtr(){
  * i4  <->  imag[n/2-i]
  */
 
-bool FastFourierTransform::realFFT( const VectorFloat &realIn, float_t *realOut, float_t *imagOut ){
+bool FastFourierTransform::realFFT( const VectorFloat &realIn, Float *realOut, float_t *imagOut ){
     int NumSamples = (int)windowSize;
     int Half = NumSamples / 2;
     int i;
     
-    float_t theta = PI / Half;
+    Float theta = PI / Half;
     
     for (i = 0; i < Half; i++) {
         tmpReal[i] = realIn[2 * i];
@@ -334,16 +334,16 @@ bool FastFourierTransform::realFFT( const VectorFloat &realIn, float_t *realOut,
         return false;
     }
     
-    float_t wtemp = float_t(sin(0.5 * theta));
+    Float wtemp = float_t(sin(0.5 * theta));
     
-    float_t wpr = -2.0 * wtemp * wtemp;
-    float_t wpi = float_t (sin(theta));
-    float_t wr = 1.0 + wpr;
-    float_t wi = wpi;
+    Float wpr = -2.0 * wtemp * wtemp;
+    Float wpi = float_t (sin(theta));
+    Float wr = 1.0 + wpr;
+    Float wi = wpi;
     
     int i3;
     
-    float_t h1r, h1i, h2r, h2i;
+    Float h1r, h1i, h2r, h2i;
     
     for (i = 1; i < Half / 2; i++) {
         
@@ -369,13 +369,13 @@ bool FastFourierTransform::realFFT( const VectorFloat &realIn, float_t *realOut,
     return true;
 }
 
-bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,float_t *realIn, float_t *imagIn, float_t *realOut, float_t *imagOut){
+bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,Float *realIn, float_t *imagIn, float_t *realOut, float_t *imagOut){
     int NumBits;                 /* Number of bits needed to store indices */
     int i, j, k, n;
     int BlockSize, BlockEnd;
     
-    float_t angle_numerator = 2.0 * PI;
-    float_t tr, ti;                /* temp real, temp imaginary */
+    Float angle_numerator = 2.0 * PI;
+    Float tr, ti;                /* temp real, temp imaginary */
     
     if( !isPowerOfTwo(numSamples) ) {
         fprintf(stderr, "%d is not a power of two\n", numSamples);
@@ -399,14 +399,14 @@ bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,float_t *rea
     BlockEnd = 1;
     for (BlockSize = 2; BlockSize <= numSamples; BlockSize <<= 1) {
         
-        float_t delta_angle = angle_numerator / (float_t) BlockSize;
+        Float delta_angle = angle_numerator / (float_t) BlockSize;
         
-        float_t sm2 = sin(-2 * delta_angle);
-        float_t sm1 = sin(-delta_angle);
-        float_t cm2 = cos(-2 * delta_angle);
-        float_t cm1 = cos(-delta_angle);
-        float_t w = 2 * cm1;
-        float_t ar0, ar1, ar2, ai0, ai1, ai2;
+        Float sm2 = sin(-2 * delta_angle);
+        Float sm1 = sin(-delta_angle);
+        Float cm2 = cos(-2 * delta_angle);
+        Float cm1 = cos(-delta_angle);
+        Float w = 2 * cm1;
+        Float ar0, ar1, ar2, ai0, ai1, ai2;
         
         for (i = 0; i < numSamples; i += BlockSize) {
             ar2 = cm2;
@@ -441,7 +441,7 @@ bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,float_t *rea
     
     //Need to normalize the results if we are computing the inverse transform
     if( inverseTransform ){
-        float_t denom = (float_t) numSamples;
+        Float denom = (float_t) numSamples;
         
         for(i = 0; i < numSamples; i++) {
             realOut[i] /= denom;

@@ -37,10 +37,10 @@ TEST(VectorFloat, EqualsConstructor) {
 	EXPECT_EQ(vec1.getSize(), vec2.getSize());
 }
 
-// Tests the Vector< float_t > equals operator.
+// Tests the Vector< Float > equals operator.
 TEST(VectorFloat, VecFloatEqualsConstructor) {
 	const UINT size = 100;
-	Vector< GRT::float_t > vec1( size );
+	Vector< Float > vec1( size );
 	EXPECT_EQ(size, vec1.getSize());
 	VectorFloat vec2;
 	vec2 = vec1;
@@ -76,8 +76,8 @@ TEST(VectorFloat, Scale) {
 	for(UINT i=0; i<size; i++){ vec[i] = i*1.0; }
 
 	//Scale the contents in the vector
-	GRT::float_t minTarget = -1.0f;
-	GRT::float_t maxTarget = 1.0f;
+	Float minTarget = -1.0f;
+	Float maxTarget = 1.0f;
 	EXPECT_TRUE( vec.scale(minTarget,maxTarget) );
 
 	EXPECT_EQ( vec.getMinValue(), minTarget );
@@ -92,10 +92,10 @@ TEST(VectorFloat, MinMaxScale) {
 	for(UINT i=0; i<size; i++){ vec[i] = i*1.0; }
 
 	//Scale the contents in the vector
-	GRT::float_t minSource = 10; //Deliberately set the min source to 10, even though the min value should be 0
-	GRT::float_t maxSource = 90; //Deliberately set the max source to 90, even though the max value should be 100
-	GRT::float_t minTarget = -1.0f;
-	GRT::float_t maxTarget = 1.0f;
+	Float minSource = 10; //Deliberately set the min source to 10, even though the min value should be 0
+	Float maxSource = 90; //Deliberately set the max source to 90, even though the max value should be 100
+	Float minTarget = -1.0f;
+	Float maxTarget = 1.0f;
 	EXPECT_TRUE( vec.scale(minSource, maxSource, minTarget, maxTarget, true) );
 	EXPECT_EQ( vec.getMinValue(), minTarget );
 	EXPECT_EQ( vec.getMaxValue(), maxTarget );
@@ -123,6 +123,53 @@ TEST(VectorFloat, GetMax) {
 	EXPECT_EQ(size, vec.getSize());
 	for(UINT i=0; i<size; i++){ vec[i] = i*1.0; }
 	EXPECT_EQ( vec.getMaxValue(), 99.0f );
+}
+
+// Tests the getMean
+TEST(VectorFloat, GetMean) {
+	const UINT size = 100;
+	VectorFloat vec( size );
+	EXPECT_EQ(size, vec.getSize());
+	for(UINT i=0; i<size; i++){ vec[i] = i*1.0; }
+	Float mean = 0.0;
+	for(UINT i=0; i<size; i++){
+		mean += vec[i];
+	}
+	mean /= size;
+	EXPECT_EQ( vec.getMean(), mean );
+}
+
+// Tests the getStdDev
+TEST(VectorFloat, GetStdDev) {
+	const UINT size = 100;
+	VectorFloat vec( size );
+	EXPECT_EQ(size, vec.getSize());
+	for(UINT i=0; i<size; i++){ vec[i] = i*1.0; }
+	Float mean = 0.0;
+	Float stddev = 0.0;
+	for(UINT i=0; i<size; i++){
+		mean += vec[i];
+	}
+	mean /= size;
+	for(UINT i=0; i<size; i++){
+		stddev += grt_sqr( vec[i]-mean );
+	}
+	stddev = grt_sqrt( stddev / (size-1) );
+
+	EXPECT_EQ( vec.getStdDev(), stddev );
+}
+
+// Tests the getMinMax
+TEST(VectorFloat, GetMinMax) {
+	const UINT size = 100;
+	VectorFloat vec( size );
+	EXPECT_EQ(size, vec.getSize());
+	for(UINT i=0; i<size; i++){ vec[i] = i*1.0; }
+	Float expectedMin = 0.0;
+	Float expectedMax = size-1;
+	MinMax result = vec.getMinMax();
+	EXPECT_EQ( expectedMin, result.min );
+	EXPECT_EQ( expectedMax, result.max );
 }
 
 int main(int argc, char **argv) {

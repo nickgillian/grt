@@ -161,12 +161,12 @@ bool UnlabelledData::enableExternalRangeScaling(const bool useExternalRanges){
     return false;
 }
 
-bool UnlabelledData::scale(const float_t minTarget,const float_t maxTarget){
+bool UnlabelledData::scale(const Float minTarget,const float_t maxTarget){
     Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool UnlabelledData::scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
+bool UnlabelledData::scale(const Vector<MinMax> &ranges,const Float minTarget,const float_t maxTarget){
     if( ranges.size() != numDimensions ) return false;
 
     //Scale the training data
@@ -422,7 +422,7 @@ UnlabelledData UnlabelledData::partition(const UINT trainingSizePercentage){
     crossValidationSetup = false;
     crossValidationIndexs.clear();
 
-	const UINT numTrainingExamples = (UINT) floor( float_t(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
+	const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
 
 	UnlabelledData trainingSet(numDimensions);
 	UnlabelledData testSet(numDimensions);
@@ -500,7 +500,7 @@ bool UnlabelledData::spiltDataIntoKFolds(const UINT K){
     Vector< UINT > indexs( totalNumSamples );
 
     //Work out how many samples are in each fold, the last fold might have more samples than the others
-    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/float_t(K) );
+    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/Float(K) );
 
     //Add the random indexs to each fold
     crossValidationIndexs.resize(K);

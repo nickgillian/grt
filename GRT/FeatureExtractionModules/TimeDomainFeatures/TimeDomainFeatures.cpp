@@ -304,7 +304,7 @@ bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimension
 }
 
 
-VectorFloat TimeDomainFeatures::update(float_t x){
+VectorFloat TimeDomainFeatures::update(Float x){
 	return update(VectorFloat(1,x));
 }
     
@@ -393,7 +393,7 @@ VectorFloat TimeDomainFeatures::update(const VectorFloat &x){
                     index = 0;
                 }
             }
-            float_t norm = frameSize>1 ? frameSize-1 : 1;
+            Float norm = frameSize>1 ? frameSize-1 : 1;
             for(UINT j=0; j<numFrames; j++){
                 stdDevFeatures[n][j] = sqrt( stdDevFeatures[n][j]/norm );
             }

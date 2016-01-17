@@ -161,13 +161,13 @@ bool RegressionData::enableExternalRangeScaling(const bool useExternalRanges){
     return false;
 }
 
-bool RegressionData::scale(const float_t minTarget,const float_t maxTarget){
+bool RegressionData::scale(const Float minTarget,const float_t maxTarget){
     Vector< MinMax > inputRanges = getInputRanges();
     Vector< MinMax > targetRanges = getTargetRanges();
     return scale(inputRanges,targetRanges,minTarget,maxTarget);
 }
 
-bool RegressionData::scale(const Vector< MinMax > &inputVectorRanges,const Vector< MinMax > &targetVectorRanges,const float_t minTarget,const float_t maxTarget){
+bool RegressionData::scale(const Vector< MinMax > &inputVectorRanges,const Vector< MinMax > &targetVectorRanges,const Float minTarget,const float_t maxTarget){
     if( inputVectorRanges.getSize() == numInputDimensions && targetVectorRanges.getSize() == numTargetDimensions ){
 
         VectorFloat scaledInputVector(numInputDimensions,0);
@@ -266,7 +266,7 @@ RegressionData RegressionData::partition(const UINT trainingSizePercentage){
 	//therefore sets the size of the data which remains in this instance and the remaining percentage of data is then added to
 	//the testing/validation dataset
 
-	const UINT numTrainingExamples = (UINT) floor( float_t(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
+	const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
 
 	RegressionData trainingSet(numInputDimensions,numTargetDimensions);
 	RegressionData testSet(numInputDimensions,numTargetDimensions);
@@ -346,7 +346,7 @@ bool RegressionData::spiltDataIntoKFolds(const UINT K){
     Vector< UINT > indexs( totalNumSamples );
 
     //Work out how many samples are in each fold, the last fold might have more samples than the others
-    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/float_t(K) );
+    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/Float(K) );
 
     //Add the random indexs to each fold
     crossValidationIndexs.resize(K);
@@ -438,9 +438,9 @@ UINT RegressionData::removeDuplicateSamples(){
     sort(data.begin(),data.end(),RegressionSample::sortByInputVectorAscending );
 
     //Remove any samples that are very close to each other
-    float_t minDist = 1.0e-5;
-    float_t dist = 0;
-    float_t totalDimensions = numInputDimensions + numTargetDimensions;
+    Float minDist = 1.0e-5;
+    Float dist = 0;
+    Float totalDimensions = numInputDimensions + numTargetDimensions;
     bool keepSearching = true;
     Vector< RegressionSample >::iterator currentSample = data.begin();
     Vector< RegressionSample >::iterator nextSample = data.begin()+1;
@@ -732,12 +732,12 @@ bool RegressionData::loadDatasetFromCSVFile(const std::string &filename,const UI
         
         //Get the input Vector
         for(UINT j=0; j<numInputDimensions; j++){
-            inputVector[j] = grt_from_str< float_t >( parser[i][n++] );
+            inputVector[j] = grt_from_str< Float >( parser[i][n++] );
         }
         
         //Get the target Vector
         for(UINT j=0; j<numTargetDimensions; j++){
-            targetVector[j] = grt_from_str< float_t >( parser[i][n++] );
+            targetVector[j] = grt_from_str< Float >( parser[i][n++] );
         }
         
         //Add the labelled sample to the dataset

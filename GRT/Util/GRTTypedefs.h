@@ -39,8 +39,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define any common GRT OS independent typedefs
-typedef double float_t; ///<This typedef is used to set floating-point precision throughout the GRT
-typedef long double long_float_t; ///<This typedef is used to set long floating-point precision throughout the GRT
+typedef double Float; ///<This typedef is used to set floating-point precision throughout the GRT
+typedef long double LongFloat; ///<This typedef is used to set long floating-point precision throughout the GRT
 	
 //Declare any common definitions that are not OS specific
 #ifndef PI
@@ -68,17 +68,17 @@ public:
     static T max() { return std::numeric_limits< T >::max(); }
 };
 
-inline float_t grt_sqr( const float &x ){ return x*x; }
+inline Float grt_sqr( const float &x ){ return x*x; }
 
-inline float_t grt_sqrt( const float &x ){ return sqrt(x); }
+inline Float grt_sqrt( const float &x ){ return sqrt(x); }
 
-inline float_t grt_antilog( const float_t &x ){ return exp( x ); }
+inline Float grt_antilog( const Float &x ){ return exp( x ); }
 
-inline float_t grt_exp( const float_t &x ){ return exp( x ); }
+inline Float grt_exp( const Float &x ){ return exp( x ); }
 
-inline float_t  grt_log( const float_t &x ){ return log( x ); }
+inline Float  grt_log( const Float &x ){ return log( x ); }
 
-inline float_t grt_sigmoid( const float_t &x ) { return 1.0 / (1.0 + exp(-x)); }
+inline Float grt_sigmoid( const Float &x ) { return 1.0 / (1.0 + exp(-x)); }
 
 template< class T >
 T grt_scale(const T &x,const T &minSource,const T &maxSource,const T &minTarget,const T &maxTarget,const bool constrain = false){

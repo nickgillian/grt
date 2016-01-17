@@ -216,7 +216,7 @@ bool TimeseriesBuffer::init(UINT bufferSize,UINT numDimensions){
 }
 
 
-VectorFloat TimeseriesBuffer::update(float_t x){
+VectorFloat TimeseriesBuffer::update(Float x){
 	return update(VectorFloat(1,x));
 }
     

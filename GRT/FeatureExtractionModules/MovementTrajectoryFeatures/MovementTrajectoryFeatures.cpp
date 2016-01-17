@@ -321,7 +321,7 @@ bool MovementTrajectoryFeatures::init(UINT trajectoryLength,UINT numCentroids,UI
     return true;
 }
 
-VectorFloat MovementTrajectoryFeatures::update(float_t x){
+VectorFloat MovementTrajectoryFeatures::update(Float x){
 	return update(VectorFloat(1,x));
 }
     
@@ -349,14 +349,14 @@ VectorFloat MovementTrajectoryFeatures::update(const VectorFloat &x){
     centroids.setAllValues(0);
     
     UINT dataBufferIndex = 0;
-    UINT numValuesPerCentroid = (UINT)floor(float_t(trajectoryLength/numCentroids));
+    UINT numValuesPerCentroid = (UINT)floor(Float(trajectoryLength/numCentroids));
     for(UINT n=0; n<numInputDimensions; n++){
         dataBufferIndex = 0;
         for(UINT i=0; i<numCentroids; i++){
             for(UINT j=0; j<numValuesPerCentroid; j++){
                 centroids[i][n] += trajectoryDataBuffer[dataBufferIndex++][n];
             }
-            centroids[i][n] /= float_t(numValuesPerCentroid);
+            centroids[i][n] /= Float(numValuesPerCentroid);
         }
     }
     
@@ -429,9 +429,9 @@ VectorFloat MovementTrajectoryFeatures::update(const VectorFloat &x){
                 //Add the angles to the histogram
                 for(UINT i=0; i<numCentroids-1; i++){
                     UINT histBin = 0;
-                    float_t degreesPerBin = 360.0/numHistogramBins;
-                    float_t binStartValue = 0;
-                    float_t binEndValue = degreesPerBin;
+                    Float degreesPerBin = 360.0/numHistogramBins;
+                    Float binStartValue = 0;
+                    Float binEndValue = degreesPerBin;
                     
                     if( angleMagnitudeValues[n][i].angle < 0 || angleMagnitudeValues[n][i].angle  > 360.0 ){
                         warningLog << "The angle of a point is not between [0 360]. Angle: " << angleMagnitudeValues[n][i].angle << std::endl;

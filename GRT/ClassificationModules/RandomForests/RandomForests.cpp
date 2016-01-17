@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the RandomForests module with the Classifier base class
 RegisterClassifierModule< RandomForests >  RandomForests::registerModule("RandomForests");
 
-RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const float_t bootstrappedDatasetWeight)
+RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight)
 {
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->forestSize = forestSize;
@@ -222,11 +222,11 @@ bool RandomForests::train_(ClassificationData &trainingData){
             return false;
         }
 
-        float_t computeTime = timer.getMilliSeconds();
+        Float computeTime = timer.getMilliSeconds();
         trainingLog << "Decision tree trained in " << (computeTime*0.001)/60.0 << " minutes" << std::endl;
 
         if( useValidationSet ){
-            float_t forestNorm = 1.0 / forestSize;
+            Float forestNorm = 1.0 / forestSize;
             validationSetAccuracy += tree.getValidationSetAccuracy();
             VectorFloat precision = tree.getValidationSetPrecision();
             VectorFloat recall = tree.getValidationSetRecall();
@@ -310,7 +310,7 @@ bool RandomForests::predict_(VectorDouble &inputVector){
     //Use the class distances to estimate the class likelihoods
     bestDistance = 0;
     UINT bestIndex = 0;
-    float_t classNorm = 1.0 / float_t(forestSize);
+    Float classNorm = 1.0 / float_t(forestSize);
     for(UINT k=0; k<numClasses; k++){
         classLikelihoods[k] = classDistances[k] * classNorm;
         
@@ -632,7 +632,7 @@ bool RandomForests::getRemoveFeaturesAtEachSpilt() const {
     return removeFeaturesAtEachSpilt;
 }
 
-float_t RandomForests::getBootstrappedDatasetWeight() const {
+Float RandomForests::getBootstrappedDatasetWeight() const {
     return bootstrappedDatasetWeight;
 }
 
@@ -670,9 +670,9 @@ VectorDouble RandomForests::getFeatureWeights( const bool normWeights ) const{
 
     //Normalize the weights
     if( normWeights  ){
-        float_t sum = Util::sum( weights );
+        Float sum = Util::sum( weights );
         if( sum > 0.0 ){
-            const float_t norm = 1.0 / sum;
+            const Float norm = 1.0 / sum;
             for(UINT j=0; j<numInputDimensions; j++){
                 weights[j] *= norm;
             }
@@ -698,12 +698,12 @@ MatrixDouble RandomForests::getLeafNodeFeatureWeights( const bool normWeights ) 
     //Normalize the weights
     if( normWeights  ){
         for(UINT j=0; j<weights.getNumCols(); j++){
-            float_t sum = 0.0;
+            Float sum = 0.0;
             for(UINT i=0; i<weights.getNumRows(); i++){
                 sum += weights[i][j];
             }
             if( sum != 0.0 ){
-                const float_t norm = 1.0 / sum;
+                const Float norm = 1.0 / sum;
                 for(UINT i=0; i<weights.getNumRows(); i++){
                     weights[i][j] *= norm;
                 }
@@ -774,7 +774,7 @@ bool RandomForests::setDecisionTreeNode( const DecisionTreeNode &node ){
     return true;
 }
 
-bool RandomForests::setBootstrappedDatasetWeight( const float_t bootstrappedDatasetWeight ){
+bool RandomForests::setBootstrappedDatasetWeight( const Float bootstrappedDatasetWeight ){
 
     if( bootstrappedDatasetWeight > 0.0 && bootstrappedDatasetWeight <= 1.0 ){
         this->bootstrappedDatasetWeight = bootstrappedDatasetWeight;

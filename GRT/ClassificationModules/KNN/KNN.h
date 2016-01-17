@@ -62,7 +62,7 @@ public:
      @param minKSearchValue: sets the minimum K value to use when searching for the best K value.  Default value is minKSearchValue = 1
      @param maxKSearchValue: sets the maximum K value to use when searching for the best K value.  Default value is maxKSearchValue = 1
     */
-	KNN(UINT K=10,bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=10.0,bool searchForBestKValue = false,UINT minKSearchValue = 1,UINT maxKSearchValue = 10);
+	KNN(UINT K=10,bool useScaling=false,bool useNullRejection=false,Float nullRejectionCoeff=10.0,bool searchForBestKValue = false,UINT minKSearchValue = 1,UINT maxKSearchValue = 10);
     
     /**
      Defines the copy constructor.
@@ -139,7 +139,7 @@ public:
     
     /**
      This recomputes the null rejection thresholds for each of the classes in the KNN model.
-     This will be called automatically if the setGamma(float_t gamma) function is called.
+     This will be called automatically if the setGamma(Float gamma) function is called.
      The KNN model needs to be trained first before this function can be called.
      
      @return returns true if the null rejection thresholds were updated successfully, false otherwise
@@ -202,7 +202,7 @@ public:
      
      @return returns true if the nullRejectionCoeff parameter was updated successfully, false otherwise
      */
-    bool setNullRejectionCoeff(float_t nullRejectionCoeff);
+    bool setNullRejectionCoeff(Float nullRejectionCoeff);
     
     /**
      Sets the current distance method being used to compute the neighest neighbours.
@@ -225,9 +225,9 @@ protected:
     bool train_(const ClassificationData &trainingData,const UINT K);
     bool predict(const VectorFloat &inputVector,const UINT K);
     bool loadLegacyModelFromFile( std::fstream &file );
-    float_t computeEuclideanDistance(const VectorFloat &a,const VectorFloat &b);
-    float_t computeCosineDistance(const VectorFloat &a,const VectorFloat &b);
-    float_t computeManhattanDistance(const VectorFloat &a,const VectorFloat &b);
+    Float computeEuclideanDistance(const VectorFloat &a,const VectorFloat &b);
+    Float computeCosineDistance(const VectorFloat &a,const VectorFloat &b);
+    Float computeManhattanDistance(const VectorFloat &a,const VectorFloat &b);
     
     UINT K;                                     ///> The number of neighbours to search for
     UINT distanceMethod;                        ///> The distance method used to compute the distance between each data point

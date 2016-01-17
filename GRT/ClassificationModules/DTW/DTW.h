@@ -50,7 +50,7 @@ GRT_BEGIN_NAMESPACE
     
 class IndexDist{
 public:
-    IndexDist(int x=0,int y=0,float_t dist=0){
+    IndexDist(int x=0,int y=0,Float dist=0){
         this->x = x;
         this->y = y;
         this->dist = dist;
@@ -67,7 +67,7 @@ public:
 
 	int x;
 	int y;
-    float_t dist;
+    Float dist;
 };
 
 ///////////////// DTW Template /////////////////
@@ -83,8 +83,8 @@ public:
 
     UINT classLabel;                    //The class that this template belongs to
 	MatrixFloat timeSeries;            //The raw time series
-	float_t trainingMu;                  //The mean distance value of the training data with the trained template 
-	float_t trainingSigma;               //The sigma of the distance value of the training data with the trained template 
+	Float trainingMu;                  //The mean distance value of the training data with the trained template 
+	Float trainingSigma;               //The sigma of the distance value of the training data with the trained template 
 	UINT averageTemplateLength;          //The average length of the examples used to train this template
 };
 
@@ -106,7 +106,7 @@ public:
      @param smoothingFactor: controls the amount of downsampling if the useSmoothing parameter is set to true. Default value = 5
 	 @param nullRejectionLikelihoodThreshold: set the null rejection threshold for likelihoods when CLASS_LIKELIHOODS or THRESHOLDS_AND_LIKELIHOODS modes are used for rejectionMode. Default value = 0.99
      */
-	DTW(bool useScaling=false,bool useNullRejection=false,float_t nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,float_t radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5, float_t nullRejectionLikelihoodThreshold = 0.99);
+	DTW(bool useScaling=false,bool useNullRejection=false,Float nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,Float radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5, float_t nullRejectionLikelihoodThreshold = 0.99);
 	
     /**
      Default copy constructor
@@ -201,7 +201,7 @@ public:
     
     /**
      This recomputes the null rejection thresholds for each of the classes in the DTW model.
-     This will be called automatically if the setGamma(float_t gamma) function is called.
+     This will be called automatically if the setGamma(Float gamma) function is called.
      The DTW model needs to be trained first before this function can be called.
      
      @return returns true if the null rejection thresholds were updated successfully, false otherwise
@@ -227,7 +227,7 @@ public:
 
 	@return returns true if the rejection threshold was updated successfully, false otherwise
 	*/
-	bool setNullRejectionThreshold(float_t nullRejectionLikelihoodThreshold);
+	bool setNullRejectionThreshold(Float nullRejectionLikelihoodThreshold);
     
     /**
      Sets if each timeseries should be offset by the first sample in the timeseries.
@@ -255,7 +255,7 @@ public:
      @param radius: the new warping radius (should be between [0 1]
      @return returns true if the warping radius parameter was updated successfully, false otherwise
      */
-    bool setWarpingRadius(float_t radius);
+    bool setWarpingRadius(Float radius);
 
     /**
      Gets the rejection mode used for null rejection. The rejection mode will be one of the RejectionModes enums.
@@ -289,7 +289,7 @@ public:
      @param maximumTrimPercentage: this sets the maximum amount of data that can be trimmed for one example. This should be in the range of [0 100]
      @return returns true if the trimTrainingData parameters were updated successfully, false otherwise
      */
-	bool enableTrimTrainingData(bool trimTrainingData,float_t trimThreshold,float_t maximumTrimPercentage);
+	bool enableTrimTrainingData(bool trimTrainingData,Float trimThreshold,Float maximumTrimPercentage);
     
     /**
      Gets the DTW models.
@@ -337,9 +337,9 @@ private:
 	bool train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dtwTemplate,UINT &bestIndex);
 
 	//The actual DTW function
-	float_t computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,MatrixFloat &distanceMatrix,Vector< IndexDist > &warpPath);
-    float_t d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N);
-	float_t inline MIN_(float_t a,float_t b, float_t c);
+	Float computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,MatrixFloat &distanceMatrix,Vector< IndexDist > &warpPath);
+    Float d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N);
+	Float inline MIN_(Float a,float_t b, float_t c);
 
 	//Private Scaling and Utility Functions
 	void scaleData(TimeSeriesClassificationData &trainingData);
@@ -370,11 +370,11 @@ protected:
 	bool				constrainWarpingPath;	//A flag to check if we need to constrain the dtw cost matrix and search
     bool                trimTrainingData;       //A flag to check if we need to trim the training data first before training
 
-	float_t				zNormConstrainThreshold;//The threshold value to be used if constrainZNorm is turned on
-    float_t              radius;
-	float_t 				trimThreshold;			//Sets the threshold under which training data should be trimmed (default 0.1)
-	float_t				maximumTrimPercentage;  //Sets the maximum amount of data that can be trimmed for each training sample (default 20)
-	float_t				nullRejectionLikelihoodThreshold; //Sets the threshold for null rejection based on likelihoods
+	Float				zNormConstrainThreshold;//The threshold value to be used if constrainZNorm is turned on
+    Float              radius;
+	Float 				trimThreshold;			//Sets the threshold under which training data should be trimmed (default 0.1)
+	Float				maximumTrimPercentage;  //Sets the maximum amount of data that can be trimmed for each training sample (default 20)
+	Float				nullRejectionLikelihoodThreshold; //Sets the threshold for null rejection based on likelihoods
 
 	UINT				smoothingFactor;		//The smoothing factor if smoothing is used
 	UINT				distanceMethod;			//The distance method to be used (should be of enum DISTANCE_METHOD)

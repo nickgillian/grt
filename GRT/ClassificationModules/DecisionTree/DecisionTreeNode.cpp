@@ -54,7 +54,7 @@ bool DecisionTreeNode::predict(const VectorFloat &x,VectorFloat &classLikelihood
     return false;
 }
 
-bool DecisionTreeNode::computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, float_t &minError ){
+bool DecisionTreeNode::computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
     
     switch( trainingMode ){
         case Tree::BEST_ITERATIVE_SPILT:

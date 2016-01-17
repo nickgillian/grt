@@ -213,7 +213,7 @@ public:
      @param maxTarget: the maximum range you want to scale the data to
 	 @return true if the data was scaled correctly, false otherwise
      */
-    bool scale(const float_t minTarget,const float_t maxTarget);
+    bool scale(const Float minTarget,const Float maxTarget);
     
 	/**
      Scales the dataset to the new target range, using the vector of ranges as the min and max source ranges.
@@ -223,7 +223,7 @@ public:
      @param maxTarget: the maximum range you want to scale the data to
 	 @return true if the data was scaled correctly, false otherwise
      */
-	bool scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget);
+	bool scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget);
     
     /**
      Saves the data to a file.

@@ -28,7 +28,7 @@ RegisterNode< ClusterTreeNode > ClusterTreeNode::registerModule("ClusterTreeNode
 //Register the ClusterTree module with the Clusterer base class
 RegisterClustererModule< ClusterTree >  ClusterTree::registerModule("ClusterTree");
 
-ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const float_t minRMSErrorPerNode){
+ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode){
     tree = NULL;
     predictedClusterLabel = 0;
     this->numSplittingSteps = numSplittingSteps;
@@ -386,11 +386,11 @@ UINT ClusterTree::getPredictedClusterLabel() const{
     return predictedClusterLabel;
 }
     
-float_t ClusterTree::getMinRMSErrorPerNode() const{
+Float ClusterTree::getMinRMSErrorPerNode() const{
     return minRMSErrorPerNode;
 }
     
-bool ClusterTree::setMinRMSErrorPerNode(const float_t minRMSErrorPerNode){
+bool ClusterTree::setMinRMSErrorPerNode(const Float minRMSErrorPerNode){
     this->minRMSErrorPerNode = minRMSErrorPerNode;
     return true;
 }
@@ -439,8 +439,8 @@ ClusterTreeNode* ClusterTree::buildTree(const MatrixFloat &trainingData,ClusterT
     
     //Compute the best spilt point
     UINT featureIndex = 0;
-    float_t threshold = 0;
-    float_t minError = 0;
+    Float threshold = 0;
+    Float minError = 0;
     if( !computeBestSpilt( trainingData, features, featureIndex, threshold, minError ) ){
         delete node;
         return NULL;
@@ -494,7 +494,7 @@ ClusterTreeNode* ClusterTree::buildTree(const MatrixFloat &trainingData,ClusterT
     return node;
 }
     
-bool ClusterTree::computeBestSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError ){
+bool ClusterTree::computeBestSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
     
     switch( trainingMode ){
         case BEST_ITERATIVE_SPILT:
@@ -512,7 +512,7 @@ bool ClusterTree::computeBestSpilt( const MatrixFloat &trainingData, const Vecto
     return true;
 }
     
-bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError ){
+bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
     
     const UINT M = trainingData.getNumRows();
     const UINT N = (UINT)features.size();
@@ -521,25 +521,25 @@ bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainin
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits< float_t >::max();
+    minError = grt_numeric_limits< Float >::max();
     UINT bestFeatureIndex = 0;
     UINT groupID = 0;
-    float_t bestThreshold = 0;
-    float_t error = 0;
-    float_t minRange = 0;
-    float_t maxRange = 0;
-    float_t step = 0;
+    Float bestThreshold = 0;
+    Float error = 0;
+    Float minRange = 0;
+    Float maxRange = 0;
+    Float step = 0;
     Vector< UINT > groupIndex(M);
-    Vector< float_t > groupCounter(2);
-    Vector< float_t > groupMean(2);
-    Vector< float_t > groupMSE(2);
+    Vector< Float > groupCounter(2);
+    Vector< Float > groupMean(2);
+    Vector< Float > groupMSE(2);
     Vector< MinMax > ranges = trainingData.getRanges();
 
     //Loop over each feature and try and find the best split point
     for(UINT n=0; n<N; n++){
         minRange = ranges[n].minValue;
         maxRange = ranges[n].maxValue;
-        step = (maxRange-minRange)/float_t(numSplittingSteps);
+        step = (maxRange-minRange)/Float(numSplittingSteps);
         threshold = minRange;
         featureIndex = features[n];
         
@@ -592,7 +592,7 @@ bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainin
     return true;
 }
     
-bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, float_t &threshold, float_t &minError ){
+bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
     
     const UINT M = trainingData.getNumRows();
     const UINT N = (UINT)features.size();
@@ -601,15 +601,15 @@ bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingDa
     
     if( N == 0 ) return false;
     
-    minError = grt_numeric_limits< float_t >::max();
+    minError = grt_numeric_limits< Float >::max();
     UINT bestFeatureIndex = 0;
     UINT groupID = 0;
-    float_t bestThreshold = 0;
-    float_t error = 0;
+    Float bestThreshold = 0;
+    Float error = 0;
     Vector< UINT > groupIndex(M);
-    Vector< float_t > groupCounter(2);
-    Vector< float_t > groupMean(2);
-    Vector< float_t > groupMSE(2);
+    Vector< Float > groupCounter(2);
+    Vector< Float > groupMean(2);
+    Vector< Float > groupMSE(2);
     Vector< MinMax > ranges = trainingData.getRanges();
     
     //Loop over each feature and try and find the best split point

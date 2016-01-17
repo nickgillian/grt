@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the MinDist module with the Classifier base class
 RegisterClassifierModule< MinDist > MinDist::registerModule("MinDist");
 
-MinDist::MinDist(bool useScaling,bool useNullRejection,float_t nullRejectionCoeff,UINT numClusters)
+MinDist::MinDist(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numClusters)
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
@@ -183,8 +183,8 @@ bool MinDist::predict_(VectorFloat &inputVector){
     if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
-    float_t sum = 0;
-    float_t minDist = grt_numeric_limits< float_t >::max();
+    Float sum = 0;
+    Float minDist = grt_numeric_limits< float_t >::max();
 	for(UINT k=0; k<numClasses; k++){
         //Compute the distance for class k
 		classDistances[k] = models[k].predict( inputVector );
@@ -240,7 +240,7 @@ bool MinDist::recomputeNullRejectionThresholds(){
     return false;
 }
     
-bool MinDist::setNullRejectionCoeff(float_t nullRejectionCoeff){
+bool MinDist::setNullRejectionCoeff(Float nullRejectionCoeff){
     
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;
@@ -286,7 +286,7 @@ bool MinDist::saveModelToFile( std::fstream &file ) const{
             file << "TrainingMu: " << models[k].getTrainingMu() << std::endl;
             file << "TrainingSigma: " << models[k].getTrainingSigma() << std::endl;
             file << "ClusterData:" << std::endl;
-            Matrix<float_t> clusters = models[k].getClusters();
+            Matrix<Float> clusters = models[k].getClusters();
             for(UINT i=0; i<models[k].getNumClusters(); i++){
                 for(UINT j=0; j<models[k].getNumFeatures(); j++){
                     file << clusters[i][j] << "\t";
@@ -340,10 +340,10 @@ bool MinDist::loadModelFromFile( std::fstream &file ){
         
         //Load each of the K models
         for(UINT k=0; k<numClasses; k++){
-            float_t rejectionThreshold;
-            float_t gamma;
-            float_t trainingSigma;
-            float_t trainingMu;
+            Float rejectionThreshold;
+            Float gamma;
+            Float trainingSigma;
+            Float trainingMu;
             
             file >> word;
             if( word != "ClassLabel:" ){
@@ -484,10 +484,10 @@ bool MinDist::loadLegacyModelFromFile( std::fstream &file ){
     
     //Load each of the K models
     for(UINT k=0; k<numClasses; k++){
-        float_t rejectionThreshold;
-        float_t gamma;
-        float_t trainingSigma;
-        float_t trainingMu;
+        Float rejectionThreshold;
+        Float gamma;
+        Float trainingSigma;
+        Float trainingMu;
         
         file >> word;
         if( word != "ClassLabel:" ){

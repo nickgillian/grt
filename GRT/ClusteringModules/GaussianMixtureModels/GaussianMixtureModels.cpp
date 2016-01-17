@@ -7,7 +7,7 @@ GRT_BEGIN_NAMESPACE
 RegisterClustererModule< GaussianMixtureModels > GaussianMixtureModels::registerModule("GaussianMixtureModels");
 
 //Constructor,destructor
-GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const float_t minChange){
+GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange){
     
     this->numClusters = numClusters;
     this->minNumEpochs = minNumEpochs;
@@ -185,7 +185,7 @@ bool GaussianMixtureModels::train_(MatrixFloat &data){
     
     //Setup sigma and the uniform prior on P(k)
     for(UINT k=0; k<numClusters; k++){
-        frac[k] = 1.0/float_t(numClusters);
+        frac[k] = 1.0/Float(numClusters);
         for(UINT i=0; i<numInputDimensions; i++){
             for(UINT j=0; j<numInputDimensions; j++) sigma[k][i][j] = 0;
             sigma[k][i][i] = 1.0e-2;   //Set the diagonal to a small number
@@ -194,7 +194,7 @@ bool GaussianMixtureModels::train_(MatrixFloat &data){
     
     loglike = 0;
     bool keepGoing = true;
-    float_t change = 99.9e99;
+    Float change = 99.9e99;
     UINT numIterationsNoChange = 0;
     VectorFloat u(numInputDimensions);
 	VectorFloat v(numInputDimensions);
@@ -269,8 +269,8 @@ bool GaussianMixtureModels::predict_(VectorFloat &x){
         }
     }
     
-    float_t sum = 0;
-    float_t dist = 0;
+    Float sum = 0;
+    Float dist = 0;
     UINT minIndex = 0;
     bestDistance = 0;
     predictedClusterLabel = 0;
@@ -453,9 +453,9 @@ bool GaussianMixtureModels::loadModelFromFile( std::fstream &file ){
     return true;
 }
 
-bool GaussianMixtureModels::estep( const MatrixFloat &data, VectorFloat &u, VectorFloat &v, float_t &change ){
+bool GaussianMixtureModels::estep( const MatrixFloat &data, VectorFloat &u, VectorFloat &v, Float &change ){
 
-	float_t tmp,sum,max,oldloglike;
+	Float tmp,sum,max,oldloglike;
 	for(UINT j=0; j<numInputDimensions; j++) u[j] = v[j] = 0;
 
 	oldloglike = loglike;
@@ -493,11 +493,11 @@ bool GaussianMixtureModels::estep( const MatrixFloat &data, VectorFloat &u, Vect
 
 bool GaussianMixtureModels::mstep( const MatrixFloat &data ){
 
-	float_t wgt, sum;
+	Float wgt, sum;
 	for(UINT k=0; k<numClusters; k++){
 		wgt = 0.0;
 		for(UINT m=0; m<numTrainingSamples; m++) wgt += resp[m][k];
-		frac[k] = wgt/float_t(numTrainingSamples);
+		frac[k] = wgt/Float(numTrainingSamples);
 		for(UINT n=0; n<numInputDimensions; n++){
 			sum = 0;
 			for(UINT m=0; m<numTrainingSamples; m++) sum += resp[m][k] * data[m][n];

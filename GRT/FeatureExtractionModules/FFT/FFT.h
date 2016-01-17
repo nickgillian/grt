@@ -172,7 +172,7 @@ public:
      @param x: the new sample, this will be added to a buffer and the FFT will be computed for the data in the buffer
 	 @return true if the FTT was updated successfully, false otherwise
      */   
-    bool update(const float_t x);
+    bool update(const Float x);
     
     /**
      Computes the FFT of the previous M input samples, where M is the size of the fft window set by the constructor.

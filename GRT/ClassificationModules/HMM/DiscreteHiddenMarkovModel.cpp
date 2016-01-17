@@ -174,7 +174,7 @@ bool DiscreteHiddenMarkovModel::randomizeMatrices(const UINT numStates,const UIN
 	}	
 
 	//Normalize the matrices
-	float_t sum=0.0;
+	Float sum=0.0;
 	for (UINT i=0; i<numStates; i++) {
 		sum = 0.;
 		for (UINT j=0; j<numStates; j++) sum += a[i][j];
@@ -194,7 +194,7 @@ bool DiscreteHiddenMarkovModel::randomizeMatrices(const UINT numStates,const UIN
     return true;
 }
     
-float_t DiscreteHiddenMarkovModel::predict(const UINT newSample){
+Float DiscreteHiddenMarkovModel::predict(const UINT newSample){
     
     if( !trained ){
         return 0;
@@ -207,10 +207,10 @@ float_t DiscreteHiddenMarkovModel::predict(const UINT newSample){
     return predict(obs);
 }
   
-/*float_t predictLogLikelihood(Vector<UINT> &obs)
+/*Float predictLogLikelihood(Vector<UINT> &obs)
  - This method computes P(O|A,B,Pi) using the forward algorithm
  */
-float_t DiscreteHiddenMarkovModel::predict(const Vector<UINT> &obs){
+Float DiscreteHiddenMarkovModel::predict(const Vector<UINT> &obs){
     
 	const int N = (int)numStates;
     const int T = (int)obs.size();
@@ -254,7 +254,7 @@ float_t DiscreteHiddenMarkovModel::predict(const Vector<UINT> &obs){
     
     if( int(estimatedStates.size()) != T ) estimatedStates.resize(T);
     for(t=0; t<T; t++){
-        float_t maxValue = 0;
+        Float maxValue = 0;
         for(i=0; i<N; i++){
             if( alpha[t][i] > maxValue ){
                 maxValue = alpha[t][i];
@@ -264,21 +264,21 @@ float_t DiscreteHiddenMarkovModel::predict(const Vector<UINT> &obs){
     }
     
 	//Termination
-	float_t loglikelihood = 0.0;
+	Float loglikelihood = 0.0;
     for(t=0; t<T; t++) loglikelihood += log( c[t] );
     return -loglikelihood; //Return the negative log likelihood
 }
 
-/*float_t predictLogLikelihood(Vector<UINT> &obs)
+/*Float predictLogLikelihood(Vector<UINT> &obs)
 - This method computes P(O|A,B,Pi) using the forward algorithm
 */
-float_t DiscreteHiddenMarkovModel::predictLogLikelihood(const Vector<UINT> &obs){
+Float DiscreteHiddenMarkovModel::predictLogLikelihood(const Vector<UINT> &obs){
 
 	const UINT T = (unsigned int)obs.size();
 	UINT t,i,j,minState = 0;
 	MatrixFloat alpha(T,numStates);
-    float_t minWeight = 0;
-    float_t weight = 0;
+    Float minWeight = 0;
+    Float weight = 0;
 
     // Base
 	t = 0;
@@ -323,7 +323,7 @@ float_t DiscreteHiddenMarkovModel::predictLogLikelihood(const Vector<UINT> &obs)
     return exp(-minWeight);
 }
 
-/*float_t forwardBackward(Vector<UINT> &obs)
+/*Float forwardBackward(Vector<UINT> &obs)
 - This method runs one pass of the forward backward algorithm, the hmm training object needs to be resized BEFORE calling this function!
 */
 bool DiscreteHiddenMarkovModel::forwardBackward(HMMTrainingObject &hmm,const Vector<UINT> &obs){
@@ -411,14 +411,14 @@ bool DiscreteHiddenMarkovModel::train(const Vector< Vector<UINT> > &trainingData
     trainingIterationLog.clear();
     
 	UINT n,currentIter, bestIndex = 0;
-	float_t newLoglikelihood, bestLogValue = 0;
+	Float newLoglikelihood, bestLogValue = 0;
     
     if( numRandomTrainingIterations > 1 ){
 
         //A buffer to keep track each AB matrix
         Vector< MatrixFloat > aTracker( numRandomTrainingIterations );
         Vector< MatrixFloat > bTracker( numRandomTrainingIterations );
-        Vector< float_t > loglikelihoodTracker( numRandomTrainingIterations );
+        Vector< Float > loglikelihoodTracker( numRandomTrainingIterations );
         
         UINT maxNumTestIter = maxNumEpochs > 10 ? 10 : maxNumEpochs;
 
@@ -467,7 +467,7 @@ bool DiscreteHiddenMarkovModel::train(const Vector< Vector<UINT> > &trainingData
 		averageObsLength += T;
 	}
     
-    averageObsLength = (UINT)floor( averageObsLength/float_t(numObs) );
+    averageObsLength = (UINT)floor( averageObsLength/Float(numObs) );
     observationSequence.resize( averageObsLength );
     estimatedStates.resize( averageObsLength );
     
@@ -477,11 +477,11 @@ bool DiscreteHiddenMarkovModel::train(const Vector< Vector<UINT> > &trainingData
 	return true;
 }
 
-bool DiscreteHiddenMarkovModel::train_(const Vector< Vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,float_t &newLoglikelihood){
+bool DiscreteHiddenMarkovModel::train_(const Vector< Vector<UINT> > &obs,const UINT maxIter, UINT &currentIter,Float &newLoglikelihood){
     
     const UINT numObs = (unsigned int)obs.size();
     UINT i,j,k,t = 0;
-    float_t num,denom,oldLoglikelihood = 0;
+    Float num,denom,oldLoglikelihood = 0;
     bool keepTraining = true;
     trainingIterationLog.clear();
     
@@ -600,7 +600,7 @@ bool DiscreteHiddenMarkovModel::train_(const Vector< Vector<UINT> > &obs,const U
             }
             
             if( renormB ){
-                float_t sum;
+                Float sum;
                 for (UINT i=0; i<numStates; i++) {
                     sum = 0.;
                     for (UINT k=0; k<numSymbols; k++){
@@ -643,7 +643,7 @@ bool DiscreteHiddenMarkovModel::train_(const Vector< Vector<UINT> > &obs,const U
                     }
                 }
                 
-                float_t sum = 0;
+                Float sum = 0;
                 for(i=0; i<numStates; i++){
                     sum=0.0;
                     for(k=0; k<numObs; k++){
@@ -858,7 +858,7 @@ bool DiscreteHiddenMarkovModel::print() const{
 
     //Check the weights all sum to 1
     if( true ){
-        float_t sum=0.0;
+        Float sum=0.0;
         for(UINT i=0; i<a.getNumRows(); i++){
           sum=0.0;
           for(UINT j=0; j<a.getNumCols(); j++) sum += a[i][j];

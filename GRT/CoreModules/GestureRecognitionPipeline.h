@@ -463,117 +463,117 @@ public:
     /**
 	 This function returns the maximum likelihood value from the most likely class from the most recent prediction.  This value is only relevant when the pipeline is in prediction mode.
 	
-	@return float_t representing the maximum likelihood value from the most likely class from the most recent prediction.
+	@return Float representing the maximum likelihood value from the most likely class from the most recent prediction.
 	*/
-    float_t getMaximumLikelihood() const;
+    Float getMaximumLikelihood() const;
     
     /**
 	 This function returns the estimated gesture phase from the most recent prediction.  This value is only relevant when the pipeline is in timeseries classification mode.
      
-     @return float_t representing the gesture phase value from the most likely class from the most recent prediction.
+     @return Float representing the gesture phase value from the most likely class from the most recent prediction.
      */
-    float_t getPhase() const;
+    Float getPhase() const;
 
     /**
 	 This function returns the cross validation value from the most recent cross validation test.  If the pipeline is in prediction mode, then the cross
      validation accuracy will be the average accuracy across each fold of testing. If the pipeline is in regression mode, then the cross validation 
      accuracy will be the average RMS error across each fold of testing.
 	
-	@return float_t representing the cross validation value from the most recent cross validation test.
+	@return Float representing the cross validation value from the most recent cross validation test.
 	*/
-    float_t getCrossValidationAccuracy() const;
+    Float getCrossValidationAccuracy() const;
 
     /**
 	 This function returns the accuracy value from the most recent test.  This will be a value between [0 100]. This value is only relevant when the pipeline is in prediction mode.
 	
-	@return float_t representing the accuracy value from the most recent test.
+	@return Float representing the accuracy value from the most recent test.
 	*/
-    float_t getTestAccuracy() const;
+    Float getTestAccuracy() const;
 
     /**
 	 This function returns the root mean squared error value from the most recent test.  This value is only relevant when the pipeline is in regression mode.
 	
-	@return float_t representing the root mean squared error value from the most recent test.
+	@return Float representing the root mean squared error value from the most recent test.
 	*/
-    float_t getTestRMSError() const;
+    Float getTestRMSError() const;
 
     /**
      This function returns the total squared error value from the most recent test.  This value is only relevant when the pipeline is in regression mode.
 
-    @return float_t representing the total squared error value from the most recent test.
+    @return Float representing the total squared error value from the most recent test.
     */
-    float_t getTestSSError() const;
+    Float getTestSSError() const;
 
     /**
 	 This function returns the f-measure from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
 	 If the classLabel is not valid then the function will return -1.
 	
     @param classLabel: the label of the class you want to get the test fMeasure value for
-	@return float_t representing the f-measure from the most recent test for the class with the matching classLabel.
+	@return Float representing the f-measure from the most recent test for the class with the matching classLabel.
 	*/
-    float_t getTestFMeasure(const UINT classLabel) const;
+    Float getTestFMeasure(const UINT classLabel) const;
 
     /**
 	 This function returns the precision from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
 	 If the classLabel is not valid then the function will return -1. 
 	
     @param classLabel: the label of the class you want to get the test precision value for
-	@return float_t representing the precision from the most recent test for the class with the matching classLabel.
+	@return Float representing the precision from the most recent test for the class with the matching classLabel.
 	*/
-    float_t getTestPrecision(const UINT classLabel) const;
+    Float getTestPrecision(const UINT classLabel) const;
 
     /**
 	 This function returns the recall from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
 	 If the classLabel is not valid then the function will return -1.
 	
     @param classLabel: the label of the class you want to get the test recall value for
-	@return float_t representing the recall from the most recent test for the class with the matching classLabel.
+	@return Float representing the recall from the most recent test for the class with the matching classLabel.
 	*/
-    float_t getTestRecall(const UINT classLabel) const;
+    Float getTestRecall(const UINT classLabel) const;
 
     /**
 	 This function returns the precision for any null examples in your dataset (examples with the class label of 0) from the most recent test.  
 	 This value is only relevant when the pipeline is in classification mode.
 	
-	@return float_t representing the precision for any null examples in your dataset.
+	@return Float representing the precision for any null examples in your dataset.
 	*/
-    float_t getTestRejectionPrecision() const;
+    Float getTestRejectionPrecision() const;
 
     /**
 	 This function returns the recall for any null examples in your dataset (examples with the class label of 0) from the most recent test.  
 	 This value is only relevant when the pipeline is in classification mode.
 	
-	@return float_t representing the recall for any null examples in your dataset.
+	@return Float representing the recall for any null examples in your dataset.
 	*/
-    float_t getTestRejectionRecall() const;
+    Float getTestRejectionRecall() const;
 
     /**
 	 This function returns the total test time (in milliseconds) for the most recent test.
 	
-	@return float_t representing the total test time (in milliseconds) for the most recent test.
+	@return Float representing the total test time (in milliseconds) for the most recent test.
 	*/
-    float_t getTestTime() const;
+    Float getTestTime() const;
 
     /**
 	 This function returns the total training time (in milliseconds) for the most recent training.
 	
-	@return float_t representing the total training time (in milliseconds) for the most recent training.
+	@return Float representing the total training time (in milliseconds) for the most recent training.
 	*/
-    float_t getTrainingTime() const;
+    Float getTrainingTime() const;
 
     /**
      This function returns the root mean squared error value from the most recent training.  This value is only relevant when the pipeline is in regression mode.
 
-    @return float_t representing the root mean squared error value from the most recent training.
+    @return Float representing the root mean squared error value from the most recent training.
     */
-    float_t getTrainingRMSError() const;
+    Float getTrainingRMSError() const;
 
     /**
      This function returns the total squared error value from the most recent training.  This value is only relevant when the pipeline is in regression mode.
 
-    @return float_t representing the total squared error value from the most recent training.
+    @return Float representing the total squared error value from the most recent training.
     */
-    float_t getTrainingSSError() const;
+    Float getTrainingSSError() const;
 
     /**
 	 This function returns the confusion matrix for the most recent round of testing.  If null rejection is enabled then the first row and column of the confusion matrix will
@@ -1113,8 +1113,8 @@ protected:
     void deleteClusterer();
     void deleteAllPostProcessingModules();
     void deleteAllContextModules();
-    bool updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorFloat &precisionCounter,VectorFloat &recallCounter,float_t &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter);
-    bool computeTestMetrics(VectorFloat &precisionCounter,VectorFloat &recallCounter,float_t &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter,const UINT numTestSamples);
+    bool updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,Float &rejectionRecallCounter,VectorFloat &confusionMatrixCounter);
+    bool computeTestMetrics(VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,Float &rejectionRecallCounter,VectorFloat &confusionMatrixCounter,const UINT numTestSamples);
     
     bool initialized;
     bool trained;
@@ -1127,17 +1127,17 @@ protected:
     UINT predictionModuleIndex;
     UINT numTrainingSamples;
     UINT numTestSamples;
-    float_t testAccuracy;
-    float_t testRMSError;
-    float_t testSquaredError;
-    float_t testTime;
-    float_t trainingTime;
+    Float testAccuracy;
+    Float testRMSError;
+    Float testSquaredError;
+    Float testTime;
+    Float trainingTime;
     VectorFloat testFMeasure;
     VectorFloat testPrecision;
     VectorFloat testRecall;
     VectorFloat regressionData;
-    float_t testRejectionPrecision;
-    float_t testRejectionRecall;
+    Float testRejectionPrecision;
+    Float testRejectionRecall;
     MatrixFloat testConfusionMatrix;
     Vector< TestResult > crossValidationResults;
     Vector< TestInstanceResult > testResults;

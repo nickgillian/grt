@@ -351,12 +351,12 @@ bool ClassificationData::enableExternalRangeScaling(const bool useExternalRanges
     return false;
 }
 
-bool ClassificationData::scale(const float_t minTarget,const float_t maxTarget){
+bool ClassificationData::scale(const Float minTarget,const float_t maxTarget){
     Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool ClassificationData::scale(const Vector<MinMax> &ranges,const float_t minTarget,const float_t maxTarget){
+bool ClassificationData::scale(const Vector<MinMax> &ranges,const Float minTarget,const float_t maxTarget){
     if( ranges.getSize() != numDimensions ) return false;
 
     //Scale the training data
@@ -652,7 +652,7 @@ bool ClassificationData::loadDatasetFromCSVFile(const std::string &filename,cons
         n=0;
         while( j != numDimensions ){
             if( n != classLabelColumnIndex ){
-                data[i][j++] = grt_from_str< float_t >( parser[i][n] );
+                data[i][j++] = grt_from_str< Float >( parser[i][n] );
             }
             n++;
         }
@@ -745,7 +745,7 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
         UINT numTestSamples = 0;
         
         for(UINT k=0; k<getNumClasses(); k++){
-            UINT numTrainingExamples = (UINT) floor( float_t(classData[k].size()) / 100.0 * float_t(trainingSizePercentage) );
+            UINT numTrainingExamples = (UINT) floor( Float(classData[k].size()) / 100.0 * float_t(trainingSizePercentage) );
             UINT numTestExamples = ((UINT)classData[k].size())-numTrainingExamples;
             numTrainingSamples += numTrainingExamples;
             numTestSamples += numTestExamples;
@@ -756,7 +756,7 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
 
         //Loop over each class and add the data to the trainingSet and testSet
         for(UINT k=0; k<getNumClasses(); k++){
-            UINT numTrainingExamples = (UINT) floor( float_t(classData[k].getSize()) / 100.0 * float_t(trainingSizePercentage) );
+            UINT numTrainingExamples = (UINT) floor( Float(classData[k].getSize()) / 100.0 * float_t(trainingSizePercentage) );
 
             //Add the data to the training and test sets
             for(UINT i=0; i<numTrainingExamples; i++){
@@ -768,7 +768,7 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
         }
     }else{
 
-        const UINT numTrainingExamples = (UINT) floor( float_t(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
+        const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
         //Create the random partion indexs
         Random random;
         UINT randomIndex = 0;
@@ -863,7 +863,7 @@ bool ClassificationData::spiltDataIntoKFolds(const UINT K,const bool useStratifi
     Vector< UINT > indexs( totalNumSamples );
 
     //Work out how many samples are in each fold, the last fold might have more samples than the others
-    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/float_t(K) );
+    UINT numSamplesPerFold = (UINT) floor( totalNumSamples/Float(K) );
 
     //Add the random indexs to each fold
     crossValidationIndexs.resize(K);
@@ -1053,7 +1053,7 @@ ClassificationData ClassificationData::getBootstrappedDataset(UINT numSamples,bo
         }
 
         //Get the class with the minimum number of examples
-        UINT numSamplesPerClass = (UINT)floor( numSamples / float_t(K) );
+        UINT numSamplesPerClass = (UINT)floor( numSamples / Float(K) );
 
         //Randomly select the training samples from each class
         UINT classIndex = 0;
@@ -1260,7 +1260,7 @@ VectorFloat ClassificationData::getMean() const{
 		for(UINT i=0; i<totalNumSamples; i++){
 			mean[j] += data[i][j];
 		}
-		mean[j] /= float_t(totalNumSamples);
+		mean[j] /= Float(totalNumSamples);
 	}
 	
 	return mean;
@@ -1275,7 +1275,7 @@ VectorFloat ClassificationData::getStdDev() const{
 		for(UINT i=0; i<totalNumSamples; i++){
 			stdDev[j] += SQR(data[i][j]-mean[j]);
 		}
-		stdDev[j] = sqrt( stdDev[j] / float_t(totalNumSamples-1) );
+		stdDev[j] = sqrt( stdDev[j] / Float(totalNumSamples-1) );
 	}
 	
 	return stdDev;
@@ -1289,13 +1289,13 @@ MatrixFloat ClassificationData::getClassHistogramData(UINT classLabel,UINT numBi
     Vector< MinMax > ranges = getRanges();
     VectorFloat binRange(N);
     for(UINT i=0; i<ranges.size(); i++){
-        binRange[i] = (ranges[i].maxValue-ranges[i].minValue)/float_t(numBins);
+        binRange[i] = (ranges[i].maxValue-ranges[i].minValue)/Float(numBins);
     }
 
     MatrixFloat histData(N,numBins);
     histData.setAllValues(0);
 
-    float_t norm = 0;
+    Float norm = 0;
     for(UINT i=0; i<M; i++){
         if( data[i].getClassLabel() == classLabel ){
             for(UINT j=0; j<N; j++){
@@ -1369,7 +1369,7 @@ MatrixFloat ClassificationData::getClassStdDev() const{
 	
 	for(UINT k=0; k<getNumClasses(); k++){
 		for(UINT j=0; j<numDimensions; j++){
-			stdDev[k][j] = sqrt( stdDev[k][j] / float_t(counter[k]-1) );
+			stdDev[k][j] = sqrt( stdDev[k][j] / Float(counter[k]-1) );
 		}
 	}
 	
@@ -1386,7 +1386,7 @@ MatrixFloat ClassificationData::getCovarianceMatrix() const{
 			for(UINT i=0; i<totalNumSamples; i++){
 				covariance[j][k] += (data[i][j]-mean[j]) * (data[i][k]-mean[k]) ;
 			}
-			covariance[j][k] /= float_t(totalNumSamples-1);
+			covariance[j][k] /= Float(totalNumSamples-1);
 		}
 	}
 	
@@ -1411,7 +1411,7 @@ VectorFloat ClassificationData::getClassProbabilities() const {
 VectorFloat ClassificationData::getClassProbabilities( const Vector< UINT > &classLabels ) const {
     const UINT K = (UINT)classLabels.size();
     const UINT N = getNumClasses();
-    float_t sum = 0;
+    Float sum = 0;
     VectorFloat x(K,0);
     for(UINT k=0; k<K; k++){
         for(UINT n=0; n<N; n++){
@@ -1487,7 +1487,7 @@ MatrixFloat ClassificationData::getDataAsMatrixFloat() const {
     return d;
 }
 
-bool ClassificationData::generateGaussDataset( const std::string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions, const float_t range, const float_t sigma ){
+bool ClassificationData::generateGaussDataset( const std::string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions, const Float range, const float_t sigma ){
     
     Random random;
     

@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the Derivative module with the PreProcessing base class
 RegisterPreProcessingModule< Derivative > Derivative::registerModule("Derivative");
     
-Derivative::Derivative(UINT derivativeOrder,float_t delta,UINT numDimensions,bool filterData,UINT filterSize){
+Derivative::Derivative(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize){
     classType = "Derivative";
     preProcessingType = classType;
     debugLog.setProceedingText("[DEBUG Derivative]");
@@ -246,27 +246,27 @@ bool Derivative::loadModelFromFile(std::fstream &file){
     return init(derivativeOrder,delta,numInputDimensions,filterData,filterSize);    
 }
     
-bool Derivative::init(UINT derivativeOrder,float_t delta,UINT numDimensions,bool filterData,UINT filterSize){
+bool Derivative::init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize){
 
     initialized = false;
     
     if( derivativeOrder != FIRST_DERIVATIVE && derivativeOrder != SECOND_DERIVATIVE ){
-        errorLog << "init(UINT derivativeOrder,float_t delta,UINT numDimensions,bool filterData,UINT filterSize) - Unknown derivativeOrder!" << std::endl;
+        errorLog << "init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize) - Unknown derivativeOrder!" << std::endl;
         return false;
     }
     
     if( numDimensions == 0 ){
-        errorLog << "init(UINT derivativeOrder,float_t delta,UINT numDimensions,bool filterData,UINT filterSize) - NumDimensions must be greater than 0!" << std::endl;
+        errorLog << "init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
     if( delta <= 0 ){
-        errorLog << "init(UINT derivativeOrder,float_t delta,UINT numDimensions,bool filterData,UINT filterSize) - Delta must be greater than 0!" << std::endl;
+        errorLog << "init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize) - Delta must be greater than 0!" << std::endl;
         return false;
     }
     
     if( filterSize == 0 ){
-        errorLog << "init(UINT derivativeOrder,float_t delta,UINT numDimensions,bool filterData,UINT filterSize) - FilterSize must be greater than zero!" << std::endl;
+        errorLog << "init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize) - FilterSize must be greater than zero!" << std::endl;
         return false;
     }
     
@@ -287,10 +287,10 @@ bool Derivative::init(UINT derivativeOrder,float_t delta,UINT numDimensions,bool
     return true;
 }
 
-float_t Derivative::computeDerivative(const float_t x){
+Float Derivative::computeDerivative(const float_t x){
     
     if( numInputDimensions != 1 ){
-        errorLog << "computeDerivative(const float_t x) - The Number Of Input Dimensions is not 1! NumInputDimensions: " << numInputDimensions << std::endl;
+        errorLog << "computeDerivative(const Float x) - The Number Of Input Dimensions is not 1! NumInputDimensions: " << numInputDimensions << std::endl;
         return 0;
     }
     
@@ -324,7 +324,7 @@ VectorFloat Derivative::computeDerivative(const VectorFloat &x){
     }
     
     if( derivativeOrder == SECOND_DERIVATIVE ){
-        float_t tmp = 0;
+        Float tmp = 0;
         for(UINT n=0; n<numInputDimensions; n++){
             tmp = processedData[n];
             processedData[n] = (processedData[n]-yyy[n])/delta;
@@ -361,7 +361,7 @@ bool Derivative::enableFiltering(bool filterData){
     return true;
 }
     
-float_t Derivative::getDerivative(UINT derivativeOrder){ 
+Float Derivative::getDerivative(UINT derivativeOrder){ 
     
     switch( derivativeOrder ){
         case 0:

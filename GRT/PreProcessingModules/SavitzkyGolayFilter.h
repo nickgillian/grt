@@ -148,7 +148,7 @@ public:
      @param x: the value to filter, this should only be called if the dimensionality of the filter was set to 1
 	 @return the filtered value.  Zero will be returned if the value was not filtered
      */
-    float_t filter(const float_t x);
+    Float filter(const Float x);
     
     /**
      Filters the input, the dimensionality of the input vector should match that of the filter.
@@ -167,7 +167,7 @@ public:
 
 protected:
     inline int min_(int a,int b) {return b < a ? (b) : (a);}
-    inline float_t min_(float_t a,float_t b) {return b < a ? (b) : (a);}
+    inline Float min_(Float a,float_t b) {return b < a ? (b) : (a);}
     bool calCoeff();
     
     UINT numPoints;                              //The physical length of the output array

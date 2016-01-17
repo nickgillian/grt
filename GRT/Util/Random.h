@@ -4,7 +4,7 @@
  @version 1.0
 
  @brief This file contains the Random class, a useful wrapper for generating cross platform random functions. 
- This includes functions for uniform distributions (both integer and float_t) and Gaussian distributions.
+ This includes functions for uniform distributions (both integer and Float) and Gaussian distributions.
  */
 
 /*
@@ -98,7 +98,7 @@ public:
      10% of the time.
      
      @param const Vector< int > &values: a Vector containing the N possible values the function can return
-     @param const Vector< float_t > &weights: the corresponding weights for the values Vector (must be the same size as the values Vector)
+     @param const Vector< Float > &weights: the corresponding weights for the values Vector (must be the same size as the values Vector)
      @return returns a random integer from the values Vector, with a probability relative to the values weight
      */
     int getRandomNumberWeighted(const Vector< int > &values,const VectorFloat &weights){
@@ -122,7 +122,7 @@ public:
      For example, if the input values are: [{1 0.7},{2 0.2}, {3 0.1}], then the 1 value would be randomly returned 
      70% of the time, the 2 value returned 20% of the time and the 3 value returned 10% of the time.
      
-     @param Vector< IndexedDouble > weightedValues: a Vector of IndexedDouble values, the (int) indexs represent the value that will be returned while the (float_t) values represent the weight of choosing that specific index 
+     @param Vector< IndexedDouble > weightedValues: a Vector of IndexedDouble values, the (int) indexs represent the value that will be returned while the (Float) values represent the weight of choosing that specific index 
      @return returns a random integer from the values Vector, with a probability relative to the values weight
      */
     int getRandomNumberWeighted(Vector< IndexedDouble > weightedValues){
@@ -136,14 +136,14 @@ public:
         sort(weightedValues.begin(),weightedValues.end(),IndexedDouble::sortIndexedDoubleByValueAscending);
         
         //Create the accumulated sum lookup table
-        Vector< float_t > x(N);
+        Vector< Float > x(N);
         x[0] = weightedValues[0].value;
         for(unsigned int i=1; i<N; i++){
             x[i] = x[i-1] + weightedValues[i].value;
         }
         
-        //Generate a random value between min and the max weighted float_t values
-        float_t randValue = getRandomNumberUniform(0,x[N-1]);
+        //Generate a random value between min and the max weighted Float values
+        Float randValue = getRandomNumberUniform(0,x[N-1]);
         
         //Find which bin the rand value falls into, return the index of that bin
         for(unsigned int i=0; i<N; i++){
@@ -165,7 +165,7 @@ public:
      For example, if the input values are: [{1 0.7},{2 0.2}, {3 0.1}], then the 1 value would be randomly returned
      70% of the time, the 2 value returned 20% of the time and the 3 value returned 10% of the time.
      
-     @param weightedValues: a sorted Vector of IndexedDouble values, the (int) indexs represent the value that will be returned while the (float_t) values represent the weight of choosing that specific index
+     @param weightedValues: a sorted Vector of IndexedDouble values, the (int) indexs represent the value that will be returned while the (Float) values represent the weight of choosing that specific index
      @param x: a Vector containing the accumulated lookup table
      @return returns a random integer from the values Vector, with a probability relative to the values weight
      */
@@ -175,8 +175,8 @@ public:
         
         if( weightedValues.size() != x.size() ) return 0;
         
-        //Generate a random value between min and the max weighted float_t values
-        float_t randValue = getRandomNumberUniform(0,x[N-1]);
+        //Generate a random value between min and the max weighted Float values
+        Float randValue = getRandomNumberUniform(0,x[N-1]);
         
         //Find which bin the rand value falls into, return the index of that bin
         for(unsigned int i=0; i<N; i++){
@@ -188,25 +188,25 @@ public:
     }
     
     /**
-	Gets a random float_t in the range [minRange maxRange], using a uniform distribution
+	Gets a random Float in the range [minRange maxRange], using a uniform distribution
 	
 	@param minRange: the minimum value in the range (inclusive)
 	@param maxRange: the maximum value in the range (inclusive)
-	@return returns a float_t in the range [minRange maxRange]
+	@return returns a Float in the range [minRange maxRange]
 	*/
-    inline float_t getRandomNumberUniform(float_t minRange=0.0,float_t maxRange=1.0){
+    inline Float getRandomNumberUniform(Float minRange=0.0,float_t maxRange=1.0){
         return (doub()*(maxRange-minRange))+minRange;
     }
     
     /**
-	Gets a random float_t, using a Gaussian distribution with mu 0 and sigma 1.0
+	Gets a random Float, using a Gaussian distribution with mu 0 and sigma 1.0
 	
 	@param mu: the mu parameter for the Gaussian distribution
 	@param sigma: the sigma parameter for the Gaussian distribution
-	@return returns a float_t from the Gaussian distribution controlled by mu and sigma
+	@return returns a Float from the Gaussian distribution controlled by mu and sigma
 	*/
-    float_t getRandomNumberGauss(float_t mu=0.0,float_t sigma=1.0){
-        float_t v1,v2,rsq,fac;
+    Float getRandomNumberGauss(Float mu=0.0,float_t sigma=1.0){
+        Float v1,v2,rsq,fac;
         
         if (storedval == 0.){
             do {
@@ -225,14 +225,14 @@ public:
     }
     
     /**
-	Gets an N-dimensional Vector of random float_ts drawn from the uniform distribution set by the minRange and maxRange.
+	Gets an N-dimensional Vector of random Floats drawn from the uniform distribution set by the minRange and maxRange.
 	
 	@param numDimensions: the size of the Vector you require
 	@param minRange: the minimum value in the range (inclusive)
 	@param maxRange: the maximum value in the range (inclusive)
-	@return returns a Vector of float_ts drawn from the uniform distribution set by the minRange and maxRange
+	@return returns a Vector of Floats drawn from the uniform distribution set by the minRange and maxRange
 	*/
-    VectorFloat getRandomVectorUniform(UINT numDimensions,float_t minRange=0.0,float_t maxRange=1.0){
+    VectorFloat getRandomVectorUniform(UINT numDimensions,Float minRange=0.0,Float maxRange=1.0){
         VectorFloat randomValues(numDimensions);
         for(UINT i=0; i<numDimensions; i++){
             randomValues[i] = getRandomNumberUniform(minRange,maxRange);
@@ -241,14 +241,14 @@ public:
     }
     
     /**
-	Gets an N-dimensional Vector of random float_ts drawn from the Gaussian distribution controlled by mu and sigma.
+	Gets an N-dimensional Vector of random Floats drawn from the Gaussian distribution controlled by mu and sigma.
 	
 	@param numDimensions: the size of the Vector you require
 	@param mu: the mu parameter for the Gaussian distribution
 	@param sigma: the sigma parameter for the Gaussian distribution
-	@return returns a Vector of float_ts drawn from the Gaussian distribution controlled by mu and sigma
+	@return returns a Vector of Floats drawn from the Gaussian distribution controlled by mu and sigma
 	*/
-    VectorFloat getRandomVectorGauss(UINT numDimensions,float_t mu=0.0,float_t sigma=1.0){
+    VectorFloat getRandomVectorGauss(UINT numDimensions,Float mu=0.0,Float sigma=1.0){
         VectorFloat randomValues(numDimensions);
         for(UINT i=0; i<numDimensions; i++){
             randomValues[i] = getRandomNumberGauss(mu,sigma);
@@ -298,13 +298,13 @@ private:
         unsigned long long x = u ^ (u << 21); x ^= x >> 35; x ^= x << 4;
         return (x + v) ^ w;
     }
-    inline float_t doub() { return 5.42101086242752217E-20 * int64(); }
+    inline Float doub() { return 5.42101086242752217E-20 * int64(); }
     inline unsigned int int32() { return (unsigned int)int64(); } 
     
     unsigned long long u;
     unsigned long long v;
     unsigned long long w;
-    float_t storedval;               //This is for the Gauss Box-Muller 
+    Float storedval;               //This is for the Gauss Box-Muller 
 };
 
 GRT_END_NAMESPACE

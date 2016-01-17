@@ -244,11 +244,11 @@ bool MovingAverageFilter::init(UINT filterSize,UINT numDimensions){
     return initialized;
 }
 
-float_t MovingAverageFilter::filter(const float_t x){
+Float MovingAverageFilter::filter(const float_t x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
-        errorLog << "filter(const float_t x) - The filter has not been initialized!" << std::endl;
+        errorLog << "filter(const Float x) - The filter has not been initialized!" << std::endl;
         return 0;
     }
     
@@ -281,7 +281,7 @@ VectorFloat MovingAverageFilter::filter(const VectorFloat &x){
         for(unsigned int i=0; i<inputSampleCounter; i++) {
             processedData[j] += dataBuffer[i][j];
         }
-        processedData[j] /= float_t(inputSampleCounter);
+        processedData[j] /= Float(inputSampleCounter);
     }
     
     return processedData;

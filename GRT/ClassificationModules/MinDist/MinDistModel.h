@@ -61,36 +61,36 @@ public:
      */
 	MinDistModel &operator=(const MinDistModel &rhs);
 	
-	bool train(UINT classLabel,MatrixFloat &trainingData,UINT numClusters,float_t minChange,UINT maxNumEpochs);
-	float_t predict(const VectorFloat &observation);
+	bool train(UINT classLabel,MatrixFloat &trainingData,UINT numClusters,Float minChange,UINT maxNumEpochs);
+	Float predict(const VectorFloat &observation);
 	void recomputeThresholdValue();
 	
 	UINT getClassLabel() const;
 	UINT getNumFeatures() const;
 	UINT getNumClusters() const;
 	UINT getDistanceMode() const;
-    float_t getRejectionThreshold() const;
-    float_t getGamma() const;
-    float_t getTrainingMu() const;
-    float_t getTrainingSigma() const;
+    Float getRejectionThreshold() const;
+    Float getGamma() const;
+    Float getTrainingMu() const;
+    Float getTrainingSigma() const;
     MatrixFloat getClusters() const;
     
     bool setClassLabel(UINT classLabel);
     bool setClusters(MatrixFloat &clusters);
-    bool setGamma(float_t gamma);
-    bool setRejectionThreshold(float_t rejectionThreshold);
-    bool setTrainingSigma(float_t trainingSigma);
-    bool setTrainingMu(float_t trainingMu);
+    bool setGamma(Float gamma);
+    bool setRejectionThreshold(Float rejectionThreshold);
+    bool setTrainingSigma(Float trainingSigma);
+    bool setTrainingMu(Float trainingMu);
     
 private:
-    float_t SQR(float_t x){ return x*x; }
+    Float SQR(Float x){ return x*x; }
 	UINT classLabel;
 	UINT numFeatures;
 	UINT numClusters;
-	float_t rejectionThreshold;			//The classification threshold value
-	float_t gamma;				//The number of standard deviations to use for the threshold
-	float_t trainingMu;			//The average confidence value in the training data
-	float_t trainingSigma;		//The simga confidence value in the training data
+	Float rejectionThreshold;			//The classification threshold value
+	Float gamma;				//The number of standard deviations to use for the threshold
+	Float trainingMu;			//The average confidence value in the training data
+	Float trainingSigma;		//The simga confidence value in the training data
 	MatrixFloat clusters;
 };
 

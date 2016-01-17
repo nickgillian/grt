@@ -81,7 +81,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 #if _MSC_VER >= 1600
-    inline float_t round( float_t d ) {
+    inline Float round( Float d ) {
         return floor( d + 0.5 );
     }
 #endif
