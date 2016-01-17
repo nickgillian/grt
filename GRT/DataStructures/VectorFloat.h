@@ -128,7 +128,7 @@ public:
      
      @return returns true if the vector was scaled, false otherwise
      */
-    bool scale(const Float minSource,const Float maxSource,const float_t minTarget,const float_t maxTarget,const bool constrain = true);
+    bool scale(const Float minSource,const Float maxSource,const Float minTarget,const Float maxTarget,const bool constrain = true);
 
     /**
      @return returns the minimum value in the vector

@@ -336,7 +336,7 @@ public:
      @param constrain: sets if the scaled value should be constrained to the target range
      @return returns a new value that has been scaled based on the input parameters
      */
-    Float inline scale(const Float &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain=false){
+    Float inline scale(const Float &x,const Float &minSource,const Float &maxSource,const Float &minTarget,const Float &maxTarget,const bool constrain=false){
         if( constrain ){
             if( x <= minSource ) return minTarget;
             if( x >= maxSource ) return maxTarget;

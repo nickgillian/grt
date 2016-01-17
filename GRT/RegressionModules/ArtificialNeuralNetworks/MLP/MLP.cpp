@@ -423,9 +423,9 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     Float accuracy = 0;
     Float trainingSetAccuracy = 0;
     Float trainingSetTotalSquaredError = 0;
-    Float bestError = grt_numeric_limits< float_t >::max();
-    Float bestTSError = grt_numeric_limits< float_t >::max();
-    Float bestRMSError = grt_numeric_limits< float_t >::max();
+    Float bestError = grt_numeric_limits< Float >::max();
+    Float bestTSError = grt_numeric_limits< Float >::max();
+    Float bestRMSError = grt_numeric_limits< Float >::max();
     Float bestAccuracy = 0;
     Float delta = 0;
     Float backPropError = 0;
@@ -567,11 +567,11 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
                     }
 				}
                 
-                accuracy = (accuracy/Float(numValidationSamples))*float_t(numValidationSamples);
+                accuracy = (accuracy/Float(numValidationSamples))*Float(numValidationSamples);
                 rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
                 
 			}else{//We are not using a validation set
-                accuracy = (accuracy/Float(M))*float_t(M);
+                accuracy = (accuracy/Float(M))*Float(M);
                 rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
             }
             
@@ -706,9 +706,9 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     Float error = 0;
     Float lastError = 0;
     Float trainingSetTotalSquaredError = 0;
-    Float bestError = grt_numeric_limits< float_t >::max();
-    Float bestTSError = grt_numeric_limits< float_t >::max();
-    Float bestRMSError = grt_numeric_limits< float_t >::max();
+    Float bestError = grt_numeric_limits< Float >::max();
+    Float bestTSError = grt_numeric_limits< Float >::max();
+    Float bestRMSError = grt_numeric_limits< Float >::max();
     Float delta = 0;
     Vector< UINT > indexList(M);
     Vector< VectorFloat > tempTrainingErrorLog;
@@ -848,7 +848,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     return true;
 }
     
-Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targetVector,const float_t alpha,const float_t beta){
+Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targetVector,const Float alpha,const Float beta){
         
     Float update = 0;
     Float sum = 0;

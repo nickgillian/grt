@@ -74,7 +74,7 @@ bool Cholesky::solve(VectorFloat &b,VectorFloat &x) {
 	Float sum;
 	
 	if (b.size() != N || x.size() != N){
-		errorLog << ":solve(vector<Float> &b, vector<float_t> &x) - The input vectors are not the same size!" << std::endl;
+		errorLog << ":solve(vector<Float> &b, vector<Float> &x) - The input vectors are not the same size!" << std::endl;
 		return false;
 	}
 	for(i=0; i<n; i++) {
@@ -91,7 +91,7 @@ bool Cholesky::solve(VectorFloat &b,VectorFloat &x) {
 bool Cholesky::elmult(VectorFloat &y,VectorFloat &b){
 	unsigned int i,j;
 	if (b.size() != N || y.size() != N){
-		errorLog << "elmult(vector<Float> &y vector<float_t> &b) - The input vectors are not the same size!" << std::endl;
+		errorLog << "elmult(vector<Float> &y vector<Float> &b) - The input vectors are not the same size!" << std::endl;
 		return false;
 	}
 	for (i=0;i<N;i++) {
@@ -106,7 +106,7 @@ bool Cholesky::elsolve(VectorFloat &b,VectorFloat &y){
 	Float sum = 0;
 	
 	if (b.size() != N || y.size() != N){
-		errorLog << "elsolve(vector<Float> &b vector<float_t> &y) - The input vectors are not the same size!" << std::endl;
+		errorLog << "elsolve(vector<Float> &b vector<Float> &y) - The input vectors are not the same size!" << std::endl;
 		return false;
 	}
 	for (i=0; i<N; i++) {

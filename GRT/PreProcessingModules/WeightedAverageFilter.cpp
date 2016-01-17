@@ -216,7 +216,7 @@ bool WeightedAverageFilter::init(UINT filterSize,UINT numDimensions){
     return initialized;
 }
 
-Float WeightedAverageFilter::filter(const float_t x){
+Float WeightedAverageFilter::filter(const Float x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){

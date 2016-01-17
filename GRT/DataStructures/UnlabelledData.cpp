@@ -161,12 +161,12 @@ bool UnlabelledData::enableExternalRangeScaling(const bool useExternalRanges){
     return false;
 }
 
-bool UnlabelledData::scale(const Float minTarget,const float_t maxTarget){
+bool UnlabelledData::scale(const Float minTarget,const Float maxTarget){
     Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool UnlabelledData::scale(const Vector<MinMax> &ranges,const Float minTarget,const float_t maxTarget){
+bool UnlabelledData::scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget){
     if( ranges.size() != numDimensions ) return false;
 
     //Scale the training data
@@ -422,7 +422,7 @@ UnlabelledData UnlabelledData::partition(const UINT trainingSizePercentage){
     crossValidationSetup = false;
     crossValidationIndexs.clear();
 
-	const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
+	const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * Float(trainingSizePercentage) );
 
 	UnlabelledData trainingSet(numDimensions);
 	UnlabelledData testSet(numDimensions);

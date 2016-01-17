@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the SVM module with the Classifier base class
 RegisterClassifierModule< SVM > SVM::registerModule("SVM");
 
-SVM::SVM(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,float_t coef0,float_t nu,float_t C,bool useCrossValidation,UINT kFoldValue){
+SVM::SVM(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue){
     
     //Setup the default SVM parameters
     model = NULL;
@@ -196,7 +196,7 @@ bool SVM::predict_(VectorFloat &inputVector){
     return true;
 }
     
-bool SVM::init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,float_t coef0,float_t nu,float_t C,bool useCrossValidation,UINT kFoldValue){
+bool SVM::init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue){
     
     //Clear any previous models or problems
     clear();
@@ -321,7 +321,7 @@ bool SVM::trainSVM(){
         Float total_correct = 0;
         Float total_error = 0;
         Float sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
-        Float *target = new float_t[prob.l];
+        Float *target = new Float[prob.l];
 
         svm_cross_validation(&prob,&param,kFoldValue,target);
         if( param.svm_type == EPSILON_SVR || param.svm_type == NU_SVR )

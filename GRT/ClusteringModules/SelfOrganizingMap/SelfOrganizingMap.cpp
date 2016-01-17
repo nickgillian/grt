@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the SelfOrganizingMap class with the Clusterer base class
 RegisterClustererModule< SelfOrganizingMap > SelfOrganizingMap::registerModule("SelfOrganizingMap");
 
-SelfOrganizingMap::SelfOrganizingMap( const UINT networkSize, const UINT networkTypology, const UINT maxNumEpochs, const Float alphaStart, const float_t alphaEnd ){
+SelfOrganizingMap::SelfOrganizingMap( const UINT networkSize, const UINT networkTypology, const UINT maxNumEpochs, const Float alphaStart, const Float alphaEnd ){
     
     this->numClusters = networkSize;
     this->networkTypology = networkTypology;
@@ -227,7 +227,7 @@ bool SelfOrganizingMap::train_( MatrixFloat &data ){
             
             //Find the best matching unit
             Float dist = 0;
-            Float bestDist = grt_numeric_limits< float_t >::max();
+            Float bestDist = grt_numeric_limits< Float >::max();
             UINT bestIndex = 0;
             for(UINT j=0; j<numClusters; j++){
                 dist = neurons[j].getSquaredWeightDistance( trainingSample );

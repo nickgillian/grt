@@ -33,7 +33,7 @@ public:
     /**
      Default Constructor
      */
-	ParticleClassifier(const unsigned int numParticles = 2000,const Float sensorNoise = 20.0,const Float transitionSigma = 0.005,const float_t phaseSigma = 0.1,const float_t velocitySigma = 0.01);
+	ParticleClassifier(const unsigned int numParticles = 2000,const Float sensorNoise = 20.0,const Float transitionSigma = 0.005,const Float phaseSigma = 0.1,const Float velocitySigma = 0.01);
 	
     /**
      Default copy constructor

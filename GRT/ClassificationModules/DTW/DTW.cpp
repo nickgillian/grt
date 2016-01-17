@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the DTW module with the Classifier base class
 RegisterClassifierModule< DTW > DTW::registerModule("DTW");
 
-DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,float_t radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,float_t nullRejectionLikelihoodThreshold)
+DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,Float radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,Float nullRejectionLikelihoodThreshold)
 {
     this->useScaling=useScaling;
     this->useNullRejection = useNullRejection;
@@ -743,7 +743,7 @@ Float DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
             Float contribDist1 = d(m-1,n-1,distanceMatrix,M,N);
             Float contribDist2 = d(m-1,n,distanceMatrix,M,N);
             Float contribDist3 = d(m,n-1,distanceMatrix,M,N);
-            Float minValue = grt_numeric_limits< float_t >::max();
+            Float minValue = grt_numeric_limits< Float >::max();
             int index = 0;
             if( contribDist1 < minValue ){ minValue = contribDist1; index = 1; }
 			if( contribDist2 < minValue ){ minValue = contribDist2; index = 2; }
@@ -773,7 +773,7 @@ Float DTW::d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N){
     return dist;
 }
 
-inline Float DTW::MIN_(float_t a,float_t b, float_t c){
+inline Float DTW::MIN_(Float a,Float b, Float c){
 	Float v = a;
 	if(b<v) v = b;
 	if(c<v) v = c;
@@ -853,7 +853,7 @@ void DTW::znormData(MatrixFloat &data,MatrixFloat &normData){
 void DTW::smoothData(VectorFloat &data,UINT smoothFactor,VectorFloat &resultsData){
 
 	const UINT M = (UINT)data.size();
-	const UINT N = (UINT) floor(Float(M)/float_t(smoothFactor));
+	const UINT N = (UINT) floor(Float(M)/Float(smoothFactor));
 	resultsData.resize(N,0);
 	for(UINT i=0; i<N; i++) resultsData[i]=0.0;
 
@@ -888,7 +888,7 @@ void DTW::smoothData(MatrixFloat &data,UINT smoothFactor,MatrixFloat &resultsDat
 
 	const UINT M = data.getNumRows();
 	const UINT C = data.getNumCols();
-	const UINT N = (UINT) floor(Float(M)/float_t(smoothFactor));
+	const UINT N = (UINT) floor(Float(M)/Float(smoothFactor));
 	resultsData.resize(N,C);
 
 	if(smoothFactor==1 || M<smoothFactor){
@@ -1251,7 +1251,7 @@ bool DTW::enableZNormalization(bool useZNormalisation,bool constrainZNorm){
 	return true; 
 }
 
-bool DTW::enableTrimTrainingData(bool trimTrainingData,Float trimThreshold,float_t maximumTrimPercentage){
+bool DTW::enableTrimTrainingData(bool trimTrainingData,Float trimThreshold,Float maximumTrimPercentage){
 	
 	if( trimThreshold < 0 || trimThreshold > 1 ){
 		warningLog << "Failed to set trimTrainingData.  The trimThreshold must be in the range of [0 1]" << std::endl;

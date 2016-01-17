@@ -249,7 +249,7 @@ public:
      @param sigma: the sigma parameter for the Gaussian distrubution
      @return returns the likelihood of x, given mu and sigma
      */
-    inline Float normal(Float x,float_t mu,float_t sigma){
+    inline Float normal(Float x,Float mu,Float sigma){
         return ( 1.0/(sigma*SQRT_TWO_PI) ) * exp( - ( SQR(x-mu)/(2.0*SQR(sigma)) ) );
     }
     
@@ -261,7 +261,7 @@ public:
      @param sigma: the sigma parameter for the Gaussian distrubution
      @return returns the likelihood of x, given mu and sigma
      */
-    inline Float gauss(Float x,float_t mu,float_t sigma){
+    inline Float gauss(Float x,Float mu,Float sigma){
         return exp( - ( SQR(x-mu)/(2.0*SQR(sigma)) ) );
     }
     

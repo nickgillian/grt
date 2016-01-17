@@ -78,7 +78,7 @@ public:
      @param constrain: if true, then the value will be constrained to the minSource and maxSource
 	 @return the scaled value
      */
-    static Float scale(const Float &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain=false);
+    static Float scale(const Float &x,const Float &minSource,const Float &maxSource,const Float &minTarget,const Float &maxTarget,const bool constrain=false);
 
     /**
     Converts an int to a string.
@@ -220,7 +220,7 @@ public:
      @param maxValue: the maximum value that should be limited
      @return the limited double input value
      */
-    static Float limit(const Float value,const float_t minValue,const float_t maxValue);
+    static Float limit(const Float value,const Float minValue,const Float maxValue);
 
     /**
     Computes the sum of the vector x.
@@ -280,7 +280,7 @@ public:
      @param constrain: if true, then the value will be constrained to the minSource and maxSource
      @return the scaled input vector
      */
-	static VectorFloat scale(const VectorFloat &x,const Float minSource,const Float maxSource,const float_t minTarget=0,const float_t maxTarget=1,const bool constrain=false);
+	static VectorFloat scale(const VectorFloat &x,const Float minSource,const Float maxSource,const Float minTarget=0,const Float maxTarget=1,const bool constrain=false);
     
     /**
     Normalizes the input vector x so the sum is 1.
@@ -365,7 +365,7 @@ public:
      @param theta: the return theta value
      @return void
      */
-    static void cartToPolar(const Float x,const Float y,float_t &r, float_t &theta);
+    static void cartToPolar(const Float x,const Float y,Float &r, Float &theta);
     
     /**
      Converts the polar values {r theta} into the cartesian values {x y}.
@@ -376,7 +376,7 @@ public:
      @param y: the return y value
      @return void
      */
-    static void polarToCart(const Float r,const Float theta,float_t &x, float_t &y);
+    static void polarToCart(const Float r,const Float theta,Float &x, Float &y);
 
     /**
      @brief Parses a directory and returns a list of filenames in that directory that match the file type.

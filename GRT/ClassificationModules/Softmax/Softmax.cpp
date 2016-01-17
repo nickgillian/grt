@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the Softmax module with the Classifier base class
 RegisterClassifierModule< Softmax >  Softmax::registerModule("Softmax");
 
-Softmax::Softmax(const bool useScaling,const Float learningRate,const float_t minChange,const UINT maxNumEpochs)
+Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minChange,const UINT maxNumEpochs)
 {
     this->useScaling = useScaling;
     this->learningRate = learningRate;
@@ -158,7 +158,7 @@ bool Softmax::predict_(VectorFloat &inputVector){
     
     //Loop over each class and compute the likelihood of the input data coming from class k. Pick the class with the highest likelihood
     Float sum = 0;
-    Float bestEstimate = -grt_numeric_limits< float_t >::max();
+    Float bestEstimate = -grt_numeric_limits< Float >::max();
     UINT bestIndex = 0;
     for(UINT k=0; k<numClasses; k++){
         Float estimate = models[k].compute( inputVector );

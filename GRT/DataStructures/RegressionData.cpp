@@ -161,13 +161,13 @@ bool RegressionData::enableExternalRangeScaling(const bool useExternalRanges){
     return false;
 }
 
-bool RegressionData::scale(const Float minTarget,const float_t maxTarget){
+bool RegressionData::scale(const Float minTarget,const Float maxTarget){
     Vector< MinMax > inputRanges = getInputRanges();
     Vector< MinMax > targetRanges = getTargetRanges();
     return scale(inputRanges,targetRanges,minTarget,maxTarget);
 }
 
-bool RegressionData::scale(const Vector< MinMax > &inputVectorRanges,const Vector< MinMax > &targetVectorRanges,const Float minTarget,const float_t maxTarget){
+bool RegressionData::scale(const Vector< MinMax > &inputVectorRanges,const Vector< MinMax > &targetVectorRanges,const Float minTarget,const Float maxTarget){
     if( inputVectorRanges.getSize() == numInputDimensions && targetVectorRanges.getSize() == numTargetDimensions ){
 
         VectorFloat scaledInputVector(numInputDimensions,0);
@@ -266,7 +266,7 @@ RegressionData RegressionData::partition(const UINT trainingSizePercentage){
 	//therefore sets the size of the data which remains in this instance and the remaining percentage of data is then added to
 	//the testing/validation dataset
 
-	const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
+	const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * Float(trainingSizePercentage) );
 
 	RegressionData trainingSet(numInputDimensions,numTargetDimensions);
 	RegressionData testSet(numInputDimensions,numTargetDimensions);

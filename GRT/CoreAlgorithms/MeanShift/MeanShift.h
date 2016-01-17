@@ -137,7 +137,7 @@ public:
         return mean;
     }
     
-    Float gaussKernel( const Float &x, const float_t &mu, const float_t gamma ){
+    Float gaussKernel( const Float &x, const Float &mu, const Float gamma ){
         return exp( gamma * grt_sqr(x-mu) );
     }
     

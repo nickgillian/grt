@@ -48,7 +48,7 @@ public:
      @param searchTimeoutDuration: sets the duration (in samples) that the threshold detector will ignore any new threshold crossings after detecting a valid threshold crossing
      @param offsetFilterSize: sets the size of the moving average filter used to offset the input value (if the analysisMode is set to MOVING_OFFSET_ANALYSIS_MODE)
      */
-    ThresholdCrossingDetector(UINT analysisMode = RAW_DATA_ANALYSIS_MODE,UINT thresholdCrossingMode = UPPER_THRESHOLD_CROSSING,UINT detectionTimeoutMode = TIMEOUT_COUNTER,Float lowerThreshold = -1,Float upperThreshold = 1,float_t hysteresisThreshold = 0,UINT searchWindowSize = 20,UINT searchTimeoutDuration = 1000,UINT offsetFilterSize = 10);
+    ThresholdCrossingDetector(UINT analysisMode = RAW_DATA_ANALYSIS_MODE,UINT thresholdCrossingMode = UPPER_THRESHOLD_CROSSING,UINT detectionTimeoutMode = TIMEOUT_COUNTER,Float lowerThreshold = -1,Float upperThreshold = 1,Float hysteresisThreshold = 0,UINT searchWindowSize = 20,UINT searchTimeoutDuration = 1000,UINT offsetFilterSize = 10);
     
     /**
      Default Destructor.

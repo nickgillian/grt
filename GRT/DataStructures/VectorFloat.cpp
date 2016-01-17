@@ -86,14 +86,14 @@ bool VectorFloat::print(const std::string title) const {
     return true;
 }
     
-bool VectorFloat::scale( const Float minTarget, const float_t maxTarget, const bool constrain ){
+bool VectorFloat::scale( const Float minTarget, const Float maxTarget, const bool constrain ){
     
     MinMax range = getMinMax();
     
     return scale( range.minValue, range.maxValue, minTarget, maxTarget, constrain );
 }
     
-bool VectorFloat::scale( const Float minSource, const float_t maxSource, const float_t minTarget, const float_t maxTarget, const bool constrain ){
+bool VectorFloat::scale( const Float minSource, const Float maxSource, const Float minTarget, const Float maxTarget, const bool constrain ){
     
     const size_t N = this->size();
     
@@ -151,9 +151,9 @@ Float VectorFloat::getStdDev() const {
     const Float *data = getData();
 	
 	for(size_t i=0; i<N; i++){
-		stdDev += (data[i]-mean)*(data[i]-mean);
+		stdDev += grt_sqr(data[i]-mean);
 	}
-    stdDev = sqrt( stdDev / Float(N-1) );
+    stdDev = grt_sqrt( stdDev / Float(N-1) );
 
     return stdDev;
 }

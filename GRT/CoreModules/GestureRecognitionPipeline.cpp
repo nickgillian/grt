@@ -3303,7 +3303,7 @@ void GestureRecognitionPipeline::deleteAllContextModules(){
     }
 }
     
-bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter){
+bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,Float &rejectionRecallCounter,VectorFloat &confusionMatrixCounter){
 
 	const bool nullRejectionEnabled = classifier->getNullRejectionEnabled();
 
@@ -3404,7 +3404,7 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
     return true;
 }
 
-bool GestureRecognitionPipeline::computeTestMetrics(VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,float_t &rejectionRecallCounter,VectorFloat &confusionMatrixCounter,const UINT numTestSamples){
+bool GestureRecognitionPipeline::computeTestMetrics(VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,Float &rejectionRecallCounter,VectorFloat &confusionMatrixCounter,const UINT numTestSamples){
         
     //Compute the test metrics
     testAccuracy = testAccuracy/Float(numTestSamples) * 100.0;

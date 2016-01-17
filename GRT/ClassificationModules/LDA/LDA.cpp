@@ -124,7 +124,7 @@ bool LDA::train(ClassificationData trainingData){
         priorProb[k] = 1.0/Float(numClasses);
         
         //Update the main covariance matrix
-        Float weight = ((classData.getNumSamples() - 1) / float_t(trainingData.getNumSamples() - numClasses) );
+        Float weight = ((classData.getNumSamples() - 1) / Float(trainingData.getNumSamples() - numClasses) );
         debugLog << "Weight: " << weight << std::endl;
         for(UINT m=0; m<numFeatures; m++){
             for(UINT n=0; n<numFeatures; n++){

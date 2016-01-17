@@ -494,7 +494,7 @@ ClusterTreeNode* ClusterTree::buildTree(const MatrixFloat &trainingData,ClusterT
     return node;
 }
     
-bool ClusterTree::computeBestSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
+bool ClusterTree::computeBestSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     switch( trainingMode ){
         case BEST_ITERATIVE_SPILT:
@@ -512,7 +512,7 @@ bool ClusterTree::computeBestSpilt( const MatrixFloat &trainingData, const Vecto
     return true;
 }
     
-bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
+bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     const UINT M = trainingData.getNumRows();
     const UINT N = (UINT)features.size();
@@ -592,7 +592,7 @@ bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainin
     return true;
 }
     
-bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
+bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     const UINT M = trainingData.getNumRows();
     const UINT N = (UINT)features.size();

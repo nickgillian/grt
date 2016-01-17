@@ -102,7 +102,7 @@ protected:
     /**
       Complex scalar division.
      */
-    void cdiv(Float xr, Float xi, float_t yr, float_t yi);
+    void cdiv(Float xr, Float xi, Float yr, Float yi);
 
     template< class T >
     inline T findMax(const T &a,const T &b){

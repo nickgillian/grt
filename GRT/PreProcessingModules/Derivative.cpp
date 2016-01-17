@@ -287,7 +287,7 @@ bool Derivative::init(UINT derivativeOrder,Float delta,UINT numDimensions,bool f
     return true;
 }
 
-Float Derivative::computeDerivative(const float_t x){
+Float Derivative::computeDerivative(const Float x){
     
     if( numInputDimensions != 1 ){
         errorLog << "computeDerivative(const Float x) - The Number Of Input Dimensions is not 1! NumInputDimensions: " << numInputDimensions << std::endl;

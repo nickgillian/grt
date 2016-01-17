@@ -51,7 +51,7 @@ public:
      @param minAlphaSearchRange: the minimum value used to search for the best alpha value. Default value = 0.001
      @param maxAlphaSearchRange: the maximum value used to search for the best alpha value. Default value = 1.0
      */
-    RadialBasisFunction(UINT numSteps=100,Float positiveClassificationThreshold=0.9,Float minAlphaSearchRange=0.001,float_t maxAlphaSearchRange=1.0);
+    RadialBasisFunction(UINT numSteps=100,Float positiveClassificationThreshold=0.9,Float minAlphaSearchRange=0.001,Float maxAlphaSearchRange=1.0);
     
     /**
      Default Destructor.

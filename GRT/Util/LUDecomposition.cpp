@@ -154,10 +154,11 @@ bool LUDecomposition::mprove(const VectorFloat &b,VectorFloat &x)
 {
 	unsigned int i,j;
 	VectorFloat r(N);
+	LongFloat sdp;
 	for (i=0;i<N;i++) {
-		long double sdp = -b[i];
+		sdp = -b[i];
 		for (j=0;j<N;j++)
-			sdp += (LongFloat) aref[i][j] * (long_float_t)x[j];
+			sdp += (LongFloat) aref[i][j] * (LongFloat)x[j];
 		r[i]=sdp;
 	}
 	if( !solve_vector(r,r) ){

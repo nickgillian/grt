@@ -32,7 +32,7 @@ GRT_BEGIN_NAMESPACE
 //Register the RadialBasisFunction module with the WeakClassifier base class
 RegisterWeakClassifierModule< RadialBasisFunction > RadialBasisFunction::registerModule("RadialBasisFunction");
     
-RadialBasisFunction::RadialBasisFunction(UINT numSteps,Float positiveClassificationThreshold,float_t minAlphaSearchRange,float_t maxAlphaSearchRange){
+RadialBasisFunction::RadialBasisFunction(UINT numSteps,Float positiveClassificationThreshold,Float minAlphaSearchRange,Float maxAlphaSearchRange){
     this->numSteps = numSteps;
     this->positiveClassificationThreshold = positiveClassificationThreshold;
     this->minAlphaSearchRange = minAlphaSearchRange;
@@ -139,7 +139,7 @@ bool RadialBasisFunction::train(ClassificationData &trainingData, VectorFloat &w
     //STEP 2: Estimate the best value for alpha
     Float step = (maxAlphaSearchRange-minAlphaSearchRange)/numSteps;
     Float bestAlpha = 0;
-    Float minError = grt_numeric_limits< float_t >::max();
+    Float minError = grt_numeric_limits< Float >::max();
     
     alpha = minAlphaSearchRange;
     while( alpha <= maxAlphaSearchRange ){

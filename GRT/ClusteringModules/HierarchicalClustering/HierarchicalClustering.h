@@ -235,7 +235,7 @@ public:
 
 protected:
 	inline Float SQR(const Float &a) {return a*a;};
-    Float squaredEuclideanDistance(const Float *a,const float_t *b);
+    Float squaredEuclideanDistance(const Float *a,const Float *b);
     Float computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB );
     Float computeClusterVariance( const ClusterInfo &cluster, const MatrixFloat &data );
 

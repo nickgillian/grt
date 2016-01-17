@@ -116,7 +116,7 @@ bool MinDistModel::train(UINT classLabel,MatrixFloat &trainingData,UINT numClust
 
 Float MinDistModel::predict(const VectorFloat &inputVector){
 	
-	Float minDist = grt_numeric_limits< float_t >::max();
+	Float minDist = grt_numeric_limits< Float >::max();
 	Float dist = 0;
 	
 	for(UINT k=0; k<numClusters; k++){

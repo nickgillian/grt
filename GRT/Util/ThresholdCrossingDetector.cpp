@@ -22,7 +22,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-ThresholdCrossingDetector::ThresholdCrossingDetector(UINT analysisMode,UINT thresholdCrossingMode,UINT detectionTimeoutMode,Float lowerThreshold,float_t upperThreshold,float_t hysteresisThreshold,UINT searchWindowSize,UINT searchTimeoutDuration,UINT offsetFilterSize){
+ThresholdCrossingDetector::ThresholdCrossingDetector(UINT analysisMode,UINT thresholdCrossingMode,UINT detectionTimeoutMode,Float lowerThreshold,Float upperThreshold,Float hysteresisThreshold,UINT searchWindowSize,UINT searchTimeoutDuration,UINT offsetFilterSize){
     
     this->analysisMode = analysisMode;
     this->thresholdCrossingMode = thresholdCrossingMode;

@@ -283,12 +283,12 @@ bool TimeSeriesClassificationData::enableExternalRangeScaling(const bool useExte
     return false;
 }
 
-bool TimeSeriesClassificationData::scale(const Float minTarget,const float_t maxTarget){
+bool TimeSeriesClassificationData::scale(const Float minTarget,const Float maxTarget){
     Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool TimeSeriesClassificationData::scale(const Vector<MinMax> &ranges,const Float minTarget,const float_t maxTarget){
+bool TimeSeriesClassificationData::scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget){
     if( ranges.size() != numDimensions ) return false;
 
     //Scale the training data
@@ -742,7 +742,7 @@ TimeSeriesClassificationData TimeSeriesClassificationData::partition(const UINT 
 
         //Loop over each class and add the data to the trainingSet and testSet
         for(UINT k=0; k<getNumClasses(); k++){
-            UINT numTrainingExamples = (UINT) floor( Float(classData[k].size()) / 100.0 * float_t(trainingSizePercentage) );
+            UINT numTrainingExamples = (UINT) floor( Float(classData[k].size()) / 100.0 * Float(trainingSizePercentage) );
 
             //Add the data to the training and test sets
             for(UINT i=0; i<numTrainingExamples; i++){
@@ -758,7 +758,7 @@ TimeSeriesClassificationData TimeSeriesClassificationData::partition(const UINT 
         totalNumSamples = trainingSet.getNumSamples();
     }else{
 
-        const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
+        const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * Float(trainingSizePercentage) );
         //Create the random partion indexs
         Random random;
         for(UINT i=0; i<totalNumSamples; i++) indexs[i] = i;

@@ -351,12 +351,12 @@ bool ClassificationData::enableExternalRangeScaling(const bool useExternalRanges
     return false;
 }
 
-bool ClassificationData::scale(const Float minTarget,const float_t maxTarget){
+bool ClassificationData::scale(const Float minTarget,const Float maxTarget){
     Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool ClassificationData::scale(const Vector<MinMax> &ranges,const Float minTarget,const float_t maxTarget){
+bool ClassificationData::scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget){
     if( ranges.getSize() != numDimensions ) return false;
 
     //Scale the training data
@@ -745,7 +745,7 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
         UINT numTestSamples = 0;
         
         for(UINT k=0; k<getNumClasses(); k++){
-            UINT numTrainingExamples = (UINT) floor( Float(classData[k].size()) / 100.0 * float_t(trainingSizePercentage) );
+            UINT numTrainingExamples = (UINT) floor( Float(classData[k].size()) / 100.0 * Float(trainingSizePercentage) );
             UINT numTestExamples = ((UINT)classData[k].size())-numTrainingExamples;
             numTrainingSamples += numTrainingExamples;
             numTestSamples += numTestExamples;
@@ -756,7 +756,7 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
 
         //Loop over each class and add the data to the trainingSet and testSet
         for(UINT k=0; k<getNumClasses(); k++){
-            UINT numTrainingExamples = (UINT) floor( Float(classData[k].getSize()) / 100.0 * float_t(trainingSizePercentage) );
+            UINT numTrainingExamples = (UINT) floor( Float(classData[k].getSize()) / 100.0 * Float(trainingSizePercentage) );
 
             //Add the data to the training and test sets
             for(UINT i=0; i<numTrainingExamples; i++){
@@ -768,7 +768,7 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
         }
     }else{
 
-        const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * float_t(trainingSizePercentage) );
+        const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * Float(trainingSizePercentage) );
         //Create the random partion indexs
         Random random;
         UINT randomIndex = 0;
@@ -1487,7 +1487,7 @@ MatrixFloat ClassificationData::getDataAsMatrixFloat() const {
     return d;
 }
 
-bool ClassificationData::generateGaussDataset( const std::string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions, const Float range, const float_t sigma ){
+bool ClassificationData::generateGaussDataset( const std::string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions, const Float range, const Float sigma ){
     
     Random random;
     

@@ -3,7 +3,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-MovementDetector::MovementDetector( const UINT numDimensions, const Float upperThreshold, const float_t lowerThreshold, const float_t gamma, const UINT searchTimeout ) {
+MovementDetector::MovementDetector( const UINT numDimensions, const Float upperThreshold, const Float lowerThreshold, const Float gamma, const UINT searchTimeout ) {
     classType = "MovementDetector";
     infoLog.setProceedingText("[MovementDetector]");
     debugLog.setProceedingText("[DEBUG MovementDetector]");

@@ -168,8 +168,8 @@ TEST(VectorFloat, GetMinMax) {
 	Float expectedMin = 0.0;
 	Float expectedMax = size-1;
 	MinMax result = vec.getMinMax();
-	EXPECT_EQ( expectedMin, result.min );
-	EXPECT_EQ( expectedMax, result.max );
+	EXPECT_EQ( expectedMin, result.minValue );
+	EXPECT_EQ( expectedMax, result.maxValue );
 }
 
 int main(int argc, char **argv) {

@@ -48,7 +48,7 @@ public:
      @param cutoffFrequency: sets the cutoffFrequency of the filter (in Hz). If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.  Default value cutoffFrequency = -1.0
      @param delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor.  Default value delta = -1.0
      */
-    FIRFilter(const UINT filterType = LPF,const UINT numTaps = 50,const Float sampleRate = 100,const Float cutoffFrequency = 10,const float_t gain = 1,const UINT numDimensions = 1);
+    FIRFilter(const UINT filterType = LPF,const UINT numTaps = 50,const Float sampleRate = 100,const Float cutoffFrequency = 10,const Float gain = 1,const UINT numDimensions = 1);
     
     /**
      Copy Constructor, copies the FIRFilter from the rhs instance to this instance

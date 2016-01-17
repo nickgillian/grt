@@ -338,7 +338,7 @@ bool SVD::reorder() {
 	return true;
 }
 
-Float SVD::pythag(const float_t a, const float_t b) {
+Float SVD::pythag(const Float a, const Float b) {
 	Float absa=fabs(a);
 	Float absb=fabs(b);
 	return (absa > absb ? absa*grt_sqrt(1.0+grt_sqr(absb/absa)) : (absb == 0.0 ? 0.0 : absb*grt_sqrt(1.0+grt_sqr(absa/absb))));

@@ -3,7 +3,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-BernoulliRBM::BernoulliRBM(const UINT numHiddenUnits,const UINT maxNumEpochs,const Float learningRate,const float_t learningRateUpdate,const float_t momentum,const bool useScaling,const bool randomiseTrainingOrder){
+BernoulliRBM::BernoulliRBM(const UINT numHiddenUnits,const UINT maxNumEpochs,const Float learningRate,const Float learningRateUpdate,const Float momentum,const bool useScaling,const bool randomiseTrainingOrder){
 
     this->numHiddenUnits = numHiddenUnits;
     this->maxNumEpochs = maxNumEpochs;

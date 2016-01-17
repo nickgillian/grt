@@ -180,7 +180,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
             
             //Pick the classifier from the family of classifiers that minimizes the total error
             UINT bestClassifierIndex = 0;
-            Float minError = grt_numeric_limits< float_t >::max();
+            Float minError = grt_numeric_limits< Float >::max();
             for(UINT k=0; k<K; k++){
                 //Get the k'th possible classifier
                 WeakClassifier *weakLearner = weakClassifiers[k];
@@ -315,7 +315,7 @@ bool AdaBoost::predict_(VectorFloat &inputVector){
     UINT bestClassIndex = 0;
     UINT numPositivePredictions = 0;
     bestDistance = -grt_numeric_limits< Float >::max();
-    Float worstDistance = grt_numeric_limits< float_t >::max();
+    Float worstDistance = grt_numeric_limits< Float >::max();
     Float sum = 0;
     for(UINT k=0; k<numClasses; k++){
         Float result = models[k].predict( inputVector );

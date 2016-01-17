@@ -322,7 +322,7 @@ bool LogisticRegression::setMaxNumIterations(const UINT maxNumIterations){
 return setMaxNumEpochs( maxNumIterations );
 }
 
-Float LogisticRegression::sigmoid(const float_t x) const{
+Float LogisticRegression::sigmoid(const Float x) const{
 	return 1.0 / (1 + exp(-x));
 }
     

@@ -138,7 +138,7 @@ public:
         return true;
     }
     
-    bool train( const unsigned int numParticles, const TimeSeriesClassificationData &trainingData, Float sensorNoise, Float transitionSigma, float_t phaseSigma, float_t velocitySigma){
+    bool train( const unsigned int numParticles, const TimeSeriesClassificationData &trainingData, Float sensorNoise, Float transitionSigma, Float phaseSigma, Float velocitySigma){
         
         //Clear any previous model
         clear();

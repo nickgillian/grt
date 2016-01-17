@@ -194,7 +194,7 @@ public:
 	@param maxRange: the maximum value in the range (inclusive)
 	@return returns a Float in the range [minRange maxRange]
 	*/
-    inline Float getRandomNumberUniform(Float minRange=0.0,float_t maxRange=1.0){
+    inline Float getRandomNumberUniform(Float minRange=0.0,Float maxRange=1.0){
         return (doub()*(maxRange-minRange))+minRange;
     }
     
@@ -205,7 +205,7 @@ public:
 	@param sigma: the sigma parameter for the Gaussian distribution
 	@return returns a Float from the Gaussian distribution controlled by mu and sigma
 	*/
-    Float getRandomNumberGauss(Float mu=0.0,float_t sigma=1.0){
+    Float getRandomNumberGauss(Float mu=0.0,Float sigma=1.0){
         Float v1,v2,rsq,fac;
         
         if (storedval == 0.){

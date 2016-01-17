@@ -111,7 +111,7 @@ Float Neuron::fire(const VectorFloat &x){
     
 }
 
-Float Neuron::getDerivative(const float_t &y){
+Float Neuron::getDerivative(const Float &y){
 
 	Float yy = 0;
 	switch( activationFunction ){

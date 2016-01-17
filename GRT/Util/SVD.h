@@ -51,7 +51,7 @@ protected:
 	Float inv_condition();
 	bool decompose();
 	bool reorder();
-	Float pythag(const Float a, const float_t b);
+	Float pythag(const Float a, const Float b);
 	
 	UINT m,n;
 	MatrixFloat u,v;

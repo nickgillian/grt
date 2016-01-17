@@ -255,7 +255,7 @@ bool DoubleMovingAverageFilter::init(UINT filterSize,UINT numDimensions){
     return true;
 }
 
-Float DoubleMovingAverageFilter::filter(const float_t x){
+Float DoubleMovingAverageFilter::filter(const Float x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){

@@ -852,7 +852,7 @@ protected:
      @param Float sigma: the sigma value for the Gaussian distrubution
      @return returns the Gaussian probabilty for the input x, given mu and sigma
      */
-    Float gauss(Float x,float_t mu,float_t sigma){
+    Float gauss(Float x,Float mu,Float sigma){
         return 1.0/(SQRT_TWO_PI*sigma) * exp( -SQR(x-mu)/(2.0*SQR(sigma)) );
     }
     
@@ -867,7 +867,7 @@ protected:
      @param Float weight: the weight for this RBF function. Default value=1.0
      @return returns the RBF function output for input x, given mu, alpha and the weight
      */
-    Float rbf(const Float x,const float_t mu,float_t sigma,float_t weight=1.0){
+    Float rbf(const Float x,const Float mu,Float sigma,Float weight=1.0){
         return weight * exp( -SQR( fabs(x-mu) / sigma ) );
     }
     
@@ -882,7 +882,7 @@ protected:
      @param Float weight: the weight for this RBF function. Default value=1.0
      @return returns the RBF function output for input x, given mu, alpha and the weight
      */
-    Float rbf(const VectorFloat &x,const VectorFloat &mu,Float sigma,float_t weight=1.0){
+    Float rbf(const VectorFloat &x,const VectorFloat &mu,Float sigma,Float weight=1.0){
         Float sum = 0;
         const unsigned int N = (unsigned int)x.size();
         for(UINT i=0; i<N; i++){

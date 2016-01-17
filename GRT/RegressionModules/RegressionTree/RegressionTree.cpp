@@ -463,7 +463,7 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
     return node;
 }
     
-bool RegressionTree::computeBestSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
+bool RegressionTree::computeBestSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     switch( trainingMode ){
         case BEST_ITERATIVE_SPILT:
@@ -481,7 +481,7 @@ bool RegressionTree::computeBestSpilt( const RegressionData &trainingData, const
     return false;
 }
     
-bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, float_t &minError ){
+bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();
@@ -550,7 +550,7 @@ bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &t
 }
     
     /*
-bool RegressionTree::computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &threshold, float_t &minError ){
+bool RegressionTree::computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &threshold, Float &minError ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();

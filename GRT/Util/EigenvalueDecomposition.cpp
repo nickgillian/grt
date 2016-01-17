@@ -17,7 +17,7 @@
 
 #include "EigenvalueDecomposition.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
    
 EigenvalueDecomposition::EigenvalueDecomposition(){
     warningLog.setProceedingText("[WARNING EigenvalueDecomposition]");
@@ -776,7 +776,7 @@ void EigenvalueDecomposition::hqr2(){
     return;
 }
     
-void EigenvalueDecomposition::cdiv(Float xr, float_t xi, float_t yr, float_t yi){
+void EigenvalueDecomposition::cdiv(Float xr, Float xi, Float yr, Float yi){
     Float r,d;
     if(fabs(yr) > fabs(yi)){
         r = yi/yr;
@@ -817,4 +817,4 @@ VectorFloat EigenvalueDecomposition::getComplexEigenvalues(){
     return complexEigenvalues;
 }
     
-}; //End of namespace GRT
+GRT_END_NAMESPACE

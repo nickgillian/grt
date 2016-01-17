@@ -131,7 +131,7 @@ bool MatrixFloat::transpose(){
     return true;
 }
     
-bool MatrixFloat::scale(const Float minTarget,const float_t maxTarget){
+bool MatrixFloat::scale(const Float minTarget,const Float maxTarget){
     
     if( dataPtr == NULL ) return false;
     
@@ -140,7 +140,7 @@ bool MatrixFloat::scale(const Float minTarget,const float_t maxTarget){
     return scale(ranges,minTarget,maxTarget);
 }
     
-bool MatrixFloat::scale(const Vector< MinMax > &ranges,const Float minTarget,const float_t maxTarget){
+bool MatrixFloat::scale(const Vector< MinMax > &ranges,const Float minTarget,const Float maxTarget){
     if( dataPtr == NULL ) return false;
     
     if( ranges.size() != cols ){

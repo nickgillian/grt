@@ -318,7 +318,7 @@ Float* FastFourierTransform::getPowerDataPtr(){
  * i4  <->  imag[n/2-i]
  */
 
-bool FastFourierTransform::realFFT( const VectorFloat &realIn, Float *realOut, float_t *imagOut ){
+bool FastFourierTransform::realFFT( const VectorFloat &realIn, Float *realOut, Float *imagOut ){
     int NumSamples = (int)windowSize;
     int Half = NumSamples / 2;
     int i;
@@ -334,10 +334,10 @@ bool FastFourierTransform::realFFT( const VectorFloat &realIn, Float *realOut, f
         return false;
     }
     
-    Float wtemp = float_t(sin(0.5 * theta));
+    Float wtemp = Float(sin(0.5 * theta));
     
     Float wpr = -2.0 * wtemp * wtemp;
-    Float wpi = float_t (sin(theta));
+    Float wpi = Float (sin(theta));
     Float wr = 1.0 + wpr;
     Float wi = wpi;
     
@@ -369,7 +369,7 @@ bool FastFourierTransform::realFFT( const VectorFloat &realIn, Float *realOut, f
     return true;
 }
 
-bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,Float *realIn, float_t *imagIn, float_t *realOut, float_t *imagOut){
+bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,Float *realIn, Float *imagIn, Float *realOut, Float *imagOut){
     int NumBits;                 /* Number of bits needed to store indices */
     int i, j, k, n;
     int BlockSize, BlockEnd;
@@ -399,7 +399,7 @@ bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,Float *realI
     BlockEnd = 1;
     for (BlockSize = 2; BlockSize <= numSamples; BlockSize <<= 1) {
         
-        Float delta_angle = angle_numerator / (float_t) BlockSize;
+        Float delta_angle = angle_numerator / (Float) BlockSize;
         
         Float sm2 = sin(-2 * delta_angle);
         Float sm1 = sin(-delta_angle);
@@ -441,7 +441,7 @@ bool FastFourierTransform::FFT(int numSamples,bool inverseTransform,Float *realI
     
     //Need to normalize the results if we are computing the inverse transform
     if( inverseTransform ){
-        Float denom = (float_t) numSamples;
+        Float denom = (Float) numSamples;
         
         for(i = 0; i < numSamples; i++) {
             realOut[i] /= denom;

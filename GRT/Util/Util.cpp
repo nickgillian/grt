@@ -49,7 +49,7 @@ bool Util::sleep(const unsigned int &numMilliseconds){
     
 }
     
-Float Util::scale(const float_t &x,const float_t &minSource,const float_t &maxSource,const float_t &minTarget,const float_t &maxTarget,const bool constrain){
+Float Util::scale(const Float &x,const Float &minSource,const Float &maxSource,const Float &minTarget,const Float &maxTarget,const bool constrain){
     if( constrain ){
         if( x <= minSource ) return minTarget;
         if( x >= maxSource ) return maxTarget;
@@ -161,7 +161,7 @@ bool Util::stringEndsWith(const std::string &str, const std::string &ending) {
     }
 }
     
-Float Util::limit(const float_t value,const float_t minValue,const float_t maxValue){
+Float Util::limit(const Float value,const Float minValue,const Float maxValue){
     if( value <= minValue ) return minValue;
     if( value >= maxValue ) return maxValue;
     return value;
@@ -219,7 +219,7 @@ Float Util::cosineDistance(const VectorFloat &a,const VectorFloat &b){
 	return dotProduct / sqrt(aSum*bSum);
 }
     
-VectorFloat Util::scale(const VectorFloat &x,const Float minSource,const float_t maxSource,const float_t minTarget,const float_t maxTarget,const bool constrain){
+VectorFloat Util::scale(const VectorFloat &x,const Float minSource,const Float maxSource,const Float minTarget,const Float maxTarget,const bool constrain){
     std::size_t N = x.size();
 	VectorFloat y(N);
     for(std::size_t i=0; i<N; i++){
@@ -245,7 +245,7 @@ VectorFloat Util::normalize(const VectorFloat &x){
 	return y;
 }
     
-VectorFloat Util::limit(const VectorFloat &x,const Float minValue,const float_t maxValue){
+VectorFloat Util::limit(const VectorFloat &x,const Float minValue,const Float maxValue){
     std::size_t N = x.size();
 	VectorFloat y(N);
     for(std::size_t i=0; i<N; i++)
@@ -254,7 +254,7 @@ VectorFloat Util::limit(const VectorFloat &x,const Float minValue,const float_t 
 }
 
 Float Util::getMin(const VectorFloat &x){
-    Float min = std::numeric_limits< float_t >::max();
+    Float min = std::numeric_limits< Float >::max();
     std::size_t N = x.size();
     for(std::size_t i=0; i<N; i++){
         if( x[i] < min ){
@@ -266,7 +266,7 @@ Float Util::getMin(const VectorFloat &x){
     
 unsigned int getMinIndex(const VectorFloat &x){
     unsigned int minIndex = 0;
-    Float min = std::numeric_limits< float_t >::max();
+    Float min = std::numeric_limits< Float >::max();
     unsigned int N = (unsigned int)x.size();
     for(unsigned int i=0; i<N; i++){
         if( x[i] < min ){
@@ -278,7 +278,7 @@ unsigned int getMinIndex(const VectorFloat &x){
 }
 
 Float Util::getMax(const VectorFloat &x){
-    Float max = std::numeric_limits< float_t >::min();
+    Float max = std::numeric_limits< Float >::min();
     std::size_t N = x.size();
     for(std::size_t i=0; i<N; i++){
         if( x[i] > max ){
@@ -290,7 +290,7 @@ Float Util::getMax(const VectorFloat &x){
     
 unsigned int Util::getMaxIndex(const VectorFloat &x){
     unsigned int maxIndex = 0;
-    Float max = std::numeric_limits< float_t >::min();
+    Float max = std::numeric_limits< Float >::min();
     unsigned int N = (unsigned int)x.size();
     for(unsigned int i=0; i<N; i++){
         if( x[i] > max ){
@@ -339,7 +339,7 @@ unsigned int Util::getOS(){
 	return OS_UNKNOWN;
 }
     
-void Util::cartToPolar(const Float x,const float_t y,float_t &r, float_t &theta){
+void Util::cartToPolar(const Float x,const Float y,Float &r, Float &theta){
     
 #ifndef PI
     Float PI = 3.14159265358979323846;
@@ -389,7 +389,7 @@ void Util::cartToPolar(const Float x,const float_t y,float_t &r, float_t &theta)
     } 
 }
     
-void Util::polarToCart(const Float r,const float_t theta,float_t &x, float_t &y){
+void Util::polarToCart(const Float r,const Float theta,Float &x, Float &y){
     x = r * cos(theta);
     y = r * sin(theta);
 }

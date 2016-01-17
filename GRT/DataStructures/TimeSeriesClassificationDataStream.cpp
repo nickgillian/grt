@@ -317,12 +317,12 @@ bool TimeSeriesClassificationDataStream::enableExternalRangeScaling(const bool u
     return false;
 }
 
-bool TimeSeriesClassificationDataStream::scale(const Float minTarget,const float_t maxTarget){
+bool TimeSeriesClassificationDataStream::scale(const Float minTarget,const Float maxTarget){
     Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool TimeSeriesClassificationDataStream::scale(const Vector<MinMax> &ranges,const Float minTarget,const float_t maxTarget){
+bool TimeSeriesClassificationDataStream::scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget){
     if( ranges.size() != numDimensions ) return false;
     
     //Scale the training data

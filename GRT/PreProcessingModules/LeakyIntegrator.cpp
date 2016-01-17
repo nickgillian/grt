@@ -183,7 +183,7 @@ bool LeakyIntegrator::init(const Float leakRate,const UINT numDimensions){
     return true;
 }
 
-Float LeakyIntegrator::update(const float_t x){
+Float LeakyIntegrator::update(const Float x){
     
     if( numInputDimensions != 1 ){
         errorLog << "update(const Float x) - The Number Of Input Dimensions is not 1! NumInputDimensions: " << numInputDimensions << std::endl;

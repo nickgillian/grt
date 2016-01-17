@@ -60,7 +60,7 @@ public:
 protected:
     bool windowData( VectorFloat &data );
     bool realFFT( const VectorFloat &realIn, Float *realOut, Float *imagOut );
-    bool FFT(int NumSamples,bool InverseTransform,Float *realIn, Float *imagIn, float_t *realOut, float_t *imagOut);
+    bool FFT(int NumSamples,bool InverseTransform,Float *realIn, Float *imagIn, Float *realOut, Float *imagOut);
     int numberOfBitsNeeded(int PowerOfTwo);
     int reverseBits(int index, int NumBits);
     void initFFT();

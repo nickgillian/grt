@@ -106,7 +106,7 @@ public:
      @param smoothingFactor: controls the amount of downsampling if the useSmoothing parameter is set to true. Default value = 5
 	 @param nullRejectionLikelihoodThreshold: set the null rejection threshold for likelihoods when CLASS_LIKELIHOODS or THRESHOLDS_AND_LIKELIHOODS modes are used for rejectionMode. Default value = 0.99
      */
-	DTW(bool useScaling=false,bool useNullRejection=false,Float nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,Float radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5, float_t nullRejectionLikelihoodThreshold = 0.99);
+	DTW(bool useScaling=false,bool useNullRejection=false,Float nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,Float radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5, Float nullRejectionLikelihoodThreshold = 0.99);
 	
     /**
      Default copy constructor
@@ -339,7 +339,7 @@ private:
 	//The actual DTW function
 	Float computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,MatrixFloat &distanceMatrix,Vector< IndexDist > &warpPath);
     Float d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N);
-	Float inline MIN_(Float a,float_t b, float_t c);
+	Float inline MIN_(Float a,Float b, Float c);
 
 	//Private Scaling and Utility Functions
 	void scaleData(TimeSeriesClassificationData &trainingData);

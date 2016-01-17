@@ -196,7 +196,7 @@ bool HierarchicalClustering::train_(MatrixFloat &data){
     while( keepClustering ){
         
         //Find the closest two clusters within the cluster data
-        Float minDist = grt_numeric_limits< float_t >::max();
+        Float minDist = grt_numeric_limits< Float >::max();
         Vector< Vector< UINT > > clusterPairs;
         UINT K = (UINT)clusterData.size();
         for(UINT i=0; i<K; i++){
@@ -329,7 +329,7 @@ bool HierarchicalClustering::printModel(){
     return true;
 }
     
-Float HierarchicalClustering::squaredEuclideanDistance(const float_t *a,const float_t *b){
+Float HierarchicalClustering::squaredEuclideanDistance(const Float *a,const Float *b){
     Float dist = 0;
     for(UINT i=0; i<N; i++){
         dist += SQR( a[i] - b[i] );
@@ -339,7 +339,7 @@ Float HierarchicalClustering::squaredEuclideanDistance(const float_t *a,const fl
     
 Float HierarchicalClustering::computeClusterDistance( const ClusterInfo &clusterA, const ClusterInfo &clusterB ){
     
-    Float minDist = grt_numeric_limits< float_t >::max();
+    Float minDist = grt_numeric_limits< Float >::max();
     const UINT numSamplesA = clusterA.getNumSamplesInCluster();
     const UINT numSamplesB = clusterB.getNumSamplesInCluster();
     

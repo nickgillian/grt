@@ -310,7 +310,7 @@ bool RandomForests::predict_(VectorDouble &inputVector){
     //Use the class distances to estimate the class likelihoods
     bestDistance = 0;
     UINT bestIndex = 0;
-    Float classNorm = 1.0 / float_t(forestSize);
+    Float classNorm = 1.0 / Float(forestSize);
     for(UINT k=0; k<numClasses; k++){
         classLikelihoods[k] = classDistances[k] * classNorm;
         

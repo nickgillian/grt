@@ -37,7 +37,7 @@ GRT_BEGIN_NAMESPACE
 
 class MovementDetector : public MLBase{
 public:
-    MovementDetector( const UINT numDimensions = 1, const Float upperThreshold = 1, const Float lowerThreshold = 0.9, const float_t gamma = 0.95, const UINT searchTimeout = 0);
+    MovementDetector( const UINT numDimensions = 1, const Float upperThreshold = 1, const Float lowerThreshold = 0.9, const Float gamma = 0.95, const UINT searchTimeout = 0);
     
     virtual ~MovementDetector();
     

@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the ParticleClassifier module with the Classifier base class
 RegisterClassifierModule< ParticleClassifier > ParticleClassifier::registerModule("ParticleClassifier");
 
-ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const Float sensorNoise,const float_t transitionSigma,const float_t phaseSigma,const float_t velocitySigma )
+ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const Float sensorNoise,const Float transitionSigma,const Float phaseSigma,const Float velocitySigma )
 {
     this->numParticles = numParticles;
     this->sensorNoise = sensorNoise;

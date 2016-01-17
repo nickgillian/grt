@@ -270,7 +270,7 @@ bool SavitzkyGolayFilter::init(UINT numLeftHandPoints,UINT numRightHandPoints,UI
     initialized = false;
     
     if( numDimensions == 0 ){
-        errorLog << "init(Float filterFactor,float_t gain,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
+        errorLog << "init(Float filterFactor,Float gain,UINT numDimensions) - NumDimensions must be greater than 0!" << std::endl;
         return false;
     }
     
@@ -298,7 +298,7 @@ bool SavitzkyGolayFilter::init(UINT numLeftHandPoints,UINT numRightHandPoints,UI
     return true;
 }
 
-Float SavitzkyGolayFilter::filter(const float_t x){
+Float SavitzkyGolayFilter::filter(const Float x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
@@ -354,8 +354,8 @@ bool SavitzkyGolayFilter::calCoeff(){
     for (ipj=0; ipj<=(m << 1); ipj++) {
         sum=(ipj ? 0.0 : 1.0);
         
-        for (k=1; k<=nr; k++) sum += pow(Float(k),float_t(ipj));
-        for (k=1; k<=nl; k++) sum += pow(Float(-k),float_t(ipj));
+        for (k=1; k<=nr; k++) sum += pow(Float(k),Float(ipj));
+        for (k=1; k<=nl; k++) sum += pow(Float(-k),Float(ipj));
         
         mm = min_(ipj,2*m-ipj);
         

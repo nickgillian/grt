@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the FIRFilter module with the PreProcessing base class
 RegisterPreProcessingModule< FIRFilter > FIRFilter::registerModule("FIRFilter");
     
-FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sampleRate,const float_t cutoffFrequency,const float_t gain,const UINT numDimensions){
+FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sampleRate,const Float cutoffFrequency,const Float gain,const UINT numDimensions){
     classType = "FIRFilter";
     preProcessingType = classType;
     debugLog.setProceedingText("[DEBUG FIRFilter]");
@@ -403,7 +403,7 @@ bool FIRFilter::buildFilter(){
     return true;
 }
 
-Float FIRFilter::filter(const float_t x){
+Float FIRFilter::filter(const Float x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
@@ -550,14 +550,14 @@ bool FIRFilter::setCutoffFrequency(const Float cutoffFrequency){
     return false;
 }
 
-bool FIRFilter::setCutoffFrequency(const Float cutoffFrequencyLower,const float_t cutoffFrequencyUpper){
+bool FIRFilter::setCutoffFrequency(const Float cutoffFrequencyLower,const Float cutoffFrequencyUpper){
     
     if( filterType == LPF ){
-        warningLog << "setCutoffFrequency(const Float cutoffFrequencyLower,const float_t cutoffFrequencyUpper) - Setting the lower and upper cutoff frequency has no effect if you are using a LPF. You should set the cutoff frequency instead!" << std::endl;
+        warningLog << "setCutoffFrequency(const Float cutoffFrequencyLower,const Float cutoffFrequencyUpper) - Setting the lower and upper cutoff frequency has no effect if you are using a LPF. You should set the cutoff frequency instead!" << std::endl;
     }
     
     if( filterType == HPF ){
-        warningLog << "setCutoffFrequency(const Float cutoffFrequencyLower,const float_t cutoffFrequencyUpper) - Setting the lower and upper cutoff frequency has no effect if you are using a HPF. You should set the cutoff frequency instead!" << std::endl;
+        warningLog << "setCutoffFrequency(const Float cutoffFrequencyLower,const Float cutoffFrequencyUpper) - Setting the lower and upper cutoff frequency has no effect if you are using a HPF. You should set the cutoff frequency instead!" << std::endl;
     }
     
     if( cutoffFrequencyLower > 0 && cutoffFrequencyUpper > 0 ){
@@ -567,7 +567,7 @@ bool FIRFilter::setCutoffFrequency(const Float cutoffFrequencyLower,const float_
         return true;
     }
     
-    errorLog << "setCutoffFrequency(const Float cutoffFrequencyLower,const float_t cutoffFrequencyUpper) - The cutoffFrequency should be a positive number greater than zero!" << std::endl;
+    errorLog << "setCutoffFrequency(const Float cutoffFrequencyLower,const Float cutoffFrequencyUpper) - The cutoffFrequency should be a positive number greater than zero!" << std::endl;
     
     return false;
 }

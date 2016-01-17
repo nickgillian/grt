@@ -42,7 +42,7 @@ GRT_BEGIN_NAMESPACE
 class BernoulliRBM : public MLBase{
 
 public:
-    BernoulliRBM(const UINT numHiddenUnits = 100,const UINT maxNumEpochs = 1000,const Float learningRate = 1,const Float learningRateUpdate = 1,const float_t momentum = 0.5,const bool useScaling = true,const bool randomiseTrainingOrder = true);
+    BernoulliRBM(const UINT numHiddenUnits = 100,const UINT maxNumEpochs = 1000,const Float learningRate = 1,const Float learningRateUpdate = 1,const Float momentum = 0.5,const bool useScaling = true,const bool randomiseTrainingOrder = true);
   
     virtual ~BernoulliRBM();
     

@@ -66,7 +66,7 @@ public:
      @param useCrossValidation: sets if the SVM model will be trained using cross validation. The default value is useCrossValidation=false
      @param kFoldValue: sets the number of folds that will be used for cross validation. The default value is kFoldValue=10
      */
-	SVM(UINT kernelType = LINEAR_KERNEL,UINT svmType = C_SVC,bool useScaling = true,bool useNullRejection = false,bool useAutoGamma = true,Float gamma = 0.1,UINT degree = 3,Float coef0 = 0,float_t nu = 0.5,float_t C = 1,bool useCrossValidation = false,UINT kFoldValue = 10);
+	SVM(UINT kernelType = LINEAR_KERNEL,UINT svmType = C_SVC,bool useScaling = true,bool useNullRejection = false,bool useAutoGamma = true,Float gamma = 0.1,UINT degree = 3,Float coef0 = 0,Float nu = 0.5,Float C = 1,bool useCrossValidation = false,UINT kFoldValue = 10);
     
     /**
      Default copy constructor.  Copies the settings from the rhs SVM instance to this instance
@@ -154,7 +154,7 @@ public:
      @param kFoldValue: sets the number of folds that will be used for cross validation
      @return returns true if the SVM was initialized, false otherwise
      */
-    bool init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,float_t nu,float_t C,bool useCrossValidation,UINT kFoldValue);
+    bool init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue);
     
     /**
      This initializes the default SVM settings and parameters. Any previous model, settings, or problems will be cleared.

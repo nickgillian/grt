@@ -244,7 +244,7 @@ bool MovingAverageFilter::init(UINT filterSize,UINT numDimensions){
     return initialized;
 }
 
-Float MovingAverageFilter::filter(const float_t x){
+Float MovingAverageFilter::filter(const Float x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){

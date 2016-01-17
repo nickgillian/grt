@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the GMM module with the Classifier base class
 RegisterClassifierModule< GMM > GMM::registerModule("GMM");
     
-GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT maxIter,float_t minChange){
+GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT maxIter,Float minChange){
     classType = "GMM";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;

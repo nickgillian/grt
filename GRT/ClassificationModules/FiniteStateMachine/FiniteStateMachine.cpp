@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the FiniteStateMachine module with the Classifier base class
 RegisterClassifierModule< FiniteStateMachine > FiniteStateMachine::registerModule("FiniteStateMachine");
 
-FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClustersPerState,const Float stateTransitionSmoothingCoeff,const float_t measurementNoise)
+FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClustersPerState,const Float stateTransitionSmoothingCoeff,const Float measurementNoise)
 {
     this->numParticles = numParticles;
     this->numClustersPerState = numClustersPerState;

@@ -184,7 +184,7 @@ bool MinDist::predict_(VectorFloat &inputVector){
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
     Float sum = 0;
-    Float minDist = grt_numeric_limits< float_t >::max();
+    Float minDist = grt_numeric_limits< Float >::max();
 	for(UINT k=0; k<numClasses; k++){
         //Compute the distance for class k
 		classDistances[k] = models[k].predict( inputVector );

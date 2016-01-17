@@ -508,7 +508,7 @@ protected:
      @param beta: the momentum
      @return returns the squared error for the current training example
      */
-    Float back_prop(const VectorFloat &inputVector,const VectorFloat &targetVector,const Float alpha,const float_t beta);
+    Float back_prop(const VectorFloat &inputVector,const VectorFloat &targetVector,const Float alpha,const Float beta);
     
     /**
      Performs the feedforward step using the current model and the input training example.

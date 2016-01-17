@@ -167,7 +167,7 @@ public:
 
 protected:
     inline int min_(int a,int b) {return b < a ? (b) : (a);}
-    inline Float min_(Float a,float_t b) {return b < a ? (b) : (a);}
+    inline Float min_(Float a,Float b) {return b < a ? (b) : (a);}
     bool calCoeff();
     
     UINT numPoints;                              //The physical length of the output array
