@@ -207,6 +207,28 @@ TEST(Matrix, SetRowVector) {
 	}
 }
 
+// Tests the setColVector
+TEST(Matrix, SetColVector) {
+	const UINT numRows = 100;
+	const UINT numCols = 50;
+	Matrix< int > mat( numRows, numCols );
+	EXPECT_EQ(numRows, mat.getNumRows());
+  	EXPECT_EQ(numCols, mat.getNumCols());
+  	for(UINT i=0; i<numRows; i++){
+		for(UINT j=0; j<numCols; j++){
+			mat[i][j] = 0;
+		}
+	}
+	Vector< int > vec( numRows );
+	EXPECT_TRUE( vec.setAll( 1000 ) );
+	EXPECT_TRUE( mat.setColVector( vec, 0 ) );
+  	for(UINT i=0; i<numRows; i++){
+		for(UINT j=0; j<numCols; j++){
+			EXPECT_EQ( mat[i][j], j == 0 ? 1000 : 0 );
+		}
+	}
+}
+
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();
