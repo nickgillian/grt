@@ -31,6 +31,7 @@
 #define GRT_RANDOM_HEADER
 
 #include <assert.h>
+#include <cstring>
 #include "../Util/GRTVersionInfo.h"
 #include "Timer.h"
 

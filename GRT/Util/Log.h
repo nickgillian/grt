@@ -22,6 +22,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_LOG_HEADER
 
 #include "GRTTypedefs.h"
+//Only include the C++ 11 code if C++11 support it is enabled
+#ifdef GRT_CXX11_ENABLED
+#include <atomic>
+#include <thread>
+#include <mutex>
+#endif //GRT_CXX11_ENABLED
 
 GRT_BEGIN_NAMESPACE
 

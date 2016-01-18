@@ -43,6 +43,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef GRT_CXX11_ENABLED
 #include <atomic>
 #include <thread>
+#include <mutex>
 #endif //GRT_CXX11_ENABLED
 
 //Include the main GRT version and typedef headers
