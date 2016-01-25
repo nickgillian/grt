@@ -78,6 +78,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "FileParser.h"
 #include "ObserverManager.h"
 #include "ThreadPool.h"
+#include "DataType.h"
 
 GRT_BEGIN_NAMESPACE
 

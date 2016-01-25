@@ -165,6 +165,55 @@ bool TimeSeriesClassificationDataStream::addSample(const UINT classLabel,const V
 	totalNumSamples++;
 	return true;
 }
+
+bool TimeSeriesClassificationDataStream::addSample(const UINT classLabel,const MatrixFloat &sample){
+
+    if( numDimensions != sample.getNumCols() ){
+        errorLog << "addSample(const UINT classLabel, const MatrixFloat &sample) - the number of columns in the sample (" << sample.getNumCols() << ") does not match the number of dimensions of the dataset (" << numDimensions << ")" << std::endl;
+        return false;
+    }
+
+    bool searchForNewClass = true;
+    if( trackingClass ){
+        if( classLabel != lastClassID ){
+            //The class ID has changed so update the time series tracker
+            timeSeriesPositionTracker[ timeSeriesPositionTracker.size()-1 ].setEndIndex( totalNumSamples-1 );
+        }else searchForNewClass = false;
+    }
+    
+    if( searchForNewClass ){
+        bool newClass = true;
+        //Search to see if this class has been found before
+        for(UINT k=0; k<classTracker.size(); k++){
+            if( classTracker[k].classLabel == classLabel ){
+                newClass = false;
+                classTracker[k].counter += sample.getNumRows();
+            }
+        }
+        if( newClass ){
+            ClassTracker newCounter(classLabel,1);
+            classTracker.push_back( newCounter );
+        }
+
+        //Set the timeSeriesPositionTracker start position
+        trackingClass = true;
+        lastClassID = classLabel;
+        TimeSeriesPositionTracker newTracker(totalNumSamples,0,classLabel);
+        timeSeriesPositionTracker.push_back( newTracker );
+    }
+
+    ClassificationSample labelledSample( numDimensions );
+    for(UINT i=0; i<sample.getNumRows(); i++){
+        data.push_back( labelledSample );
+        data.back().setClassLabel( classLabel );
+        for(UINT j=0; j<numDimensions; j++){
+            data.back()[j] = sample[i][j];
+        }
+    }
+    totalNumSamples += sample.getNumRows();
+    return true;
+
+}
     
 bool TimeSeriesClassificationDataStream::removeLastSample(){
     

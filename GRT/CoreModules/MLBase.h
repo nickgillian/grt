@@ -353,6 +353,20 @@ public:
     virtual std::string getModelAsString() const;
 
     /**
+     Gets the expected input data type for the module
+     
+     @return returns the expected input data type
+     */
+    DataType getInputType() const;
+
+    /**
+     Gets the expected output data type for the module
+     
+     @return returns the expected output data type
+     */
+    DataType getOutputType() const;
+
+    /**
      Gets the current ML base type.
      
      @return returns an UINT representing the current ML base type, this will be one of the BaseTypes enumerations
@@ -704,6 +718,8 @@ protected:
     
     bool trained;
     bool useScaling;
+    DataType inputType;
+    DataType outputType;
     UINT baseType;
     UINT numInputDimensions;
     UINT numOutputDimensions;

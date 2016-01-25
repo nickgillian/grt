@@ -112,6 +112,16 @@ public:
     virtual bool computeFeatures(const VectorFloat &inputVector);
 
     /**
+     Sets the FeatureExtraction computeFeatures function, overwriting the base FeatureExtraction function.
+     This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
+     This function calls the FFT's computeFFT(...) function.
+     
+     @param inputMatrix: the inputMatrix that should be processed.  Must have the same dimensionality as the FeatureExtraction module
+     @return true if the data was processed, false otherwise
+     */
+    virtual bool computeFeatures(const MatrixFloat &inputMatrix);
+
+    /**
      Sets the FeatureExtraction clear function, overwriting the base FeatureExtraction function.
      This function is called by the GestureRecognitionPipeline when the pipelines main clear() function is called.
      This function completely clears the FFT setup, you will need to initialize the instance again before you can use it.
@@ -160,9 +170,11 @@ public:
      @param windowFunction: sets the window function of the FFT. This should be one of the WindowFunctionOptions enumeration values
      @param computeMagnitude: sets if the magnitude (and power) of the spectrum should be computed on the results of the FFT
      @param computePhase: sets if the phase of the spectrum should be computed on the results of the FFT
+     @param inputType: the input type expected, defaults to DATA_TYPE_VECTOR
+     @param outputType: the output type that can be accessed by users of the module, defaults to DATA_TYPE_VECTOR
 	 @return true if the FTT was initialized, false otherwise
      */   
-    bool init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT windowFunction,bool computeMagnitude,bool computePhase);
+    bool init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT windowFunction,bool computeMagnitude,bool computePhase,DataType inputType = DATA_TYPE_VECTOR,DataType outputType = DATA_TYPE_VECTOR);
     
     /**
      Computes the FFT of the previous M input samples, where M is the size of the fft window set by the constructor.
@@ -183,6 +195,16 @@ public:
 	 @return true if the FTT was updated successfully, false otherwise
      */   
     bool update(const VectorFloat &x);
+
+    /**
+     Computes the FFT of the previous M input samples, where M is the size of the fft window set by the constructor.
+     The FFT of the input will only be computed if the current hop counter value matches the hopSize.
+     The number of columns in the input matrix must match the number of dimensions for the FFT.
+     
+     @param x: a [M N] matrix, this will be added to a buffer and the FFT will be computed for the data in the buffer
+     @return true if the FTT was updated successfully, false otherwise
+     */   
+    bool update(const MatrixFloat &x);
     
     /**
      Returns the current hopSize.

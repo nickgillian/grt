@@ -58,7 +58,7 @@ bool PostProcessing::copyBaseVariables(const PostProcessing *postProcessingModul
         return false;
     }
     
-    if( !this->copyGRTBaseVariables( postProcessingModule ) ){
+    if( !this->copyMLBaseVariables( postProcessingModule ) ){
         return false;
     }
     

@@ -185,7 +185,7 @@ bool FFT::loadModelFromFile( std::fstream &file ){
     return init(fftWindowSize,hopSize,numInputDimensions,fftWindowFunction,computeMagnitude,computePhase);
 }
 
-bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase){
+bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase,DataType inputType,DataType outputType){
     
     //Clear any previous setup
     clear();
@@ -206,6 +206,8 @@ bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindow
     this->fftWindowFunction = fftWindowFunction;
     this->computeMagnitude = computeMagnitude;
     this->computePhase = computePhase;
+    this->inputType = inputType;
+    this->outputType = outputType;
     hopCounter = 0;
     featureDataReady = false;
     numInputDimensions = numDimensions;
@@ -245,18 +247,11 @@ bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindow
 }
     
 bool FFT::computeFeatures(const VectorFloat &inputVector){
+    return update( inputVector );
+}
 
-    if( !initialized ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - Not initialized!" << std::endl;
-        return false;
-    }
-    
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the FeatureExtraction (" << numInputDimensions << ")!" << std::endl;
-        return false;
-    }
-    
-    return update(inputVector);
+bool FFT::computeFeatures(const MatrixFloat &inputMatrix){
+    return update( inputMatrix );
 }
     
 bool FFT::update(const Float x){
@@ -287,7 +282,7 @@ bool FFT::update(const VectorFloat &x){
     }
 
     //Add the current input to the data buffers
-    dataBuffer.push_back(x);
+    dataBuffer.push_back( x );
     
     featureDataReady = false;
     
@@ -331,6 +326,67 @@ bool FFT::update(const VectorFloat &x){
     
     return true;
 }
+
+bool FFT::update(const MatrixFloat &x){
+
+    if( !initialized ){
+        errorLog << "update(const MatrixFloat &x) - Not initialized!" << std::endl;
+        return false;
+    }
+    
+    if( x.getNumCols() != numInputDimensions ){
+        errorLog << "update(const MatrixFloat &x) - The number of columns in the inputMatrix (" << x.getNumCols() << ") does not match that of the FeatureExtraction (" << numInputDimensions << ")!" << std::endl;
+        return false;
+    }
+    
+    featureDataReady = false;
+    
+    for(UINT k=0; k<x.getNumRows(); k++){
+
+        //Add the current input to the data buffers
+        dataBuffer.push_back( x.getRow(k) );
+
+        if( ++hopCounter == hopSize ){
+            hopCounter = 0;
+            //Compute the FFT for each dimension
+            for(UINT j=0; j<numInputDimensions; j++){
+                
+                //Copy the input data for this dimension into the temp buffer
+                for(UINT i=0; i<dataBufferSize; i++){
+                    tempBuffer[i] = dataBuffer[i][j];
+                }
+                
+                //Compute the FFT
+                if( !fft[j].computeFFT( tempBuffer ) ){
+                    errorLog << "update(const VectorFloat &x) - Failed to compute FFT!" << std::endl;
+                    return false;
+                }
+            }
+            
+            //Flag that the fft was computed during this update
+            featureDataReady = true;
+            
+            //Copy the FFT data to the feature vector
+            UINT index = 0;
+            for(UINT j=0; j<numInputDimensions; j++){
+                if( computeMagnitude ){
+                    Float *mag = fft[j].getMagnitudeDataPtr();
+                    for(UINT i=0; i<fft[j].getFFTSize()/2; i++){
+                        featureVector[index++] = *mag++;
+                    }
+                }
+                if( computePhase ){
+                    Float *phase = fft[j].getPhaseDataPtr();
+                    for(UINT i=0; i<fft[j].getFFTSize()/2; i++){
+                        featureVector[index++] = *phase++;
+                    }
+                }
+            }
+        }
+    }
+    
+    return true;
+}
     
 bool FFT::clear(){
 
@@ -346,7 +402,7 @@ bool FFT::clear(){
 }
 
 bool FFT::reset(){ 
-    if( initialized ) return init(fftWindowSize,hopSize,numInputDimensions,fftWindowFunction,computeMagnitude,computePhase);
+    if( initialized ) return init(fftWindowSize,hopSize,numInputDimensions,fftWindowFunction,computeMagnitude,computePhase,inputType,outputType);
     return false;
 }
     

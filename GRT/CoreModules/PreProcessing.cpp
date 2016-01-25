@@ -56,7 +56,7 @@ bool PreProcessing::copyBaseVariables(const PreProcessing *preProcessingModule){
         return false;
     }
     
-    if( !this->copyGRTBaseVariables( preProcessingModule ) ){
+    if( !this->copyMLBaseVariables( preProcessingModule ) ){
         return false;
     }
     

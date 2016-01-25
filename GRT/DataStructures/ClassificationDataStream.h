@@ -83,6 +83,17 @@ public:
 	}
 
     /**
+     Const Array Subscript Operator, returns the ClassificationSample at index i.
+     It is up to the user to ensure that i is within the range of [0 totalNumSamples-1]
+     
+     @param i: the index of the training sample you want to access.  Must be within the range of [0 totalNumSamples-1]
+     @return a reference to the i'th ClassificationSample
+     */
+    inline const ClassificationSample& operator[] (const UINT i) const {
+        return data[i];
+    }
+
+    /**
      Clears any previous training data and counters
      */
 	void clear();
@@ -138,7 +149,18 @@ public:
      @param sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the TimeSeriesClassificationDataStream
 	 @return true if the sample was correctly added to the dataset, false otherwise
      */
-	bool addSample(const UINT classLabel,const VectorFloat &trainingSample);
+	bool addSample(const UINT classLabel,const VectorFloat &sample);
+
+    /**
+     Adds a new labelled sample to the dataset.  
+     The dimensionality of the sample should match the number of dimensions in the TimeSeriesClassificationDataStream.
+     The class label can be zero (this should represent a null class).
+     
+     @param classLabel: the class label of the corresponding sample
+     @param sample: the new sample you want to add to the dataset.  The number of rows of this sample should match the number of dimensions in the TimeSeriesClassificationDataStream
+     @return true if the sample was correctly added to the dataset, false otherwise
+     */
+    bool addSample(const UINT classLabel,const MatrixFloat &sample);
     
     /**
      Removes the last training sample added to the dataset.
@@ -380,7 +402,7 @@ public:
      
 	 @return a Vector of ClassificationSamples
      */
-	Vector< ClassificationSample > getClassificationSamples() const { return data; }
+	std::deque< ClassificationSample > getClassificationSamples() const { return data; }
     
     /**
      Gets a new TimeSeriesClassificationDataStream dataset drawn from the startIndex and endIndex values.
@@ -451,7 +473,7 @@ protected:
     bool useExternalRanges;                                 ///< A flag to show if the dataset should be scaled using the externalRanges values
     Vector< MinMax > externalRanges;                        ///< A Vector containing a set of externalRanges set by the user
 	Vector< ClassTracker > classTracker;
-	Vector< ClassificationSample > data;
+	std::deque< ClassificationSample > data;
 	Vector< TimeSeriesPositionTracker > timeSeriesPositionTracker;
     
     DebugLog debugLog;                                      ///< Default debugging log

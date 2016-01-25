@@ -616,6 +616,111 @@ bool GestureRecognitionPipeline::train(const TimeSeriesClassificationData &train
     
     return true;
 }
+
+bool GestureRecognitionPipeline::train(const TimeSeriesClassificationDataStream &trainingData){
+
+    trained = false;
+    trainingTime = 0;
+    clearTestResults();
+    
+    if( !getIsClassifierSet() ){
+        errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed To train Classifier, the classifier has not been set!" << std::endl;
+        return false;
+    }
+    
+    if( trainingData.getNumSamples() == 0 ){
+        errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed To train Classifier, there is no training data!" << std::endl;
+        return false;
+    }
+    
+    //Reset all the modules
+    reset();
+    
+    //Set the input Vector dimension size
+    inputVectorDimensions = trainingData.getNumDimensions();
+    
+    //Pass the training data through any pre-processing or feature extraction units
+    UINT numDimensions = inputVectorDimensions;
+    
+    //If there are any preprocessing or feature extraction modules, then get the size of the last module
+    if( getIsPreProcessingSet() || getIsFeatureExtractionSet() ){
+        if( getIsFeatureExtractionSet() ){
+            numDimensions = featureExtractionModules[ featureExtractionModules.size()-1 ]->getNumOutputDimensions();
+        }else{
+            numDimensions = preProcessingModules[ preProcessingModules.size()-1 ]->getNumOutputDimensions();
+        }
+    }
+    
+    //Start the training timer
+    Timer timer;
+    timer.start();
+    
+    ClassificationData processedTrainingData( numDimensions );
+    processedTrainingData.reserve( trainingData.getNumSamples() );
+    UINT classLabel = 0;
+    VectorFloat trainingSample;
+    for(UINT i=0; i<trainingData.getNumSamples(); i++){
+        bool okToAddProcessedData = true;
+        classLabel = trainingData[i].getClassLabel();
+        trainingSample = trainingData[i].getSample();
+        
+        //Perform any preprocessing
+        if( getIsPreProcessingSet() ){
+            for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
+                if( !preProcessingModules[moduleIndex]->process( trainingSample ) ){
+                    errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed to PreProcess training Data. PreProcessingModuleIndex: ";
+                    errorLog << moduleIndex;
+                    errorLog << std::endl;
+                    return false;
+                }
+                trainingSample = preProcessingModules[moduleIndex]->getProcessedData();
+            }
+        }
+        
+        //Compute any features
+        if( getIsFeatureExtractionSet() ){
+            for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
+                if( !featureExtractionModules[moduleIndex]->computeFeatures( trainingSample ) ){
+                    errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed to Compute Features from training Data. FeatureExtractionModuleIndex ";
+                    errorLog << moduleIndex;
+                    errorLog << std::endl;
+                    return false;
+                }
+                if( featureExtractionModules[moduleIndex]->getFeatureDataReady() ){
+                    trainingSample = featureExtractionModules[moduleIndex]->getFeatureVector();
+                }else{
+                   okToAddProcessedData = false;
+                   break;
+                }
+            }
+        }
+
+        if( okToAddProcessedData ){
+            //Add the training sample to the processed training data
+            processedTrainingData.addSample(classLabel, trainingSample);
+        }
+        
+    }
+    
+    if( processedTrainingData.getNumSamples() != trainingData.getNumSamples() ){
+        warningLog << "train(TimeSeriesClassificationDataStream trainingData) - Lost " << trainingData.getNumSamples()-processedTrainingData.getNumSamples() << " of " << trainingData.getNumSamples() << " training samples due to the processing stage!" << std::endl;
+    }
+
+    //Store the number of training samples
+    numTrainingSamples = processedTrainingData.getNumSamples();
+    
+    //Train the classifier
+    trained = classifier->train_( processedTrainingData );
+    if( !trained ){
+        errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed To Train Classifier: " << classifier->getLastErrorMessage() << std::endl;
+        return false;
+    }
+    
+    //Store the training time
+    trainingTime = timer.getMilliSeconds();
+
+    return true;
+}
     
 bool GestureRecognitionPipeline::train(const RegressionData &trainingData){
     
@@ -1232,7 +1337,7 @@ bool GestureRecognitionPipeline::test(const RegressionData &testData){
         Float sum = 0;
         VectorFloat regressionData = regressifier->getRegressionData();
         for(UINT j=0; j<targetVector.size(); j++){
-            sum += SQR( regressionData[j]-targetVector[j] );
+            sum += grt_sqr( regressionData[j]-targetVector[j] );
         }
 
         testSquaredError += sum;
@@ -1286,79 +1391,139 @@ bool GestureRecognitionPipeline::predict(const MatrixFloat &input){
 	
 	//Make sure the classification model has been trained
     if( !trained ){
-        errorLog << "predict(const MatrixFloat &inputMatrix) - The classifier has not been trained" << std::endl;
+        errorLog << "predict(const MatrixFloat &inputMatrix) - The classifier has not been trained!" << std::endl;
         return false;
     }
-    
+
     //Make sure the dimensionality of the input matrix matches the inputVectorDimensions
     if( input.getNumCols() != inputVectorDimensions ){
-        errorLog << "predict(const MatrixFloat &inputMatrix) - The dimensionality of the input matrix (" << input.getNumCols() << ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
+        errorLog << "predict_timeseries(const MatrixFloat &inputMatrix) - The dimensionality of the input matrix (" << input.getNumCols() << ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
         return false;
     }
 
-	if( !getIsClassifierSet() ){
-        errorLog << "predict(const MatrixFloat &inputMatrix) - A classifier has not been set" << std::endl;
-		return false;
+    if( !getIsClassifierSet() ){
+        errorLog << "predict_timeseries(const MatrixFloat &inputMatrix) - A classifier has not been set" << std::endl;
+        return false;
     }
 
-	MatrixFloat inputMatrix = input;
+    //Get a copy of the input matrix so it can be processed
+    MatrixFloat inputMatrix = input;
 
-	predictedClassLabel = 0;
+    //Get a pointer to the input matrix so we can pass it down the pipeline
+    const void *data = static_cast< const void* >( &inputMatrix );
+    DataType dataType = DATA_TYPE_MATRIX;
+
+    //Setup a temporary matrix and vector
+    //VectorFloat tmpVector;
+    //MatrixFloat tmpMatrix;
     
     //Update the context module
     predictionModuleIndex = START_OF_PIPELINE;
     
     //Perform any pre-processing
+    /*
     if( getIsPreProcessingSet() ){
-		
+        
         for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
-			MatrixFloat tmpMatrix( inputMatrix.getNumRows(), preProcessingModules[moduleIndex]->getNumOutputDimensions() );
-			
-			for(UINT i=0; i<inputMatrix.getNumRows(); i++){
-            	if( !preProcessingModules[moduleIndex]->process( inputMatrix.getRow(i) ) ){
-                    errorLog << "predict(const MatrixFloat &inputMatrix) - Failed to PreProcess Input Matrix. PreProcessingModuleIndex: " << moduleIndex << std::endl;
-                	return false;
-            	}
-            	tmpMatrix.setRowVector( preProcessingModules[moduleIndex]->getProcessedData(), i );
-			}
-			
-			//Update the input matrix with the preprocessed data
-			inputMatrix = tmpMatrix;
+            MatrixFloat tmpMatrix( inputMatrix.getNumRows(), preProcessingModules[moduleIndex]->getNumOutputDimensions() );
+            
+            for(UINT i=0; i<inputMatrix.getNumRows(); i++){
+                if( !preProcessingModules[moduleIndex]->process( inputMatrix.getRow(i) ) ){
+                    errorLog << "predict_timeseries(const MatrixFloat &inputMatrix) - Failed to PreProcess Input Matrix. PreProcessingModuleIndex: " << moduleIndex << std::endl;
+                    return false;
+                }
+                tmpMatrix.setRowVector( preProcessingModules[moduleIndex]->getProcessedData(), i );
+            }
+            
+            //Update the input matrix with the preprocessed data
+            inputMatrix = tmpMatrix;
         }
     }
+    */
     
     //Update the context module
     predictionModuleIndex = AFTER_PREPROCESSING;
-    //Todo
-    
     //Perform any feature extraction
     if( getIsFeatureExtractionSet() ){
-	
-	    for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
-			MatrixFloat tmpMatrix( inputMatrix.getNumRows(), featureExtractionModules[moduleIndex]->getNumOutputDimensions() );
-			
-			for(UINT i=0; i<inputMatrix.getNumRows(); i++){
-            	if( !featureExtractionModules[moduleIndex]->computeFeatures( inputMatrix.getRow(i) ) ){
-                    errorLog << "predict(const MatrixFloat &inputMatrix) - Failed to PreProcess Input Matrix. FeatureExtractionModuleIndex: " << moduleIndex << std::endl;
-                	return false;
-            	}
-            	tmpMatrix.setRowVector( featureExtractionModules[moduleIndex]->getFeatureVector(), i );
-			}
-			
-			//Update the input matrix with the preprocessed data
-			inputMatrix = tmpMatrix;
+
+        const void *feInput = data;
+        const void *feOutput = NULL;
+        const UINT numFeatureExtractionModules = featureExtractionModules.getSize();
+        DataType inputType = DATA_TYPE_UNKNOWN;
+        DataType outputType = DATA_TYPE_UNKNOWN;
+        for(UINT moduleIndex=0; moduleIndex<numFeatureExtractionModules; moduleIndex++){
+
+            inputType = featureExtractionModules[ moduleIndex ]->getInputType();
+            outputType = featureExtractionModules[ moduleIndex ]->getOutputType();
+
+            //Run the feature extraction algorithm
+            switch( inputType ){
+                case DATA_TYPE_VECTOR:
+                    if( !featureExtractionModules[ moduleIndex ]->computeFeatures( *static_cast< const VectorFloat* >( feInput ) ) ){
+                        errorLog << "predict(const MatrixFloat &inputMatrix) - Failed to PreProcess Input Matrix. FeatureExtractionModuleIndex: " << moduleIndex << std::endl;
+                        return false;
+                    }
+                break;
+                case DATA_TYPE_MATRIX:
+                    if( !featureExtractionModules[ moduleIndex ]->computeFeatures( *static_cast< const MatrixFloat* >( feInput ) ) ){
+                        errorLog << "predict(const MatrixFloat &inputMatrix) - Failed to PreProcess Input Matrix. FeatureExtractionModuleIndex: " << moduleIndex << std::endl;
+                        return false;
+                    }
+                break;
+                default:
+                    errorLog << "predict(const MatrixFloat &inputMatrix) - Failed to process data. Unknown output data type for FeatureExtractionModuleIndex: " << moduleIndex << std::endl;
+                    return false;
+                break;
+            }
+            
+            //Get the results and store them in the feOutput pointer
+            switch( outputType ){
+                case DATA_TYPE_VECTOR:
+                    feOutput = static_cast< const void* >( &featureExtractionModules[ moduleIndex ]->getFeatureVector() );
+                break;
+                case DATA_TYPE_MATRIX:
+                    feOutput = static_cast< const void* >( &featureExtractionModules[ moduleIndex ]->getFeatureMatrix() );
+                break;
+                default:
+                    errorLog << "predict(const MatrixFloat &inputMatrix) - Failed to process data. Unknown output data type for FeatureExtractionModuleIndex: " << moduleIndex << std::endl;
+                    return false;
+                break;
+            }
+
+            //If there are more feature extraction modules to process, then set the feInput 
+            if( moduleIndex+1 < numFeatureExtractionModules ){
+                feInput = feOutput;
+            }
         }
+
+        //Update the data pointer to the data from the last output from the end feature extraction module
+        data = feOutput;
+        dataType = outputType;
     }
     
     //Update the context module
     predictionModuleIndex = AFTER_FEATURE_EXTRACTION;
-    //Todo
-    
+
     //Perform the classification
-    if( !classifier->predict( inputMatrix ) ){
-        errorLog <<"predict(const MatrixFloat &inputMatrix) - Prediction Failed! " << classifier->getLastErrorMessage() << std::endl;
-        return false;
+    switch( dataType ){
+        case DATA_TYPE_VECTOR:
+            if( !classifier->predict_( *(VectorFloat*)data ) ){
+                errorLog <<"predict_timeseries(const MatrixFloat &inputMatrix) - Prediction Failed! " << classifier->getLastErrorMessage() << std::endl;
+                return false;
+            }
+        break;
+        case DATA_TYPE_MATRIX:
+            if( !classifier->predict_( *(MatrixFloat*)data ) ){
+                errorLog <<"predict_timeseries(const MatrixFloat &inputMatrix) - Prediction Failed! " << classifier->getLastErrorMessage() << std::endl;
+                return false;
+            }
+        break;
+        default:
+            errorLog << "predict(const MatrixFloat &inputMatrix) - Failed to run prediction. Unknown data type!" << std::endl;
+            return false;
+        break;
     }
+    
     predictedClassLabel = classifier->getPredictedClassLabel();
     
     //Update the context module
@@ -1366,10 +1531,11 @@ bool GestureRecognitionPipeline::predict(const MatrixFloat &input){
     
     //Perform any post processing
     predictionModuleIndex = AFTER_CLASSIFIER;
+/*
     if( getIsPostProcessingSet() ){
         
         if( pipelineMode != CLASSIFICATION_MODE){
-            errorLog << "predict_(const MatrixFloat &inputMatrix) - Pipeline Mode Is Not in CLASSIFICATION_MODE!" << std::endl;
+            errorLog << "predict_timeseries(const MatrixFloat &inputMatrix) - Pipeline Mode Is Not in CLASSIFICATION_MODE!" << std::endl;
             return false;
         }
         
@@ -1384,13 +1550,13 @@ bool GestureRecognitionPipeline::predict(const MatrixFloat &input){
                 
                 //Verify that the input size is OK
                 if( data.size() != postProcessingModules[moduleIndex]->getNumInputDimensions() ){
-                    errorLog << "predict(const MatrixFloat &inputMatrix) - The size of the data Vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
+                    errorLog << "predict_timeseries(const MatrixFloat &inputMatrix) - The size of the data Vector (" << int(data.size()) << ") does not match that of the postProcessingModule (" << postProcessingModules[moduleIndex]->getNumInputDimensions() << ") at the moduleIndex: " << moduleIndex << std::endl;
                     return false;
                 }
                 
                 //Postprocess the data
                 if( !postProcessingModules[moduleIndex]->process( data ) ){
-                    errorLog << "predict(const MatrixFloat &inputMatrix) - Failed to post process data. PostProcessing moduleIndex: " << moduleIndex << std::endl;
+                    errorLog << "predict_timeseries(const MatrixFloat &inputMatrix) - Failed to post process data. PostProcessing moduleIndex: " << moduleIndex << std::endl;
                     return false;
                 }
                 
@@ -1405,7 +1571,7 @@ bool GestureRecognitionPipeline::predict(const MatrixFloat &input){
                 
                 //Verify that the output size is OK
                 if( data.size() != 1 ){
-                    errorLog << "predict(const MatrixFloat &inputMatrix) - The size of the processed data Vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << std::endl;
+                    errorLog << "predict_timeseries(const MatrixFloat &inputMatrix) - The size of the processed data Vector (" << int(data.size()) << ") from postProcessingModule at the moduleIndex: " << moduleIndex << " is not equal to 1 even though it is in OutputModePredictedClassLabel!" << std::endl;
                     return false;
                 }
                 
@@ -1415,11 +1581,10 @@ bool GestureRecognitionPipeline::predict(const MatrixFloat &input){
                   
         }
     } 
-    
+*/
     //Update the context module
     //TODO
     predictionModuleIndex = END_OF_PIPELINE;
-
 	return true;
 }
 

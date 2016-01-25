@@ -44,6 +44,8 @@ FeatureExtraction::FeatureExtraction(){
     featureDataReady = false;
     numInputDimensions = 0;
     numOutputDimensions = 0;
+    inputType = DATA_TYPE_VECTOR;
+    outputType = DATA_TYPE_VECTOR;
     numFeatureExtractionInstances++;
     infoLog.setProceedingText("[FeatureExtraction]");
     warningLog.setProceedingText("[WARNING FeatureExtraction]");
@@ -64,9 +66,11 @@ bool FeatureExtraction::copyBaseVariables(const FeatureExtraction *featureExtrac
         return false;
     }
     
-    if( !this->copyGRTBaseVariables( featureExtractionModule ) ){
+    if( !this->copyMLBaseVariables( featureExtractionModule ) ){
         return false;
     }
+
+    std::cout << "FeatureExtraction::copyBaseVariables: input type: " << this->inputType << " output type: " << this->outputType << std::endl;
     
     this->featureExtractionType = featureExtractionModule->featureExtractionType;
     this->initialized = featureExtractionModule->initialized;
@@ -74,6 +78,7 @@ bool FeatureExtraction::copyBaseVariables(const FeatureExtraction *featureExtrac
     this->numInputDimensions = featureExtractionModule->numInputDimensions;
     this->numOutputDimensions = featureExtractionModule->numOutputDimensions;
     this->featureVector = featureExtractionModule->featureVector;
+    this->featureMatrix = featureExtractionModule->featureMatrix;
     this->debugLog = featureExtractionModule->debugLog;
     this->errorLog = featureExtractionModule->errorLog;
     this->warningLog = featureExtractionModule->warningLog;
@@ -178,8 +183,12 @@ bool FeatureExtraction::getFeatureDataReady() const{
     return featureDataReady;
 }
 
-VectorFloat FeatureExtraction::getFeatureVector() const{ 
+const VectorFloat& FeatureExtraction::getFeatureVector() const{ 
     return featureVector; 
+}
+
+const MatrixFloat& FeatureExtraction::getFeatureMatrix() const {
+    return featureMatrix;
 }
 
 GRT_END_NAMESPACE

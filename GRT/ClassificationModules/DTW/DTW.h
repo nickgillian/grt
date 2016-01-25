@@ -106,7 +106,7 @@ public:
      @param smoothingFactor: controls the amount of downsampling if the useSmoothing parameter is set to true. Default value = 5
 	 @param nullRejectionLikelihoodThreshold: set the null rejection threshold for likelihoods when CLASS_LIKELIHOODS or THRESHOLDS_AND_LIKELIHOODS modes are used for rejectionMode. Default value = 0.99
      */
-	DTW(bool useScaling=false,bool useNullRejection=false,Float nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,Float radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5, Float nullRejectionLikelihoodThreshold = 0.99);
+    DTW(bool useScaling=false,bool useNullRejection=false,Float nullRejectionCoeff=3.0,UINT rejectionMode = DTW::TEMPLATE_THRESHOLDS,bool dtwConstrain=true,Float radius=0.2,bool offsetUsingFirstSample=false,bool useSmoothing = false,UINT smoothingFactor = 5, Float nullRejectionLikelihoodThreshold = 0.99);
 	
     /**
      Default copy constructor
@@ -115,7 +115,7 @@ public:
      
      @param rhs: another instance of a DTW
      */
-	DTW(const DTW &rhs);
+    DTW(const DTW &rhs);
 	
      /**
      Default Destructor
@@ -262,7 +262,7 @@ public:
      
      @return returns an unsigned integer representing the current rejection mode
      */
-    UINT getRejectionMode(){ return rejectionMode; }
+    UINT getRejectionMode() const { return rejectionMode; }
     
     /**
      Sets if z-normalization should be used for both training and realtime prediction.  This should be called before training the templates.
@@ -310,21 +310,21 @@ public:
      
      @return returns a vector of VectorFloats containing the current data in the DTW circular buffer
      */
-    Vector< VectorFloat > getInputDataBuffer(){ return continuousInputDataBuffer.getData(); }
+    Vector< VectorFloat > getInputDataBuffer() const { return continuousInputDataBuffer.getData(); }
 
     /**
      Gets the distances matrices from the last prediction.  Each element in the vector represents the distance matrices for each corresponding class.
      
      @return returns a vector of MatrixFloat containing the distance matrices from the last prediction, or an empty vector if no prediction has been made
      */
-    Vector< MatrixFloat > getDistanceMatrices(){ return distanceMatrices; }
+    const Vector< MatrixFloat >& getDistanceMatrices() const { return distanceMatrices; }
 
     /**
      Gets the warping paths from the last prediction.  Each element in the vector represents the warping path for each corresponding class.
      
      @return returns a vector of vectors containing the warping paths from the last prediction, or an empty vector if no prediction has been made
      */
-    Vector< Vector< IndexDist > > getWarpingPaths(){ return warpPaths; }
+    const Vector< Vector< IndexDist > >& getWarpingPaths() const { return warpPaths; }
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;

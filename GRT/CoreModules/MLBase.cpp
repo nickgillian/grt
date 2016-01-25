@@ -26,6 +26,8 @@ MLBase::MLBase(void){
     trained = false;
     useScaling = false;
     baseType = BASE_TYPE_NOT_SET;
+    inputType = DATA_TYPE_UNKNOWN;
+    outputType = DATA_TYPE_UNKNOWN;
     numInputDimensions = 0;
     numOutputDimensions = 0;
     minNumEpochs = 0;
@@ -59,6 +61,8 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     this->trained = mlBase->trained;
     this->useScaling = mlBase->useScaling;
     this->baseType = mlBase->baseType;
+    this->inputType = mlBase->inputType;
+    this->outputType = mlBase->outputType;
     this->numInputDimensions = mlBase->numInputDimensions;
     this->numOutputDimensions = mlBase->numOutputDimensions;
     this->minNumEpochs = mlBase->minNumEpochs;
@@ -186,6 +190,14 @@ std::string MLBase::getModelAsString() const{
         return stream.str();
     }
     return "";
+}
+
+DataType MLBase::getInputType() const {
+    return inputType;
+}
+
+DataType MLBase::getOutputType() const {
+    return outputType;
 }
 
 UINT MLBase::getBaseType() const{ return baseType; }
