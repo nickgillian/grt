@@ -9,7 +9,7 @@
  of clusters you want your quantizer to have and then give it any training data in the following formats:
  - ClassificationData
  - TimeSeriesClassificationData
- - TimeSeriesClassificationDataStream
+ - ClassificationDataStream
  - UnlabelledClassificationData
  - MatrixFloat
  */
@@ -41,7 +41,7 @@
 #include "../../CoreModules/FeatureExtraction.h"
 #include "../../CoreAlgorithms/BernoulliRBM/BernoulliRBM.h"
 #include "../../DataStructures/TimeSeriesClassificationData.h"
-#include "../../DataStructures/TimeSeriesClassificationDataStream.h"
+#include "../../DataStructures/ClassificationDataStream.h"
 #include "../../DataStructures/UnlabelledData.h"
 
 GRT_BEGIN_NAMESPACE
@@ -167,7 +167,7 @@ public:
      @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
-    virtual bool train_(TimeSeriesClassificationDataStream &trainingData);
+    virtual bool train_(ClassificationDataStream &trainingData);
 
     /**
      Trains the quantization model using the training dataset.

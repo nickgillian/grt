@@ -18,12 +18,12 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "TimeSeriesClassificationDataStream.h"
+#include "ClassificationDataStream.h"
 
 GRT_BEGIN_NAMESPACE
 
 //Constructors and Destructors
-TimeSeriesClassificationDataStream::TimeSeriesClassificationDataStream(const UINT numDimensions,const std::string datasetName,const std::string infoText){
+ClassificationDataStream::ClassificationDataStream(const UINT numDimensions,const std::string datasetName,const std::string infoText){
     
     this->numDimensions= numDimensions;
     this->datasetName = datasetName;
@@ -32,22 +32,22 @@ TimeSeriesClassificationDataStream::TimeSeriesClassificationDataStream(const UIN
     playbackIndex  = 0;
     trackingClass = false;
     useExternalRanges = false;
-    debugLog.setProceedingText("[DEBUG LTSCD]");
-    errorLog.setProceedingText("[ERROR LTSCD]");
-    warningLog.setProceedingText("[WARNING LTSCD]");
+    debugLog.setProceedingText("[DEBUG ClassificationDataStream]");
+    errorLog.setProceedingText("[ERROR ClassificationDataStream]");
+    warningLog.setProceedingText("[WARNING ClassificationDataStream]");
     
     if( numDimensions > 0 ){
         setNumDimensions(numDimensions);
     }
 }
 
-TimeSeriesClassificationDataStream::TimeSeriesClassificationDataStream(const TimeSeriesClassificationDataStream &rhs){
+ClassificationDataStream::ClassificationDataStream(const ClassificationDataStream &rhs){
     *this = rhs;
 }
 
-TimeSeriesClassificationDataStream::~TimeSeriesClassificationDataStream(){}
+ClassificationDataStream::~ClassificationDataStream(){}
     
-TimeSeriesClassificationDataStream& TimeSeriesClassificationDataStream::operator=(const TimeSeriesClassificationDataStream &rhs){
+ClassificationDataStream& ClassificationDataStream::operator=(const ClassificationDataStream &rhs){
     if( this != &rhs){
         this->datasetName = rhs.datasetName;
         this->infoText = rhs.infoText;
@@ -69,7 +69,7 @@ TimeSeriesClassificationDataStream& TimeSeriesClassificationDataStream::operator
     return *this;
 }
 
-void TimeSeriesClassificationDataStream::clear(){
+void ClassificationDataStream::clear(){
 	totalNumSamples = 0;
 	playbackIndex = 0;
 	trackingClass = false;
@@ -78,7 +78,7 @@ void TimeSeriesClassificationDataStream::clear(){
 	timeSeriesPositionTracker.clear();
 }
     
-bool TimeSeriesClassificationDataStream::setNumDimensions(const UINT numDimensions){
+bool ClassificationDataStream::setNumDimensions(const UINT numDimensions){
     if( numDimensions > 0 ){
         //Clear any previous data
         clear();
@@ -94,7 +94,7 @@ bool TimeSeriesClassificationDataStream::setNumDimensions(const UINT numDimensio
 }
     
     
-bool TimeSeriesClassificationDataStream::setDatasetName(const std::string datasetName){
+bool ClassificationDataStream::setDatasetName(const std::string datasetName){
     
     //Make sure there are no spaces in the std::string
     if( datasetName.find(" ") == std::string::npos ){
@@ -106,12 +106,12 @@ bool TimeSeriesClassificationDataStream::setDatasetName(const std::string datase
     return false;
 }
     
-bool TimeSeriesClassificationDataStream::setInfoText(std::string infoText){
+bool ClassificationDataStream::setInfoText(std::string infoText){
     this->infoText = infoText;
     return true;
 }
     
-bool TimeSeriesClassificationDataStream::setClassNameForCorrespondingClassLabel(const std::string className,const UINT classLabel){
+bool ClassificationDataStream::setClassNameForCorrespondingClassLabel(const std::string className,const UINT classLabel){
     
     for(UINT i=0; i<classTracker.size(); i++){
         if( classTracker[i].classLabel == classLabel ){
@@ -124,7 +124,7 @@ bool TimeSeriesClassificationDataStream::setClassNameForCorrespondingClassLabel(
     return false;
 }
 
-bool TimeSeriesClassificationDataStream::addSample(const UINT classLabel,const VectorFloat &sample){
+bool ClassificationDataStream::addSample(const UINT classLabel,const VectorFloat &sample){
 
 	if( numDimensions != sample.size() ){
 		errorLog << "addSample(const UINT classLabel, VectorFloat sample) - the size of the new sample (" << sample.size() << ") does not match the number of dimensions of the dataset (" << numDimensions << ")" << std::endl;
@@ -166,7 +166,7 @@ bool TimeSeriesClassificationDataStream::addSample(const UINT classLabel,const V
 	return true;
 }
 
-bool TimeSeriesClassificationDataStream::addSample(const UINT classLabel,const MatrixFloat &sample){
+bool ClassificationDataStream::addSample(const UINT classLabel,const MatrixFloat &sample){
 
     if( numDimensions != sample.getNumCols() ){
         errorLog << "addSample(const UINT classLabel, const MatrixFloat &sample) - the number of columns in the sample (" << sample.getNumCols() << ") does not match the number of dimensions of the dataset (" << numDimensions << ")" << std::endl;
@@ -215,7 +215,7 @@ bool TimeSeriesClassificationDataStream::addSample(const UINT classLabel,const M
 
 }
     
-bool TimeSeriesClassificationDataStream::removeLastSample(){
+bool ClassificationDataStream::removeLastSample(){
     
     if( totalNumSamples > 0 ){
         
@@ -247,7 +247,7 @@ bool TimeSeriesClassificationDataStream::removeLastSample(){
     
 }
     
-UINT TimeSeriesClassificationDataStream::eraseAllSamplesWithClassLabel(const UINT classLabel){
+UINT ClassificationDataStream::eraseAllSamplesWithClassLabel(const UINT classLabel){
     UINT numExamplesRemoved = 0;
     UINT numExamplesToRemove = 0;
     
@@ -296,7 +296,7 @@ UINT TimeSeriesClassificationDataStream::eraseAllSamplesWithClassLabel(const UIN
     return numExamplesRemoved;
 }
     
-bool TimeSeriesClassificationDataStream::relabelAllSamplesWithClassLabel(const UINT oldClassLabel,const UINT newClassLabel){
+bool ClassificationDataStream::relabelAllSamplesWithClassLabel(const UINT oldClassLabel,const UINT newClassLabel){
     bool oldClassLabelFound = false;
     bool newClassLabelAllReadyExists = false;
     UINT indexOfOldClassLabel = 0;
@@ -348,7 +348,7 @@ bool TimeSeriesClassificationDataStream::relabelAllSamplesWithClassLabel(const U
     return true;
 }
     
-bool TimeSeriesClassificationDataStream::setExternalRanges(const Vector< MinMax > &externalRanges, const bool useExternalRanges){
+bool ClassificationDataStream::setExternalRanges(const Vector< MinMax > &externalRanges, const bool useExternalRanges){
     
     if( externalRanges.size() != numDimensions ) return false;
     
@@ -358,7 +358,7 @@ bool TimeSeriesClassificationDataStream::setExternalRanges(const Vector< MinMax 
     return true;
 }
 
-bool TimeSeriesClassificationDataStream::enableExternalRangeScaling(const bool useExternalRanges){
+bool ClassificationDataStream::enableExternalRangeScaling(const bool useExternalRanges){
     if( externalRanges.size() == numDimensions ){
         this->useExternalRanges = useExternalRanges;
         return true;
@@ -366,12 +366,12 @@ bool TimeSeriesClassificationDataStream::enableExternalRangeScaling(const bool u
     return false;
 }
 
-bool TimeSeriesClassificationDataStream::scale(const Float minTarget,const Float maxTarget){
+bool ClassificationDataStream::scale(const Float minTarget,const Float maxTarget){
     Vector< MinMax > ranges = getRanges();
     return scale(ranges,minTarget,maxTarget);
 }
 
-bool TimeSeriesClassificationDataStream::scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget){
+bool ClassificationDataStream::scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget){
     if( ranges.size() != numDimensions ) return false;
     
     //Scale the training data
@@ -383,7 +383,7 @@ bool TimeSeriesClassificationDataStream::scale(const Vector<MinMax> &ranges,cons
     return true;
 }
 
-bool TimeSeriesClassificationDataStream::resetPlaybackIndex(const UINT playbackIndex){
+bool ClassificationDataStream::resetPlaybackIndex(const UINT playbackIndex){
     if( playbackIndex < totalNumSamples ){
         this->playbackIndex = playbackIndex;
         return true;
@@ -391,14 +391,14 @@ bool TimeSeriesClassificationDataStream::resetPlaybackIndex(const UINT playbackI
     return false;
 }
 
-ClassificationSample TimeSeriesClassificationDataStream::getNextSample(){
+ClassificationSample ClassificationDataStream::getNextSample(){
     if( totalNumSamples == 0 ) return ClassificationSample();
     
     UINT index = playbackIndex++ % totalNumSamples;
     return data[ index ];
 }
     
-TimeSeriesClassificationData TimeSeriesClassificationDataStream::getAllTrainingExamplesWithClassLabel(const UINT classLabel) const {
+TimeSeriesClassificationData ClassificationDataStream::getAllTrainingExamplesWithClassLabel(const UINT classLabel) const {
 	TimeSeriesClassificationData classData(numDimensions);
 	for(UINT x=0; x<timeSeriesPositionTracker.size(); x++){
 		if( timeSeriesPositionTracker[x].getClassLabel() == classLabel && timeSeriesPositionTracker[x].getEndIndex() > 0){
@@ -412,7 +412,7 @@ TimeSeriesClassificationData TimeSeriesClassificationDataStream::getAllTrainingE
 	return classData;
 }
 
-UINT TimeSeriesClassificationDataStream::getMinimumClassLabel() const {
+UINT ClassificationDataStream::getMinimumClassLabel() const {
     UINT minClassLabel = 99999;
     
     for(UINT i=0; i<classTracker.size(); i++){
@@ -425,7 +425,7 @@ UINT TimeSeriesClassificationDataStream::getMinimumClassLabel() const {
 }
 
 
-UINT TimeSeriesClassificationDataStream::getMaximumClassLabel() const {
+UINT ClassificationDataStream::getMaximumClassLabel() const {
     UINT maxClassLabel = 0;
     
     for(UINT i=0; i<classTracker.size(); i++){
@@ -437,7 +437,7 @@ UINT TimeSeriesClassificationDataStream::getMaximumClassLabel() const {
     return maxClassLabel;
 }
 
-UINT TimeSeriesClassificationDataStream::getClassLabelIndexValue(const UINT classLabel) const {
+UINT ClassificationDataStream::getClassLabelIndexValue(const UINT classLabel) const {
     for(UINT k=0; k<classTracker.size(); k++){
         if( classTracker[k].classLabel == classLabel ){
             return k;
@@ -447,7 +447,7 @@ UINT TimeSeriesClassificationDataStream::getClassLabelIndexValue(const UINT clas
     return 0;
 }
 
-std::string TimeSeriesClassificationDataStream::getClassNameForCorrespondingClassLabel(const UINT classLabel){
+std::string ClassificationDataStream::getClassNameForCorrespondingClassLabel(const UINT classLabel){
     
     for(UINT i=0; i<classTracker.size(); i++){
         if( classTracker[i].classLabel == classLabel ){
@@ -457,7 +457,7 @@ std::string TimeSeriesClassificationDataStream::getClassNameForCorrespondingClas
     return "CLASS_LABEL_NOT_FOUND";
 }
 
-Vector<MinMax> TimeSeriesClassificationDataStream::getRanges() const {
+Vector<MinMax> ClassificationDataStream::getRanges() const {
     
     Vector< MinMax > ranges(numDimensions);
     
@@ -478,7 +478,7 @@ Vector<MinMax> TimeSeriesClassificationDataStream::getRanges() const {
     return ranges;
 }
     
-bool TimeSeriesClassificationDataStream::save(const std::string &filename){
+bool ClassificationDataStream::save(const std::string &filename){
     
     //Check if the file should be saved as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -489,7 +489,7 @@ bool TimeSeriesClassificationDataStream::save(const std::string &filename){
     return saveDatasetToFile( filename );
 }
 
-bool TimeSeriesClassificationDataStream::load(const std::string &filename){
+bool ClassificationDataStream::load(const std::string &filename){
     
     //Check if the file should be loaded as a csv file
     if( Util::stringEndsWith( filename, ".csv" )  ){
@@ -500,7 +500,7 @@ bool TimeSeriesClassificationDataStream::load(const std::string &filename){
     return loadDatasetFromFile( filename );
 }
 
-bool TimeSeriesClassificationDataStream::saveDatasetToFile(const std::string &filename) {
+bool ClassificationDataStream::saveDatasetToFile(const std::string &filename) {
 
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
@@ -554,7 +554,7 @@ bool TimeSeriesClassificationDataStream::saveDatasetToFile(const std::string &fi
     return true;
 }
 
-bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const std::string &filename){
+bool ClassificationDataStream::loadDatasetFromFile(const std::string &filename){
 
 	std::fstream file; 
 	file.open(filename.c_str(), std::ios::in);
@@ -717,7 +717,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromFile(const std::string &
 	return true;
 }
     
-bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const std::string &filename) {
+bool ClassificationDataStream::saveDatasetToCSVFile(const std::string &filename) {
     std::fstream file; 
     file.open(filename.c_str(), std::ios::out );
     
@@ -740,7 +740,7 @@ bool TimeSeriesClassificationDataStream::saveDatasetToCSVFile(const std::string 
     return true;
 }
 
-bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const std::string &filename,const UINT classLabelColumnIndex){
+bool ClassificationDataStream::loadDatasetFromCSVFile(const std::string &filename,const UINT classLabelColumnIndex){
 
     datasetName = "NOT_SET";
     infoText = "";
@@ -795,7 +795,7 @@ bool TimeSeriesClassificationDataStream::loadDatasetFromCSVFile(const std::strin
     return true;
 }
     
-bool TimeSeriesClassificationDataStream::printStats() const {
+bool ClassificationDataStream::printStats() const {
     
     std::cout << "DatasetName:\t" << datasetName << std::endl;
     std::cout << "DatasetInfo:\t" << infoText << std::endl;
@@ -828,9 +828,9 @@ bool TimeSeriesClassificationDataStream::printStats() const {
     return true;
 }
     
-TimeSeriesClassificationDataStream TimeSeriesClassificationDataStream::getSubset(const UINT startIndex,const UINT endIndex) const {
+ClassificationDataStream ClassificationDataStream::getSubset(const UINT startIndex,const UINT endIndex) const {
     
-    TimeSeriesClassificationDataStream subset;
+    ClassificationDataStream subset;
     
     if( endIndex >= totalNumSamples ){
         warningLog << "getSubset(const UINT startIndex,const UINT endIndex) - The endIndex is greater than or equal to the number of samples in the current dataset!" << std::endl;
@@ -855,7 +855,7 @@ TimeSeriesClassificationDataStream TimeSeriesClassificationDataStream::getSubset
     return subset;
 }
     
-TimeSeriesClassificationData TimeSeriesClassificationDataStream::getTimeSeriesClassificationData( const bool includeNullGestures ) const {
+TimeSeriesClassificationData ClassificationDataStream::getTimeSeriesClassificationData( const bool includeNullGestures ) const {
     
     TimeSeriesClassificationData tsData;
     
@@ -874,7 +874,7 @@ TimeSeriesClassificationData TimeSeriesClassificationDataStream::getTimeSeriesCl
     return tsData;
 }
     
-ClassificationData TimeSeriesClassificationDataStream::getClassificationData( const bool includeNullGestures ) const {
+ClassificationData ClassificationDataStream::getClassificationData( const bool includeNullGestures ) const {
     
     ClassificationData classificationData;
     
@@ -895,7 +895,7 @@ ClassificationData TimeSeriesClassificationDataStream::getClassificationData( co
     return classificationData;
 }
     
-MatrixFloat TimeSeriesClassificationDataStream::getTimeSeriesData( const TimeSeriesPositionTracker &trackerInfo ) const {
+MatrixFloat ClassificationDataStream::getTimeSeriesData( const TimeSeriesPositionTracker &trackerInfo ) const {
     
     if( trackerInfo.getStartIndex() >= totalNumSamples || trackerInfo.getEndIndex() > totalNumSamples ){
         warningLog << "getTimeSeriesData(TimeSeriesPositionTracker trackerInfo) - Invalid tracker indexs!" << std::endl;
@@ -916,7 +916,7 @@ MatrixFloat TimeSeriesClassificationDataStream::getTimeSeriesData( const TimeSer
     return tsData;
 }
     
-MatrixFloat TimeSeriesClassificationDataStream::getDataAsMatrixFloat() const {
+MatrixFloat ClassificationDataStream::getDataAsMatrixFloat() const {
     UINT M = getNumSamples();
     UINT N = getNumDimensions();
     MatrixFloat matrixData(M,N);
@@ -928,7 +928,7 @@ MatrixFloat TimeSeriesClassificationDataStream::getDataAsMatrixFloat() const {
     return matrixData;
 }
     
-Vector< UINT > TimeSeriesClassificationDataStream::getClassLabels() const{
+Vector< UINT > ClassificationDataStream::getClassLabels() const{
     const UINT K = (UINT)classTracker.size();
     Vector< UINT > classLabels( K );
     

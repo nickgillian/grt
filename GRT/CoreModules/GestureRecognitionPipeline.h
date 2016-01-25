@@ -43,7 +43,7 @@
 #include "Clusterer.h"
 #include "PostProcessing.h"
 #include "Context.h"
-#include "../DataStructures/TimeSeriesClassificationDataStream.h"
+#include "../DataStructures/ClassificationDataStream.h"
 #include "../Util/ClassificationResult.h"
 #include "../Util/TestResult.h"
 
@@ -124,7 +124,7 @@ public:
     bool train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
 
     /**
-     This is the main training interface for training a Classifier with TimeSeriesClassificationDataStream.  This function will pass
+     This is the main training interface for training a Classifier with ClassificationDataStream.  This function will pass
      the trainingData through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the 
      training function of the Classification module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the classifier was trained successfully, false otherwise.
@@ -132,7 +132,7 @@ public:
     @param trainingData: the time-series classification training data that will be used to train the classifier at the core of the pipeline
     @return bool returns true if the classifier was trained successfully, false otherwise
     */
-    bool train(const TimeSeriesClassificationDataStream &trainingData);
+    bool train(const ClassificationDataStream &trainingData);
 
 	/**
      This is the main training interface for training a regression module with RegressionData.  This function will pass
@@ -191,7 +191,7 @@ public:
     bool test(const TimeSeriesClassificationData &testData);
 
     /**
-     This function is the main interface for testing the accuracy of a pipeline with TimeSeriesClassificationDataStream.  This function will pass
+     This function is the main interface for testing the accuracy of a pipeline with ClassificationDataStream.  This function will pass
      the testData through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the 
      predict function of the classification module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the pipeline was tested successfully, false otherwise.
@@ -199,7 +199,7 @@ public:
      @param testData: the timeseries classification data stream that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
 	*/
-    bool test(const TimeSeriesClassificationDataStream &testData);
+    bool test(const ClassificationDataStream &testData);
 
     /**
      This function is the main interface for testing the accuracy of a pipeline with RegressionData.  This function will pass

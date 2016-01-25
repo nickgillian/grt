@@ -205,6 +205,7 @@ abort(); \
     
 //Declare typedefs for the legacy data types
 class ClassificationData;
+class ClassificationDataStream;
 class RegressionData;
 class TimeSeriesClassificationData;
 class UnlabelledData;
@@ -213,6 +214,7 @@ class MatrixFloat;
 typedef ClassificationData LabelledClassificationData;
 typedef RegressionData LabelledRegressionData;
 typedef TimeSeriesClassificationData LabelledTimeSeriesClassificationData;
+typedef ClassificationDataStream TimeSeriesClassificationDataStream;
 typedef UnlabelledData UnlabelledClassificationData;
 typedef VectorFloat VectorDouble;
 typedef MatrixFloat MatrixDouble;

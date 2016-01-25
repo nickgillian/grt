@@ -231,7 +231,7 @@ bool RBMQuantizer::train_(TimeSeriesClassificationData &trainingData){
     return train_( data );
 }
    
-bool RBMQuantizer::train_(TimeSeriesClassificationDataStream &trainingData){
+bool RBMQuantizer::train_(ClassificationDataStream &trainingData){
     MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }

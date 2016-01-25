@@ -617,19 +617,19 @@ bool GestureRecognitionPipeline::train(const TimeSeriesClassificationData &train
     return true;
 }
 
-bool GestureRecognitionPipeline::train(const TimeSeriesClassificationDataStream &trainingData){
+bool GestureRecognitionPipeline::train(const ClassificationDataStream &trainingData){
 
     trained = false;
     trainingTime = 0;
     clearTestResults();
     
     if( !getIsClassifierSet() ){
-        errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed To train Classifier, the classifier has not been set!" << std::endl;
+        errorLog << "train(ClassificationDataStream trainingData) - Failed To train Classifier, the classifier has not been set!" << std::endl;
         return false;
     }
     
     if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed To train Classifier, there is no training data!" << std::endl;
+        errorLog << "train(ClassificationDataStream trainingData) - Failed To train Classifier, there is no training data!" << std::endl;
         return false;
     }
     
@@ -668,7 +668,7 @@ bool GestureRecognitionPipeline::train(const TimeSeriesClassificationDataStream 
         if( getIsPreProcessingSet() ){
             for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
                 if( !preProcessingModules[moduleIndex]->process( trainingSample ) ){
-                    errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed to PreProcess training Data. PreProcessingModuleIndex: ";
+                    errorLog << "train(ClassificationDataStream trainingData) - Failed to PreProcess training Data. PreProcessingModuleIndex: ";
                     errorLog << moduleIndex;
                     errorLog << std::endl;
                     return false;
@@ -681,7 +681,7 @@ bool GestureRecognitionPipeline::train(const TimeSeriesClassificationDataStream 
         if( getIsFeatureExtractionSet() ){
             for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
                 if( !featureExtractionModules[moduleIndex]->computeFeatures( trainingSample ) ){
-                    errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed to Compute Features from training Data. FeatureExtractionModuleIndex ";
+                    errorLog << "train(ClassificationDataStream trainingData) - Failed to Compute Features from training Data. FeatureExtractionModuleIndex ";
                     errorLog << moduleIndex;
                     errorLog << std::endl;
                     return false;
@@ -703,7 +703,7 @@ bool GestureRecognitionPipeline::train(const TimeSeriesClassificationDataStream 
     }
     
     if( processedTrainingData.getNumSamples() != trainingData.getNumSamples() ){
-        warningLog << "train(TimeSeriesClassificationDataStream trainingData) - Lost " << trainingData.getNumSamples()-processedTrainingData.getNumSamples() << " of " << trainingData.getNumSamples() << " training samples due to the processing stage!" << std::endl;
+        warningLog << "train(ClassificationDataStream trainingData) - Lost " << trainingData.getNumSamples()-processedTrainingData.getNumSamples() << " of " << trainingData.getNumSamples() << " training samples due to the processing stage!" << std::endl;
     }
 
     //Store the number of training samples
@@ -712,7 +712,7 @@ bool GestureRecognitionPipeline::train(const TimeSeriesClassificationDataStream 
     //Train the classifier
     trained = classifier->train_( processedTrainingData );
     if( !trained ){
-        errorLog << "train(TimeSeriesClassificationDataStream trainingData) - Failed To Train Classifier: " << classifier->getLastErrorMessage() << std::endl;
+        errorLog << "train(ClassificationDataStream trainingData) - Failed To Train Classifier: " << classifier->getLastErrorMessage() << std::endl;
         return false;
     }
     
@@ -1179,25 +1179,25 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationData &testDa
     return true;
 }
     
-bool GestureRecognitionPipeline::test(const TimeSeriesClassificationDataStream &testData){
+bool GestureRecognitionPipeline::test(const ClassificationDataStream &testData){
     
     //Clear any previous test results
     clearTestResults();
     
     //Make sure the classification model has been trained
     if( !trained ){
-        errorLog << "test(const TimeSeriesClassificationDataStream &testData) - The classifier has not been trained" << std::endl;
+        errorLog << "test(const ClassificationDataStream &testData) - The classifier has not been trained" << std::endl;
         return false;
     }
     
     //Make sure the dimensionality of the test data matches the input Vector's dimensions
     if( testData.getNumDimensions() != inputVectorDimensions ){
-        errorLog << "test(const TimeSeriesClassificationDataStream &testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
+        errorLog << "test(const ClassificationDataStream &testData) - The dimensionality of the test data (" + Util::toString(testData.getNumDimensions()) + ") does not match that of the input Vector dimensions of the pipeline (" << inputVectorDimensions << ")" << std::endl;
         return false;
     }
     
     if( !getIsClassifierSet() ){
-        errorLog << "test(const TimeSeriesClassificationDataStream &testData) - The classifier has not been set" << std::endl;
+        errorLog << "test(const ClassificationDataStream &testData) - The classifier has not been set" << std::endl;
         return false;
     }
     
@@ -1229,7 +1229,7 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationDataStream &
     timer.start();
 
     //Get a copy of the data so we can modify it
-    TimeSeriesClassificationDataStream data = testData;
+    ClassificationDataStream data = testData;
     
     //Run the test
     data.resetPlaybackIndex(0); //Make sure that the test data start at 0
@@ -1240,7 +1240,7 @@ bool GestureRecognitionPipeline::test(const TimeSeriesClassificationDataStream &
             
         //Pass the test sample through the pipeline
         if( !predict( testSample ) ){
-            errorLog << "test(const TimeSeriesClassificationDataStream &testData) - Prediction Failed! " << classifier->getLastErrorMessage() << std::endl;
+            errorLog << "test(const ClassificationDataStream &testData) - Prediction Failed! " << classifier->getLastErrorMessage() << std::endl;
             return false;
         }
         

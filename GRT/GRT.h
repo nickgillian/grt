@@ -68,7 +68,7 @@
 #include "DataStructures/MatrixFloat.h"
 #include "DataStructures/ClassificationData.h"
 #include "DataStructures/TimeSeriesClassificationData.h"
-#include "DataStructures/TimeSeriesClassificationDataStream.h"
+#include "DataStructures/ClassificationDataStream.h"
 #include "DataStructures/RegressionData.h"
 #include "DataStructures/UnlabelledData.h"
 

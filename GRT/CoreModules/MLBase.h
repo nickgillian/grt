@@ -34,9 +34,9 @@
 #include "GRTBase.h"
 #include "../DataStructures/UnlabelledData.h"
 #include "../DataStructures/ClassificationData.h"
+#include "../DataStructures/ClassificationDataStream.h"
 #include "../DataStructures/RegressionData.h"
 #include "../DataStructures/TimeSeriesClassificationData.h"
-#include "../DataStructures/TimeSeriesClassificationDataStream.h"
 
 GRT_BEGIN_NAMESPACE
 
@@ -140,21 +140,21 @@ public:
     virtual bool train_(TimeSeriesClassificationData &trainingData);
     
     /**
-     This is the main training interface for TimeSeriesClassificationDataStream.
+     This is the main training interface for ClassificationDataStream.
      By default it will call the train_ function, unless it is overwritten by the derived class.
      
      @param trainingData: the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
-    virtual bool train(TimeSeriesClassificationDataStream trainingData);
+    virtual bool train(ClassificationDataStream trainingData);
     
     /**
-     This is the main training interface for referenced TimeSeriesClassificationDataStream. This should be overwritten by the derived class.
+     This is the main training interface for referenced ClassificationDataStream. This should be overwritten by the derived class.
      
      @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the classifier was successfully trained, false otherwise
      */
-    virtual bool train_(TimeSeriesClassificationDataStream &trainingData);
+    virtual bool train_(ClassificationDataStream &trainingData);
     
     /**
      This is the main training interface for UnlabelledData.

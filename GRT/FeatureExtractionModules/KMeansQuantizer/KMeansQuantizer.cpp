@@ -218,7 +218,7 @@ bool KMeansQuantizer::train_(TimeSeriesClassificationData &trainingData){
     return train( data );
 }
    
-bool KMeansQuantizer::train_(TimeSeriesClassificationDataStream &trainingData){
+bool KMeansQuantizer::train_(ClassificationDataStream &trainingData){
     MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train( data );
 }

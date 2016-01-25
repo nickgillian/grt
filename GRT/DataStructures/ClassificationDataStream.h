@@ -1,11 +1,12 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
  
- @brief The TimeSeriesClassificationDataStream is the main data structure for recording, labeling, managing, saving, and loading datasets that can be used to test the continuous classification abilities of the GRT supervised temporal learning algorithms.
+ @brief The ClassificationDataStream is the main data structure for recording, labeling, managing, saving, and loading datasets that can be used to test the continuous classification abilities of the GRT supervised learning algorithms.
  
- @example DatastructuresExample/TimeSeriesClassificationDataStreamExample/TimeSeriesClassificationDataStreamExample.cpp
+ @note This was previously called ClassificationDataStream.
+
+ @example DatastructuresExample/ClassificationDataStreamExample/ClassificationDataStream.cpp
  */
 
 /**
@@ -28,8 +29,8 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef GRT_TIME_SERIES_CLASSIFICATION_DATA_STREAM_HEADER
-#define GRT_TIME_SERIES_CLASSIFICATION_DATA_STREAM_HEADER
+#ifndef GRT_CLASSIFICATION_DATA_STREAM_HEADER
+#define GRT_CLASSIFICATION_DATA_STREAM_HEADER
 
 #include "../Util/GRTCommon.h"
 #include "TimeSeriesPositionTracker.h"
@@ -38,7 +39,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class TimeSeriesClassificationDataStream{
+class ClassificationDataStream{
 public:
 	
     /**
@@ -49,27 +50,27 @@ public:
      @param datasetName: the name of the dataset, should not contain any spaces
      @param infoText: some info about the data in this dataset, this can contain spaces
     */
-	TimeSeriesClassificationDataStream(const UINT numDimensions=0,const std::string datasetName = "NOT_SET",const std::string infoText = "");
+	ClassificationDataStream(const UINT numDimensions=0,const std::string datasetName = "NOT_SET",const std::string infoText = "");
     
     /**
-     Copy Constructor, copies the TimeSeriesClassificationDataStream from the rhs instance to this instance
+     Copy Constructor, copies the ClassificationDataStream from the rhs instance to this instance
      
-	 @param rhs: another instance of the TimeSeriesClassificationDataStream class from which the data will be copied to this instance
+	 @param rhs: another instance of the ClassificationDataStream class from which the data will be copied to this instance
      */
-	TimeSeriesClassificationDataStream(const TimeSeriesClassificationDataStream &rhs);
+	ClassificationDataStream(const ClassificationDataStream &rhs);
     
     /**
      Default Destructor
      */
-	virtual ~TimeSeriesClassificationDataStream();
+	virtual ~ClassificationDataStream();
 
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance
      
-	 @param rhs: another instance of the TimeSeriesClassificationDataStream class from which the data will be copied to this instance
-	 @return a reference to this instance of TimeSeriesClassificationDataStream
+	 @param rhs: another instance of the ClassificationDataStream class from which the data will be copied to this instance
+	 @return a reference to this instance of ClassificationDataStream
      */
-	TimeSeriesClassificationDataStream& operator= (const TimeSeriesClassificationDataStream &rhs);
+	ClassificationDataStream& operator= (const ClassificationDataStream &rhs);
 
     /**
      Array Subscript Operator, returns the ClassificationSample at index i.
@@ -142,22 +143,22 @@ public:
     
     /**
      Adds a new labelled sample to the dataset.  
-     The dimensionality of the sample should match the number of dimensions in the TimeSeriesClassificationDataStream.
+     The dimensionality of the sample should match the number of dimensions in the ClassificationDataStream.
      The class label can be zero (this should represent a null class).
      
 	 @param classLabel: the class label of the corresponding sample
-     @param sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the TimeSeriesClassificationDataStream
+     @param sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the ClassificationDataStream
 	 @return true if the sample was correctly added to the dataset, false otherwise
      */
 	bool addSample(const UINT classLabel,const VectorFloat &sample);
 
     /**
      Adds a new labelled sample to the dataset.  
-     The dimensionality of the sample should match the number of dimensions in the TimeSeriesClassificationDataStream.
+     The dimensionality of the sample should match the number of dimensions in the ClassificationDataStream.
      The class label can be zero (this should represent a null class).
      
      @param classLabel: the class label of the corresponding sample
-     @param sample: the new sample you want to add to the dataset.  The number of rows of this sample should match the number of dimensions in the TimeSeriesClassificationDataStream
+     @param sample: the new sample you want to add to the dataset.  The number of rows of this sample should match the number of dimensions in the ClassificationDataStream
      @return true if the sample was correctly added to the dataset, false otherwise
      */
     bool addSample(const UINT classLabel,const MatrixFloat &sample);
@@ -405,15 +406,15 @@ public:
 	std::deque< ClassificationSample > getClassificationSamples() const { return data; }
     
     /**
-     Gets a new TimeSeriesClassificationDataStream dataset drawn from the startIndex and endIndex values.
+     Gets a new ClassificationDataStream dataset drawn from the startIndex and endIndex values.
      The startIndex and endIndex values must be valid (i.e. if the current dataset has 1000 samples then you can not have a startIndex
      or endIndex value that is greater or equal to 1000).
      
      @param startIndex: the index of the first value from the current dataset that you want to start the new subset from
      @param endIndex: the index of the last value from the current dataset that you want to end the new dataset at (inclusive)
-     @return returns a new TimeSeriesClassificationDataStream subset of the current dataset drawn from the startIndex and endIndex values
+     @return returns a new ClassificationDataStream subset of the current dataset drawn from the startIndex and endIndex values
      */
-    TimeSeriesClassificationDataStream getSubset(const UINT startIndex,const UINT endIndex) const;
+    ClassificationDataStream getSubset(const UINT startIndex,const UINT endIndex) const;
     
     /**
      This function segments the continuous time series data into individual time series and then adds these time series into a new

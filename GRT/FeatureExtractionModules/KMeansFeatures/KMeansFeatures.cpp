@@ -337,7 +337,7 @@ bool KMeansFeatures::train_(TimeSeriesClassificationData &trainingData){
     return train_( data );
 }
    
-bool KMeansFeatures::train_(TimeSeriesClassificationDataStream &trainingData){
+bool KMeansFeatures::train_(ClassificationDataStream &trainingData){
     MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
