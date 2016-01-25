@@ -69,8 +69,6 @@ bool FeatureExtraction::copyBaseVariables(const FeatureExtraction *featureExtrac
     if( !this->copyMLBaseVariables( featureExtractionModule ) ){
         return false;
     }
-
-    std::cout << "FeatureExtraction::copyBaseVariables: input type: " << this->inputType << " output type: " << this->outputType << std::endl;
     
     this->featureExtractionType = featureExtractionModule->featureExtractionType;
     this->initialized = featureExtractionModule->initialized;
