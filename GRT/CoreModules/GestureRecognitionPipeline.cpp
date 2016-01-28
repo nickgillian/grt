@@ -24,28 +24,7 @@ GRT_BEGIN_NAMESPACE
 
 GestureRecognitionPipeline::GestureRecognitionPipeline(void)
 {
-    initialized = false;
-    trained = false;
-    info = "";
-    pipelineMode = PIPELINE_MODE_NOT_SET;
-    inputVectorDimensions = 0;
-    outputVectorDimensions = 0;
-    predictedClassLabel = 0;
-    predictedClusterLabel = 0;
-    predictionModuleIndex = 0;
-    numTrainingSamples = 0;
-    numTestSamples = 0;
-    testAccuracy = 0;
-    testRMSError = 0;
-    testSquaredError = 0;
-    testRejectionPrecision = 0;
-    testRejectionRecall = 0;
-    testTime = 0;
-    trainingTime = 0;
-    classifier = NULL;
-    regressifier = NULL;
-    clusterer = NULL;
-    contextModules.resize( NUM_CONTEXT_LEVELS );
+    init();
 
     debugLog.setProceedingText("[DEBUG GRP]");
     errorLog.setProceedingText("[ERROR GRP]");
@@ -55,28 +34,7 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(void)
 
 GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionPipeline &rhs){
 	
-	initialized = false;
-    trained = false;
-    info = "";
-    pipelineMode = PIPELINE_MODE_NOT_SET;
-    inputVectorDimensions = 0;
-    outputVectorDimensions = 0;
-    predictedClassLabel = 0;
-    predictedClusterLabel = 0;
-    predictionModuleIndex = 0;
-    numTrainingSamples = 0;
-    numTestSamples = 0;
-    testAccuracy = 0;
-    testRMSError = 0;
-    testSquaredError = 0;
-    testRejectionPrecision = 0;
-    testRejectionRecall = 0;
-    testTime = 0;
-    trainingTime = 0;
-    classifier = NULL;
-    regressifier = NULL;
-    clusterer = NULL;
-    contextModules.resize( NUM_CONTEXT_LEVELS );
+	init();
     
     debugLog.setProceedingText("[DEBUG GRP]");
     errorLog.setProceedingText("[ERROR GRP]");
@@ -167,13 +125,7 @@ GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureR
 GestureRecognitionPipeline::~GestureRecognitionPipeline(void)
 {
     //Clean up the memory
-    deleteAllPreProcessingModules();
-    deleteAllFeatureExtractionModules();
-    deleteClassifier();
-    deleteRegressifier();
-    deleteClusterer();
-    deleteAllPostProcessingModules();
-    deleteAllContextModules();
+    clear();
 } 
     
 bool GestureRecognitionPipeline::train(const ClassificationData &trainingData){
@@ -2122,6 +2074,26 @@ bool GestureRecognitionPipeline::reset(){
     
     return true;
 }
+
+bool GestureRecognitionPipeline::clear(){
+
+    //Clear the entire pipeline
+    clearTestResults();
+    deleteAllPreProcessingModules();
+    deleteAllFeatureExtractionModules();
+    deleteClassifier();
+    deleteRegressifier();
+    deleteClusterer();
+    deleteAllPostProcessingModules();
+    deleteAllContextModules();
+
+    //Reset the pipeline
+    return init();
+}
+
+bool GestureRecognitionPipeline::clearModel(){
+    return true;
+}
     
 bool GestureRecognitionPipeline::save(const std::string &filename) const {
     return savePipelineToFile( filename );
@@ -3356,19 +3328,6 @@ bool GestureRecognitionPipeline::removeAllContextModules(){
     deleteAllContextModules();
     return true;
 }
-
-bool GestureRecognitionPipeline::clearAll(){
-	
-    clearTestResults();
-	removeAllPreProcessingModules();
-	removeAllFeatureExtractionModules();
-	removeClassifier();
-	removeRegressifier();
-	removeAllPostProcessingModules();
-	removeAllContextModules();
-	
-	return true;
-}
     
 bool GestureRecognitionPipeline::clearTestResults(){
     
@@ -3466,6 +3425,32 @@ void GestureRecognitionPipeline::deleteAllContextModules(){
         }
         contextModules[i].clear();
     }
+}
+
+bool GestureRecognitionPipeline::init(){
+    initialized = false;
+    trained = false;
+    info = "";
+    pipelineMode = PIPELINE_MODE_NOT_SET;
+    inputVectorDimensions = 0;
+    outputVectorDimensions = 0;
+    predictedClassLabel = 0;
+    predictedClusterLabel = 0;
+    predictionModuleIndex = 0;
+    numTrainingSamples = 0;
+    numTestSamples = 0;
+    testAccuracy = 0;
+    testRMSError = 0;
+    testSquaredError = 0;
+    testRejectionPrecision = 0;
+    testRejectionRecall = 0;
+    testTime = 0;
+    trainingTime = 0;
+    classifier = NULL;
+    regressifier = NULL;
+    clusterer = NULL;
+    contextModules.resize( NUM_CONTEXT_LEVELS );
+    return true;
 }
     
 bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const UINT predictedClassLabel,VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,Float &rejectionRecallCounter,VectorFloat &confusionMatrixCounter){

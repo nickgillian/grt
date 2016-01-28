@@ -250,6 +250,22 @@ public:
     bool reset();
 
     /**
+     This function is the main interface for clearing the entire gesture recognition pipeline.  This function will remove any module added to the pipeline and
+     set it back to its default state.
+
+     @return bool returns true if the cleared was successful, false otherwise
+    */
+    bool clear();
+
+    /**
+     This function is the main interface for clearing any trained model stored by the gesture recognition pipeline.  This function will call clear on all the modules in the pipeline,
+     but unlike the clear() function, it will not remove the modules.
+
+     @return bool returns true if the cleared was successful, false otherwise
+    */
+    bool clearModel();
+
+    /**
      This function will save the entire pipeline to a file.  This includes all the modules types, settings, and models.
      This calls the older savePipelineToFile function.
      
@@ -1121,6 +1137,7 @@ protected:
     bool predict_frame( const MatrixFloat &input );
     bool predict_regressifier(const VectorFloat &inputVector);
     bool predict_clusterer(const VectorFloat &inputVector);
+    bool init();
     void deleteAllPreProcessingModules();
     void deleteAllFeatureExtractionModules();
     void deleteClassifier();
