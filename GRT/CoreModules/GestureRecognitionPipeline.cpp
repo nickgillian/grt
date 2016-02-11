@@ -49,7 +49,7 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionP
 GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureRecognitionPipeline &rhs){
 	
 	if( this != &rhs ){
-        this->clearAll();
+        this->clear();
 		
         //Copy the pipeline variables
 		this->initialized = rhs.initialized;
@@ -2092,6 +2092,45 @@ bool GestureRecognitionPipeline::clear(){
 }
 
 bool GestureRecognitionPipeline::clearModel(){
+    
+    //Clear any preprocessing module
+    for(UINT i=0; i<getNumPreProcessingModules(); i++){
+        preProcessingModules[i]->clear();
+    }
+    
+    //Clear any feature extraction module
+    for(UINT i=0; i<getNumFeatureExtractionModules(); i++){
+        featureExtractionModules[i]->clear();
+    }
+    
+    //Clear any ML model
+    switch( pipelineMode ){
+        case PIPELINE_MODE_NOT_SET:
+            break;
+        case CLASSIFICATION_MODE:
+            if( getIsClassifierSet() ){
+                classifier->clear();
+            }
+            break;
+        case REGRESSION_MODE:
+            if( getIsRegressifierSet() ){
+                regressifier->clear();
+            }
+            break;
+        case CLUSTER_MODE:
+            if( getIsClustererSet() ){
+                clusterer->clear();
+            }
+            break;
+        default:
+            break;
+    }
+    
+    //Clear any post processing modules
+    for(UINT i=0; i<getNumPostProcessingModules(); i++){
+        postProcessingModules[i]->clear();
+    }
+
     return true;
 }
     
@@ -2241,7 +2280,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const std::string &filenam
     std::fstream file;
 
 	//Clear any previous setup
-	clearAll();
+	clear();
     
     file.open(filename.c_str(), std::iostream::in );
     
