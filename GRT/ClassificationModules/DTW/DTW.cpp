@@ -410,7 +410,16 @@ bool DTW::predict_(MatrixDouble &inputTimeSeries){
 	for(UINT k=0; k<numTemplates; k++){
 		//Perform DTW
 		classDistances[k] = computeDistance(templatesBuffer[k].timeSeries,*timeSeriesPtr,distanceMatrices[k],warpPaths[k]);
-        classLikelihoods[k] = 1.0 / classDistances[k];
+        
+		if(classDistances[k] > 1e-9)
+		{
+			classLikelihoods[k] = 1.0 / classDistances[k];
+		}
+		else
+		{
+			classLikelihoods[k] = 1e9;
+		}
+
         sum += classLikelihoods[k];
 	}
 
