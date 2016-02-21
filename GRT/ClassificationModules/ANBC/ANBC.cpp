@@ -326,17 +326,17 @@ bool ANBC::saveModelToFile( std::fstream &file ) const{
             file << "TrainingMu: " << models[k].trainingMu << std::endl;
             file << "TrainingSigma: " << models[k].trainingSigma << std::endl;
             
-            file<<"Mu:\n";
+            file<<"Mu:";
             for(UINT j=0; j<models[k].N; j++){
                 file << "\t" << models[k].mu[j];
             }file << std::endl;
             
-            file<<"Sigma:\n";
+            file<<"Sigma:";
             for(UINT j=0; j<models[k].N; j++){
                 file << "\t" << models[k].sigma[j];
             }file << std::endl;
             
-            file<<"Weights:\n";
+            file<<"Weights:";
             for(UINT j=0; j<models[k].N; j++){
                 file << "\t" << models[k].weights[j];
             }file << std::endl;

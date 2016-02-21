@@ -50,10 +50,6 @@ bool ANBC_Model::train( UINT classLabel, const MatrixFloat &trainingData, const 
         }
 
 		mu[j] /= Float(M);
-        
-        if( mu[j] == 0 ){
-            return false;
-        }
 	}
 
 	//Calculate the sample standard deviation
@@ -63,11 +59,10 @@ bool ANBC_Model::train( UINT classLabel, const MatrixFloat &trainingData, const 
 		for(UINT i=0; i<M; i++){
 			sigma[j] += grt_sqr( trainingData[i][j]-mu[j] );
         }
-        sigma[j] += 0.01; //Add a small amount to the standard deviation to ensure it is not zero
         sigma[j] = grt_sqrt( sigma[j]/Float(M-1) );
         
         if( sigma[j] == 0 ){
-            return false;
+        	sigma[j] = 0.1; //Set the sigma to a small value so sigma is not zero!
         }
 	}
 
