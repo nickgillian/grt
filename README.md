@@ -54,7 +54,13 @@ The toolkit's source code is structured as following:
 * **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random and Matrix.
 
 ##GRT Floating Precision
-The GRT defaults to double precision floating point values.  This can easily be changed to single precision accuracy if needed by modifing the main GRT *Float* typedef value, defined in GRT/Util/GRTTypedefs.h header.
+The GRT defaults to double precision floating point values.  The precision of the toolkit is defined by the following **Float** typedef:
+
+```C++
+typedef double Float;
+```
+
+This can easily be changed to single precision accuracy if needed by modifing the main GRT **Float** typedef value, defined in GRT/Util/GRTTypedefs.h header.
 
 ##VectorFloat and MatrixFloat Data Structures
 The GRT uses two main data structures throughout the toolkit: *Vector* and *Matrix*.  These are templates and can therefore generalize to any C++ class.  The main things to know about these data types are:
