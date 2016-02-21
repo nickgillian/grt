@@ -57,7 +57,7 @@ The toolkit's source code is structured as following:
 The GRT defaults to double precision floating point values.  The precision of the toolkit is defined by the following **Float** typedef:
 
 ```C++
-typedef double Float;
+typedef double Float; ///<This typedef is used to set floating-point precision throughout the GRT
 ```
 
 This can easily be changed to single precision accuracy if needed by modifing the main GRT **Float** typedef value, defined in GRT/Util/GRTTypedefs.h header.
