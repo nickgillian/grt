@@ -2,7 +2,7 @@
 
 This directory contains a number of datasets that can be used to test and explore the GRT.
 
-## Accelerometer Orientation
+## Accelerometer 5-Class Orientation
 
 - **Info**: This file contains a recording of 5 tilt gestures captured from the accelerometer sensor of a WiiMote.  Each of the 5 gestures consist of a different tilt position.
 
