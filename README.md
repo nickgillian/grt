@@ -149,23 +149,28 @@ int main (int argc, const char * argv[])
     //Print some stats about the testing
     cout << "Test Accuracy: " << pipeline.getTestAccuracy() << endl;
    
+    //Get the vector of class labels from the pipeline
     Vector< UINT > classLabels = pipeline.getClassLabels();
 
+    //Print out the precision
     cout << "Precision: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
         cout << "\t" << pipeline.getTestPrecision( classLabels[k] );
     }cout << endl;
 
+    //Print out the recall
     cout << "Recall: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
          cout << "\t" << pipeline.getTestRecall( classLabels[k] );
     }cout << endl;
 
+    //Print out the f-measure
     cout << "FMeasure: ";
     for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
         cout << "\t" << pipeline.getTestFMeasure( classLabels[k] );
     }cout << endl;
 
+    //Print out the confusion matrix
     MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
     cout << "ConfusionMatrix: \n";
     for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
