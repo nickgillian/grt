@@ -29,12 +29,14 @@ int main (int argc, const char * argv[])
     MatrixFloat matrix;
     
     //Resize the matrix
-    matrix.resize( 100, 2 );
+    const UINT numRows = 100;
+    const UINT numCols = 2;
+    matrix.resize( numRows, numCols );
     
     //Set all the values in the matrix to zero
     matrix.setAllValues( 0 );
     
-    //Loop over the data and set the values to random values
+    //Loop over the data and set the values to a basic incrementing value
     UINT counter = 0;
     for(UINT i=0; i<matrix.getNumRows(); i++){
         for(UINT j=0; j<matrix.getNumCols(); j++){
@@ -43,7 +45,7 @@ int main (int argc, const char * argv[])
     }
     
     //Add a new row at the very end of the matrix
-    VectorFloat newRow(2);
+    VectorFloat newRow( numCols );
     newRow[0] = 1000;
     newRow[1] = 2000;
     matrix.push_back( newRow );
