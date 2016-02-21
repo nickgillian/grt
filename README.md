@@ -1,7 +1,5 @@
 # Gesture Recognition Toolkit (GRT)
 
-NOTE: This dev branch contains a new version of the GRT with some major changes.
-
 The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, C++ machine learning library designed for real-time gesture recognition.
 
 Build Status:
@@ -55,6 +53,16 @@ The toolkit's source code is structured as following:
 * **RegressionModules:** Contains all the GRT regression modules, such as MLP Neural Networks, Linear Regression, and Logistic Regression.
 * **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random and Matrix.
 
+##GRT Floating Precision
+The GRT defaults to double precision floating point values.  This can easily be changed to single precision accuracy if needed by modifing the main GRT *Float* typedef value, defined in GRT/Util/GRTTypedefs.h header.
+
+##VectorFloat and MatrixFloat Data Structures
+The GRT uses two main data structures throughout the toolkit: *Vector* and *Matrix*.  These are templates and can therefore generalize to any C++ class.  The main things to know about these data types are:
+
+- **Vector:** this inherits from the [STL vector class](http://www.cplusplus.com/reference/vector/vector/)
+- **VectorFloat:** this provides the main data structure for storing floating point vector data. The precision of VectorFloat will automatically match that of GRT Float.
+- **MatrixFloat:** this provides the main data structure for storing floating point matrix data. The precision of MatrixFloat will automatically match that of GRT Float.
+
 ##Getting Started Example
 This example demonstrates a few key components of the GRT, such as:
 * how to generate and save a basic labeled dataset
@@ -100,7 +108,7 @@ int main (int argc, const char * argv[])
     //Partition the training data into a training dataset and a test dataset. 80 means that 80%
     //of the data will be used for the training data and 20% will be returned as the test dataset
     cout << "Splitting data into training/test split..." << endl;
-    ClassificationData testData = trainingData.partition(80);
+    ClassificationData testData = trainingData.partition( 80 );
 
     //Create a new Gesture Recognition Pipeline using an Adaptive Naive Bayes Classifier
     GestureRecognitionPipeline pipeline;
