@@ -66,6 +66,27 @@ This can easily be changed to single precision accuracy if needed by modifing th
 The GRT uses two main data structures throughout the toolkit: *Vector* and *Matrix*.  These are templates and can therefore generalize to any C++ class.  The main things to know about these data types are:
 
 - **Vector:** this inherits from the [STL vector class](http://www.cplusplus.com/reference/vector/vector/)
+```C++
+//Create an integer vector with a size of 3 elements
+Vector< int > vec1(3);
+
+//Create a string vector with a size of 2 elements
+Vector< string > vec2(2);
+
+//Create a Foo vector with a size of 5 elements
+Vector< Foo > vec3(5);
+```
+- **Matrix:** this provides the base class for storing two dimensional arrays:
+```C++
+//Create an integer matrix with a size of 3x2
+Matrix< int > mat1(3,2);
+
+//Create a string matrix with a size of 2x2
+Matrix< string > mat2(2,2);
+
+//Create a Foo matrix with a size of 5x3
+Matrix< Foo > mat3(5,3);
+```
 - **VectorFloat:** this provides the main data structure for storing floating point vector data. The precision of VectorFloat will automatically match that of GRT Float.
 ```C++
 //Create a new vector with 10 elements
