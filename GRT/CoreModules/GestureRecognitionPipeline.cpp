@@ -2599,7 +2599,7 @@ bool GestureRecognitionPipeline::preProcessData(VectorFloat inputVector,bool com
             }
             
             if( !featureExtractionModules[ moduleIndex ]->computeFeatures( inputVector ) ){
-                errorLog << "FeatureExtraction(VectorFloat inputVector) - Failed To Compute Features from Input Vector. FeatureExtraction moduleIndex: " << moduleIndex << endl;
+                errorLog << "FeatureExtraction(VectorFloat inputVector) - Failed To Compute Features from Input Vector. FeatureExtraction moduleIndex: " << moduleIndex << std::endl;
                 return false;
             }
             inputVector = featureExtractionModules[ moduleIndex ]->getFeatureVector();
