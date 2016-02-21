@@ -13,7 +13,7 @@ Key things to know about the GRT:
 * Both the C++ API and GUI are designed to work with real-time sensor data, but they can also be used for more conventional offline machine-learning tasks 
 * The input to the GRT can be any *N*-dimensional floating-point vector - this means you can use the GRT with Cameras, Kinect, Leap Motion, accelerometers, or any other custom sensor you might have built
 * The toolkit defines a generic [Float](#grt-floating-point-precision) type, this defaults to double precision float, but can easily be changed to single precision via the main GRT Typedefs header
-* The precision of the GRT VectorFloat and MatrixFloat classes is automatically updated based on the main Float precision
+* The precision of the GRT [VectorFloat](#vectorfloat-and-matrixfloat-data-structures) and [MatrixFloat](#vectorfloat-and-matrixfloat-data-structures) classes is automatically updated based on the main Float precision
 * The toolkit reserves the class label value of zero as a special **null gesture** class label for automatic gesture spotting, so if you want to use gesture spotting avoid labelling any of your gestures with the class label of zero
 * Training data and models are saved as custom **.grt** files.  These consist of a simple header followed by the main dataset.  In addition to the grt files, you can also import/export data via CSV files by using the *.csv* file extension when saving/loading files
 * Almost all the GRT classes support the following functions: 
