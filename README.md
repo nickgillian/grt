@@ -228,7 +228,7 @@ for(UINT i=0; i<vector.getSize(); i++){
 ```
 - **MatrixFloat:** this provides the main data structure for storing floating point matrix data. The precision of MatrixFloat will automatically match that of GRT Float.
 ```C++
-//Create an [5x2]
+//Create a [5x2] floating point matrix
 MatrixFloat matrix(5,2);
 
 //Loop over the data and set the values to a basic incrementing value
