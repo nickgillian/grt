@@ -2,6 +2,9 @@
 
 This file contains some notes about significant changes to the GRT.
 
+## 20th February 2015\6
+- **moved to semantic versioning, set version to 0.0.1**
+
 ## 19th Novemeber 2015
 - **moved swig files from GRT directory to jni directory**: The .i files were causing some issues for non-swig users, so moving them to the JNI directory to clean things up, updated
 .i file paths accordingly.
