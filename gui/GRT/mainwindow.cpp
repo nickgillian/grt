@@ -3029,14 +3029,14 @@ void MainWindow::updateTimeseriesClassifierView(const int viewIndex){
             core.setClassifier( dtw );
             break;
         case TIMESERIES_CLASSIFIER_HMM_DISCRETE:
-            hmm.setHMMType( GRT::HMM_DISCRETE );
+            hmm.setHMMType( HMM_DISCRETE );
             hmm.enableScaling( ui->pipelineTool_timeseriesClassification_enableScaling->isChecked() );
             hmm.enableNullRejection( ui->pipelineTool_timeseriesClassification_enableNullRejection->isChecked() );
             hmm.setNullRejectionCoeff( ui->pipelineTool_timeseriesClassification_nullRejectionCoeff->value() );
             core.setClassifier( hmm );
         break;
         case TIMESERIES_CLASSIFIER_HMM_CONTINUOUS:
-            hmm.setHMMType( GRT::HMM_CONTINUOUS );
+            hmm.setHMMType( HMM_CONTINUOUS );
             hmm.enableScaling( ui->pipelineTool_timeseriesClassification_enableScaling->isChecked() );
             hmm.enableNullRejection( ui->pipelineTool_timeseriesClassification_enableNullRejection->isChecked() );
             hmm.setNullRejectionCoeff( ui->pipelineTool_timeseriesClassification_nullRejectionCoeff->value() );

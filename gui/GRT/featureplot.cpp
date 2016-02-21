@@ -18,7 +18,7 @@ FeaturePlot::~FeaturePlot()
     delete ui;
 }
 
-bool FeaturePlot::init(const unsigned int axisIndexX,const unsigned int axisIndexY,const GRT::ClassificationData &data,const vector< Qt::GlobalColor > &classColors){
+bool FeaturePlot::init(const unsigned int axisIndexX,const unsigned int axisIndexY,const GRT::ClassificationData &data,const GRT::Vector< Qt::GlobalColor > &classColors){
 
     this->initialized = true;
     this->axisIndexX = axisIndexX;
@@ -43,10 +43,10 @@ bool FeaturePlot::plot(){
     const unsigned int M = data.getNumSamples();
     const unsigned int K = data.getNumClasses();
     const unsigned int N = data.getNumDimensions();
-    vector< GRT::MinMax > ranges = data.getRanges();
-    vector< unsigned int > classLabels = data.getClassLabels();
-    vector< GRT::ClassTracker > classTracker = data.getClassTracker();
-    double minRange = numeric_limits<double>::max();
+    GRT::Vector< GRT::MinMax > ranges = data.getRanges();
+    GRT::Vector< unsigned int > classLabels = data.getClassLabels();
+    GRT::Vector< GRT::ClassTracker > classTracker = data.getClassTracker();
+    double minRange = GRT::grt_numeric_limits<double>::max();
     double maxRange = -minRange;
 
     //Add a new graph for each class
@@ -84,15 +84,9 @@ bool FeaturePlot::plot(){
         }
     }
 
-    cout << "min range: " << minRange << endl;
-    cout << "max range: " << maxRange << endl;
-
     //Add 20% to the min and max range
     minRange += minRange * 0.2;
     maxRange += maxRange * 0.2;
-
-    cout << "min range: " << minRange << endl;
-    cout << "max range: " << maxRange << endl;
 
     plot->xAxis->setVisible( true );
     plot->xAxis->setTickLabels( true );

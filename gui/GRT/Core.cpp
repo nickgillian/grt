@@ -1405,8 +1405,8 @@ bool Core::processNewData(){
     GRT::VectorDouble clusterLikelihoods;
     GRT::VectorDouble clusterDistances;
     GRT::VectorDouble regressionData;
-    GRT::vector<unsigned int> classLabels;
-    GRT::vector<unsigned int> clusterLabels;
+    GRT::Vector<unsigned int> classLabels;
+    GRT::Vector<unsigned int> clusterLabels;
     GRT::ClassificationSample newSample;
     GRT::RegressionSample newRegressionSample;
     GRT::MatrixDouble newTimeseriesSample;

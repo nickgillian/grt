@@ -1112,11 +1112,12 @@ public:
     bool removeContextModule(const UINT contextLevel,const UINT moduleIndex);
 
     /**
+     @deprecated This function is now deprecated, you should use clear() instead!
 	 Removes everything from the pipeline.
  
 	 @return returns true if all the modules were removed successfully, false otherwise
 	 */
-	bool clearAll();
+    GRT_DEPRECATED_MSG( "use clear() instead.", bool clearAll() );
     
     /**
 	 Resets all the test results to zero.

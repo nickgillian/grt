@@ -17,7 +17,7 @@ public:
     explicit FeaturePlot(QWidget *parent = 0);
     ~FeaturePlot();
 
-    bool init(const unsigned int axisIndexX,const unsigned int axisIndexY,const GRT::ClassificationData &data,const vector< Qt::GlobalColor > &classColors);
+    bool init(const unsigned int axisIndexX,const unsigned int axisIndexY,const GRT::ClassificationData &data,const GRT::Vector< Qt::GlobalColor > &classColors);
     bool plot();
 
     void resizeEvent (QResizeEvent *event);
@@ -31,7 +31,7 @@ private:
     unsigned int axisIndexX;
     unsigned int axisIndexY;
     GRT::ClassificationData data;
-    vector< Qt::GlobalColor > classColors;
+    GRT::Vector< Qt::GlobalColor > classColors;
 
 };
 

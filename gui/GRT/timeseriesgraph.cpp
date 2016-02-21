@@ -33,7 +33,7 @@ TimeseriesGraph::TimeseriesGraph(QWidget *parent) :
     colors.push_back( Qt::darkYellow );
     colors.push_back( Qt::darkCyan );
     colors.push_back( Qt::darkGray );
-    const double bigNumber = numeric_limits<double>::max();
+    const double bigNumber = grt_numeric_limits<double>::max();
     ui->yMin->setDecimals( 4 );
     ui->yMax->setDecimals( 4 );
     ui->yMin->setRange( - bigNumber, bigNumber );

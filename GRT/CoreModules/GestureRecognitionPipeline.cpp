@@ -2075,6 +2075,8 @@ bool GestureRecognitionPipeline::reset(){
     return true;
 }
 
+bool GestureRecognitionPipeline::clearAll(){ return clear(); }
+
 bool GestureRecognitionPipeline::clear(){
 
     //Clear the entire pipeline

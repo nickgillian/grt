@@ -38,8 +38,8 @@ private:
     double minRange;
     double maxRange;
     QVector<double> x;
-    vector< QVector<double> > y;
-    vector< Qt::GlobalColor > colors;
+    GRT::Vector< QVector<double> > y;
+    GRT::Vector< Qt::GlobalColor > colors;
     static double maximumGraphRefreshFramerate;
 };
 
