@@ -67,8 +67,14 @@ The GRT uses two main data structures throughout the toolkit: *Vector* and *Matr
 
 - **Vector:** this inherits from the [STL vector class](http://www.cplusplus.com/reference/vector/vector/)
 - **VectorFloat:** this provides the main data structure for storing floating point vector data. The precision of VectorFloat will automatically match that of GRT Float.
+```C++
+//Create a new vector with 10 elements
+VectorFloat vector( 10 );
+for(UINT i=0; i<vector.getSize(); i++){ 
+    vector[i] = i*1.0; 
+}
+```
 - **MatrixFloat:** this provides the main data structure for storing floating point matrix data. The precision of MatrixFloat will automatically match that of GRT Float.
-
 ```C++
 //Create an [5x2]
 MatrixFloat matrix(5,2);
