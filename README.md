@@ -53,7 +53,7 @@ The toolkit's source code is structured as following:
 * **RegressionModules:** Contains all the GRT regression modules, such as MLP Neural Networks, Linear Regression, and Logistic Regression.
 * **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random and Matrix.
 
-##GRT Floating Precision
+##GRT Floating Point Precision
 The GRT defaults to double precision floating point values.  The precision of the toolkit is defined by the following **Float** typedef:
 
 ```C++
