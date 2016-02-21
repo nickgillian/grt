@@ -2,6 +2,14 @@
 
 This file contains some notes about significant changes to the GRT.
 
+# Version 0.1.0
+
+## 20th February 2016
+- **updated version to 0.1.0**, merged dev to master
+- **added unit tests**: unit tests can be run via the: *make test* command
+
+# Version 0.0.1
+
 ## 20th February 2016
 - **moved to semantic versioning, set version to 0.0.1**
 

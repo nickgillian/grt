@@ -6,5 +6,6 @@ libgrt.a
 moc*
 build/examples/*.txt
 build/examples/*.csv
+build/examples/*.grt
 obj/
 libs/

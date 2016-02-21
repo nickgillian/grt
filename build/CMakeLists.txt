@@ -6,7 +6,7 @@ project(GRT C CXX)
 set(GRT_LIB_NAME grt)
 
 #set the main options
-option(BUILD_TESTS “build-unit-tests” OFF)
+option(BUILD_TESTS “build-unit-tests” ON)
 option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
@@ -222,7 +222,9 @@ endif()
 
 # GRT Unit Tests
 if( BUILD_TESTS )
+    ENABLE_TESTING()
 
+    #Add a command that will automatically build the unit testing tools for us
     add_custom_command(TARGET ${GRT_LIB_NAME}
                                 PRE_BUILD
                                 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/../build_gtest.sh
@@ -230,6 +232,7 @@ if( BUILD_TESTS )
                                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
             )
 
+    #Add the unit tests
     message(STATUS "Adding unit tests...")
     file(GLOB_RECURSE GRT_UNIT_TESTS "${GRT_UNIT_TEST_DIR}/*.cpp")
     foreach(unit_test ${GRT_UNIT_TESTS})
@@ -248,12 +251,10 @@ if( BUILD_TESTS )
         #Link against the main GRT library 
         target_link_libraries(${unit_test_name} ${GRT_LIB_NAME} ${GTEST_LIB_DIR}/libgmock.a)
 
-        add_custom_command(TARGET ${unit_test_name}
-                            POST_BUILD
-                            COMMAND ${unit_test_name}
-                            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                            COMMENT "Running ${unit_test_name}" VERBATIM
-            )
+        #Add the test
+        add_test( ${unit_test_name} ${unit_test_name} )
+        
+        #add_custom_command(TARGET ${unit_test_name} POST_BUILD COMMAND ${unit_test_name} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Running ${unit_test_name}" VERBATIM)
     endforeach()
 endif()
 
