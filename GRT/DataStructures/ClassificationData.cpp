@@ -950,7 +950,7 @@ ClassificationData ClassificationData::getTrainingFoldData(const UINT foldIndex)
     if( foldIndex >= kFoldValue ) return trainingData;
 
     //Add the class labels to make sure they all exist
-    for(UINT k=0; k<getNumSamples(); k++){
+    for(UINT k=0; k<getNumClasses(); k++){
         trainingData.addClass( classTracker[k].classLabel, classTracker[k].className );
     }
 
@@ -983,7 +983,7 @@ ClassificationData ClassificationData::getTestFoldData(const UINT foldIndex) con
     if( foldIndex >= kFoldValue ) return testData;
 
     //Add the class labels to make sure they all exist
-    for(UINT k=0; k<getNumSamples(); k++){
+    for(UINT k=0; k<getNumClasses(); k++){
         testData.addClass( classTracker[k].classLabel, classTracker[k].className );
     }
     
@@ -1344,7 +1344,7 @@ MatrixFloat ClassificationData::getClassMean() const{
 	
 	for(UINT k=0; k<getNumClasses(); k++){
 		for(UINT j=0; j<numDimensions; j++){
-			mean[k][j] = counter[j] > 0 ? mean[k][j]/counter[j] : 0;
+			mean[k][j] = counter[k] > 0 ? mean[k][j]/counter[k] : 0;
 		}
 	}
 	
