@@ -75,6 +75,54 @@ public:
      Equals Constructor. Performs a depp copy of the data from the rhs pipeline into this pipeline.
 	*/
 	GestureRecognitionPipeline& operator=(const GestureRecognitionPipeline &rhs);
+
+    /**
+     Adds the preprocessing module to the pipeline, this is the same as calling addPreProcessingModule( module )
+
+     @param module: the preprocessing module you want to add
+     @return returns a reference to the updated pipeline
+    */
+    GestureRecognitionPipeline& operator << (const PreProcessing &module);
+
+    /**
+     Adds the feature extraction module to the pipeline, this is the same as calling addFeatureExtractionModule( module )
+
+     @param module: the feature extraction module you want to add
+     @return returns a reference to the updated pipeline
+    */
+    GestureRecognitionPipeline& operator << (const FeatureExtraction &module);
+
+    /**
+     Adds the classifier to the pipeline, this is the same as calling setClassifier( module )
+
+     @param module: the classifier you want to add
+     @return returns a reference to the updated pipeline
+    */
+    GestureRecognitionPipeline& operator << (const Classifier &module);
+
+    /**
+     Adds the regressifier to the pipeline, this is the same as calling setRegressifier( module )
+
+     @param module: the regressifier you want to add
+     @return returns a reference to the updated pipeline
+    */
+    GestureRecognitionPipeline& operator << (const Regressifier &module);
+
+    /**
+     Adds the clusterer to the pipeline, this is the same as calling setClusterer( module )
+
+     @param module: the clusterer you want to add
+     @return returns a reference to the updated pipeline
+    */
+    GestureRecognitionPipeline& operator << (const Clusterer &module);
+
+    /**
+     Adds the postprocessing module to the pipeline, this is the same as calling addPostProcessingModule( module )
+
+     @param module: the postprocessing module you want to add
+     @return returns a reference to the updated pipeline
+    */
+    GestureRecognitionPipeline& operator << (const PostProcessing &module);
     
     /**
      This is the main training interface for training a Classifier with ClassificationData.  This function will pass the trainingData through
