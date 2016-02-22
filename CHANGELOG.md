@@ -4,6 +4,9 @@ This file contains some notes about significant changes to the GRT.
 
 # Version 0.1.0
 
+## 21th February 2016
+- **added new << operator to GestureRecognitionPipeline**: modules can now be added via: pipeline << ANBC();
+
 ## 20th February 2016
 - **updated version to 0.1.0**, merged dev to master
 - **added unit tests**: unit tests can be run via the: *make test* command

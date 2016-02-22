@@ -100,9 +100,11 @@ int main (int argc, const char * argv[])
     cout << "Splitting data into training/test split..." << endl;
     ClassificationData testData = trainingData.partition( 80 );
 
-    //Create a new Gesture Recognition Pipeline using an Adaptive Naive Bayes Classifier
+    //Create a new Gesture Recognition Pipeline
     GestureRecognitionPipeline pipeline;
-    pipeline.setClassifier( ANBC() );
+
+    //Add a Naive Bayes classifier to the pipeline
+    pipeline << ANBC();
 
     //Train the pipeline using the training data
     cout << "Training model..." << endl;
