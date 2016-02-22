@@ -19,7 +19,6 @@
  */
 
  /*
-
  You should run this example with one argument pointing to the data you want to load. A good dataset to run this example is acc-orientation.grt, which can be found in the GRT data folder.
  */
 

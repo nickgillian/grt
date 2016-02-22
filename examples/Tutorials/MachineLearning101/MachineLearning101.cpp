@@ -37,6 +37,12 @@ using namespace std;
 
 int main (int argc, const char * argv[])
 {
+    //Parse the data filename from the argument list, you should pass in the data path to the iris data set in the GRT data folder
+    if( argc != 2 ){
+        cout << "Error: failed to parse data filename from command line. You should run this example with one argument pointing to the data filename!\n";
+        return EXIT_FAILURE;
+    }
+    const string filename = argv[1];
 
     //We are going to use the Iris dataset, you can find more about the orginal dataset at: http://en.wikipedia.org/wiki/Iris_flower_data_set
     
@@ -44,7 +50,7 @@ int main (int argc, const char * argv[])
     ClassificationData trainingData;
     
     //Load the training dataset from a file, the file should be in the same directory as this program
-    if( !trainingData.load("IrisData.grt") ){
+    if( !trainingData.load( filename ) ){
         cout << "Failed to load Iris data from file!\n";
         return EXIT_FAILURE;
     }
@@ -62,7 +68,7 @@ int main (int argc, const char * argv[])
     GestureRecognitionPipeline pipeline;
     
     //Add a KNN classification algorithm as the main classifier with a K value of 10
-    pipeline.setClassifier( KNN(10) );
+    pipeline << KNN(10);
     
     //Train the KNN algorithm using the training dataset
     if( !pipeline.train( trainingData ) ){
