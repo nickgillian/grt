@@ -9,7 +9,7 @@ Build Status:
   * ![Dev Build Status](https://travis-ci.org/nickgillian/grt.svg?branch=dev)
 
 Key things to know about the GRT:
-* The toolkit consists of two parts: a comprehensive **C++ API** and a front-end **graphical user interface (GUI)**. You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded [here](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
+* The toolkit consists of two parts: a comprehensive [C++ API](http://nickgillian.com/grt/api/0.1.0) and a front-end [graphical user interface (GUI)](http://www.nickgillian.com/wiki/pmwiki.php/GRT/GUI). You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded [here](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * Both the C++ API and GUI are designed to work with real-time sensor data, but they can also be used for more conventional offline machine-learning tasks 
 * The input to the GRT can be any *N*-dimensional floating-point vector - this means you can use the GRT with Cameras, Kinect, Leap Motion, accelerometers, or any other custom sensor you might have built
 * The toolkit defines a generic [Float](#grt-floating-point-precision) type, this defaults to double precision float, but can easily be changed to single precision via the main GRT Typedefs header
@@ -100,9 +100,11 @@ int main (int argc, const char * argv[])
     cout << "Splitting data into training/test split..." << endl;
     ClassificationData testData = trainingData.partition( 80 );
 
-    //Create a new Gesture Recognition Pipeline using an Adaptive Naive Bayes Classifier
+    //Create a new Gesture Recognition Pipeline
     GestureRecognitionPipeline pipeline;
-    pipeline.setClassifier( ANBC() );
+
+    //Add a Naive Bayes classifier to the pipeline
+    pipeline << ANBC();
 
     //Train the pipeline using the training data
     cout << "Training model..." << endl;
@@ -228,7 +230,7 @@ for(UINT i=0; i<vector.getSize(); i++){
 ```
 - **MatrixFloat:** this provides the main data structure for storing floating point matrix data. The precision of MatrixFloat will automatically match that of GRT Float.
 ```C++
-//Create an [5x2]
+//Create a [5x2] floating point matrix
 MatrixFloat matrix(5,2);
 
 //Loop over the data and set the values to a basic incrementing value

@@ -122,6 +122,36 @@ GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureR
 	return *this;
 }
 
+GestureRecognitionPipeline& GestureRecognitionPipeline::operator << (const PreProcessing &module) {
+    this->addPreProcessingModule( module );
+    return *this;
+}
+
+GestureRecognitionPipeline& GestureRecognitionPipeline::operator << (const FeatureExtraction &module) {
+    this->addFeatureExtractionModule( module );
+    return *this;
+}
+
+GestureRecognitionPipeline& GestureRecognitionPipeline::operator << (const Classifier &module) {
+    this->setClassifier( module );
+    return *this;
+}
+
+GestureRecognitionPipeline& GestureRecognitionPipeline::operator << (const Regressifier &module) {
+    this->setRegressifier( module );
+    return *this;
+}
+
+GestureRecognitionPipeline& GestureRecognitionPipeline::operator << (const Clusterer &module) {
+    this->setClusterer( module );
+    return *this;
+}
+
+GestureRecognitionPipeline& GestureRecognitionPipeline::operator << (const PostProcessing &module) {
+    this->addPostProcessingModule( module );
+    return *this;
+}
+
 GestureRecognitionPipeline::~GestureRecognitionPipeline(void)
 {
     //Clean up the memory
