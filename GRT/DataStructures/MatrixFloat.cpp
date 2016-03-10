@@ -350,7 +350,7 @@ bool MatrixFloat::add(const MatrixFloat &a,const MatrixFloat &b){
     
     resize( M, N );
     
-    UINT i,j;
+    UINT i;
     
     //Using direct pointers really helps speed up the computation time
     Float *pa = a.getData();
@@ -378,7 +378,7 @@ bool MatrixFloat::subtract(const MatrixFloat &b){
         return false;
     }
     
-    unsigned int i,j;
+    unsigned int i;
     
     //Using direct pointers really helps speed up the computation time
     Float *pb = b.getData();

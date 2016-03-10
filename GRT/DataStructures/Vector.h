@@ -50,14 +50,14 @@ public:
      
      @param size: the size of the vector
     */
-	Vector( const unsigned int size = 0 ):std::vector< T >(size){}
+	Vector( const size_type size = 0 ):std::vector< T >(size){}
 
     /**
     Constructor, sets the size of the vector and sets all elements to value
      
      @param size: the size of the vector
     */
-    Vector( const unsigned int size, const T &value ):std::vector< T >(size, value){}
+    Vector( const size_type size, const T &value ):std::vector< T >(size, value){}
     
     /**
      Copy Constructor, copies the values from the rhs Vector to this Vector instance
@@ -65,7 +65,7 @@ public:
      @param rhs: the Vector from which the values will be copied
     */
 	Vector( const Vector &rhs ){
-        UINT N = rhs.getSize();
+        size_type N = rhs.getSize();
         if( N > 0 ){
             this->resize( N );
             std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -78,7 +78,7 @@ public:
      @param rhs: the base class instance from which the values will be copied
     */
     Vector( const std::vector< T > &rhs ){
-        UINT N = (UINT)rhs.size();
+        size_type N = rhs.size();
         if( N > 0 ){
             this->resize( N );
             std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -98,7 +98,7 @@ public:
     */
 	Vector& operator=(const Vector &rhs){
 		if(this!=&rhs){
-            UINT N = rhs.getSize();
+            size_type N = rhs.getSize();
             if( N > 0 ){
                 this->resize( N );
                 std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -115,7 +115,7 @@ public:
     */
     Vector& operator=(const std::vector< T > &rhs){
         if(this!=&rhs){
-            UINT N = rhs.getSize();
+            size_type N = rhs.getSize();
             if( N > 0 ){
                 this->resize( N );
                 std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -130,7 +130,7 @@ public:
      @param size: the new size of the vector
      @return returns true if the vector was resized correctly, false otherwise
     */
-    virtual bool resize( const unsigned int size ){
+    virtual bool resize( const size_type size ){
         std::vector< T >::resize( size );
         return getSize() == size;
     }
@@ -142,7 +142,7 @@ public:
      @param value: the value that will be copied to all elements in the vector
      @return returns true if the vector was resized correctly, false otherwise
     */
-    virtual bool resize( const unsigned int size, const T& value ){
+    virtual bool resize( const size_type size, const T& value ){
         std::vector< T >::resize( size, value );
         return getSize() == size;
     }
@@ -156,7 +156,7 @@ public:
     virtual bool copy( const Vector<T> &rhs ){
         
         if( this != &rhs ){
-            UINT N = rhs.getSize();
+            size_type N = rhs.getSize();
             if( N > 0 ){
                 this->resize( N );
                 std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -174,12 +174,12 @@ public:
     */
 	bool setAll(const T &value){
 
-        const size_t N = this->size();
+        const size_type N = this->size();
 
 		if( N == 0 ) return false;
 
         T *data = &(*this)[0];
-        for(size_t i=0; i<N; i++)
+        for(size_type i=0; i<N; i++)
             data[i] = value;
 
         return true;
@@ -190,7 +190,7 @@ public:
      
      @return returns the size of the Vector
     */
-	inline unsigned int getSize() const{ return (unsigned int)this->size(); }
+	inline UINT getSize() const{ return static_cast<UINT>(this->size()); }
 
     /**
      Gets a pointer to the first element in the vector

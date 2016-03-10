@@ -58,7 +58,9 @@ public:
                 *lastMessagePtr = "";
             }
             std::cout << val;
-            *lastMessagePtr += val;
+            std::stringstream stream;
+            stream << val;
+            *lastMessagePtr += stream.str();
         }
         return *this;
     }

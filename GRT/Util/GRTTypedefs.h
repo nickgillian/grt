@@ -33,6 +33,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <limits>
 #include <cmath>
 
+#ifdef __GRT_WINDOWS_BUILD__
+
+#define NOMINMAX
+
+#include <windows.h>
+
+#endif
+
+
 #define GRT_BEGIN_NAMESPACE namespace GRT {
 #define GRT_END_NAMESPACE }
 
@@ -107,13 +116,6 @@ T grt_from_str( const std::string &str ){
 
 #define grt_min(a,b) (((a)<(b))?(a):(b))
 #define grt_max(a,b) (((a)>(b))?(a):(b))
-
-#ifndef MIN
-#define	MIN(a,b) (((a)<(b))?(a):(b))
-#endif
-#ifndef MAX
-#define	MAX(a,b) (((a)>(b))?(a):(b))
-#endif
 
 #define GRT_DEFAULT_NULL_CLASS_LABEL 0
 #define GRT_SAFE_CHECKING true

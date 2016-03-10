@@ -70,10 +70,14 @@ int main (int argc, const char * argv[])
     bag.addClassifierToEnsemble( ANBC() );
     
     //Add a MinDist classifier to the BAG ensemble, using two clusters
-    bag.addClassifierToEnsemble( MinDist(2) );
+    MinDist min_dist_two_clusters;
+    min_dist_two_clusters.setNumClusters(2);
+    bag.addClassifierToEnsemble( min_dist_two_clusters );
     
     //Add a MinDist classifier to the BAG ensemble, using five clusters
-    bag.addClassifierToEnsemble( MinDist(5) );
+    MinDist min_dist_five_clusters;
+    min_dist_five_clusters.setNumClusters(5);
+    bag.addClassifierToEnsemble( min_dist_five_clusters );
     
     //Load some training data to train the classifier
     ClassificationData trainingData;
