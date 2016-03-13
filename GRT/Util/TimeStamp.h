@@ -511,7 +511,11 @@ public:
         timeString += grt_to_str< unsigned int >(millisecond);
         timeString += grt_to_str(",");
         timeString += grt_to_str("\"timeInMS\":");
-        timeString += grt_to_str< unsigned int >(getTimeInMilliseconds());
+        timeString += grt_to_str< unsigned int >(
+            static_cast<unsigned int>(
+                getTimeInMilliseconds()
+            )
+        );
         timeString += grt_to_str("}");
         return timeString;
     }
