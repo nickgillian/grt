@@ -225,12 +225,30 @@ if( BUILD_TESTS )
     ENABLE_TESTING()
 
     #Add a command that will automatically build the unit testing tools for us
-    add_custom_command(TARGET ${GRT_LIB_NAME}
-                                PRE_BUILD
-                                COMMAND ${CMAKE_CURRENT_BINARY_DIR}/../build_gtest.sh
-                                COMMENT "Building gtest..."
-                                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
-            )
+    set(BUILD_GTEST
+        ON
+        CACHE
+        BOOL
+        "Builds the googletest subproject"
+    )
+    set(BUILD_GMOCK
+        OFF
+        CACHE
+        BOOL
+        "Builds the googlemock subproject"
+    )
+    set(gtest_force_shared_crt
+        ON
+        CACHE
+        BOOL
+        "Use shared (DLL) run-time lib even when Google Test is built as static lib."
+    )
+
+    add_subdirectory(
+        "${PROJECT_SOURCE_DIR}/../third_party/gtest"
+        "${PROJECT_BINARY_DIR}/third_party/gtest"
+        EXCLUDE_FROM_ALL
+    )
 
     #Add the unit tests
     message(STATUS "Adding unit tests...")
@@ -246,10 +264,9 @@ if( BUILD_TESTS )
 
         #Include the main GRT include directory
         include_directories( "${GRT_SRC_DIR}" )
-        include_directories( "${GTEST_INCLUDE_DIR}" )
 
         #Link against the main GRT library 
-        target_link_libraries(${unit_test_name} ${GRT_LIB_NAME} ${GTEST_LIB_DIR}/libgmock.a)
+        target_link_libraries(${unit_test_name} ${GRT_LIB_NAME} gtest)
 
         #Add the test
         add_test( ${unit_test_name} ${unit_test_name} )

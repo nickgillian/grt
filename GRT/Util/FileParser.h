@@ -134,7 +134,6 @@ protected:
         file.seekg (0, std::ios::end);
         end = file.tellg();
         file.seekg (0, std::ios::beg); //Reset the file pointer to the start of the file so we can read it
-        unsigned long fileSize = end-begin;
         
         Vector< std::string > vec;
         std::string line;

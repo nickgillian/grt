@@ -65,7 +65,7 @@ public:
      @param rhs: the Vector from which the values will be copied
     */
 	Vector( const Vector &rhs ){
-        UINT N = rhs.getSize();
+        unsigned int N = rhs.getSize();
         if( N > 0 ){
             this->resize( N );
             std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -78,7 +78,7 @@ public:
      @param rhs: the base class instance from which the values will be copied
     */
     Vector( const std::vector< T > &rhs ){
-        UINT N = (UINT)rhs.size();
+        unsigned int N = rhs.size();
         if( N > 0 ){
             this->resize( N );
             std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -98,7 +98,7 @@ public:
     */
 	Vector& operator=(const Vector &rhs){
 		if(this!=&rhs){
-            UINT N = rhs.getSize();
+            unsigned int N = rhs.getSize();
             if( N > 0 ){
                 this->resize( N );
                 std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -115,7 +115,7 @@ public:
     */
     Vector& operator=(const std::vector< T > &rhs){
         if(this!=&rhs){
-            UINT N = rhs.getSize();
+            unsigned int N = rhs.getSize();
             if( N > 0 ){
                 this->resize( N );
                 std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -156,7 +156,7 @@ public:
     virtual bool copy( const Vector<T> &rhs ){
         
         if( this != &rhs ){
-            UINT N = rhs.getSize();
+            unsigned int N = rhs.getSize();
             if( N > 0 ){
                 this->resize( N );
                 std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -174,12 +174,12 @@ public:
     */
 	bool setAll(const T &value){
 
-        const size_t N = this->size();
+        const unsigned int N = this->size();
 
 		if( N == 0 ) return false;
 
         T *data = &(*this)[0];
-        for(size_t i=0; i<N; i++)
+        for(unsigned int i=0; i<N; i++)
             data[i] = value;
 
         return true;
@@ -190,7 +190,7 @@ public:
      
      @return returns the size of the Vector
     */
-	inline unsigned int getSize() const{ return (unsigned int)this->size(); }
+	inline UINT getSize() const{ return static_cast<UINT>(this->size()); }
 
     /**
      Gets a pointer to the first element in the vector
