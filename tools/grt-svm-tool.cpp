@@ -70,8 +70,6 @@ int main(int argc, char * argv[])
 
 bool train( CommandLineParser &parser ){
 
-    infoLog << "Training SVM model..." << endl;
-
     string trainDatasetFilename = "";
     string modelFilename = "";
     string defaultFilename = "svm-model.grt";
@@ -109,8 +107,6 @@ bool train( CommandLineParser &parser ){
         return false;
     }
 
-    //C_SVC
-
     //Load some training data to train the classifier
     ClassificationData trainingData;
 
@@ -137,7 +133,7 @@ bool train( CommandLineParser &parser ){
     GestureRecognitionPipeline pipeline;
     pipeline << svm;
 
-    infoLog << "- Training model..." << endl;
+    infoLog << "- Training SVM model..." << endl;
 
     //Train the classifier
     if( !pipeline.train( trainingData ) ){
