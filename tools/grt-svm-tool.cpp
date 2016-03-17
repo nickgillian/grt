@@ -149,6 +149,7 @@ bool train( CommandLineParser &parser ){
     //Save the pipeline
     if( !pipeline.save( modelFilename ) ){
         warningLog << "Failed to save model to file: " << modelFilename << endl;
+        return false;
     } 
 
     return true;
