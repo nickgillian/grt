@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the SVM module with the Classifier base class
 RegisterClassifierModule< SVM > SVM::registerModule("SVM");
 
-SVM::SVM(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue){
+SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue){
     
     //Setup the default SVM parameters
     model = NULL;
@@ -196,7 +196,7 @@ bool SVM::predict_(VectorFloat &inputVector){
     return true;
 }
     
-bool SVM::init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue){
+bool SVM::init(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue){
     
     //Clear any previous models or problems
     clear();
@@ -1053,7 +1053,7 @@ Float SVM::getC() const{
     
 Float SVM::getCrossValidationResult() const{ return crossValidationResult; }
 
-bool SVM::setSVMType(const UINT svmType){
+bool SVM::setSVMType(const SVMType svmType){
     if( validateSVMType(svmType) ){
         param.svm_type = (int)svmType;
         return true;
@@ -1061,7 +1061,7 @@ bool SVM::setSVMType(const UINT svmType){
     return false;
 }
     
-bool SVM::setKernelType(const UINT kernelType){
+bool SVM::setKernelType(const KernelType kernelType){
     if( validateKernelType(kernelType) ){
         param.kernel_type = (int)kernelType;
         return true;
@@ -1118,7 +1118,7 @@ bool SVM::enableCrossValidationTraining(const bool useCrossValidation){
     return true;
 }
     
-bool SVM::validateSVMType(const UINT svmType){
+bool SVM::validateSVMType(const SVMType svmType){
     if( svmType == C_SVC ){
         return true;
     }
@@ -1137,7 +1137,7 @@ bool SVM::validateSVMType(const UINT svmType){
     return false;
 }
     
-bool SVM::validateKernelType(const UINT kernelType){
+bool SVM::validateKernelType(const KernelType kernelType){
     if( kernelType == LINEAR_KERNEL ){
         return true;
     }

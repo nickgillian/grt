@@ -48,6 +48,10 @@ using namespace LIBSVM;
 
 class SVM : public Classifier{
 public:
+
+    enum SVMType{ C_SVC = 0, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };
+    enum KernelType{ LINEAR_KERNEL = 0, POLY_KERNEL, RBF_KERNEL, SIGMOID_KERNEL, PRECOMPUTED_KERNEL };
+
     /**
      Default constructor.
      
@@ -66,7 +70,7 @@ public:
      @param useCrossValidation: sets if the SVM model will be trained using cross validation. The default value is useCrossValidation=false
      @param kFoldValue: sets the number of folds that will be used for cross validation. The default value is kFoldValue=10
      */
-	SVM(UINT kernelType = LINEAR_KERNEL,UINT svmType = C_SVC,bool useScaling = true,bool useNullRejection = false,bool useAutoGamma = true,Float gamma = 0.1,UINT degree = 3,Float coef0 = 0,Float nu = 0.5,Float C = 1,bool useCrossValidation = false,UINT kFoldValue = 10);
+	SVM(KernelType kernelType = LINEAR_KERNEL,SVMType svmType = C_SVC,bool useScaling = true,bool useNullRejection = false,bool useAutoGamma = true,Float gamma = 0.1,UINT degree = 3,Float coef0 = 0,Float nu = 0.5,Float C = 1,bool useCrossValidation = false,UINT kFoldValue = 10);
     
     /**
      Default copy constructor.  Copies the settings from the rhs SVM instance to this instance
@@ -154,7 +158,7 @@ public:
      @param kFoldValue: sets the number of folds that will be used for cross validation
      @return returns true if the SVM was initialized, false otherwise
      */
-    bool init(UINT kernelType,UINT svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue);
+    bool init(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue);
     
     /**
      This initializes the default SVM settings and parameters. Any previous model, settings, or problems will be cleared.
@@ -254,7 +258,7 @@ public:
      @param svmType: the new SVM type, options are C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR 
      @return returns true if the SVM type was set correctly, false otherwise
      */
-    bool setSVMType(const UINT svmType);
+    bool setSVMType(const SVMType svmType);
     
     /**
      Sets the kernel type.
@@ -263,7 +267,7 @@ public:
      @param kernelType: the new kernel, options are LINEAR_KERNEL, POLY_KERNEL, RBF_KERNEL, SIGMOID_KERNEL, PRECOMPUTED_KERNEL 
      @return returns true if the kernel type was set correctly, false otherwise
      */
-    bool setKernelType(const UINT kernelType);
+    bool setKernelType(const KernelType kernelType);
     
     /**
      Sets the SVM gamma parameter.  The user should only try and set this value manually if the useAutoGamma parameter has been set to false.
@@ -344,8 +348,8 @@ public:
 protected:
     void deleteProblemSet();
     bool validateProblemAndParameters();
-    bool validateSVMType(UINT svmType);
-    bool validateKernelType(UINT kernelType);
+    bool validateSVMType(SVMType svmType);
+    bool validateKernelType(KernelType kernelType);
     bool convertClassificationDataToLIBSVMFormat(ClassificationData &trainingData);
 	bool trainSVM();
     
@@ -368,11 +372,6 @@ protected:
     bool useCrossValidation;
     
     static RegisterClassifierModule< SVM > registerModule;
-    
-public:
-    enum SVMTypes{ C_SVC = 0, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };
-    enum SVMKernelTypes{ LINEAR_KERNEL = 0, POLY_KERNEL, RBF_KERNEL, SIGMOID_KERNEL, PRECOMPUTED_KERNEL };
-
 };
     
 GRT_END_NAMESPACE
