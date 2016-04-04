@@ -192,6 +192,7 @@ protected:
     bool loadLegacyModelFromFile_v2( std::fstream &file );
     bool loadLegacyModelFromFile_v3( std::fstream &file );
     
+    bool trainTree( ClassificationData trainingData, const ClassificationData &trainingDataCopy, const ClassificationData &validationData, Vector< UINT > features );
     DecisionTreeNode* buildTree(ClassificationData &trainingData, DecisionTreeNode *parent, Vector< UINT > features, const Vector< UINT > &classLabels, UINT nodeID );
     Float getNodeDistance( const VectorFloat &x, const UINT nodeID );
     Float getNodeDistance( const VectorFloat &x, const VectorFloat &y );

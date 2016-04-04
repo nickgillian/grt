@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="_static/css/bootstrap.min.css" media="screen" />
     <link rel="stylesheet" href="_static/css/bootstrap-responsive.css"/>
     <link rel="stylesheet" href="_static/navbar-static-top.css">
+    <link rel="stylesheet" href="_static/css/prism.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -34,11 +35,11 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Gesture Recognition Toolkit</a>
+          <a class="navbar-brand" href="index.html">Gesture Recognition Toolkit</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
+            <li class="active"><a href="index.html">Home</a></li>
             <li><a href="http://nickgillian.com/grt/api/0.1.0/">Documentation</a></li>
             <li><a href="http://nickgillian.com/wiki">Wiki</a></li>
             <li><a href="http://nickgillian.com/forum">Forum</a></li>
@@ -57,6 +58,44 @@
       <p>The Gesture Recognition Toolkit (GRT) is a cross-platform, open-source, C++ machine learning library designed for real-time gesture recognition.</p>
     </div> <!-- /container -->
 
+    <div class="container">
+      <pre><code class="language-cpp">
+//Setup a custom recognition pipeline
+GestureRecognitionPipeline pipeline;
+
+//Add a low pass filter to the pipeline with a buffer size of 5 samples
+pipeline << MovingAverageFilter( 5 );
+
+//Add a 512-sized fast Fourier transform to the pipeline for some feature extraction
+pipeline << FFT( 512 );
+  
+//Add a custom feature extraction algorithm that will use the output of the FFT as input
+pipeline << MyCustomFeatureAlgorithm();
+
+//Add a Random Forest Classifier
+pipeline << RandomForest();
+
+
+//Load a labeled data set from a CSV file and train a classification model
+ClassificationData trainingData;
+trainingData.load( "TrainingData.csv" );
+
+bool success = pipeline.train( trainingData );
+cout << "Test Accuracy: " << pipeline.getTestAccuracy() << endl;
+
+
+//The following lines would be called each time the user gets a new sample
+VectorFloat sample = getDataFromSenor(); //Custom user function
+
+//Pass the sensor data down the pipeline
+pipeline.predict( sample );
+
+//Get the predicted class label and likelihood
+unsigned int predictedClassLabel = pipeline.getPredictedClassLabel();
+Float maxLikelihood = pipeline.getMaximumLikelihood();
+        </code></pre>
+    </div>
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -65,5 +104,6 @@
     <script src="_static/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="_static/assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="_static/js/prism.js"></script>
   </body>
 </html>

@@ -713,15 +713,15 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
     ClassificationData testSet(numDimensions);
     trainingSet.setAllowNullGestureClass( allowNullGestureClass );
     testSet.setAllowNullGestureClass( allowNullGestureClass );
-    Vector< UINT > indexs( totalNumSamples );
 
 	//Create the random partion indexs
 	Random random;
     UINT randomIndex = 0;
+    UINT K = getNumClasses();
 
     if( useStratifiedSampling ){
         //Break the data into seperate classes
-        Vector< Vector< UINT > > classData( getNumClasses() );
+        Vector< Vector< UINT > > classData( K );
 
         //Add the indexs to their respective classes
         for(UINT i=0; i<totalNumSamples; i++){
@@ -729,22 +729,15 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
         }
 
         //Randomize the order of the indexs in each of the class index buffers
-        for(UINT k=0; k<getNumClasses(); k++){
-            UINT numSamples = classData[k].getSize();
-            for(UINT x=0; x<numSamples; x++){
-                //Pick a random index
-                randomIndex = random.getRandomNumberInt(0,numSamples);
-
-                //Swap the indexs
-                SWAP(classData[k][ x ], classData[k][ randomIndex ]);
-            }
+        for(UINT k=0; k<K; k++){
+            std::random_shuffle(classData[k].begin(), classData[k].end());
         }
         
         //Reserve the memory
         UINT numTrainingSamples = 0;
         UINT numTestSamples = 0;
         
-        for(UINT k=0; k<getNumClasses(); k++){
+        for(UINT k=0; k<K; k++){
             UINT numTrainingExamples = (UINT) floor( Float(classData[k].size()) / 100.0 * Float(trainingSizePercentage) );
             UINT numTestExamples = ((UINT)classData[k].size())-numTrainingExamples;
             numTrainingSamples += numTrainingExamples;
@@ -755,7 +748,7 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
         testSet.reserve( numTestSamples );
 
         //Loop over each class and add the data to the trainingSet and testSet
-        for(UINT k=0; k<getNumClasses(); k++){
+        for(UINT k=0; k<K; k++){
             UINT numTrainingExamples = (UINT) floor( Float(classData[k].getSize()) / 100.0 * Float(trainingSizePercentage) );
 
             //Add the data to the training and test sets
@@ -769,9 +762,10 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
     }else{
 
         const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * Float(trainingSizePercentage) );
+
         //Create the random partion indexs
-        Random random;
         UINT randomIndex = 0;
+        Vector< UINT > indexs( totalNumSamples );
         for(UINT i=0; i<totalNumSamples; i++) indexs[i] = i;
         std::random_shuffle(indexs.begin(), indexs.end());
         
@@ -800,28 +794,31 @@ ClassificationData ClassificationData::partition(const UINT trainingSizePercenta
 	return testSet;
 }
 
-bool ClassificationData::merge(const ClassificationData &labelledData){
+bool ClassificationData::merge(const ClassificationData &otherData){
 
-    if( labelledData.getNumDimensions() != numDimensions ){
-        errorLog << "merge(const ClassificationData &labelledData) - The number of dimensions in the labelledData (" << labelledData.getNumDimensions() << ") does not match the number of dimensions of this dataset (" << numDimensions << ")" << std::endl;
+    if( otherData.getNumDimensions() != numDimensions ){
+        errorLog << "merge(const ClassificationData &labelledData) - The number of dimensions in the labelledData (" << otherData.getNumDimensions() << ") does not match the number of dimensions of this dataset (" << numDimensions << ")" << std::endl;
         return false;
     }
 
     //The dataset has changed so flag that any previous cross validation setup will now not work
     crossValidationSetup = false;
     crossValidationIndexs.clear();
+
+    const UINT M = otherData.getNumSamples();
     
     //Reserve the memory
-    reserve( getNumSamples() + labelledData.getNumSamples() );
+    reserve( getNumSamples() + M );
 
     //Add the data from the labelledData to this instance
-    for(UINT i=0; i<labelledData.getNumSamples(); i++){
-        addSample(labelledData[i].getClassLabel(), labelledData[i].getSample());
+    
+    for(UINT i=0; i<M; i++){
+        addSample(otherData[i].getClassLabel(), otherData[i].getSample());
     }
 
     //Set the class names from the dataset
-    Vector< ClassTracker > classTracker = labelledData.getClassTracker();
-    for(UINT i=0; i<classTracker.size(); i++){
+    Vector< ClassTracker > classTracker = otherData.getClassTracker();
+    for(UINT i=0; i<classTracker.getSize(); i++){
         setClassNameForCorrespondingClassLabel(classTracker[i].className, classTracker[i].classLabel);
     }
 

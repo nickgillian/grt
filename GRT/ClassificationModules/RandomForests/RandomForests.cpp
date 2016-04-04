@@ -241,7 +241,6 @@ bool RandomForests::train_(ClassificationData &trainingData){
             for(UINT i=0; i<validationSetRecall.getSize(); i++){
                 validationSetRecall[i] += recall[i] * forestNorm;
             }
-
         }
         
         //Deep copy the tree into the forest

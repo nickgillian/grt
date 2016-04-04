@@ -36,6 +36,7 @@ DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT m
     this->numSplittingSteps = numSplittingSteps;
     this->useScaling = useScaling;
     this->supportsNullRejection = true;
+    this->numTrainingIterationsToConverge = 20; //Retrain the model 20 times and pick the best one
     Classifier::classType = "DecisionTree";
     classifierType = Classifier::classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -187,7 +188,82 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     for(UINT i=0; i<N; i++){
         features[i] = i;
     }
-    
+
+    numTrainingIterationsToConverge = 20;
+    Classifier::trainingLog << "numTrainingIterationsToConverge " << numTrainingIterationsToConverge << " useValidationSet: " << useValidationSet << std::endl;
+
+    if( useValidationSet ){
+
+        //If we get here, then we are going to train the tree several times and pick the best model
+        GRT::Node *bestTree = NULL;
+        Float bestValidationSetAccuracy = 0;
+        UINT bestTreeIndex = 0;
+        for(UINT i=0; i<numTrainingIterationsToConverge; i++){
+
+            Classifier::trainingLog << "Training tree iteration: " << i+1 << "/" << numTrainingIterationsToConverge << std::endl;
+
+            if( !trainTree( trainingData, trainingDataCopy, validationData, features ) ){
+                Classifier::errorLog << "train_(ClassificationData &trainingData) - Failed to build tree!" << std::endl;
+                //Delete the best tree if it exists
+                if( bestTree != NULL ){
+                    bestTree->clear();
+                    delete bestTree;
+                    bestTree = NULL;
+                }
+                return false;
+            }
+
+            //Keep track of the best tree
+            if( bestTree == NULL ){
+                //Grab the tree pointer
+                bestTree = tree;
+                tree = NULL;
+                bestValidationSetAccuracy = validationSetAccuracy;
+                bestTreeIndex = i;
+            }else{
+                if( validationSetAccuracy > bestValidationSetAccuracy ){
+                    //Grab the tree pointer
+                    bestTree = tree;
+                    tree = NULL;
+                    bestValidationSetAccuracy = validationSetAccuracy;
+                    bestTreeIndex = i;
+                }
+            }
+        }
+
+        //Use the best tree
+        Classifier::trainingLog << "Best tree index: " << bestTreeIndex+1 << " validation set accuracy: " << bestValidationSetAccuracy << std::endl;
+        
+        if( bestTree != tree ){
+            //Delete the tree if it exists
+            if( tree != NULL ){
+                tree->clear();
+                delete tree;
+                tree = NULL;
+            }
+
+            //Swap the pointers
+            tree = bestTree;
+        }
+
+        //If we get this far, then the model was trained successfully
+        return true;
+    }else{
+        //If we get here, then we are going to train the tree once
+        return trainTree( trainingData, trainingDataCopy, validationData, features );
+    }
+
+    return false;
+}
+
+bool DecisionTree::trainTree( ClassificationData trainingData, const ClassificationData &trainingDataCopy, const ClassificationData &validationData, Vector< UINT > features ){
+
+    //Note, this function is only called internally by the decision tree, users should call train_ instead.
+
+    const unsigned int M = trainingData.getNumSamples();
+    const unsigned int N = trainingData.getNumDimensions();
+    const unsigned int K = trainingData.getNumClasses();
+
     //Build the tree
     UINT nodeID = 0;
     tree = buildTree( trainingData, NULL, features, classLabels, nodeID );
@@ -197,7 +273,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         Classifier::errorLog << "train_(ClassificationData &trainingData) - Failed to build tree!" << std::endl;
         return false;
     }
-    
+
     //Flag that the algorithm has been trained
     trained = true;
     
