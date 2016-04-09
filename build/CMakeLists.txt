@@ -133,6 +133,7 @@ file(GLOB GRT_DATA_STRUCTURES
 )
 
 file(GLOB GRT_FEATURE_EXTRACTION_MODULES
+    "${GRT_SRC_DIR}/FeatureExtractionModules/EnvelopeExtractor/*.cpp"
     "${GRT_SRC_DIR}/FeatureExtractionModules/FFT/*.cpp"
     "${GRT_SRC_DIR}/FeatureExtractionModules/KMeansFeatures/*.cpp"
     "${GRT_SRC_DIR}/FeatureExtractionModules/KMeansQuantizer/*.cpp"
