@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="dist/assets/img/GRTLogo.ico">
+    <link rel="icon" href="dist/assets/img/grt.ico">
 
     <title>Gesture Recogniton Toolkit</title>
 
@@ -58,17 +58,40 @@
 
 
       <div style="background: white; font-family: Helvetica">
-        <pre class='brush: cpp'>
-// my first program in C++
-#include <iostream>
-using namespace std;
+        <pre><code>
+//Setup a custom recognition pipeline
+GestureRecognitionPipeline pipeline;
 
-int main ()
-{
-  cout << "Hello World!";
-  return 0;
+//Add a moving average filter pre-processing module
+pipeline << MovingAverageFilter( 5 );
+
+//Add some feature extraction
+pipeline << FFT( 512 );
+pipeline << MyCustomFeatureAlgorithm();
+
+//Add an AdaBoost classifier
+pipeline << Adaboost( DecisionStump() );
+
+//Add a class label filter
+pipeline << ClassLabelTimeoutFilter( 1000 );
+
+//Load a labeled data set from a CSV file and train a classification model
+ClassificationData trainingData;
+
+trainingData.load( "TrainingData.csv" );
+
+//Train a model using the custom pipeline
+bool success = pipeline.train( trainingData );
+
+//The following lines would be called each time the user gets a new sample
+VectorFloat sample = getDataFromSenor(); //Custom user function
+
+if( pipeline.predict( sample ) ){
+  //Get the results
+  unsigned int predictedClassLabel = pipeline.getPredictedClassLabel();
+  Float maxLikelihood = pipeline.getMaximumLikelihood(); 
 }
-        </pre>
+        </code></pre>
 
       </div>
 
@@ -80,10 +103,9 @@ int main ()
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="dist/assets/js/vendor/jquery.min.js"><\/script>')</script>
     <script src="dist/js/bootstrap.min.js"></script>
-    <link href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" rel="stylesheet" type="text/css" />
-    <script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js" type="text/javascript"></script>
-    <script src="http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js" type="text/javascript"></script>
-    <script type="text/javascript">SyntaxHighlighter.all();</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.2.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.2.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="dist/assets/js/ie10-viewport-bug-workaround.js"></script>
   </body>
