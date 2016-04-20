@@ -239,7 +239,7 @@ bool ContinuousHiddenMarkovModel::train_(TimeSeriesClassificationSample &trainin
 
     //The number of states is simply set as the number of samples in the training sample
     timeseriesLength = trainingData.getLength();
-    numStates = (unsigned int)floor(timeseriesLength/downsampleFactor);
+    numStates = (unsigned int)floor((double)(timeseriesLength/downsampleFactor));
     numInputDimensions = trainingData.getNumDimensions();
     classLabel = trainingData.getClassLabel();
     
