@@ -23,6 +23,7 @@
  by Don Cross (http://www.intersrv.com/~dcross/fft.html) and the FFT algorithms from Numerical Recipes.
  */
 
+#define GRT_DLL_EXPORTS
 #include "FastFourierTransform.h"	
 
 GRT_BEGIN_NAMESPACE

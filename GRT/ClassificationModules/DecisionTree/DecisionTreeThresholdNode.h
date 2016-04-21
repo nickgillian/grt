@@ -39,7 +39,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class DecisionTreeThresholdNode : public DecisionTreeNode{
+class GRT_API DecisionTreeThresholdNode : public DecisionTreeNode{
 public:
     /**
      Default Constructor. Sets all the pointers to NULL.

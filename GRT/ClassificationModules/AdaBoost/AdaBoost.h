@@ -54,7 +54,7 @@ GRT_BEGIN_NAMESPACE
     
 //typedef DecisionStump AdaBoostWeakClassifier;
 
-class AdaBoost : public Classifier
+class GRT_API AdaBoost : public Classifier
 {
 public:
     /**

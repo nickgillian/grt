@@ -119,7 +119,11 @@ T grt_from_str( const std::string &str ){
 
 #define GRT_DEFAULT_NULL_CLASS_LABEL 0
 #define GRT_SAFE_CHECKING true
-	
+
+//No need for this on non-Windows platforms, but
+//must have an empty definition.
+#define GRT_API
+
 //Specific defines for Windows
 #ifdef __GRT_WINDOWS_BUILD__
 #define grt_isnan(x) (x != x)
@@ -139,7 +143,20 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif 
-	
+
+//Allow DLL exports.
+#if !defined(GRT_STATIC_LIB) && defined(_MSC_VER)
+	#undef GRT_API
+	#ifdef GRT_DLL_EXPORTS
+		#define GRT_API __declspec(dllexport)
+	#else // GRT_DLL_EXPORTS
+		#define GRT_API __declspec(dllimport)
+	#endif // GRT_DLL_EXPORTS
+
+	//disable warnings about a "dllexport" class using a regular class
+	# pragma warning(disable: 4251)
+#endif // !GRT_STATIC_LIB && MSC_VER
+
 #endif
 	
 //Specific defines for OSX

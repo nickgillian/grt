@@ -37,7 +37,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class RegressionTree : public Tree, public Regressifier
+class GRT_API RegressionTree : public Tree, public Regressifier
 {
 public:
     /**

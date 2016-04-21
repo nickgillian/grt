@@ -31,7 +31,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class FastFourierTransform : public GRTBase{
+class GRT_API FastFourierTransform : public GRTBase{
 	
 public:
 		

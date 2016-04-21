@@ -48,7 +48,7 @@ GRT_BEGIN_NAMESPACE
     
 #define BIG_DISTANCE 99e+99
 
-class KNN : public Classifier
+class GRT_API KNN : public Classifier
 {
 public:
     /**

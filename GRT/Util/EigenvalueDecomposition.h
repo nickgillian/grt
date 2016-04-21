@@ -27,7 +27,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-class EigenvalueDecomposition {
+class GRT_API EigenvalueDecomposition {
 public:
     EigenvalueDecomposition();
     ~EigenvalueDecomposition();

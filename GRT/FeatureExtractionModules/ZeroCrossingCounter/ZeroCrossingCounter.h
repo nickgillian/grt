@@ -47,7 +47,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class ZeroCrossingCounter : public FeatureExtraction{
+class GRT_API ZeroCrossingCounter : public FeatureExtraction{
 public:
     /**
      Constructor, sets the search window size, deadZoneThreshold, and the dimensionality of the input data.

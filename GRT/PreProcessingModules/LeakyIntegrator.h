@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class LeakyIntegrator : public PreProcessing{
+class GRT_API LeakyIntegrator : public PreProcessing{
 public:
     /**
      Constructor, sets the leak rate and the dimensionality of the input data.

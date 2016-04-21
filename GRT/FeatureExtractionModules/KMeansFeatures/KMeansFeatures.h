@@ -38,7 +38,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class KMeansFeatures : public FeatureExtraction{
+class GRT_API KMeansFeatures : public FeatureExtraction{
 public:
     /**
      Default constructor. Initalizes the KMeansFeatures, setting the number of input dimensions and the number of clusters to use in the quantization model.

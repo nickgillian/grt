@@ -1,4 +1,5 @@
 
+#define GRT_DLL_EXPORTS
 #include "DecisionTreeTripleFeatureNode.h"
 
 GRT_BEGIN_NAMESPACE

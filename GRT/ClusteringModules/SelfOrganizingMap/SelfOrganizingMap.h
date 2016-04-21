@@ -194,7 +194,7 @@ public:
     bool initialized;
 };
 
-class SelfOrganizingMap : public Clusterer{
+class GRT_API SelfOrganizingMap : public Clusterer{
         
 public:
 	/**

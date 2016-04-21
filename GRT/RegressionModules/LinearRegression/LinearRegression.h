@@ -37,7 +37,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class LinearRegression : public Regressifier
+class GRT_API LinearRegression : public Regressifier
 {
 public:
     /**

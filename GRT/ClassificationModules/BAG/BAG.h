@@ -41,7 +41,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class BAG : public Classifier
+class GRT_API BAG : public Classifier
 {
 public:
     /**

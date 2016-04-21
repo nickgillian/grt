@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class PostProcessing : public MLBase
+class GRT_API PostProcessing : public MLBase
 {
 public:
     /**

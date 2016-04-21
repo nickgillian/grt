@@ -39,7 +39,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class TimeSeriesClassificationData{
+class GRT_API TimeSeriesClassificationData{
 public:
     
     /**

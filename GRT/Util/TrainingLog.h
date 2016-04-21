@@ -26,7 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace GRT{
     
-class TrainingLogMessage{
+class GRT_API TrainingLogMessage{
 public:
     TrainingLogMessage(std::string proceedingText = "",std::string message = ""){
         this->proceedingText = proceedingText;
@@ -48,7 +48,7 @@ public:
     std::string message;
 };
 
-class TrainingLog : public Log{
+class GRT_API TrainingLog : public Log{
 public:
     TrainingLog(std::string proceedingText = ""){ setProceedingText(proceedingText); Log::loggingEnabledPtr = &trainingLoggingEnabled; }
 

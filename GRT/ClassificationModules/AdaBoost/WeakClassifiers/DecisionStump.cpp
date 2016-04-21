@@ -25,6 +25,7 @@
  @section DESCRIPTION
  */
 
+#define GRT_DLL_EXPORTS
 #include "DecisionStump.h"
 
 GRT_BEGIN_NAMESPACE

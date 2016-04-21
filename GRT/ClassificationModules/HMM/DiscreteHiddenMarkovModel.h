@@ -38,7 +38,7 @@
 GRT_BEGIN_NAMESPACE
 
 //This class is used for the HMM batch training
-class HMMTrainingObject{
+class GRT_API HMMTrainingObject{
 public:
 	HMMTrainingObject(){
 		pk = 0.0;
@@ -50,7 +50,7 @@ public:
 	Float pk;				//P( O | Model )
 };
 
-class DiscreteHiddenMarkovModel : public MLBase {
+class GRT_API DiscreteHiddenMarkovModel : public MLBase {
 
 public:
 	DiscreteHiddenMarkovModel();

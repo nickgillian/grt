@@ -38,7 +38,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class MLP : public Regressifier{
+class GRT_API MLP : public Regressifier{
 public:
     /**
      Default Constructor

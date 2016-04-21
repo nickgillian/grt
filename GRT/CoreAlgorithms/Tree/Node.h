@@ -34,7 +34,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class Node : public GRTBase{
+class GRT_API Node : public GRTBase{
 public:
     /**
      Default Constructor. Sets all the pointers to NULL.

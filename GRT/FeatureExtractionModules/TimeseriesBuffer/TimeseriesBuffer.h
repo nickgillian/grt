@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class TimeseriesBuffer : public FeatureExtraction{
+class GRT_API TimeseriesBuffer : public FeatureExtraction{
 public:
     /**
      Constructor, sets the size of the timeseries buffer and number of input dimensions.

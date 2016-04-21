@@ -42,7 +42,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class Util{
+class GRT_API Util{
 public:
 	/**
 	Default constructor.

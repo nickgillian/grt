@@ -38,7 +38,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class RegressionData{
+class GRT_API RegressionData{
 public:
     
     /**

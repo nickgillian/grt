@@ -36,7 +36,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class ANBC_Model{
+class GRT_API ANBC_Model{
 public:
 	ANBC_Model(void){ N=0; classLabel = 0; gamma=2.0; threshold=0.0; trainingMu=0.0; trainingSigma=0.0;};
 	~ANBC_Model(void){};

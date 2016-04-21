@@ -36,7 +36,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class DoubleMovingAverageFilter : public PreProcessing {
+class GRT_API DoubleMovingAverageFilter : public PreProcessing {
 public:
     /**
      Constructor, sets the size of the Float moving average filter and the dimensionality of the data it will filter.

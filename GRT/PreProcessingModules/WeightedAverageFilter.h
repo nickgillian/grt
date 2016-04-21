@@ -34,7 +34,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class WeightedAverageFilter : public PreProcessing {
+class GRT_API WeightedAverageFilter : public PreProcessing {
 public:
     /**
      Constructor, sets the size of the filter and the dimensionality of the data it will filter.

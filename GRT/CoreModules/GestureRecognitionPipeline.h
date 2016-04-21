@@ -51,7 +51,7 @@ GRT_BEGIN_NAMESPACE
     
 #define INSERT_AT_END_INDEX 99999
 
-class GestureRecognitionPipeline : public GRTBase
+class GRT_API GestureRecognitionPipeline : public GRTBase
 {
 public:
     enum ContextLevels{START_OF_PIPELINE=0,AFTER_PREPROCESSING,AFTER_FEATURE_EXTRACTION,AFTER_CLASSIFIER,END_OF_PIPELINE,NUM_CONTEXT_LEVELS};

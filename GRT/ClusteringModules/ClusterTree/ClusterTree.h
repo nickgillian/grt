@@ -37,7 +37,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class ClusterTree : public Tree, public Clusterer
+class GRT_API ClusterTree : public Tree, public Clusterer
 {
 public:
     /**

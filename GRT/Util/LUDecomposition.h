@@ -28,7 +28,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class LUDecomposition{
+class GRT_API LUDecomposition{
 	
 public:
     LUDecomposition(const MatrixFloat &a);

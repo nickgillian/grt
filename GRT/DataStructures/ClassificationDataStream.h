@@ -39,7 +39,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class ClassificationDataStream{
+class GRT_API ClassificationDataStream{
 public:
 	
     /**

@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class Clusterer : public MLBase
+class GRT_API Clusterer : public MLBase
 {
 public:
     /**

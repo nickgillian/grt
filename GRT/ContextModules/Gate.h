@@ -26,7 +26,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class Gate : public Context{
+class GRT_API Gate : public Context{
 public:
     Gate(bool gateOpen=true);
     virtual ~Gate(void);
