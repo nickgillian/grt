@@ -20,7 +20,7 @@ before_script:
  - cd build
  - cmake ..
 script:
-- make
+- make -j2
 - make test
 branches:
   only:
