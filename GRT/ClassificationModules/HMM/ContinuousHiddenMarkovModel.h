@@ -37,7 +37,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class ContinuousHiddenMarkovModel : public MLBase {
+class GRT_API ContinuousHiddenMarkovModel : public MLBase {
 public:
 	ContinuousHiddenMarkovModel(const UINT downsampleFactor = 5,const UINT delta = 1,const bool autoEstimateSigma = true,const Float sigma = 10.0);
     

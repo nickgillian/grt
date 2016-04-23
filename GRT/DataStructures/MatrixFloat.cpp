@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#define GRT_DLL_EXPORTS
 #include "MatrixFloat.h"
 
 GRT_BEGIN_NAMESPACE
@@ -350,7 +351,7 @@ bool MatrixFloat::add(const MatrixFloat &a,const MatrixFloat &b){
     
     resize( M, N );
     
-    UINT i,j;
+    UINT i;
     
     //Using direct pointers really helps speed up the computation time
     Float *pa = a.getData();
@@ -378,7 +379,7 @@ bool MatrixFloat::subtract(const MatrixFloat &b){
         return false;
     }
     
-    unsigned int i,j;
+    unsigned int i;
     
     //Using direct pointers really helps speed up the computation time
     Float *pb = b.getData();

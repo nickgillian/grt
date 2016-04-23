@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class MedianFilter : public PreProcessing {
+class GRT_API MedianFilter : public PreProcessing {
 public:
     /**
      Constructor, sets the size of the median filter and the dimensionality of the data it will filter.

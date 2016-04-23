@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class LowPassFilter : public PreProcessing{
+class GRT_API LowPassFilter : public PreProcessing{
 public:
     /**
      Constructor, sets the filter factor, gain and dimensionality of the low pass filter.

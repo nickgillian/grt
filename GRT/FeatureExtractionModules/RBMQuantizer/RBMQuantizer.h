@@ -46,7 +46,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class RBMQuantizer : public FeatureExtraction{
+class GRT_API RBMQuantizer : public FeatureExtraction{
 public:
     /**
      Default constructor. Initalizes the RBMQuantizer, setting the number of clusters to use in the quantization model.

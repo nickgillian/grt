@@ -40,7 +40,7 @@ GRT_BEGIN_NAMESPACE
 #define DEFAULT_NULL_LIKELIHOOD_VALUE 0
 #define DEFAULT_NULL_DISTANCE_VALUE 0
 
-class Regressifier : public MLBase
+class GRT_API Regressifier : public MLBase
 {
 public:
     /**

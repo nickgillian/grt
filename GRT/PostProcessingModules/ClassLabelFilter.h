@@ -38,7 +38,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class ClassLabelFilter : public PostProcessing{
+class GRT_API ClassLabelFilter : public PostProcessing{
 public:
     /**
      Default Constructor. Sets the minimumCount and bufferSize parameters. The minimum count sets the minimum number of class

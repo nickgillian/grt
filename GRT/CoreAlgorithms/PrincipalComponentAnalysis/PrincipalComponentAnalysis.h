@@ -48,7 +48,7 @@
 
 GRT_BEGIN_NAMESPACE
 	
-class PrincipalComponentAnalysis : public MLBase{
+class GRT_API PrincipalComponentAnalysis : public MLBase{
  public:
     /**
      Default constructor.

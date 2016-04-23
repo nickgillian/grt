@@ -31,7 +31,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-class Log{
+class GRT_API Log{
 public:
     Log(std::string proceedingText = ""){
         setProceedingText(proceedingText);
@@ -58,7 +58,9 @@ public:
                 *lastMessagePtr = "";
             }
             std::cout << val;
-            *lastMessagePtr += val;
+            std::stringstream stream;
+            stream << val;
+            *lastMessagePtr += stream.str();
         }
         return *this;
     }

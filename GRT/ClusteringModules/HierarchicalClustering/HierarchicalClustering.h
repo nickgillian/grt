@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class ClusterInfo{
+class GRT_API ClusterInfo{
 public:
     ClusterInfo(){
         uniqueClusterID = 0;
@@ -86,7 +86,7 @@ public:
     Vector< UINT > indexs;
 };
     
-class ClusterLevel{
+class GRT_API ClusterLevel{
 public:
     ClusterLevel(){
         level = 0;
@@ -131,7 +131,7 @@ public:
     Vector< ClusterInfo > clusters;
 };
 
-class HierarchicalClustering : public Clusterer {
+class GRT_API HierarchicalClustering : public Clusterer {
 
 public:
 	/**

@@ -33,7 +33,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-class MatrixFloat : public Matrix< Float >{
+class GRT_API MatrixFloat : public Matrix< Float >{
 public:
     /**
      Default Constructor

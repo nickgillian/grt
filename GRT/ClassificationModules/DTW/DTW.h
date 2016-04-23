@@ -48,7 +48,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class IndexDist{
+class GRT_API IndexDist{
 public:
     IndexDist(int x=0,int y=0,Float dist=0){
         this->x = x;
@@ -71,7 +71,7 @@ public:
 };
 
 ///////////////// DTW Template /////////////////
-class DTWTemplate{
+class GRT_API DTWTemplate{
 public:
 	DTWTemplate(){
         classLabel = 0;
@@ -88,7 +88,7 @@ public:
 	UINT averageTemplateLength;          //The average length of the examples used to train this template
 };
 
-class DTW : public Classifier
+class GRT_API DTW : public Classifier
 {
 public:
 	

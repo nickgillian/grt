@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class FeatureExtraction : public MLBase
+class GRT_API FeatureExtraction : public MLBase
 {
 public:
     /**

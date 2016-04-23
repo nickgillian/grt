@@ -37,7 +37,7 @@ GRT_BEGIN_NAMESPACE
 #define BIG_POSITIVE_VALUE 99e+99
 #define BIG_NEGATIVE_VALUE -99e+99
 
-class RangeTracker{
+class GRT_API RangeTracker{
 public:
 
 	/**

@@ -17,6 +17,7 @@
  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#define GRT_DLL_EXPORTS
 #include "SVD.h"
 
 GRT_BEGIN_NAMESPACE
@@ -171,7 +172,7 @@ bool SVD::decompose() {
 				for (k=l-1;k<N;k++) u[i][k]*= scale;
 			}
 		}
-		anorm=MAX(anorm,(fabs(w[i])+fabs(rv1[i])));
+		anorm=grt_max(anorm,(fabs(w[i])+fabs(rv1[i])));
 	}
 	for (i=N-1;i>=0;i--) {
 		if (i < N-1) {
@@ -189,7 +190,7 @@ bool SVD::decompose() {
 		g=rv1[i];
 		l=i;
 	}
-	for (i=MIN(M,N)-1;i>=0;i--) {
+	for (i=grt_min(M,N)-1;i>=0;i--) {
 		l=i+1;
 		g=w[i];
 		for (j=l;j<N;j++) u[i][j]=0.0;

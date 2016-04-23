@@ -37,7 +37,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class SwipeDetector : public Classifier
+class GRT_API SwipeDetector : public Classifier
 {
 public:
     /**

@@ -38,7 +38,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class MovementIndex : public FeatureExtraction{
+class GRT_API MovementIndex : public FeatureExtraction{
 public:
     /**
      Default Constructor. Sets the buffer length and the number of input dimensions.

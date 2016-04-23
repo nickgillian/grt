@@ -38,7 +38,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class MinDist : public Classifier
+class GRT_API MinDist : public Classifier
 {
 public:
     /**

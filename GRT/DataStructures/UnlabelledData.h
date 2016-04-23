@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class UnlabelledData{
+class GRT_API UnlabelledData{
 public:
     
     /**

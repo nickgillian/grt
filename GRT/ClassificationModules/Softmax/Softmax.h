@@ -38,7 +38,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class Softmax : public Classifier
+class GRT_API Softmax : public Classifier
 {
 public:
     /**

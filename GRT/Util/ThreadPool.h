@@ -45,9 +45,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <functional>
 #endif //GRT_CXX11_ENABLED
 
+#include "GRTTypedefs.h"
+
 namespace GRT{
     
-class ThreadPool {
+class GRT_API ThreadPool {
 public:
     
     /**

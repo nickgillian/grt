@@ -3,7 +3,7 @@
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
  
- @brief This class implements the TimeDomainFeatures feature extraction module.
+ @brief
  */
 
 /**
@@ -26,46 +26,53 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef GRT_TIME_DOMAIN_FEATURES_HEADER
-#define GRT_TIME_DOMAIN_FEATURES_HEADER
+#ifndef GRT_ENVELOPE_EXTRACTOR_HEADER
+#define GRT_ENVELOPE_EXTRACTOR_HEADER
 
+//Include the main GRT header to get access to the FeatureExtraction base class
 #include "../../CoreModules/FeatureExtraction.h"
-#include "../../Util/Util.h"
+#include "../../DataStructures/TimeSeriesClassificationData.h"
+#include "../../DataStructures/ClassificationDataStream.h"
+#include "../../DataStructures/UnlabelledData.h"
 
 GRT_BEGIN_NAMESPACE
     
-class GRT_API TimeDomainFeatures : public FeatureExtraction{
+class GRT_API EnvelopeExtractor : public FeatureExtraction{
 public:
     /**
+     Default constructor. Initalizes the EnvelopeExtractor, setting the number of input dimensions and the number of clusters to use in the quantization model.
+	
+	@param numDimensions: the number of dimensions in the input data
+    @param numClusters: the number of quantization clusters
      */
-    TimeDomainFeatures(UINT bufferLength=100,UINT numFrames=10,UINT numDimensions = 1,bool offsetInput = false,bool useMean = true,bool useStdDev = true,bool useEuclideanNorm = true,bool useRMS = true);
+    EnvelopeExtractor(const UINT bufferSize = 100,const UINT numDimensions = 1);
 	
     /**
-     Copy constructor, copies the TimeDomainFeatures from the rhs instance to this instance.
+     Copy constructor, copies the KMeansQuantizer from the rhs instance to this instance.
      
-     @param rhs: another instance of the TimeDomainFeatures class from which the data will be copied to this instance
+     @param rhs: another instance of this class from which the data will be copied to this instance
      */
-    TimeDomainFeatures(const TimeDomainFeatures &rhs);
+    EnvelopeExtractor(const EnvelopeExtractor &rhs);
     
     /**
      Default Destructor
      */
-    virtual ~TimeDomainFeatures();
+    virtual ~EnvelopeExtractor();
     
     /**
      Sets the equals operator, copies the data from the rhs instance to this instance.
      
-     @param rhs: another instance of the TimeDomainFeatures class from which the data will be copied to this instance
-     @return a reference to this instance of TimeDomainFeatures
+     @param rhs: another instance of this class from which the data will be copied to this instance
+     @return a reference to this instance
      */
-    TimeDomainFeatures& operator=(const TimeDomainFeatures &rhs);
+    EnvelopeExtractor& operator=(const EnvelopeExtractor &rhs);
 
     /**
      Sets the FeatureExtraction deepCopyFrom function, overwriting the base FeatureExtraction function.
      This function is used to deep copy the values from the input pointer to this instance of the FeatureExtraction module.
-     This function is called by the GestureRecognitionPipeline when the user adds a new FeatureExtraction module to the pipeline.
+     This function is called by the GestureRecognitionPipeline when the user adds a new FeatureExtraction module to the pipeleine.
      
-     @param featureExtraction: a pointer to another instance of a TimeDomainFeatures, the values of that instance will be cloned to this instance
+     @param featureExtraction: a pointer to another instance of this class, the values of that instance will be cloned to this instance
      @return returns true if the deep copy was successful, false otherwise
      */
     virtual bool deepCopyFrom(const FeatureExtraction *featureExtraction);
@@ -73,7 +80,7 @@ public:
     /**
      Sets the FeatureExtraction computeFeatures function, overwriting the base FeatureExtraction function.
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
-     This function calls the TimeDomainFeatures's update function.
+     This is where you should add your main feature extraction code.
      
      @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
@@ -83,9 +90,9 @@ public:
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
      This function is called by the GestureRecognitionPipeline when the pipelines main reset() function is called.
-     This function resets the feature extraction by re-initiliazing the instance.
+     You should add any custom reset code to this function to define how your feature extraction module should be reset.
      
-     @return true if the filter was reset, false otherwise
+     @return true if the instance was reset, false otherwise
      */
     virtual bool reset();
     
@@ -108,6 +115,7 @@ public:
     /**
      This saves the feature extraction settings to a file.
      This overrides the saveSettingsToFile function in the FeatureExtraction base class.
+     You should add your own custom code to this function to define how your feature extraction module is saved to a file.
      
      @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
@@ -122,61 +130,16 @@ public:
      @return returns true if the settings were loaded successfully, false otherwise
      */
     virtual bool loadModelFromFile( std::fstream &file );
-
-    /**
-     Initializes the MovementTrajectoryFeatures
-     */
-    bool init(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS);
     
-    /**
-     Computes the features from the input, this should only be called if the dimensionality of this instance was set to 1.
-     
-     @param x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
-	 @return a vector containing the features, an empty vector will be returned if the features were not computed
-     */
-	VectorFloat update(Float x);
+    bool init( const UINT bufferSize = 100,const UINT numDimensions = 1 );
     
-    /**
-     Computes the features from the input, the dimensionality of x should match that of this instance.
-     
-     @param x: a vector containing the values to be processed, must be the same size as the numInputDimensions
-	 @return a vector containing the features, an empty vector will be returned if the features were not computed
-     */
-    VectorFloat update(const VectorFloat &x);
-    
-    /**
-     Get the circular buffer.
-     
-     @return a copy of the circular buffer
-     */
-    CircularBuffer< VectorFloat > getBufferData();
-    
-    /**
-     Gets a reference to the circular buffer.
-     
-     @return a reference to the circular buffer
-     */
-    const CircularBuffer< VectorFloat > &getBufferData() const;
-    
-    //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
-    using MLBase::train;
-    using MLBase::train_;
-    using MLBase::predict;
-    using MLBase::predict_;
-
 protected:
-    UINT bufferLength;
-    UINT numFrames;
-    bool offsetInput;
-    bool useMean;
-    bool useStdDev;
-    bool useEuclideanNorm;
-    bool useRMS;
-    CircularBuffer< VectorFloat > dataBuffer;
+    UINT bufferSize;
+    CircularBuffer< VectorFloat > buffer;
     
-    static RegisterFeatureExtractionModule< TimeDomainFeatures > registerModule;
+    static RegisterFeatureExtractionModule< EnvelopeExtractor > registerModule;
 };
 
 GRT_END_NAMESPACE
 
-#endif //GRT_TIME_DOMAIN_FEATURES_HEADER
+#endif //GRT_KMEANS_FEATURES_HEADER

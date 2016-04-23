@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#define GRT_DLL_EXPORTS
 #include "VectorFloat.h"
 #include "../Util/FileParser.h"
 
@@ -28,13 +29,13 @@ VectorFloat::VectorFloat(){
     errorLog.setProceedingText("[ERROR VectorFloat]");
 }
     
-VectorFloat::VectorFloat(const unsigned int size){
+VectorFloat::VectorFloat(const size_type size){
     warningLog.setProceedingText("[WARNING VectorFloat]");
     errorLog.setProceedingText("[ERROR VectorFloat]");
     resize( size );
 }
 
-VectorFloat::VectorFloat( const unsigned int size, const Float &value ){
+VectorFloat::VectorFloat( const size_type size, const Float &value ){
     warningLog.setProceedingText("[WARNING VectorFloat]");
     errorLog.setProceedingText("[ERROR VectorFloat]");
     resize( size, value );
@@ -76,9 +77,9 @@ bool VectorFloat::print(const std::string title) const {
     if( title != "" ){
         std::cout << title << std::endl;
     }
-    const size_t size = this->size();
+    const size_type size = this->size();
     const Float *data = getData();
-    for(size_t i=0; i<size; i++){
+    for(size_type i=0; i<size; i++){
         std::cout << data[i] << "\t";
     }
     std::cout << std::endl;
@@ -95,13 +96,13 @@ bool VectorFloat::scale( const Float minTarget, const Float maxTarget, const boo
     
 bool VectorFloat::scale( const Float minSource, const Float maxSource, const Float minTarget, const Float maxTarget, const bool constrain ){
     
-    const size_t N = this->size();
+    const size_type N = this->size();
     
     if( N == 0 ){
         return false;
     }
     
-    unsigned int i = 0;
+    size_type i = 0;
     Float *data = getData();
     for( i=0; i<N; i++ ){
         data[i] = grt_scale(data[i],minSource,maxSource,minTarget,maxTarget,constrain);
@@ -112,9 +113,9 @@ bool VectorFloat::scale( const Float minSource, const Float maxSource, const Flo
     
 Float VectorFloat::getMinValue() const{
     Float minValue = 99e+99;
-    const size_t N = this->size();
+    const size_type N = this->size();
     const Float *data = getData();
-    for(size_t i=0; i<N; i++){
+    for(size_type i=0; i<N; i++){
         if( data[i] < minValue ) minValue = data[i];
     }
     return minValue;
@@ -122,9 +123,9 @@ Float VectorFloat::getMinValue() const{
 
 Float VectorFloat::getMaxValue() const{
     Float maxValue = -99e99;
-    const size_t N = this->size();
+    const size_type N = this->size();
     const Float *data = getData();
-    for(size_t i=0; i<N; i++){
+    for(size_type i=0; i<N; i++){
         if( data[i] > maxValue ) maxValue = data[i];
     }
     return maxValue;
@@ -133,9 +134,9 @@ Float VectorFloat::getMaxValue() const{
 Float VectorFloat::getMean() const {
     
     Float mean = 0.0;
-    const size_t N = this->size();
+    const size_type N = this->size();
     const Float *data = getData();
-    for(size_t i=0; i<N; i++){
+    for(size_type i=0; i<N; i++){
         mean += data[i];
     }
     mean /= N;
@@ -147,10 +148,10 @@ Float VectorFloat::getStdDev() const {
     
     Float mean = getMean();
 	Float stdDev = 0.0;
-    const size_t N = this->size();
+    const size_type N = this->size();
     const Float *data = getData();
 	
-	for(size_t i=0; i<N; i++){
+	for(size_type i=0; i<N; i++){
 		stdDev += grt_sqr(data[i]-mean);
 	}
     stdDev = grt_sqrt( stdDev / Float(N-1) );
@@ -160,14 +161,14 @@ Float VectorFloat::getStdDev() const {
     
 MinMax VectorFloat::getMinMax() const {
 
-    const size_t N = this->size();
+    const size_type N = this->size();
     MinMax range;
     
     if( N == 0 ) return range;
 
     const Float *data = getData();
     
-    for(unsigned int i=0; i<N; i++){
+    for(size_type i=0; i<N; i++){
         range.updateMinMax( data[ i ] );
     }
 
@@ -176,7 +177,7 @@ MinMax VectorFloat::getMinMax() const {
   
 bool VectorFloat::save(const std::string &filename) const {
 
-    const size_t N = this->size();
+    const size_type N = this->size();
 
     if( N == 0 ){
         warningLog << "save(...) - Vector is empty, nothing to save!" << std::endl;
@@ -191,7 +192,7 @@ bool VectorFloat::save(const std::string &filename) const {
     }
     
     const Float *data = getData();
-    for(size_t i=0; i<N; i++){
+    for(size_type i=0; i<N; i++){
         file << data[i] << (i<N-1 ? "," : "\n");
     }
     
@@ -218,7 +219,7 @@ bool VectorFloat::load(const std::string &filename,const char seperator){
     std::string columnString = "";
     const int sepValue = seperator;
     unsigned int numElements = 0;
-    unsigned int length = 0;
+    size_t length = 0;
     
     //Get the data, for a vector it should just be one line
     if( !getline(file,line) ){
@@ -230,7 +231,7 @@ bool VectorFloat::load(const std::string &filename,const char seperator){
     columnString = "";
     length = line.length();
     vec.reserve( length );
-    for(unsigned int i=0; i<length; i++){
+    for(size_t i=0; i<length; i++){
         if( int(line[i]) == sepValue ){
             vec.push_back( columnString );
             columnString = "";

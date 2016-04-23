@@ -37,7 +37,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class ClassLabelChangeFilter : public PostProcessing{
+class GRT_API ClassLabelChangeFilter : public PostProcessing{
 public:
     /**
      Default Constructor. 

@@ -44,7 +44,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class MultidimensionalRegression : public Regressifier
+class GRT_API MultidimensionalRegression : public Regressifier
 {
 public:
     /**

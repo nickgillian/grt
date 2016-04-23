@@ -27,7 +27,7 @@ GRT_BEGIN_NAMESPACE
 
 #define MAX_NUM_SVD_ITER 75
 
-class SVD {
+class GRT_API SVD {
  public:
 	
 	SVD(){}

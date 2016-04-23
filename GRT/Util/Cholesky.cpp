@@ -21,6 +21,7 @@
  
 */
 
+#define GRT_DLL_EXPORTS
 #include "Cholesky.h"
 
 GRT_BEGIN_NAMESPACE

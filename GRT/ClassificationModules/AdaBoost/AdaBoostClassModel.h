@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class AdaBoostClassModel{
+class GRT_API AdaBoostClassModel{
 public:
     AdaBoostClassModel(){
         classLabel = 0;

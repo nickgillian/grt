@@ -39,7 +39,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class RandomForests : public Classifier
+class GRT_API RandomForests : public Classifier
 {
 public:
     /**

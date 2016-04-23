@@ -33,6 +33,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <limits>
 #include <cmath>
 
+#ifdef __GRT_WINDOWS_BUILD__
+
+#define NOMINMAX
+
+#include <windows.h>
+
+#endif
+
+
 #define GRT_BEGIN_NAMESPACE namespace GRT {
 #define GRT_END_NAMESPACE }
 
@@ -108,16 +117,13 @@ T grt_from_str( const std::string &str ){
 #define grt_min(a,b) (((a)<(b))?(a):(b))
 #define grt_max(a,b) (((a)>(b))?(a):(b))
 
-#ifndef MIN
-#define	MIN(a,b) (((a)<(b))?(a):(b))
-#endif
-#ifndef MAX
-#define	MAX(a,b) (((a)>(b))?(a):(b))
-#endif
-
 #define GRT_DEFAULT_NULL_CLASS_LABEL 0
 #define GRT_SAFE_CHECKING true
-	
+
+//No need for this on non-Windows platforms, but
+//must have an empty definition.
+#define GRT_API
+
 //Specific defines for Windows
 #ifdef __GRT_WINDOWS_BUILD__
 #define grt_isnan(x) (x != x)
@@ -137,7 +143,20 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif 
-	
+
+//Allow DLL exports.
+#if !defined(GRT_STATIC_LIB) && defined(_MSC_VER)
+	#undef GRT_API
+	#ifdef GRT_DLL_EXPORTS
+		#define GRT_API __declspec(dllexport)
+	#else // GRT_DLL_EXPORTS
+		#define GRT_API __declspec(dllimport)
+	#endif // GRT_DLL_EXPORTS
+
+	//disable warnings about a "dllexport" class using a regular class
+	# pragma warning(disable: 4251)
+#endif // !GRT_STATIC_LIB && MSC_VER
+
 #endif
 	
 //Specific defines for OSX
@@ -192,6 +211,16 @@ typedef unsigned long ULONG;
 /**
   @brief custom GRT assert function
 */
+#if defined(_MSC_VER) && _MSC_VER <= 1800
+//Use __FUNCTION__ instead of __func__ for Visual Studio 2013 & earlier
+#define grt_assert(x) \
+do { \
+if (0 == (x)) { \
+fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __FUNCTION__, __LINE__, grt_to_str(x) ); \
+abort(); \
+} \
+} while (0)
+#else // _MSC_VER <= 1800
 #define grt_assert(x) \
 do { \
 if (0 == (x)) { \
@@ -199,9 +228,10 @@ fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __fu
 abort(); \
 } \
 } while (0)
-#else
+#endif // _MSC_VER <= 1800
+#else // !NDEBUG
 #define grt_assert(x)
-#endif
+#endif // !NDEBUG
     
 //Declare typedefs for the legacy data types
 class ClassificationData;

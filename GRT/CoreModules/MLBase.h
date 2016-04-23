@@ -46,7 +46,7 @@ GRT_BEGIN_NAMESPACE
 /**
  Define the class for handling TrainingResult callbacks
  */
-class TrainingResultsObserverManager : public ObserverManager< TrainingResult >
+class GRT_API TrainingResultsObserverManager : public ObserverManager< TrainingResult >
 {
 public:
     TrainingResultsObserverManager(){
@@ -58,7 +58,7 @@ public:
 /**
  Define the class for handling TestInstanceResult callbacks
  */
-class TestResultsObserverManager : public ObserverManager< TestInstanceResult >
+class GRT_API TestResultsObserverManager : public ObserverManager< TestInstanceResult >
 {
 public:
     TestResultsObserverManager(){
@@ -67,7 +67,7 @@ public:
     
 };
 
-class MLBase : public GRTBase, public Observer< TrainingResult >, public Observer< TestInstanceResult >
+class GRT_API MLBase : public GRTBase, public Observer< TrainingResult >, public Observer< TestInstanceResult >
 {
 public:
     /**

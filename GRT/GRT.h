@@ -98,6 +98,7 @@
 
 //Include the FeatureExtraction Modules
 #include "FeatureExtractionModules/ZeroCrossingCounter/ZeroCrossingCounter.h"
+#include "FeatureExtractionModules/EnvelopeExtractor/EnvelopeExtractor.h"
 #include "FeatureExtractionModules/FFT/FFT.h"
 #include "FeatureExtractionModules/FFT/FFTFeatures.h"
 #include "FeatureExtractionModules/MovementTrajectoryFeatures/MovementTrajectoryFeatures.h"

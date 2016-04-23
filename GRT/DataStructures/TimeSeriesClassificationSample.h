@@ -34,7 +34,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class TimeSeriesClassificationSample{
+class GRT_API TimeSeriesClassificationSample{
 public:
 	TimeSeriesClassificationSample();
 	TimeSeriesClassificationSample(const UINT classLabel,const MatrixFloat &data);

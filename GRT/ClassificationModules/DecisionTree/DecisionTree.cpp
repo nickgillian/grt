@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#define GRT_DLL_EXPORTS
 #include "DecisionTree.h"
 
 GRT_BEGIN_NAMESPACE
@@ -233,7 +234,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
             classClusterMean[ predictions[i] ] += distances[ i ];
         }
         for(UINT k=0; k<numClasses; k++){
-            classClusterMean[k] /= MAX( classCounter[k], 1 );
+            classClusterMean[k] /= grt_max( classCounter[k], 1 );
         }
         
         //Compute the std deviation
@@ -241,7 +242,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
             classClusterStdDev[ predictions[i] ] += MLBase::SQR( distances[ i ] - classClusterMean[ predictions[i] ] );
         }
         for(UINT k=0; k<numClasses; k++){
-            classClusterStdDev[k] = sqrt( classClusterStdDev[k] / MAX( classCounter[k], 1 ) );
+            classClusterStdDev[k] = sqrt( classClusterStdDev[k] / grt_max( classCounter[k], 1 ) );
         }
         
         //Compute the null rejection thresholds using the class mean and std dev

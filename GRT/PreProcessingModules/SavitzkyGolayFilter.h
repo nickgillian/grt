@@ -36,7 +36,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class SavitzkyGolayFilter : public PreProcessing{
+class GRT_API SavitzkyGolayFilter : public PreProcessing{
 public:
 	/**
      Constructor, sets the number of left and right points of the filter, the derivative and polynomial smoothing order, and the dimensionality of the input data.

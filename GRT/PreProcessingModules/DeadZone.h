@@ -36,7 +36,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class DeadZone : public PreProcessing{
+class GRT_API DeadZone : public PreProcessing{
 public:
 	/**
      Constructor, sets the lower and upper limits of the dead-zone region and the dimensionality of the input data.

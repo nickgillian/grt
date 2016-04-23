@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class Tree : public GRTBase
+class GRT_API Tree : public GRTBase
 {
 public:
     /**

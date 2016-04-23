@@ -38,7 +38,7 @@ GRT_BEGIN_NAMESPACE
 #define DEFAULT_NULL_LIKELIHOOD_VALUE 0
 #define DEFAULT_NULL_DISTANCE_VALUE 0
 
-class Classifier : public MLBase
+class GRT_API Classifier : public MLBase
 {
 public:
     /**

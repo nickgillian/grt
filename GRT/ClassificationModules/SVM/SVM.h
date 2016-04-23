@@ -46,7 +46,7 @@ using namespace LIBSVM;
 #define SVM_MIN_SCALE_RANGE -1.0
 #define SVM_MAX_SCALE_RANGE 1.0
 
-class SVM : public Classifier{
+class GRT_API SVM : public Classifier{
 public:
     /**
      Default constructor.

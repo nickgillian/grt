@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class FiniteStateMachine : public Classifier
+class GRT_API FiniteStateMachine : public Classifier
 {
 public:
 
