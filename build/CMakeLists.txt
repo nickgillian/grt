@@ -234,7 +234,7 @@ if( BUILD_TESTS )
         include_directories( "${GRT_SRC_DIR}" )
 
         #Include the gtest parent directory
-        include_directories( "${GRT_THIRD_PARTY_DIR}" )
+        include_directories( "${GRT_THIRD_PARTY_DIR}/gtest/googletest/include" )
 
         #Link against the main GRT library 
         target_link_libraries(${unit_test_name} ${GRT_LIB_NAME} gtest)
