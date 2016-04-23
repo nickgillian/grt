@@ -231,10 +231,10 @@ if( BUILD_TESTS )
         add_executable(${unit_test_name} ${unit_test})
 
         #Include the main GRT include directory
-        include_directories( "${GRT_SRC_DIR}" )
+        target_include_directories( "${GRT_SRC_DIR}" )
 
         #Include the gtest parent directory
-        include_directories( "${GRT_THIRD_PARTY_DIR}" )
+        target_include_directories( "${GRT_THIRD_PARTY_DIR}" )
 
         #Link against the main GRT library 
         target_link_libraries(${unit_test_name} ${GRT_LIB_NAME} gtest)
