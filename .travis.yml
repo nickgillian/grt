@@ -13,7 +13,9 @@ before_script:
  - mkdir build
  - cd build
  - cmake ..
-script: make
+script:
+- make
+- make test
 branches:
   only:
     - master
