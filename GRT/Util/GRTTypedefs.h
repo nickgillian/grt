@@ -194,6 +194,16 @@ typedef unsigned long ULONG;
 /**
   @brief custom GRT assert function
 */
+#if defined(_MSC_VER) && _MSC_VER <= 1800
+//Use __FUNCTION__ instead of __func__ for Visual Studio 2013 & earlier
+#define grt_assert(x) \
+do { \
+if (0 == (x)) { \
+fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __FUNCTION__, __LINE__, grt_to_str(x) ); \
+abort(); \
+} \
+} while (0)
+#else // _MSC_VER <= 1800
 #define grt_assert(x) \
 do { \
 if (0 == (x)) { \
@@ -201,9 +211,10 @@ fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __fu
 abort(); \
 } \
 } while (0)
-#else
+#endif // _MSC_VER <= 1800
+#else // !NDEBUG
 #define grt_assert(x)
-#endif
+#endif // !NDEBUG
     
 //Declare typedefs for the legacy data types
 class ClassificationData;

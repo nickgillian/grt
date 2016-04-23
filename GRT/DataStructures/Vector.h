@@ -115,7 +115,7 @@ public:
     */
     Vector& operator=(const std::vector< T > &rhs){
         if(this!=&rhs){
-            unsigned int N = rhs.getSize();
+            unsigned int N = rhs.size();
             if( N > 0 ){
                 this->resize( N );
                 std::copy( rhs.begin(), rhs.end(), this->begin() );
