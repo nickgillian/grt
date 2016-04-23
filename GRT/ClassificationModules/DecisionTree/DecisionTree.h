@@ -44,7 +44,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class DecisionTree : public Tree, public Classifier
+class GRT_API DecisionTree : public Tree, public Classifier
 {
 public:
     /**

@@ -38,7 +38,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class HMM : public Classifier
+class GRT_API HMM : public Classifier
 {
 public:
     /**

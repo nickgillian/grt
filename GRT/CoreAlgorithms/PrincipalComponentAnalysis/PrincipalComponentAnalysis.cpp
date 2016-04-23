@@ -23,6 +23,7 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#define GRT_DLL_EXPORTS
 #include "PrincipalComponentAnalysis.h"
 
 GRT_BEGIN_NAMESPACE

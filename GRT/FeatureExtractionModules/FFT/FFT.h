@@ -53,7 +53,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class FFT : public FeatureExtraction
+class GRT_API FFT : public FeatureExtraction
 {
 public:
     /**

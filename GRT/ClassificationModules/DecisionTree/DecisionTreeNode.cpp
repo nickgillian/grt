@@ -1,4 +1,5 @@
 
+#define GRT_DLL_EXPORTS
 #include "DecisionTreeNode.h"
 
 using namespace GRT;

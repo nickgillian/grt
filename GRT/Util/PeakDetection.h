@@ -30,7 +30,7 @@ typedef struct PeakInfo PeakInfo;
 #define DEFAULT_GLOBAL_MAXIMA_VALUE -1.0e+99
 #define DEFAULT_GLOBAL_MINIMA_VALUE 1.0e+99
     
-class PeakDetection{
+class GRT_API PeakDetection{
 public:
     PeakDetection(const UINT lowPassFilterSize = 5,const UINT searchWindowSize = 5);
     

@@ -26,7 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
     
-class DebugLogMessage{
+class GRT_API DebugLogMessage{
 public:
     DebugLogMessage(std::string proceedingText = "",std::string message = ""){
         this->proceedingText = proceedingText;

@@ -29,6 +29,11 @@ if( ENABLE_CXX11_SUPPORT MATCHES ON)
     add_definitions(-DGRT_CXX11_ENABLED)
 endif()
 
+#If static lib is enabled, then define the relevant flag
+if( BUILD_STATIC_LIB MATCHES ON )
+	add_definitions(-DGRT_STATIC_LIB)
+endif()
+
 #Add any custom OS definitions
 if(MSVC)
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for Windows")

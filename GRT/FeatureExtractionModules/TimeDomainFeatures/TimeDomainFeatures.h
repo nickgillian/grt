@@ -34,7 +34,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class TimeDomainFeatures : public FeatureExtraction{
+class GRT_API TimeDomainFeatures : public FeatureExtraction{
 public:
     /**
      */

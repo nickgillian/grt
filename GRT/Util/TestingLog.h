@@ -48,7 +48,7 @@ public:
     std::string message;
 };
 
-class TestingLog : public Log{
+class GRT_API TestingLog : public Log{
 public:
     TestingLog(std::string proceedingText =""){ setProceedingText(proceedingText); Log::loggingEnabledPtr = &testingLoggingEnabled; }
 

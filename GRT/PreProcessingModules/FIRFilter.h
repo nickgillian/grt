@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class FIRFilter : public PreProcessing{
+class GRT_API FIRFilter : public PreProcessing{
 public:
     /**
      Constructor, sets the filter factor, gain and dimensionality of the low pass filter.

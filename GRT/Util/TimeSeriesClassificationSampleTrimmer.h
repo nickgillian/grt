@@ -47,7 +47,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class TimeSeriesClassificationSampleTrimmer{
+class GRT_API TimeSeriesClassificationSampleTrimmer{
 public:
 
 	/**

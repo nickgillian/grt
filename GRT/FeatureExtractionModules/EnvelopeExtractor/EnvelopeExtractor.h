@@ -37,7 +37,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class EnvelopeExtractor : public FeatureExtraction{
+class GRT_API EnvelopeExtractor : public FeatureExtraction{
 public:
     /**
      Default constructor. Initalizes the EnvelopeExtractor, setting the number of input dimensions and the number of clusters to use in the quantization model.

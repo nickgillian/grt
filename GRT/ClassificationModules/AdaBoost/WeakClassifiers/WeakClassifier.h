@@ -37,7 +37,7 @@ GRT_BEGIN_NAMESPACE
 #define WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL 1
 #define WEAK_CLASSIFIER_NEGATIVE_CLASS_LABEL 2
     
-class WeakClassifier{
+class GRT_API WeakClassifier{
 public:
     /**
      Default Constructor.

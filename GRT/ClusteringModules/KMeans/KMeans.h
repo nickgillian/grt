@@ -38,7 +38,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class KMeans : public Clusterer{
+class GRT_API KMeans : public Clusterer{
 
 public:
      /**

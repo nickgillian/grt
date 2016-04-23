@@ -1,4 +1,5 @@
 
+#define GRT_DLL_EXPORTS
 #include "MovementDetector.h"
 
 GRT_BEGIN_NAMESPACE

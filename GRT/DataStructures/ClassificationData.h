@@ -40,7 +40,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class ClassificationData : public GRTBase{
+class GRT_API ClassificationData : public GRTBase{
 public:
     
     /**

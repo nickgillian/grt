@@ -47,7 +47,7 @@ GRT_BEGIN_NAMESPACE
 #define MIN_SCALE_VALUE 1.0e-10
 #define MAX_SCALE_VALUE 1
 
-class ANBC : public Classifier
+class GRT_API ANBC : public Classifier
 {
 public:
     /**

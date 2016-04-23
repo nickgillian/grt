@@ -46,7 +46,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class SOMQuantizer : public FeatureExtraction{
+class GRT_API SOMQuantizer : public FeatureExtraction{
 public:
     /**
      Default constructor. Initalizes the SOMQuantizer, setting the number of input dimensions and the number of clusters to use in the quantization model.

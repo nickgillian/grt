@@ -26,7 +26,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class ParticleClassifier : public Classifier
+class GRT_API ParticleClassifier : public Classifier
 {
 public:
 	

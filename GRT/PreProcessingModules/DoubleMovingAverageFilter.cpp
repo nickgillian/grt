@@ -27,6 +27,7 @@
  
  */
 
+#define GRT_DLL_EXPORTS
 #include "DoubleMovingAverageFilter.h"
 
 GRT_BEGIN_NAMESPACE

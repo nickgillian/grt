@@ -37,7 +37,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class RadialBasisFunction : public WeakClassifier{
+class GRT_API RadialBasisFunction : public WeakClassifier{
 public:
     /**
      Default Constructor.

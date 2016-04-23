@@ -36,7 +36,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class Derivative : public PreProcessing{
+class GRT_API Derivative : public PreProcessing{
 public:
     /**
      Constructor, sets the derivativeOrder (which should be either FIRST_DERIVATIVE or SECOND_DERIVATIVE), the delta value (which should be set to 1000.0/sampleRate, the dimensionality of the input data,

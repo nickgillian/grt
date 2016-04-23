@@ -40,7 +40,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class ClassLabelAndTimer{
+class GRT_API ClassLabelAndTimer{
 public:
     ClassLabelAndTimer(){
         classLabel = 0;
@@ -70,7 +70,7 @@ protected:
     Timer timer;
 };
     
-class ClassLabelTimeoutFilter : public PostProcessing{
+class GRT_API ClassLabelTimeoutFilter : public PostProcessing{
 public:
     /**
      Default Constructor. Sets the timeoutDuration and filterMode parameters. 

@@ -44,7 +44,7 @@ struct AngleMagnitude{
 };
 typedef struct AngleMagnitude AngleMagnitude;
     
-class MovementTrajectoryFeatures : public FeatureExtraction{
+class GRT_API MovementTrajectoryFeatures : public FeatureExtraction{
 public:
     /**
      Default Constructor.

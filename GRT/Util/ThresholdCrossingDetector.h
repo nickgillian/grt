@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class ThresholdCrossingDetector{
+class GRT_API ThresholdCrossingDetector{
 public:
     /**
      Default Constructor.  

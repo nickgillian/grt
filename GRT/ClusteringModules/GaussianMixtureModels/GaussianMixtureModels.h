@@ -34,7 +34,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class GaussianMixtureModels : public Clusterer
+class GRT_API GaussianMixtureModels : public Clusterer
 {
 public:
     /**

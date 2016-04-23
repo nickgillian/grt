@@ -185,10 +185,22 @@ $ mkdir tmp
 $ cd tmp
 ```
 	
+- possibly define some environment variables that will be used by cmake:
+
+```
+$ REM Create projects that build their files in parallel.
+$ set CFLAGS=/MP
+$ set CXXFLAGS=/MP
+
+$ REM Ignore warnings about DLL linking.
+$ set LDFLAGS=/ignore:4049,4217
+
+```
+
 - use cmake to generate the Visual Studio project for your machine:
 
 ```
-$ cmake .. -DBUILD_SHARED_LIB=OFF
+$ cmake ..
 ```
 	
 - this will generate project files for all the GRT classes and examples in the temporary build directory
