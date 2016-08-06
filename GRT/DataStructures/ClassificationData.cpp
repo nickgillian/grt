@@ -843,7 +843,7 @@ bool ClassificationData::spiltDataIntoKFolds(const UINT K,const bool useStratifi
     crossValidationIndexs.clear();
 
     //K can not be zero
-    if( K > totalNumSamples ){
+    if( K == 0 ){
         errorLog << "spiltDataIntoKFolds(const UINT K,const bool useStratifiedSampling) - K can not be zero!" << std::endl;
         return false;
     }
