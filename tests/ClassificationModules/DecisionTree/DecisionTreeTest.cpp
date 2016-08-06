@@ -7,9 +7,9 @@ using namespace GRT;
 // Tests the square function
 TEST(Typedefs, TreeConstructor) {
   
-  
+  DecisionTree tree;
 
-  EXPECT_EQ(grt_sqr(a), expectedA);
+  EXPECT_TRUE( tree.getClassifierType() == DecisionTree::getClassifierType() );
 }
 
 int main(int argc, char **argv) {
