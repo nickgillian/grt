@@ -9,7 +9,11 @@ TEST(Typedefs, TreeConstructor) {
   
   DecisionTree tree;
 
-  EXPECT_TRUE( tree.getClassifierType() == DecisionTree::getClassifierType() );
+  //Check the type matches
+  EXPECT_TRUE( tree.getClassifierType() == DecisionTree::getType() );
+
+  //Check the module is not trained
+  EXPECT_TRUE( !tree.getTrained() );
 }
 
 int main(int argc, char **argv) {

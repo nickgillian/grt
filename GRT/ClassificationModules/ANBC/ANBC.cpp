@@ -2,19 +2,19 @@
 GRT MIT License
 Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-and associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
+The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
@@ -41,7 +41,7 @@ ANBC::ANBC(bool useScaling,bool useNullRejection,Float nullRejectionCoeff)
     trainingLog.setProceedingText("[TRAINING ANBC]");
     warningLog.setProceedingText("[WARNING ANBC]");
 }
-    
+
 ANBC::ANBC(const ANBC &rhs){
     classType = "ANBC";
     classifierType = classType;
@@ -55,19 +55,19 @@ ANBC::ANBC(const ANBC &rhs){
 
 ANBC::~ANBC(void)
 {
-} 
+}
 
 ANBC& ANBC::operator=(const ANBC &rhs){
-	if( this != &rhs ){
+    if( this != &rhs ){
         //ANBC variables
         this->weightsDataSet = rhs.weightsDataSet;
         this->weightsData = rhs.weightsData;
-		this->models = rhs.models;
+        this->models = rhs.models;
         
         //Classifier variables
         copyBaseVariables( (Classifier*)&rhs );
-	}
-	return *this;
+    }
+    return *this;
 }
 
 bool ANBC::deepCopyFrom(const Classifier *classifier){
@@ -75,19 +75,19 @@ bool ANBC::deepCopyFrom(const Classifier *classifier){
     if( classifier == NULL ) return false;
     
     if( this->getClassifierType() == classifier->getClassifierType() ){
-
+        
         ANBC *ptr = (ANBC*)classifier;
-        //Clone the ANBC values 
+        //Clone the ANBC values
         this->weightsDataSet = ptr->weightsDataSet;
         this->weightsData = ptr->weightsData;
-		this->models = ptr->models;
+        this->models = ptr->models;
         
         //Clone the classifier variables
         return copyBaseVariables( classifier );
     }
     return false;
 }
-    
+
 bool ANBC::train_(ClassificationData &trainingData){
     
     //Clear any previous model
@@ -144,7 +144,7 @@ bool ANBC::train_(ClassificationData &trainingData){
             
             if( !weightsFound ){
                 errorLog << "train_(ClassificationData &trainingData) - Failed to find the weights for class " << classLabel << std::endl;
-                return false;
+                    return false;
             }
         }else{
             //If the weights data has not been set then all the weights are 1
@@ -166,7 +166,7 @@ bool ANBC::train_(ClassificationData &trainingData){
         models[k].gamma = nullRejectionCoeff;
         if( !models[k].train( classLabel, data, weights ) ){
             errorLog << "train_(ClassificationData &trainingData) - Failed to train model for class: " << classLabel << std::endl;
-            
+                
             //Try and work out why the training failed
             if( models[k].N == 0 ){
                 errorLog << "train_(ClassificationData &trainingData) - N == 0!" << std::endl;
@@ -196,7 +196,7 @@ bool ANBC::train_(ClassificationData &trainingData){
     trained = true;
     return trained;
 }
-    
+
 bool ANBC::predict_(VectorFloat &inputVector){
     
     if( !trained ){
@@ -205,14 +205,14 @@ bool ANBC::predict_(VectorFloat &inputVector){
     }
     
     predictedClassLabel = 0;
-	maxLikelihood = -10000;
+    maxLikelihood = -10000;
     
     if( !trained ) return false;
     
-	if( inputVector.size() != numInputDimensions ){
+    if( inputVector.size() != numInputDimensions ){
         errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
-		return false;
-	}
+        return false;
+    }
     
     if( useScaling ){
         for(UINT n=0; n<numInputDimensions; n++){
@@ -225,8 +225,8 @@ bool ANBC::predict_(VectorFloat &inputVector){
     
     Float classLikelihoodsSum = 0;
     Float minDist = -99e+99;
-	for(UINT k=0; k<numClasses; k++){
-		classDistances[k] = models[k].predict( inputVector );
+    for(UINT k=0; k<numClasses; k++){
+        classDistances[k] = models[k].predict( inputVector );
         
         //At this point the class likelihoods and class distances are the same thing
         classLikelihoods[k] = classDistances[k];
@@ -237,7 +237,7 @@ bool ANBC::predict_(VectorFloat &inputVector){
         }else{
             classLikelihoods[k] = grt_exp( classLikelihoods[k] );
             classLikelihoodsSum += classLikelihoods[k];
-
+            
             //The loglikelihood values are negative so we want the values closest to 0
             if( classDistances[k] > minDist ){
                 minDist = classDistances[k];
@@ -245,7 +245,7 @@ bool ANBC::predict_(VectorFloat &inputVector){
             }
         }
     }
-
+    
     //If the class likelihoods sum is zero then all classes are -INF
     if( classLikelihoodsSum == 0 ){
         predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
@@ -263,16 +263,16 @@ bool ANBC::predict_(VectorFloat &inputVector){
         //Check to see if the best result is greater than the models threshold
         if( minDist >= models[predictedClassLabel].threshold ) predictedClassLabel = models[predictedClassLabel].classLabel;
         else predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
-    }else predictedClassLabel = models[predictedClassLabel].classLabel;
+        }else predictedClassLabel = models[predictedClassLabel].classLabel;
     
     return true;
 }
 
 bool ANBC::recomputeNullRejectionThresholds(){
-
+    
     if( trained ){
         if( nullRejectionThresholds.size() != numClasses )
-            nullRejectionThresholds.resize(numClasses);
+        nullRejectionThresholds.resize(numClasses);
         for(UINT k=0; k<numClasses; k++) {
             models[k].recomputeThresholdValue(nullRejectionCoeff);
             nullRejectionThresholds[k] = models[k].threshold;
@@ -281,7 +281,7 @@ bool ANBC::recomputeNullRejectionThresholds(){
     }
     return false;
 }
-    
+
 bool ANBC::reset(){
     return true;
 }
@@ -297,22 +297,22 @@ bool ANBC::clear(){
     
     return true;
 }
-    
-bool ANBC::saveModelToFile( std::fstream &file ) const{
+
+bool ANBC::save( std::fstream &file ) const{
     
     if(!file.is_open())
-	{
-		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
-		return false;
-	}
+    {
+        errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
+        return false;
+    }
     
-	//Write the header info
-	file<<"GRT_ANBC_MODEL_FILE_V2.0\n";
+    //Write the header info
+    file<<"GRT_ANBC_MODEL_FILE_V2.0\n";
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
-		return false;
+        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        return false;
     }
     
     if( trained ){
@@ -346,8 +346,8 @@ bool ANBC::saveModelToFile( std::fstream &file ) const{
     
     return true;
 }
-    
-bool ANBC::loadModelFromFile( std::fstream &file ){
+
+bool ANBC::load( std::fstream &file ){
     
     trained = false;
     numInputDimensions = 0;
@@ -357,7 +357,7 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
+        errorLog << "load(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -371,18 +371,18 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
     
     //Find the file type header
     if(word != "GRT_ANBC_MODEL_FILE_V2.0"){
-        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
+        errorLog << "load(string filename) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     if( trained ){
-    
+        
         //Resize the buffer
         models.resize(numClasses);
         
@@ -391,62 +391,62 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
             UINT modelID;
             file >> word;
             if(word != "*************_MODEL_*************"){
-                errorLog << "loadModelFromFile(string filename) - Could not find header for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find header for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             
             file >> word;
             if(word != "Model_ID:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find model ID for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find model ID for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             file >> modelID;
             
             if(modelID-1!=k){
                 errorLog << "ANBC: Model ID does not match the current class ID for the "<<k+1<<"th model" << std::endl;
-                return false;
+                    return false;
             }
             
             file >> word;
             if(word != "N:"){
                 errorLog << "ANBC: Could not find N for the "<<k+1<<"th model" << std::endl;
-                return false;
+                    return false;
             }
             file >> models[k].N;
             
             file >> word;
             if(word != "ClassLabel:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find ClassLabel for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find ClassLabel for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             file >> models[k].classLabel;
             classLabels[k] = models[k].classLabel;
             
             file >> word;
             if(word != "Threshold:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find the threshold for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find the threshold for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             file >> models[k].threshold;
             
             file >> word;
             if(word != "Gamma:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find the gamma parameter for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find the gamma parameter for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             file >> models[k].gamma;
             
             file >> word;
             if(word != "TrainingMu:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find the training mu parameter for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find the training mu parameter for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             file >> models[k].trainingMu;
             
             file >> word;
             if(word != "TrainingSigma:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find the training sigma parameter for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find the training sigma parameter for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             file >> models[k].trainingSigma;
             
@@ -458,8 +458,8 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
             //Load Mu, Sigma and Weights
             file >> word;
             if(word != "Mu:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find the Mu vector for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find the Mu vector for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             
             //Load Mu
@@ -471,8 +471,8 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
             
             file >> word;
             if(word != "Sigma:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find the Sigma vector for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find the Sigma vector for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             
             //Load Sigma
@@ -484,8 +484,8 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
             
             file >> word;
             if(word != "Weights:"){
-                errorLog << "loadModelFromFile(string filename) - Could not find the Weights vector for the "<<k+1<<"th model" << std::endl;
-                return false;
+                errorLog << "load(string filename) - Could not find the Weights vector for the "<<k+1<<"th model" << std::endl;
+                    return false;
             }
             
             //Load Weights
@@ -508,12 +508,12 @@ bool ANBC::loadModelFromFile( std::fstream &file ){
     
     return true;
 }
-    
+
 VectorFloat ANBC::getNullRejectionThresholds() const{
     if( !trained ) return VectorFloat();
     return nullRejectionThresholds;
 }
-    
+
 bool ANBC::setNullRejectionCoeff(Float nullRejectionCoeff){
     
     if( nullRejectionCoeff > 0 ){
@@ -533,7 +533,7 @@ bool ANBC::setWeights(const ClassificationData &weightsData){
     }
     return false;
 }
-    
+
 bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
     
     std::string word;
@@ -592,32 +592,32 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "*************_MODEL_*************"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find header for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         
         file >> word;
         if(word != "Model_ID:"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find model ID for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         file >> modelID;
         
         if(modelID-1!=k){
             errorLog << "ANBC: Model ID does not match the current class ID for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         
         file >> word;
         if(word != "N:"){
             errorLog << "ANBC: Could not find N for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         file >> models[k].N;
         
         file >> word;
         if(word != "ClassLabel:"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find ClassLabel for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         file >> models[k].classLabel;
         classLabels[k] = models[k].classLabel;
@@ -625,28 +625,28 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Threshold:"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find the threshold for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         file >> models[k].threshold;
         
         file >> word;
         if(word != "Gamma:"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find the gamma parameter for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         file >> models[k].gamma;
         
         file >> word;
         if(word != "TrainingMu:"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find the training mu parameter for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         file >> models[k].trainingMu;
         
         file >> word;
         if(word != "TrainingSigma:"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find the training sigma parameter for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         file >> models[k].trainingSigma;
         
@@ -659,7 +659,7 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Mu:"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find the Mu vector for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         
         //Load Mu
@@ -672,7 +672,7 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Sigma:"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find the Sigma vector for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         
         //Load Sigma
@@ -685,7 +685,7 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Weights:"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find the Weights vector for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
         
         //Load Weights
@@ -698,7 +698,7 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "*********************************"){
             errorLog << "loadANBCModelFromFile(string filename) - Could not find the model footer for the "<<k+1<<"th model" << std::endl;
-            return false;
+                return false;
         }
     }
     
@@ -719,4 +719,3 @@ bool ANBC::loadLegacyModelFromFile( std::fstream &file ){
 }
 
 GRT_END_NAMESPACE
-

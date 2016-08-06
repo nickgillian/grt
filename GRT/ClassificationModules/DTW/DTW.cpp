@@ -27,7 +27,7 @@ GRT_BEGIN_NAMESPACE
 RegisterClassifierModule< DTW > DTW::registerModule("DTW");
 
 DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,Float radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,Float nullRejectionLikelihoodThreshold){
-
+    
     this->useScaling=useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
@@ -98,7 +98,7 @@ DTW& DTW::operator=(const DTW &rhs){
         //Copy the classifier variables
         copyBaseVariables( (Classifier*)&rhs );
     }
-
+    
     return *this;
 }
 
@@ -133,7 +133,7 @@ bool DTW::deepCopyFrom(const Classifier *classifier){
         //Copy the classifier variables
         return copyBaseVariables( classifier );
     }
-
+    
     return false;
 }
 
@@ -220,7 +220,7 @@ bool DTW::train_(TimeSeriesClassificationData &data){
             //Search for the best training example for this class
             if( !train_NDDTW(classData,templatesBuffer[k],bestIndex) ){
                 errorLog << "train_(LabelledTimeSeriesClassificationData &labelledTrainingData) - Failed to train template for class with label: " << classLabel << std::endl;
-                return false;
+                    return false;
             }
         }
         
@@ -230,15 +230,15 @@ bool DTW::train_(TimeSeriesClassificationData &data){
         
         switch (trainingMethod) {
             case(0)://Standard Training
-            templatesBuffer[k].timeSeries = classData[bestIndex].getData();
+                templatesBuffer[k].timeSeries = classData[bestIndex].getData();
             break;
             case(1)://Training using Smoothing
-            //Smooth the data, reducing its size by a factor set by smoothFactor
-            smoothData(classData[ bestIndex ].getData(),smoothingFactor,templatesBuffer[k].timeSeries);
+                //Smooth the data, reducing its size by a factor set by smoothFactor
+                smoothData(classData[ bestIndex ].getData(),smoothingFactor,templatesBuffer[k].timeSeries);
             break;
             default:
-            errorLog << "Can not train model: Unknown training method "  << std::endl;
-            return false;
+                errorLog << "Can not train model: Unknown training method "  << std::endl;
+                return false;
             break;
         }
         
@@ -657,17 +657,17 @@ Float DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,Mat
                 if( distanceMatrix[i-1][j-1] <= v ){ index = 3; }
                 switch(index){
                     case(1):
-                    i--;
+                        i--;
                     break;
                     case(2):
-                    j--;
+                        j--;
                     break;
                     case(3):
-                    i--;
-                    j--;
+                        i--;
+                        j--;
                     break;
                     default:
-                    warningLog << "DTW computeDistance(...) - Could not compute a warping path for the input matrix! Dist: " << distanceMatrix[i-1][j] << " i: " << i << " j: " << j << std::endl;
+                        warningLog << "DTW computeDistance(...) - Could not compute a warping path for the input matrix! Dist: " << distanceMatrix[i-1][j] << " i: " << i << " j: " << j << std::endl;
                         return INFINITY;
                     break;
                 }
@@ -940,10 +940,10 @@ void DTW::smoothData(MatrixFloat &data,UINT smoothFactor,MatrixFloat &resultsDat
 
 ////////////////////////////// SAVE & LOAD FUNCTIONS ////////////////////////////////
 
-bool DTW::saveModelToFile( std::fstream &file ) const{
+bool DTW::save( std::fstream &file ) const{
     
     if(!file.is_open()){
-        errorLog << "saveModelToFile( string fileName ) - Could not open file to save data" << std::endl;
+        errorLog << "save( string fileName ) - Could not open file to save data" << std::endl;
         return false;
     }
     
@@ -951,7 +951,7 @@ bool DTW::saveModelToFile( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
@@ -1001,7 +1001,7 @@ bool DTW::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool DTW::loadModelFromFile( std::fstream &file ){
+bool DTW::load( std::fstream &file ){
     
     std::string word;
     UINT timeSeriesLength;
@@ -1028,7 +1028,7 @@ bool DTW::loadModelFromFile( std::fstream &file ){
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     

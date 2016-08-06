@@ -147,7 +147,7 @@ bool MLBase::save(const std::string filename) const {
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
     
-    if( !saveModelToFile( file ) ){
+    if( !save( file ) ){
         return false;
     }
     
@@ -156,18 +156,20 @@ bool MLBase::save(const std::string filename) const {
     return true;
 }
 
-bool MLBase::saveModelToFile(std::string filename) const{
-    return save( filename );
+bool MLBase::save(std::fstream &file) const {
+    return false; //The base class returns false, as this should be overwritten by the inheriting class
 }
 
-bool MLBase::saveModelToFile(std::fstream &file) const { return save(file); }
+bool MLBase::saveModelToFile(std::string filename) const { return save( filename ); }
+
+bool MLBase::saveModelToFile(std::fstream &file) const { return save( file ); }
 
 bool MLBase::load(const std::string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
     
-    if( !loadModelFromFile( file ) ){
+    if( !load( file ) ){
         return false;
     }
     
@@ -177,11 +179,13 @@ bool MLBase::load(const std::string filename){
     return true;
 }
 
-bool MLBase::loadModelFromFile(std::string filename){
-    return load(filename);
+bool MLBase::load(std::fstream &file) {
+    return false; //The base class returns false, as this should be overwritten by the inheriting class
 }
 
-bool MLBase::loadModelFromFile(std::fstream &file){ return load(file); }
+bool MLBase::loadModelFromFile(std::string filename){ return load( filename ); }
+
+bool MLBase::loadModelFromFile(std::fstream &file){ return load( file ); }
 
 bool MLBase::getModel(std::ostream &stream) const { return true; }
 

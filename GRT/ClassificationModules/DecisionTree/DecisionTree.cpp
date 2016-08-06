@@ -23,8 +23,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string DecisionTree::typeId = "DecisionTree";
+std::string DecisionTree::getType() { return DecisionTree::typeId; }
+
 //Register the DecisionTree module with the Classifier base class
-RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule("DecisionTree");
+RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule( DecisionTree::getType() );
 
 DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const UINT numSplittingSteps,const bool useScaling){
 
@@ -37,10 +41,10 @@ DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT m
     this->numSplittingSteps = numSplittingSteps;
     this->useScaling = useScaling;
     this->supportsNullRejection = true;
-    Classifier::classType = "DecisionTree";
+    Classifier::classType = DecisionTree::getType();
     classifierType = Classifier::classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    Classifier::debugLog.setProceedingText("[DEBUG DecisionTree]");
+    Classifier::debugLog.setProceedingText("[DEBUG " + DecisionTree::getType() + "]");
     Classifier::errorLog.setProceedingText("[ERROR DecisionTree]");
     Classifier::trainingLog.setProceedingText("[TRAINING DecisionTree]");
     Classifier::warningLog.setProceedingText("[WARNING DecisionTree]");
@@ -52,7 +56,7 @@ DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT m
 DecisionTree::DecisionTree(const DecisionTree &rhs){
     tree = NULL;
     decisionTreeNode = NULL;
-    Classifier::classType = "DecisionTree";
+    Classifier::classType = DecisionTree::getType();
     classifierType = Classifier::classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
     Classifier:: debugLog.setProceedingText("[DEBUG DecisionTree]");

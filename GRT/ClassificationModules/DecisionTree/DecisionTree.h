@@ -179,12 +179,14 @@ public:
     @return returns true if the decision tree node was updated, false otherwise
     */
     bool setDecisionTreeNode( const DecisionTreeNode &node );
+
+    static std::string getType();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
-    using MLBase::saveModelToFile;
-    using MLBase::loadModelFromFile;
-    using MLBase::train;
-    using MLBase::predict;
+    using MLBase::save;
+    using MLBase::load;
+    using MLBase::train_;
+    using MLBase::predict_;
     using MLBase::print;
     
 protected:
@@ -201,7 +203,7 @@ protected:
     VectorFloat classClusterMean;
     VectorFloat classClusterStdDev;
     static RegisterClassifierModule< DecisionTree > registerModule;
-    
+    static std::string typeId;
 };
 
 GRT_END_NAMESPACE

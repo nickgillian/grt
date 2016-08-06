@@ -70,6 +70,8 @@ class GRT_API TestResultsObserverManager : public ObserverManager< TestInstanceR
 class GRT_API MLBase : public GRTBase, public Observer< TrainingResult >, public Observer< TestInstanceResult >
 {
 public:
+    enum BaseTypes{BASE_TYPE_NOT_SET=0,CLASSIFIER,REGRESSIFIER,CLUSTERER}; ///<Enum that defines the type of inherited class
+
     /**
     Default MLBase Constructor
     */
@@ -272,7 +274,7 @@ public:
     @param filename: the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool save( const std::string filename ) const;
+    virtual bool save(const std::string filename) const;
     
     /**
     This saves the model to a file, it calls the loadModelFromFile(std::string filename) function unless it is overwritten by the derived class.
@@ -301,38 +303,32 @@ public:
     virtual bool load(std::fstream &file);
     
     /**
-    This saves the trained model to a file, it calls the saveModelToFile(fstream &file) function unless it is overwritten by the derived class.
-    
+    @deprecated use save(std::string filename) instead
     @param the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
     GRT_DEPRECATED_MSG( "saveModelToFile(std::string filename) is deprecated, use save(std::string filename) instead", virtual bool saveModelToFile(std::string filename) const );
     
     /**
-    This saves the trained model to a file.
-    This function should be overwritten by the derived class.
-    
+    @deprecated use save(std::fstream &file) instead
     @param file: a reference to the file the model will be saved to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool saveModelToFile(std::fstream &file) const;
+    GRT_DEPRECATED_MSG( "saveModelToFile(std::fstream &file) is deprecated, use save(std::fstream &file) instead", virtual bool saveModelToFile(std::fstream &file) const );
     
     /**
-    This loads a trained model from a file, it calls the loadModelFromFile(fstream &file) function unless it is overwritten by the derived class.
-    
+    @deprecated use load(std::string filename) instead
     @param filename: the name of the file to load the model from
     @return returns true if the model was loaded successfully, false otherwise
     */
-    virtual bool loadModelFromFile(std::string filename);
+    GRT_DEPRECATED_MSG( "loadModelFromFile(std::string filename) is deprecated, use load(std::string filename) instead",virtual bool loadModelFromFile(std::string filename) );
     
     /**
-    This loads a trained model from a file.
-    This function should be overwritten by the derived class.
-    
+    @deprecated use load(std::fstream &file) instead
     @param file: a reference to the file the model will be loaded from
     @return returns true if the model was loaded successfully, false otherwise
     */
-    virtual bool loadModelFromFile(std::fstream &file);
+    GRT_DEPRECATED_MSG( "loadModelFromFile(std::fstream &file) is deprecated, use load(std::fstream &file) instead",virtual bool loadModelFromFile(std::fstream &file) );
     
     /**
     This function adds the current model to the formatted stream.
@@ -759,9 +755,6 @@ protected:
     TrainingResultsObserverManager trainingResultsObserverManager;
     TestResultsObserverManager testResultsObserverManager;
     
-    public:
-    
-    enum BaseTypes{BASE_TYPE_NOT_SET=0,CLASSIFIER,REGRESSIFIER,CLUSTERER};
 };
 
 GRT_END_NAMESPACE

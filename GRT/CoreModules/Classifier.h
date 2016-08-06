@@ -41,6 +41,8 @@ GRT_BEGIN_NAMESPACE
 class GRT_API Classifier : public MLBase
 {
 public:
+    enum ClassifierModes{STANDARD_CLASSIFIER_MODE=0,TIMESERIES_CLASSIFIER_MODE}; ///<An enum that indicates if the classifier supports timeseries data
+
     /**
     Default Classifier Constructor
     */
@@ -323,14 +325,17 @@ protected:
     Vector< UINT > classLabels;
     Vector< MinMax > ranges;
     
+    /**
+    This function returns the classifier map, only one map should exist across all classifiers.
+    If a map has not been created then one will be created, otherwise the current map will be returned.
+    @return returns a pointer to the classifier map
+    */
     static StringClassifierMap *getMap() {
         if( !stringClassifierMap ){ stringClassifierMap = new StringClassifierMap; }
         return stringClassifierMap;
     }
     
-    enum ClassifierModes{STANDARD_CLASSIFIER_MODE=0,TIMESERIES_CLASSIFIER_MODE};
-    
-    private:
+private:
     static StringClassifierMap *stringClassifierMap;
     static UINT numClassifierInstances;
     
@@ -341,7 +346,7 @@ template< typename T >  Classifier* getNewClassificationModuleInstance() { retur
 
 template< typename T >
 class RegisterClassifierModule : public Classifier {
-    public:
+public:
     RegisterClassifierModule( std::string const &newClassificationModuleName ) {
         getMap()->insert( std::pair< std::string, Classifier*(*)() >(newClassificationModuleName, &getNewClassificationModuleInstance< T > ) );
     }

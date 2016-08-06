@@ -2,19 +2,19 @@
 GRT MIT License
 Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-and associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
+The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
@@ -42,7 +42,7 @@ AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool use
     trainingLog.setProceedingText("[TRAINING AdaBoost]");
     warningLog.setProceedingText("[WARNING AdaBoost]");
 }
-    
+
 AdaBoost::AdaBoost(const AdaBoost &rhs){
     classifierType = "AdaBoost";
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -57,8 +57,8 @@ AdaBoost::~AdaBoost(void)
 {
     //Clean up any weak classifiers
     clearWeakClassifiers();
-} 
-    
+}
+
 AdaBoost& AdaBoost::operator=(const AdaBoost &rhs){
     if( this != &rhs ){
         //Clear the current weak classifiers
@@ -80,7 +80,7 @@ AdaBoost& AdaBoost::operator=(const AdaBoost &rhs){
     }
     return *this;
 }
-    
+
 bool AdaBoost::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ){
@@ -111,7 +111,7 @@ bool AdaBoost::deepCopyFrom(const Classifier *classifier){
     }
     return false;
 }
-    
+
 bool AdaBoost::train_(ClassificationData &trainingData){
     
     //Clear any previous model
@@ -137,11 +137,11 @@ bool AdaBoost::train_(ClassificationData &trainingData){
         errorLog << "train_(ClassificationData &trainingData) - No weakClassifiers have been set. You need to set at least one weak classifier first." << std::endl;
         return false;
     }
-
+    
     classLabels.resize(numClasses);
     models.resize(numClasses);
     ranges = trainingData.getRanges();
-
+    
     //Scale the training data if needed
     if( useScaling ){
         trainingData.scale(ranges,0,1);
@@ -202,7 +202,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
                     Float prediction = weakLearner->predict( classData[i].getSample() );
                     
                     if( (prediction == positiveLabel && classData[i].getClassLabel() != POSITIVE_LABEL) ||        //False positive
-                        (prediction != positiveLabel && classData[i].getClassLabel() == POSITIVE_LABEL) ){       //False negative
+                    (prediction != positiveLabel && classData[i].getClassLabel() == POSITIVE_LABEL) ){       //False negative
                         e += weights[i]; //Increase the error proportional to the weight of the example
                         errorMatrix[k][i] = 1; //Flag that there was an error
                         numIncorrect++;
@@ -220,7 +220,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
                 }
                 
             }
-  
+            
             epsilon = minError;
             
             //Set alpha, using the M1 weight value, small weights (close to 0) will receive a strong weight in the final classifier
@@ -231,7 +231,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
             if( grt_isinf(alpha) ){ keepBoosting = false; trainingLog << "Alpha is INF. Stopping boosting for current class" << std::endl; }
             if( 0.5 - epsilon <= beta ){ keepBoosting = false; trainingLog << "Epsilon <= Beta. Stopping boosting for current class" << std::endl; }
             if( ++t >= numBoostingIterations ) keepBoosting = false;
-
+            
             trainingResult.setClassificationResult(t, minError, this);
             trainingResults.push_back(trainingResult);
             trainingResultsObserverManager.notifyObservers( trainingResult );
@@ -288,7 +288,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
     
     return true;
 }
-    
+
 bool AdaBoost::predict_(VectorFloat &inputVector){
     
     predictedClassLabel = 0;
@@ -323,35 +323,35 @@ bool AdaBoost::predict_(VectorFloat &inputVector){
         
         switch ( predictionMethod ) {
             case MAX_POSITIVE_VALUE:
-                if( result > 0 ){
-                    if( result > bestDistance ){
-                        bestDistance = result;
-                        bestClassIndex = k;
-                    }
-                    numPositivePredictions++;
-                    classLikelihoods[k] = result;
-                }else classLikelihoods[k] = 0;
-                
-                classDistances[k] = result;
-                sum += classLikelihoods[k];
-                
-                break;
-            case MAX_VALUE:
+            if( result > 0 ){
                 if( result > bestDistance ){
                     bestDistance = result;
                     bestClassIndex = k;
                 }
-                if( result < worstDistance ){
-                    worstDistance = result;
-                }
-                numPositivePredictions++; //In the MAX_VALUE mode we assume all samples are valid
+                numPositivePredictions++;
                 classLikelihoods[k] = result;
-                classDistances[k] = result;
-                
-                break;
+            }else classLikelihoods[k] = 0;
+            
+            classDistances[k] = result;
+            sum += classLikelihoods[k];
+            
+            break;
+            case MAX_VALUE:
+            if( result > bestDistance ){
+                bestDistance = result;
+                bestClassIndex = k;
+            }
+            if( result < worstDistance ){
+                worstDistance = result;
+            }
+            numPositivePredictions++; //In the MAX_VALUE mode we assume all samples are valid
+            classLikelihoods[k] = result;
+            classDistances[k] = result;
+            
+            break;
             default:
-                errorLog << "predict_(VectorFloat &inputVector) - Unknown prediction method!" << std::endl;
-                break;
+            errorLog << "predict_(VectorFloat &inputVector) - Unknown prediction method!" << std::endl;
+            break;
         }
     }
     
@@ -367,7 +367,7 @@ bool AdaBoost::predict_(VectorFloat &inputVector){
     //Normalize the class likelihoods
     if( sum > 0 ){
         for(UINT k=0; k<numClasses; k++)
-            classLikelihoods[k] /= sum;
+        classLikelihoods[k] /= sum;
     }
     maxLikelihood = classLikelihoods[ bestClassIndex ];
     
@@ -379,14 +379,14 @@ bool AdaBoost::predict_(VectorFloat &inputVector){
 }
 
 bool AdaBoost::recomputeNullRejectionThresholds(){
-
+    
     if( trained ){
         //Todo - need to add null rejection for AdaBoost
         return false;
     }
     return false;
 }
-    
+
 bool AdaBoost::setNullRejectionCoeff(Float nullRejectionCoeff){
     
     if( nullRejectionCoeff > 0 ){
@@ -396,22 +396,22 @@ bool AdaBoost::setNullRejectionCoeff(Float nullRejectionCoeff){
     }
     return false;
 }
-    
-bool AdaBoost::saveModelToFile( std::fstream &file ) const{
+
+bool AdaBoost::save( std::fstream &file ) const{
     
     if(!file.is_open())
-	{
-		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
-		return false;
-	}
+    {
+        errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
+        return false;
+    }
     
-	//Write the header info
-	file<<"GRT_ADABOOST_MODEL_FILE_V2.0\n";
+    //Write the header info
+    file<<"GRT_ADABOOST_MODEL_FILE_V2.0\n";
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
-		return false;
+        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        return false;
     }
     
     //Write the AdaBoost settings to the file
@@ -421,8 +421,8 @@ bool AdaBoost::saveModelToFile( std::fstream &file ) const{
     if( trained ){
         file << "Models: " << std::endl;
         for(UINT i=0; i<models.size(); i++){
-            if( !models[i].saveModelToFile( file ) ){
-                errorLog <<"saveModelToFile(fstream &file) - Failed to write model " << i << " to file!" << std::endl;
+            if( !models[i].save( file ) ){
+                errorLog <<"save(fstream &file) - Failed to write model " << i << " to file!" << std::endl;
                 file.close();
                 return false;
             }
@@ -431,14 +431,14 @@ bool AdaBoost::saveModelToFile( std::fstream &file ) const{
     
     return true;
 }
-    
-bool AdaBoost::loadModelFromFile( std::fstream &file ){
+
+bool AdaBoost::load( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model!" << std::endl;
+        errorLog << "load(string filename) - Could not open file to load model!" << std::endl;
         return false;
     }
     
@@ -451,36 +451,36 @@ bool AdaBoost::loadModelFromFile( std::fstream &file ){
     }
     
     if( word != "GRT_ADABOOST_MODEL_FILE_V2.0" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read file header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read file header!" << std::endl;
         errorLog << word << std::endl;
-		return false;
+        return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if( word != "PredictionMethod:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read PredictionMethod header!" << std::endl;
-		return false;
+        errorLog <<"load(fstream &file) - Failed to read PredictionMethod header!" << std::endl;
+        return false;
     }
     file >> predictionMethod;
     
     if( trained ){
         file >> word;
         if( word != "Models:" ){
-            errorLog <<"loadModelFromFile(fstream &file) - Failed to read Models header!" << std::endl;
+            errorLog <<"load(fstream &file) - Failed to read Models header!" << std::endl;
             return false;
         }
         
         //Load the models
         models.resize( numClasses );
         for(UINT i=0; i<models.size(); i++){
-            if( !models[i].loadModelFromFile( file ) ){
-                errorLog << "loadModelFromFile(fstream &file) - Failed to load model " << i << " from file!" << std::endl;
+            if( !models[i].load( file ) ){
+                errorLog << "load(fstream &file) - Failed to load model " << i << " from file!" << std::endl;
                 file.close();
                 return false;
             }
@@ -495,10 +495,10 @@ bool AdaBoost::loadModelFromFile( std::fstream &file ){
         classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
         classDistances.resize(numClasses,DEFAULT_NULL_DISTANCE_VALUE);
     }
-
+    
     return true;
 }
-    
+
 bool AdaBoost::clear(){
     
     //Clear the Classifier variables
@@ -509,7 +509,7 @@ bool AdaBoost::clear(){
     
     return true;
 }
-    
+
 bool AdaBoost::setWeakClassifier(const WeakClassifier &weakClassifer){
     
     //Clear any previous weak classifers
@@ -521,7 +521,7 @@ bool AdaBoost::setWeakClassifier(const WeakClassifier &weakClassifer){
     
     return true;
 }
-    
+
 bool AdaBoost::addWeakClassifier(const WeakClassifier &weakClassifer){
     
     WeakClassifier *weakClassiferPtr = weakClassifer.createNewInstance();
@@ -557,7 +557,7 @@ bool AdaBoost::setPredictionMethod(UINT predictionMethod){
     this->predictionMethod = predictionMethod;
     return true;
 }
- 
+
 void AdaBoost::printModel(){
     
     std::cout <<"AdaBoostModel: \n";
@@ -572,35 +572,35 @@ void AdaBoost::printModel(){
     }
     
 }
-    
+
 bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
     
     std::string word;
     
     file >> word;
     if( word != "NumFeatures:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumFeatures header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read NumFeatures header!" << std::endl;
         return false;
     }
     file >> numInputDimensions;
     
     file >> word;
     if( word != "NumClasses:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumClasses header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read NumClasses header!" << std::endl;
         return false;
     }
     file >> numClasses;
     
     file >> word;
     if( word != "UseScaling:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read UseScaling header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read UseScaling header!" << std::endl;
         return false;
     }
     file >> useScaling;
     
     file >> word;
     if( word != "UseNullRejection:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read UseNullRejection header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read UseNullRejection header!" << std::endl;
         return false;
     }
     file >> useNullRejection;
@@ -608,7 +608,7 @@ bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
     if( useScaling ){
         file >> word;
         if( word != "Ranges:" ){
-            errorLog <<"loadModelFromFile(fstream &file) - Failed to read Ranges header!" << std::endl;
+            errorLog <<"load(fstream &file) - Failed to read Ranges header!" << std::endl;
             return false;
         }
         ranges.resize( numInputDimensions );
@@ -621,14 +621,14 @@ bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
     
     file >> word;
     if( word != "Trained:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read Trained header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read Trained header!" << std::endl;
         return false;
     }
     file >> trained;
     
     file >> word;
     if( word != "PredictionMethod:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read PredictionMethod header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read PredictionMethod header!" << std::endl;
         return false;
     }
     file >> predictionMethod;
@@ -636,7 +636,7 @@ bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
     if( trained ){
         file >> word;
         if( word != "Models:" ){
-            errorLog <<"loadModelFromFile(fstream &file) - Failed to read Models header!" << std::endl;
+            errorLog <<"load(fstream &file) - Failed to read Models header!" << std::endl;
             return false;
         }
         
@@ -644,8 +644,8 @@ bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
         models.resize( numClasses );
         classLabels.resize( numClasses );
         for(UINT i=0; i<models.size(); i++){
-            if( !models[i].loadModelFromFile( file ) ){
-                errorLog << "loadModelFromFile(fstream &file) - Failed to load model " << i << " from file!" << std::endl;
+            if( !models[i].load( file ) ){
+                errorLog << "load(fstream &file) - Failed to load model " << i << " from file!" << std::endl;
                 file.close();
                 return false;
             }
@@ -668,4 +668,3 @@ bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
 }
 
 GRT_END_NAMESPACE
-
