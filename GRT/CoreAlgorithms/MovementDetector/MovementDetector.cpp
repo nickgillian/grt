@@ -11,7 +11,7 @@ MovementDetector::MovementDetector( const UINT numDimensions, const Float upperT
     errorLog.setProceedingText("[ERROR MovementDetector]");
     trainingLog.setProceedingText("[TRAINING MovementDetector]");
     warningLog.setProceedingText("[WARNING MovementDetector]");
-
+    
     this->numInputDimensions = numDimensions;
     this->numOutputDimensions = 1;
     this->upperThreshold = upperThreshold;
@@ -22,11 +22,11 @@ MovementDetector::MovementDetector( const UINT numDimensions, const Float upperT
     
     reset();
 }
-    
+
 MovementDetector::~MovementDetector(){
-        
-}
     
+}
+
 bool MovementDetector::predict_( VectorFloat &input ){
     
     movementDetected = false;
@@ -57,25 +57,25 @@ bool MovementDetector::predict_( VectorFloat &input ){
     
     switch( state ){
         case SEARCHING_FOR_MOVEMENT:
-            if( movementIndex >= upperThreshold ){
-                movementDetected = true;
-                state = SEARCHING_FOR_NO_MOVEMENT;
-            }
-            break;
+        if( movementIndex >= upperThreshold ){
+            movementDetected = true;
+            state = SEARCHING_FOR_NO_MOVEMENT;
+        }
+        break;
         case SEARCHING_FOR_NO_MOVEMENT:
-            if( movementIndex < lowerThreshold ){
-                noMovementDetected = true;
-                state = SEARCH_TIMEOUT;
-                searchTimer.start();
-            }
-            break;
+        if( movementIndex < lowerThreshold ){
+            noMovementDetected = true;
+            state = SEARCH_TIMEOUT;
+            searchTimer.start();
+        }
+        break;
         case SEARCH_TIMEOUT:
-            // searchTimeout is cast because of a C4018 warning on visual (signed/unsigned incompatibility)
-            if( searchTimer.getMilliSeconds() >= (signed long)searchTimeout ){
-                state = SEARCH_TIMEOUT;
-                searchTimer.stop();
-            }
-            break;
+        // searchTimeout is cast because of a C4018 warning on visual (signed/unsigned incompatibility)
+        if( searchTimer.getMilliSeconds() >= (signed long)searchTimeout ){
+            state = SEARCH_TIMEOUT;
+            searchTimer.stop();
+        }
+        break;
     }
     
     
@@ -104,14 +104,14 @@ bool MovementDetector::reset(){
     return true;
 }
 
-bool MovementDetector::saveModelToFile( std::fstream &file ) const{
+bool MovementDetector::save( std::fstream &file ) const{
     
     //Write the header info
     file << "GRT_MOVEMENT_DETECTOR_MODEL_FILE_V1.0\n";
     
     //Write the base settings to the file
     if( !MLBase::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save ML base settings to file!" << std::endl;
+        errorLog <<"save(fstream &file) - Failed to save ML base settings to file!" << std::endl;
         return false;
     }
     
@@ -124,13 +124,13 @@ bool MovementDetector::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool MovementDetector::loadModelFromFile( std::fstream &file ){
+bool MovementDetector::load( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model!" << std::endl;
+        errorLog << "load(string filename) - Could not open file to load model!" << std::endl;
         return false;
     }
     
@@ -139,40 +139,40 @@ bool MovementDetector::loadModelFromFile( std::fstream &file ){
     
     //Write the header info
     if( word != "GRT_MOVEMENT_DETECTOR_MODEL_FILE_V1.0" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read file header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read file header!" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !MLBase::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if( word != "SearchTimeout:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read SearchTimeout header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read SearchTimeout header!" << std::endl;
         return false;
     }
     file >> searchTimeout;
     
     file >> word;
     if( word != "UpperThreshold:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read UpperThreshold header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read UpperThreshold header!" << std::endl;
         return false;
     }
     file >> upperThreshold;
     
     file >> word;
     if( word != "LowerThreshold:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read LowerThreshold header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read LowerThreshold header!" << std::endl;
         return false;
     }
     file >> lowerThreshold;
     
     file >> word;
     if( word != "Gamma:" ){
-        errorLog <<"loadModelFromFile(fstream &file) - Failed to read Gamma header!" << std::endl;
+        errorLog <<"load(fstream &file) - Failed to read Gamma header!" << std::endl;
         return false;
     }
     file >> gamma;
