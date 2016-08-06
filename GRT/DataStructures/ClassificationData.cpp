@@ -133,7 +133,7 @@ bool ClassificationData::setAllowNullGestureClass(const bool allowNullGestureCla
 bool ClassificationData::addSample(const UINT classLabel,const VectorFloat &sample){
     
 	if( sample.getSize() != numDimensions ){
-        if( numSamples == 0 ){
+        if( totalNumSamples == 0 ){
             warningLog << "addSample(const UINT classLabel, VectorFloat &sample) - the size of the new sample (" << sample.getSize() << ") does not match the number of dimensions of the dataset (" << numDimensions << "), setting dimensionality to: " << numDimensions << std::endl;
             numDimensions = sample.getSize();
         }else{
