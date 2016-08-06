@@ -26,8 +26,22 @@
 #include <GRT/GRT.h>
 using namespace GRT;
 
+void runMatrixExample();
+void runClassificationDataExample();
+
 int main (int argc, const char * argv[])
 {
+
+    runMatrixExample();
+    
+    runClassificationDataExample();
+
+    return EXIT_SUCCESS;
+}
+
+void runMatrixExample(){
+
+    //This example demonstrates how to save and load data from a matrix
 
     //Create dummy matrix and fill it with some data
     //The matrix will have 100 rows and 5 columns
@@ -45,7 +59,7 @@ int main (int argc, const char * argv[])
     //Save the dummy data to a CSV file
     //Each row in the CSV file corresponds to a row in the matrix
     //Columns will be seperated by the comma delimiter (',')
-    x.save( "data.csv" );
+    x.save( "matrix_data.csv" );
 
     //Create a second matrix to load the data we just saved
     MatrixFloat y;
@@ -53,7 +67,7 @@ int main (int argc, const char * argv[])
     std::cout << "loading data from CSV file...\n";
 
     //Load the data from the CSV file, the load function will automatically determine the size of the matrix
-    y.load( "data.csv" );
+    y.load( "matrix_data.csv" );
 
     std::cout << "validating data...\n";
 
@@ -70,7 +84,70 @@ int main (int argc, const char * argv[])
     }
 
     std::cout << "data OK\n";
-    
-    return EXIT_SUCCESS;
 }
+
+void runClassificationDataExample(){
+
+    //This example demonstrates how to save and load supervised classification data
+
+    //Create a dummy classification data structure
+    ClassificationData data;
+
+    const unsigned int numDimensions = 3;
+    const unsigned int numExamples = 1000;
+    VectorFloat sample( numDimensions );
+    Random random;
+
+    //Add some random data to the classification data structure
+    for(unsigned int i=0; i<numExamples; i++){
+        for(unsigned int j=0; j<numDimensions; j++){
+            sample[j] = random.getRandomNumberUniform( 0.0, 1.0 );
+        }
+
+        //Create a random class label, between 0 and 10
+        unsigned int classLabel = random.getRandomNumberInt( 0, 10 );
+
+        //Add the sample to the data structure
+        data.addSample( classLabel, sample );
+    }
+
+    //Save the classification data to a custom GRT format (this is faster to save/load)
+    //The is a basic ASCII file, with a custom header followed by the raw data
+    data.save( "classification_data.grt" );
+
+    //The data can also be saved to a CSV file
+    //Each row in the CSV file corresponds to a sample in the classification data
+    //The first column in the CSV file corresponds to the class label
+    //The following columns correspond to each of the dimensions in the input data
+    //There will therefore be M rows and N+1 columns, where M is the number of examples and N is the number of dimensions
+    //Columns will be seperated by the comma delimiter (',')
+    data.save( "classification_data.csv" );
+
+    //Create a second classification data structure to load the data
+    ClassificationData grtData;
+
+    //Load the data from the GRT file
+    grtData.load( "classification_data.grt" );
+
+    //Check to make sure the sizes match
+    grt_assert( data.getNumDimensions() == grtData.getNumDimensions() );
+    grt_assert( data.getNumSamples() == grtData.getNumSamples() );
+
+    //Check the values match
+    for(unsigned int i=0; i<data.getNumSamples(); i++){
+
+        //Verify the class label
+        grt_assert( data[i].getClassLabel() == grtData[i].getClassLabel() );
+
+        //Verify the sample data
+        for(unsigned int j=0; j<data.getNumDimensions(); j++){
+            grt_assert( fabs( data[i][j] - grtData[i][j] ) < 1.0e-5 );
+        }
+    }
+
+    std::cout << "grt classification data OK\n";
+
+
+}
+
 
