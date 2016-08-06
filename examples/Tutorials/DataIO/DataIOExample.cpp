@@ -98,6 +98,10 @@ void runClassificationDataExample(){
     VectorFloat sample( numDimensions );
     Random random;
 
+    //Set the size of the classification data structure, this will make adding new samples faster
+    data.setNumDimensions( numDimensions );
+    data.reserve( numExamples );
+
     //Add some random data to the classification data structure
     for(unsigned int i=0; i<numExamples; i++){
         for(unsigned int j=0; j<numDimensions; j++){
@@ -123,7 +127,8 @@ void runClassificationDataExample(){
     //Columns will be seperated by the comma delimiter (',')
     data.save( "classification_data.csv" );
 
-    //Create a second classification data structure to load the data
+
+    //Create a second classification data structure to load the GRT formatted data
     ClassificationData grtData;
 
     //Load the data from the GRT file
@@ -145,7 +150,32 @@ void runClassificationDataExample(){
         }
     }
 
-    std::cout << "grt classification data OK\n";
+    std::cout << "grt formatted classification data OK\n";
+
+
+    //Create a third classification data structure to load the CSV formatted data
+    ClassificationData csvData;
+
+    //Load the data from the GRT file
+    csvData.load( "classification_data.csv" );
+
+    //Check to make sure the sizes match
+    grt_assert( data.getNumDimensions() == csvData.getNumDimensions() );
+    grt_assert( data.getNumSamples() == csvData.getNumSamples() );
+
+    //Check the values match
+    for(unsigned int i=0; i<data.getNumSamples(); i++){
+
+        //Verify the class label
+        grt_assert( data[i].getClassLabel() == csvData[i].getClassLabel() );
+
+        //Verify the sample data
+        for(unsigned int j=0; j<data.getNumDimensions(); j++){
+            grt_assert( fabs( data[i][j] - csvData[i][j] ) < 1.0e-5 );
+        }
+    }
+
+    std::cout << "csv formatted classification data OK\n";
 
 
 }
