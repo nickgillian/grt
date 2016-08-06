@@ -19,98 +19,57 @@
  */
 
  /*
- You should run this example with one argument pointing to the data you want to load. A good dataset to run this example is acc-orientation.grt, which can be found in the GRT data folder.
+ This example demonstrates some basic IO functionality with the GRT, such as saving and loading CSV (comma seperated data) data.
  */
 
 //You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
-using namespace std;
 
 int main (int argc, const char * argv[])
 {
-    //Parse the data filename from the argument list
-    if( argc != 2 ){
-        cout << "Error: failed to parse data filename from command line. You should run this example with one argument pointing to the data filename!\n";
-        return EXIT_FAILURE;
-    }
-    const string filename = argv[1];
 
-    //Load some training data from a file
-    ClassificationData trainingData;
-    
-    if( !trainingData.load( filename ) ){
-        cout << "ERROR: Failed to load training data from file\n";
-        return EXIT_FAILURE;
-    }
-    
-    cout << "Data Loaded\n";
-    
-    //Print out some stats about the training data
-    trainingData.printStats();
-    
-    //Partition the training data into a training dataset and a test dataset. 80 means that 80%
-    //of the data will be used for the training data and 20% will be returned as the test dataset
-    ClassificationData testData = trainingData.partition( 80 );
-    
-    //Create a new Gesture Recognition Pipeline
-    GestureRecognitionPipeline pipeline;
+    //Create dummy matrix and fill it with some data
+    //The matrix will have 100 rows and 5 columns
+    MatrixFloat x( 100, 5 );
 
-    //Add a naive bayes classifier to the pipeline
-    pipeline << ANBC();
-    
-    //Train the pipeline using the training data
-    if( !pipeline.train( trainingData ) ){
-        cout << "ERROR: Failed to train the pipeline!\n";
-        return EXIT_FAILURE;
+    Random random;
+    for(unsigned int i=0; i<x.getNumRows(); i++){
+        for(unsigned int j=0; j<x.getNumCols(); j++){
+            x[i][j] = random.getRandomNumberUniform( 0.0, 1.0 );
+        }
     }
-    
-    //Save the pipeline to a file
-	if( !pipeline.save( "HelloWorldPipeline.grt" ) ){
-        cout << "ERROR: Failed to save the pipeline!\n";
-        return EXIT_FAILURE;
+
+    std::cout << "saving data to CSV file...\n";
+
+    //Save the dummy data to a CSV file
+    //Each row in the CSV file corresponds to a row in the matrix
+    //Columns will be seperated by the comma delimiter (',')
+    x.save( "data.csv" );
+
+    //Create a second matrix to load the data we just saved
+    MatrixFloat y;
+
+    std::cout << "loading data from CSV file...\n";
+
+    //Load the data from the CSV file, the load function will automatically determine the size of the matrix
+    y.load( "data.csv" );
+
+    std::cout << "validating data...\n";
+
+    //Check to make sure the sizes match
+    grt_assert( x.getSize() == y.getSize() );
+    grt_assert( x.getNumRows() == y.getNumRows() );
+    grt_assert( x.getNumCols() == y.getNumCols() );
+
+    //Check the values match
+    for(unsigned int i=0; i<x.getNumRows(); i++){
+        for(unsigned int j=0; j<x.getNumCols(); j++){
+            grt_assert( fabs( x[i][j] - y[i][j] ) < 1.0e-5 );
+        }
     }
-    
-	//Load the pipeline from a file
-	if( !pipeline.load( "HelloWorldPipeline.grt" ) ){
-        cout << "ERROR: Failed to load the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-    
-    //Test the pipeline using the test data
-    if( !pipeline.test( testData ) ){
-        cout << "ERROR: Failed to test the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-    
-    //Print some stats about the testing
-    cout << "Test Accuracy: " << pipeline.getTestAccuracy() << endl;
-    
-    //Get the class labels
-    Vector< UINT > classLabels = pipeline.getClassLabels();
-    
-    cout << "Precision: ";
-    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        cout << "\t" << pipeline.getTestPrecision( classLabels[k] );
-    }cout << endl;
-    
-    cout << "Recall: ";
-    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        cout << "\t" << pipeline.getTestRecall( classLabels[k] );
-    }cout << endl;
-    
-    cout << "FMeasure: ";
-    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        cout << "\t" << pipeline.getTestFMeasure( classLabels[k] );
-    }cout << endl;
-    
-    MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
-    cout << "ConfusionMatrix: \n";
-    for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
-        for(UINT j=0; j<confusionMatrix.getNumCols(); j++){
-            cout << confusionMatrix[i][j] << "\t";
-        }cout << endl;
-    }
+
+    std::cout << "data OK\n";
     
     return EXIT_SUCCESS;
 }
