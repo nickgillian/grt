@@ -127,7 +127,7 @@ void draw() {
 void oscEvent(OscMessage theOscMessage) {
   /* check if theOscMessage has the address pattern we are looking for. */
   
-  //println("### received an osc message. with address pattern "+theOscMessage.addrPattern());
+  println("### received an osc message. with address pattern "+theOscMessage.addrPattern());
   
   if(theOscMessage.checkAddrPattern("/gyrosc/gyro")==true) {
      gyro[0] = theOscMessage.get(0).floatValue(); 
