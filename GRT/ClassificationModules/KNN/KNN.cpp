@@ -145,7 +145,7 @@ bool KNN::train_(ClassificationData &trainingData){
     for(UINT k=minKSearchValue; k<=maxKSearchValue; k++){
         //Randomly spilt the data and use 80% to train the algorithm and 20% to test it
         ClassificationData trainingSet(trainingData);
-        ClassificationData testSet = trainingSet.partition(80,true);
+        ClassificationData testSet = trainingSet.split(80,true);
         
         if( !train_(trainingSet, k) ){
             errorLog << "Failed to train model for a k value of " << k << std::endl;

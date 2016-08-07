@@ -105,7 +105,7 @@ int main (int argc, const char * argv[])
     
     //Print the start and end indexs of each time series
     Vector< TimeSeriesPositionTracker > positionTracker = trainingData.getTimeSeriesPositionTracker();
-    for(UINT i=0; i<positionTracker.size(); i++){
+    for(UINT i=0; i<positionTracker.getSize(); i++){
         cout << "Class Label: " << positionTracker[i].getClassLabel() << "\t";
         cout << "Start Index: " << positionTracker[i].getStartIndex() << "\t";
         cout << "End Index: " << positionTracker[i].getEndIndex() << "\t";
