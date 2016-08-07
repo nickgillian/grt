@@ -282,11 +282,11 @@ bool SwipeDetector::reset(){
     return true;
 }
     
-bool SwipeDetector::saveModelToFile( std::fstream &file ) const{
+bool SwipeDetector::save( std::fstream &file ) const{
     
     if(!file.is_open())
 	{
-		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+		errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
 		return false;
 	}
     
@@ -295,7 +295,7 @@ bool SwipeDetector::saveModelToFile( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
 		return false;
     }
     
@@ -319,7 +319,7 @@ bool SwipeDetector::saveModelToFile( std::fstream &file ) const{
     return true;
 }
     
-bool SwipeDetector::loadModelFromFile( std::fstream &file ){
+bool SwipeDetector::load( std::fstream &file ){
     
     trained = false;
     numInputDimensions = 0;
@@ -328,7 +328,7 @@ bool SwipeDetector::loadModelFromFile( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
+        errorLog << "load(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -338,13 +338,13 @@ bool SwipeDetector::loadModelFromFile( std::fstream &file ){
 
     //Find the file type header
     if(word != "GRT_SWIPE_DETECTION_MODEL_FILE_V1.0"){
-        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
+        errorLog << "load(string filename) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
@@ -352,56 +352,56 @@ bool SwipeDetector::loadModelFromFile( std::fstream &file ){
         
         file >> word;
         if( word != "SwipeIndex:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeIndex!" << std::endl;
+            errorLog << "load(string filename) - Could not load the SwipeIndex!" << std::endl;
             return false;
         }
         file >> swipeIndex;
         
         file >> word;
         if( word != "ContextFilterSize:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the ContextFilterSize!" << std::endl;
+            errorLog << "load(string filename) - Could not load the ContextFilterSize!" << std::endl;
             return false;
         }
         file >> contextFilterSize;
         
         file >> word;
         if( word != "SwipeIntegrationCoeff:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeIntegrationCoeff!" << std::endl;
+            errorLog << "load(string filename) - Could not load the SwipeIntegrationCoeff!" << std::endl;
             return false;
         }
         file >> swipeIntegrationCoeff;
         
         file >> word;
         if( word != "MovementIntegrationCoeff:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the MovementIntegrationCoeff!" << std::endl;
+            errorLog << "load(string filename) - Could not load the MovementIntegrationCoeff!" << std::endl;
             return false;
         }
         file >> movementIntegrationCoeff;
         
         file >> word;
         if( word != "SwipeThreshold:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeThreshold!" << std::endl;
+            errorLog << "load(string filename) - Could not load the SwipeThreshold!" << std::endl;
             return false;
         }
         file >> swipeThreshold;
         
         file >> word;
         if( word != "HysteresisThreshold:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the HysteresisThreshold!" << std::endl;
+            errorLog << "load(string filename) - Could not load the HysteresisThreshold!" << std::endl;
             return false;
         }
         file >> hysteresisThreshold;
         
         file >> word;
         if( word != "SwipeThreshold:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the SwipeThreshold!" << std::endl;
+            errorLog << "load(string filename) - Could not load the SwipeThreshold!" << std::endl;
             return false;
         }
         file >> swipeThreshold;
         
         file >> word;
         if( word != "MovementThreshold:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not load the MovementThreshold!" << std::endl;
+            errorLog << "load(string filename) - Could not load the MovementThreshold!" << std::endl;
             return false;
         }
         file >> movementThreshold;

@@ -66,7 +66,7 @@ public:
         for(UINT i=0; i<N; i++){
             sum += x[i]*w[i];
         }
-        return (1.0 / (1.0+exp(-sum)));
+        return 1.0 / (1.0+exp(-sum));
     }
     
     UINT classLabel;

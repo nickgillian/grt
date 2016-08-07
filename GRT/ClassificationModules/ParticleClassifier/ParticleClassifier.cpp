@@ -199,24 +199,24 @@ bool ParticleClassifier::reset(){
     return true;
 }
     
-bool ParticleClassifier::saveModelToFile( std::fstream &file ) const{
+bool ParticleClassifier::save( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
 
     return true;
 }
     
-bool ParticleClassifier::loadModelFromFile( std::fstream &file ){
+bool ParticleClassifier::load( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
+        errorLog << "load(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
     

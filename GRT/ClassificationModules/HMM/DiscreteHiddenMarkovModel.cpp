@@ -670,11 +670,11 @@ bool DiscreteHiddenMarkovModel::reset(){
     return true;
 }
     
-bool DiscreteHiddenMarkovModel::saveModelToFile( std::fstream &file ) const{
+bool DiscreteHiddenMarkovModel::save( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog << "saveModelToFile( fstream &file ) - File is not open!" << std::endl;
+        errorLog << "save( fstream &file ) - File is not open!" << std::endl;
         return false;
     }
     
@@ -683,7 +683,7 @@ bool DiscreteHiddenMarkovModel::saveModelToFile( std::fstream &file ) const{
     
     //Write the base settings to the file
     if( !MLBase::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
@@ -720,13 +720,13 @@ bool DiscreteHiddenMarkovModel::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool DiscreteHiddenMarkovModel::loadModelFromFile( std::fstream &file ){
+bool DiscreteHiddenMarkovModel::load( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile( fstream &file ) - File is not open!" << std::endl;
+        errorLog << "load( fstream &file ) - File is not open!" << std::endl;
         return false;
     }
     
@@ -736,54 +736,54 @@ bool DiscreteHiddenMarkovModel::loadModelFromFile( std::fstream &file ){
     
     //Find the file type header
     if(word != "DISCRETE_HMM_MODEL_FILE_V1.0"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header!" << std::endl;
+        errorLog << "load( fstream &file ) - Could not find Model File Header!" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !MLBase::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "NumStates:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumStates header." << std::endl;
+        errorLog << "load( fstream &file ) - Could not find the NumStates header." << std::endl;
         return false;
     }
     file >> numStates;
     
     file >> word;
     if(word != "NumSymbols:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the NumSymbols header." << std::endl;
+        errorLog << "load( fstream &file ) - Could not find the NumSymbols header." << std::endl;
         return false;
     }
     file >> numSymbols;
     
     file >> word;
     if(word != "ModelType:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the modelType for the header." << std::endl;
+        errorLog << "load( fstream &file ) - Could not find the modelType for the header." << std::endl;
         return false;
     }
     file >> modelType;
     
     file >> word;
     if(word != "Delta:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Delta for the header." << std::endl;
+        errorLog << "load( fstream &file ) - Could not find the Delta for the header." << std::endl;
         return false;
     }
     file >> delta;
     
     file >> word;
     if(word != "Threshold:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Threshold for the header." << std::endl;
+        errorLog << "load( fstream &file ) - Could not find the Threshold for the header." << std::endl;
         return false;
     }
     file >> cThreshold;
     
     file >> word;
     if(word != "NumRandomTrainingIterations:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the numRandomTrainingIterations header." << std::endl;
+        errorLog << "load( fstream &file ) - Could not find the numRandomTrainingIterations header." << std::endl;
         return false;
     }
     file >> numRandomTrainingIterations;
@@ -795,7 +795,7 @@ bool DiscreteHiddenMarkovModel::loadModelFromFile( std::fstream &file ){
     //Load the A, B and Pi matrices
     file >> word;
     if(word != "A:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the A matrix header." << std::endl;
+        errorLog << "load( fstream &file ) - Could not find the A matrix header." << std::endl;
         return false;
     }
     
@@ -808,7 +808,7 @@ bool DiscreteHiddenMarkovModel::loadModelFromFile( std::fstream &file ){
     
     file >> word;
     if(word != "B:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the B matrix header." << std::endl;
+        errorLog << "load( fstream &file ) - Could not find the B matrix header." << std::endl;
         return false;
     }
     
@@ -821,7 +821,7 @@ bool DiscreteHiddenMarkovModel::loadModelFromFile( std::fstream &file ){
     
     file >> word;
     if(word != "Pi:"){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find the Pi matrix header." << std::endl;
+        errorLog << "load( fstream &file ) - Could not find the Pi matrix header." << std::endl;
         return false;
     }
     

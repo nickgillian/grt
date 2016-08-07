@@ -29,7 +29,7 @@ int main (int argc, const char * argv[])
     
     //Load some training data to train the ClusterTree model
     MatrixDouble trainingData;
-    if( !trainingData.loadFromCSVFile("ClusterTreeData.csv") ){
+    if( !trainingData.load("ClusterTreeData.csv") ){
         log << "Failed to load training data!" << endl;
         return EXIT_FAILURE;
     }
@@ -56,12 +56,12 @@ int main (int argc, const char * argv[])
         return EXIT_FAILURE;
     }
     
-    if( !ctree.saveModelToFile("Model.grt") ){
+    if( !ctree.save("Model.grt") ){
         log << "Failed to train model!" << endl;
         return EXIT_FAILURE;
     }
 	
-    if( !ctree.loadModelFromFile("Model.grt") ){
+    if( !ctree.load("Model.grt") ){
         log << "Failed to train model!" << endl;
         return EXIT_FAILURE;
     }
