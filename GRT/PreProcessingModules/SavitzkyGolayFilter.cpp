@@ -1,31 +1,31 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "SavitzkyGolayFilter.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the SavitzkyGolayFilter module with the PreProcessing base class
 RegisterPreProcessingModule< SavitzkyGolayFilter > SavitzkyGolayFilter::registerModule("SavitzkyGolayFilter");
-    
+
 SavitzkyGolayFilter::SavitzkyGolayFilter(UINT numLeftHandPoints,UINT numRightHandPoints,UINT derivativeOrder,UINT smoothingPolynomialOrder,UINT numDimensions){
     
     classType = "SavitzkyGolayFilter";
@@ -57,11 +57,11 @@ SavitzkyGolayFilter::SavitzkyGolayFilter(const SavitzkyGolayFilter &rhs){
 }
 
 SavitzkyGolayFilter::~SavitzkyGolayFilter(){
-
+    
 }
 
 SavitzkyGolayFilter& SavitzkyGolayFilter::operator=(const SavitzkyGolayFilter &rhs){
-	if(this!=&rhs){
+    if(this!=&rhs){
         this->numPoints = rhs.numPoints;
         this->numLeftHandPoints = rhs.numLeftHandPoints;
         this->numRightHandPoints = rhs.numRightHandPoints;
@@ -71,8 +71,8 @@ SavitzkyGolayFilter& SavitzkyGolayFilter::operator=(const SavitzkyGolayFilter &r
         this->yy = rhs.yy;
         this->coeff = rhs.coeff;
         copyBaseVariables( (PreProcessing*)&rhs );
-	}
-	return *this;
+    }
+    return *this;
 }
 
 bool SavitzkyGolayFilter::deepCopyFrom(const PreProcessing *preProcessing){
@@ -83,7 +83,7 @@ bool SavitzkyGolayFilter::deepCopyFrom(const PreProcessing *preProcessing){
         
         SavitzkyGolayFilter *ptr = (SavitzkyGolayFilter*)preProcessing;
         
-        //Clone the SavitzkyGolayFilter values 
+        //Clone the SavitzkyGolayFilter values
         this->numPoints = ptr->numPoints;
         this->numLeftHandPoints = ptr->numLeftHandPoints;
         this->numRightHandPoints = ptr->numRightHandPoints;
@@ -101,7 +101,7 @@ bool SavitzkyGolayFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     return false;
 }
-    
+
 bool SavitzkyGolayFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
@@ -118,7 +118,7 @@ bool SavitzkyGolayFilter::process(const VectorFloat &inputVector){
     
     if( processedData.size() == numOutputDimensions ) return true;
     return false;
-
+    
 }
 
 bool SavitzkyGolayFilter::reset(){
@@ -132,31 +132,11 @@ bool SavitzkyGolayFilter::reset(){
     }
     return false;
 }
-    
-bool SavitzkyGolayFilter::saveModelToFile( std::string filename ) const{
-    
-    if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The HighPassFilter has not been initialized" << std::endl;
-        return false;
-    }
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool SavitzkyGolayFilter::saveModelToFile(std::fstream &file) const{
+bool SavitzkyGolayFilter::save(std::fstream &file) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(std::fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(std::fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -173,26 +153,10 @@ bool SavitzkyGolayFilter::saveModelToFile(std::fstream &file) const{
     return true;
 }
 
-bool SavitzkyGolayFilter::loadModelFromFile( std::string filename ){
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        initialized = false;
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool SavitzkyGolayFilter::loadModelFromFile(std::fstream &file){
+bool SavitzkyGolayFilter::load(std::fstream &file){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(std::fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(std::fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -202,70 +166,70 @@ bool SavitzkyGolayFilter::loadModelFromFile(std::fstream &file){
     file >> word;
     
     if( word != "GRT_SAVITZKY_GOLAY_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
+        return false;
     }
     file >> numInputDimensions;
     
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
+        return false;
     }
     file >> numOutputDimensions;
     
     //Load the numPoints
     file >> word;
     if( word != "NumPoints:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumPoints header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read NumPoints header!" << std::endl;
+        return false;
     }
     file >> numPoints;
     
     //Load the NumLeftHandPoints
     file >> word;
     if( word != "NumLeftHandPoints:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumLeftHandPoints header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read NumLeftHandPoints header!" << std::endl;
+        return false;
     }
     file >> numLeftHandPoints;
     
     //Load the NumRightHandPoints
     file >> word;
     if( word != "NumRightHandPoints:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read numRightHandPoints header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read numRightHandPoints header!" << std::endl;
+        return false;
     }
     file >> numRightHandPoints;
     
     //Load the DerivativeOrder
     file >> word;
     if( word != "DerivativeOrder:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read DerivativeOrder header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read DerivativeOrder header!" << std::endl;
+        return false;
     }
     file >> derivativeOrder;
     
     //Load the SmoothingPolynomialOrder
     file >> word;
     if( word != "SmoothingPolynomialOrder:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read SmoothingPolynomialOrder header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read SmoothingPolynomialOrder header!" << std::endl;
+        return false;
     }
     file >> smoothingPolynomialOrder;
-        
-    //Init the filter module to ensure everything is initialized correctly
-    return init(numLeftHandPoints,numRightHandPoints,derivativeOrder,smoothingPolynomialOrder,numInputDimensions);  
-}
     
+    //Init the filter module to ensure everything is initialized correctly
+    return init(numLeftHandPoints,numRightHandPoints,derivativeOrder,smoothingPolynomialOrder,numInputDimensions);
+}
+
 bool SavitzkyGolayFilter::init(UINT numLeftHandPoints,UINT numRightHandPoints,UINT derivativeOrder,UINT smoothingPolynomialOrder,UINT numDimensions){
     
     initialized = false;
@@ -310,9 +274,9 @@ Float SavitzkyGolayFilter::filter(const Float x){
     VectorFloat y = filter(VectorFloat(1,x));
     
     if( y.size() > 0 ) return y[0];
-	return 0;
+    return 0;
 }
-    
+
 VectorFloat SavitzkyGolayFilter::filter(const VectorFloat &x){
     
     if( !initialized ){
@@ -331,13 +295,13 @@ VectorFloat SavitzkyGolayFilter::filter(const VectorFloat &x){
     //Filter the data
     for(UINT j=0; j<x.size(); j++){
         processedData[j] = 0;
-        for(UINT i=0; i<numPoints; i++) 
-            processedData[j] += data[i][j] * coeff[i];
+        for(UINT i=0; i<numPoints; i++)
+        processedData[j] += data[i][j] * coeff[i];
     }
     
     return processedData;
 }
-    
+
 bool SavitzkyGolayFilter::calCoeff(){
     
     int np = (int)numPoints;
@@ -356,40 +320,41 @@ bool SavitzkyGolayFilter::calCoeff(){
         sum=(ipj ? 0.0 : 1.0);
         
         for (k=1; k<=nr; k++) sum += pow(Float(k),Float(ipj));
-        for (k=1; k<=nl; k++) sum += pow(Float(-k),Float(ipj));
+            for (k=1; k<=nl; k++) sum += pow(Float(-k),Float(ipj));
+                
+            mm = min_(ipj,2*m-ipj);
+            
+            for (imj = -mm; imj<=mm; imj+=2) a[(ipj+imj)/2][(ipj-imj)/2] = sum;
+            }
         
-        mm = min_(ipj,2*m-ipj);
+        LUDecomposition alud(a);
+        for (j=0;j<m+1;j++) b[j]=0.0;
+            b[ld]=1.0;
+        if( !alud.solve_vector(b,b) ){
+            return false;
+        }
         
-        for (imj = -mm; imj<=mm; imj+=2) a[(ipj+imj)/2][(ipj-imj)/2] = sum;
-    }
-    
-    LUDecomposition alud(a);
-    for (j=0;j<m+1;j++) b[j]=0.0;
-    b[ld]=1.0;
-    if( !alud.solve_vector(b,b) ){
-        return false;
-    }
-    
-    for (kk=0; kk<np; kk++) c[kk]=0.0;
-    for (k = -nl; k<=nr; k++) {
-        sum=b[0];
-        fac=1.0;
-        
-        for(mm=1; mm<=m; mm++) 
+        for (kk=0; kk<np; kk++) c[kk]=0.0;
+        for (k = -nl; k<=nr; k++) {
+            sum=b[0];
+            fac=1.0;
+            
+            for(mm=1; mm<=m; mm++)
             sum += b[mm]*(fac *= k);
+            
+            kk=(np-k) % np;
+            c[kk]=sum;
+        }
         
-        kk=(np-k) % np;
-        c[kk]=sum;
+        //Reorder coefficients and place them in coeff
+        //Reorder last=0 future = np-1
+        pos = nl;
+        for(i=0; i<np; i++){
+            coeff[i] = c[pos--];
+            if(pos==0)pos=np-1;
+        }
+        return true;
     }
     
-    //Reorder coefficients and place them in coeff
-    //Reorder last=0 future = np-1
-    pos = nl;
-    for(i=0; i<np; i++){
-        coeff[i] = c[pos--];
-        if(pos==0)pos=np-1;
-    }
-    return true;
-}
-
-GRT_END_NAMESPACE
+    GRT_END_NAMESPACE
+    

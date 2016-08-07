@@ -36,7 +36,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 class GRT_API HighPassFilter : public PreProcessing{
-    public:
+public:
     /**
     Constructor, sets the filter factor, gain and dimensionality of the high pass filter.
     If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.
@@ -199,7 +199,7 @@ class GRT_API HighPassFilter : public PreProcessing{
     using MLBase::save;
     using MLBase::load;
     
-    protected:
+protected:
     Float filterFactor;        ///< The filter factor (alpha) of the filter
     Float gain;                ///< The gain factor of the filter
     VectorFloat xx;        ///< The previous input value(s)

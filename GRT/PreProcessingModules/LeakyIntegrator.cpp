@@ -1,31 +1,31 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "LeakyIntegrator.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the LeakyIntegrator module with the PreProcessing base class
 RegisterPreProcessingModule< LeakyIntegrator > LeakyIntegrator::registerModule("LeakyIntegrator");
-    
+
 LeakyIntegrator::LeakyIntegrator(const Float leakRate,const UINT numDimensions){
     classType = "LeakyIntegrator";
     preProcessingType = classType;
@@ -34,7 +34,7 @@ LeakyIntegrator::LeakyIntegrator(const Float leakRate,const UINT numDimensions){
     warningLog.setProceedingText("[WARNING LeakyIntegrator]");
     init(leakRate,numDimensions);
 }
-    
+
 LeakyIntegrator::LeakyIntegrator(const LeakyIntegrator &rhs){
     
     classType = "LeakyIntegrator";
@@ -50,9 +50,9 @@ LeakyIntegrator::LeakyIntegrator(const LeakyIntegrator &rhs){
 }
 
 LeakyIntegrator::~LeakyIntegrator(){
-
-}
     
+}
+
 LeakyIntegrator& LeakyIntegrator::operator=(const LeakyIntegrator &rhs){
     if( this != &rhs ){
         this->leakRate = rhs.leakRate;
@@ -61,7 +61,7 @@ LeakyIntegrator& LeakyIntegrator::operator=(const LeakyIntegrator &rhs){
     }
     return *this;
 }
-    
+
 bool LeakyIntegrator::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
@@ -70,7 +70,7 @@ bool LeakyIntegrator::deepCopyFrom(const PreProcessing *preProcessing){
         
         LeakyIntegrator *ptr = (LeakyIntegrator*)preProcessing;
         
-        //Clone the LeakyIntegrator values 
+        //Clone the LeakyIntegrator values
         this->leakRate = ptr->leakRate;
         this->y = ptr->y;
         
@@ -82,7 +82,7 @@ bool LeakyIntegrator::deepCopyFrom(const PreProcessing *preProcessing){
     
     return false;
 }
-    
+
 bool LeakyIntegrator::process(const VectorFloat &inputVector){
     
     if( !initialized ){
@@ -105,11 +105,11 @@ bool LeakyIntegrator::reset(){
     if( initialized ) return init(leakRate, numInputDimensions);
     return false;
 }
-    
-bool LeakyIntegrator::saveModelToFile( std::fstream &file ) const{
+
+bool LeakyIntegrator::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -125,10 +125,10 @@ bool LeakyIntegrator::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool LeakyIntegrator::loadModelFromFile( std::fstream &file ){
-     
+bool LeakyIntegrator::load( std::fstream &file ){
+    
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -138,8 +138,8 @@ bool LeakyIntegrator::loadModelFromFile( std::fstream &file ){
     file >> word;
     
     if( word != "GRT_LEAKY_INTEGRATOR_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     if( !PreProcessing::loadPreProcessingSettingsFromFile( file ) ){
@@ -150,17 +150,17 @@ bool LeakyIntegrator::loadModelFromFile( std::fstream &file ){
     //Load the LeakRate
     file >> word;
     if( word != "LeakRate:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read LeakRate header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read LeakRate header!" << std::endl;
+        return false;
     }
     file >> leakRate;
-
+    
     //Init the LeakyIntegrator module to ensure everything is initialized correctly
     return init(leakRate,numInputDimensions);
 }
-    
-bool LeakyIntegrator::init(const Float leakRate,const UINT numDimensions){
 
+bool LeakyIntegrator::init(const Float leakRate,const UINT numDimensions){
+    
     initialized = false;
     
     if( leakRate < 0 || leakRate > 1 ){
@@ -195,9 +195,9 @@ Float LeakyIntegrator::update(const Float x){
     
     if( y.size() == 0 ) return 0 ;
     
-	return y[0];
+    return y[0];
 }
-    
+
 VectorFloat LeakyIntegrator::update(const VectorFloat &x){
     
     if( !initialized ){
@@ -217,7 +217,7 @@ VectorFloat LeakyIntegrator::update(const VectorFloat &x){
     
     return processedData;
 }
-    
+
 bool LeakyIntegrator::setLeakRate(const Float leakRate){
     if( leakRate >= 0 && leakRate <= 1 ){
         this->leakRate = leakRate;
