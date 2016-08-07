@@ -1,28 +1,28 @@
 /**
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "Node.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 Node::StringNodeMap* Node::stringNodeMap = NULL;
 UINT Node::numNodeInstances = 0;
 
@@ -35,11 +35,11 @@ Node* Node::createInstanceFromString( std::string const &nodeType ){
     
     return iter->second();
 }
-    
+
 Node* Node::createNewInstance() const{
     return createInstanceFromString( nodeType );
 }
-    
+
 Node::Node(){
     nodeType = "";
     parent = NULL;
@@ -116,7 +116,7 @@ bool Node::print() const{
     
     return false;
 }
-    
+
 bool Node::getModel( std::ostream &stream ) const{
     
     std::string tab = "";
@@ -137,11 +137,11 @@ bool Node::getModel( std::ostream &stream ) const{
     return true;
 }
 
-bool Node::saveToFile( std::fstream &file ) const{
+bool Node::save( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog << "saveToFile(fstream &file) - File is not open!" << std::endl;
+        errorLog << "save(fstream &file) - File is not open!" << std::endl;
         return false;
     }
     
@@ -155,8 +155,8 @@ bool Node::saveToFile( std::fstream &file ) const{
     //If there is a left child then load the left child's data
     if( getHasLeftChild() ){
         file << "LeftChild\n";
-        if( !leftChild->saveToFile( file ) ){
-            errorLog << "saveToFile(fstream &file) - Failed to save left child at depth: " << depth << std::endl;
+        if( !leftChild->save( file ) ){
+            errorLog << "save(fstream &file) - Failed to save left child at depth: " << depth << std::endl;
             return false;
         }
     }
@@ -164,29 +164,29 @@ bool Node::saveToFile( std::fstream &file ) const{
     //If there is a right child then load the right child's data
     if( getHasRightChild() ){
         file << "RightChild\n";
-        if( !rightChild->saveToFile( file ) ){
-            errorLog << "saveToFile(fstream &file) - Failed to save right child at depth: " << depth << std::endl;
+        if( !rightChild->save( file ) ){
+            errorLog << "save(fstream &file) - Failed to save right child at depth: " << depth << std::endl;
             return false;
         }
     }
     
     //Save the custom parameters to the file
     if( !saveParametersToFile( file ) ){
-        errorLog << "saveToFile(fstream &file) - Failed to save parameters to file at depth: " << depth << std::endl;
+        errorLog << "save(fstream &file) - Failed to save parameters to file at depth: " << depth << std::endl;
         return false;
     }
     
     return true;
 }
 
-bool Node::loadFromFile( std::fstream &file ){
+bool Node::load( std::fstream &file ){
     
     //Clear any previous nodes
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadFromFile(fstream &file) - File is not open!" << std::endl;
+        errorLog << "load(fstream &file) - File is not open!" << std::endl;
         return false;
     }
     
@@ -196,42 +196,42 @@ bool Node::loadFromFile( std::fstream &file ){
     
     file >> word;
     if( word != "NodeType:" ){
-        errorLog << "loadFromFile(fstream &file) - Failed to find Node header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find Node header!" << std::endl;
         return false;
     }
     file >> nodeType;
     
     file >> word;
     if( word != "Depth:" ){
-        errorLog << "loadFromFile(fstream &file) - Failed to find Depth header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find Depth header!" << std::endl;
         return false;
     }
     file >> depth;
     
     file >> word;
     if( word != "NodeID:" ){
-        errorLog << "loadFromFile(fstream &file) - Failed to find NodeID header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find NodeID header!" << std::endl;
         return false;
     }
     file >> nodeID;
     
     file >> word;
     if( word != "IsLeafNode:" ){
-        errorLog << "loadFromFile(fstream &file) - Failed to find IsLeafNode header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find IsLeafNode header!" << std::endl;
         return false;
     }
     file >> isLeafNode;
     
     file >> word;
     if( word != "HasLeftChild:" ){
-        errorLog << "loadFromFile(fstream &file) - Failed to find HasLeftChild header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find HasLeftChild header!" << std::endl;
         return false;
     }
     file >> hasLeftChild;
     
     file >> word;
     if( word != "HasRightChild:" ){
-        errorLog << "loadFromFile(fstream &file) - Failed to find HasRightChild header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find HasRightChild header!" << std::endl;
         return false;
     }
     file >> hasRightChild;
@@ -239,13 +239,13 @@ bool Node::loadFromFile( std::fstream &file ){
     if( hasLeftChild ){
         file >> word;
         if( word != "LeftChild" ){
-            errorLog << "loadFromFile(fstream &file) - Failed to find LeftChild header!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find LeftChild header!" << std::endl;
             return false;
         }
         leftChild = createNewInstance();
         leftChild->setParent( this );
-        if( !leftChild->loadFromFile(file) ){
-            errorLog << "loadFromFile(fstream &file) - Failed to load left child at depth: " << depth << std::endl;
+        if( !leftChild->load(file) ){
+            errorLog << "load(fstream &file) - Failed to load left child at depth: " << depth << std::endl;
             return false;
         }
     }
@@ -253,13 +253,13 @@ bool Node::loadFromFile( std::fstream &file ){
     if( hasRightChild ){
         file >> word;
         if( word != "RightChild" ){
-            errorLog << "loadFromFile(fstream &file) - Failed to find RightChild header!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find RightChild header!" << std::endl;
             return false;
         }
         rightChild = createNewInstance();
         rightChild->setParent( this );
-        if( !rightChild->loadFromFile( file ) ){
-            errorLog << "loadFromFile(fstream &file) - Failed to load right child at depth: " << depth << std::endl;
+        if( !rightChild->load( file ) ){
+            errorLog << "load(fstream &file) - Failed to load right child at depth: " << depth << std::endl;
             return false;
         }
     }
@@ -316,7 +316,7 @@ UINT Node::getNodeID() const{
 UINT Node::getPredictedNodeID() const{
     return predictedNodeID;
 }
-    
+
 UINT Node::getMaxDepth() const {
     
     UINT maxDepth = depth;
@@ -336,10 +336,10 @@ UINT Node::getMaxDepth() const {
             maxDepth = maxRightDepth;
         }
     }
-        
+    
     return maxDepth;
 }
-    
+
 bool Node::getIsLeafNode() const{
     return isLeafNode;
 }
@@ -388,11 +388,10 @@ bool Node::setNodeID(const UINT nodeID){
     this->nodeID = nodeID;
     return true;
 }
-    
+
 bool Node::setIsLeafNode(const bool isLeafNode){
     this->isLeafNode = isLeafNode;
     return true;
 }
 
 GRT_END_NAMESPACE
-

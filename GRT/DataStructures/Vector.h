@@ -178,9 +178,7 @@ public:
 
 		if( N == 0 ) return false;
 
-        T *data = &(*this)[0];
-        for(unsigned int i=0; i<N; i++)
-            data[i] = value;
+        std::fill(this->begin(),this->end(),value);
 
         return true;
 	}

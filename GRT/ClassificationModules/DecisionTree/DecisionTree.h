@@ -180,7 +180,7 @@ public:
     */
     bool setDecisionTreeNode( const DecisionTreeNode &node );
 
-    static std::string getType();
+    static std::string getId();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
@@ -203,7 +203,7 @@ protected:
     VectorFloat classClusterMean;
     VectorFloat classClusterStdDev;
     static RegisterClassifierModule< DecisionTree > registerModule;
-    static std::string typeId;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

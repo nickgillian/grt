@@ -24,11 +24,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to indentify the object
-std::string DecisionTree::typeId = "DecisionTree";
-std::string DecisionTree::getType() { return DecisionTree::typeId; }
+std::string DecisionTree::id = "DecisionTree";
+std::string DecisionTree::getId() { return DecisionTree::id; }
 
 //Register the DecisionTree module with the Classifier base class
-RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule( DecisionTree::getType() );
+RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule( DecisionTree::getId() );
 
 DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const UINT numSplittingSteps,const bool useScaling){
 
@@ -41,13 +41,13 @@ DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT m
     this->numSplittingSteps = numSplittingSteps;
     this->useScaling = useScaling;
     this->supportsNullRejection = true;
-    Classifier::classType = DecisionTree::getType();
+    Classifier::classType = DecisionTree::getId();
     classifierType = Classifier::classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    Classifier::debugLog.setProceedingText("[DEBUG " + DecisionTree::getType() + "]");
-    Classifier::errorLog.setProceedingText("[ERROR DecisionTree]");
-    Classifier::trainingLog.setProceedingText("[TRAINING DecisionTree]");
-    Classifier::warningLog.setProceedingText("[WARNING DecisionTree]");
+    Classifier::debugLog.setProceedingText("[DEBUG " + DecisionTree::getId() + "]");
+    Classifier::errorLog.setProceedingText("[ERROR " + DecisionTree::getId() + "]");
+    Classifier::trainingLog.setProceedingText("[TRAINING " + DecisionTree::getId() + "]");
+    Classifier::warningLog.setProceedingText("[WARNING " + DecisionTree::getId() + "]");
     
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     
@@ -56,13 +56,13 @@ DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT m
 DecisionTree::DecisionTree(const DecisionTree &rhs){
     tree = NULL;
     decisionTreeNode = NULL;
-    Classifier::classType = DecisionTree::getType();
+    Classifier::classType = DecisionTree::getId();
     classifierType = Classifier::classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    Classifier:: debugLog.setProceedingText("[DEBUG DecisionTree]");
-    Classifier::errorLog.setProceedingText("[ERROR DecisionTree]");
-    Classifier::trainingLog.setProceedingText("[TRAINING DecisionTree]");
-    Classifier::warningLog.setProceedingText("[WARNING DecisionTree]");
+    Classifier:: debugLog.setProceedingText("[DEBUG " + DecisionTree::getId() + "]");
+    Classifier::errorLog.setProceedingText("[ERROR " + DecisionTree::getId() + "]");
+    Classifier::trainingLog.setProceedingText("[TRAINING " + DecisionTree::getId() + "]");
+    Classifier::warningLog.setProceedingText("[WARNING " + DecisionTree::getId() + "]");
     *this = rhs;
 }
 
@@ -169,7 +169,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     //Get the validation set if needed
     ClassificationData validationData;
     if( useValidationSet ){
-        validationData = trainingData.partition( validationSetSize );
+        validationData = trainingData.split( validationSetSize );
         validationSetAccuracy = 0;
         validationSetPrecision.resize( useNullRejection ? K+1 : K, 0 );
         validationSetRecall.resize( useNullRejection ? K+1 : K, 0 );
@@ -217,7 +217,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         for(UINT i=0; i<M; i++){
             //Run the prediction for this sample
             if( !tree->predict( trainingDataCopy[i].getSample(), classLikelihoods ) ){
-                Classifier::errorLog << "predict_(VectorFloat &inputVector) - Failed to predict!" << std::endl;
+                Classifier::errorLog << "train_(ClassificationData &trainingData) - Failed to predict training sample while building null rejection model!" << std::endl;
                 return false;
             }
             
@@ -257,9 +257,9 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         const UINT numTestSamples = validationData.getNumSamples();
         double numCorrect = 0;
         UINT testLabel = 0;
-        VectorDouble testSample;
-        VectorDouble validationSetPrecisionCounter( validationSetPrecision.size(), 0.0 );
-        VectorDouble validationSetRecallCounter( validationSetRecall.size(), 0.0 );
+        VectorFloat testSample;
+        VectorFloat validationSetPrecisionCounter( validationSetPrecision.size(), 0.0 );
+        VectorFloat validationSetRecallCounter( validationSetRecall.size(), 0.0 );
         Classifier::trainingLog << "Testing model with validation set..." << std::endl;
         for(UINT i=0; i<numTestSamples; i++){
             testLabel = validationData[i].getClassLabel();
@@ -275,23 +275,23 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         }
         
         validationSetAccuracy = (numCorrect / numTestSamples) * 100.0;
-        for(size_t i=0; i<validationSetPrecision.size(); i++){
+        for(UINT i=0; i<validationSetPrecision.getSize(); i++){
             validationSetPrecision[i] /= validationSetPrecisionCounter[i] > 0 ? validationSetPrecisionCounter[i] : 1;
         }
-        for(size_t i=0; i<validationSetRecall.size(); i++){
+        for(UINT i=0; i<validationSetRecall.getSize(); i++){
             validationSetRecall[i] /= validationSetRecallCounter[i] > 0 ? validationSetRecallCounter[i] : 1;
         }
         
         Classifier::trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
         
         Classifier::trainingLog << "Validation set precision: ";
-        for(size_t i=0; i<validationSetPrecision.size(); i++){
+        for(UINT i=0; i<validationSetPrecision.getSize(); i++){
             Classifier::trainingLog << validationSetPrecision[i] << " ";
         }
         Classifier::trainingLog << std::endl;
         
         Classifier::trainingLog << "Validation set recall: ";
-        for(size_t i=0; i<validationSetRecall.size(); i++){
+        for(UINT i=0; i<validationSetRecall.getSize(); i++){
             Classifier::trainingLog << validationSetRecall[i] << " ";
         }
         Classifier::trainingLog << std::endl;
@@ -360,7 +360,7 @@ bool DecisionTree::predict_(VectorFloat &inputVector){
         }
         
         //Set the predicted class distance as the leaf distance, all other classes will have a distance of zero
-        std::fill(classDistances.begin(),classDistances.end(),0);
+        classDistances.setAll(0.0);
         classDistances[ maxIndex ] = leafDistance;
         
         //Use the distance to check if the class label should be rejected or not
@@ -437,7 +437,7 @@ bool DecisionTree::save( std::fstream &file ) const{
     
     if( decisionTreeNode != NULL ){
         file << "DecisionTreeNodeType: " << decisionTreeNode->getNodeType() << std::endl;
-        if( !decisionTreeNode->saveToFile( file ) ){
+        if( !decisionTreeNode->save( file ) ){
             Classifier::errorLog <<"save(fstream &file) - Failed to save decisionTreeNode settings to file!" << std::endl;
             return false;
         }
@@ -454,7 +454,7 @@ bool DecisionTree::save( std::fstream &file ) const{
     
     if( tree != NULL ){
         file << "Tree:\n";
-        if( !tree->saveToFile( file ) ){
+        if( !tree->save( file ) ){
             Classifier::errorLog << "save(fstream &file) - Failed to save tree to file!" << std::endl;
             return false;
         }
@@ -558,7 +558,7 @@ bool DecisionTree::load( std::fstream &file ){
             return false;
         }
         
-        if( !decisionTreeNode->loadFromFile( file ) ){
+        if( !decisionTreeNode->load( file ) ){
             Classifier::errorLog <<"load(fstream &file) - Failed to load decisionTreeNode settings from file!" << std::endl;
             return false;
         }
@@ -626,7 +626,7 @@ bool DecisionTree::load( std::fstream &file ){
         }
         
         tree->setParent( NULL );
-        if( !tree->loadFromFile( file ) ){
+        if( !tree->load( file ) ){
             clear();
             Classifier::errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
@@ -990,7 +990,7 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
         }
         
         tree->setParent( NULL );
-        if( !tree->loadFromFile( file ) ){
+        if( !tree->load( file ) ){
             clear();
             Classifier::errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
@@ -1069,7 +1069,7 @@ bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
         }
         
         tree->setParent( NULL );
-        if( !tree->loadFromFile( file ) ){
+        if( !tree->load( file ) ){
             clear();
             Classifier::errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
@@ -1157,7 +1157,7 @@ bool DecisionTree::loadLegacyModelFromFile_v3( std::fstream &file ){
         }
         
         tree->setParent( NULL );
-        if( !tree->loadFromFile( file ) ){
+        if( !tree->load( file ) ){
             clear();
             Classifier::errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;

@@ -240,7 +240,7 @@ bool RegressionTree::save( std::fstream &file ) const{
     
     if( tree != NULL ){
         file << "Tree:\n";
-        if( !tree->saveToFile( file ) ){
+        if( !tree->save( file ) ){
             Regressifier::errorLog << "save(fstream &file) - Failed to save tree to file!" << std::endl;
             return false;
         }
@@ -333,7 +333,7 @@ bool RegressionTree::load( std::fstream &file ){
         }
         
         tree->setParent( NULL );
-        if( !tree->loadFromFile( file ) ){
+        if( !tree->load( file ) ){
             clear();
             Regressifier::errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;

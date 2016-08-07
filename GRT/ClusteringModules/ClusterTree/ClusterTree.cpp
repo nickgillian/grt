@@ -252,7 +252,7 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
 
 	if( tree != NULL ){
     	file << "Tree:\n";
-    	if( !tree->saveToFile( file ) ){
+    	if( !tree->save( file ) ){
         	Clusterer::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << std::endl;
         	return false;
     	}
@@ -352,7 +352,7 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
     	}
     
     	tree->setParent( NULL );
-    	if( !tree->loadFromFile( file ) ){
+    	if( !tree->load( file ) ){
             clear();
             Clusterer::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;

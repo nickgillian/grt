@@ -386,7 +386,7 @@ bool RandomForests::save( std::fstream &file ) const{
     
     if( decisionTreeNode != NULL ){
         file << "DecisionTreeNodeType: " << decisionTreeNode->getNodeType() << std::endl;
-        if( !decisionTreeNode->saveToFile( file ) ){
+        if( !decisionTreeNode->save( file ) ){
             Classifier::errorLog <<"save(fstream &file) - Failed to save decisionTreeNode settings to file!" << std::endl;
             return false;
         }
@@ -407,7 +407,7 @@ bool RandomForests::save( std::fstream &file ) const{
         for(UINT i=0; i<forestSize; i++){
             file << "Tree: " << i+1 << std::endl;
             file << "TreeNodeType: " << forest[i]->getNodeType() << std::endl;
-            if( !forest[i]->saveToFile( file ) ){
+            if( !forest[i]->save( file ) ){
                 errorLog << "save(fstream &file) - Failed to save tree " << i << " to file!" << std::endl;
                 return false;
             }
@@ -460,7 +460,7 @@ bool RandomForests::load( std::fstream &file ){
             return false;
         }
         
-        if( !decisionTreeNode->loadFromFile( file ) ){
+        if( !decisionTreeNode->load( file ) ){
             Classifier::errorLog <<"load(fstream &file) - Failed to load decisionTreeNode settings from file!" << std::endl;
             return false;
         }
@@ -564,7 +564,7 @@ bool RandomForests::load( std::fstream &file ){
             
             //Load the tree from the file
             tree->setParent( NULL );
-            if( !tree->loadFromFile( file ) ){
+            if( !tree->load( file ) ){
                 errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
                 return false;
             }

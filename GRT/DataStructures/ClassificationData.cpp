@@ -705,6 +705,10 @@ bool ClassificationData::sortClassLabels(){
 }
 
 ClassificationData ClassificationData::partition(const UINT trainingSizePercentage,const bool useStratifiedSampling){
+    return split(trainingSizePercentage, useStratifiedSampling);
+}
+
+ClassificationData ClassificationData::split(const UINT trainingSizePercentage,const bool useStratifiedSampling){
 
     //Partitions the dataset into a training dataset (which is kept by this instance of the ClassificationData) and
 	//a testing/validation dataset (which is return as a new instance of the ClassificationData).  The trainingSizePercentage
