@@ -298,14 +298,22 @@ public:
     std::string getStatsAsString() const;
     
     /**
-     Partitions the dataset into a training dataset (which is kept by this instance of the TimeSeriesClassificationData) and
-	 a testing/validation dataset (which is returned as a new instance of a TimeSeriesClassificationData).
-     
+     @deprecated use split(...) instead
 	 @param partitionPercentage: sets the percentage of data which remains in this instance, the remaining percentage of data is then returned as the testing/validation dataset
      @param useStratifiedSampling: sets if the dataset should be broken into homogeneous groups first before randomly being spilt, default value is false
 	 @return a new TimeSeriesClassificationData instance, containing the remaining data not kept but this instance
      */
-	TimeSeriesClassificationData partition(const UINT partitionPercentage,const bool useStratifiedSampling = false);
+	GRT_DEPRECATED_MSG( "partition(...) is deprecated, use split(...) instead", TimeSeriesClassificationData partition(const UINT partitionPercentage,const bool useStratifiedSampling = false) );
+
+    /**
+     Partitions the dataset into a training dataset (which is kept by this instance of the TimeSeriesClassificationData) and
+     a testing/validation dataset (which is returned as a new instance of a TimeSeriesClassificationData).
+     
+     @param partitionPercentage: sets the percentage of data which remains in this instance, the remaining percentage of data is then returned as the testing/validation dataset
+     @param useStratifiedSampling: sets if the dataset should be broken into homogeneous groups first before randomly being spilt, default value is false
+     @return a new TimeSeriesClassificationData instance, containing the remaining data not kept but this instance
+     */
+    TimeSeriesClassificationData split(const UINT partitionPercentage,const bool useStratifiedSampling = false);
     
     /**
      Adds the data in the labelledData set to the current instance of the TimeSeriesClassificationData.
