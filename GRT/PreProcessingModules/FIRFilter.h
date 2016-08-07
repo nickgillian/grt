@@ -35,6 +35,8 @@ GRT_BEGIN_NAMESPACE
     
 class GRT_API FIRFilter : public PreProcessing{
 public:
+    enum FilterTypes{LPF=0, HPF, BPF};
+
     /**
      Constructor, sets the filter factor, gain and dimensionality of the low pass filter.
      If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.
@@ -109,39 +111,21 @@ public:
     
     /**
      This saves the current settings of the FIRFilter to a file.
-     This overrides the saveModelToFile function in the PreProcessing base class.
-     
-     @param filename: the name of the file to save the settings to
-     @return returns true if the model was saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile( std::string filename ) const;
-    
-    /**
-     This saves the current settings of the FIRFilter to a file.
-     This overrides the saveModelToFile function in the PreProcessing base class.
+     This overrides the save function in the PreProcessing base class.
      
      @param file: a reference to the file the settings will be saved to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads the FIRFilter settings from a file.
-     This overrides the loadModelFromFile function in the PreProcessing base class.
-     
-     @param filename: the name of the file to load the settings from
-     @return returns true if the settings were loaded successfully, false otherwise
-     */
-    virtual bool loadModelFromFile( std::string filename );
-    
-    /**
-     This loads the FIRFilter settings from a file.
-     This overrides the loadModelFromFile function in the PreProcessing base class.
+     This overrides the load function in the PreProcessing base class.
      
      @param file: a reference to the file to load the settings from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file );
+    virtual bool load( std::fstream &file );
 
     /**
      Builds the filter, using the current filter parameters.
@@ -282,6 +266,10 @@ public:
      */
     bool setGain(const Float gain);
 
+    //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
+    using MLBase::save;
+    using MLBase::load;
+
 protected:
     UINT filterType;
     UINT numTaps;
@@ -294,9 +282,6 @@ protected:
     VectorFloat z;
     
     static RegisterPreProcessingModule< FIRFilter > registerModule;
-    
-public:
-    enum FilterTypes{LPF=0, HPF, BPF};
 };
 
 GRT_END_NAMESPACE

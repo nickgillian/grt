@@ -1,31 +1,31 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "Derivative.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the Derivative module with the PreProcessing base class
 RegisterPreProcessingModule< Derivative > Derivative::registerModule("Derivative");
-    
+
 Derivative::Derivative(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize){
     classType = "Derivative";
     preProcessingType = classType;
@@ -36,7 +36,7 @@ Derivative::Derivative(UINT derivativeOrder,Float delta,UINT numDimensions,bool 
         init(derivativeOrder,delta,numDimensions,filterData,filterSize);
     }
 }
-    
+
 Derivative::Derivative(const Derivative &rhs){
     
     this->derivativeOrder = rhs.derivativeOrder;
@@ -57,23 +57,23 @@ Derivative::Derivative(const Derivative &rhs){
 }
 
 Derivative::~Derivative(){
-
-}
     
+}
+
 Derivative& Derivative::operator=(const Derivative &rhs){
     if( this != &rhs ){
         this->derivativeOrder = rhs.derivativeOrder;
-	    this->filterSize = rhs.filterSize;
-	    this->delta = rhs.delta;
-	    this->filterData = rhs.filterData;
-	    this->filter = rhs.filter;
-	    this->yy = rhs.yy;
-	    this->yyy = rhs.yyy;
+        this->filterSize = rhs.filterSize;
+        this->delta = rhs.delta;
+        this->filterData = rhs.filterData;
+        this->filter = rhs.filter;
+        this->yy = rhs.yy;
+        this->yyy = rhs.yyy;
         copyBaseVariables( (PreProcessing*)&rhs );
     }
     return *this;
 }
-    
+
 bool Derivative::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
@@ -82,7 +82,7 @@ bool Derivative::deepCopyFrom(const PreProcessing *preProcessing){
         
         Derivative *ptr = (Derivative*)preProcessing;
         
-        //Clone the Derivative values 
+        //Clone the Derivative values
         this->derivativeOrder = ptr->derivativeOrder;
         this->filterSize = ptr->filterSize;
         this->delta = ptr->delta;
@@ -99,7 +99,7 @@ bool Derivative::deepCopyFrom(const PreProcessing *preProcessing){
     
     return false;
 }
-    
+
 bool Derivative::process(const VectorFloat &inputVector){
     
     if( !initialized ){
@@ -122,31 +122,11 @@ bool Derivative::reset(){
     if( initialized ) return init(derivativeOrder, delta, numInputDimensions,filterData,filterSize);
     return false;
 }
-    
-bool Derivative::saveModelToFile(std::string filename) const{
-    
-    if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The DeadZone has not been initialized" << std::endl;
-        return false;
-    }
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool Derivative::saveModelToFile(std::fstream &file) const{
+bool Derivative::save(std::fstream &file) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -155,33 +135,17 @@ bool Derivative::saveModelToFile(std::fstream &file) const{
     file << "NumInputDimensions: " << numInputDimensions << std::endl;
     file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
     file << "DerivativeOrder: " << derivativeOrder << std::endl;
-    file << "FilterSize: " << filterSize << std::endl;	
+    file << "FilterSize: " << filterSize << std::endl;
     file << "Delta: " << delta << std::endl;
     file << "FilterData: " << filterData << std::endl;
     
     return true;
 }
 
-bool Derivative::loadModelFromFile(std::string filename){
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        initialized = false;
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool Derivative::loadModelFromFile(std::fstream &file){
+bool Derivative::load(std::fstream &file){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -191,64 +155,64 @@ bool Derivative::loadModelFromFile(std::fstream &file){
     file >> word;
     
     if( word != "GRT_DERIVATIVE_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
+        return false;
     }
     file >> numInputDimensions;
     
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
+        return false;
     }
     file >> numOutputDimensions;
     
     //Load the DerivativeOrder
     file >> word;
     if( word != "DerivativeOrder:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read DerivativeOrder header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read DerivativeOrder header!" << std::endl;
+        return false;
     }
     file >> derivativeOrder;
     
     //Load the FilterSize
     file >> word;
     if( word != "FilterSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterSize header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read FilterSize header!" << std::endl;
+        return false;
     }
     file >> filterSize;
     
     //Load the Delta
     file >> word;
     if( word != "Delta:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read Delta header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read Delta header!" << std::endl;
+        return false;
     }
     file >> delta;
     
-    //Load if the data should be filtered 
+    //Load if the data should be filtered
     file >> word;
     if( word != "FilterData:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterData header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read FilterData header!" << std::endl;
+        return false;
     }
     file >> filterData;
-
-    //Init the derivative module to ensure everything is initialized correctly
-    return init(derivativeOrder,delta,numInputDimensions,filterData,filterSize);    
-}
     
-bool Derivative::init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize){
+    //Init the derivative module to ensure everything is initialized correctly
+    return init(derivativeOrder,delta,numInputDimensions,filterData,filterSize);
+}
 
+bool Derivative::init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize){
+    
     initialized = false;
     
     if( derivativeOrder != FIRST_DERIVATIVE && derivativeOrder != SECOND_DERIVATIVE ){
@@ -299,9 +263,9 @@ Float Derivative::computeDerivative(const Float x){
     
     if( y.size() == 0 ) return 0 ;
     
-	return y[0];
+    return y[0];
 }
-    
+
 VectorFloat Derivative::computeDerivative(const VectorFloat &x){
     
     if( !initialized ){
@@ -335,7 +299,7 @@ VectorFloat Derivative::computeDerivative(const VectorFloat &x){
     
     return processedData;
 }
-    
+
 bool Derivative::setDerivativeOrder(UINT derivativeOrder){
     if( derivativeOrder == FIRST_DERIVATIVE || derivativeOrder == SECOND_DERIVATIVE ){
         this->derivativeOrder = derivativeOrder;
@@ -355,48 +319,48 @@ bool Derivative::setFilterSize(UINT filterSize){
     errorLog << "setFilterSize(UINT filterSize) - FilterSize must be greater than zero!" << std::endl;
     return false;
 }
-    
+
 bool Derivative::enableFiltering(bool filterData){
     this->filterData = filterData;
     if( initialized ) init(derivativeOrder, delta, numInputDimensions,filterData,filterSize);
     return true;
 }
-    
-Float Derivative::getDerivative(UINT derivativeOrder){ 
+
+Float Derivative::getDerivative(UINT derivativeOrder){
     
     switch( derivativeOrder ){
         case 0:
-            return processedData[0];
-            break;
+        return processedData[0];
+        break;
         case( FIRST_DERIVATIVE ):
-            return yy[0]; 
-            break;
+        return yy[0];
+        break;
         case( SECOND_DERIVATIVE ):
-            return yyy[0]; 
-            break;
+        return yyy[0];
+        break;
         default:
-            warningLog << "getDerivative(UINT derivativeOrder) - Unkown derivativeOrder: " << derivativeOrder << std::endl;
-            break;
+        warningLog << "getDerivative(UINT derivativeOrder) - Unkown derivativeOrder: " << derivativeOrder << std::endl;
+        break;
     }
     
     return 0;
 }
 
-VectorFloat Derivative::getDerivatives(UINT derivativeOrder){ 
+VectorFloat Derivative::getDerivatives(UINT derivativeOrder){
     
     switch( derivativeOrder ){
         case 0:
-            return processedData;
-            break;
+        return processedData;
+        break;
         case( FIRST_DERIVATIVE ):
-            return yy; 
-            break;
+        return yy;
+        break;
         case( SECOND_DERIVATIVE ):
-            return yyy; 
-            break;
+        return yyy;
+        break;
         default:
-            warningLog << "getDerivative(UINT derivativeOrder) - Unkown derivativeOrder: " << derivativeOrder << std::endl;
-            break;
+        warningLog << "getDerivative(UINT derivativeOrder) - Unkown derivativeOrder: " << derivativeOrder << std::endl;
+        break;
     }
     
     return VectorFloat();
