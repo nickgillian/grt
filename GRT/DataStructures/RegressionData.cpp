@@ -259,8 +259,12 @@ bool RegressionData::printStats() const{
     std::cout << getStatsAsString();
     return true;
 }
-    
+
 RegressionData RegressionData::partition(const UINT trainingSizePercentage){
+    return split( trainingSizePercentage );
+}
+
+RegressionData RegressionData::split(const UINT trainingSizePercentage){
 
 	//Partitions the dataset into a training dataset (which is kept by this instance of the RegressionData) and
 	//a testing/validation dataset (which is return as a new instance of the RegressionData).  The trainingSizePercentage

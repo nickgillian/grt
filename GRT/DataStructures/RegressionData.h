@@ -263,13 +263,20 @@ public:
     bool merge(const RegressionData &regressionData);
     
     /**
-     Partitions the dataset into a training dataset (which is kept by this instance of the RegressionData) and
-	 a testing/validation dataset (which is returned as a new instance of a RegressionData).
-     
+     @deprecated use split(...) instead
      @param partitionPercentage: sets the percentage of data which remains in this instance, the remaining percentage of data is then returned as the testing/validation dataset
 	 @return a new RegressionData instance, containing the remaining data not kept but this instance
      */
-    RegressionData partition(const UINT trainingSizePercentage);
+    GRT_DEPRECATED_MSG( "partition(...) is deprecated, use split(...) instead", RegressionData partition(const UINT trainingSizePercentage) );
+
+    /**
+     Splits the dataset into a training dataset (which is kept by this instance of the RegressionData) and
+     a testing/validation dataset (which is returned as a new instance of a RegressionData).
+     
+     @param partitionPercentage: sets the percentage of data which remains in this instance, the remaining percentage of data is then returned as the testing/validation dataset
+     @return a new RegressionData instance, containing the remaining data not kept but this instance
+     */
+    RegressionData split(const UINT trainingSizePercentage);
     
     /**
      This function prepares the dataset for k-fold cross validation and should be called prior to calling the getTrainingFold(UINT foldIndex) or getTestingFold(UINT foldIndex) functions.  It will spilt the dataset into K-folds, as long as K < M, where M is the number of samples in the dataset.

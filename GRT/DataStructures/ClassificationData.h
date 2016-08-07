@@ -337,7 +337,7 @@ public:
     bool merge(const ClassificationData &data);
     
     /**
-     @deprecated use split(std::string filename) instead
+     @deprecated use split(...) instead
      @param partitionPercentage: sets the percentage of data which remains in this instance, the remaining percentage of data is then returned as the testing/validation dataset
      @param useStratifiedSampling: sets if the dataset should be broken into homogeneous groups first before randomly being spilt, default value is false
      @return a new ClassificationData instance, containing the remaining data not kept but this instance
