@@ -46,7 +46,7 @@ int main (int argc, const char * argv[])
     //Partition the training data into a training dataset and a test dataset. 80 means that 80%
     //of the data will be used for the training data and 20% will be returned as the test dataset
     cout << "Splitting data into training/test split..." << endl;
-    ClassificationData testData = trainingData.partition(80);
+    ClassificationData testData = trainingData.split(80);
     
     //Create a new Gesture Recognition Pipeline using an Adaptive Naive Bayes Classifier
     GestureRecognitionPipeline pipeline;

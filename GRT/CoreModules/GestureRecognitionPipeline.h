@@ -315,7 +315,6 @@ public:
 
     /**
      This function will save the entire pipeline to a file.  This includes all the modules types, settings, and models.
-     This calls the older savePipelineToFile function.
      
      @param filename: the name of the file you want to save the pipeline to
      @return bool returns true if the pipeline was saved successful, false otherwise
@@ -323,12 +322,11 @@ public:
     bool save(const std::string &filename) const;
     
     /**
-     This function will save the entire pipeline to a file.  This includes all the modules types, settings, and models.
-
+     @deprecated use save(std::string &filename) instead
      @param filename: the name of the file you want to save the pipeline to
      @return bool returns true if the pipeline was saved successful, false otherwise
 	*/
-    bool savePipelineToFile(const std::string &filename) const;
+    GRT_DEPRECATED_MSG( "savePipelineToFile(std::string filename) is deprecated, use save(std::string &filename) instead", bool savePipelineToFile(const std::string &filename) const );
 
     /**
      This function will load an entire pipeline from a file.  This includes all the modules types, settings, and models.
@@ -340,12 +338,11 @@ public:
     bool load(const std::string &filename);
     
     /**
-     This function will load an entire pipeline from a file.  This includes all the modules types, settings, and models.
-
+     @deprecated use load(std::string &filename) instead
      @param filename: the name of the file you want to load the pipeline from
      @return bool returns true if the pipeline was loaded successful, false otherwise
 	*/
-    bool loadPipelineFromFile(const std::string &filename);
+    GRT_DEPRECATED_MSG( "loadPipelineFromFile(std::string filename) is deprecated, use load(std::string &filename) instead", bool loadPipelineFromFile(const std::string &filename) );
     
     /**
      This function will pass the input Vector through any preprocessing or feature extraction modules added to the pipeline.  This function

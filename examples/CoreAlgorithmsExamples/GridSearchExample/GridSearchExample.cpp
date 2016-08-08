@@ -41,7 +41,7 @@ int main (int argc, const char * argv[])
     ClassificationData::generateGaussDataset( "data.csv", 100000, 10, 10, 1.0, 0.3 );
     ClassificationData trainingData, testData;
     trainingData.load( "data.csv" );
-    testData = trainingData.partition( 50 );
+    testData = trainingData.split( 50 );
 
     //Setup grid search
     GridSearch< GestureRecognitionPipeline > gridSearch;

@@ -62,7 +62,7 @@ int main (int argc, const char * argv[])
     //We will use 60% of the data to train the algorithm and 40% of the data to test it
     //The true parameter flags that we want to use stratified sampling, which means there 
     //should be an equal class distribution between the training and test datasets
-    ClassificationData testData = trainingData.partition( 60, true );
+    ClassificationData testData = trainingData.split( 60, true );
     
     //Setup the gesture recognition pipeline
     GestureRecognitionPipeline pipeline;
