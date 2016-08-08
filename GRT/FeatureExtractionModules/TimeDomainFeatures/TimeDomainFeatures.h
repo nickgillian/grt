@@ -4,6 +4,19 @@
  @version 1.0
  
  @brief This class implements the TimeDomainFeatures feature extraction module.
+ 
+ This class extracts basic time domain features: mean, standard deviation, Euclidean norm, and RMS.
+ 
+ It computes these features over one or more frames of a buffer / window.
+ For instance, if the buffer length is 100 and the number of frames is 5, each feature will be computed five times, once per each frame of 20 samples.
+ As a result, the buffer length must be evenly divisible by the number of frames.
+ 
+ Features are computed independently on each dimension of input data. 
+ Thus, the total output dimension equals the number of frames times the number of input dimensions times the number of features selected.
+ 
+ Optionally, this class can offset the input data, i.e. subtract the value of the first data point in the buffer from the value of all subsequent data points (prior to computing any features).
+ 
+ The output is ordered by input dimension, then by frame, then by feature, e.g. for three dimensions, two frames, and two features (mean and standard deviation), the output would be (dimension 0, frame 0, mean), (dimension 0, frame 0, std. dev.), (dimension 0, frame 1, mean), (dimension 0, frame 1, std. dev.), (dimension 1, frame 0, mean), (dimension 1, frame 0, std. dev.), (dimension 1, frame 1, mean), (dimension 1, frame 1, std. dev.), (dimension 2, frame 0, mean), (dimension 2, frame 0, std. dev.), (dimension 2, frame 1, mean), (dimension 2, frame 1, std. dev.)
  */
 
 /**

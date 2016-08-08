@@ -481,6 +481,9 @@ bool GestureRecognitionPipeline::train( const TimeSeriesClassificationData &trai
                     //or converted to the LabelledClassificationData format
                     inputVector = featureExtractionModules[moduleIndex]->getFeatureVector();
                     featureDataReady = featureExtractionModules[moduleIndex]->getFeatureDataReady();
+                    
+                    //If feature data is not ready at any stage, stop the rest of the pipeline.
+                    if( !featureDataReady ) { break; }
                 }
                 
                 //The feature extraction modules should only be reset on r == 0
