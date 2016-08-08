@@ -63,8 +63,9 @@ This example demonstrates a few key components of the GRT, such as:
 * how to setup a new Gesture Recognition Pipeline and add a classification algorithm to the pipeline
 * how to use a training dataset to train a new classification model
 * how to save/load a trained pipeline to/from a file
-* how to use a test dataset to test the accuracy of a classification model
-* how to print the test results
+* how to use a automatically test dataset to test the accuracy of a classification model
+* how to use a manually test dataset to test the accuracy of a classification model
+* how to print detailed test results, such as precision, recall, and the confusion matrix
 
 You can find this source code and a large number of other examples and tutorials in the GRT examples folder.
 
