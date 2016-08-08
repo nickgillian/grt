@@ -141,7 +141,7 @@ UINT ClassLabelChangeFilter::filter(UINT predictedClassLabel){
     return GRT_DEFAULT_NULL_CLASS_LABEL;
 }
 
-bool ClassLabelChangeFilter::save( std::fstream &file ) const{
+bool ClassLabelChangeFilter::save( std::fstream &file ) const {
     
     if( !file.is_open() ){
         errorLog << "save(fstream &file) - The file is not open!" << std::endl;

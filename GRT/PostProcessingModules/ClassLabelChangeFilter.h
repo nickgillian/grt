@@ -97,12 +97,12 @@ public:
     
     /**
     This saves the post processing settings to a file.
-    This overrides the saveSettingsToFile function in the PostProcessing base class.
+    This overrides the save function in the PostProcessing base class.
     
     @param filename: the name of the file to save the settings to
     @return returns true if the settings were saved successfully, false otherwise
     */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
     This loads the post processing settings from a file.
