@@ -2,19 +2,19 @@
 GRT MIT License
 Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-and associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
+The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 
 const Float MLP_NEURON_MIN_TARGET = -1.0;
 const Float MLP_NEURON_MAX_TARGET = 1.0;
-    
+
 //Register the MLP module with the Regressifier base class
 RegisterRegressifierModule< MLP > MLP::registerModule("MLP");
 
@@ -33,19 +33,19 @@ MLP::MLP(){
     inputLayerActivationFunction = Neuron::LINEAR;
     hiddenLayerActivationFunction = Neuron::LINEAR;
     outputLayerActivationFunction = Neuron::LINEAR;
-	minNumEpochs = 10;
+    minNumEpochs = 10;
     numRandomTrainingIterations = 10;
-    validationSetSize = 20;	//20% of the training data will be set aside for the validation set
+    validationSetSize = 20; //20% of the training data will be set aside for the validation set
     trainingMode = ONLINE_GRADIENT_DESCENT;
-	momentum = 0.5;
-	gamma = 2.0;
+    momentum = 0.5;
+    gamma = 2.0;
     trainingError = 0;
     nullRejectionCoeff = 0.9;
     nullRejectionThreshold = 0;
-	useValidationSet = true;
-	randomiseTrainingOrder = false;
-	useScaling = true;
-	trained = false;
+    useValidationSet = true;
+    randomiseTrainingOrder = false;
+    useScaling = true;
+    trained = false;
     initialized = false;
     classificationModeActive = false;
     useNullRejection = true;
@@ -57,7 +57,7 @@ MLP::MLP(){
     trainingLog.setProceedingText("[TRAINING MLP]");
     warningLog.setProceedingText("[WARNING MLP]");
 }
-    
+
 MLP::MLP(const MLP &rhs){
     classType = "MLP";
     regressifierType = classType;
@@ -72,7 +72,7 @@ MLP::MLP(const MLP &rhs){
 MLP::~MLP(){
     clear();
 }
-    
+
 MLP& MLP::operator=(const MLP &rhs){
     if( this != &rhs ){
         //MLP variables
@@ -108,7 +108,7 @@ MLP& MLP::operator=(const MLP &rhs){
     }
     return *this;
 }
-    
+
 bool MLP::deepCopyFrom(const Regressifier *regressifier){
     
     if( regressifier == NULL ){
@@ -125,7 +125,7 @@ bool MLP::deepCopyFrom(const Regressifier *regressifier){
     
     return true;
 }
-    
+
 //Classifier interface
 bool MLP::train_(ClassificationData &trainingData){
     
@@ -151,15 +151,15 @@ bool MLP::train_(ClassificationData &trainingData){
     
     return trainModel(regressionData);
 }
-    
+
 bool MLP::train_(RegressionData &trainingData){
     
     //Flag that the MLP is being used for regression, not classification
     classificationModeActive = false;
-
+    
     return trainModel(trainingData);
 }
-    
+
 //Classifier interface
 bool MLP::predict_(VectorFloat &inputVector){
     
@@ -177,8 +177,8 @@ bool MLP::predict_(VectorFloat &inputVector){
     regressionData = feedforward( inputVector );
     
     if( classificationModeActive ){
-	
-		//Estimate the class likelihoods        
+        
+        //Estimate the class likelihoods
         const UINT K = (UINT)regressionData.size();
         classLikelihoods = regressionData;
         
@@ -219,23 +219,23 @@ bool MLP::predict_(VectorFloat &inputVector){
     
     return true;
 }
-    
+
 bool MLP::init(const UINT numInputNeurons, const UINT numHiddenNeurons, const UINT numOutputNeurons){
     return init(numInputNeurons, numHiddenNeurons, numOutputNeurons, inputLayerActivationFunction, hiddenLayerActivationFunction, outputLayerActivationFunction );
 }
-    
+
 bool MLP::init(const UINT numInputNeurons,
-               const UINT numHiddenNeurons,
-               const UINT numOutputNeurons,
-               const UINT inputLayerActivationFunction,
-               const UINT hiddenLayerActivationFunction,
-               const UINT outputLayerActivationFunction){
+const UINT numHiddenNeurons,
+const UINT numOutputNeurons,
+const UINT inputLayerActivationFunction,
+const UINT hiddenLayerActivationFunction,
+const UINT outputLayerActivationFunction){
     
     //Clear any previous models
     clear();
-
-	//Initialize the random seed
-	random.setSeed( (UINT)time(NULL) );
+    
+    //Initialize the random seed
+    random.setSeed( (UINT)time(NULL) );
     
     if( numInputNeurons == 0 || numHiddenNeurons == 0 || numOutputNeurons == 0 ){
         if( numInputNeurons == 0 ){  errorLog << "init(...) - The number of input neurons is zero!" << std::endl; }
@@ -249,7 +249,7 @@ bool MLP::init(const UINT numInputNeurons,
         errorLog << "init(...) - One Of The Activation Functions Failed The Validation Check" << std::endl;
         return false;
     }
-
+    
     //Set the size of the MLP
     this->numInputNeurons = numInputNeurons;
     this->numHiddenNeurons = numHiddenNeurons;
@@ -258,7 +258,7 @@ bool MLP::init(const UINT numInputNeurons,
     //Set the regression IO
     this->numInputDimensions = numInputNeurons;
     this->numOutputDimensions = numOutputNeurons;
-       
+    
     //Set the validation layers
     this->inputLayerActivationFunction = inputLayerActivationFunction;
     this->hiddenLayerActivationFunction = hiddenLayerActivationFunction;
@@ -273,20 +273,20 @@ bool MLP::init(const UINT numInputNeurons,
     for(UINT i=0; i<numInputNeurons; i++){
         inputLayer[i].init(1,inputLayerActivationFunction); //The input size for each input neuron will always be 1
         inputLayer[i].weights[0] = 1.0; //The weights for the input layer should always be 1
-		inputLayer[i].bias = 0.0; //The bias for the input layer should always be 0
-		inputLayer[i].gamma = gamma;
+        inputLayer[i].bias = 0.0; //The bias for the input layer should always be 0
+        inputLayer[i].gamma = gamma;
     }
     
     for(UINT i=0; i<numHiddenNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of input neurons
         hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction);
-		hiddenLayer[i].gamma = gamma;
+        hiddenLayer[i].gamma = gamma;
     }
     
     for(UINT i=0; i<numOutputNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of hidden neurons
         outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction);
-		outputLayer[i].gamma = gamma;
+        outputLayer[i].gamma = gamma;
     }
     
     initialized = true;
@@ -309,7 +309,7 @@ bool MLP::clear(){
     
     return true;
 }
-    
+
 bool MLP::print() const{
     printNetwork();
     return true;
@@ -330,14 +330,14 @@ bool MLP::trainModel(RegressionData &trainingData){
     }
     
     //Create a validation dataset, if needed
-	RegressionData validationData;
-	if( useValidationSet ){
-		validationData = trainingData.partition( 100 - validationSetSize );
-	}
-
+    RegressionData validationData;
+    if( useValidationSet ){
+        validationData = trainingData.split( 100 - validationSetSize );
+    }
+    
     const UINT N = trainingData.getNumInputDimensions();
     const UINT T = trainingData.getNumTargetDimensions();
-
+    
     if( N != numInputNeurons ){
         errorLog << "train(LabelledRegressionData trainingData) - The number of input dimensions in the training data (" << N << ") does not match that of the MLP (" << numInputNeurons << ")" << std::endl;
         return false;
@@ -350,22 +350,22 @@ bool MLP::trainModel(RegressionData &trainingData){
     //Set the Regressifier input and output dimensions
     numInputDimensions = numInputNeurons;
     numOutputDimensions = numOutputNeurons;
-
+    
     //Scale the training and validation data, if needed
-	if( useScaling ){
-		//Find the ranges for the input data
+    if( useScaling ){
+        //Find the ranges for the input data
         inputVectorRanges = trainingData.getInputRanges();
         
         //Find the ranges for the target data
-		targetVectorRanges = trainingData.getTargetRanges();
-
-		//Now scale the training data and the validation data if required
-		trainingData.scale(inputVectorRanges,targetVectorRanges,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
+        targetVectorRanges = trainingData.getTargetRanges();
         
-		if( useValidationSet ){
-			validationData.scale(inputVectorRanges,targetVectorRanges,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
-		}
-	}
+        //Now scale the training data and the validation data if required
+        trainingData.scale(inputVectorRanges,targetVectorRanges,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
+        
+        if( useValidationSet ){
+            validationData.scale(inputVectorRanges,targetVectorRanges,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
+        }
+    }
     //If scaling is enabled then the training and validation data will be scaled - so turn it off so the we do not need to scale the data again
     //The actual scaling state will be reset at the end of traiing
     bool tempScalingState = useScaling;
@@ -382,30 +382,30 @@ bool MLP::trainModel(RegressionData &trainingData){
     //Call the main training function
     switch( trainingMode ){
         case ONLINE_GRADIENT_DESCENT:
-            if( classificationModeActive ){
-                trained = trainOnlineGradientDescentClassification( trainingData, validationData );
-            }else{
-                trained = trainOnlineGradientDescentRegression( trainingData, validationData );
-            }
-            break;
+        if( classificationModeActive ){
+            trained = trainOnlineGradientDescentClassification( trainingData, validationData );
+        }else{
+            trained = trainOnlineGradientDescentRegression( trainingData, validationData );
+        }
+        break;
         default:
-            useScaling = tempScalingState;
-            errorLog << "train(RegressionData trainingData) - Uknown training mode!" << std::endl;
-            return false;
-            break;
+        useScaling = tempScalingState;
+        errorLog << "train(RegressionData trainingData) - Uknown training mode!" << std::endl;
+        return false;
+        break;
     }
     
     //Reset the scaling state so the prediction data will be scaled if needed
     useScaling = tempScalingState;
-
+    
     return true;
 }
-    
+
 bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainingData,const RegressionData &validationData){
     
     const UINT M = trainingData.getNumSamples();
     const UINT T = trainingData.getNumTargetDimensions();
-	const UINT numTestingExamples = useValidationSet ? validationData.getNumSamples() : M;
+    const UINT numTestingExamples = useValidationSet ? validationData.getNumSamples() : M;
     
     //Setup the training loop
     MLP bestNetwork;
@@ -439,12 +439,12 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     
     //Reset the indexList, this is used to randomize the order of the training examples, if needed
     for(UINT i=0; i<M; i++) indexList[i] = i;
-	
+    
     for(UINT iter=0; iter<numRandomTrainingIterations; iter++){
         
         epoch = 0;
         keepTraining = true;
-		tempTrainingErrorLog.clear();
+        tempTrainingErrorLog.clear();
         
         //Randomise the start values of the neurons
         init(numInputNeurons,numHiddenNeurons,numOutputNeurons,inputLayerActivationFunction,hiddenLayerActivationFunction,outputLayerActivationFunction);
@@ -519,7 +519,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             }
             
             //Compute the error over all the training/validation examples
-	    if( useValidationSet ){
+            if( useValidationSet ){
                 trainingSetAccuracy = accuracy;
                 trainingSetTotalSquaredError = totalSquaredTrainingError;
                 accuracy = 0;
@@ -566,12 +566,12 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
                             totalSquaredTrainingError += SQR( targetVector[j]-y[j] );
                         }
                     }
-				}
+                }
                 
                 accuracy = (accuracy/Float(numValidationSamples))*Float(numValidationSamples);
                 rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
                 
-			}else{//We are not using a validation set
+            }else{//We are not using a validation set
                 accuracy = (accuracy/Float(M))*Float(M);
                 rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
             }
@@ -587,7 +587,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             //Store the training results
             result.setClassificationResult(iter,accuracy,this);
             trainingResults.push_back( result );
-
+            
             delta = fabs( error - lastError );
             
             trainingLog << "Random Training Iteration: " << iter+1 << " Epoch: " << epoch << " Error: " << error << " Delta: " << delta << std::endl;
@@ -622,11 +622,11 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     
     trainingLog << "Best Accuracy: " << bestAccuracy << " in Random Training Iteration: " << bestIter+1 << std::endl;
     
-	//Check to make sure the best network has not got any NaNs in it
-	if( checkForNAN() ){
+    //Check to make sure the best network has not got any NaNs in it
+    if( checkForNAN() ){
         errorLog << "train(LabelledRegressionData trainingData) - NAN Found!" << std::endl;
-		return false;
-	}
+        return false;
+    }
     
     //Set the MLP model to the model that best during training
     *this = bestNetwork;
@@ -634,7 +634,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     
     //Compute the rejection threshold
     if( useNullRejection ){
-
+        
         Float averageValue = 0;
         VectorFloat classificationPredictions, inputVector, targetVector;
         
@@ -687,12 +687,12 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     //Return true to flag that the model was trained OK
     return true;
 }
-    
+
 bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingData,const RegressionData &validationData){
     
     const UINT M = trainingData.getNumSamples();
     const UINT T = trainingData.getNumTargetDimensions();
-	const UINT numValidationSamples = useValidationSet ? validationData.getNumSamples() : M;
+    const UINT numValidationSamples = useValidationSet ? validationData.getNumSamples() : M;
     
     //Setup the training loop
     bool keepTraining = true;
@@ -782,7 +782,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
                     }
                     
                 }
-            
+                
                 rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
                 
             }else{//We are not using a validation set
@@ -848,13 +848,13 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     //Return true to flag that the model was trained OK
     return true;
 }
-    
+
 Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targetVector,const Float alpha,const Float beta){
-        
+    
     Float update = 0;
     Float sum = 0;
     Float omBeta = 1.0 - beta;
-        
+    
     //Forward propagation
     feedforward(trainingExample,inputNeuronsOuput,hiddenNeuronsOutput,outputNeuronsOutput);
     
@@ -878,12 +878,12 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
             //Compute the update
             //update = alpha * ((beta * hiddenLayer[i].previousUpdate[j]) + (omBeta * inputNeuronsOuput[j])) * deltaH[i];
             update = alpha * inputNeuronsOuput[j] * deltaH[i];
-
+            
             //Update the weights
             hiddenLayer[i].weights[j] += update;
-
+            
             //Store the previous update
-            hiddenLayer[i].previousUpdate[j] = update; 
+            hiddenLayer[i].previousUpdate[j] = update;
         }
     }
     
@@ -893,10 +893,10 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
             //Compute the update
             //update = alpha * ((beta * outputLayer[i].previousUpdate[j]) + (omBeta * hiddenNeuronsOutput[j])) * deltaO[i];
             update = alpha * hiddenNeuronsOutput[j] * deltaO[i];
-
+            
             //Update the weights
             outputLayer[i].weights[j] += update;
-
+            
             //Store the update
             outputLayer[i].previousUpdate[j] = update;
         }
@@ -907,10 +907,10 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
         //Compute the update
         //update = alpha * ((beta * hiddenLayer[i].previousBiasUpdate) + (omBeta * deltaH[i]));
         update = alpha * deltaH[i];
-
+        
         //Update the bias
         hiddenLayer[i].bias += update;
-
+        
         //Store the update
         hiddenLayer[i].previousBiasUpdate = update;
     }
@@ -920,10 +920,10 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
         //Compute the update
         //update = alpha * (beta * outputLayer[i].previousBiasUpdate) + (omBeta * deltaO[i]);
         update = alpha * deltaO[i];
-
+        
         //Update the bias
         outputLayer[i].bias += update;
-		
+        
         //Store the update
         outputLayer[i].previousBiasUpdate = update;
     }
@@ -933,7 +933,7 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
     for(UINT i=0; i<numOutputNeurons; i++){
         error += SQR( targetVector[i] - outputNeuronsOutput[i] );
     }
-
+    
     return error;
 }
 
@@ -942,16 +942,16 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
     if( inputNeuronsOuput.size() != numInputNeurons ) inputNeuronsOuput.resize(numInputNeurons,0);
     if( hiddenNeuronsOutput.size() != numHiddenNeurons ) hiddenNeuronsOutput.resize(numHiddenNeurons,0);
     if( outputNeuronsOutput.size() != numOutputNeurons ) outputNeuronsOutput.resize(numOutputNeurons,0);
-
-	//Scale the input Vector if required
-	if( useScaling ){
-		for(UINT i=0; i<numInputNeurons; i++){
-			trainingExample[i] = scale(trainingExample[i],inputVectorRanges[i].minValue,inputVectorRanges[i].maxValue,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
-		}
-	}
+    
+    //Scale the input Vector if required
+    if( useScaling ){
+        for(UINT i=0; i<numInputNeurons; i++){
+            trainingExample[i] = scale(trainingExample[i],inputVectorRanges[i].minValue,inputVectorRanges[i].maxValue,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
+        }
+    }
     
     //Input layer
-	VectorFloat input(1);
+    VectorFloat input(1);
     for(UINT i=0; i<numInputNeurons; i++){
         input[0] = trainingExample[i];
         inputNeuronsOuput[i] = inputLayer[i].fire( input );
@@ -966,13 +966,13 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
     for(UINT i=0; i<numOutputNeurons; i++){
         outputNeuronsOutput[i] = outputLayer[i].fire( hiddenNeuronsOutput );
     }
-
-	//Scale the output Vector if required
-	if( useScaling ){
-		for(UINT i=0; i<numOutputNeurons; i++){
-			outputNeuronsOutput[i] = scale(outputNeuronsOutput[i],MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET,targetVectorRanges[i].minValue,targetVectorRanges[i].maxValue);
-		}
-	}
+    
+    //Scale the output Vector if required
+    if( useScaling ){
+        for(UINT i=0; i<numOutputNeurons; i++){
+            outputNeuronsOutput[i] = scale(outputNeuronsOutput[i],MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET,targetVectorRanges[i].minValue,targetVectorRanges[i].maxValue);
+        }
+    }
     
     return outputNeuronsOutput;
     
@@ -985,7 +985,7 @@ void MLP::feedforward(const VectorFloat &data,VectorFloat &inputNeuronsOuput,Vec
     if( outputNeuronsOutput.size() != numOutputNeurons ) outputNeuronsOutput.resize(numOutputNeurons,0);
     
     //Input layer
-	VectorFloat input(1);
+    VectorFloat input(1);
     for(UINT i=0; i<numInputNeurons; i++){
         input[0] = data[i];
         inputNeuronsOuput[i] = inputLayer[i].fire( input );
@@ -1070,34 +1070,34 @@ bool inline MLP::isNAN(const Float v) const{
     return false;
 }
 
-bool MLP::saveModelToFile( std::fstream &file ) const{
-
-	if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - File is not open!" << std::endl;
-		return false;
-	}
-
-	file << "GRT_MLP_FILE_V2.0\n";
+bool MLP::save( std::fstream &file ) const{
+    
+    if( !file.is_open() ){
+        errorLog << "save(fstream &file) - File is not open!" << std::endl;
+        return false;
+    }
+    
+    file << "GRT_MLP_FILE_V2.0\n";
     
     //Write the regressifier settings to the file
     if( !Regressifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save Regressifier base settings to file!" << std::endl;
-		return false;
+        errorLog <<"save(fstream &file) - Failed to save Regressifier base settings to file!" << std::endl;
+        return false;
     }
-
-	file << "NumInputNeurons: "<<numInputNeurons<< std::endl;
-	file << "NumHiddenNeurons: "<<numHiddenNeurons<< std::endl;
-	file << "NumOutputNeurons: "<<numOutputNeurons<< std::endl;
-	file << "InputLayerActivationFunction: " <<activationFunctionToString(inputLayerActivationFunction)<< std::endl;
-	file << "HiddenLayerActivationFunction: " <<activationFunctionToString(hiddenLayerActivationFunction)<< std::endl;
-	file << "OutputLayerActivationFunction: " <<activationFunctionToString(outputLayerActivationFunction)<< std::endl;
-	file << "NumRandomTrainingIterations: " << numRandomTrainingIterations << std::endl;
-	file << "Momentum: " << momentum << std::endl;
-	file << "Gamma: " << gamma << std::endl;
+    
+    file << "NumInputNeurons: "<<numInputNeurons<< std::endl;
+    file << "NumHiddenNeurons: "<<numHiddenNeurons<< std::endl;
+    file << "NumOutputNeurons: "<<numOutputNeurons<< std::endl;
+    file << "InputLayerActivationFunction: " <<activationFunctionToString(inputLayerActivationFunction)<< std::endl;
+    file << "HiddenLayerActivationFunction: " <<activationFunctionToString(hiddenLayerActivationFunction)<< std::endl;
+    file << "OutputLayerActivationFunction: " <<activationFunctionToString(outputLayerActivationFunction)<< std::endl;
+    file << "NumRandomTrainingIterations: " << numRandomTrainingIterations << std::endl;
+    file << "Momentum: " << momentum << std::endl;
+    file << "Gamma: " << gamma << std::endl;
     file << "ClassificationMode: " << classificationModeActive << std::endl;
     file << "UseNullRejection: " << useNullRejection << std::endl;
     file << "RejectionThreshold: " << nullRejectionThreshold << std::endl;
-	
+    
     if( trained ){
         file << "InputLayer: \n";
         for(UINT i=0; i<numInputNeurons; i++){
@@ -1112,7 +1112,7 @@ bool MLP::saveModelToFile( std::fstream &file ) const{
             file << std::endl;
         }
         file << "\n";
-
+        
         file << "HiddenLayer: \n";
         for(UINT i=0; i<numHiddenNeurons; i++){
             file << "HiddenNeuron: " << i+1 << std::endl;
@@ -1126,7 +1126,7 @@ bool MLP::saveModelToFile( std::fstream &file ) const{
             file << std::endl;
         }
         file << "\n";
-
+        
         file << "OutputLayer: \n";
         for(UINT i=0; i<numOutputNeurons; i++){
             file << "OutputNeuron: " << i+1 << std::endl;
@@ -1140,148 +1140,148 @@ bool MLP::saveModelToFile( std::fstream &file ) const{
             file << std::endl;
         }
     }
-
-	return true;
-}
     
-bool MLP::loadModelFromFile( std::fstream &file ){
+    return true;
+}
 
-	std::string activationFunction;
-
-	//Clear any previous models
-	clear();
-
-	if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - File is not open!" << std::endl;
-		return false;
-	}
-
-	std::string word;
-	
-	file >> word;
+bool MLP::load( std::fstream &file ){
+    
+    std::string activationFunction;
+    
+    //Clear any previous models
+    clear();
+    
+    if( !file.is_open() ){
+        errorLog << "load(fstream &file) - File is not open!" << std::endl;
+        return false;
+    }
+    
+    std::string word;
+    
+    file >> word;
     
     //See if we should load a legacy file
     if( word == "GRT_MLP_FILE_V1.0" ){
         return loadLegacyModelFromFile( file );
-	}
+    }
     
     //Check to make sure this is a file with the MLP File Format
-	if( word != "GRT_MLP_FILE_V2.0" ){
+    if( word != "GRT_MLP_FILE_V2.0" ){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find file header!" << std::endl;
-		return false;
-	}
+        errorLog << "load(fstream &file) - Failed to find file header!" << std::endl;
+        return false;
+    }
     
     //Load the base settings from the file
     if( !Regressifier::loadBaseSettingsFromFile( file ) ){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load regressifier base settings from file!" << std::endl;
-		return false;
+        errorLog << "load(fstream &file) - Failed to load regressifier base settings from file!" << std::endl;
+        return false;
     }
-
-	file >> word;
-	if(word != "NumInputNeurons:"){
+    
+    file >> word;
+    if(word != "NumInputNeurons:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find NumInputNeurons!" << std::endl;
-		return false;
-	}
-	file >> numInputNeurons;
+        errorLog << "load(fstream &file) - Failed to find NumInputNeurons!" << std::endl;
+        return false;
+    }
+    file >> numInputNeurons;
     numInputDimensions = numInputNeurons;
-
-	file >> word;
-	if(word != "NumHiddenNeurons:"){
-        file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find NumHiddenNeurons!" << std::endl;
-		return false;
-	}
-	file >> numHiddenNeurons;
-
-	file >> word;
-	if(word != "NumOutputNeurons:"){
-        file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find NumOutputNeurons!" << std::endl;
-		return false;
-	}
-	file >> numOutputNeurons;
-
-	file >> word;
-	if(word != "InputLayerActivationFunction:"){
-        file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find InputLayerActivationFunction!" << std::endl;
-		return false;
-	}
-	file >> activationFunction;
-	inputLayerActivationFunction = activationFunctionFromString(activationFunction);
-
-	file >> word;
-	if(word != "HiddenLayerActivationFunction:"){
-        file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find HiddenLayerActivationFunction!" << std::endl;
-		return false;
-	}
-	file >> activationFunction;
-	hiddenLayerActivationFunction = activationFunctionFromString(activationFunction);
-
-	file >> word;
-	if(word != "OutputLayerActivationFunction:"){
-        file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find OutputLayerActivationFunction!" << std::endl;
-		return false;
-	}
-	file >> activationFunction;
-	outputLayerActivationFunction = activationFunctionFromString(activationFunction);
-
-	file >> word;
-	if(word != "NumRandomTrainingIterations:"){
-        file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find NumRandomTrainingIterations!" << std::endl;
-		return false;
-	}
-	file >> numRandomTrainingIterations;
-
-	file >> word;
-	if(word != "Momentum:"){
-        file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find Momentum!" << std::endl;
-		return false;
-	}
-	file >> momentum;
-
-	file >> word;
-	if(word != "Gamma:"){
-        file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find Gamma!" << std::endl;
-		return false;
-	}
-	file >> gamma;
     
     file >> word;
-	if(word != "ClassificationMode:"){
+    if(word != "NumHiddenNeurons:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find ClassificationMode!" << std::endl;
-		return false;
-	}
-	file >> classificationModeActive;
+        errorLog << "load(fstream &file) - Failed to find NumHiddenNeurons!" << std::endl;
+        return false;
+    }
+    file >> numHiddenNeurons;
     
     file >> word;
-	if(word != "UseNullRejection:"){
+    if(word != "NumOutputNeurons:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find UseNullRejection!" << std::endl;
-		return false;
-	}
-	file >> useNullRejection;
+        errorLog << "load(fstream &file) - Failed to find NumOutputNeurons!" << std::endl;
+        return false;
+    }
+    file >> numOutputNeurons;
     
     file >> word;
-	if(word != "RejectionThreshold:"){
+    if(word != "InputLayerActivationFunction:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find RejectionThreshold!" << std::endl;
-		return false;
-	}
-	file >> nullRejectionThreshold;
+        errorLog << "load(fstream &file) - Failed to find InputLayerActivationFunction!" << std::endl;
+        return false;
+    }
+    file >> activationFunction;
+    inputLayerActivationFunction = activationFunctionFromString(activationFunction);
+    
+    file >> word;
+    if(word != "HiddenLayerActivationFunction:"){
+        file.close();
+        errorLog << "load(fstream &file) - Failed to find HiddenLayerActivationFunction!" << std::endl;
+        return false;
+    }
+    file >> activationFunction;
+    hiddenLayerActivationFunction = activationFunctionFromString(activationFunction);
+    
+    file >> word;
+    if(word != "OutputLayerActivationFunction:"){
+        file.close();
+        errorLog << "load(fstream &file) - Failed to find OutputLayerActivationFunction!" << std::endl;
+        return false;
+    }
+    file >> activationFunction;
+    outputLayerActivationFunction = activationFunctionFromString(activationFunction);
+    
+    file >> word;
+    if(word != "NumRandomTrainingIterations:"){
+        file.close();
+        errorLog << "load(fstream &file) - Failed to find NumRandomTrainingIterations!" << std::endl;
+        return false;
+    }
+    file >> numRandomTrainingIterations;
+    
+    file >> word;
+    if(word != "Momentum:"){
+        file.close();
+        errorLog << "load(fstream &file) - Failed to find Momentum!" << std::endl;
+        return false;
+    }
+    file >> momentum;
+    
+    file >> word;
+    if(word != "Gamma:"){
+        file.close();
+        errorLog << "load(fstream &file) - Failed to find Gamma!" << std::endl;
+        return false;
+    }
+    file >> gamma;
+    
+    file >> word;
+    if(word != "ClassificationMode:"){
+        file.close();
+        errorLog << "load(fstream &file) - Failed to find ClassificationMode!" << std::endl;
+        return false;
+    }
+    file >> classificationModeActive;
+    
+    file >> word;
+    if(word != "UseNullRejection:"){
+        file.close();
+        errorLog << "load(fstream &file) - Failed to find UseNullRejection!" << std::endl;
+        return false;
+    }
+    file >> useNullRejection;
+    
+    file >> word;
+    if(word != "RejectionThreshold:"){
+        file.close();
+        errorLog << "load(fstream &file) - Failed to find RejectionThreshold!" << std::endl;
+        return false;
+    }
+    file >> nullRejectionThreshold;
     
     if( trained ) initialized = true;
     else init(numInputNeurons,numHiddenNeurons,numOutputNeurons);
-    
+        
     if( trained ){
         
         //Resize the layers
@@ -1293,7 +1293,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "InputLayer:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find InputLayer!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find InputLayer!" << std::endl;
             return false;
         }
         
@@ -1303,21 +1303,21 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "InputNeuron:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find InputNeuron!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find InputNeuron!" << std::endl;
                 return false;
             }
             file >> tempNeuronID;
             
             if( tempNeuronID != i+1 ){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - InputNeuron ID does not match!" << std::endl;
+                errorLog << "load(fstream &file) - InputNeuron ID does not match!" << std::endl;
                 return false;
             }
             
             file >> word;
             if(word != "NumInputs:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find NumInputs!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find NumInputs!" << std::endl;
                 return false;
             }
             file >> inputLayer[i].numInputs;
@@ -1328,7 +1328,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "Bias:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find Bias!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find Bias!" << std::endl;
                 return false;
             }
             file >> inputLayer[i].bias;
@@ -1336,7 +1336,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "Gamma:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find Gamma!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find Gamma!" << std::endl;
                 return false;
             }
             file >> inputLayer[i].gamma;
@@ -1344,7 +1344,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "Weights:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find Weights!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find Weights!" << std::endl;
                 return false;
             }
             
@@ -1357,7 +1357,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "HiddenLayer:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find HiddenLayer!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find HiddenLayer!" << std::endl;
             return false;
         }
         
@@ -1367,21 +1367,21 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "HiddenNeuron:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find HiddenNeuron!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find HiddenNeuron!" << std::endl;
                 return false;
             }
             file >> tempNeuronID;
             
             if( tempNeuronID != i+1 ){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find HiddenNeuron ID does not match!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find HiddenNeuron ID does not match!" << std::endl;
                 return false;
             }
             
             file >> word;
             if(word != "NumInputs:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find NumInputs!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find NumInputs!" << std::endl;
                 return false;
             }
             file >> hiddenLayer[i].numInputs;
@@ -1392,7 +1392,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "Bias:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find Bias!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find Bias!" << std::endl;
                 return false;
             }
             file >> hiddenLayer[i].bias;
@@ -1400,7 +1400,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "Gamma:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find Gamma!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find Gamma!" << std::endl;
                 return false;
             }
             file >> hiddenLayer[i].gamma;
@@ -1408,7 +1408,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "Weights:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find Weights!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find Weights!" << std::endl;
                 return false;
             }
             
@@ -1421,7 +1421,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "OutputLayer:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find OutputLayer!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find OutputLayer!" << std::endl;
             return false;
         }
         
@@ -1431,21 +1431,21 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "OutputNeuron:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find OutputNeuron!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find OutputNeuron!" << std::endl;
                 return false;
             }
             file >> tempNeuronID;
             
             if( tempNeuronID != i+1 ){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find OuputNeuron ID does not match!!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find OuputNeuron ID does not match!!" << std::endl;
                 return false;
             }
             
             file >> word;
             if(word != "NumInputs:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find NumInputs!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find NumInputs!" << std::endl;
                 return false;
             }
             file >> outputLayer[i].numInputs;
@@ -1456,7 +1456,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "Bias:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find Bias!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find Bias!" << std::endl;
                 return false;
             }
             file >> outputLayer[i].bias;
@@ -1464,7 +1464,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "Gamma:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find Gamma!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find Gamma!" << std::endl;
                 return false;
             }
             file >> outputLayer[i].gamma;
@@ -1472,7 +1472,7 @@ bool MLP::loadModelFromFile( std::fstream &file ){
             file >> word;
             if(word != "Weights:"){
                 file.close();
-                errorLog << "loadModelFromFile(fstream &file) - Failed to find Weights!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to find Weights!" << std::endl;
                 return false;
             }
             
@@ -1482,16 +1482,16 @@ bool MLP::loadModelFromFile( std::fstream &file ){
         }
         
     }
-
-	return true;
-}
     
+    return true;
+}
+
 UINT MLP::getNumClasses() const{
     if( classificationModeActive )
-        return numOutputNeurons;
+    return numOutputNeurons;
     return 0;
 }
-    
+
 UINT MLP::getNumInputNeurons() const{
     return numInputNeurons;
 }
@@ -1499,67 +1499,67 @@ UINT MLP::getNumInputNeurons() const{
 UINT MLP::getNumHiddenNeurons() const{
     return numHiddenNeurons;
 }
-    
+
 UINT MLP::getNumOutputNeurons() const{
     return numOutputNeurons;
 }
-    
+
 UINT MLP::getInputLayerActivationFunction() const{
     return inputLayerActivationFunction;
 }
-    
+
 UINT MLP::getHiddenLayerActivationFunction() const{
     return hiddenLayerActivationFunction;
 }
-    
+
 UINT MLP::getOutputLayerActivationFunction() const{
     return outputLayerActivationFunction;
 }
-    
+
 UINT MLP::getNumRandomTrainingIterations() const{
     return numRandomTrainingIterations;
 }
-    
+
 Float MLP::getTrainingRate() const{
     return learningRate;
 }
-    
+
 Float MLP::getMomentum() const{
     return momentum;
 }
-    
+
 Float MLP::getGamma() const{
     return gamma;
 }
-    
+
 Float MLP::getTrainingError() const{
     return trainingError;
 }
-    
+
 bool MLP::getClassificationModeActive() const{
     return classificationModeActive;
 }
-    
+
 bool MLP::getRegressionModeActive() const{
     return !classificationModeActive;
 }
-    
+
 Vector< Neuron > MLP::getInputLayer() const{
     return inputLayer;
 }
-    
+
 Vector< Neuron > MLP::getHiddenLayer() const{
     return hiddenLayer;
 }
-    
+
 Vector< Neuron > MLP::getOutputLayer() const{
     return outputLayer;
 }
-    
+
 Vector< VectorFloat > MLP::getTrainingLog() const{
     return trainingErrorLog;
 }
-    
+
 bool MLP::getNullRejectionEnabled() const{
     return useNullRejection;
 }
@@ -1567,11 +1567,11 @@ bool MLP::getNullRejectionEnabled() const{
 Float MLP::getNullRejectionCoeff() const{
     return nullRejectionCoeff;
 }
-    
+
 Float MLP::getNullRejectionThreshold() const{
     return nullRejectionThreshold;
 }
-    
+
 Float MLP::getMaximumLikelihood() const{
     if( trained ) return maxLikelihood;
     return DEFAULT_NULL_LIKELIHOOD_VALUE;
@@ -1581,7 +1581,7 @@ VectorFloat MLP::getClassLikelihoods() const{
     if( trained && classificationModeActive ) return classLikelihoods;
     return VectorFloat();
 }
-    
+
 VectorFloat MLP::getClassDistances() const{
     //The class distances is simply the regression data
     if( trained && classificationModeActive ) return regressionData;
@@ -1594,47 +1594,47 @@ UINT MLP::getPredictedClassLabel() const{
 }
 
 std::string MLP::activationFunctionToString(const UINT activationFunction) const{
-	std::string activationName;
-
-	switch(activationFunction){
-		case(Neuron::LINEAR):
-			activationName = "LINEAR";
-			break;
-		case(Neuron::SIGMOID):
-			activationName = "SIGMOID";
-			break;
-		case(Neuron::BIPOLAR_SIGMOID):
-			activationName = "BIPOLAR_SIGMOID";
-			break;
-		default:
-			activationName = "UNKNOWN";
-			break;
-	}
-
-	return activationName;
+    std::string activationName;
+    
+    switch(activationFunction){
+        case(Neuron::LINEAR):
+        activationName = "LINEAR";
+        break;
+        case(Neuron::SIGMOID):
+        activationName = "SIGMOID";
+        break;
+        case(Neuron::BIPOLAR_SIGMOID):
+        activationName = "BIPOLAR_SIGMOID";
+        break;
+        default:
+        activationName = "UNKNOWN";
+        break;
+    }
+    
+    return activationName;
 }
 
 UINT MLP::activationFunctionFromString(const std::string activationName) const{
-	UINT activationFunction = 0;
-
-	if(activationName == "LINEAR" ){
-		activationFunction = 0;
-		return activationFunction;
-	}
-	if(activationName == "SIGMOID" ){
-		activationFunction = 1;
-		return activationFunction;
-	}
-	if(activationName == "BIPOLAR_SIGMOID" ){
-		activationFunction = 2;
-		return activationFunction;
-	}
-	return activationFunction;
+    UINT activationFunction = 0;
+    
+    if(activationName == "LINEAR" ){
+        activationFunction = 0;
+        return activationFunction;
+    }
+    if(activationName == "SIGMOID" ){
+        activationFunction = 1;
+        return activationFunction;
+    }
+    if(activationName == "BIPOLAR_SIGMOID" ){
+        activationFunction = 2;
+        return activationFunction;
+    }
+    return activationFunction;
 }
 
 bool MLP::validateActivationFunction(const UINT actvationFunction) const{
-	if( actvationFunction >= Neuron::LINEAR && actvationFunction < Neuron::NUMBER_OF_ACTIVATION_FUNCTIONS ) return true;
-	return false;
+    if( actvationFunction >= Neuron::LINEAR && actvationFunction < Neuron::NUMBER_OF_ACTIVATION_FUNCTIONS ) return true;
+    return false;
 }
 
 bool MLP::setInputLayerActivationFunction(const UINT activationFunction){
@@ -1667,7 +1667,7 @@ bool MLP::setHiddenLayerActivationFunction(const UINT activationFunction){
     
     return true;
 }
-    
+
 
 bool MLP::setOutputLayerActivationFunction(const UINT activationFunction){
     
@@ -1683,21 +1683,21 @@ bool MLP::setOutputLayerActivationFunction(const UINT activationFunction){
     
     return true;
 }
-    
+
 bool MLP::setTrainingRate(const Float trainingRate){
     return setLearningRate( trainingRate );
 }
 
 bool MLP::setMomentum(const Float momentum){
-	if( momentum >= 0 && momentum <= 1.0 ){
-		this->momentum = momentum;
-		return true;
-	}
-	return false;
+    if( momentum >= 0 && momentum <= 1.0 ){
+        this->momentum = momentum;
+        return true;
+    }
+    return false;
 }
 
 bool MLP::setGamma(const Float gamma){
-	
+    
     if( gamma < 0 ){
         warningLog << "setGamma(const Float gamma) - Gamma must be greater than zero!" << std::endl;
     }
@@ -1708,9 +1708,9 @@ bool MLP::setGamma(const Float gamma){
         return init(numInputNeurons,numHiddenNeurons,numOutputNeurons);
     }
     
-	return true;
+    return true;
 }
-    
+
 bool MLP::setNumRandomTrainingIterations(const UINT numRandomTrainingIterations){
     if( numRandomTrainingIterations > 0 ){
         this->numRandomTrainingIterations = numRandomTrainingIterations;
@@ -1718,12 +1718,12 @@ bool MLP::setNumRandomTrainingIterations(const UINT numRandomTrainingIterations)
     }
     return false;
 }
-    
+
 bool MLP::setNullRejection(const bool useNullRejection){
     this->useNullRejection = useNullRejection;
     return true;
 }
-    
+
 bool MLP::setNullRejectionCoeff(const Float nullRejectionCoeff){
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;
@@ -1731,7 +1731,7 @@ bool MLP::setNullRejectionCoeff(const Float nullRejectionCoeff){
     }
     return false;
 }
-    
+
 bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     
     std::string word;
@@ -1739,7 +1739,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "NumInputNeurons:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find NumInputNeurons!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find NumInputNeurons!" << std::endl;
         return false;
     }
     file >> numInputNeurons;
@@ -1748,7 +1748,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "NumHiddenNeurons:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find NumHiddenNeurons!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find NumHiddenNeurons!" << std::endl;
         return false;
     }
     file >> numHiddenNeurons;
@@ -1756,7 +1756,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "NumOutputNeurons:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find NumOutputNeurons!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find NumOutputNeurons!" << std::endl;
         return false;
     }
     file >> numOutputNeurons;
@@ -1764,7 +1764,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "InputLayerActivationFunction:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find InputLayerActivationFunction!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find InputLayerActivationFunction!" << std::endl;
         return false;
     }
     file >> word;
@@ -1773,7 +1773,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "HiddenLayerActivationFunction:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find HiddenLayerActivationFunction!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find HiddenLayerActivationFunction!" << std::endl;
         return false;
     }
     file >> word;
@@ -1782,7 +1782,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "OutputLayerActivationFunction:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find OutputLayerActivationFunction!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find OutputLayerActivationFunction!" << std::endl;
         return false;
     }
     file >> word;
@@ -1791,7 +1791,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "MinNumEpochs:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find MinNumEpochs!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find MinNumEpochs!" << std::endl;
         return false;
     }
     file >> minNumEpochs;
@@ -1799,7 +1799,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "MaxNumEpochs:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find MaxNumEpochs!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find MaxNumEpochs!" << std::endl;
         return false;
     }
     file >> maxNumEpochs;
@@ -1807,7 +1807,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "NumRandomTrainingIterations:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find NumRandomTrainingIterations!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find NumRandomTrainingIterations!" << std::endl;
         return false;
     }
     file >> numRandomTrainingIterations;
@@ -1815,7 +1815,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "ValidationSetSize:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find ValidationSetSize!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find ValidationSetSize!" << std::endl;
         return false;
     }
     file >> validationSetSize;
@@ -1823,7 +1823,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "MinChange:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find MinChange!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find MinChange!" << std::endl;
         return false;
     }
     file >> minChange;
@@ -1831,7 +1831,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "TrainingRate:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find TrainingRate!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find TrainingRate!" << std::endl;
         return false;
     }
     file >> learningRate;
@@ -1839,7 +1839,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "Momentum:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find Momentum!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find Momentum!" << std::endl;
         return false;
     }
     file >> momentum;
@@ -1847,7 +1847,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "Gamma:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find Gamma!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find Gamma!" << std::endl;
         return false;
     }
     file >> gamma;
@@ -1855,7 +1855,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "UseValidationSet:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find UseValidationSet!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find UseValidationSet!" << std::endl;
         return false;
     }
     file >> useValidationSet;
@@ -1863,7 +1863,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "RandomiseTrainingOrder:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find RandomiseTrainingOrder!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find RandomiseTrainingOrder!" << std::endl;
         return false;
     }
     file >> randomiseTrainingOrder;
@@ -1871,7 +1871,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "UseScaling:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find UseScaling!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find UseScaling!" << std::endl;
         return false;
     }
     file >> useScaling;
@@ -1879,7 +1879,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "ClassificationMode:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find ClassificationMode!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find ClassificationMode!" << std::endl;
         return false;
     }
     file >> classificationModeActive;
@@ -1887,7 +1887,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "UseNullRejection:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find UseNullRejection!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find UseNullRejection!" << std::endl;
         return false;
     }
     file >> useNullRejection;
@@ -1895,7 +1895,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "RejectionThreshold:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find RejectionThreshold!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find RejectionThreshold!" << std::endl;
         return false;
     }
     file >> nullRejectionThreshold;
@@ -1909,7 +1909,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "InputLayer:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find InputLayer!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find InputLayer!" << std::endl;
         return false;
     }
     
@@ -1919,21 +1919,21 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "InputNeuron:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find InputNeuron!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find InputNeuron!" << std::endl;
             return false;
         }
         file >> tempNeuronID;
         
         if( tempNeuronID != i+1 ){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - InputNeuron ID does not match!" << std::endl;
+            errorLog << "load(fstream &file) - InputNeuron ID does not match!" << std::endl;
             return false;
         }
         
         file >> word;
         if(word != "NumInputs:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find NumInputs!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find NumInputs!" << std::endl;
             return false;
         }
         file >> inputLayer[i].numInputs;
@@ -1944,7 +1944,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Bias:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find Bias!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find Bias!" << std::endl;
             return false;
         }
         file >> inputLayer[i].bias;
@@ -1952,7 +1952,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Gamma:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find Gamma!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find Gamma!" << std::endl;
             return false;
         }
         file >> inputLayer[i].gamma;
@@ -1960,7 +1960,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Weights:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find Weights!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find Weights!" << std::endl;
             return false;
         }
         
@@ -1973,7 +1973,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "HiddenLayer:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find HiddenLayer!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find HiddenLayer!" << std::endl;
         return false;
     }
     
@@ -1983,21 +1983,21 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "HiddenNeuron:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find HiddenNeuron!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find HiddenNeuron!" << std::endl;
             return false;
         }
         file >> tempNeuronID;
         
         if( tempNeuronID != i+1 ){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find HiddenNeuron ID does not match!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find HiddenNeuron ID does not match!" << std::endl;
             return false;
         }
         
         file >> word;
         if(word != "NumInputs:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find NumInputs!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find NumInputs!" << std::endl;
             return false;
         }
         file >> hiddenLayer[i].numInputs;
@@ -2008,7 +2008,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Bias:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find Bias!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find Bias!" << std::endl;
             return false;
         }
         file >> hiddenLayer[i].bias;
@@ -2016,7 +2016,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Gamma:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find Gamma!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find Gamma!" << std::endl;
             return false;
         }
         file >> hiddenLayer[i].gamma;
@@ -2024,7 +2024,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Weights:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find Weights!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find Weights!" << std::endl;
             return false;
         }
         
@@ -2037,7 +2037,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     file >> word;
     if(word != "OutputLayer:"){
         file.close();
-        errorLog << "loadModelFromFile(fstream &file) - Failed to find OutputLayer!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to find OutputLayer!" << std::endl;
         return false;
     }
     
@@ -2047,21 +2047,21 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "OutputNeuron:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find OutputNeuron!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find OutputNeuron!" << std::endl;
             return false;
         }
         file >> tempNeuronID;
         
         if( tempNeuronID != i+1 ){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find OuputNeuron ID does not match!!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find OuputNeuron ID does not match!!" << std::endl;
             return false;
         }
         
         file >> word;
         if(word != "NumInputs:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find NumInputs!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find NumInputs!" << std::endl;
             return false;
         }
         file >> outputLayer[i].numInputs;
@@ -2072,7 +2072,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Bias:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find Bias!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find Bias!" << std::endl;
             return false;
         }
         file >> outputLayer[i].bias;
@@ -2080,7 +2080,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Gamma:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find Gamma!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find Gamma!" << std::endl;
             return false;
         }
         file >> outputLayer[i].gamma;
@@ -2088,7 +2088,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "Weights:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find Weights!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find Weights!" << std::endl;
             return false;
         }
         
@@ -2106,7 +2106,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "InputVectorRanges:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find InputVectorRanges!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find InputVectorRanges!" << std::endl;
             return false;
         }
         for(UINT j=0; j<inputVectorRanges.size(); j++){
@@ -2117,7 +2117,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         file >> word;
         if(word != "OutputVectorRanges:"){
             file.close();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to find OutputVectorRanges!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to find OutputVectorRanges!" << std::endl;
             return false;
         }
         for(UINT j=0; j<targetVectorRanges.size(); j++){
@@ -2131,6 +2131,5 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     
     return true;
 }
-    
-GRT_END_NAMESPACE
 
+GRT_END_NAMESPACE

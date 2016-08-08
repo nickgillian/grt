@@ -114,21 +114,21 @@ public:
     
     /**
      This saves the trained SwipeDetector model to a file.
-     This overrides the saveModelToFile function in the Classifier base class.
+     This overrides the save function in the Classifier base class.
      
      @param file: a reference to the file the SwipeDetector model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads a trained SwipeDetector model from a file.
-     This overrides the loadModelFromFile function in the Classifier base class.
+     This overrides the load function in the Classifier base class.
      
      @param file: a reference to the file the SwipeDetector model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file );
+    virtual bool load( std::fstream &file );
     
     /**
      @return returns true if a swipe was detected, false otherwise
@@ -226,6 +226,12 @@ public:
      @return returns true if the parameter was updated, false otherwise
      */
     bool setSwipeIntegrationCoeff(const Float swipeIntegrationCoeff);
+
+    //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
+    using MLBase::save;
+    using MLBase::load;
+    using MLBase::train_;
+    using MLBase::predict_;
 
 protected:
     

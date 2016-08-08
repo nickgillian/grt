@@ -2,19 +2,19 @@
 GRT MIT License
 Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-and associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
+The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
@@ -22,7 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "RegressionTree.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the RegressionTreeNode with the Node base class
 RegisterNode< RegressionTreeNode > RegressionTreeNode::registerModule("RegressionTreeNode");
 
@@ -47,7 +47,7 @@ RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSam
     Regressifier::warningLog.setProceedingText("[WARNING RegressionTree]");
     
 }
-    
+
 RegressionTree::RegressionTree(const RegressionTree &rhs){
     tree = NULL;
     Regressifier::classType = "RegressionTree";
@@ -63,9 +63,9 @@ RegressionTree::~RegressionTree(void)
 {
     clear();
 }
-    
+
 RegressionTree& RegressionTree::operator=(const RegressionTree &rhs){
-	if( this != &rhs ){
+    if( this != &rhs ){
         //Clear this tree
         this->clear();
         
@@ -80,11 +80,11 @@ RegressionTree& RegressionTree::operator=(const RegressionTree &rhs){
         this->removeFeaturesAtEachSpilt = rhs.removeFeaturesAtEachSpilt;
         this->trainingMode = rhs.trainingMode;
         this->minRMSErrorPerNode = rhs.minRMSErrorPerNode;
-
+        
         //Copy the base variables
         copyBaseVariables( (Regressifier*)&rhs );
-	}
-	return *this;
+    }
+    return *this;
 }
 
 bool RegressionTree::deepCopyFrom(const Regressifier *regressifier){
@@ -175,10 +175,10 @@ bool RegressionTree::predict_(VectorFloat &inputVector){
         return false;
     }
     
-	if( inputVector.size() != numInputDimensions ){
+    if( inputVector.size() != numInputDimensions ){
         Regressifier::errorLog << "predict_(VectorFloat &inputVector) - The size of the input Vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
-		return false;
-	}
+        return false;
+    }
     
     if( useScaling ){
         for(UINT n=0; n<numInputDimensions; n++){
@@ -193,7 +193,7 @@ bool RegressionTree::predict_(VectorFloat &inputVector){
     
     return true;
 }
-    
+
 bool RegressionTree::clear(){
     
     //Clear the Classifier variables
@@ -210,25 +210,25 @@ bool RegressionTree::clear(){
 
 bool RegressionTree::print() const{
     if( tree != NULL )
-        return tree->print();
+    return tree->print();
     return false;
 }
-    
-bool RegressionTree::saveModelToFile( std::fstream &file ) const{
+
+bool RegressionTree::save( std::fstream &file ) const{
     
     if(!file.is_open())
-	{
-		Regressifier::errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
-		return false;
-	}
+    {
+        Regressifier::errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
+        return false;
+    }
     
-	//Write the header info
-	file << "GRT_REGRESSION_TREE_MODEL_FILE_V1.0\n";
+    //Write the header info
+    file << "GRT_REGRESSION_TREE_MODEL_FILE_V1.0\n";
     
     //Write the classifier settings to the file
     if( !Regressifier::saveBaseSettingsToFile(file) ){
-        Regressifier::errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
-		return false;
+        Regressifier::errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        return false;
     }
     
     file << "NumSplittingSteps: " << numSplittingSteps << std::endl;
@@ -240,22 +240,22 @@ bool RegressionTree::saveModelToFile( std::fstream &file ) const{
     
     if( tree != NULL ){
         file << "Tree:\n";
-        if( !tree->saveToFile( file ) ){
-            Regressifier::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << std::endl;
+        if( !tree->save( file ) ){
+            Regressifier::errorLog << "save(fstream &file) - Failed to save tree to file!" << std::endl;
             return false;
         }
     }
     
     return true;
 }
-    
-bool RegressionTree::loadModelFromFile( std::fstream &file ){
+
+bool RegressionTree::load( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
+        Regressifier::errorLog << "load(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -264,54 +264,54 @@ bool RegressionTree::loadModelFromFile( std::fstream &file ){
     
     //Find the file type header
     if(word != "GRT_REGRESSION_TREE_MODEL_FILE_V1.0"){
-        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
+        Regressifier::errorLog << "load(string filename) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Regressifier::loadBaseSettingsFromFile(file) ){
-        Regressifier::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+        Regressifier::errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "NumSplittingSteps:"){
-        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << std::endl;
+        Regressifier::errorLog << "load(string filename) - Could not find the NumSplittingSteps!" << std::endl;
         return false;
     }
     file >> numSplittingSteps;
     
     file >> word;
     if(word != "MinNumSamplesPerNode:"){
-        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
+        Regressifier::errorLog << "load(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
         return false;
     }
     file >> minNumSamplesPerNode;
     
     file >> word;
     if(word != "MaxDepth:"){
-        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << std::endl;
+        Regressifier::errorLog << "load(string filename) - Could not find the MaxDepth!" << std::endl;
         return false;
     }
     file >> maxDepth;
     
     file >> word;
     if(word != "RemoveFeaturesAtEachSpilt:"){
-        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
+        Regressifier::errorLog << "load(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
     file >> removeFeaturesAtEachSpilt;
     
     file >> word;
     if(word != "TrainingMode:"){
-        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
+        Regressifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
     file >> trainingMode;
     
     file >> word;
     if(word != "TreeBuilt:"){
-        Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << std::endl;
+        Regressifier::errorLog << "load(string filename) - Could not find the TreeBuilt!" << std::endl;
         return false;
     }
     file >> trained;
@@ -319,43 +319,43 @@ bool RegressionTree::loadModelFromFile( std::fstream &file ){
     if( trained ){
         file >> word;
         if(word != "Tree:"){
-            Regressifier::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << std::endl;
+            Regressifier::errorLog << "load(string filename) - Could not find the Tree!" << std::endl;
             return false;
         }
-    
+        
         //Create a new tree
         tree = new RegressionTreeNode;
         
         if( tree == NULL ){
             clear();
-            Regressifier::errorLog << "loadModelFromFile(fstream &file) - Failed to create new RegressionTreeNode!" << std::endl;
+            Regressifier::errorLog << "load(fstream &file) - Failed to create new RegressionTreeNode!" << std::endl;
             return false;
         }
         
         tree->setParent( NULL );
-        if( !tree->loadFromFile( file ) ){
+        if( !tree->load( file ) ){
             clear();
-            Regressifier::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
+            Regressifier::errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
         }
     }
     
     return true;
 }
-    
+
 RegressionTreeNode* RegressionTree::deepCopyTree() const{
     
     if( tree == NULL ){
         return NULL;
     }
-
+    
     return (RegressionTreeNode*)tree->deepCopyNode();
 }
 
 const RegressionTreeNode* RegressionTree::getTree() const{
     return dynamic_cast< RegressionTreeNode* >( tree );
 }
-    
+
 Float RegressionTree::getMinRMSErrorPerNode() const{
     return minRMSErrorPerNode;
 }
@@ -364,7 +364,7 @@ bool RegressionTree::setMinRMSErrorPerNode(const Float minRMSErrorPerNode){
     this->minRMSErrorPerNode = minRMSErrorPerNode;
     return true;
 }
-    
+
 RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData,RegressionTreeNode *parent,Vector< UINT > features,UINT nodeID){
     
     const UINT M = trainingData.getNumSamples();
@@ -378,17 +378,17 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
     UINT depth = 0;
     
     if( parent != NULL )
-        depth = parent->getDepth() + 1;
+    depth = parent->getDepth() + 1;
     
     //If there are no training data then return NULL
     if( trainingData.getNumSamples() == 0 )
-        return NULL;
+    return NULL;
     
     //Create the new node
     RegressionTreeNode *node = new RegressionTreeNode;
     
     if( node == NULL )
-        return NULL;
+    return NULL;
     
     //Set the parent
     node->initNode( parent, depth, nodeID );
@@ -463,25 +463,25 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
     
     return node;
 }
-    
+
 bool RegressionTree::computeBestSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     switch( trainingMode ){
         case BEST_ITERATIVE_SPILT:
-            return computeBestSpiltBestIterativeSpilt( trainingData, features, featureIndex, threshold, minError );
-            break;
+        return computeBestSpiltBestIterativeSpilt( trainingData, features, featureIndex, threshold, minError );
+        break;
         case BEST_RANDOM_SPLIT:
-            //return computeBestSpiltBestRandomSpilt( trainingData, features, featureIndex, threshold, minError );
-            break;
+        //return computeBestSpiltBestRandomSpilt( trainingData, features, featureIndex, threshold, minError );
+        break;
         default:
-            Regressifier::errorLog << "Uknown trainingMode!" << std::endl;
-            return false;
-            break;
+        Regressifier::errorLog << "Uknown trainingMode!" << std::endl;
+        return false;
+        break;
     }
     
     return false;
 }
-    
+
 bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     const UINT M = trainingData.getNumSamples();
@@ -549,80 +549,80 @@ bool RegressionTree::computeBestSpiltBestIterativeSpilt( const RegressionData &t
     
     return true;
 }
-    
-    /*
+
+/*
 bool RegressionTree::computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &threshold, Float &minError ){
-    
-    const UINT M = trainingData.getNumSamples();
-    const UINT N = (UINT)features.size();
-    const UINT K = (UINT)classLabels.size();
-    
-    if( N == 0 ) return false;
-    
-    minError = numeric_limits<Float>::max();
-    UINT bestFeatureIndex = 0;
-    Float bestThreshold = 0;
-    Float error = 0;
-    Float giniIndexL = 0;
-    Float giniIndexR = 0;
-    Float weightL = 0;
-    Float weightR = 0;
-    Vector< UINT > groupIndex(M);
-    VectorFloat groupCounter(2,0);
-    Vector< MinMax > ranges = trainingData.getRanges();
-    
-    MatrixDouble classProbabilities(K,2);
-    
-    //Loop over each feature and try and find the best split point
-    for(UINT n=0; n<N; n++){
-        for(UINT m=0; m<numSplittingSteps; m++){
-            //Randomly choose the threshold
-            threshold = random.getRandomNumberUniform(ranges[n].minValue,ranges[n].maxValue);
-        
-            //Iterate over each sample and work out if it should be in the lhs (0) or rhs (1) group
-            groupCounter[0] = groupCounter[1] = 0;
-            classProbabilities.setAllValues(0);
-            for(UINT i=0; i<M; i++){
-                groupIndex[i] = trainingData[ i ][ features[n] ] >= threshold ? 1 : 0;
-                groupCounter[ groupIndex[i] ]++;
-                classProbabilities[ getClassLabelIndexValue(trainingData[i].getClassLabel()) ][ groupIndex[i] ]++;
-            }
-            
-            //Compute the class probabilities for the lhs group and rhs group
-            for(UINT k=0; k<K; k++){
-                classProbabilities[k][0] = groupCounter[0]>0 ? classProbabilities[k][0]/groupCounter[0] : 0;
-                classProbabilities[k][1] = groupCounter[1]>0 ? classProbabilities[k][1]/groupCounter[1] : 0;
-            }
-            
-            //Compute the Gini index for the lhs and rhs groups
-            giniIndexL = giniIndexR = 0;
-            for(UINT k=0; k<K; k++){
-                giniIndexL += classProbabilities[k][0] * (1.0-classProbabilities[k][0]);
-                giniIndexR += classProbabilities[k][1] * (1.0-classProbabilities[k][1]);
-            }
-            weightL = groupCounter[0]/M;
-            weightR = groupCounter[1]/M;
-            error = (giniIndexL*weightL) + (giniIndexR*weightR);
-            
-            //Store the best threshold and feature index
-            if( error < minError ){
-                minError = error;
-                bestThreshold = threshold;
-                bestFeatureIndex = n;
-            }
-        }
-    }
-    
-    //Set the best feature index and threshold
-    featureIndex = bestFeatureIndex;
-    threshold = bestThreshold;
-    
-    return true;
+
+const UINT M = trainingData.getNumSamples();
+const UINT N = (UINT)features.size();
+const UINT K = (UINT)classLabels.size();
+
+if( N == 0 ) return false;
+
+minError = numeric_limits<Float>::max();
+UINT bestFeatureIndex = 0;
+Float bestThreshold = 0;
+Float error = 0;
+Float giniIndexL = 0;
+Float giniIndexR = 0;
+Float weightL = 0;
+Float weightR = 0;
+Vector< UINT > groupIndex(M);
+VectorFloat groupCounter(2,0);
+Vector< MinMax > ranges = trainingData.getRanges();
+
+MatrixDouble classProbabilities(K,2);
+
+//Loop over each feature and try and find the best split point
+for(UINT n=0; n<N; n++){
+for(UINT m=0; m<numSplittingSteps; m++){
+//Randomly choose the threshold
+threshold = random.getRandomNumberUniform(ranges[n].minValue,ranges[n].maxValue);
+
+//Iterate over each sample and work out if it should be in the lhs (0) or rhs (1) group
+groupCounter[0] = groupCounter[1] = 0;
+classProbabilities.setAllValues(0);
+for(UINT i=0; i<M; i++){
+groupIndex[i] = trainingData[ i ][ features[n] ] >= threshold ? 1 : 0;
+groupCounter[ groupIndex[i] ]++;
+classProbabilities[ getClassLabelIndexValue(trainingData[i].getClassLabel()) ][ groupIndex[i] ]++;
 }
-    
+
+//Compute the class probabilities for the lhs group and rhs group
+for(UINT k=0; k<K; k++){
+classProbabilities[k][0] = groupCounter[0]>0 ? classProbabilities[k][0]/groupCounter[0] : 0;
+classProbabilities[k][1] = groupCounter[1]>0 ? classProbabilities[k][1]/groupCounter[1] : 0;
+}
+
+//Compute the Gini index for the lhs and rhs groups
+giniIndexL = giniIndexR = 0;
+for(UINT k=0; k<K; k++){
+giniIndexL += classProbabilities[k][0] * (1.0-classProbabilities[k][0]);
+giniIndexR += classProbabilities[k][1] * (1.0-classProbabilities[k][1]);
+}
+weightL = groupCounter[0]/M;
+weightR = groupCounter[1]/M;
+error = (giniIndexL*weightL) + (giniIndexR*weightR);
+
+//Store the best threshold and feature index
+if( error < minError ){
+minError = error;
+bestThreshold = threshold;
+bestFeatureIndex = n;
+}
+}
+}
+
+//Set the best feature index and threshold
+featureIndex = bestFeatureIndex;
+threshold = bestThreshold;
+
+return true;
+}
+
 */
-    
-    //Compute the regression data that will be stored at this node
+
+//Compute the regression data that will be stored at this node
 bool RegressionTree::computeNodeRegressionData( const RegressionData &trainingData, VectorFloat &regressionData ){
     
     const UINT M = trainingData.getNumSamples();
@@ -648,6 +648,5 @@ bool RegressionTree::computeNodeRegressionData( const RegressionData &trainingDa
     
     return true;
 }
-    
-GRT_END_NAMESPACE
 
+GRT_END_NAMESPACE

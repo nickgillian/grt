@@ -1,37 +1,37 @@
 /**
- @file
- @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @section LICENSE
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
- @section DESCRIPTION
- The DoubleMovingAverageFilter implements a low pass Float moving average filter.
- 
- */
+@file
+@author  Nicholas Gillian <ngillian@media.mit.edu>
+@version 1.0
+
+@section LICENSE
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+@section DESCRIPTION
+The DoubleMovingAverageFilter implements a low pass Float moving average filter.
+
+*/
 
 #define GRT_DLL_EXPORTS
 #include "DoubleMovingAverageFilter.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the DoubleMovingAverageFilter module with the PreProcessing base class
 RegisterPreProcessingModule< DoubleMovingAverageFilter > DoubleMovingAverageFilter::registerModule("DoubleMovingAverageFilter");
 
@@ -43,7 +43,7 @@ DoubleMovingAverageFilter::DoubleMovingAverageFilter(UINT filterSize,UINT numDim
     warningLog.setProceedingText("[WARNING DoubleMovingAverageFilter]");
     init(filterSize,numDimensions);
 }
-    
+
 DoubleMovingAverageFilter::DoubleMovingAverageFilter(const DoubleMovingAverageFilter &rhs){
     
     this->filterSize = rhs.filterSize;
@@ -58,11 +58,11 @@ DoubleMovingAverageFilter::DoubleMovingAverageFilter(const DoubleMovingAverageFi
     //Copy the base variables
     copyBaseVariables( (PreProcessing*)&rhs );
 }
-    
-DoubleMovingAverageFilter::~DoubleMovingAverageFilter(){
 
-}
+DoubleMovingAverageFilter::~DoubleMovingAverageFilter(){
     
+}
+
 DoubleMovingAverageFilter& DoubleMovingAverageFilter::operator=(const DoubleMovingAverageFilter &rhs){
     if(this!=&rhs){
         this->filterSize = rhs.filterSize;
@@ -74,7 +74,7 @@ DoubleMovingAverageFilter& DoubleMovingAverageFilter::operator=(const DoubleMovi
     }
     return *this;
 }
-    
+
 bool DoubleMovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
@@ -83,7 +83,7 @@ bool DoubleMovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing)
         
         DoubleMovingAverageFilter *ptr = (DoubleMovingAverageFilter*)preProcessing;
         
-        //Clone the classLabelTimeoutFilter values 
+        //Clone the classLabelTimeoutFilter values
         this->filterSize = ptr->filterSize;
         this->filter1 = ptr->filter1;
         this->filter2 = ptr->filter2;
@@ -97,14 +97,14 @@ bool DoubleMovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing)
     return false;
 }
 
-    
+
 bool DoubleMovingAverageFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
         errorLog << "process(const VectorFloat &inputVector) - The filter has not been initialized!" << std::endl;
         return false;
     }
-
+    
     if( inputVector.size() != numInputDimensions ){
         errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
@@ -120,31 +120,11 @@ bool DoubleMovingAverageFilter::reset(){
     if( initialized ) return init(filterSize,numInputDimensions);
     return false;
 }
-    
-bool DoubleMovingAverageFilter::saveModelToFile( std::string filename ) const{
-    
-    if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The DoubleMovingAverageFilter has not been initialized" << std::endl;
-        return false;
-    }
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-    
-bool DoubleMovingAverageFilter::saveModelToFile(std::fstream &file) const{
+
+bool DoubleMovingAverageFilter::save(std::fstream &file) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(std::fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(std::fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -157,26 +137,10 @@ bool DoubleMovingAverageFilter::saveModelToFile(std::fstream &file) const{
     return true;
 }
 
-bool DoubleMovingAverageFilter::loadModelFromFile( std::string filename ){
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        initialized = false;
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool DoubleMovingAverageFilter::loadModelFromFile( std::fstream &file ){
+bool DoubleMovingAverageFilter::load( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(std::fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(std::fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -186,36 +150,36 @@ bool DoubleMovingAverageFilter::loadModelFromFile( std::fstream &file ){
     file >> word;
     
     if( word != "GRT_DOUBLE_MOVING_AVERAGE_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
+        return false;
     }
     file >> numInputDimensions;
     
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
+        return false;
     }
     file >> numOutputDimensions;
     
     //Load the filter size
     file >> word;
     if( word != "FilterSize:" ){
-        errorLog << "loadModelFromFile(std::fstream &file) - Failed to read FilterSize header!" << std::endl;
-        return false;     
+        errorLog << "load(std::fstream &file) - Failed to read FilterSize header!" << std::endl;
+        return false;
     }
     file >> filterSize;
     
     //Init the filter module to ensure everything is initialized correctly
-    return init(filterSize,numInputDimensions);  
+    return init(filterSize,numInputDimensions);
 }
 
 bool DoubleMovingAverageFilter::init(UINT filterSize,UINT numDimensions){
@@ -269,7 +233,7 @@ Float DoubleMovingAverageFilter::filter(const Float x){
     if( y.getSize() == 0 ) return 0;
     return y[0];
 }
-    
+
 VectorFloat DoubleMovingAverageFilter::filter(const VectorFloat &x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
@@ -296,7 +260,7 @@ VectorFloat DoubleMovingAverageFilter::filter(const VectorFloat &x){
     //Account for the filter lag
     const UINT N = y.getSize();
     for(UINT i=0; i<N; i++){
-        yy[i] = y[i] + (y[i] - yy[i]); 
+        yy[i] = y[i] + (y[i] - yy[i]);
         processedData[i] = yy[i];
     }
     

@@ -1,33 +1,33 @@
 /**
- @file
- @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @brief This class implements a MixtureModel, which is a container for holding a class model for the
- GRT::GMM class.
- 
- @example ClassificationModulesExamples/GMMExample/GMMExample.cpp
+@file
+@author  Nicholas Gillian <ngillian@media.mit.edu>
+@version 1.0
+
+@brief This class implements a MixtureModel, which is a container for holding a class model for the
+GRT::GMM class.
+
+@example ClassificationModulesExamples/GMMExample/GMMExample.cpp
 */
 
 /**
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- and associated documentation files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #ifndef GRT_MIXTURE_MODEL_HEADER
 #define GRT_MIXTURE_MODEL_HEADER
@@ -36,7 +36,7 @@
 #include "../../ClusteringModules/GaussianMixtureModels/GaussianMixtureModels.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 class GuassModel{
 public:
     GuassModel(){
@@ -53,7 +53,7 @@ public:
         std::cout << "Determinate: " << det << std::endl;
         std::cout << "Mu: ";
         for(UINT i=0; i<mu.getSize(); i++)
-            std::cout << mu[i] << "\t";
+        std::cout << mu[i] << "\t";
         std::cout << std::endl;
         
         std::cout << "Sigma: \n";
@@ -78,7 +78,7 @@ public:
     MatrixFloat sigma;
     MatrixFloat invSigma;
 };
-    
+
 class MixtureModel{
 public:
     MixtureModel(){
@@ -96,11 +96,11 @@ public:
     
     inline GuassModel& operator[](const UINT i){
         return gaussModels[i];
-	}
+    }
     
     inline const GuassModel& operator[](const UINT i) const{
         return gaussModels[i];
-	}
+    }
     
     Float computeMixtureLikelihood( const VectorFloat &x ){
         Float sum = 0;
@@ -149,6 +149,7 @@ public:
             for(UINT k=0; k<gaussModels.getSize(); k++){
                 gaussModels[k].printModelValues();
             }
+            return true;
         }
         return false;
     }
@@ -194,7 +195,7 @@ public:
         return true;
     }
     
-private:    
+private:
     Float gauss(const VectorFloat &x,Float det,const VectorFloat &mu,const MatrixFloat &invSigma){
         
         Float y = 0;
@@ -205,7 +206,7 @@ private:
         //Compute the first part of the equation
         y = (1.0/pow(TWO_PI,N/2.0)) * (1.0/pow(det,0.5));
         
-        //Compute the later half    
+        //Compute the later half
         for(UINT i=0; i<N; i++){
             for(UINT j=0; j<N; j++){
                 temp[i] += (x[j]-mu[j]) * invSigma[j][i];
@@ -213,20 +214,20 @@ private:
             sum += (x[i]-mu[i]) * temp[i];
         }
         
-        return ( y*grt_exp( -0.5*sum ) );
+        return y*grt_exp( -0.5*sum );
     }
     
     UINT classLabel;
     UINT K;
     Float nullRejectionThreshold;
     Float gamma;                           //The number of standard deviations to use for the threshold
-	Float trainingMu;                      //The average confidence value in the training data
-	Float trainingSigma;                   //The simga confidence value in the training data
+    Float trainingMu;                      //The average confidence value in the training data
+    Float trainingSigma;                   //The simga confidence value in the training data
     Float normFactor;
     Vector< GuassModel > gaussModels;
     
 };
-    
+
 GRT_END_NAMESPACE
 
 #endif //GRT_MIXTURE_MODEL_HEADER

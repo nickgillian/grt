@@ -2237,7 +2237,7 @@ bool GestureRecognitionPipeline::savePipelineToFile(const std::string &filename)
     //Write the preprocessing module data to the file
     for(UINT i=0; i<getNumPreProcessingModules(); i++){
         file << "PreProcessingModule_" << Util::intToString(i+1) << std::endl;
-        if( !preProcessingModules[i]->saveModelToFile( file ) ){
+        if( !preProcessingModules[i]->save( file ) ){
             errorLog << "Failed to write preprocessing module " << i << " settings to file!" << std::endl;
             file.close();
             return false;
@@ -2247,7 +2247,7 @@ bool GestureRecognitionPipeline::savePipelineToFile(const std::string &filename)
     //Write the feature extraction module data to the file
     for(UINT i=0; i<getNumFeatureExtractionModules(); i++){
         file << "FeatureExtractionModule_" << Util::intToString(i+1) << std::endl;
-        if( !featureExtractionModules[i]->saveModelToFile( file ) ){
+        if( !featureExtractionModules[i]->save( file ) ){
             errorLog << "Failed to write feature extraction module " << i << " settings to file!" << std::endl;
             file.close();
             return false;
@@ -2259,7 +2259,7 @@ bool GestureRecognitionPipeline::savePipelineToFile(const std::string &filename)
             break;
         case CLASSIFICATION_MODE:
             if( getIsClassifierSet() ){
-                if( !classifier->saveModelToFile( file ) ){
+                if( !classifier->save( file ) ){
                     errorLog << "Failed to write classifier model to file!" << std::endl;
                     file.close();
                     return false;
@@ -2268,7 +2268,7 @@ bool GestureRecognitionPipeline::savePipelineToFile(const std::string &filename)
             break;
         case REGRESSION_MODE:
             if( getIsRegressifierSet() ){
-                if( !regressifier->saveModelToFile( file ) ){
+                if( !regressifier->save( file ) ){
                     errorLog << "Failed to write regressifier model to file!" << std::endl;
                     file.close();
                     return false;
@@ -2277,7 +2277,7 @@ bool GestureRecognitionPipeline::savePipelineToFile(const std::string &filename)
             break;
         case CLUSTER_MODE:
             if( getIsClustererSet() ){
-                if( !clusterer->saveModelToFile( file ) ){
+                if( !clusterer->save( file ) ){
                     errorLog << "Failed to write clusterer model to file!" << std::endl;
                     file.close();
                     return false;
@@ -2291,7 +2291,7 @@ bool GestureRecognitionPipeline::savePipelineToFile(const std::string &filename)
     //Write the post processing module data to the file
     for(UINT i=0; i<getNumPostProcessingModules(); i++){
         file << "PostProcessingModule_" << Util::intToString(i+1) << std::endl;
-        if( !postProcessingModules[i]->saveModelToFile( file ) ){
+        if( !postProcessingModules[i]->save( file ) ){
             errorLog <<"Failed to write post processing module " << i << " settings to file!" << std::endl;
             file.close();
             return false;
@@ -2511,7 +2511,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const std::string &filenam
     for(UINT i=0; i<numPreprocessingModules; i++){
 		//Load the preprocessing module header
 		file >> word;
-        if( !preProcessingModules[i]->loadModelFromFile( file ) ){
+        if( !preProcessingModules[i]->load( file ) ){
             errorLog << "Failed to load preprocessing module " << i << " settings from file!" << std::endl;
             file.close();
             return false;
@@ -2522,7 +2522,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const std::string &filenam
 	for(UINT i=0; i<numFeatureExtractionModules; i++){
 		//Load the feature extraction module header
 		file >> word;
-	    if( !featureExtractionModules[i]->loadModelFromFile( file ) ){
+	    if( !featureExtractionModules[i]->load( file ) ){
             errorLog << "Failed to load feature extraction module " << i << " settings from file!" << std::endl;
 	        file.close();
 	        return false;
@@ -2534,21 +2534,21 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const std::string &filenam
         case PIPELINE_MODE_NOT_SET:
             break;
         case CLASSIFICATION_MODE:
-               if( !classifier->loadModelFromFile( file ) ){
+               if( !classifier->load( file ) ){
                    errorLog << "Failed to load classifier model from file!" << std::endl;
                    file.close();
                    return false;
                }
             break;
         case REGRESSION_MODE:
-               if( !regressifier->loadModelFromFile( file ) ){
+               if( !regressifier->load( file ) ){
                    errorLog << "Failed to load regressifier model from file!" << std::endl;
                    file.close();
                    return false;
                }
             break;
         case CLUSTER_MODE:
-            if( !clusterer->loadModelFromFile( file ) ){
+            if( !clusterer->load( file ) ){
                 errorLog << "Failed to load cluster model from file!" << std::endl;
                 file.close();
                 return false;
@@ -2562,7 +2562,7 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const std::string &filenam
     for(UINT i=0; i<numPostprocessingModules; i++){
 		//Load the post processing module header
 		file >> word;
-        if( !postProcessingModules[i]->loadModelFromFile( file ) ){
+        if( !postProcessingModules[i]->load( file ) ){
             errorLog << "Failed to load post processing module " << i << " settings from file!" << std::endl;
             file.close();
             return false;

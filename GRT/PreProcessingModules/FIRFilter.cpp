@@ -1,31 +1,31 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "FIRFilter.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the FIRFilter module with the PreProcessing base class
 RegisterPreProcessingModule< FIRFilter > FIRFilter::registerModule("FIRFilter");
-    
+
 FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sampleRate,const Float cutoffFrequency,const Float gain,const UINT numDimensions){
     classType = "FIRFilter";
     preProcessingType = classType;
@@ -45,19 +45,19 @@ FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sample
     switch( filterType ){
         case LPF:
         case HPF:
-            setCutoffFrequency( cutoffFrequency );
-            this->cutoffFrequencyLower = 0;
-            this->cutoffFrequencyUpper = 0;
-            //Build the filter
-            buildFilter();
-            break;
+        setCutoffFrequency( cutoffFrequency );
+        this->cutoffFrequencyLower = 0;
+        this->cutoffFrequencyUpper = 0;
+        //Build the filter
+        buildFilter();
+        break;
         case BPF:
-            this->cutoffFrequency = 0;
-            setCutoffFrequency(cutoffFrequency, cutoffFrequency);
-            //Build the filter
-            buildFilter();
-            break;
-    }    
+        this->cutoffFrequency = 0;
+        setCutoffFrequency(cutoffFrequency, cutoffFrequency);
+        //Build the filter
+        buildFilter();
+        break;
+    }
 }
 
 FIRFilter::FIRFilter(const FIRFilter &rhs){
@@ -69,13 +69,13 @@ FIRFilter::FIRFilter(const FIRFilter &rhs){
     
     *this = rhs;
 }
-    
-FIRFilter::~FIRFilter(){
 
+FIRFilter::~FIRFilter(){
+    
 }
 
 FIRFilter& FIRFilter::operator=(const FIRFilter &rhs){
-	if(this!=&rhs){
+    if(this!=&rhs){
         this->filterType = rhs.filterType;
         this->numTaps = rhs.numTaps;
         this->sampleRate = rhs.sampleRate;
@@ -87,10 +87,10 @@ FIRFilter& FIRFilter::operator=(const FIRFilter &rhs){
         this->z = rhs.z;
         
         copyBaseVariables( (PreProcessing*)&rhs );
-	}
-	return *this;
+    }
+    return *this;
 }
-    
+
 bool FIRFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
@@ -107,7 +107,7 @@ bool FIRFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     return false;
 }
-    
+
 bool FIRFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
@@ -145,7 +145,7 @@ bool FIRFilter::reset(){
     
     return true;
 }
-    
+
 bool FIRFilter::clear(){
     
     //Clear the base class
@@ -156,23 +156,8 @@ bool FIRFilter::clear(){
     
     return true;
 }
-    
-bool FIRFilter::saveModelToFile( std::string filename ) const{
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool FIRFilter::saveModelToFile( std::fstream &file ) const{
+bool FIRFilter::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
         errorLog << "saveSettingsToFile(fstream &file) - The file is not open!" << std::endl;
@@ -210,29 +195,13 @@ bool FIRFilter::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool FIRFilter::loadModelFromFile( std::string filename ){
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        initialized = false;
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool FIRFilter::loadModelFromFile( std::fstream &file ){
+bool FIRFilter::load( std::fstream &file ){
     
     //Clear the filter
     clear();
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -242,13 +211,13 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
     file >> word;
     
     if( word != "GRT_FIR_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
         clear();
-        return false;     
+        return false;
     }
     
     if( !loadPreProcessingSettingsFromFile( file ) ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load preprocessing base settings from file!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to load preprocessing base settings from file!" << std::endl;
         clear();
         return false;
     }
@@ -256,7 +225,7 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
     //Load if the filter type
     file >> word;
     if( word != "FilterType:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterType header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read FilterType header!" << std::endl;
         clear();
         return false;
     }
@@ -265,7 +234,7 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
     //Load if the number of taps
     file >> word;
     if( word != "NumTaps:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumTaps header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read NumTaps header!" << std::endl;
         clear();
         return false;
     }
@@ -274,7 +243,7 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
     //Load if the sample rate
     file >> word;
     if( word != "SampleRate:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read SampleRate header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read SampleRate header!" << std::endl;
         clear();
         return false;
     }
@@ -283,7 +252,7 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
     //Load if the cutoffFrequency
     file >> word;
     if( word != "CutoffFrequency:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read CutoffFrequency header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read CutoffFrequency header!" << std::endl;
         clear();
         return false;
     }
@@ -292,7 +261,7 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
     //Load if the CutoffFrequencyLower
     file >> word;
     if( word != "CutoffFrequencyLower:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read CutoffFrequencyLower header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read CutoffFrequencyLower header!" << std::endl;
         clear();
         return false;
     }
@@ -301,7 +270,7 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
     //Load if the CutoffFrequencyUpper
     file >> word;
     if( word != "CutoffFrequencyUpper:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read CutoffFrequencyUpper header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read CutoffFrequencyUpper header!" << std::endl;
         clear();
         return false;
     }
@@ -310,7 +279,7 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
     //Load if the Gain
     file >> word;
     if( word != "Gain:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read Gain header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read Gain header!" << std::endl;
         clear();
         return false;
     }
@@ -325,7 +294,7 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
         //Load z
         file >> word;
         if( word != "FilterCoeff:" ){
-            errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterCoeff header!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to read FilterCoeff header!" << std::endl;
             clear();
             return false;
         }
@@ -337,7 +306,7 @@ bool FIRFilter::loadModelFromFile( std::fstream &file ){
     
     return true;
 }
-    
+
 bool FIRFilter::buildFilter(){
     
     if( numInputDimensions == 0 ){
@@ -365,37 +334,37 @@ bool FIRFilter::buildFilter(){
     
     switch( filterType ){
         case LPF:
-            //Design the low pass filter
-            lambda = PI * cutoffFrequency / nyquist;
-            for(UINT i=0; i<numTaps; i++){
-                alpha = i - (numTaps - 1.0) / 2.0;
-                if( alpha == 0.0 ) z[i] = lambda / PI;
-                else z[i] = sin( alpha * lambda ) / (alpha * PI);
+        //Design the low pass filter
+        lambda = PI * cutoffFrequency / nyquist;
+        for(UINT i=0; i<numTaps; i++){
+            alpha = i - (numTaps - 1.0) / 2.0;
+            if( alpha == 0.0 ) z[i] = lambda / PI;
+            else z[i] = sin( alpha * lambda ) / (alpha * PI);
             }
-            break;
+        break;
         case HPF:
-            //Design the high pass filter
-            lambda = PI * cutoffFrequency / nyquist;
-            for(UINT i=0; i<numTaps; i++){
-                alpha = i - (numTaps - 1.0) / 2.0;
-                if( alpha == 0.0 ) z[i] = 1.0 - lambda / PI;
-                else z[i] = -sin( alpha * lambda ) / (alpha * PI);
+        //Design the high pass filter
+        lambda = PI * cutoffFrequency / nyquist;
+        for(UINT i=0; i<numTaps; i++){
+            alpha = i - (numTaps - 1.0) / 2.0;
+            if( alpha == 0.0 ) z[i] = 1.0 - lambda / PI;
+            else z[i] = -sin( alpha * lambda ) / (alpha * PI);
             }
-            break;
+        break;
         case BPF:
-            //Design the band pass filter
-            lambda = PI * cutoffFrequencyLower / nyquist;
-            phi = PI * cutoffFrequencyUpper / nyquist;
-            for(UINT i=0; i<numTaps; i++){
-                alpha = i - (numTaps - 1.0) / 2.0;
-                if( alpha == 0.0 ) z[i] = (phi - lambda) / PI;
-                else z[i] = (sin( alpha * phi ) - sin( alpha * lambda )) / (alpha * PI);
+        //Design the band pass filter
+        lambda = PI * cutoffFrequencyLower / nyquist;
+        phi = PI * cutoffFrequencyUpper / nyquist;
+        for(UINT i=0; i<numTaps; i++){
+            alpha = i - (numTaps - 1.0) / 2.0;
+            if( alpha == 0.0 ) z[i] = (phi - lambda) / PI;
+            else z[i] = (sin( alpha * phi ) - sin( alpha * lambda )) / (alpha * PI);
             }
-            break;
+        break;
         default:
-            errorLog << "designFilter() - Failed to design filter. Unknown filter type!" << std::endl;
-            return false;
-            break;
+        errorLog << "designFilter() - Failed to design filter. Unknown filter type!" << std::endl;
+        return false;
+        break;
     }
     
     //Init the preprocessing base class
@@ -423,7 +392,7 @@ Float FIRFilter::filter(const Float x){
     //Return the filtered value
     return result[0];
 }
-    
+
 VectorFloat FIRFilter::filter(const VectorFloat &x){
     
     if( !initialized ){
@@ -452,7 +421,7 @@ VectorFloat FIRFilter::filter(const VectorFloat &x){
     
     return processedData;
 }
-    
+
 UINT FIRFilter::getFilterType() const{
     return filterType;
 }
@@ -494,7 +463,7 @@ VectorFloat FIRFilter::getFilterCoefficents() const{
     }
     return VectorFloat();
 }
-    
+
 bool FIRFilter::setFilterType(const UINT filterType){
     
     if( filterType == LPF || filterType == HPF || filterType == BPF ){
@@ -586,4 +555,3 @@ bool FIRFilter::setGain(const Float gain){
 }
 
 GRT_END_NAMESPACE
-

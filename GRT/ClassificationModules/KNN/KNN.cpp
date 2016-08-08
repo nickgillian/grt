@@ -22,7 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "KNN.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the DTW module with the Classifier base class
 RegisterClassifierModule< KNN > KNN::registerModule("KNN");
 
@@ -45,7 +45,7 @@ KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectio
     trainingLog.setProceedingText("[TRAINING KNN]");
     warningLog.setProceedingText("[WARNING KNN]");
 }
-    
+
 KNN::KNN(const KNN &rhs){
     classType = "KNN";
     classifierType = classType;
@@ -60,7 +60,7 @@ KNN::KNN(const KNN &rhs){
 KNN::~KNN(void)
 {
 }
-    
+
 KNN& KNN::operator=(const KNN &rhs){
     if( this != &rhs ){
         //KNN variables
@@ -78,7 +78,7 @@ KNN& KNN::operator=(const KNN &rhs){
     }
     return *this;
 }
-    
+
 bool KNN::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
@@ -131,113 +131,113 @@ bool KNN::train_(ClassificationData &trainingData){
     for(UINT k=0; k<numClasses; k++){
         classLabels[k] = trainingData.getClassTracker()[k].classLabel;
     }
-
+    
     //If we do not need to search for the best K value, then call the sub training function and return the result
-	if( !searchForBestKValue ){
+    if( !searchForBestKValue ){
         return train_(trainingData,K);
     }
-
+    
     //If we have got this far then we are going to search for the best K value
     UINT index = 0;
     Float bestAccuracy = 0;
     Vector< IndexedDouble > trainingAccuracyLog;
-
+    
     for(UINT k=minKSearchValue; k<=maxKSearchValue; k++){
         //Randomly spilt the data and use 80% to train the algorithm and 20% to test it
         ClassificationData trainingSet(trainingData);
-        ClassificationData testSet = trainingSet.partition(80,true);
-
+        ClassificationData testSet = trainingSet.split(80,true);
+        
         if( !train_(trainingSet, k) ){
             errorLog << "Failed to train model for a k value of " << k << std::endl;
         }else{
-
+                
             //Compute the classification error
             Float accuracy = 0;
             for(UINT i=0; i<testSet.getNumSamples(); i++){
-
+                
                 VectorFloat sample = testSet[i].getSample();
-
+                
                 if( !predict( sample , k) ){
                     errorLog << "Failed to predict label for test sample with a k value of " << k << std::endl;
-                    return false;
+                        return false;
                 }
-
+                
                 if( testSet[i].getClassLabel() == predictedClassLabel ){
                     accuracy++;
                 }
             }
-
+            
             accuracy = accuracy /Float( testSet.getNumSamples() ) * 100.0;
             trainingAccuracyLog.push_back( IndexedDouble(k,accuracy) );
-			
-			trainingLog << "K:\t" << k << "\tAccuracy:\t" << accuracy << std::endl;
-
+            
+            trainingLog << "K:\t" << k << "\tAccuracy:\t" << accuracy << std::endl;
+            
             if( accuracy > bestAccuracy ){
                 bestAccuracy = accuracy;
             }
-
+            
             index++;
         }
-
+            
     }
-
+        
     if( bestAccuracy > 0 ){
         //Sort the training log by value
         std::sort(trainingAccuracyLog.begin(),trainingAccuracyLog.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
-
+        
         //Copy the top matching values into a temporary buffer
         Vector< IndexedDouble > tempLog;
-
+        
         //Add the first value
         tempLog.push_back( trainingAccuracyLog[0] );
-
+        
         //Keep adding values until the value changes
         for(UINT i=1; i<trainingAccuracyLog.size(); i++){
             if( trainingAccuracyLog[i].value == tempLog[0].value ){
                 tempLog.push_back( trainingAccuracyLog[i] );
             }else break;
         }
-
+        
         //Sort the temp values by index (the index is the K value so we want to get the minimum K value with the maximum accuracy)
         std::sort(tempLog.begin(),tempLog.end(),IndexedDouble::sortIndexedDoubleByIndexAscending);
-
-		trainingLog << "Best K Value: " << tempLog[0].index << "\tAccuracy:\t" << tempLog[0].value << std::endl;
-
+        
+        trainingLog << "Best K Value: " << tempLog[0].index << "\tAccuracy:\t" << tempLog[0].value << std::endl;
+        
         //Use the minimum index, this should give us the best accuracy with the minimum K value
         //We now need to train the model again to make sure all the training metrics are computed correctly
         return train_(trainingData,tempLog[0].index);
     }
-
+        
     return false;
 }
-
+    
 bool KNN::train_(const ClassificationData &trainingData,const UINT K){
-
+    
     //Set the dimensionality of the input data
     this->K = K;
-
+    
     //Flag that the algorithm has been trained so we can compute the rejection thresholds
     trained = true;
     
     //If null rejection is enabled then compute the null rejection thresholds
     if( useNullRejection ){
-
+        
         //Set the null rejection to false so we can compute the values for it (this will be set back to its current value later)
         useNullRejection = false;
         nullRejectionThresholds.clear();
-
+        
         //Compute the rejection thresholds for each of the K classes
         VectorFloat counter(numClasses,0);
         trainingMu.resize( numClasses, 0 );
         trainingSigma.resize( numClasses, 0 );
         nullRejectionThresholds.resize( numClasses, 0 );
-
+        
         //Compute Mu for each of the classes
         const unsigned int numTrainingExamples = trainingData.getNumSamples();
         Vector< IndexedDouble > predictionResults( numTrainingExamples );
         for(UINT i=0; i<numTrainingExamples; i++){
             predict( trainingData[i].getSample(), K);
-
+            
             UINT classLabelIndex = 0;
             for(UINT k=0; k<numClasses; k++){
                 if( predictedClassLabel == classLabels[k] ){
@@ -245,23 +245,23 @@ bool KNN::train_(const ClassificationData &trainingData,const UINT K){
                     break;
                 }
             }
-
+            
             predictionResults[ i ].index = classLabelIndex;
             predictionResults[ i ].value = classDistances[ classLabelIndex ];
-
+            
             trainingMu[ classLabelIndex ] += predictionResults[ i ].value;
             counter[ classLabelIndex ]++;
         }
-
+        
         for(UINT j=0; j<numClasses; j++){
             trainingMu[j] /= counter[j];
         }
-
+        
         //Compute Sigma for each of the classes
         for(UINT i=0; i<numTrainingExamples; i++){
             trainingSigma[predictionResults[i].index] += SQR(predictionResults[i].value - trainingMu[predictionResults[i].index]);
         }
-
+        
         for(UINT j=0; j<numClasses; j++){
             Float count = counter[j];
             if( count > 1 ){
@@ -270,36 +270,36 @@ bool KNN::train_(const ClassificationData &trainingData,const UINT K){
                 trainingSigma[ j ] = 1.0;
             }
         }
-
+        
         //Check to see if any of the mu or sigma values are zero or NaN
         bool errorFound = false;
         for(UINT j=0; j<numClasses; j++){
             if( trainingMu[j] == 0 ){
                 warningLog << "TrainingMu[ " << j << " ] is zero for a K value of " << K << std::endl;
-            }
+                }
             if( trainingSigma[j] == 0 ){
                 warningLog << "TrainingSigma[ " << j << " ] is zero for a K value of " << K << std::endl;
-            }
+                }
             if( grt_isnan( trainingMu[j] ) ){
                 errorLog << "TrainingMu[ " << j << " ] is NAN for a K value of " << K << std::endl;
-                errorFound = true;
+                    errorFound = true;
             }
             if( grt_isnan( trainingSigma[j] ) ){
                 errorLog << "TrainingSigma[ " << j << " ] is NAN for a K value of " << K << std::endl;
-                errorFound = true;
+                    errorFound = true;
             }
         }
-
+        
         if( errorFound ){
             trained = false;
             return false;
         }
-
+        
         //Compute the rejection thresholds
         for(unsigned int j=0; j<numClasses; j++){
             nullRejectionThresholds[j] = trainingMu[j] + (trainingSigma[j]*nullRejectionCoeff);
         }
-
+        
         //Restore the actual state of the null rejection
         useNullRejection = true;
         
@@ -308,17 +308,17 @@ bool KNN::train_(const ClassificationData &trainingData,const UINT K){
         nullRejectionThresholds.clear();
         nullRejectionThresholds.resize( numClasses, 0 );
     }
-
+    
     return true;
 }
 
 bool KNN::predict_(VectorFloat &inputVector){
-
+    
     if( !trained ){
         errorLog << "predict_(VectorFloat &inputVector) - KNN model has not been trained" << std::endl;
         return false;
     }
-
+    
     if( inputVector.size() != numInputDimensions ){
         errorLog << "predict_(VectorFloat &inputVector) - the size of the input vector " << inputVector.size() << " does not match the number of features " << numInputDimensions <<  std::endl;
         return false;
@@ -330,53 +330,53 @@ bool KNN::predict_(VectorFloat &inputVector){
             inputVector[i] = scale(inputVector[i], ranges[i].minValue, ranges[i].maxValue, 0, 1);
         }
     }
-
+    
     //Run the prediction
     return predict(inputVector,K);
 }
 
 bool KNN::predict(const VectorFloat &inputVector,const UINT K){
-
+    
     if( !trained ){
         errorLog << "predict(VectorFloat inputVector,UINT K) - KNN model has not been trained" << std::endl;
         return false;
     }
-
+    
     if( inputVector.size() != numInputDimensions ){
         errorLog << "predict(VectorFloat inputVector) - the size of the input vector " << inputVector.size() << " does not match the number of features " << numInputDimensions <<  std::endl;
         return false;
     }
-
+    
     if( K > trainingData.getNumSamples() ){
         errorLog << "predict(VectorFloat inputVector,UINT K) - K Is Greater Than The Number Of Training Samples" << std::endl;
         return false;
     }
-
+    
     //TODO - need to build a kdtree of the training data to allow better realtime prediction
     const UINT M = trainingData.getNumSamples();
     Vector< IndexedDouble > neighbours;
-
+    
     for(UINT i=0; i<M; i++){
         Float dist = 0;
         UINT classLabel = trainingData[i].getClassLabel();
         VectorFloat trainingSample = trainingData[i].getSample();
-
+        
         switch( distanceMethod ){
             case EUCLIDEAN_DISTANCE:
-                dist = computeEuclideanDistance(inputVector,trainingSample);
-                break;
+            dist = computeEuclideanDistance(inputVector,trainingSample);
+            break;
             case COSINE_DISTANCE:
-                dist = computeCosineDistance(inputVector,trainingSample);
-                break;
+            dist = computeCosineDistance(inputVector,trainingSample);
+            break;
             case MANHATTAN_DISTANCE:
-                dist = computeManhattanDistance(inputVector, trainingSample);
-                break;
+            dist = computeManhattanDistance(inputVector, trainingSample);
+            break;
             default:
-                errorLog << "predict(vector< Float > inputVector) - unkown distance measure!" << std::endl;
-                return false;
-                break;
+            errorLog << "predict(vector< Float > inputVector) - unkown distance measure!" << std::endl;
+            return false;
+            break;
         }
-
+        
         if( neighbours.size() < K ){
             neighbours.push_back( IndexedDouble(classLabel,dist) );
         }else{
@@ -389,21 +389,21 @@ bool KNN::predict(const VectorFloat &inputVector,const UINT K){
                     maxIndex = n;
                 }
             }
-
+            
             //If the dist is less than the maximum value in the buffer, then replace that value with the new dist
             if( dist < maxValue ){
                 neighbours[ maxIndex ] = IndexedDouble(classLabel,dist);
             }
         }
     }
-
+    
     //Predict the class ID using the labels of the K nearest neighbours
     if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses);
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses);
     
     std::fill(classLikelihoods.begin(),classLikelihoods.end(),0);
     std::fill(classDistances.begin(),classDistances.end(),0);
-
+    
     //Count the classes
     for(UINT k=0; k<neighbours.size(); k++){
         UINT classLabel = neighbours[k].index;
@@ -411,19 +411,19 @@ bool KNN::predict(const VectorFloat &inputVector,const UINT K){
             errorLog << "predict(VectorFloat inputVector) - Class label of training example can not be zero!" << std::endl;
             return false;
         }
-
-		//Find the index of the classLabel
-		UINT classLabelIndex = 0;
-		for(UINT j=0; j<numClasses; j++){
-			if( classLabel == classLabels[j] ){
-				classLabelIndex = j;
-				break;
-			}
-		}
+        
+        //Find the index of the classLabel
+        UINT classLabelIndex = 0;
+        for(UINT j=0; j<numClasses; j++){
+            if( classLabel == classLabels[j] ){
+                classLabelIndex = j;
+                break;
+            }
+        }
         classLikelihoods[ classLabelIndex ] += 1;
         classDistances[ classLabelIndex ] += neighbours[k].value;
     }
-
+    
     //Get the max count
     Float maxCount = classLikelihoods[0];
     UINT maxIndex = 0;
@@ -433,21 +433,21 @@ bool KNN::predict(const VectorFloat &inputVector,const UINT K){
             maxIndex = i;
         }
     }
-
+    
     //Compute the average distances per class
     for(UINT i=0; i<numClasses; i++){
         if( classLikelihoods[i] > 0 )   classDistances[i] /= classLikelihoods[i];
         else classDistances[i] = BIG_DISTANCE;
-    }
-
+        }
+    
     //Normalize the likelihoods
     for(UINT i=0; i<numClasses; i++){
         classLikelihoods[i] /= Float( neighbours.size() );
     }
-
+    
     //Set the maximum likelihood value
     maxLikelihood = classLikelihoods[ maxIndex ];
-
+    
     if( useNullRejection ){
         if( classDistances[ maxIndex ] <= nullRejectionThresholds[ maxIndex ] ){
             predictedClassLabel = classLabels[maxIndex];
@@ -457,10 +457,10 @@ bool KNN::predict(const VectorFloat &inputVector,const UINT K){
     }else{
         predictedClassLabel = classLabels[maxIndex];
     }
-
+    
     return true;
 }
-    
+
 bool KNN::clear(){
     
     //Clear the Classifier variables
@@ -474,11 +474,11 @@ bool KNN::clear(){
     return true;
 }
 
-bool KNN::saveModelToFile( std::fstream &file ) const{
+bool KNN::save( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog << "saveModelToFile(fstream &file) - Could not open file to save model!" << std::endl;
+        errorLog << "save(fstream &file) - Could not open file to save model!" << std::endl;
         return false;
     }
     
@@ -487,8 +487,8 @@ bool KNN::saveModelToFile( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
-		return false;
+        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        return false;
     }
     
     file << "K: " << K << std::endl;
@@ -496,7 +496,7 @@ bool KNN::saveModelToFile( std::fstream &file ) const{
     file << "SearchForBestKValue: " << searchForBestKValue << std::endl;
     file << "MinKSearchValue: " << minKSearchValue << std::endl;
     file << "MaxKSearchValue: " << maxKSearchValue << std::endl;
-   
+    
     if( trained ){
         if( useNullRejection ){
             file << "TrainingMu: ";
@@ -526,12 +526,12 @@ bool KNN::saveModelToFile( std::fstream &file ) const{
     
     return true;
 }
-    
-bool KNN::loadModelFromFile( std::fstream &file ){
+
+bool KNN::load( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(fstream &file) - Could not open file to load model!" << std::endl;
+        errorLog << "load(fstream &file) - Could not open file to load model!" << std::endl;
         return false;
     }
     
@@ -546,47 +546,47 @@ bool KNN::loadModelFromFile( std::fstream &file ){
     
     //Find the file type header
     if(word != "GRT_KNN_MODEL_FILE_V2.0"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find Model File Header!" << std::endl;
+        errorLog << "load(fstream &file) - Could not find Model File Header!" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "K:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find K!" << std::endl;
+        errorLog << "load(fstream &file) - Could not find K!" << std::endl;
         return false;
     }
     file >> K;
     
     file >> word;
     if(word != "DistanceMethod:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find DistanceMethod!" << std::endl;
+        errorLog << "load(fstream &file) - Could not find DistanceMethod!" << std::endl;
         return false;
     }
     file >> distanceMethod;
     
     file >> word;
     if(word != "SearchForBestKValue:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find SearchForBestKValue!" << std::endl;
+        errorLog << "load(fstream &file) - Could not find SearchForBestKValue!" << std::endl;
         return false;
     }
     file >> searchForBestKValue;
     
     file >> word;
     if(word != "MinKSearchValue:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find MinKSearchValue!" << std::endl;
+        errorLog << "load(fstream &file) - Could not find MinKSearchValue!" << std::endl;
         return false;
     }
     file >> minKSearchValue;
     
     file >> word;
     if(word != "MaxKSearchValue:"){
-        errorLog << "loadModelFromFile(fstream &file) - Could not find MaxKSearchValue!" << std::endl;
+        errorLog << "load(fstream &file) - Could not find MaxKSearchValue!" << std::endl;
         return false;
     }
     file >> maxKSearchValue;
@@ -600,7 +600,7 @@ bool KNN::loadModelFromFile( std::fstream &file ){
         if( useNullRejection ){
             file >> word;
             if(word != "TrainingMu:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingMu!" << std::endl;
+                errorLog << "load(fstream &file) - Could not find TrainingMu!" << std::endl;
                 return false;
             }
             
@@ -611,10 +611,10 @@ bool KNN::loadModelFromFile( std::fstream &file ){
             
             file >> word;
             if(word != "TrainingSigma:"){
-                errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingSigma!" << std::endl;
+                errorLog << "load(fstream &file) - Could not find TrainingSigma!" << std::endl;
                 return false;
             }
-        
+            
             //Load the trainingSigma data
             for(UINT j=0; j<numClasses; j++){
                 file >> trainingSigma[j];
@@ -623,7 +623,7 @@ bool KNN::loadModelFromFile( std::fstream &file ){
         
         file >> word;
         if(word != "NumTrainingSamples:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find NumTrainingSamples!" << std::endl;
+            errorLog << "load(fstream &file) - Could not find NumTrainingSamples!" << std::endl;
             return false;
         }
         unsigned int numTrainingSamples = 0;
@@ -631,7 +631,7 @@ bool KNN::loadModelFromFile( std::fstream &file ){
         
         file >> word;
         if(word != "TrainingData:"){
-            errorLog << "loadModelFromFile(fstream &file) - Could not find TrainingData!" << std::endl;
+            errorLog << "load(fstream &file) - Could not find TrainingData!" << std::endl;
             return false;
         }
         
@@ -660,23 +660,23 @@ bool KNN::loadModelFromFile( std::fstream &file ){
     
     return true;
 }
-    
+
 bool KNN::recomputeNullRejectionThresholds(){
     
     if( !trained ){
         return false;
     }
-
+    
     nullRejectionThresholds.resize(numClasses,0);
     
     if( trainingMu.size() != numClasses || trainingSigma.size() != numClasses ){
         return false;
     }
-
+    
     for(unsigned int j=0; j<numClasses; j++){
         nullRejectionThresholds[j] = trainingMu[j] + (trainingSigma[j]*nullRejectionCoeff);
     }
-
+    
     return true;
 }
 
@@ -730,32 +730,32 @@ Float KNN::computeEuclideanDistance(const VectorFloat &a,const VectorFloat &b){
 
 Float KNN::computeCosineDistance(const VectorFloat &a,const VectorFloat &b){
     Float dist = 0;
-
+    
     Float dotAB = 0;
     Float magA = 0;
     Float magB = 0;
-
+    
     for(UINT j=0; j<numInputDimensions; j++){
         dotAB += a[j] * b[j];
         magA += SQR(a[j]);
         magB += SQR(b[j]);
     }
-
+    
     dist = dotAB / (sqrt(magA) * sqrt(magB));
-
+    
     return dist;
 }
 
 Float KNN::computeManhattanDistance(const VectorFloat &a,const VectorFloat &b){
     Float dist = 0;
-
+    
     for(UINT j=0; j<numInputDimensions; j++){
         dist += fabs( a[j] - b[j] );
     }
-
+    
     return dist;
 }
-    
+
 bool KNN::loadLegacyModelFromFile( std::fstream &file ){
     
     std::string word;

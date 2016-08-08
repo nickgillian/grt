@@ -96,21 +96,21 @@ public:
     
     /**
      This saves the trained Multidimensional Regression model to a file.
-     This overrides the saveModelToFile function in the ML base class.
+     This overrides the save function in the ML base class.
      
      @param file: a reference to the file the Multidimensional Regression model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads a trained Multidimensional Regression model from a file.
-     This overrides the loadModelFromFile function in the ML base class.
+     This overrides the load function in the ML base class.
      
      @param file: a reference to the file the Logistic Regression model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file );
+    virtual bool load( std::fstream &file );
     
     /**
      This returns true if the regression module has been set. The regression module is the regression algorithm
@@ -139,8 +139,8 @@ public:
     bool setRegressionModule( const Regressifier &regressifier );
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
-    using MLBase::saveModelToFile;
-    using MLBase::loadModelFromFile;
+    using MLBase::save;
+    using MLBase::load;
 
 protected:
     bool deepCopyRegressionModules( Vector< Regressifier* > &newModules ) const;

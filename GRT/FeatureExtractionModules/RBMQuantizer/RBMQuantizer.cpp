@@ -111,40 +111,11 @@ bool RBMQuantizer::clear(){
 
     return true;
 }
-    
-bool RBMQuantizer::saveModelToFile( std::string filename ) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool RBMQuantizer::loadModelFromFile( std::string filename ){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
-}
-
-bool RBMQuantizer::saveModelToFile( std::fstream &file ) const{
+bool RBMQuantizer::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -161,8 +132,8 @@ bool RBMQuantizer::saveModelToFile( std::fstream &file ) const{
     file << "NumClusters: " << numClusters << std::endl;
     
     if( trained ){
-        if( !rbm.saveModelToFile( file ) ){
-            errorLog << "saveModelToFile(fstream &file) - Failed to save RBM settings to file!" << std::endl;
+        if( !rbm.save( file ) ){
+            errorLog << "save(fstream &file) - Failed to save RBM settings to file!" << std::endl;
             return false;
         }
     }
@@ -170,13 +141,13 @@ bool RBMQuantizer::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool RBMQuantizer::loadModelFromFile( std::fstream &file ){
+bool RBMQuantizer::load( std::fstream &file ){
     
     //Clear any previous model
     clear();
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -185,7 +156,7 @@ bool RBMQuantizer::loadModelFromFile( std::fstream &file ){
     //First, you should read and validate the header
     file >> word;
     if( word != "RBM_QUANTIZER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
         return false;
     }
     
@@ -197,21 +168,21 @@ bool RBMQuantizer::loadModelFromFile( std::fstream &file ){
     
     file >> word;
     if( word != "QuantizerTrained:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load QuantizerTrained!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to load QuantizerTrained!" << std::endl;
         return false;
     }
     file >> trained;
     
     file >> word;
     if( word != "NumClusters:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load NumClusters!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to load NumClusters!" << std::endl;
         return false;
     }
     file >> numClusters;
     
     if( trained ){
-        if( !rbm.loadModelFromFile( file ) ){
-            errorLog << "loadModelFromFile(fstream &file) - Failed to load SelfOrganizingMap settings from file!" << std::endl;
+        if( !rbm.load( file ) ){
+            errorLog << "load(fstream &file) - Failed to load SelfOrganizingMap settings from file!" << std::endl;
             return false;
         }
         initialized = true;

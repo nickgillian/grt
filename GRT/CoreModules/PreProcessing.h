@@ -86,42 +86,6 @@ public:
      @return returns true if the derived class was cleared succesfully, false otherwise
      */
     virtual bool clear();
-    
-    /**
-     This saves the preprocessing settings to a file.
-     This function should be overwritten by the derived class.
-     
-     @param filename: the filename to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(std::string filename) const;
-    
-    /**
-     This saves the preprocessing settings to a file.
-     This function should be overwritten by the derived class.
-     
-     @param file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(std::string filename);
-    
-    /**
-     This saves the preprocessing settings to a file.
-     This function should be overwritten by the derived class.
-     
-     @param file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise (the base class always returns false)
-     */
-    virtual bool saveModelToFile(std::fstream &file) const{ return false; }
-    
-    /**
-     This loads the preprocessing settings from a file.
-     This function should be overwritten by the derived class.
-     
-     @param file: a reference to the file to load the settings from
-     @return returns true if the settings were loaded successfully, false otherwise (the base class always returns false)
-     */
-    virtual bool loadModelFromFile(std::fstream &file){ return false; }
 	
     /**
      @return returns the pre processing type as a string, e.g. LowPassFilter

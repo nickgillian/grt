@@ -1,30 +1,30 @@
 /**
- @file
- @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
+@file
+@author  Nicholas Gillian <ngillian@media.mit.edu>
+@version 1.0
 
- @brief This file implements a container for an AdaBoost class model.
- */
+@brief This file implements a container for an AdaBoost class model.
+*/
 
 /**
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- and associated documentation files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #ifndef GRT_ADABOOST_CLASS_MODEL_HEADER
 #define GRT_ADABOOST_CLASS_MODEL_HEADER
@@ -32,9 +32,9 @@
 #include "WeakClassifiers/WeakClassifier.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 class GRT_API AdaBoostClassModel{
-public:
+    public:
     AdaBoostClassModel(){
         classLabel = 0;
         debugLog.setProceedingText("[DEBUG AdaBoostClassModel]");
@@ -160,7 +160,7 @@ public:
         return weights;
     }
     
-    bool saveModelToFile( std::fstream &file ) const{
+    bool save( std::fstream &file ) const{
         
         if(!file.is_open())
         {
@@ -190,17 +190,17 @@ public:
             if( !weakClassifiers[i]->saveModelToFile( file ) ) return false;
         }
         
-       return true;
+        return true;
     }
     
-    bool loadModelFromFile( std::fstream &file ){
+    bool load( std::fstream &file ){
         
         //Clear any previous models
         clear();
         
         if(!file.is_open())
         {
-            errorLog <<"loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+            errorLog <<"load(fstream &file) - The file is not open!" << std::endl;
             return false;
         }
         
@@ -209,21 +209,21 @@ public:
         
         file >> word;
         if( word != "ClassLabel:" ){
-            errorLog <<"loadModelFromFile(fstream &file) - Failed to read ClassLabel header!" << std::endl;
+            errorLog <<"load(fstream &file) - Failed to read ClassLabel header!" << std::endl;
             return false;
         }
         file >> classLabel;
-
+        
         file >> word;
         if( word != "NumWeakClassifiers:" ){
-            errorLog <<"loadModelFromFile(fstream &file) - Failed to read NumWeakClassifiers header!" << std::endl;
+            errorLog <<"load(fstream &file) - Failed to read NumWeakClassifiers header!" << std::endl;
             return false;
         }
         file >> numWeakClassifiers;
         
         file >> word;
         if( word != "WeakClassifierTypes:" ){
-            errorLog <<"loadModelFromFile(fstream &file) - Failed to read WeakClassifierTypes header!" << std::endl;
+            errorLog <<"load(fstream &file) - Failed to read WeakClassifierTypes header!" << std::endl;
             return false;
         }
         
@@ -236,7 +236,7 @@ public:
                 file >> word;
                 weakClassifiers[i] = WeakClassifier::createInstanceFromString(word);
                 if( weakClassifiers[i] == NULL ){
-                    errorLog <<"loadModelFromFile(fstream &file) - WeakClassifier " << i << " is NULL!" << std::endl;
+                    errorLog << "load(fstream &file) - WeakClassifier " << i << " is NULL!" << std::endl;
                     return false;
                 }
             }
@@ -283,7 +283,7 @@ public:
         return true;
     }
     
-protected:
+    protected:
     UINT classLabel;
     VectorFloat weights;
     Vector< WeakClassifier* > weakClassifiers;

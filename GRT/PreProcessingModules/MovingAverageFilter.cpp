@@ -1,28 +1,28 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "MovingAverageFilter.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the MovingAverageFilter module with the PreProcessing base class
 RegisterPreProcessingModule< MovingAverageFilter > MovingAverageFilter::registerModule("MovingAverageFilter");
 
@@ -35,7 +35,7 @@ MovingAverageFilter::MovingAverageFilter(UINT filterSize,UINT numDimensions){
     warningLog.setProceedingText("[WARNING MovingAverageFilter]");
     init(filterSize,numDimensions);
 }
-    
+
 MovingAverageFilter::MovingAverageFilter(const MovingAverageFilter &rhs){
     
     classType = "MovingAverageFilter";
@@ -48,14 +48,14 @@ MovingAverageFilter::MovingAverageFilter(const MovingAverageFilter &rhs){
     this->filterSize = 0;
     this->inputSampleCounter = 0;
     
-	//Copy the settings from the rhs instance
-	*this = rhs;
+    //Copy the settings from the rhs instance
+    *this = rhs;
 }
-    
-MovingAverageFilter::~MovingAverageFilter(){
 
-}
+MovingAverageFilter::~MovingAverageFilter(){
     
+}
+
 MovingAverageFilter& MovingAverageFilter::operator=(const MovingAverageFilter &rhs){
     if(this!=&rhs){
         //Clear this instance
@@ -74,7 +74,7 @@ MovingAverageFilter& MovingAverageFilter::operator=(const MovingAverageFilter &r
     }
     return *this;
 }
-    
+
 bool MovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
@@ -84,7 +84,7 @@ bool MovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
         //Call the equals operator
         *this = *(MovingAverageFilter*)preProcessing;
         
-		return true;
+        return true;
     }
     
     errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
@@ -92,14 +92,14 @@ bool MovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
     return false;
 }
 
-    
+
 bool MovingAverageFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
         errorLog << "process(const VectorFloat &inputVector) - The filter has not been initialized!" << std::endl;
         return false;
     }
-
+    
     if( inputVector.getSize() != numInputDimensions ){
         errorLog << "process(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
@@ -108,7 +108,7 @@ bool MovingAverageFilter::process(const VectorFloat &inputVector){
     filter( inputVector );
     
     if( processedData.getSize() == numOutputDimensions ) return true;
-
+    
     return false;
 }
 
@@ -116,31 +116,11 @@ bool MovingAverageFilter::reset(){
     if( initialized ) return init(filterSize,numInputDimensions);
     return false;
 }
-    
-bool MovingAverageFilter::saveModelToFile(std::string filename) const{
-    
-    if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The MovingAverageFilter has not been initialized" << std::endl;
-        return false;
-    }
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool MovingAverageFilter::saveModelToFile(std::fstream &file) const{
+bool MovingAverageFilter::save(std::fstream &file) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -153,26 +133,10 @@ bool MovingAverageFilter::saveModelToFile(std::fstream &file) const{
     return true;
 }
 
-bool MovingAverageFilter::loadModelFromFile(std::string filename){
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        initialized = false;
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool MovingAverageFilter::loadModelFromFile(std::fstream &file){
+bool MovingAverageFilter::load(std::fstream &file){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -182,36 +146,36 @@ bool MovingAverageFilter::loadModelFromFile(std::fstream &file){
     file >> word;
     
     if( word != "GRT_MOVING_AVERAGE_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     //Load the number of input dimensions
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
+        return false;
     }
     file >> numInputDimensions;
     
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
+        return false;
     }
     file >> numOutputDimensions;
     
     //Load the filter factor
     file >> word;
     if( word != "FilterSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterSize header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read FilterSize header!" << std::endl;
+        return false;
     }
     file >> filterSize;
     
     //Init the filter module to ensure everything is initialized correctly
-    return init(filterSize,numInputDimensions);  
+    return init(filterSize,numInputDimensions);
 }
 
 bool MovingAverageFilter::init(UINT filterSize,UINT numDimensions){
@@ -258,7 +222,7 @@ Float MovingAverageFilter::filter(const Float x){
     if( y.size() == 0 ) return 0;
     return y[0];
 }
-    
+
 VectorFloat MovingAverageFilter::filter(const VectorFloat &x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y

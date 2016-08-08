@@ -117,21 +117,21 @@ public:
     
     /**
      This saves the trained RegressionTree model to a file.
-     This overrides the saveModelToFile function in the Regressifier base class.
+     This overrides the save function in the Regressifier base class.
      
      @param file: a reference to the file the RegressionTree model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads a trained RegressionTree model from a file.
-     This overrides the loadModelFromFile function in the Regressifier base class.
+     This overrides the load function in the Regressifier base class.
      
      @param file: a reference to the file the RegressionTree model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file );
+    virtual bool load( std::fstream &file );
 
     /**
      Deep copies the regression tree, returning a pointer to the new regression tree.
@@ -166,10 +166,10 @@ public:
     bool setMinRMSErrorPerNode(const Float minRMSErrorPerNode);
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
-    using MLBase::saveModelToFile;
-    using MLBase::loadModelFromFile;
-    using MLBase::train; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
-    using MLBase::predict; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
+    using MLBase::save;
+    using MLBase::load;
+    using MLBase::train_; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
+    using MLBase::predict_; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
     
 protected:
     Float minRMSErrorPerNode;

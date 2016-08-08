@@ -337,14 +337,22 @@ public:
     bool merge(const ClassificationData &data);
     
     /**
-     Partitions the dataset into a training dataset (which is kept by this instance of the ClassificationData) and
-	 a testing/validation dataset (which is returned as a new instance of a ClassificationData).
-     
+     @deprecated use split(...) instead
      @param partitionPercentage: sets the percentage of data which remains in this instance, the remaining percentage of data is then returned as the testing/validation dataset
      @param useStratifiedSampling: sets if the dataset should be broken into homogeneous groups first before randomly being spilt, default value is false
      @return a new ClassificationData instance, containing the remaining data not kept but this instance
      */
-    ClassificationData partition(const UINT partitionPercentage,const bool useStratifiedSampling = false);
+    GRT_DEPRECATED_MSG( "partition(...) is deprecated, use split(...) instead", ClassificationData partition(const UINT partitionPercentage,const bool useStratifiedSampling = false) );
+
+    /**
+     Splits the dataset into a training dataset (which is kept by this instance of the ClassificationData) and
+     a testing/validation dataset (which is returned as a new instance of a ClassificationData).
+     
+     @param splitPercentage: sets the percentage of data which remains in this instance, the remaining percentage of data is then returned as the testing/validation dataset
+     @param useStratifiedSampling: sets if the dataset should be broken into homogeneous groups first before randomly being spilt, default value is false
+     @return a new ClassificationData instance, containing the remaining data not kept but this instance
+     */
+    ClassificationData split(const UINT splitPercentage,const bool useStratifiedSampling = false);
     
     /**
      This function prepares the dataset for k-fold cross validation and should be called prior to calling the getTrainingFold(UINT foldIndex) or getTestingFold(UINT foldIndex) functions.  It will spilt the dataset into K-folds, as long as K < M, where M is the number of samples in the dataset.

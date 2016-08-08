@@ -63,7 +63,7 @@ int main (int argc, const char * argv[])
     }
     
     //Use 20% of the training dataset to create a test dataset
-    ClassificationData testData = trainingData.partition( 80 );
+    ClassificationData testData = trainingData.split( 80 );
     
     //Train the classifier
     if( !softmax.train( trainingData ) ){

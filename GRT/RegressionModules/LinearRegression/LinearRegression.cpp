@@ -2,19 +2,19 @@
 GRT MIT License
 Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-and associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
+The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
@@ -43,16 +43,16 @@ LinearRegression::LinearRegression(bool useScaling)
 LinearRegression::~LinearRegression(void)
 {
 }
-    
+
 LinearRegression& LinearRegression::operator=(const LinearRegression &rhs){
-	if( this != &rhs ){
+    if( this != &rhs ){
         this->w0 = rhs.w0;
         this->w = rhs.w;
         
         //Copy the base variables
         copyBaseVariables( (Regressifier*)&rhs );
-	}
-	return *this;
+    }
+    return *this;
 }
 
 bool LinearRegression::deepCopyFrom(const Regressifier *regressifier){
@@ -62,7 +62,7 @@ bool LinearRegression::deepCopyFrom(const Regressifier *regressifier){
     if( this->getRegressifierType() == regressifier->getRegressifierType() ){
         
         const LinearRegression *ptr = dynamic_cast<const LinearRegression*>(regressifier);
-
+        
         this->w0 = ptr->w0;
         this->w = ptr->w;
         
@@ -96,16 +96,16 @@ bool LinearRegression::train_(RegressionData &trainingData){
     targetVectorRanges.clear();
     
     //Scale the training and validation data, if needed
-	if( useScaling ){
-		//Find the ranges for the input data
+    if( useScaling ){
+        //Find the ranges for the input data
         inputVectorRanges = trainingData.getInputRanges();
         
         //Find the ranges for the target data
-		targetVectorRanges = trainingData.getTargetRanges();
+        targetVectorRanges = trainingData.getTargetRanges();
         
-		//Scale the training data
-		trainingData.scale(inputVectorRanges,targetVectorRanges,0.0,1.0);
-	}
+        //Scale the training data
+        trainingData.scale(inputVectorRanges,targetVectorRanges,0.0,1.0);
+    }
     
     //Reset the weights
     Random rand;
@@ -114,7 +114,7 @@ bool LinearRegression::train_(RegressionData &trainingData){
     for(UINT j=0; j<N; j++){
         w[j] = rand.getRandomNumberUniform(-0.1,0.1);
     }
-
+    
     Float error = 0;
     Float lastError = 0;
     Float delta = 0;
@@ -203,10 +203,10 @@ bool LinearRegression::predict_(VectorFloat &inputVector){
     
     if( !trained ) return false;
     
-	if( inputVector.size() != numInputDimensions ){
+    if( inputVector.size() != numInputDimensions ){
         errorLog << "predict_(VectorFloat &inputVector) - The size of the input Vector (" << int( inputVector.size() ) << ") does not match the num features in the model (" << numInputDimensions << std::endl;
-		return false;
-	}
+        return false;
+    }
     
     if( useScaling ){
         for(UINT n=0; n<numInputDimensions; n++){
@@ -227,22 +227,22 @@ bool LinearRegression::predict_(VectorFloat &inputVector){
     
     return true;
 }
-    
-bool LinearRegression::saveModelToFile( std::fstream &file ) const{
+
+bool LinearRegression::save( std::fstream &file ) const{
     
     if(!file.is_open())
-	{
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
-		return false;
-	}
+    {
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
+        return false;
+    }
     
-	//Write the header info
+    //Write the header info
     file<<"GRT_LINEAR_REGRESSION_MODEL_FILE_V2.0\n";
     
     //Write the regressifier settings to the file
     if( !Regressifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save Regressifier base settings to file!" << std::endl;
-		return false;
+        errorLog <<"save(fstream &file) - Failed to save Regressifier base settings to file!" << std::endl;
+        return false;
     }
     
     if( trained ){
@@ -256,14 +256,14 @@ bool LinearRegression::saveModelToFile( std::fstream &file ) const{
     
     return true;
 }
-    
-bool LinearRegression::loadModelFromFile( std::fstream &file ){
+
+bool LinearRegression::load( std::fstream &file ){
     
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile( fstream &file ) - Could not open file to load model" << std::endl;
+        errorLog << "load( fstream &file ) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -278,35 +278,35 @@ bool LinearRegression::loadModelFromFile( std::fstream &file ){
     }
     
     if( word != "GRT_LINEAR_REGRESSION_MODEL_FILE_V2.0" ){
-        errorLog << "loadModelFromFile( fstream &file ) - Could not find Model File Header" << std::endl;
+        errorLog << "load( fstream &file ) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the regressifier settings from the file
     if( !Regressifier::loadBaseSettingsFromFile(file) ){
-        errorLog <<"loadModelFromFile( fstream &file ) - Failed to save Regressifier base settings to file!" << std::endl;
-		return false;
+        errorLog <<"load( fstream &file ) - Failed to save Regressifier base settings to file!" << std::endl;
+        return false;
     }
     
     if( trained ){
-    
+        
         //Resize the weights
         w.resize(numInputDimensions);
         
         //Load the weights
         file >> word;
         if(word != "Weights:"){
-            errorLog << "loadModelFromFile( fstream &file ) - Could not find the Weights!" << std::endl;
+            errorLog << "load( fstream &file ) - Could not find the Weights!" << std::endl;
             return false;
         }
         
         file >> w0;
         for(UINT j=0; j<numInputDimensions; j++){
             file >> w[j];
-        
+            
         }
     }
-
+    
     return true;
 }
 
@@ -317,7 +317,7 @@ bool LinearRegression::setMaxNumIterations(const UINT maxNumIterations){
 UINT LinearRegression::getMaxNumIterations() const{
     return getMaxNumEpochs();
 }
-    
+
 bool LinearRegression::loadLegacyModelFromFile( std::fstream &file ){
     
     std::string word;
@@ -399,4 +399,3 @@ bool LinearRegression::loadLegacyModelFromFile( std::fstream &file ){
 }
 
 GRT_END_NAMESPACE
-

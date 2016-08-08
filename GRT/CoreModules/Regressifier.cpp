@@ -133,7 +133,6 @@ const Regressifier& Regressifier::getBaseRegressifier() const{
     return *this;
 }
     
-    
 bool Regressifier::saveBaseSettingsToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
@@ -158,7 +157,6 @@ bool Regressifier::saveBaseSettingsToFile( std::fstream &file ) const{
     
     return true;
 }
-
 
 bool Regressifier::loadBaseSettingsFromFile( std::fstream &file ){
     

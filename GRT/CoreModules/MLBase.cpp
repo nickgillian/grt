@@ -1,22 +1,22 @@
 /**
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- and associated documentation files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "MLBase.h"
@@ -48,7 +48,7 @@ MLBase::~MLBase(void){
 }
 
 bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
-
+    
     if( mlBase == NULL ){
         errorLog << "copyMLBaseVariables(MLBase *mlBase) - mlBase pointer is NULL!" << std::endl;
         return false;
@@ -58,7 +58,7 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
         errorLog << "copyMLBaseVariables(MLBase *mlBase) - Failed to copy GRT Base variables!" << std::endl;
         return false;
     }
-
+    
     this->trained = mlBase->trained;
     this->useScaling = mlBase->useScaling;
     this->baseType = mlBase->baseType;
@@ -82,24 +82,24 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     this->trainingResults = mlBase->trainingResults;
     this->trainingResultsObserverManager = mlBase->trainingResultsObserverManager;
     this->testResultsObserverManager = mlBase->testResultsObserverManager;
-
+    
     return true;
 }
 
 bool MLBase::train(ClassificationData trainingData){ return train_( trainingData ); }
 
 bool MLBase::train_(ClassificationData &trainingData){ return false; }
-    
+
 bool MLBase::train(RegressionData trainingData){ return train_( trainingData ); }
-    
+
 bool MLBase::train_(RegressionData &trainingData){ return false; }
 
 bool MLBase::train(TimeSeriesClassificationData trainingData){ return train_( trainingData ); }
 
 bool MLBase::train_(TimeSeriesClassificationData &trainingData){ return false; }
-    
+
 bool MLBase::train(ClassificationDataStream trainingData){ return train_( trainingData ); }
-    
+
 bool MLBase::train_(ClassificationDataStream &trainingData){ return false; }
 
 bool MLBase::train(UnlabelledData trainingData){ return train_( trainingData ); }
@@ -111,11 +111,11 @@ bool MLBase::train(MatrixFloat data){ return train_( data ); }
 bool MLBase::train_(MatrixFloat &data){ return false; }
 
 bool MLBase::predict(VectorFloat inputVector){ return predict_( inputVector ); }
-    
+
 bool MLBase::predict_(VectorFloat &inputVector){ return false; }
 
 bool MLBase::predict(MatrixFloat inputMatrix){ return predict_( inputMatrix ); }
-    
+
 bool MLBase::predict_(MatrixFloat &inputMatrix){ return false; }
 
 bool MLBase::map(VectorFloat inputVector){ return map_( inputVector ); }
@@ -139,19 +139,15 @@ bool MLBase::clear(){
 }
 
 bool MLBase::print() const { std::cout << getModelAsString(); return true; }
-    
-bool MLBase::save(const std::string filename) const {
-    return saveModelToFile( filename );
-}
 
-bool MLBase::saveModelToFile(std::string filename) const{
+bool MLBase::save(const std::string filename) const {
     
     if( !trained ) return false;
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
     
-    if( !saveModelToFile( file ) ){
+    if( !save( file ) ){
         return false;
     }
     
@@ -160,18 +156,20 @@ bool MLBase::saveModelToFile(std::string filename) const{
     return true;
 }
 
-bool MLBase::saveModelToFile(std::fstream &file) const { return false; }
+bool MLBase::save(std::fstream &file) const {
+    return false; //The base class returns false, as this should be overwritten by the inheriting class
+}
+
+bool MLBase::saveModelToFile(std::string filename) const { return save( filename ); }
+
+bool MLBase::saveModelToFile(std::fstream &file) const { return save( file ); }
 
 bool MLBase::load(const std::string filename){
-    return loadModelFromFile(filename);
-}
-    
-bool MLBase::loadModelFromFile(std::string filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
     
-    if( !loadModelFromFile( file ) ){
+    if( !load( file ) ){
         return false;
     }
     
@@ -181,10 +179,16 @@ bool MLBase::loadModelFromFile(std::string filename){
     return true;
 }
 
-bool MLBase::loadModelFromFile(std::fstream &file){ return false; }
-    
+bool MLBase::load(std::fstream &file) {
+    return false; //The base class returns false, as this should be overwritten by the inheriting class
+}
+
+bool MLBase::loadModelFromFile(std::string filename){ return load( filename ); }
+
+bool MLBase::loadModelFromFile(std::fstream &file){ return load( file ); }
+
 bool MLBase::getModel(std::ostream &stream) const { return true; }
-    
+
 std::string MLBase::getModelAsString() const{
     std::stringstream stream;
     if( getModel( stream ) ){
@@ -215,7 +219,7 @@ UINT MLBase::getNumTrainingIterationsToConverge() const{
     }
     return 0;
 }
-    
+
 UINT MLBase::getMinNumEpochs() const{
     return minNumEpochs;
 }
@@ -227,7 +231,7 @@ UINT MLBase::getMaxNumEpochs() const{
 UINT MLBase::getValidationSetSize() const{
     return validationSetSize;
 }
-    
+
 Float MLBase::getLearningRate() const{
     return learningRate;
 }
@@ -261,11 +265,11 @@ bool MLBase::getScalingEnabled() const{ return useScaling; }
 bool MLBase::getIsBaseTypeClassifier() const{ return baseType==CLASSIFIER; }
 
 bool MLBase::getIsBaseTypeRegressifier() const{ return baseType==REGRESSIFIER; }
-    
+
 bool MLBase::getIsBaseTypeClusterer() const{ return baseType==CLUSTERER; }
 
 bool MLBase::enableScaling(bool useScaling){ this->useScaling = useScaling; return true; }
-    
+
 bool MLBase::setMaxNumEpochs(const UINT maxNumEpochs){
     if( maxNumEpochs == 0 ){
         warningLog << "setMaxNumEpochs(const UINT maxNumEpochs) - The maxNumEpochs must be greater than 0!" << std::endl;
@@ -288,7 +292,7 @@ bool MLBase::setMinChange(const Float minChange){
     this->minChange = minChange;
     return true;
 }
-    
+
 bool MLBase::setLearningRate(const Float learningRate){
     if( learningRate > 0 ){
         this->learningRate = learningRate;
@@ -318,12 +322,12 @@ bool MLBase::setRandomiseTrainingOrder(const bool randomiseTrainingOrder){
     this->randomiseTrainingOrder = randomiseTrainingOrder;
     return true;
 }
-    
+
 bool MLBase::setTrainingLoggingEnabled(const bool loggingEnabled){
     this->trainingLog.setEnableInstanceLogging( loggingEnabled );
     return true;
 }
-    
+
 bool MLBase::registerTrainingResultsObserver( Observer< TrainingResult > &observer ){
     return trainingResultsObserverManager.registerObserver( observer );
 }
@@ -355,7 +359,7 @@ bool MLBase::notifyTrainingResultsObservers( const TrainingResult &data ){
 bool MLBase::notifyTestResultsObservers( const TestInstanceResult &data ){
     return testResultsObserverManager.notifyObservers( data );
 }
-    
+
 MLBase* MLBase::getMLBasePointer(){
     return this;
 }

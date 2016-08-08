@@ -2,19 +2,19 @@
 GRT MIT License
 Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-and associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
+The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
@@ -45,7 +45,7 @@ FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClu
     minNumEpochs = 0;
     maxNumEpochs = 1000;
 }
-    
+
 FiniteStateMachine::FiniteStateMachine(const FiniteStateMachine &rhs){
     classType = "FiniteStateMachine";
     classifierType = classType;
@@ -59,16 +59,16 @@ FiniteStateMachine::FiniteStateMachine(const FiniteStateMachine &rhs){
 
 FiniteStateMachine::~FiniteStateMachine(void)
 {
-} 
+}
 
 FiniteStateMachine& FiniteStateMachine::operator=(const FiniteStateMachine &rhs){
-	if( this != &rhs ){
+    if( this != &rhs ){
         
         this->clear();
         
         //Classifier variables
         copyBaseVariables( (Classifier*)&rhs );
-
+        
         //Copy the FiniteStateMachine variable
         this->numParticles = rhs.numParticles;
         this->numClustersPerState = rhs.numClustersPerState;
@@ -77,12 +77,12 @@ FiniteStateMachine& FiniteStateMachine::operator=(const FiniteStateMachine &rhs)
         this->particles = rhs.particles;
         this->stateTransitions = rhs.stateTransitions;
         this->stateEmissions = rhs.stateEmissions;
-
+        
         if( rhs.trained ){
             this->initParticles();
         }
-	}
-	return *this;
+    }
+    return *this;
 }
 
 bool FiniteStateMachine::deepCopyFrom(const Classifier *classifier){
@@ -90,7 +90,7 @@ bool FiniteStateMachine::deepCopyFrom(const Classifier *classifier){
     if( classifier == NULL ) return false;
     
     if( this->getClassifierType() == classifier->getClassifierType() ){
-
+        
         FiniteStateMachine *ptr = (FiniteStateMachine*)classifier;
         
         this->clear();
@@ -112,12 +112,12 @@ bool FiniteStateMachine::deepCopyFrom(const Classifier *classifier){
         if( ptr->trained ){
             this->initParticles();
         }
-       
+        
         return true;
     }
     return false;
 }
-    
+
 bool FiniteStateMachine::train_( ClassificationData &trainingData ){
     
     const unsigned int M = trainingData.getNumSamples();
@@ -146,7 +146,7 @@ bool FiniteStateMachine::train_( ClassificationData &trainingData ){
     
     return true;
 }
-    
+
 bool FiniteStateMachine::train_( TimeSeriesClassificationData &trainingData ){
     
     const unsigned int M = trainingData.getNumSamples();
@@ -177,7 +177,7 @@ bool FiniteStateMachine::train_( TimeSeriesClassificationData &trainingData ){
     
     return true;
 }
-    
+
 bool FiniteStateMachine::train_( TimeSeriesClassificationDataStream &data ){
     
     //Clear any previous model
@@ -255,17 +255,17 @@ bool FiniteStateMachine::train_( TimeSeriesClassificationDataStream &data ){
         
         if( !kmeans.train_( classData ) ){
             errorLog << "train_(TimeSeriesClassificationDataStream &trainingData) - Failed to train kmeans cluster for class k: " << classLabels[k] << std::endl;
-            clear();
+                clear();
             return false;
         }
-
+        
         //Add the clusters for this state to the stateEmissions vector
         stateEmissions.push_back( kmeans.getClusters() );
     }
     
     //Flag the model is trained
     trained = true;
- 
+    
     //Init the particles
     initParticles();
     
@@ -285,12 +285,12 @@ bool FiniteStateMachine::predict_(VectorFloat &inputVector){
     }
     
     predictedClassLabel = 0;
-	maxLikelihood = -10000;
+    maxLikelihood = -10000;
     
-	if( inputVector.size() != numInputDimensions ){
+    if( inputVector.size() != numInputDimensions ){
         errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
-		return false;
-	}
+        return false;
+    }
     
     if( useScaling ){
         for(UINT n=0; n<numInputDimensions; n++){
@@ -329,7 +329,7 @@ bool FiniteStateMachine::predict_(VectorFloat &inputVector){
     
     return true;
 }
-    
+
 bool FiniteStateMachine::reset(){
     
     if( trained ){
@@ -357,7 +357,7 @@ bool FiniteStateMachine::clear(){
     
     return true;
 }
-    
+
 bool FiniteStateMachine::print() const {
     
     infoLog << "FiniteStateMachineModel" << std::endl;
@@ -387,22 +387,22 @@ bool FiniteStateMachine::print() const {
     
     return true;
 }
-    
-bool FiniteStateMachine::saveModelToFile( std::fstream &file ) const{
+
+bool FiniteStateMachine::save( std::fstream &file ) const{
     
     if(!file.is_open())
-	{
-		errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
-		return false;
-	}
+    {
+        errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
+        return false;
+    }
     
-	//Write the header info
+    //Write the header info
     file << "GRT_FSM_MODEL_FILE_V1.0\n";
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog << "saveModelToFile(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
-		return false;
+        errorLog << "save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        return false;
     }
     
     file << "NumParticles: " << numParticles << std::endl;
@@ -438,15 +438,15 @@ bool FiniteStateMachine::saveModelToFile( std::fstream &file ) const{
     
     return true;
 }
-    
-bool FiniteStateMachine::loadModelFromFile( std::fstream &file ){
+
+bool FiniteStateMachine::load( std::fstream &file ){
     
     //Clear any previous model
     clear();
     
     if(!file.is_open())
     {
-        errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
+        errorLog << "load(string filename) - Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -455,20 +455,20 @@ bool FiniteStateMachine::loadModelFromFile( std::fstream &file ){
     //Find the file type header
     file >> word;
     if( word != "GRT_FSM_MODEL_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
+        errorLog << "load(string filename) - Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     //Find the NumParticles header
     file >> word;
     if( word != "NumParticles:" ){
-        errorLog << "loadModelFromFile(string filename) - Could not find NumParticles Header" << std::endl;
+        errorLog << "load(string filename) - Could not find NumParticles Header" << std::endl;
         return false;
     }
     file >> numParticles;
@@ -476,7 +476,7 @@ bool FiniteStateMachine::loadModelFromFile( std::fstream &file ){
     //Find the NumClustersPerState header
     file >> word;
     if( word != "NumClustersPerState:" ){
-        errorLog << "loadModelFromFile(string filename) - Could not find NumClustersPerState Header" << std::endl;
+        errorLog << "load(string filename) - Could not find NumClustersPerState Header" << std::endl;
         return false;
     }
     file >> numClustersPerState;
@@ -484,7 +484,7 @@ bool FiniteStateMachine::loadModelFromFile( std::fstream &file ){
     //Find the StateTransitionSmoothingCoeff header
     file >> word;
     if( word != "StateTransitionSmoothingCoeff:" ){
-        errorLog << "loadModelFromFile(string filename) - Could not find stateTransitionSmoothingCoeff Header" << std::endl;
+        errorLog << "load(string filename) - Could not find stateTransitionSmoothingCoeff Header" << std::endl;
         return false;
     }
     file >> stateTransitionSmoothingCoeff;
@@ -494,11 +494,11 @@ bool FiniteStateMachine::loadModelFromFile( std::fstream &file ){
         //Find the StateTransitions header
         file >> word;
         if( word != "StateTransitions:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not find StateTransitions Header" << std::endl;
+            errorLog << "load(string filename) - Could not find StateTransitions Header" << std::endl;
             return false;
         }
         stateTransitions.resize(numClasses, numClasses);
-
+        
         for(unsigned int i=0; i<stateTransitions.getNumRows(); i++){
             for(unsigned int j=0; j<stateTransitions.getNumCols(); j++){
                 file >> stateTransitions[i][j];
@@ -508,7 +508,7 @@ bool FiniteStateMachine::loadModelFromFile( std::fstream &file ){
         //Find the StateEmissions header
         file >> word;
         if( word != "StateEmissions:" ){
-            errorLog << "loadModelFromFile(string filename) - Could not find StateEmissions Header" << std::endl;
+            errorLog << "load(string filename) - Could not find StateEmissions Header" << std::endl;
             return false;
         }
         stateEmissions.resize( numClasses );
@@ -526,7 +526,7 @@ bool FiniteStateMachine::loadModelFromFile( std::fstream &file ){
             //Load if the Ranges
             file >> word;
             if( word != "Ranges:" ){
-                errorLog << "loadModelFromFile(string filename) - Failed to read Ranges header!" << std::endl;
+                errorLog << "load(string filename) - Failed to read Ranges header!" << std::endl;
                 clear();
                 return false;
             }
@@ -543,7 +543,7 @@ bool FiniteStateMachine::loadModelFromFile( std::fstream &file ){
     
     return true;
 }
-    
+
 bool FiniteStateMachine::recomputePT(){
     
     if( !trained ){
@@ -566,7 +566,7 @@ bool FiniteStateMachine::recomputePT(){
     
     return true;
 }
-    
+
 bool FiniteStateMachine::recomputePE(){
     
     if( !trained ){
@@ -593,7 +593,7 @@ bool FiniteStateMachine::recomputePE(){
     
     return true;
 }
-    
+
 bool FiniteStateMachine::initParticles(){
     
     if( !trained ){
@@ -630,7 +630,7 @@ bool FiniteStateMachine::initParticles(){
     
     return true;
 }
-    
+
 bool FiniteStateMachine::setNumParticles(const UINT numParticles){
     
     clear();
@@ -657,7 +657,7 @@ bool FiniteStateMachine::setStateTransitionSmoothingCoeff(const Float stateTrans
     
     return true;
 }
-    
+
 bool FiniteStateMachine::setMeasurementNoise(const Float measurementNoise){
     
     clear();
@@ -666,6 +666,5 @@ bool FiniteStateMachine::setMeasurementNoise(const Float measurementNoise){
     
     return true;
 }
-    
-GRT_END_NAMESPACE
 
+GRT_END_NAMESPACE

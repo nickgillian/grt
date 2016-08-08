@@ -5,7 +5,8 @@ project(GRT C CXX)
 # GRT library
 set(GRT_LIB_NAME grt)
 
-#set the main options
+#set the main options, you can control these dynamically via the command line by passing in the option -D OPTION_NAME=ON
+#e.g., cmake .. -DBUILD_TESTS=ON
 option(BUILD_TESTS “build-unit-tests” ON)
 option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)

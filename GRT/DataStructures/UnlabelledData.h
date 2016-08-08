@@ -248,13 +248,20 @@ public:
 	bool loadDatasetFromCSVFile(const std::string &filename);
 
 	/**
-     Partitions the dataset into a training dataset (which is kept by this instance of the UnlabelledData) and
-	 a testing/validation dataset (which is returned as a new instance of a UnlabelledData).
-
+     @deprecated use split(...) instead
 	 @param partitionPercentage: sets the percentage of data which remains in this instance, the remaining percentage of data is then returned as the testing/validation dataset
 	 @return a new UnlabelledData instance, containing the remaining data not kept but this instance
     */
-	UnlabelledData partition(const UINT partitionPercentage);
+	GRT_DEPRECATED_MSG( "partition(...) is deprecated, use split(...) instead", UnlabelledData partition(const UINT partitionPercentage) );
+
+    /**
+     Partitions the dataset into a training dataset (which is kept by this instance of the UnlabelledData) and
+     a testing/validation dataset (which is returned as a new instance of a UnlabelledData).
+
+     @param partitionPercentage: sets the percentage of data which remains in this instance, the remaining percentage of data is then returned as the testing/validation dataset
+     @return a new UnlabelledData instance, containing the remaining data not kept but this instance
+    */
+    UnlabelledData split(const UINT partitionPercentage);
     
     /**
      Adds the data in the unlabelledData set to the current instance of the UnlabelledData.

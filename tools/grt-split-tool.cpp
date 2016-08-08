@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
 
     infoLog << "- Loaded dataset with " << data.getNumSamples() << " samples" << endl;
 
-    ClassificationData subset = data.partition( splitPercentage, useStratifiedSampling );
+    ClassificationData subset = data.split( splitPercentage, useStratifiedSampling );
 
     infoLog << "- Data split." << endl;
     infoLog << "- Main Dataset. Number of samples: " << data.getNumSamples() << endl;
