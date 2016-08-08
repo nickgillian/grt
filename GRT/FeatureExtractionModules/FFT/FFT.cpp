@@ -1,37 +1,37 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "FFT.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the FFT module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< FFT > FFT::registerModule("FFT");
 
 FFT::FFT(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase){
-
+    
     classType = "FFT";
     featureExtractionType = classType;
     
-    initialized = false; 
+    initialized = false;
     featureDataReady = false;
     numInputDimensions = 0;
     numOutputDimensions = 0;
@@ -44,21 +44,21 @@ FFT::FFT(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFuncti
         init(fftWindowSize,hopSize,numDimensions,fftWindowFunction,computeMagnitude,computePhase);
     }
 }
-    
+
 FFT::FFT(const FFT &rhs){
     infoLog.setProceedingText("[FFT]");
     warningLog.setProceedingText("[WARNING FFT]");
     errorLog.setProceedingText("[ERROR FFT]");
-
+    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
-    
+
 FFT::~FFT(void){
 }
-    
-FFT& FFT::operator=(const FFT &rhs){
 
+FFT& FFT::operator=(const FFT &rhs){
+    
     if( this != &rhs ){
         this->hopSize = rhs.hopSize;
         this->dataBufferSize = rhs.dataBufferSize;
@@ -73,7 +73,7 @@ FFT& FFT::operator=(const FFT &rhs){
         this->windowSizeMap = rhs.windowSizeMap;
         
         copyBaseVariables( (FeatureExtraction*)&rhs );
-
+        
         for(UINT i=0; i<dataBufferSize; i++){
             dataBuffer[i].resize( numInputDimensions, 0 );
         }
@@ -82,8 +82,8 @@ FFT& FFT::operator=(const FFT &rhs){
 }
 
 //Clone method
-bool FFT::deepCopyFrom(const FeatureExtraction *featureExtraction){ 
-        
+bool FFT::deepCopyFrom(const FeatureExtraction *featureExtraction){
+    
     if( featureExtraction == NULL ) return false;
     
     if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
@@ -99,10 +99,10 @@ bool FFT::deepCopyFrom(const FeatureExtraction *featureExtraction){
     return false;
 }
 
-bool FFT::saveModelToFile( std::fstream &file ) const{
+bool FFT::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -125,10 +125,10 @@ bool FFT::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool FFT::loadModelFromFile( std::fstream &file ){
+bool FFT::load( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -138,8 +138,8 @@ bool FFT::loadModelFromFile( std::fstream &file ){
     file >> word;
     
     if( word != "GRT_FFT_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
@@ -149,36 +149,36 @@ bool FFT::loadModelFromFile( std::fstream &file ){
     
     file >> word;
     if( word != "HopSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read HopSize header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read HopSize header!" << std::endl;
+        return false;
     }
     file >> hopSize;
     
     file >> word;
     if( word != "FftWindowSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FftWindowSize header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read FftWindowSize header!" << std::endl;
+        return false;
     }
     file >> fftWindowSize;
     
     file >> word;
     if( word != "FftWindowFunction:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FftWindowFunction header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read FftWindowFunction header!" << std::endl;
+        return false;
     }
     file >> fftWindowFunction;
     
     file >> word;
     if( word != "ComputeMagnitude:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeMagnitude header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read ComputeMagnitude header!" << std::endl;
+        return false;
     }
     file >> computeMagnitude;
     
     file >> word;
     if( word != "ComputePhase:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputePhase header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read ComputePhase header!" << std::endl;
+        return false;
     }
     file >> computePhase;
     
@@ -200,7 +200,7 @@ bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindow
         errorLog << "init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase) - Unkown Window Function!" << std::endl;
         return false;
     }
-       
+    
     this->dataBufferSize = fftWindowSize;
     this->fftWindowSize = fftWindowSize;
     this->hopSize = hopSize;
@@ -220,18 +220,18 @@ bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindow
     
     //Resize the output feature vector
     featureVector.resize( numOutputDimensions, 0);
-
+    
     dataBuffer.resize( dataBufferSize );
     tempBuffer.resize( dataBufferSize );
-
+    
     for(UINT i=0; i<dataBufferSize; i++){
         dataBuffer[i].resize( numInputDimensions, 0 );
     }
-
+    
     for(UINT i=0; i<dataBufferSize; i++){
         dataBuffer[i].resize( numInputDimensions, 0 );
     }
-
+    
     //Setup the fft for each dimension
     fft.resize(numInputDimensions);
     for(unsigned int i=0; i<numInputDimensions; i++){
@@ -243,10 +243,10 @@ bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindow
     }
     
     initialized = true;
-
+    
     return true;
 }
-    
+
 bool FFT::computeFeatures(const VectorFloat &inputVector){
     return update( inputVector );
 }
@@ -254,9 +254,9 @@ bool FFT::computeFeatures(const VectorFloat &inputVector){
 bool FFT::computeFeatures(const MatrixFloat &inputMatrix){
     return update( inputMatrix );
 }
-    
-bool FFT::update(const Float x){
 
+bool FFT::update(const Float x){
+    
     if( !initialized ){
         errorLog << "update(const Float x) - Not initialized!" << std::endl;
         return false;
@@ -271,7 +271,7 @@ bool FFT::update(const Float x){
 }
 
 bool FFT::update(const VectorFloat &x){
-
+    
     if( !initialized ){
         errorLog << "update(const VectorFloat &x) - Not initialized!" << std::endl;
         return false;
@@ -281,7 +281,7 @@ bool FFT::update(const VectorFloat &x){
         errorLog << "update(const VectorFloat &x) - The size of the input (" << x.size() << ") does not match that of the FeatureExtraction (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
-
+    
     //Add the current input to the data buffers
     dataBuffer.push_back( x );
     
@@ -329,7 +329,7 @@ bool FFT::update(const VectorFloat &x){
 }
 
 bool FFT::update(const MatrixFloat &x){
-
+    
     if( !initialized ){
         errorLog << "update(const MatrixFloat &x) - Not initialized!" << std::endl;
         return false;
@@ -343,10 +343,10 @@ bool FFT::update(const MatrixFloat &x){
     featureDataReady = false;
     
     for(UINT k=0; k<x.getNumRows(); k++){
-
+        
         //Add the current input to the data buffers
         dataBuffer.push_back( x.getRow(k) );
-
+        
         if( ++hopCounter == hopSize ){
             hopCounter = 0;
             //Compute the FFT for each dimension
@@ -388,51 +388,51 @@ bool FFT::update(const MatrixFloat &x){
     
     return true;
 }
-    
-bool FFT::clear(){
 
+bool FFT::clear(){
+    
     //Clear the base class
     FeatureExtraction::clear();
-
+    
     //Clear the buffers
     tempBuffer.clear();
     dataBuffer.clear();
     fft.clear();
-
+    
     return true;
 }
 
-bool FFT::reset(){ 
+bool FFT::reset(){
     if( initialized ) return init(fftWindowSize,hopSize,numInputDimensions,fftWindowFunction,computeMagnitude,computePhase,inputType,outputType);
     return false;
 }
-    
-UINT FFT::getHopSize(){ 
-    if(initialized){ return hopSize; } 
-    return 0; 
+
+UINT FFT::getHopSize(){
+    if(initialized){ return hopSize; }
+    return 0;
 }
-    
-UINT FFT::getDataBufferSize(){ 
-    if(initialized){ return dataBufferSize; } 
-    return 0; 
+
+UINT FFT::getDataBufferSize(){
+    if(initialized){ return dataBufferSize; }
+    return 0;
 }
-    
-UINT FFT::getFFTWindowSize(){ 
+
+UINT FFT::getFFTWindowSize(){
     
     if( !initialized ) return 0;
     return fftWindowSize;
 }
-    
-UINT FFT::getFFTWindowFunction(){ 
-    if(initialized){ return fftWindowFunction; } 
-    return 0; 
+
+UINT FFT::getFFTWindowFunction(){
+    if(initialized){ return fftWindowFunction; }
+    return 0;
 }
-    
-UINT FFT::getHopCounter(){ 
-    if(initialized){ return hopCounter; } 
-    return 0; 
+
+UINT FFT::getHopCounter(){
+    if(initialized){ return hopCounter; }
+    return 0;
 }
-    
+
 VectorFloat FFT::getFrequencyBins(const unsigned int sampleRate){
     if( !initialized ){ return VectorFloat(); }
     
@@ -442,7 +442,7 @@ VectorFloat FFT::getFrequencyBins(const unsigned int sampleRate){
     }
     return freqBins;
 }
-    
+
 bool FFT::setHopSize(UINT hopSize){
     if( hopSize > 0 ){
         this->hopSize = hopSize;
@@ -461,9 +461,9 @@ bool FFT::setFFTWindowSize(UINT fftWindowSize){
     }
     errorLog << "setFFTWindowSize(UINT fftWindowSize) - fftWindowSize must be a power of two!" << std::endl;
     return false;
-
-}
     
+}
+
 bool FFT::setFFTWindowFunction(UINT fftWindowFunction){
     if( validateFFTWindowFunction( fftWindowFunction ) ){
         this->fftWindowFunction = fftWindowFunction;
@@ -471,18 +471,18 @@ bool FFT::setFFTWindowFunction(UINT fftWindowFunction){
     }
     return false;
 }
-    
+
 bool FFT::setComputeMagnitude(bool computeMagnitude){
     if( initialized ) return init(fftWindowSize, hopSize, numInputDimensions, fftWindowFunction, computeMagnitude, computePhase);
     this->computeMagnitude = computeMagnitude;
     return true;
 }
-    
+
 bool FFT::setComputePhase(bool computePhase){
     if( initialized ) return init(fftWindowSize, hopSize, numInputDimensions, fftWindowFunction, computeMagnitude, computePhase);
     this->computePhase = computePhase;
     return true;
-
+    
 }
 
 bool FFT::isPowerOfTwo(unsigned int x){
@@ -490,10 +490,10 @@ bool FFT::isPowerOfTwo(unsigned int x){
     if (x & (x - 1)) return false;
     return true;
 }
-    
+
 bool FFT::validateFFTWindowFunction(UINT fftWindowFunction){
-    if( fftWindowFunction != RECTANGULAR_WINDOW && fftWindowFunction != BARTLETT_WINDOW && 
-        fftWindowFunction != HAMMING_WINDOW && fftWindowFunction != HANNING_WINDOW ){
+    if( fftWindowFunction != RECTANGULAR_WINDOW && fftWindowFunction != BARTLETT_WINDOW &&
+    fftWindowFunction != HAMMING_WINDOW && fftWindowFunction != HANNING_WINDOW ){
         return false;
     }
     return true;

@@ -1,31 +1,31 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "ZeroCrossingCounter.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the ZeroCrossingCounter module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< ZeroCrossingCounter > ZeroCrossingCounter::registerModule("ZeroCrossingCounter");
-    
+
 ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode){
     
     classType = "ZeroCrossingCounter";
@@ -36,7 +36,7 @@ ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,Float deadZoneThr
     
     init(searchWindowSize,deadZoneThreshold,numDimensions,featureMode);
 }
-    
+
 ZeroCrossingCounter::ZeroCrossingCounter(const ZeroCrossingCounter &rhs){
     
     classType = "ZeroCrossingCounter";
@@ -50,9 +50,9 @@ ZeroCrossingCounter::ZeroCrossingCounter(const ZeroCrossingCounter &rhs){
 }
 
 ZeroCrossingCounter::~ZeroCrossingCounter(){
-
-}
     
+}
+
 ZeroCrossingCounter& ZeroCrossingCounter::operator=(const ZeroCrossingCounter &rhs){
     if(this!=&rhs){
         this->searchWindowSize = rhs.searchWindowSize;
@@ -66,7 +66,7 @@ ZeroCrossingCounter& ZeroCrossingCounter::operator=(const ZeroCrossingCounter &r
     }
     return *this;
 }
-    
+
 bool ZeroCrossingCounter::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
@@ -81,7 +81,7 @@ bool ZeroCrossingCounter::deepCopyFrom(const FeatureExtraction *featureExtractio
     
     return false;
 }
-    
+
 bool ZeroCrossingCounter::computeFeatures(const VectorFloat &inputVector){
     
     if( !initialized ){
@@ -105,40 +105,11 @@ bool ZeroCrossingCounter::reset(){
     }
     return false;
 }
-    
-bool ZeroCrossingCounter::saveModelToFile( std::string filename ) const{
 
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool ZeroCrossingCounter::loadModelFromFile( std::string filename ){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
-}
-    
-bool ZeroCrossingCounter::saveModelToFile( std::fstream &file ) const{
+bool ZeroCrossingCounter::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -153,16 +124,16 @@ bool ZeroCrossingCounter::saveModelToFile( std::fstream &file ) const{
     
     //Write the zero crossing counter settings
     file << "SearchWindowSize: " << searchWindowSize << std::endl;
-    file << "FeatureMode: " << featureMode << std::endl;	
-    file << "DeadZoneThreshold: " << deadZoneThreshold << std::endl;		
+    file << "FeatureMode: " << featureMode << std::endl;
+    file << "DeadZoneThreshold: " << deadZoneThreshold << std::endl;
     
     return true;
 }
 
-bool ZeroCrossingCounter::loadModelFromFile( std::fstream &file ){
+bool ZeroCrossingCounter::load( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -172,8 +143,8 @@ bool ZeroCrossingCounter::loadModelFromFile( std::fstream &file ){
     file >> word;
     
     if( word != "GRT_ZERO_CROSSING_COUNTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
@@ -183,29 +154,29 @@ bool ZeroCrossingCounter::loadModelFromFile( std::fstream &file ){
     
     file >> word;
     if( word != "SearchWindowSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read SearchWindowSize header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read SearchWindowSize header!" << std::endl;
+        return false;
     }
     file >> searchWindowSize;
     
     file >> word;
     if( word != "FeatureMode:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FeatureMode header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read FeatureMode header!" << std::endl;
+        return false;
     }
     file >> featureMode;
     
     file >> word;
     if( word != "DeadZoneThreshold:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read DeadZoneThreshold header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read DeadZoneThreshold header!" << std::endl;
+        return false;
     }
     file >> deadZoneThreshold;
     
     //Init the ZeroCrossingCounter module to ensure everything is initialized correctly
     return init(searchWindowSize,deadZoneThreshold,numInputDimensions,featureMode);
 }
-    
+
 bool ZeroCrossingCounter::init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode){
     
     initialized = false;
@@ -250,9 +221,9 @@ bool ZeroCrossingCounter::init(UINT searchWindowSize,Float deadZoneThreshold,UIN
 
 
 VectorFloat ZeroCrossingCounter::update(Float x){
-	return update(VectorFloat(1,x));
+    return update(VectorFloat(1,x));
 }
-    
+
 VectorFloat ZeroCrossingCounter::update(const VectorFloat &x){
     
     if( !initialized ){
@@ -268,7 +239,7 @@ VectorFloat ZeroCrossingCounter::update(const VectorFloat &x){
     //Clear the feature vector
     std::fill(featureVector.begin(),featureVector.end(),0);
     
-    //Update the derivative data and 
+    //Update the derivative data and
     derivative.computeDerivative( x );
     
     //Dead zone the derivative data
@@ -300,10 +271,10 @@ VectorFloat ZeroCrossingCounter::update(const VectorFloat &x){
     
     //Flag that the feature data has been computed
     featureDataReady = true;
-
+    
     return featureVector;
 }
-    
+
 bool ZeroCrossingCounter::setSearchWindowSize(UINT searchWindowSize){
     if( searchWindowSize > 0 ){
         this->searchWindowSize = searchWindowSize;
@@ -313,7 +284,7 @@ bool ZeroCrossingCounter::setSearchWindowSize(UINT searchWindowSize){
     errorLog << "setSearchWindowSize(UINT searchWindowSize) - The searchWindowSize must be larger than zero!" << std::endl;
     return false;
 }
-    
+
 bool ZeroCrossingCounter::setFeatureMode(UINT featureMode){
     if( featureMode == INDEPENDANT_FEATURE_MODE || featureMode == COMBINED_FEATURE_MODE ){
         this->featureMode = featureMode;
@@ -333,5 +304,5 @@ bool ZeroCrossingCounter::setDeadZoneThreshold(Float deadZoneThreshold){
     errorLog << "setDeadZoneThreshold(Float deadZoneThreshold) - The deadZoneThreshold must be larger than zero!" << std::endl;
     return false;
 }
-    
+
 GRT_END_NAMESPACE

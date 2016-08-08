@@ -1,31 +1,31 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "SOMQuantizer.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register your module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< SOMQuantizer > SOMQuantizer::registerModule("SOMQuantizer");
-    
+
 SOMQuantizer::SOMQuantizer(const UINT numClusters){
     
     this->numClusters = numClusters;
@@ -36,7 +36,7 @@ SOMQuantizer::SOMQuantizer(const UINT numClusters){
     errorLog.setProceedingText("[ERROR SOMQuantizer]");
     warningLog.setProceedingText("[WARNING SOMQuantizer]");
 }
-    
+
 SOMQuantizer::SOMQuantizer(const SOMQuantizer &rhs){
     
     classType = "SOMQuantizer";
@@ -52,7 +52,7 @@ SOMQuantizer::SOMQuantizer(const SOMQuantizer &rhs){
 SOMQuantizer::~SOMQuantizer(){
     //Here you should add any specific code to cleanup your custom feature extraction module if needed
 }
-    
+
 SOMQuantizer& SOMQuantizer::operator=(const SOMQuantizer &rhs){
     if(this!=&rhs){
         //Here you should copy any class variables from the rhs instance to this instance
@@ -65,7 +65,7 @@ SOMQuantizer& SOMQuantizer::operator=(const SOMQuantizer &rhs){
     }
     return *this;
 }
-    
+
 bool SOMQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
@@ -83,12 +83,12 @@ bool SOMQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     return false;
 }
-    
+
 bool SOMQuantizer::computeFeatures(const VectorFloat &inputVector){
     
-	//Run the quantize algorithm
-	quantize( inputVector );
-	
+    //Run the quantize algorithm
+    quantize( inputVector );
+    
     return true;
 }
 
@@ -104,7 +104,7 @@ bool SOMQuantizer::reset(){
     
     return true;
 }
-    
+
 bool SOMQuantizer::clear(){
     
     //Clear the base class
@@ -115,46 +115,17 @@ bool SOMQuantizer::clear(){
     
     return true;
 }
-    
-bool SOMQuantizer::saveModelToFile( std::string filename ) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool SOMQuantizer::loadModelFromFile( std::string filename ){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
-}
-
-bool SOMQuantizer::saveModelToFile( std::fstream &file ) const{
+bool SOMQuantizer::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //First, you should add a header (with no spaces) e.g.
     file << "SOM_QUANTIZER_FILE_V1.0" << std::endl;
-	
+    
     //Second, you should save the base feature extraction settings to the file
     if( !saveFeatureExtractionSettingsToFile( file ) ){
         errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
@@ -166,8 +137,8 @@ bool SOMQuantizer::saveModelToFile( std::fstream &file ) const{
     
     if( trained ){
         file << "SOM: \n";
-        if( !som.saveModelToFile( file ) ){
-            errorLog << "saveModelToFile(fstream &file) - Failed to save SelfOrganizingMap settings to file!" << std::endl;
+        if( !som.save( file ) ){
+            errorLog << "save(fstream &file) - Failed to save SelfOrganizingMap settings to file!" << std::endl;
             return false;
         }
     }
@@ -175,13 +146,13 @@ bool SOMQuantizer::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool SOMQuantizer::loadModelFromFile( std::fstream &file ){
+bool SOMQuantizer::load( std::fstream &file ){
     
     //Clear any previous model
     clear();
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -190,7 +161,7 @@ bool SOMQuantizer::loadModelFromFile( std::fstream &file ){
     //First, you should read and validate the header
     file >> word;
     if( word != "SOM_QUANTIZER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
         return false;
     }
     
@@ -202,14 +173,14 @@ bool SOMQuantizer::loadModelFromFile( std::fstream &file ){
     
     file >> word;
     if( word != "QuantizerTrained:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load QuantizerTrained!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to load QuantizerTrained!" << std::endl;
         return false;
     }
     file >> trained;
     
     file >> word;
     if( word != "NumClusters:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load NumClusters!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to load NumClusters!" << std::endl;
         return false;
     }
     file >> numClusters;
@@ -217,12 +188,12 @@ bool SOMQuantizer::loadModelFromFile( std::fstream &file ){
     if( trained ){
         file >> word;
         if( word != "SOM:" ){
-            errorLog << "loadModelFromFile(fstream &file) - Failed to load SOM!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to load SOM!" << std::endl;
             return false;
         }
         
-        if( !som.loadModelFromFile( file ) ){
-            errorLog << "loadModelFromFile(fstream &file) - Failed to load SelfOrganizingMap settings from file!" << std::endl;
+        if( !som.load( file ) ){
+            errorLog << "load(fstream &file) - Failed to load SelfOrganizingMap settings from file!" << std::endl;
             return false;
         }
         
@@ -233,27 +204,27 @@ bool SOMQuantizer::loadModelFromFile( std::fstream &file ){
     
     return true;
 }
-    
+
 bool SOMQuantizer::train_(ClassificationData &trainingData){
     MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
-    
+
 bool SOMQuantizer::train_(TimeSeriesClassificationData &trainingData){
     MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
-   
+
 bool SOMQuantizer::train_(ClassificationDataStream &trainingData){
     MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
 
 bool SOMQuantizer::train_(UnlabelledData &trainingData){
-	MatrixFloat data = trainingData.getDataAsMatrixFloat();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
-    
+
 bool SOMQuantizer::train_(MatrixFloat &trainingData){
     
     //Clear any previous model
@@ -288,21 +259,21 @@ bool SOMQuantizer::train_(MatrixFloat &trainingData){
 }
 
 UINT SOMQuantizer::quantize(const Float inputValue){
-	return quantize( VectorFloat(1,inputValue) );
+    return quantize( VectorFloat(1,inputValue) );
 }
 
 UINT SOMQuantizer::quantize(const VectorFloat &inputVector){
-	
+    
     if( !trained ){
         errorLog << "computeFeatures(const VectorFloat &inputVector) - The quantizer model has not been trained!" << std::endl;
         return 0;
     }
-
+    
     if( inputVector.getSize() != numInputDimensions ){
         errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return 0;
     }
-	
+    
     //Pass the input data through the map
     if( !som.predict( inputVector ) ){
         errorLog << "computeFeatures(const VectorFloat &inputVector) - Failed to perform map!" << std::endl;
@@ -322,14 +293,14 @@ UINT SOMQuantizer::quantize(const VectorFloat &inputVector){
     
     featureVector[0] = quantizedValue;
     featureDataReady = true;
-	
-	return quantizedValue;
-}
     
+    return quantizedValue;
+}
+
 bool SOMQuantizer::getQuantizerTrained() const {
     return trained;
 }
-    
+
 UINT SOMQuantizer::getNumClusters() const{
     return numClusters;
 }
@@ -345,7 +316,7 @@ VectorFloat SOMQuantizer::getQuantizationDistances() const{
 SelfOrganizingMap SOMQuantizer::getSelfOrganizingMap() const{
     return som;
 }
-    
+
 bool SOMQuantizer::setNumClusters(const UINT numClusters){
     clear();
     this->numClusters = numClusters;

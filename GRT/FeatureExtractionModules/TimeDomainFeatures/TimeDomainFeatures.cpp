@@ -1,33 +1,33 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "TimeDomainFeatures.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the TimeDomainFeatures module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< TimeDomainFeatures > TimeDomainFeatures::registerModule("TimeDomainFeatures");
-    
-TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS){
 
+TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS){
+    
     classType = "TimeDomainFeatures";
     featureExtractionType = classType;
     debugLog.setProceedingText("[DEBUG TimeDomainFeatures]");
@@ -36,7 +36,7 @@ TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT num
     
     init(bufferLength,numFrames,numDimensions,offsetInput,useMean,useStdDev,useEuclideanNorm,useRMS);
 }
-    
+
 TimeDomainFeatures::TimeDomainFeatures(const TimeDomainFeatures &rhs){
     
     classType = "TimeDomainFeatures";
@@ -50,9 +50,9 @@ TimeDomainFeatures::TimeDomainFeatures(const TimeDomainFeatures &rhs){
 }
 
 TimeDomainFeatures::~TimeDomainFeatures(){
-
-}
     
+}
+
 TimeDomainFeatures& TimeDomainFeatures::operator=(const TimeDomainFeatures &rhs){
     if(this!=&rhs){
         this->bufferLength = rhs.bufferLength;
@@ -69,7 +69,7 @@ TimeDomainFeatures& TimeDomainFeatures::operator=(const TimeDomainFeatures &rhs)
     }
     return *this;
 }
-    
+
 bool TimeDomainFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
@@ -86,7 +86,7 @@ bool TimeDomainFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction
     
     return false;
 }
-    
+
 bool TimeDomainFeatures::computeFeatures(const VectorFloat &inputVector){
     
     if( !initialized ){
@@ -110,45 +110,16 @@ bool TimeDomainFeatures::reset(){
     }
     return false;
 }
-    
-bool TimeDomainFeatures::saveModelToFile( std::string filename ) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool TimeDomainFeatures::loadModelFromFile( std::string filename ){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
-}
-
-bool TimeDomainFeatures::saveModelToFile( std::fstream &file ) const{
+bool TimeDomainFeatures::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //Write the file header
-    file << "GRT_TIME_DOMAIN_FEATURES_FILE_V1.0" << std::endl;	
+    file << "GRT_TIME_DOMAIN_FEATURES_FILE_V1.0" << std::endl;
     
     //Save the base settings to the file
     if( !saveFeatureExtractionSettingsToFile( file ) ){
@@ -168,10 +139,10 @@ bool TimeDomainFeatures::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool TimeDomainFeatures::loadModelFromFile( std::fstream &file ){
+bool TimeDomainFeatures::load( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -181,8 +152,8 @@ bool TimeDomainFeatures::loadModelFromFile( std::fstream &file ){
     file >> word;
     
     if( word != "GRT_TIME_DOMAIN_FEATURES_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
@@ -193,55 +164,55 @@ bool TimeDomainFeatures::loadModelFromFile( std::fstream &file ){
     //Load the BufferLength
     file >> word;
     if( word != "BufferLength:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read BufferLength header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read BufferLength header!" << std::endl;
+        return false;
     }
     file >> bufferLength;
     
     //Load the NumFrames
     file >> word;
     if( word != "NumFrames:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumFrames header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read NumFrames header!" << std::endl;
+        return false;
     }
     file >> numFrames;
     
     //Load the OffsetInput
     file >> word;
     if( word != "OffsetInput:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read OffsetInput header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read OffsetInput header!" << std::endl;
+        return false;
     }
     file >> offsetInput;
     
     //Load the UseMean
     file >> word;
     if( word != "UseMean:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseMean header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read UseMean header!" << std::endl;
+        return false;
     }
     file >> useMean;
     
     //Load the UseStdDev
     file >> word;
     if( word != "UseStdDev:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseStdDev header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read UseStdDev header!" << std::endl;
+        return false;
     }
     file >> useStdDev;
     
     //Load the UseEuclideanNorm
     file >> word;
     if( word != "UseEuclideanNorm:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseEuclideanNorm header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read UseEuclideanNorm header!" << std::endl;
+        return false;
     }
     file >> useEuclideanNorm;
     
     //Load the UseRMS
     file >> word;
     if( word != "UseRMS:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read UseRMS header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read UseRMS header!" << std::endl;
         return false;
     }
     file >> useRMS;
@@ -249,7 +220,7 @@ bool TimeDomainFeatures::loadModelFromFile( std::fstream &file ){
     //Init the TimeDomainFeatures module to ensure everything is initialized correctly
     return init(bufferLength,numFrames,numInputDimensions,offsetInput,useMean,useStdDev,useEuclideanNorm,useRMS);
 }
-    
+
 bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS){
     
     initialized = false;
@@ -297,7 +268,7 @@ bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimension
     
     //Resize the raw data buffer
     dataBuffer.resize( bufferLength, VectorFloat(numInputDimensions,0) );
-
+    
     //Flag that the time domain features has been initialized
     initialized = true;
     
@@ -306,9 +277,9 @@ bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimension
 
 
 VectorFloat TimeDomainFeatures::update(Float x){
-	return update(VectorFloat(1,x));
+    return update(VectorFloat(1,x));
 }
-    
+
 VectorFloat TimeDomainFeatures::update(const VectorFloat &x){
     
     if( !initialized ){
@@ -366,11 +337,11 @@ VectorFloat TimeDomainFeatures::update(const VectorFloat &x){
             
             //Update the norm features
             if( useEuclideanNorm )
-                normFeatures[n][frame] += data[i][n]*data[i][n];
+            normFeatures[n][frame] += data[i][n]*data[i][n];
             
             //Update the rms features
             if( useRMS )
-                rmsFeatures[n][frame] += data[i][n]*data[i][n];
+            rmsFeatures[n][frame] += data[i][n]*data[i][n];
             
             if( ++index == frameSize ){
                 frame++;
@@ -437,16 +408,16 @@ VectorFloat TimeDomainFeatures::update(const VectorFloat &x){
     
     return featureVector;
 }
-    
+
 CircularBuffer< VectorFloat > TimeDomainFeatures::getBufferData(){
     if( initialized ){
         return dataBuffer;
     }
     return CircularBuffer< VectorFloat >();
 }
-    
+
 const CircularBuffer< VectorFloat > &TimeDomainFeatures::getBufferData() const {
     return dataBuffer;
 }
-    
+
 GRT_END_NAMESPACE

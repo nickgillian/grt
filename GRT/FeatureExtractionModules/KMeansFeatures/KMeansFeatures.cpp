@@ -1,31 +1,31 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "KMeansFeatures.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register your module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< KMeansFeatures > KMeansFeatures::registerModule("KMeansFeatures");
-    
+
 KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Float alpha,const bool useScaling){
     
     classType = "KMeansFeatures";
@@ -43,7 +43,7 @@ KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Fl
         init( numClustersPerLayer );
     }
 }
-    
+
 KMeansFeatures::KMeansFeatures(const KMeansFeatures &rhs){
     
     classType = "KMeansFeatures";
@@ -60,7 +60,7 @@ KMeansFeatures::KMeansFeatures(const KMeansFeatures &rhs){
 KMeansFeatures::~KMeansFeatures(){
     //Here you should add any specific code to cleanup your custom feature extraction module if needed
 }
-    
+
 KMeansFeatures& KMeansFeatures::operator=(const KMeansFeatures &rhs){
     if(this!=&rhs){
         //Here you should copy any class variables from the rhs instance to this instance
@@ -71,7 +71,7 @@ KMeansFeatures& KMeansFeatures::operator=(const KMeansFeatures &rhs){
     }
     return *this;
 }
-    
+
 bool KMeansFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
@@ -89,7 +89,7 @@ bool KMeansFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     return false;
 }
-    
+
 bool KMeansFeatures::computeFeatures(const VectorFloat &inputVector){
     
     VectorFloat data( numInputDimensions );
@@ -124,49 +124,20 @@ bool KMeansFeatures::computeFeatures(const VectorFloat &inputVector){
 bool KMeansFeatures::reset(){
     return true;
 }
-    
-bool KMeansFeatures::saveModelToFile( std::string filename ) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool KMeansFeatures::loadModelFromFile( std::string filename ){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
-}
-
-bool KMeansFeatures::saveModelToFile( std::fstream &file ) const{
+bool KMeansFeatures::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
     //First, you should add a header (with no spaces) e.g.
     file << "KMEANS_FEATURES_FILE_V1.0" << std::endl;
-	
+    
     //Second, you should save the base feature extraction settings to the file
     if( !saveFeatureExtractionSettingsToFile( file ) ){
-        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
+        errorLog << "save(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
         return false;
     }
     
@@ -194,7 +165,7 @@ bool KMeansFeatures::saveModelToFile( std::fstream &file ) const{
                 for(UINT j=0; j<clusters[k].getNumCols(); j++){
                     file << clusters[k][i][j];
                     if( j+1 < clusters[k].getNumCols() )
-                        file << "\t";
+                    file << "\t";
                 }
                 file << std::endl;
             }
@@ -204,12 +175,12 @@ bool KMeansFeatures::saveModelToFile( std::fstream &file ) const{
     return true;
 }
 
-bool KMeansFeatures::loadModelFromFile( std::fstream &file ){
+bool KMeansFeatures::load( std::fstream &file ){
     
     clear();
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -221,20 +192,20 @@ bool KMeansFeatures::loadModelFromFile( std::fstream &file ){
     //First, you should read and validate the header
     file >> word;
     if( word != "KMEANS_FEATURES_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
         return false;
     }
     
     //Second, you should load the base feature extraction settings to the file
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
-        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
         return false;
     }
     
     //Load the number of layers
     file >> word;
     if( word != "NumLayers:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumLayers header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read NumLayers header!" << std::endl;
         return false;
     }
     file >> numLayers;
@@ -243,7 +214,7 @@ bool KMeansFeatures::loadModelFromFile( std::fstream &file ){
     //Load the number clusters per layer
     file >> word;
     if( word != "NumClustersPerLayer:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumClustersPerLayer header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read NumClustersPerLayer header!" << std::endl;
         return false;
     }
     for(UINT i=0; i<numClustersPerLayer.getSize(); i++){
@@ -253,7 +224,7 @@ bool KMeansFeatures::loadModelFromFile( std::fstream &file ){
     //Load the alpha parameter
     file >> word;
     if( word != "Alpha:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read Alpha header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read Alpha header!" << std::endl;
         return false;
     }
     file >> alpha;
@@ -264,7 +235,7 @@ bool KMeansFeatures::loadModelFromFile( std::fstream &file ){
         //Load the Ranges
         file >> word;
         if( word != "Ranges:" ){
-            errorLog << "loadModelFromFile(fstream &file) - Failed to read Ranges header!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to read Ranges header!" << std::endl;
             return false;
         }
         ranges.resize(numInputDimensions);
@@ -276,7 +247,7 @@ bool KMeansFeatures::loadModelFromFile( std::fstream &file ){
         //Load the Clusters
         file >> word;
         if( word != "Clusters:" ){
-            errorLog << "loadModelFromFile(fstream &file) - Failed to read Clusters header!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to read Clusters header!" << std::endl;
             return false;
         }
         clusters.resize( numLayers );
@@ -286,7 +257,7 @@ bool KMeansFeatures::loadModelFromFile( std::fstream &file ){
             //Load the NumRows
             file >> word;
             if( word != "NumRows:" ){
-                errorLog << "loadModelFromFile(fstream &file) - Failed to read NumRows header!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to read NumRows header!" << std::endl;
                 return false;
             }
             file >> numRows;
@@ -294,7 +265,7 @@ bool KMeansFeatures::loadModelFromFile( std::fstream &file ){
             //Load the NumCols
             file >> word;
             if( word != "NumCols:" ){
-                errorLog << "loadModelFromFile(fstream &file) - Failed to read NumCols header!" << std::endl;
+                errorLog << "load(fstream &file) - Failed to read NumCols header!" << std::endl;
                 return false;
             }
             file >> numCols;
@@ -310,7 +281,7 @@ bool KMeansFeatures::loadModelFromFile( std::fstream &file ){
     
     return true;
 }
-    
+
 bool KMeansFeatures::init( const Vector< UINT > numClustersPerLayer ){
     
     clear();
@@ -327,27 +298,27 @@ bool KMeansFeatures::init( const Vector< UINT > numClustersPerLayer ){
     
     return true;
 }
-    
+
 bool KMeansFeatures::train_(ClassificationData &trainingData){
     MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
-    
+
 bool KMeansFeatures::train_(TimeSeriesClassificationData &trainingData){
     MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
-   
+
 bool KMeansFeatures::train_(ClassificationDataStream &trainingData){
     MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
 
 bool KMeansFeatures::train_(UnlabelledData &trainingData){
-	MatrixFloat data = trainingData.getDataAsMatrixFloat();
+    MatrixFloat data = trainingData.getDataAsMatrixFloat();
     return train_( data );
 }
-    
+
 bool KMeansFeatures::train_(MatrixFloat &trainingData){
     
     if( !initialized ){
@@ -430,7 +401,7 @@ bool KMeansFeatures::train_(MatrixFloat &trainingData){
     
     return true;
 }
-    
+
 bool KMeansFeatures::projectDataThroughLayer( const VectorFloat &input, VectorFloat &output, const UINT layer ){
     
     if( layer >= clusters.getSize() ){
@@ -470,11 +441,11 @@ bool KMeansFeatures::projectDataThroughLayer( const VectorFloat &input, VectorFl
     
     return true;
 }
-    
+
 UINT KMeansFeatures::getNumLayers() const{
     return numClustersPerLayer.getSize();
 }
-    
+
 UINT KMeansFeatures::getLayerSize(const UINT layerIndex) const{
     if( layerIndex >= numClustersPerLayer.getSize() ){
         warningLog << "LayerIndex is out of bounds. It must be less than the number of layers: " << numClustersPerLayer.getSize() << std::endl;
@@ -482,9 +453,9 @@ UINT KMeansFeatures::getLayerSize(const UINT layerIndex) const{
     }
     return numClustersPerLayer[layerIndex];
 }
-    
+
 Vector< MatrixFloat > KMeansFeatures::getClusters() const{
     return clusters;
 }
-    
+
 GRT_END_NAMESPACE

@@ -99,38 +99,22 @@ public:
     
     /**
      This saves the feature extraction settings to a file.
-     
-     @param filename: the filename to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile( std::string filename ) const;
-    
-    /**
-     This saves the feature extraction settings to a file.
-     
-     @param file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool loadModelFromFile( std::string filename );
-    
-    /**
-     This saves the feature extraction settings to a file.
-     This overrides the saveSettingsToFile function in the FeatureExtraction base class.
+     This overrides the save function in the FeatureExtraction base class.
      You should add your own custom code to this function to define how your feature extraction module is saved to a file.
      
      @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads the feature extraction settings from a file.
-     This overrides the loadSettingsFromFile function in the FeatureExtraction base class.
+     This overrides the load function in the FeatureExtraction base class.
      
      @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file );
+    virtual bool load( std::fstream &file );
 
     /**
      Trains the quantization model using the training dataset.
