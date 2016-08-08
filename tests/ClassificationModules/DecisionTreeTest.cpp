@@ -25,14 +25,40 @@ TEST(DecisionTree, TrainBasicDataset) {
   EXPECT_TRUE( !tree.getTrained() );
 
   //Generate a basic dataset
-  ClassificationData::generateGaussDataset( "gauss_data.csv", 10000, 10, 100, 10, 1 );
+  const UINT numSamples = 10000;
+  const UINT numClasses = 10;
+  const UINT numDimensions = 100;
+  ClassificationData::generateGaussDataset( "gauss_data.csv", numSamples, numClasses, numDimensions, 10, 1 );
   ClassificationData trainingData;
   EXPECT_TRUE( trainingData.load( "gauss_data.csv" ) );
 
-  ClassificationData testData = trainingData.split( 80 );
+  ClassificationData testData = trainingData.split( 50 );
 
   //Train the classifier
   EXPECT_TRUE( tree.train( trainingData ) );
+
+  EXPECT_TRUE( tree.getTrained() );
+
+  EXPECT_TRUE( tree.print() );
+
+  for(UINT i=0; i<testData.getNumSamples(); i++){
+    EXPECT_TRUE( tree.predict( testData[i].getSample() ) );
+  }
+
+  EXPECT_TRUE( tree.save( "tree_model.grt" ) );
+
+  tree.clear();
+
+  EXPECT_TRUE( !tree.getTrained() );
+
+  EXPECT_TRUE( tree.load( "tree_model.grt" ) );
+
+  EXPECT_TRUE( tree.getTrained() );
+
+  for(UINT i=0; i<testData.getNumSamples(); i++){
+    EXPECT_TRUE( tree.predict( testData[i].getSample() ) );
+  }
+
 
 }
 
