@@ -327,12 +327,19 @@ class GRT_API RandomForests : public Classifier
     @return returns true if the parameter was updated, false otherwise
     */
     bool setBootstrappedDatasetWeight( const Float bootstrappedDatasetWeight );
+
+    /**
+    Gets a string that represents the DecisionTree class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
     
-    protected:
+protected:
     
     UINT forestSize;
     UINT numRandomSplits;
@@ -344,8 +351,9 @@ class GRT_API RandomForests : public Classifier
     DecisionTreeNode* decisionTreeNode;
     Vector< DecisionTreeNode* > forest;
     
-    private:
+private:
     static RegisterClassifierModule< RandomForests > registerModule;
+    static std::string id;
     
 };
 

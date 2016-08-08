@@ -332,7 +332,7 @@ bool MLP::trainModel(RegressionData &trainingData){
     //Create a validation dataset, if needed
     RegressionData validationData;
     if( useValidationSet ){
-        validationData = trainingData.partition( 100 - validationSetSize );
+        validationData = trainingData.split( 100 - validationSetSize );
     }
     
     const UINT N = trainingData.getNumInputDimensions();

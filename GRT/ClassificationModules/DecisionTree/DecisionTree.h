@@ -180,6 +180,11 @@ public:
     */
     bool setDecisionTreeNode( const DecisionTreeNode &node );
 
+    /**
+    Gets a string that represents the DecisionTree class.
+    
+    @return returns a string containing the ID of this class
+    */
     static std::string getId();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings

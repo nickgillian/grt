@@ -23,8 +23,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string RandomForests::id = "RandomForests";
+std::string RandomForests::getId() { return RandomForests::id; }
+
 //Register the RandomForests module with the Classifier base class
-RegisterClassifierModule< RandomForests >  RandomForests::registerModule("RandomForests");
+RegisterClassifierModule< RandomForests >  RandomForests::registerModule( RandomForests::getId() );
 
 RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight)
 {
@@ -37,28 +41,28 @@ RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT
     this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
     this->useScaling = useScaling;
     this->bootstrappedDatasetWeight = bootstrappedDatasetWeight;
-    classType = "RandomForests";
+    classType = RandomForests::getId();
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
     useNullRejection = false;
     supportsNullRejection = false;
     useValidationSet = true;
     validationSetSize = 20;
-    debugLog.setProceedingText("[DEBUG RandomForests]");
-    errorLog.setProceedingText("[ERROR RandomForests]");
-    trainingLog.setProceedingText("[TRAINING RandomForests]");
-    warningLog.setProceedingText("[WARNING RandomForests]");
+    debugLog.setProceedingText("[DEBUG " + RandomForests::getId() + "]");
+    errorLog.setProceedingText("[ERROR " + RandomForests::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING " + RandomForests::getId() + "]");
+    warningLog.setProceedingText("[WARNING " + RandomForests::getId() + "]");
 }
 
 RandomForests::RandomForests(const RandomForests &rhs){
     this->decisionTreeNode = NULL;
-    classType = "RandomForests";
+    classType = RandomForests::getId();
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG RandomForests]");
-    errorLog.setProceedingText("[ERROR RandomForests]");
-    trainingLog.setProceedingText("[TRAINING RandomForests]");
-    warningLog.setProceedingText("[WARNING RandomForests]");
+    debugLog.setProceedingText("[DEBUG " + RandomForests::getId() + "]");
+    errorLog.setProceedingText("[ERROR " + RandomForests::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING " + RandomForests::getId() + "]");
+    warningLog.setProceedingText("[WARNING " + RandomForests::getId() + "]");
     *this = rhs;
 }
 
@@ -129,8 +133,8 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
             
             if( ptr->getTrained() ){
                 //Deep copy the forest
-                this->forest.reserve( ptr->forest.size() );
-                for(size_t i=0; i<ptr->forest.size(); i++){
+                this->forest.reserve( ptr->forest.getSize() );
+                for(UINT i=0; i<ptr->forest.getSize(); i++){
                     this->forest.push_back( ptr->forest[i]->deepCopy() );
                 }
             }
@@ -196,7 +200,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
     for(UINT i=0; i<forestSize; i++){
         
         //Get a balanced bootstrapped dataset
-        UINT datasetSize = (UINT)(trainingData.getNumSamples() * bootstrappedDatasetWeight);
+        UINT datasetSize = (UINT)floor(trainingData.getNumSamples() * bootstrappedDatasetWeight);
         ClassificationData data = trainingData.getBootstrappedDataset( datasetSize, true );
         
         Timer timer;
@@ -242,7 +246,6 @@ bool RandomForests::train_(ClassificationData &trainingData){
             for(UINT i=0; i<validationSetRecall.getSize(); i++){
                 validationSetRecall[i] += recall[i] * forestNorm;
             }
-            
         }
         
         //Deep copy the tree into the forest

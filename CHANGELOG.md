@@ -2,6 +2,12 @@
 
 This file contains some notes about significant changes to the GRT.
 
+# Version 0.2.0
+
+## 7th August 2016
+- **depreciated saveModelToFile/loadModelFromFile functions, replaced with save/load functions**
+- **depreciated dataset partition function, replaced split function**
+
 # Version 0.1.0
 
 ## 21th February 2016
