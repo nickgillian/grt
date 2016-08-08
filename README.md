@@ -144,6 +144,16 @@ int main (int argc, const char * argv[])
 
     //Print some stats about the testing
     cout << "Test Accuracy: " << pipeline.getTestAccuracy() << endl;
+
+    //Manually project the test dataset through the pipeline
+    for(UINT i=0; i<testData.getNumSamples(); i++){
+        pipeline.predict( testData[i].getSample() );
+
+        if( testData[i].getClassLabel() == pipeline.getPredictedClassLabel() ){
+            testAccuracy++;
+        }
+    }
+    cout << "Manual test accuracy: " << testAccuracy / testData.getNumSamples() * 100.0 << endl;
    
     //Get the vector of class labels from the pipeline
     Vector< UINT > classLabels = pipeline.getClassLabels();
