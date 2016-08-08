@@ -28,6 +28,7 @@ Key things to know about the GRT:
 * Functions with an underscore, such as **train_( ... )**, pass the input arguments as references and are therefore more efficient to use with very large datasets
 
 ##Core Resources
+* GRT Website: [http://www.nickgillian.com/grt](http://www.nickgillian.com/grt)
 * GRT Wiki: [http://www.nickgillian.com/wiki](http://www.nickgillian.com/wiki)
 * GRT Forum: [http://www.nickgillian.com/forum](http://www.nickgillian.com/forum)
 * GRT API Reference: [http://nickgillian.com/grt/api/0.2.0/](http://nickgillian.com/grt/api/0.2.0/)
@@ -57,8 +58,7 @@ The toolkit's source code is structured as following:
 
 ##Getting Started Example
 This example demonstrates a few key components of the GRT, such as:
-* how to generate and save a basic labeled dataset
-* how to save/load this data to/from a CSV file
+* how to save/load a dataset from a file
 * how to split a dataset into a training and test partition
 * how to setup a new Gesture Recognition Pipeline and add a classification algorithm to the pipeline
 * how to use a training dataset to train a new classification model
@@ -67,6 +67,14 @@ This example demonstrates a few key components of the GRT, such as:
 * how to print the test results
 
 You can find this source code and a large number of other examples and tutorials in the GRT examples folder.
+
+You should run this example with one argument, pointing to the file you want to load, for example:
+
+```
+ ./example my_data.csv
+```
+
+You can find several example CSV files and other datasets in the main GRT data directory.
 
 ```C++
 //Include the main GRT header
