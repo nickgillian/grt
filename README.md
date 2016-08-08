@@ -58,8 +58,8 @@ The toolkit's source code is structured as following:
 
 ##Getting Started Example
 This example demonstrates a few key components of the GRT, such as:
-* how to save/load a dataset from a file
-* how to split a dataset into a training and test partition
+* how to load a dataset from a file (e.g., a CSV file)
+* how to split a dataset into a training and test dataset
 * how to setup a new Gesture Recognition Pipeline and add a classification algorithm to the pipeline
 * how to use a training dataset to train a new classification model
 * how to save/load a trained pipeline to/from a file
