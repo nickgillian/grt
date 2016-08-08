@@ -143,7 +143,7 @@ int main (int argc, const char * argv[])
     }
 
     //Print some stats about the testing
-    cout << "Test Accuracy: " << pipeline.getTestAccuracy() << endl;
+    cout << "Pipeline Test Accuracy: " << pipeline.getTestAccuracy() << endl;
 
     //Manually project the test dataset through the pipeline
     for(UINT i=0; i<testData.getNumSamples(); i++){
