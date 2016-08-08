@@ -1,31 +1,31 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "ClassLabelFilter.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the ClassLabelFilter module with the PostProcessing base class
 RegisterPostProcessingModule< ClassLabelFilter > ClassLabelFilter::registerModule("ClassLabelFilter");
-    
+
 ClassLabelFilter::ClassLabelFilter(UINT minimumCount,UINT bufferSize){
     classType = "ClassLabelFilter";
     postProcessingType = classType;
@@ -36,7 +36,7 @@ ClassLabelFilter::ClassLabelFilter(UINT minimumCount,UINT bufferSize){
     warningLog.setProceedingText("[WARNING ClassLabelFilter]");
     init(minimumCount,bufferSize);
 }
-    
+
 ClassLabelFilter::ClassLabelFilter(const ClassLabelFilter &rhs){
     
     classType = "ClassLabelFilter";
@@ -47,7 +47,7 @@ ClassLabelFilter::ClassLabelFilter(const ClassLabelFilter &rhs){
     errorLog.setProceedingText("[ERROR ClassLabelFilter]");
     warningLog.setProceedingText("[WARNING ClassLabelFilter]");
     
-    //Copy the ClassLabelFilter values 
+    //Copy the ClassLabelFilter values
     this->filteredClassLabel = rhs.filteredClassLabel;
     this->minimumCount = rhs.minimumCount;
     this->bufferSize = rhs.bufferSize;
@@ -60,11 +60,11 @@ ClassLabelFilter::ClassLabelFilter(const ClassLabelFilter &rhs){
 ClassLabelFilter::~ClassLabelFilter(){
     
 }
-    
+
 ClassLabelFilter& ClassLabelFilter::operator=(const ClassLabelFilter &rhs){
     
     if( this != &rhs ){
-        //Copy the ClassLabelFilter values 
+        //Copy the ClassLabelFilter values
         this->filteredClassLabel = rhs.filteredClassLabel;
         this->minimumCount = rhs.minimumCount;
         this->bufferSize = rhs.bufferSize;
@@ -76,7 +76,7 @@ ClassLabelFilter& ClassLabelFilter::operator=(const ClassLabelFilter &rhs){
     
     return *this;
 }
-    
+
 bool ClassLabelFilter::deepCopyFrom(const PostProcessing *postProcessing){
     
     if( postProcessing == NULL ) return false;
@@ -85,7 +85,7 @@ bool ClassLabelFilter::deepCopyFrom(const PostProcessing *postProcessing){
         
         ClassLabelFilter *ptr = (ClassLabelFilter*)postProcessing;
         
-        //Clone the ClassLabelFilter values 
+        //Clone the ClassLabelFilter values
         this->filteredClassLabel = ptr->filteredClassLabel;
         this->minimumCount = ptr->minimumCount;
         this->bufferSize = ptr->bufferSize;
@@ -116,7 +116,7 @@ bool ClassLabelFilter::process(const VectorDouble &inputVector){
 }
 
 bool ClassLabelFilter::reset(){
-    filteredClassLabel = 0;   
+    filteredClassLabel = 0;
     processedData.clear();
     processedData.resize(1,0);
     buffer.clear();
@@ -152,7 +152,7 @@ bool ClassLabelFilter::init(UINT minimumCount,UINT bufferSize){
     initialized = reset();
     return true;
 }
- 
+
 UINT ClassLabelFilter::filter(UINT predictedClassLabel){
     
     if( !initialized ){
@@ -205,31 +205,11 @@ UINT ClassLabelFilter::filter(UINT predictedClassLabel){
     
     return filteredClassLabel;
 }
-    
-bool ClassLabelFilter::saveModelToFile( std::string filename ) const{
-    
-    if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The ClassLabelFilter has not been initialized" << std::endl;
-        return false;
-    }
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool ClassLabelFilter::saveModelToFile( std::fstream &file ) const{
+bool ClassLabelFilter::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -237,31 +217,15 @@ bool ClassLabelFilter::saveModelToFile( std::fstream &file ) const{
     file << "NumInputDimensions: " << numInputDimensions << std::endl;
     file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
     file << "MinimumCount: " << minimumCount << std::endl;
-    file << "BufferSize: " << bufferSize << std::endl;	
+    file << "BufferSize: " << bufferSize << std::endl;
     
     return true;
 }
 
-bool ClassLabelFilter::loadModelFromFile( std::string filename ){
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        initialized = false;
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool ClassLabelFilter::loadModelFromFile( std::fstream &file ){
+bool ClassLabelFilter::load( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -271,44 +235,44 @@ bool ClassLabelFilter::loadModelFromFile( std::fstream &file ){
     file >> word;
     
     if( word != "GRT_CLASS_LABEL_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
+        return false;
     }
     file >> numInputDimensions;
     
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
+        return false;
     }
     file >> numOutputDimensions;
     
     //Load the minimumCount
     file >> word;
     if( word != "MinimumCount:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read MinimumCount header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read MinimumCount header!" << std::endl;
+        return false;
     }
     file >> minimumCount;
     
     file >> word;
     if( word != "BufferSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read BufferSize header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read BufferSize header!" << std::endl;
+        return false;
     }
     file >> bufferSize;
     
     //Init the classLabelFilter module to ensure everything is initialized correctly
     return init(minimumCount,bufferSize);
 }
-    
+
 bool ClassLabelFilter::setMinimumCount(UINT minimumCount){
     this->minimumCount = minimumCount;
     if( initialized ){
@@ -324,5 +288,5 @@ bool ClassLabelFilter::setBufferSize(UINT bufferSize){
     }
     return true;
 }
-    
+
 GRT_END_NAMESPACE

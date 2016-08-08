@@ -1,31 +1,31 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
- and associated documentation files (the "Software"), to deal in the Software without restriction, 
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial 
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #define GRT_DLL_EXPORTS
 #include "ClassLabelTimeoutFilter.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 //Register the ClassLabelTimeoutFilter module with the PostProcessing base class
 RegisterPostProcessingModule< ClassLabelTimeoutFilter > ClassLabelTimeoutFilter::registerModule("ClassLabelTimeoutFilter");
-    
+
 ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(unsigned long timeoutDuration,UINT filterMode){
     classType = "ClassLabelTimeoutFilter";
     postProcessingType = classType;
@@ -36,7 +36,7 @@ ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(unsigned long timeoutDuration,U
     warningLog.setProceedingText("[WARNING ClassLabelTimeoutFilter]");
     init(timeoutDuration,filterMode);
 }
-    
+
 ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(const ClassLabelTimeoutFilter &rhs){
     
     classType = "ClassLabelTimeoutFilter";
@@ -47,7 +47,7 @@ ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(const ClassLabelTimeoutFilter &
     errorLog.setProceedingText("[ERROR ClassLabelTimeoutFilter]");
     warningLog.setProceedingText("[WARNING ClassLabelTimeoutFilter]");
     
-    //Copy the classLabelTimeoutFilter values 
+    //Copy the classLabelTimeoutFilter values
     this->filteredClassLabel = rhs.filteredClassLabel;
     this->filterMode = rhs.filterMode;
     this->timeoutDuration = rhs.timeoutDuration;
@@ -58,13 +58,13 @@ ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(const ClassLabelTimeoutFilter &
 }
 
 ClassLabelTimeoutFilter::~ClassLabelTimeoutFilter(){
-
-}
     
+}
+
 ClassLabelTimeoutFilter& ClassLabelTimeoutFilter::operator=(const ClassLabelTimeoutFilter &rhs){
     
     if( this != &rhs ){
-        //Copy the classLabelTimeoutFilter values 
+        //Copy the classLabelTimeoutFilter values
         this->filteredClassLabel = rhs.filteredClassLabel;
         this->filterMode = rhs.filterMode;
         this->timeoutDuration = rhs.timeoutDuration;
@@ -73,9 +73,9 @@ ClassLabelTimeoutFilter& ClassLabelTimeoutFilter::operator=(const ClassLabelTime
         //Clone the post processing base variables
         copyBaseVariables( (PostProcessing*)&rhs );
     }
-        return *this;
+    return *this;
 }
-    
+
 bool ClassLabelTimeoutFilter::deepCopyFrom(const PostProcessing *postProcessing){
     
     if( postProcessing == NULL ) return false;
@@ -84,7 +84,7 @@ bool ClassLabelTimeoutFilter::deepCopyFrom(const PostProcessing *postProcessing)
         
         ClassLabelTimeoutFilter *ptr = (ClassLabelTimeoutFilter*)postProcessing;
         
-        //Clone the classLabelTimeoutFilter values 
+        //Clone the classLabelTimeoutFilter values
         this->filteredClassLabel = ptr->filterMode;
         this->filterMode = ptr->filterMode;
         this->timeoutDuration = ptr->timeoutDuration;
@@ -95,10 +95,10 @@ bool ClassLabelTimeoutFilter::deepCopyFrom(const PostProcessing *postProcessing)
     }
     return false;
 }
-    
+
 bool ClassLabelTimeoutFilter::process(const VectorDouble &inputVector){
     
-#ifdef GRT_SAFE_CHECKING
+    #ifdef GRT_SAFE_CHECKING
     if( !initialized ){
         errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << std::endl;
         return false;
@@ -108,23 +108,23 @@ bool ClassLabelTimeoutFilter::process(const VectorDouble &inputVector){
         errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
-#endif
+    #endif
     
     //Use only the first value (as that is the predicted class label)
     processedData[0] = filter( (UINT)inputVector[0] );
     return true;
 }
-    
+
 bool ClassLabelTimeoutFilter::reset(){
-    filteredClassLabel = 0;   
+    filteredClassLabel = 0;
     classLabelTimers.clear();
     processedData.clear();
     processedData.resize(1,0);
     return true;
 }
-    
-bool ClassLabelTimeoutFilter::init(unsigned long timeoutDuration,UINT filterMode){
 
+bool ClassLabelTimeoutFilter::init(unsigned long timeoutDuration,UINT filterMode){
+    
     initialized = false;
     
     if( filterMode != ALL_CLASS_LABELS && filterMode != INDEPENDENT_CLASS_LABELS ){
@@ -153,73 +153,73 @@ UINT ClassLabelTimeoutFilter::filter(UINT predictedClassLabel){
     
     switch( filterMode ){
         case ALL_CLASS_LABELS:
-            
-            //Have we seen any class label yet, if not then just start the timer and return the current class label
-            if( classLabelTimers.size() == 0 ){
-                filteredClassLabel = predictedClassLabel;
-                classLabelTimers.push_back( ClassLabelAndTimer(predictedClassLabel,timeoutDuration) );
-            }else{
-                //Otherwise check to see if the timer has timed-out
-                if( classLabelTimers[0].timerReached() ){
-                    //Clear the timer
-                    classLabelTimers.clear();
-                    
-                    //Check if the current predictedClassLabel is a valid gesture, if so then recursively call this function
-                    //to start a new filter
-                    filteredClassLabel = 0;
-                    if( predictedClassLabel ){
-                        filteredClassLabel = filter( predictedClassLabel );
-                    }
-                    
-                }else filteredClassLabel = 0;
-            }
-            
-            break;
-        case INDEPENDENT_CLASS_LABELS:
-            
-            //Search the classLabelTimers buffer to find a matching class label
-            if( classLabelTimers.size() > 0 ){
-                iter = classLabelTimers.begin();
+        
+        //Have we seen any class label yet, if not then just start the timer and return the current class label
+        if( classLabelTimers.size() == 0 ){
+            filteredClassLabel = predictedClassLabel;
+            classLabelTimers.push_back( ClassLabelAndTimer(predictedClassLabel,timeoutDuration) );
+        }else{
+            //Otherwise check to see if the timer has timed-out
+            if( classLabelTimers[0].timerReached() ){
+                //Clear the timer
+                classLabelTimers.clear();
                 
-                while( iter != classLabelTimers.end() ){
-                    if( iter->getClassLabel() == predictedClassLabel ){
-                        //Check to see if the timer for this class has elapsed
-                        if( iter->timerReached() ){
-                            //Reset the timer for this label
-                            iter->set(predictedClassLabel,timeoutDuration);
-                            
-                            //Signal that a match was found
-                            matchFound = true;
-                            filteredClassLabel = predictedClassLabel;
-                            break;
-                        }else filteredClassLabel = 0;
-                        
-                        //Update the iterator
-                        iter++;
-                    }else{
-                        if( iter->timerReached() ){
-                            //Erase the current timer from the buffer
-                            iter = classLabelTimers.erase( iter );
-                        }else iter++;
-                    }
+                //Check if the current predictedClassLabel is a valid gesture, if so then recursively call this function
+                //to start a new filter
+                filteredClassLabel = 0;
+                if( predictedClassLabel ){
+                    filteredClassLabel = filter( predictedClassLabel );
                 }
                 
+            }else filteredClassLabel = 0;
+        }
+        
+        break;
+        case INDEPENDENT_CLASS_LABELS:
+        
+        //Search the classLabelTimers buffer to find a matching class label
+        if( classLabelTimers.size() > 0 ){
+            iter = classLabelTimers.begin();
+            
+            while( iter != classLabelTimers.end() ){
+                if( iter->getClassLabel() == predictedClassLabel ){
+                    //Check to see if the timer for this class has elapsed
+                    if( iter->timerReached() ){
+                        //Reset the timer for this label
+                        iter->set(predictedClassLabel,timeoutDuration);
+                        
+                        //Signal that a match was found
+                        matchFound = true;
+                        filteredClassLabel = predictedClassLabel;
+                        break;
+                    }else filteredClassLabel = 0;
+                    
+                    //Update the iterator
+                    iter++;
+                }else{
+                    if( iter->timerReached() ){
+                        //Erase the current timer from the buffer
+                        iter = classLabelTimers.erase( iter );
+                    }else iter++;
+                }
             }
             
-            //If a match has not been found then create a new timer
-            if( !matchFound ){
-                classLabelTimers.push_back( ClassLabelAndTimer(predictedClassLabel,timeoutDuration) );
-                filteredClassLabel = predictedClassLabel;
-            }
-                        
-            break;
+        }
+        
+        //If a match has not been found then create a new timer
+        if( !matchFound ){
+            classLabelTimers.push_back( ClassLabelAndTimer(predictedClassLabel,timeoutDuration) );
+            filteredClassLabel = predictedClassLabel;
+        }
+        
+        break;
     }
     
-	return filteredClassLabel;
+    return filteredClassLabel;
 }
-    
-bool ClassLabelTimeoutFilter::isTimeoutActive(){
 
+bool ClassLabelTimeoutFilter::isTimeoutActive(){
+    
     for(UINT i=0; i<classLabelTimers.getSize(); i++){
         if( classLabelTimers[i].timerReached() ){
             return true;
@@ -228,31 +228,11 @@ bool ClassLabelTimeoutFilter::isTimeoutActive(){
     
     return false;
 }
-    
-bool ClassLabelTimeoutFilter::saveModelToFile( std::string filename ) const{
-    
-    if( !initialized ){
-        errorLog << "saveModelToFile(string filename) - The ClassLabelTimeoutFilter has not been initialized" << std::endl;
-        return false;
-    }
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        file.close();
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool ClassLabelTimeoutFilter::saveModelToFile( std::fstream &file ) const{
+bool ClassLabelTimeoutFilter::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -260,31 +240,15 @@ bool ClassLabelTimeoutFilter::saveModelToFile( std::fstream &file ) const{
     file << "NumInputDimensions: " << numInputDimensions << std::endl;
     file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
     file << "FilterMode: " << filterMode << std::endl;
-    file << "TimeoutDuration: " << timeoutDuration << std::endl;	
+    file << "TimeoutDuration: " << timeoutDuration << std::endl;
     
     return true;
 }
 
-bool ClassLabelTimeoutFilter::loadModelFromFile( std::string filename ){
-    
-    std::fstream file; 
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        file.close();
-        initialized = false;
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool ClassLabelTimeoutFilter::loadModelFromFile( std::fstream &file ){
+bool ClassLabelTimeoutFilter::load( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -294,44 +258,44 @@ bool ClassLabelTimeoutFilter::loadModelFromFile( std::fstream &file ){
     file >> word;
     
     if( word != "GRT_CLASS_LABEL_TIMEOUT_FILTER_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        return false;
     }
     
     file >> word;
     if( word != "NumInputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read NumInputDimensions header!" << std::endl;
+        return false;
     }
     file >> numInputDimensions;
     
     //Load the number of output dimensions
     file >> word;
     if( word != "NumOutputDimensions:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read NumOutputDimensions header!" << std::endl;
+        return false;
     }
     file >> numOutputDimensions;
     
     //Load the filterMode
     file >> word;
     if( word != "FilterMode:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FilterMode header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read FilterMode header!" << std::endl;
+        return false;
     }
     file >> filterMode;
     
     file >> word;
     if( word != "TimeoutDuration:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read TimeoutDuration header!" << std::endl;
-        return false;     
+        errorLog << "load(fstream &file) - Failed to read TimeoutDuration header!" << std::endl;
+        return false;
     }
     file >> timeoutDuration;
     
     //Init the classLabelTimeoutFilter module to ensure everything is initialized correctly
     return init(timeoutDuration,filterMode);
 }
-    
+
 bool ClassLabelTimeoutFilter::setTimeoutDuration(unsigned long timeoutDuration){
     this->timeoutDuration = timeoutDuration;
     if( initialized ){
