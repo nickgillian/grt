@@ -150,15 +150,16 @@ bool ContinuousHiddenMarkovModel::predict_( MatrixFloat &timeseries ){
     Float norm = 0;
     
     //Downsample the observation timeseries using the same downsample factor of the training data
-    const unsigned int timeseriesLength = (int)timeseries.getNumRows();
-    const unsigned int T = (int)floor( timeseriesLength / Float(downsampleFactor) );
+    const unsigned int timeseriesLength = (unsigned int)timeseries.getNumRows();
+    const unsigned int T = downsampleFactor < timeseriesLength ? (unsigned int)floor( timeseriesLength / Float(downsampleFactor) ) : timeseriesLength;
+    const unsigned int K = downsampleFactor < timeseriesLength ? downsampleFactor : 1; //K is used to average over multiple bins
     MatrixFloat obs(T,numInputDimensions);
     for(j=0; j<numInputDimensions; j++){
         index = 0;
         for(i=0; i<T; i++){
             norm = 0;
             obs[i][j] = 0;
-            for(k=0; k<downsampleFactor; k++){
+            for(k=0; k<K; k++){
                 if( index < timeseriesLength ){
                     obs[i][j] += timeseries[index++][j];
                     norm += 1;
