@@ -2,6 +2,11 @@
 
 This file contains some notes about significant changes to the GRT.
 
+# Version 0.2.1
+
+## 11th August 2016
+- **fixed HMM continuous bug:** caused if downsampleFactor > timeseriesLength
+
 # Version 0.2.0
 
 ## 7th August 2016
