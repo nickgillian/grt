@@ -41,10 +41,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-using namespace LIBSVM;
-
 #define SVM_MIN_SCALE_RANGE -1.0
 #define SVM_MAX_SCALE_RANGE 1.0
+
+typedef struct SVMModel{
+    unsigned int numInputDimensions;
+    unsigned int numClasses;
+    unsigned int totalSV;
+    Vector<unsigned int> classLabels;
+    Vector<unsigned int> numSVPerClass;
+    VectorFloat rho;
+    Vector< MatrixFloat > sv;
+    Vector< VectorFloat > svCoeff;
+
+} SVMModel;
 
 class GRT_API SVM : public Classifier{
 public:
@@ -125,21 +135,21 @@ public:
     
     /**
      This saves the trained SVM model to a file.
-     This overrides the saveModelToFile function in the Classifier base class.
+     This overrides the save function in the Classifier base class.
      
      @param file: a reference to the file the SVM model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads a trained SVM model from a file.
-     This overrides the loadModelFromFile function in the Classifier base class.
+     This overrides the load function in the Classifier base class.
      
      @param file: a reference to the file the SVM model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file );
+    virtual bool load( std::fstream &file );
     
     /**
      This initializes the SVM settings and parameters.  Any previous model, settings, or problems will be cleared.
@@ -248,7 +258,14 @@ public:
     */
     Float getCrossValidationResult() const;
     
-    struct svm_model *getModel() const { return model; }
+    /**
+     Returns a pointer to the svm_model, this will be NULL if the model has not been trained.
+     
+     @return returns a pointer to the svm_model.
+     */
+    struct LIBSVM::svm_model *getLIBSVMModel() const;
+
+    SVMModel getModel() const;
     
     /**
      Sets the SVM type.
@@ -335,6 +352,13 @@ public:
     return returns true if the useCrossValidation was set, false otherwise
     */
     bool enableCrossValidationTraining(const bool useCrossValidation);
+
+    /**
+    Gets a string that represents the class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -354,14 +378,14 @@ protected:
     bool predictSVM(VectorFloat &inputVector,Float &maxProbability, VectorFloat &probabilites);
     bool loadLegacyModelFromFile( std::fstream &file );
     
-    struct svm_model *deepCopyModel() const;
-    bool deepCopyProblem( const struct svm_problem &source_problem, struct svm_problem &target_problem, const unsigned int numInputDimensions ) const;
-    bool deepCopyParam( const svm_parameter &source_param, svm_parameter &target_param ) const;
+    struct LIBSVM::svm_model *deepCopyModel() const;
+    bool deepCopyProblem( const struct LIBSVM::svm_problem &source_problem, struct LIBSVM::svm_problem &target_problem, const unsigned int numInputDimensions ) const;
+    bool deepCopyParam( const LIBSVM::svm_parameter &source_param, LIBSVM::svm_parameter &target_param ) const;
     
     bool problemSet;
-    struct svm_model *model;
-    struct svm_parameter param;
-    struct svm_problem prob;
+    struct LIBSVM::svm_model *model;
+    struct LIBSVM::svm_parameter param;
+    struct LIBSVM::svm_problem prob;
     UINT kFoldValue;
     Float classificationThreshold;
     Float crossValidationResult;
@@ -369,6 +393,7 @@ protected:
     bool useCrossValidation;
     
     static RegisterClassifierModule< SVM > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

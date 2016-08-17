@@ -21,10 +21,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_DLL_EXPORTS
 #include "SVM.h"
 
+using namespace LIBSVM;
+
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string SVM::id = "DecisionTree";
+std::string SVM::getId() { return SVM::id; }
+
 //Register the SVM module with the Classifier base class
-RegisterClassifierModule< SVM > SVM::registerModule("SVM");
+RegisterClassifierModule< SVM > SVM::registerModule( SVM::getId() );
 
 SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue){
     
@@ -59,13 +65,13 @@ SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejec
     classificationThreshold = 0.5;
     crossValidationResult = 0;
     
-    classType = "SVM";
+    classType = getId();
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG SVM]");
-    errorLog.setProceedingText("[ERROR SVM]");
-    trainingLog.setProceedingText("[TRAINING SVM]");
-    warningLog.setProceedingText("[WARNING SVM]");
+    Classifier::debugLog.setProceedingText("[DEBUG " + getId() + "]");
+    Classifier::errorLog.setProceedingText("[ERROR " + getId() + "]");
+    Classifier::trainingLog.setProceedingText("[TRAINING " + getId() + "]");
+    Classifier::warningLog.setProceedingText("[WARNING " + getId() + "]");
     
     init(kernelType,svmType,useScaling,useNullRejection,useAutoGamma,gamma,degree,coef0,nu,C,useCrossValidation,kFoldValue);
 }
@@ -77,13 +83,13 @@ SVM::SVM(const SVM &rhs){
     prob.l = 0;
     prob.x = NULL;
     prob.y = NULL;
-    classType = "SVM";
+    classType = getId();
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG SVM]");
-    errorLog.setProceedingText("[ERROR SVM]");
-    trainingLog.setProceedingText("[TRAINING SVM]");
-    warningLog.setProceedingText("[WARNING SVM]");
+    Classifier::debugLog.setProceedingText("[DEBUG " + getId() + "]");
+    Classifier::errorLog.setProceedingText("[ERROR " + getId() + "]");
+    Classifier::trainingLog.setProceedingText("[TRAINING " + getId() + "]");
+    Classifier::warningLog.setProceedingText("[WARNING " + getId() + "]");
     *this = rhs;
 }
 
@@ -153,7 +159,7 @@ bool SVM::train_(ClassificationData &trainingData){
     
     //Convert the labelled classification data into the LIBSVM data format
     if( !convertClassificationDataToLIBSVMFormat(trainingData) ){
-        errorLog << "train_(ClassificationData &trainingData) - Failed To Convert Labelled Classification Data To LIBSVM Format!" << std::endl;
+        errorLog << "train_(ClassificationData &trainingData) - Failed To Convert Classification Data To LIBSVM Format!" << std::endl;
         return false;
     }
     
@@ -1054,6 +1060,68 @@ Float SVM::getC() const{
 
 Float SVM::getCrossValidationResult() const{ return crossValidationResult; }
 
+struct LIBSVM::svm_model* SVM::getLIBSVMModel() const { return model; }
+
+SVMModel SVM::getModel() const {
+    SVMModel m;
+    if( !model ){
+        m.numClasses = 0;
+        return m;
+    }
+
+    m.numInputDimensions = numInputDimensions;
+    m.numClasses = model->nr_class;
+    m.totalSV = model->l;
+    const unsigned int halfNumClasses = numClasses*(numClasses-1)/2;
+
+    m.classLabels.resize( m.numClasses );
+    m.numSVPerClass.resize( m.numClasses );
+    m.sv.resize( m.numClasses );
+    m.svCoeff.resize( m.numClasses );
+    m.rho.resize( halfNumClasses );
+
+    //Get the indexs for each class
+    Vector<int> start( m.numClasses );
+    start[0] = 0;
+    for(unsigned int k=1; k<m.numClasses; k++){
+        start[k] = start[k-1] + model->nSV[k-1];
+    }
+
+    for(unsigned int k=0; k<m.numClasses; k++){
+        m.classLabels[k] = (unsigned int)model->label[k];
+        m.numSVPerClass[k] = model->nSV[k];
+        m.svCoeff[k].resize( m.numSVPerClass[k] );
+        m.sv[k].resize( m.numSVPerClass[k], numInputDimensions );
+        m.sv[k].setAll( 0.0 );
+    }
+
+    //Copy the RHO
+    for(unsigned int i=0; i<halfNumClasses; i++) m.rho[i] = model->rho[i];
+
+    //Copy the class SV coeff
+    for(unsigned int k=0; k<m.numClasses; k++){
+        for(unsigned int i=0; i<m.numSVPerClass[k]; i++){
+            m.svCoeff[k][i] = 0.0;
+        }
+    }
+
+    //Copy the support vectors for each class
+    unsigned int svIndex = 0;
+    for(unsigned int k=0; k<m.numClasses; k++){
+        for(unsigned int i=0; i<m.numSVPerClass[k]; i++){
+            unsigned int idx = start[k]+i;
+            const svm_node *px = model->SV[svIndex++];
+            while( px->index != -1 )
+            {
+                m.sv[k][i][px->index] = px->value;
+                ++px;      
+            }
+        }
+    }
+
+    return m;
+}
+
 bool SVM::setSVMType(const SVMType svmType){
     if( validateSVMType(svmType) ){
         param.svm_type = (int)svmType;
@@ -1061,13 +1129,9 @@ bool SVM::setSVMType(const SVMType svmType){
     }
     return false;
 }
-<<<<<<< HEAD
-    
-bool SVM::setKernelType(const KernelType kernelType){
-=======
 
-bool SVM::setKernelType(const UINT kernelType){
->>>>>>> e1111dc347bc5895b448f85d3cc66aaa28d59bc5
+bool SVM::setKernelType(const KernelType kernelType){
+
     if( validateKernelType(kernelType) ){
         param.kernel_type = (int)kernelType;
         return true;
