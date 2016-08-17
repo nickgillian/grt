@@ -43,6 +43,7 @@ class DecisionTreeThresholdNode : public DecisionTreeNode{
 public:
     /**
      Default Constructor. Sets all the pointers to NULL.
+     @param trainingMode: sets the training algorithm used during the training of the node
      */
     DecisionTreeThresholdNode();
     

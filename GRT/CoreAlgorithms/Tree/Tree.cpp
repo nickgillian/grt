@@ -22,7 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-Tree::Tree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode)
+Tree::Tree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const TrainingMode trainingMode)
 {
     tree = NULL;
     this->numSplittingSteps = numSplittingSteps;
@@ -117,7 +117,7 @@ bool Tree::getRemoveFeaturesAtEachSpilt() const{
     return removeFeaturesAtEachSpilt;
 }
     
-bool Tree::setTrainingMode(const UINT trainingMode){
+bool Tree::setTrainingMode(const TrainingMode trainingMode){
     if( trainingMode >= BEST_ITERATIVE_SPILT && trainingMode < NUM_TRAINING_MODES ){
         this->trainingMode = trainingMode;
         return true;

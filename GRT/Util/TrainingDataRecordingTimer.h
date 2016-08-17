@@ -31,7 +31,7 @@
 
 #include "GRTCommon.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class TrainingDataRecordingTimer{
 public:
@@ -87,6 +87,6 @@ public:
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TRAINING_DATA_RECORDING_TIMER_HEADER

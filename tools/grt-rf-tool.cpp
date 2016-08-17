@@ -32,6 +32,7 @@ bool printUsage(){
     infoLog << "\t--remove-features: sets if features should be removed at each split [1=true,0=false], only used for 'train-model'\n";
     infoLog << "\t--bootstrap-weight: sets the size of the dataset used to train each tree in the RF model, only used for 'train-model'\n";
     infoLog << "\t--combine-weights: 1/0 if true, then the random forest weights will be combined across all trees in the forest, only used for 'compute-weights' mode\n";
+    infoLog << "\t--node: sets the node algorithm used in the DecisionTree. Options: cluster-node (default), threshold-node\n";
     infoLog << endl;
     return true;
 }
@@ -68,6 +69,7 @@ int main(int argc, char * argv[])
     parser.addOption( "--remove-features", "remove-features" );
     parser.addOption( "--bootstrap-weight", "bootstrap-weight" );
     parser.addOption( "--combine-weights", "combine-weights" );
+    parser.addOption( "--node", "node" );
 
     //Parse the command line
     parser.parse( argc, argv );
@@ -125,7 +127,7 @@ bool train( CommandLineParser &parser ){
 
     string trainDatasetFilename = "";
     string modelFilename = "";
-    string defaultFilename = "rf-model.grt";
+    string nodeType = "";
     unsigned int numThreads = 0;
     unsigned int forestSize = 0;
     unsigned int maxDepth = 0;
@@ -147,7 +149,7 @@ bool train( CommandLineParser &parser ){
     }
 
     //Get the model filename
-    parser.get("model-filename",modelFilename,defaultFilename);
+    parser.get("model-filename",modelFilename,std::string("rf-model.grt"));
 
     //Get the forest size
     parser.get("forest-size",forestSize,defaultForestSize);
@@ -165,7 +167,10 @@ bool train( CommandLineParser &parser ){
     parser.get("remove-features",removeFeatures,defaultRemoveFeatures);
    
     //Get the bootstrap weight 
-    parser.get("bootstrap-weight",bootstrapWeight,0.5);
+    parser.get("bootstrap-weight",bootstrapWeight,0.8);
+
+    //Get the node type
+    parser.get("node",nodeType,std::string("cluster-node"));
 
     //Load some training data to train the classifier
     ClassificationData trainingData;
@@ -190,7 +195,13 @@ bool train( CommandLineParser &parser ){
     RandomForests forest;
 
     //Set the decision tree node that will be used for each tree in the forest
-    forest.setDecisionTreeNode( DecisionTreeClusterNode() );
+    if( nodeType == "cluster-node" ){
+        forest.setDecisionTreeNode( DecisionTreeClusterNode() );
+    }
+    if( nodeType == "threshold-node" ){
+        forest.setTrainingMode( Tree::BEST_RANDOM_SPLIT );
+        forest.setDecisionTreeNode( DecisionTreeThresholdNode() );
+    }
 
     //Set the number of trees in the forest
     forest.setForestSize( forestSize );

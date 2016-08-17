@@ -25,7 +25,7 @@
 #include "ErrorLog.h"
 #include "WarningLog.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 class TimeStamp{
 public:
@@ -599,5 +599,6 @@ public:
     
 };
 
-} //End of namespace GRT
+GRT_END_NAMESPACE
+
 #endif //GRT_TIMESTAMP_HEADER

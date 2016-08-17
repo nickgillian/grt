@@ -17,12 +17,13 @@ bool printUsage(){
     infoLog << "\t-f: sets the name of the file the test dataset should be loaded from \n";
     infoLog << "\t-m: sets the name of the file the test model should be loaded from\n";
     infoLog << "\t-r: sets the name of the file the results will be saved to\n";
+    infoLog << "\t--all: outputs the prediction for each test sample to the results file\n";
     infoLog << endl;
     return true;
 }
 
 bool test( CommandLineParser &parser );
-bool saveResults( const GestureRecognitionPipeline &pipeline, const string &filename );
+bool saveResults( const GestureRecognitionPipeline &pipeline, const string &filename, const bool exportTimeseries );
 
 int main(int argc, char * argv[])
 {
@@ -43,6 +44,7 @@ int main(int argc, char * argv[])
     parser.addOption( "-f", "dataset-filename" );
     parser.addOption( "-m", "model-filename" );
     parser.addOption( "-r", "results-filename" );
+    parser.addOption( "--export-timeseries", "export-timeseries" );
 
     //Parse the command line
     parser.parse( argc, argv );
@@ -65,6 +67,7 @@ bool test( CommandLineParser &parser ){
     string datasetFilename = "";
     string modelFilename = "";
     string resultsFilename = "";
+    bool exportTimeseries = false;
 
     //Get the model filename
     if( !parser.get("model-filename",modelFilename) ){
@@ -82,6 +85,9 @@ bool test( CommandLineParser &parser ){
 
     //Get the model filename
     parser.get("results-filename",resultsFilename,string("results.txt"));
+
+    //Get the export all parameter
+    parser.get("export-timeseries",exportTimeseries,false);
 
     //Load the pipeline from a file
     GestureRecognitionPipeline pipeline;
@@ -118,12 +124,13 @@ bool test( CommandLineParser &parser ){
 
     infoLog << "- Test complete in " << pipeline.getTestTime()/1000.0 << " seconds with and accuracy of: " << pipeline.getTestAccuracy() << endl;
 
-    return saveResults( pipeline, resultsFilename );
+    return saveResults( pipeline, resultsFilename, exportTimeseries );
 }
 
-bool saveResults( const GestureRecognitionPipeline &pipeline, const string &filename ){
+bool saveResults( const GestureRecognitionPipeline &pipeline, const string &filename, const bool exportTimeseries ){
     
     infoLog << "Saving results to file: " << filename << endl;
+    infoLog << "Exporting timeseries: " << exportTimeseries << endl;
 
     fstream file( filename.c_str(), fstream::out );
 
@@ -160,6 +167,32 @@ bool saveResults( const GestureRecognitionPipeline &pipeline, const string &file
             file << confusionMatrix[i][j];
             if( j+1 < confusionMatrix.getNumCols() ) file << "\t";
         }file << endl;
+    }
+
+    if( exportTimeseries ){
+        Vector< TestInstanceResult > testInstanceResults = pipeline.getTestInstanceResults();
+        VectorFloat classLikelihoods;
+        for(UINT i=0; i<testInstanceResults.getSize(); i++){
+            const TestInstanceResult &result = testInstanceResults[i];
+            switch( result.getTestMode() ){
+                case TestInstanceResult::CLASSIFICATION_MODE:
+                {
+                    file << result.getClassLabel() << "\t";
+                    file << result.getPredictedClassLabel() << "\t";
+                    file << result.getMaximumLikelihood() << "\t";
+                    classLikelihoods = result.getClassLikelihoods();
+                    for(UINT k=0; k<classLikelihoods.getSize(); k++){
+                        file << classLikelihoods[k];
+                        if( k+1 < classLikelihoods.getSize() ) file << "\t";
+                    }
+                    file << endl;
+                }
+                break;
+                case TestInstanceResult::REGRESSION_MODE:
+                    //Todo
+                break;
+            }
+        }
     }
 
     file.close();

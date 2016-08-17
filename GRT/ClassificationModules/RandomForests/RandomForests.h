@@ -59,7 +59,7 @@ public:
                   const UINT numRandomSplits=100,
                   const UINT minNumSamplesPerNode=5,
                   const UINT maxDepth=10,
-                  const UINT trainingMode = DecisionTree::BEST_RANDOM_SPLIT,
+                  const Tree::TrainingMode trainingMode = Tree::BEST_RANDOM_SPLIT,
                   const bool removeFeaturesAtEachSpilt = true,
                   const bool useScaling=false,
                   const Float bootstrappedDatasetWeight = 0.8);
@@ -310,7 +310,7 @@ public:
      @param trainingMode: the new trainingMode, this should be one of the DecisionTree::TrainingModes enums
      @return returns true if the trainingMode was set successfully, false otherwise
      */
-    bool setTrainingMode(const UINT trainingMode);
+    bool setTrainingMode(const Tree::TrainingMode trainingMode);
     
     /**
      Sets the decision tree node, this will be used as the starting node the next time the RandomForest model is trained.
@@ -338,7 +338,7 @@ protected:
     UINT numRandomSplits;
     UINT minNumSamplesPerNode;
     UINT maxDepth;
-    UINT trainingMode;
+    Tree::TrainingMode trainingMode;
     bool removeFeaturesAtEachSpilt;
     Float bootstrappedDatasetWeight;
     DecisionTreeNode* decisionTreeNode;

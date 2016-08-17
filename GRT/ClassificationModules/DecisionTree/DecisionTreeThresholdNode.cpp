@@ -225,48 +225,50 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &num
     Random random;
     Vector< UINT > groupIndex(M);
     VectorFloat groupCounter(2,0);
-    Vector< MinMax > ranges = trainingData.getRanges();
     
     MatrixFloat classProbabilities(K,2);
-    
+
     //Loop over each feature and try and find the best split point
-    for(UINT n=0; n<N; n++){
+    UINT m,n;
+    const UINT numFeatures = features.getSize();
+    for(m=0; m<numSplittingSteps; m++){
+        //Chose a random feature
+        n = random.getRandomNumberInt(0,numFeatures);
         featureIndex = features[n];
-        for(UINT m=0; m<numSplittingSteps; m++){
-            //Randomly choose the threshold
-            threshold = random.getRandomNumberUniform(ranges[n].minValue,ranges[n].maxValue);
-            
-            //Iterate over each sample and work out if it should be in the lhs (0) or rhs (1) group
-            groupCounter[0] = groupCounter[1] = 0;
-            classProbabilities.setAllValues(0);
-            for(UINT i=0; i<M; i++){
-                groupIndex[i] = trainingData[ i ][ featureIndex ] >= threshold ? 1 : 0;
-                groupCounter[ groupIndex[i] ]++;
-                classProbabilities[ getClassLabelIndexValue(trainingData[i].getClassLabel(),classLabels) ][ groupIndex[i] ]++;
-            }
-            
-            //Compute the class probabilities for the lhs group and rhs group
-            for(UINT k=0; k<K; k++){
-                classProbabilities[k][0] = groupCounter[0]>0 ? classProbabilities[k][0]/groupCounter[0] : 0;
-                classProbabilities[k][1] = groupCounter[1]>0 ? classProbabilities[k][1]/groupCounter[1] : 0;
-            }
-            
-            //Compute the Gini index for the lhs and rhs groups
-            giniIndexL = giniIndexR = 0;
-            for(UINT k=0; k<K; k++){
-                giniIndexL += classProbabilities[k][0] * (1.0-classProbabilities[k][0]);
-                giniIndexR += classProbabilities[k][1] * (1.0-classProbabilities[k][1]);
-            }
-            weightL = groupCounter[0]/M;
-            weightR = groupCounter[1]/M;
-            error = (giniIndexL*weightL) + (giniIndexR*weightR);
-            
-            //Store the best threshold and feature index
-            if( error < minError ){
-                minError = error;
-                bestThreshold = threshold;
-                bestFeatureIndex = featureIndex;
-            }
+        
+        //Randomly choose the threshold, the threshold is based on a randomly selected sample with some random scaling
+        threshold = trainingData[ random.getRandomNumberInt(0,M) ][ featureIndex ] * random.getRandomNumberUniform(0.8,1.2);
+        
+        //Iterate over each sample and work out if it should be in the lhs (0) or rhs (1) group
+        groupCounter[0] = groupCounter[1] = 0;
+        classProbabilities.setAllValues(0);
+        for(UINT i=0; i<M; i++){
+            groupIndex[i] = trainingData[ i ][ featureIndex ] >= threshold ? 1 : 0;
+            groupCounter[ groupIndex[i] ]++;
+            classProbabilities[ getClassLabelIndexValue(trainingData[i].getClassLabel(),classLabels) ][ groupIndex[i] ]++;
+        }
+        
+        //Compute the class probabilities for the lhs group and rhs group
+        for(UINT k=0; k<K; k++){
+            classProbabilities[k][0] = groupCounter[0]>0 ? classProbabilities[k][0]/groupCounter[0] : 0;
+            classProbabilities[k][1] = groupCounter[1]>0 ? classProbabilities[k][1]/groupCounter[1] : 0;
+        }
+        
+        //Compute the Gini index for the lhs and rhs groups
+        giniIndexL = giniIndexR = 0;
+        for(UINT k=0; k<K; k++){
+            giniIndexL += classProbabilities[k][0] * (1.0-classProbabilities[k][0]);
+            giniIndexR += classProbabilities[k][1] * (1.0-classProbabilities[k][1]);
+        }
+        weightL = groupCounter[0]/M;
+        weightR = groupCounter[1]/M;
+        error = (giniIndexL*weightL) + (giniIndexR*weightR);
+        
+        //Store the best threshold and feature index
+        if( error < minError ){
+            minError = error;
+            bestThreshold = threshold;
+            bestFeatureIndex = featureIndex;
         }
     }
     

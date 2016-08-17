@@ -2607,9 +2607,9 @@ bool GestureRecognitionPipeline::loadPipelineFromFile(const std::string &filenam
 bool GestureRecognitionPipeline::preProcessData(VectorFloat inputVector,bool computeFeatures){
     
     if( getIsPreProcessingSet() ){
-        for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
+        for(UINT moduleIndex=0; moduleIndex<preProcessingModules.getSize(); moduleIndex++){
             
-            if( inputVector.size() != preProcessingModules[ moduleIndex ]->getNumInputDimensions() ){
+            if( inputVector.getSize() != preProcessingModules[ moduleIndex ]->getNumInputDimensions() ){
                 errorLog << "preProcessData(VectorFloat inputVector) - The size of the input Vector (" << preProcessingModules[ moduleIndex ]->getNumInputDimensions() << ") does not match that of the PreProcessing Module at moduleIndex: " << moduleIndex << std::endl;
                 return false;
             }
@@ -2624,8 +2624,8 @@ bool GestureRecognitionPipeline::preProcessData(VectorFloat inputVector,bool com
     
     //Perform any feature extraction
     if( getIsFeatureExtractionSet() && computeFeatures ){
-        for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
-            if( inputVector.size() != featureExtractionModules[ moduleIndex ]->getNumInputDimensions() ){
+        for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.getSize(); moduleIndex++){
+            if( inputVector.getSize() != featureExtractionModules[ moduleIndex ]->getNumInputDimensions() ){
                 errorLog << "FeatureExtraction(VectorFloat inputVector) - The size of the input Vector (" << featureExtractionModules[ moduleIndex ]->getNumInputDimensions() << ") does not match that of the FeatureExtraction Module at moduleIndex: " << moduleIndex << std::endl;
                 return false;
             }
@@ -2651,11 +2651,11 @@ bool GestureRecognitionPipeline::getTrained() const{
 }
     
 bool GestureRecognitionPipeline::getIsPreProcessingSet() const{ 
-    return preProcessingModules.size() > 0; 
+    return preProcessingModules.getSize() > 0; 
 } 
     
 bool GestureRecognitionPipeline::getIsFeatureExtractionSet() const{ 
-    return featureExtractionModules.size() > 0; 
+    return featureExtractionModules.getSize() > 0; 
 }
     
 bool GestureRecognitionPipeline::getIsClassifierSet() const{ 
@@ -2676,7 +2676,7 @@ bool GestureRecognitionPipeline::getIsPostProcessingSet() const{
     
 bool GestureRecognitionPipeline::getIsContextSet() const{ 
     for(UINT i=0; i<NUM_CONTEXT_LEVELS; i++){
-        if( contextModules[i].size() > 0 ) return true;
+        if( contextModules[i].getSize() > 0 ) return true;
     }
     return false;
 }
@@ -2816,9 +2816,9 @@ Float GestureRecognitionPipeline::getTestSSError() const{
 Float GestureRecognitionPipeline::getTestFMeasure(const UINT classLabel) const{
     
     if( !getIsClassifierSet() ) return -1;
-    if( getClassLabels().size() != testFMeasure.size() ) return -1;
+    if( getClassLabels().size() != testFMeasure.getSize() ) return -1;
     
-    for(UINT i=0; i<testFMeasure.size(); i++){
+    for(UINT i=0; i<testFMeasure.getSize(); i++){
         if( getClassLabels()[i] == classLabel ){
             return testFMeasure[i];
         }
@@ -2829,9 +2829,9 @@ Float GestureRecognitionPipeline::getTestFMeasure(const UINT classLabel) const{
 Float GestureRecognitionPipeline::getTestPrecision(const UINT classLabel) const{
     
     if( !getIsClassifierSet() ) return -1;
-    if( getClassLabels().size() != testPrecision.size() ) return -1;
+    if( getClassLabels().size() != testPrecision.getSize() ) return -1;
     
-    for(UINT i=0; i<testPrecision.size(); i++){
+    for(UINT i=0; i<testPrecision.getSize(); i++){
         if( getClassLabels()[i] == classLabel ){
             return testPrecision[i];
         }
@@ -2940,14 +2940,14 @@ VectorFloat GestureRecognitionPipeline::getUnProcessedRegressionData() const{
     
 VectorFloat GestureRecognitionPipeline::getPreProcessedData() const{
     if( getIsPreProcessingSet() ){ 
-        return preProcessingModules[ preProcessingModules.size()-1 ]->getProcessedData(); 
+        return preProcessingModules[ preProcessingModules.getSize()-1 ]->getProcessedData(); 
     }
     return VectorFloat();
 }
 
 VectorFloat GestureRecognitionPipeline::getPreProcessedData(const UINT moduleIndex) const{
     if( getIsPreProcessingSet() ){ 
-        if( moduleIndex < preProcessingModules.size() ){
+        if( moduleIndex < preProcessingModules.getSize() ){
             return preProcessingModules[ moduleIndex ]->getProcessedData(); 
         }
     }
@@ -2956,14 +2956,14 @@ VectorFloat GestureRecognitionPipeline::getPreProcessedData(const UINT moduleInd
 
 VectorFloat GestureRecognitionPipeline::getFeatureExtractionData() const{
     if( getIsFeatureExtractionSet() ){ 
-        return featureExtractionModules[ featureExtractionModules.size()-1 ]->getFeatureVector(); 
+        return featureExtractionModules[ featureExtractionModules.getSize()-1 ]->getFeatureVector(); 
     }
     return VectorFloat();
 }
     
 VectorFloat GestureRecognitionPipeline::getFeatureExtractionData(const UINT moduleIndex) const{
     if( getIsFeatureExtractionSet() ){ 
-        if( moduleIndex < featureExtractionModules.size() ){
+        if( moduleIndex < featureExtractionModules.getSize() ){
             return featureExtractionModules[ moduleIndex ]->getFeatureVector(); 
         }
     }
@@ -2991,7 +2991,7 @@ Vector< TestResult > GestureRecognitionPipeline::getCrossValidationResults() con
 }
     
 PreProcessing* GestureRecognitionPipeline::getPreProcessingModule(const UINT moduleIndex) const{
-    if( moduleIndex < preProcessingModules.size() ){
+    if( moduleIndex < preProcessingModules.getSize() ){
         return preProcessingModules[ moduleIndex ];
     }
     warningLog << "getPreProcessingModule(const UINT moduleIndex) - Failed to get pre processing module!" << std::endl;
@@ -2999,7 +2999,7 @@ PreProcessing* GestureRecognitionPipeline::getPreProcessingModule(const UINT mod
 }
     
 FeatureExtraction* GestureRecognitionPipeline::getFeatureExtractionModule(const UINT moduleIndex) const{
-    if( moduleIndex < featureExtractionModules.size() ){
+    if( moduleIndex < featureExtractionModules.getSize() ){
         return featureExtractionModules[ moduleIndex ];
     }
     warningLog << "getFeatureExtractionModule(const UINT moduleIndex) - Failed to get feature extraction module!" << std::endl;
@@ -3019,7 +3019,7 @@ Clusterer* GestureRecognitionPipeline::getClusterer() const{
 }
     
 PostProcessing* GestureRecognitionPipeline::getPostProcessingModule(UINT moduleIndex) const{
-    if( moduleIndex < postProcessingModules.size() ){
+    if( moduleIndex < postProcessingModules.getSize() ){
         return postProcessingModules[ moduleIndex ];
     }
     warningLog << "getPostProcessingModule(UINT moduleIndex) - Failed to get post processing module!" << std::endl;
@@ -3027,8 +3027,8 @@ PostProcessing* GestureRecognitionPipeline::getPostProcessingModule(UINT moduleI
 }
     
 Context* GestureRecognitionPipeline::getContextModule(UINT contextLevel,UINT moduleIndex) const{
-    if( contextLevel < contextModules.size() ){
-        if( moduleIndex < contextModules[ contextLevel ].size() ){
+    if( contextLevel < contextModules.getSize() ){
+        if( moduleIndex < contextModules[ contextLevel ].getSize() ){
             return contextModules[ contextLevel ][ moduleIndex ];
         }
     }
@@ -3043,7 +3043,7 @@ Context* GestureRecognitionPipeline::getContextModule(UINT contextLevel,UINT mod
 bool GestureRecognitionPipeline::addPreProcessingModule(const PreProcessing &preProcessingModule,UINT insertIndex){
     
     //Validate the insertIndex is valid
-    if( insertIndex != INSERT_AT_END_INDEX && insertIndex >= preProcessingModules.size() ){
+    if( insertIndex != INSERT_AT_END_INDEX && insertIndex >= preProcessingModules.getSize() ){
         errorLog << "addPreProcessingModule(const PreProcessing &preProcessingModule) - Invalid insertIndex value!" << std::endl;
         return false;
     }
@@ -3081,7 +3081,7 @@ bool GestureRecognitionPipeline::setPreProcessingModule(const PreProcessing &pre
 bool GestureRecognitionPipeline::addFeatureExtractionModule(const FeatureExtraction &featureExtractionModule,UINT insertIndex){
     
     //Validate the insertIndex is valid
-    if( insertIndex != INSERT_AT_END_INDEX && insertIndex >= featureExtractionModules.size() ){
+    if( insertIndex != INSERT_AT_END_INDEX && insertIndex >= featureExtractionModules.getSize() ){
         errorLog << "addFeatureExtractionModule(const FeatureExtraction &featureExtractionModule) - Invalid insertIndex value!" << std::endl;
         return false;
     }
@@ -3224,7 +3224,7 @@ bool GestureRecognitionPipeline::setClusterer(const Clusterer &clusterer){
 bool GestureRecognitionPipeline::addPostProcessingModule(const PostProcessing &postProcessingModule,UINT insertIndex){
     
     //Validate the insertIndex is valid
-    if( insertIndex != INSERT_AT_END_INDEX && insertIndex >= postProcessingModules.size() ){
+    if( insertIndex != INSERT_AT_END_INDEX && insertIndex >= postProcessingModules.getSize() ){
         errorLog << "addPostProcessingModule((const PostProcessing &postProcessingModule) - Invalid insertIndex value!" << std::endl;
         return false;
     }
@@ -3261,13 +3261,13 @@ bool GestureRecognitionPipeline::setPostProcessingModule(const PostProcessing &p
 bool GestureRecognitionPipeline::addContextModule(const Context &contextModule,UINT contextLevel,UINT insertIndex){
 	
 	//Validate the contextLevel is valid
-    if( contextLevel >= contextModules.size() ){
+    if( contextLevel >= contextModules.getSize() ){
         errorLog << "addContextModule(...) - Invalid contextLevel value!" << std::endl;
         return false;
     }
 
 	//Validate the insertIndex is valid
-    if( insertIndex != INSERT_AT_END_INDEX && insertIndex >= contextModules[contextLevel].size() ){
+    if( insertIndex != INSERT_AT_END_INDEX && insertIndex >= contextModules[contextLevel].getSize() ){
         errorLog << "addContextModule(...) - Invalid insertIndex value!" << std::endl;
         return false;
     }
@@ -3297,13 +3297,13 @@ bool GestureRecognitionPipeline::addContextModule(const Context &contextModule,U
 bool GestureRecognitionPipeline::updateContextModule(bool value,UINT contextLevel,UINT moduleIndex){
     
     //Validate the contextLevel is valid
-    if( contextLevel >= contextModules.size() ){
+    if( contextLevel >= contextModules.getSize() ){
         errorLog << "updateContextModule(...) - Context Level is out of bounds!" << std::endl;
         return false;
     }
     
     //Validate the moduleIndex is valid
-    if( moduleIndex >= contextModules[contextLevel].size() ){
+    if( moduleIndex >= contextModules[contextLevel].getSize() ){
         errorLog << "updateContextModule(...) - Invalid contextLevel value!"  << std::endl;
         return false;
     }
@@ -3317,7 +3317,7 @@ bool GestureRecognitionPipeline::removeAllPreProcessingModules(){
 }
     
 bool GestureRecognitionPipeline::removePreProcessingModule(UINT moduleIndex){
-    if( moduleIndex >= preProcessingModules.size() ){
+    if( moduleIndex >= preProcessingModules.getSize() ){
         errorLog << "removePreProcessingModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the preProcessingModules Vector is " << int(preProcessingModules.size()) << std::endl;
         return false;
     }
@@ -3339,7 +3339,7 @@ bool GestureRecognitionPipeline::removeAllFeatureExtractionModules(){
 }
         
 bool GestureRecognitionPipeline::removeFeatureExtractionModule(UINT moduleIndex){
-    if( moduleIndex >= featureExtractionModules.size() ){
+    if( moduleIndex >= featureExtractionModules.getSize() ){
         errorLog << "removeFeatureExtractionModule(UINT moduleIndex) - Invalid moduleIndex " << moduleIndex << ". The size of the featureExtractionModules Vector is " << int(featureExtractionModules.size()) << std::endl;
         return false;
     }
@@ -3429,8 +3429,8 @@ bool GestureRecognitionPipeline::setInfo(const std::string &info){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
     
 void GestureRecognitionPipeline::deleteAllPreProcessingModules(){
-    if( preProcessingModules.size() != 0 ){
-        for(UINT i=0; i<preProcessingModules.size(); i++){
+    if( preProcessingModules.getSize() != 0 ){
+        for(UINT i=0; i<preProcessingModules.getSize(); i++){
             delete preProcessingModules[i];
             preProcessingModules[i] = NULL;
         }
@@ -3440,8 +3440,8 @@ void GestureRecognitionPipeline::deleteAllPreProcessingModules(){
 }
     
 void GestureRecognitionPipeline::deleteAllFeatureExtractionModules(){
-    if( featureExtractionModules.size() != 0 ){
-        for(UINT i=0; i<featureExtractionModules.size(); i++){
+    if( featureExtractionModules.getSize() != 0 ){
+        for(UINT i=0; i<featureExtractionModules.getSize(); i++){
             delete featureExtractionModules[i];
             featureExtractionModules[i] = NULL;
         }
@@ -3479,7 +3479,7 @@ void GestureRecognitionPipeline::deleteClusterer(){
     
 void GestureRecognitionPipeline::deleteAllPostProcessingModules(){
     if( postProcessingModules.size() != 0 ){
-        for(UINT i=0; i<postProcessingModules.size(); i++){
+        for(UINT i=0; i<postProcessingModules.getSize(); i++){
             delete postProcessingModules[i];
             postProcessingModules[i] = NULL;
         }
@@ -3489,8 +3489,8 @@ void GestureRecognitionPipeline::deleteAllPostProcessingModules(){
 }
     
 void GestureRecognitionPipeline::deleteAllContextModules(){
-    for(UINT i=0; i<contextModules.size(); i++){
-        for(UINT j=0; j<contextModules[i].size(); j++){
+    for(UINT i=0; i<contextModules.getSize(); i++){
+        for(UINT j=0; j<contextModules[i].getSize(); j++){
             delete contextModules[i][j];
             contextModules[i][j] = NULL;
         }
@@ -3531,7 +3531,8 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
     //Find the index of the classLabel
     UINT predictedClassLabelIndex =0;
     bool predictedClassLabelIndexFound = false;
-    for(UINT k=0; k<getNumClassesInModel(); k++){
+    const UINT K = getNumClassesInModel();
+    for(UINT k=0; k<K; k++){
         if( predictedClassLabel == classifier->getClassLabels()[k] ){
             predictedClassLabelIndex = k;
             predictedClassLabelIndexFound = true;
@@ -3546,7 +3547,7 @@ bool GestureRecognitionPipeline::updateTestMetrics(const UINT classLabel,const U
 
     //Find the index of the class label
     UINT actualClassLabelIndex = 0;
-    for(UINT k=0; k<getNumClassesInModel(); k++){
+    for(UINT k=0; k<K; k++){
         if( classLabel == classifier->getClassLabels()[k] ){
              actualClassLabelIndex = k;
              break;
@@ -3643,8 +3644,7 @@ bool GestureRecognitionPipeline::computeTestMetrics(VectorFloat &precisionCounte
     if( rejectionPrecisionCounter > 0 ) testRejectionPrecision /= rejectionPrecisionCounter;
     if( rejectionRecallCounter > 0 ) testRejectionRecall /= rejectionRecallCounter;
     
-    
-    for(UINT r=0; r<confusionMatrixCounter.size(); r++){
+    for(UINT r=0; r<confusionMatrixCounter.getSize(); r++){
         if( confusionMatrixCounter[r] > 0 ){
             for(UINT c=0; c<testConfusionMatrix.getNumCols(); c++){
                 testConfusionMatrix[r][c] /= confusionMatrixCounter[r];

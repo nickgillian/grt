@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "Log.h"
 #include "ObserverManager.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
     
 class TrainingLogMessage{
 public:
@@ -86,6 +86,6 @@ protected:
     static ObserverManager< TrainingLogMessage > observerManager;
 };
 
-}; //End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TRAINING_LOG_HEADER

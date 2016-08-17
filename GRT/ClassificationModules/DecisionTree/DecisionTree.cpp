@@ -189,7 +189,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         features[i] = i;
     }
 
-    numTrainingIterationsToConverge = 20;
+    numTrainingIterationsToConverge = 1;
     Classifier::trainingLog << "numTrainingIterationsToConverge " << numTrainingIterationsToConverge << " useValidationSet: " << useValidationSet << std::endl;
 
     if( useValidationSet ){

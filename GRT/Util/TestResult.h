@@ -12,7 +12,7 @@
 #include "../DataStructures/VectorFloat.h"
 #include "../DataStructures/MatrixFloat.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 class TestResult{
 public:
@@ -77,6 +77,6 @@ public:
 
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TEST_RESULT_HEADER

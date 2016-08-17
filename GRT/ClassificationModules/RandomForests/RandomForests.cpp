@@ -25,7 +25,7 @@ GRT_BEGIN_NAMESPACE
 //Register the RandomForests module with the Classifier base class
 RegisterClassifierModule< RandomForests >  RandomForests::registerModule("RandomForests");
 
-RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const UINT trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight)
+RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight)
 {
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->forestSize = forestSize;
@@ -507,7 +507,9 @@ bool RandomForests::loadModelFromFile( std::fstream &file ){
         errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    UINT trainingModeTmp;
+    file >> trainingModeTmp;
+    trainingMode = (Tree::TrainingMode)trainingModeTmp;
     
     file >> word;
     if(word != "ForestBuilt:"){
@@ -751,14 +753,14 @@ bool RandomForests::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEach
     return true;
 }
     
-bool RandomForests::setTrainingMode(const UINT trainingMode){
+bool RandomForests::setTrainingMode(const Tree::TrainingMode trainingMode){
     
     if( trainingMode == DecisionTree::BEST_ITERATIVE_SPILT || trainingMode == DecisionTree::BEST_RANDOM_SPLIT ){
         this->trainingMode = trainingMode;
         return true;
     }
     
-    warningLog << "setTrainingMode(const UINT mode) - Unknown training mode!" << std::endl;
+    warningLog << "setTrainingMode(const Tree::TrainingMode mode) - Unknown training mode!" << std::endl;
     return false;
 }
     

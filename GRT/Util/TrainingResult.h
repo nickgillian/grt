@@ -9,7 +9,7 @@
 #ifndef GRT_TRAINING_RESULT_HEADER
 #define GRT_TRAINING_RESULT_HEADER
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
     
 //Forward declartion of MLBase class
 class MLBase;
@@ -173,6 +173,6 @@ public:
 
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TRAINING_RESULT_HEADER

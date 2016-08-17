@@ -38,6 +38,8 @@ GRT_BEGIN_NAMESPACE
 class Tree : public GRTBase
 {
 public:
+    enum TrainingMode{BEST_ITERATIVE_SPILT=0,BEST_RANDOM_SPLIT,NUM_TRAINING_MODES};
+
     /**
      Default Constructor
 
@@ -47,7 +49,7 @@ public:
      @param removeFeaturesAtEachSpilt: sets if a feature is removed at each spilt so it can not be used again. Default value = false
      @param trainingMode: sets the training mode, this should be one of the TrainingMode enums. Default value = BEST_ITERATIVE_SPILT
      */
-	Tree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT);
+	Tree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const TrainingMode trainingMode = BEST_ITERATIVE_SPILT);
     
     /**
      Default Destructor
@@ -143,10 +145,10 @@ public:
     /**
      Sets the training mode, this should be one of the TrainingModes enums.
      
-     @param const UINT trainingMode: the new trainingMode, this should be one of the TrainingModes enums
+     @param trainingMode: the new trainingMode, this should be one of the TrainingModes enums
      @return returns true if the trainingMode was set successfully, false otherwise
      */
-    bool setTrainingMode(const UINT trainingMode);
+    bool setTrainingMode(const TrainingMode trainingMode);
     
     /**
      Sets the number of steps that will be used to search for the best spliting value for each node.
@@ -199,9 +201,6 @@ protected:
     UINT maxDepth;
     bool removeFeaturesAtEachSpilt;
     Node *tree;
-    
-public:
-    enum TrainingMode{BEST_ITERATIVE_SPILT=0,BEST_RANDOM_SPLIT,NUM_TRAINING_MODES};
     
 };
 

@@ -80,17 +80,12 @@ endif() #end of else(APPLE)
 
 #Set the main directory locations
 set(GRT_SRC_DIR ${PROJECT_SOURCE_DIR}/../GRT)
-
 set(GRT_UNIT_TEST_DIR ${PROJECT_SOURCE_DIR}/../tests)
-
 set(GTEST_DIR ${PROJECT_SOURCE_DIR}/../third_party/gtest)
 set(GTEST_INCLUDE_DIR ${GTEST_DIR}/googletest/include)
 set(GTEST_LIB_DIR ${PROJECT_SOURCE_DIR}/gtest/googlemock)
-
 set(GRT_EXAMPLES_DIR ${PROJECT_SOURCE_DIR}/../examples)
-
 set(GRT_EXAMPLES_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/examples)
-
 set(GRT_TOOLS_DIR ${PROJECT_SOURCE_DIR}/../tools)
 
 #Add all the project files

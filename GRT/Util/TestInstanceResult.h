@@ -31,7 +31,7 @@
 
 #include "GRTTypedefs.h"
 
-namespace GRT {
+GRT_BEGIN_NAMESPACE
 
 class TestInstanceResult{
 public:
@@ -141,7 +141,7 @@ public:
     }
 
     /**
-     Gets the class label.
+     Gets the class label. This is only useful in CLASSIFICATION_MODE.
 
      @return returns the class label
      */
@@ -150,7 +150,7 @@ public:
     }
 
     /**
-     Gets the predicted class label.
+     Gets the predicted class label. This is only useful in CLASSIFICATION_MODE.
 
      @return returns the predicted class label
      */
@@ -159,7 +159,7 @@ public:
     }
 
     /**
-     Gets the maximum likelihood.
+     Gets the maximum likelihood. This is only useful in CLASSIFICATION_MODE.
 
      @return returns the maximum likelihood
      */
@@ -187,6 +187,24 @@ public:
         return sum;
     }
 
+    /**
+     Gets the class likelihoods vector. This is only useful in CLASSIFICATION_MODE.
+     
+     @return returns the class likelihoods vector
+     */
+    VectorFloat getClassLikelihoods() const {
+        return classLikelihoods;
+    }
+
+    /**
+     Gets the class distances vector. This is only useful in CLASSIFICATION_MODE.
+     
+     @return returns the class distances vector
+     */
+    VectorFloat getDistances() const {
+        return classDistances;
+    }
+
 protected:
 	unsigned int testMode;
 	unsigned int testIteration;
@@ -204,6 +222,6 @@ public:
 
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE
 
 #endif //GRT_TEST_INSTANCE_RESULT_HEADER
