@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class RegressionSample{
+class GRT_API RegressionSample{
 public:
 	RegressionSample();
 	RegressionSample(const VectorFloat &inputVector,const VectorFloat &targetVector);

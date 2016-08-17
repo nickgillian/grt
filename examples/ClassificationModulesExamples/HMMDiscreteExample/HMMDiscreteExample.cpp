@@ -54,7 +54,7 @@ int main(int argc, const char * argv[]){
     }
     
     //Remove 20% of the training data to use as test data
-    TimeSeriesClassificationData testData = trainingData.partition( 80 );
+    TimeSeriesClassificationData testData = trainingData.split( 80 );
     
     //The input to the HMM must be a quantized discrete value
     //We therefore use a KMeansQuantizer to covert the N-dimensional continuous data into 1-dimensional discrete data

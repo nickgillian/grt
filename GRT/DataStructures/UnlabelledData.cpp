@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#define GRT_DLL_EXPORTS
 #include "UnlabelledData.h"
 
 GRT_BEGIN_NAMESPACE
@@ -412,6 +413,10 @@ bool UnlabelledData::loadDatasetFromCSVFile(const std::string &filename){
 }
 
 UnlabelledData UnlabelledData::partition(const UINT trainingSizePercentage){
+    return split( trainingSizePercentage );
+}
+
+UnlabelledData UnlabelledData::split(const UINT trainingSizePercentage){
 
     //Partitions the dataset into a training dataset (which is kept by this instance of the UnlabelledData) and
 	//a testing/validation dataset (which is return as a new instance of the UnlabelledData).  The trainingSizePercentage

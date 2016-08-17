@@ -1,19 +1,28 @@
 language: cpp
+os:
+  - linux
+  - osx
 compiler:
  - gcc
  - clang
+ - g++
 before_install:
- - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
- - sudo apt-get -qq update
- - sudo apt-get -qq install g++-4.8
- - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq libstdc++-4.8-dev; fi
- - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq install g++-4.8 ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install cmake ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" = "g++" ]]; then sudo apt-get install -qq libstdc++-4.8-dev; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" = "g++" ]]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 before_script:
  - cd build
  - mkdir build
  - cd build
  - cmake ..
-script: make
+script:
+- make -j2
+- make test
 branches:
   only:
     - master

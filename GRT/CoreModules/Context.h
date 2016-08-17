@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class Context : public MLBase
+class GRT_API Context : public MLBase
 {
 public:
 	Context(void){ 

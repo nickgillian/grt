@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class DecisionStump : public WeakClassifier{
+class GRT_API DecisionStump : public WeakClassifier{
 public:
     /**
      Default Constructor.

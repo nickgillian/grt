@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#define GRT_DLL_EXPORTS
 #include "ClusterTree.h"
 
 GRT_BEGIN_NAMESPACE
@@ -251,7 +252,7 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
 
 	if( tree != NULL ){
     	file << "Tree:\n";
-    	if( !tree->saveToFile( file ) ){
+    	if( !tree->save( file ) ){
         	Clusterer::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << std::endl;
         	return false;
     	}
@@ -351,7 +352,7 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
     	}
     
     	tree->setParent( NULL );
-    	if( !tree->loadFromFile( file ) ){
+    	if( !tree->load( file ) ){
             clear();
             Clusterer::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;

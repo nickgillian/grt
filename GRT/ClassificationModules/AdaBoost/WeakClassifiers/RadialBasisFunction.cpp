@@ -25,6 +25,7 @@
  @section DESCRIPTION
  */
 
+#define GRT_DLL_EXPORTS
 #include "RadialBasisFunction.h"
 
 GRT_BEGIN_NAMESPACE

@@ -21,6 +21,7 @@
 
  */
 
+#define GRT_DLL_EXPORTS
 #include "LUDecomposition.h"
 
 GRT_BEGIN_NAMESPACE

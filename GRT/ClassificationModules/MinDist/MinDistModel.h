@@ -34,7 +34,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class MinDistModel
+class GRT_API MinDistModel
 {
 public:
     

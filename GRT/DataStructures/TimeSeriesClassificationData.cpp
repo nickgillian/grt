@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#define GRT_DLL_EXPORTS
 #include "TimeSeriesClassificationData.h"
 
 GRT_BEGIN_NAMESPACE
@@ -697,8 +698,12 @@ std::string TimeSeriesClassificationData::getStatsAsString() const{
     
     return stats;
 }
-    
+
 TimeSeriesClassificationData TimeSeriesClassificationData::partition(const UINT trainingSizePercentage,const bool useStratifiedSampling){
+    return split( trainingSizePercentage, useStratifiedSampling );
+}
+
+TimeSeriesClassificationData TimeSeriesClassificationData::split(const UINT trainingSizePercentage,const bool useStratifiedSampling){
 
     //Partitions the dataset into a training dataset (which is kept by this instance of the TimeSeriesClassificationData) and
     //a testing/validation dataset (which is return as a new instance of the TimeSeriesClassificationData).  The trainingSizePercentage

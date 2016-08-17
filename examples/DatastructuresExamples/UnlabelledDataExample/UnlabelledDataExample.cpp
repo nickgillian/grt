@@ -95,9 +95,9 @@ int main (int argc, const char * argv[])
         cout << "Dimension: " << j << " Min: " << ranges[j].minValue << " Max: " << ranges[j].maxValue << endl;
     }
     
-    //If you want to partition the dataset into a training dataset and a test dataset then you can use the partition function
+    //If you want to partition the dataset into a training dataset and a test dataset then you can use the split function
     //A value of 80 means that 80% of the original data will remain in the training dataset and 20% will be returned as the test dataset
-    UnlabelledData testData = trainingData.partition( 80 );
+    UnlabelledData testData = trainingData.split( 80 );
     
     //If you have multiple datasets that you want to merge together then use the merge function
     if( !trainingData.merge( testData ) ){

@@ -36,7 +36,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class LDAClassModel{
+class GRT_API LDAClassModel{
 public:
     LDAClassModel(){
         classLabel = 0;
@@ -55,7 +55,7 @@ public:
     
 };
     
-class LDA : public Classifier
+class GRT_API LDA : public Classifier
 {
 public:
     /**

@@ -49,7 +49,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
     
-class ThreadPool {
+class GRT_API ThreadPool {
 public:
     
     /**

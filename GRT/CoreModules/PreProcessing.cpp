@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#define GRT_DLL_EXPORTS
 #include "PreProcessing.h"
 
 GRT_BEGIN_NAMESPACE
@@ -102,35 +103,6 @@ bool PreProcessing::init(){
     
     //Flag the module has been initialized
     initialized = true;
-    
-    return true;
-}
-
-bool PreProcessing::saveModelToFile( std::string filename ) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool PreProcessing::loadModelFromFile( std::string filename ){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
     
     return true;
 }

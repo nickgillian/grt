@@ -56,7 +56,7 @@ int main(int argc, const char * argv[]){
     }
     
     //Remove 20% of the training data to use as test data
-    TimeSeriesClassificationData testData = trainingData.partition( 80 );
+    TimeSeriesClassificationData testData = trainingData.split( 80 );
     
     //Create a new HMM instance
     HMM hmm;

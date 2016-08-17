@@ -49,7 +49,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class GRTBase
+class GRT_API GRTBase
 {
 public:
     /**

@@ -5,7 +5,8 @@ project(GRT C CXX)
 # GRT library
 set(GRT_LIB_NAME grt)
 
-#set the main options
+#set the main options, you can control these dynamically via the command line by passing in the option -D OPTION_NAME=ON
+#e.g., cmake .. -DBUILD_TESTS=ON
 option(BUILD_TESTS “build-unit-tests” ON)
 option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
@@ -27,6 +28,11 @@ endif()
 #If C++11 is enabled, then define the relevant flag
 if( ENABLE_CXX11_SUPPORT MATCHES ON)
     add_definitions(-DGRT_CXX11_ENABLED)
+endif()
+
+#If static lib is enabled, then define the relevant flag
+if( BUILD_STATIC_LIB MATCHES ON )
+	add_definitions(-DGRT_STATIC_LIB)
 endif()
 
 #Add any custom OS definitions
@@ -80,8 +86,9 @@ endif() #end of else(APPLE)
 
 #Set the main directory locations
 set(GRT_SRC_DIR ${PROJECT_SOURCE_DIR}/../GRT)
+set(GRT_THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/../third_party)
 set(GRT_UNIT_TEST_DIR ${PROJECT_SOURCE_DIR}/../tests)
-set(GTEST_DIR ${PROJECT_SOURCE_DIR}/../third_party/gtest)
+set(GTEST_DIR ${GRT_THIRD_PARTY_DIR}/gtest)
 set(GTEST_INCLUDE_DIR ${GTEST_DIR}/googletest/include)
 set(GTEST_LIB_DIR ${PROJECT_SOURCE_DIR}/gtest/googlemock)
 set(GRT_EXAMPLES_DIR ${PROJECT_SOURCE_DIR}/../examples)
@@ -89,34 +96,12 @@ set(GRT_EXAMPLES_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/examples)
 set(GRT_TOOLS_DIR ${PROJECT_SOURCE_DIR}/../tools)
 
 #Add all the project files
-file(GLOB GRT_CLASSIFICATION_MODULES
-    "${GRT_SRC_DIR}/ClassificationModules/AdaBoost/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/AdaBoost/WeakClassifiers/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/ANBC/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/BAG/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/CNN/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/DecisionTree/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/DTW/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/FiniteStateMachine/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/GMM/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/KNN/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/LDA/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/ParticleClassifier/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/RandomForests/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/Softmax/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/SVM/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/SVM/LIBSVM/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/HMM/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/MinDist/*.cpp"
-    "${GRT_SRC_DIR}/ClassificationModules/SwipeDetector/*.cpp"
+file(GLOB_RECURSE GRT_CLASSIFICATION_MODULES
+    "${GRT_SRC_DIR}/ClassificationModules/*.cpp"
 )
 
-file(GLOB GRT_CLUSTERING_MODULES
-    "${GRT_SRC_DIR}/ClusteringModules/ClusterTree/*.cpp"
-    "${GRT_SRC_DIR}/ClusteringModules/GaussianMixtureModels/*.cpp"
-    "${GRT_SRC_DIR}/ClusteringModules/KMeans/*.cpp"
-    "${GRT_SRC_DIR}/ClusteringModules/HierarchicalClustering/*.cpp"
-    "${GRT_SRC_DIR}/ClusteringModules/SelfOrganizingMap/*.cpp"
+file(GLOB_RECURSE GRT_CLUSTERING_MODULES
+    "${GRT_SRC_DIR}/ClusteringModules/*.cpp"
 )
 
 file(GLOB GRT_CONTEXT_MODULES
@@ -127,24 +112,12 @@ file(GLOB GRT_DATA_STRUCTURES
     "${GRT_SRC_DIR}/DataStructures/*.cpp"
 )
 
-file(GLOB GRT_FEATURE_EXTRACTION_MODULES
-    "${GRT_SRC_DIR}/FeatureExtractionModules/FFT/*.cpp"
-    "${GRT_SRC_DIR}/FeatureExtractionModules/KMeansFeatures/*.cpp"
-    "${GRT_SRC_DIR}/FeatureExtractionModules/KMeansQuantizer/*.cpp"
-    "${GRT_SRC_DIR}/FeatureExtractionModules/MovementIndex/*.cpp"
-    "${GRT_SRC_DIR}/FeatureExtractionModules/MovementTrajectoryFeatures/*.cpp"
-    "${GRT_SRC_DIR}/FeatureExtractionModules/RBMQuantizer/*.cpp"
-    "${GRT_SRC_DIR}/FeatureExtractionModules/SOMQuantizer/*.cpp"
-    "${GRT_SRC_DIR}/FeatureExtractionModules/TimeDomainFeatures/*.cpp"
-    "${GRT_SRC_DIR}/FeatureExtractionModules/TimeseriesBuffer/*.cpp"
-    "${GRT_SRC_DIR}/FeatureExtractionModules/ZeroCrossingCounter/*.cpp"
+file(GLOB_RECURSE GRT_FEATURE_EXTRACTION_MODULES
+    "${GRT_SRC_DIR}/FeatureExtractionModules/*.cpp"
 )
 
-file(GLOB GRT_CORE_ALGORITHMS
-    "${GRT_SRC_DIR}/CoreAlgorithms/BernoulliRBM/*.cpp"
-    "${GRT_SRC_DIR}/CoreAlgorithms/MovementDetector/*.cpp"
-    "${GRT_SRC_DIR}/CoreAlgorithms/PrincipalComponentAnalysis/*.cpp"
-    "${GRT_SRC_DIR}/CoreAlgorithms/Tree/*.cpp"
+file(GLOB_RECURSE GRT_CORE_ALGORITHMS
+    "${GRT_SRC_DIR}/CoreAlgorithms/*.cpp"
 )
 
 file(GLOB GRT_PIPELINE
@@ -159,12 +132,8 @@ file(GLOB GRT_PRE_PROCESSING_MODULES
     "${GRT_SRC_DIR}/PreProcessingModules/*.cpp"
 )
 
-file(GLOB GRT_REGRESSION_MODULES
-    "${GRT_SRC_DIR}/RegressionModules/ArtificialNeuralNetworks/MLP/*.cpp"
-    "${GRT_SRC_DIR}/RegressionModules/LinearRegression/*.cpp"
-    "${GRT_SRC_DIR}/RegressionModules/LogisticRegression/*.cpp"
-    "${GRT_SRC_DIR}/RegressionModules/MultidimensionalRegression/*.cpp"
-    "${GRT_SRC_DIR}/RegressionModules/RegressionTree/*.cpp"
+file(GLOB_RECURSE GRT_REGRESSION_MODULES
+    "${GRT_SRC_DIR}/RegressionModules/*.cpp"
 )
 
 file(GLOB GRT_UTIL
@@ -240,7 +209,7 @@ if( BUILD_TESTS )
     )
 
     add_subdirectory(
-        "${PROJECT_SOURCE_DIR}/../third_party/gtest"
+        "${GTEST_DIR}"
         "${PROJECT_BINARY_DIR}/third_party/gtest"
         EXCLUDE_FROM_ALL
     )
@@ -259,6 +228,9 @@ if( BUILD_TESTS )
 
         #Include the main GRT include directory
         include_directories( "${GRT_SRC_DIR}" )
+
+        #Include the gtest parent directory
+        include_directories( "${GRT_THIRD_PARTY_DIR}/gtest/googletest/include" )
 
         #Link against the main GRT library 
         target_link_libraries(${unit_test_name} ${GRT_LIB_NAME} gtest)

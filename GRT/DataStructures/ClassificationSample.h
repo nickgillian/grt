@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class ClassificationSample{
+class GRT_API ClassificationSample{
 public:
 	ClassificationSample();
 	ClassificationSample(const UINT numDimensions);

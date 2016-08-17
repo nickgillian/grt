@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#define GRT_DLL_EXPORTS
 #include "ClassificationData.h"
 
 GRT_BEGIN_NAMESPACE
@@ -132,8 +133,13 @@ bool ClassificationData::setAllowNullGestureClass(const bool allowNullGestureCla
 bool ClassificationData::addSample(const UINT classLabel,const VectorFloat &sample){
     
 	if( sample.getSize() != numDimensions ){
-        errorLog << "addSample(const UINT classLabel, VectorFloat &sample) - the size of the new sample (" << sample.getSize() << ") does not match the number of dimensions of the dataset (" << numDimensions << ")" << std::endl;
-        return false;
+        if( totalNumSamples == 0 ){
+            warningLog << "addSample(const UINT classLabel, VectorFloat &sample) - the size of the new sample (" << sample.getSize() << ") does not match the number of dimensions of the dataset (" << numDimensions << "), setting dimensionality to: " << numDimensions << std::endl;
+            numDimensions = sample.getSize();
+        }else{
+            errorLog << "addSample(const UINT classLabel, VectorFloat &sample) - the size of the new sample (" << sample.getSize() << ") does not match the number of dimensions of the dataset (" << numDimensions << ")" << std::endl;
+            return false;
+        }
     }
 
     //The class label must be greater than zero (as zero is used for the null rejection class label
@@ -699,6 +705,10 @@ bool ClassificationData::sortClassLabels(){
 }
 
 ClassificationData ClassificationData::partition(const UINT trainingSizePercentage,const bool useStratifiedSampling){
+    return split(trainingSizePercentage, useStratifiedSampling);
+}
+
+ClassificationData ClassificationData::split(const UINT trainingSizePercentage,const bool useStratifiedSampling){
 
     //Partitions the dataset into a training dataset (which is kept by this instance of the ClassificationData) and
 	//a testing/validation dataset (which is return as a new instance of the ClassificationData).  The trainingSizePercentage
@@ -834,7 +844,7 @@ bool ClassificationData::spiltDataIntoKFolds(const UINT K,const bool useStratifi
     crossValidationIndexs.clear();
 
     //K can not be zero
-    if( K > totalNumSamples ){
+    if( K == 0 ){
         errorLog << "spiltDataIntoKFolds(const UINT K,const bool useStratifiedSampling) - K can not be zero!" << std::endl;
         return false;
     }

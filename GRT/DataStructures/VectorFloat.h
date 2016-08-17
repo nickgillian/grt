@@ -35,14 +35,14 @@ public:
     /**
      Default Constructor
      */
-    VectorFloat();
+    GRT_API VectorFloat();
     
     /**
      Constructor, sets the size of the vector
      
      @param size: sets the size of the vector
      */
-    VectorFloat( const size_type size );
+    GRT_API VectorFloat( const size_type size );
 
     /**
      Constructor, sets the size of the vector and sets all elements to value
@@ -50,19 +50,19 @@ public:
      @param size: sets the size of the vector
      @param value: the value that will be written to all elements in the vector
      */
-    VectorFloat( const size_type size, const Float &value );
+    GRT_API VectorFloat( const size_type size, const Float &value );
     
     /**
      Copy Constructor, copies the values from the rhs VectorFloat to this VectorFloat instance
      
      @param rhs: the VectorFloat from which the values will be copied
      */
-    VectorFloat(const VectorFloat &rhs);
+    GRT_API VectorFloat(const VectorFloat &rhs);
     
     /**
      Destructor, cleans up any memory
      */
-    virtual ~VectorFloat();
+    GRT_API virtual ~VectorFloat();
     
     /**
      Defines how the data from the rhs VectorFloat should be copied to this VectorFloat
@@ -70,7 +70,7 @@ public:
      @param rhs: another instance of a VectorFloat
      @return returns a reference to this instance of the VectorFloat
      */
-    VectorFloat& operator=(const VectorFloat &rhs);
+    GRT_API VectorFloat& operator=(const VectorFloat &rhs);
     
     /**
      Defines how the data from the rhs Vector< Float > should be copied to this VectorFloat
@@ -78,7 +78,7 @@ public:
      @param rhs: an instance of a Vector< Float >
      @return returns a reference to this instance of the VectorFloat
      */
-    VectorFloat& operator=(const Vector< Float > &rhs);
+    GRT_API VectorFloat& operator=(const Vector< Float > &rhs);
     
     /**
      Defines how the data from the rhs vector of VectorFloats should be copied to this VectorFloat
@@ -86,7 +86,7 @@ public:
      @param rhs: a vector of VectorFloats
      @return returns a reference to this instance of the VectorFloat
      */
-    VectorFloat& operator=(const vector< VectorFloat > &rhs);
+    GRT_API VectorFloat& operator=(const vector< VectorFloat > &rhs);
     
     /**
      Saves the vector to a CSV file.  This replaces the deprecated saveToCSVFile function.
@@ -94,7 +94,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was saved successful
      */
-    bool save(const std::string &filename) const;
+    GRT_API bool save(const std::string &filename) const;
     
     /**
      Loads a vector from a CSV file. This assumes that the data has been saved as rows and columns in the CSV file
@@ -105,7 +105,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was loaded successful
      */
-    bool load(const std::string &filename,const char seperator = ',');
+    GRT_API bool load(const std::string &filename,const char seperator = ',');
     
     /**
      Prints the VectorFloat contents to std::cout
@@ -113,7 +113,7 @@ public:
      @param title: sets the title of the data that will be printed to std::cout
      @return returns true or false, indicating if the print was successful
      */
-    bool print(const std::string title="") const;
+    GRT_API bool print(const std::string title="") const;
     
     /**
      Scales the vector to a new range given by the min and max targets, this uses the minimum and maximum values in the 
@@ -121,39 +121,39 @@ public:
      
      @return returns true if the vector was scaled, false otherwise
      */
-    bool scale(const Float minTarget,const Float maxTarget,const bool constrain = true);
+    GRT_API bool scale(const Float minTarget,const Float maxTarget,const bool constrain = true);
     
     /**
      Scales the vector to a new range given by the min and max targets using the ranges as the source ranges.
      
      @return returns true if the vector was scaled, false otherwise
      */
-    bool scale(const Float minSource,const Float maxSource,const Float minTarget,const Float maxTarget,const bool constrain = true);
+    GRT_API bool scale(const Float minSource,const Float maxSource,const Float minTarget,const Float maxTarget,const bool constrain = true);
 
     /**
      @return returns the minimum value in the vector
      */
-    Float getMinValue() const;
+    GRT_API Float getMinValue() const;
 
     /**
      @return returns the maximum value in the vector
      */
-    Float getMaxValue() const;
+    GRT_API Float getMaxValue() const;
     
     /**
      @return returns the mean of the vector
      */
-    Float getMean() const;
+    GRT_API Float getMean() const;
     
     /**
      @return returns the standard deviation of the vector
      */
-    Float getStdDev() const;
+    GRT_API Float getStdDev() const;
     
     /**
      @return returns the minimum and maximum values in the vector
      */
-    MinMax getMinMax() const;
+    GRT_API MinMax getMinMax() const;
     
 protected:
   

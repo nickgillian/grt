@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class Neuron{
+class GRT_API Neuron{
 public:
     Neuron();
     ~Neuron();

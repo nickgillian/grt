@@ -1,3 +1,4 @@
+#define GRT_DLL_EXPORTS
 #include "ThreadPool.h"
 #include <iostream>
 

@@ -99,9 +99,9 @@ int main (int argc, const char * argv[])
     cout << "NumSamples: " << trainingData.getNumSamples() << endl;
     cout << "Info: " << trainingData.getInfoText() << endl;
     
-    //Partition the dataset into a training dataset and a test dataset
+    //Split the dataset into a training dataset and a test dataset
     //This will keep 80% of the data in the training dataset and return 20% of the data as the test dataset
-    RegressionData testData = trainingData.partition( 80 );
+    RegressionData testData = trainingData.split( 80 );
     
     //Datasets can also be merged together, this will add all the data in the test dataset to the training dataset
     trainingData.merge( testData );

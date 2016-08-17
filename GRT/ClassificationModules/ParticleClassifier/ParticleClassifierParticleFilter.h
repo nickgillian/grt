@@ -1,22 +1,22 @@
 /*
- GRT MIT License
- Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- and associated documentation files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
- subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all copies or substantial
- portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
- LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+GRT MIT License
+Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #ifndef GRT_PARTICLE_CLASSIFIER_PARTICLE_FILTER_HEADER
 #define GRT_PARTICLE_CLASSIFIER_PARTICLE_FILTER_HEADER
@@ -24,9 +24,9 @@
 #include "../../CoreAlgorithms/ParticleFilter/ParticleFilter.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
 class ParticleClassifierGestureTemplate{
-public:
+    public:
     ParticleClassifierGestureTemplate(){
         classLabel = 0;
     }
@@ -52,7 +52,7 @@ public:
     }
     
     virtual ~ParticleClassifierParticleFilter(){
-    
+        
     }
     
     virtual bool preFilterUpdate( VectorFloat &data ){
@@ -82,16 +82,16 @@ public:
         //Given the prior set of particles, randomly generate new state estimations using the process model
         const Float phase = p.x[1];
         const Float velocity = p.x[2];
-            
+        
         //Update the phase
         p.x[1] = Util::limit( phase + rand.getRandomNumberGauss(0.0,processNoise[1]) , 0, 1);
-            
+        
         //Update the velocity
         p.x[2] += phase-p.x[1];
-            
+        
         //Limit the velocity
         p.x[2] = Util::limit( p.x[2], -processNoise[2], processNoise[2] );
-    
+        
         return true;
     }
     
@@ -198,13 +198,13 @@ public:
     
     /*
     virtual bool checkForResample(){
-        if( ++resampleCounter >= 100 ){
-            resampleCounter = 0;
-            return true;
-        }
-        return false;
+    if( ++resampleCounter >= 100 ){
+    resampleCounter = 0;
+    return true;
     }
-     */
+    return false;
+    }
+    */
     
     unsigned int numInputDimensions;
     unsigned int numTemplates;
@@ -213,7 +213,8 @@ public:
     Vector< ParticleClassifierGestureTemplate > gestureTemplates;
     
 };
-    
+
 GRT_END_NAMESPACE
 
 #endif //GRT_PARTICLE_CLASSIFIER_PARTICLE_FILTER_HEADER
+    

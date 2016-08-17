@@ -39,7 +39,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class Cholesky{
+class GRT_API Cholesky{
 public:
 	Cholesky();
 	Cholesky(MatrixFloat &a);

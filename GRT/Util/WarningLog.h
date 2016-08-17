@@ -26,7 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
     
-class WarningLogMessage{
+class GRT_API WarningLogMessage{
 public:
     WarningLogMessage(std::string proceedingText = "",std::string message = ""){
         this->proceedingText = proceedingText;
@@ -48,7 +48,7 @@ public:
     std::string message;
 };
 
-class WarningLog : public GRT::Log{
+class GRT_API WarningLog : public GRT::Log{
 public:
     WarningLog(std::string proceedingText =""){
         setProceedingText(proceedingText);

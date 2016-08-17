@@ -115,7 +115,7 @@ public:
     */
     Vector& operator=(const std::vector< T > &rhs){
         if(this!=&rhs){
-            unsigned int N = rhs.getSize();
+            unsigned int N = rhs.size();
             if( N > 0 ){
                 this->resize( N );
                 std::copy( rhs.begin(), rhs.end(), this->begin() );
@@ -178,9 +178,7 @@ public:
 
 		if( N == 0 ) return false;
 
-        T *data = &(*this)[0];
-        for(unsigned int i=0; i<N; i++)
-            data[i] = value;
+        std::fill(this->begin(),this->end(),value);
 
         return true;
 	}

@@ -88,7 +88,7 @@ int main (int argc, const char * argv[])
     }
     
     //Use 50% of the training dataset to create a test dataset
-    ClassificationData testData = trainingData.partition( 50 );
+    ClassificationData testData = trainingData.split( 50 );
     
     //Train the classifier
     if( !bag.train( trainingData ) ){

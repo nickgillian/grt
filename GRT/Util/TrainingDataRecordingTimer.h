@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class TrainingDataRecordingTimer{
+class GRT_API TrainingDataRecordingTimer{
 public:
 
 	/**

@@ -15,6 +15,7 @@
  *
  */
 
+#define GRT_DLL_EXPORTS
 #include "EigenvalueDecomposition.h"
 
 GRT_BEGIN_NAMESPACE

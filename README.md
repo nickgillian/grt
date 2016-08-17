@@ -8,8 +8,10 @@ Build Status:
 * Dev branch: 
   * ![Dev Build Status](https://travis-ci.org/nickgillian/grt.svg?branch=dev)
 
+Current version: [0.2.0](http://nickgillian.com/grt/api/0.2.0/)
+
 Key things to know about the GRT:
-* The toolkit consists of two parts: a comprehensive [C++ API](http://nickgillian.com/grt/api/0.1.0) and a front-end [graphical user interface (GUI)](http://www.nickgillian.com/wiki/pmwiki.php/GRT/GUI). You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded [here](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
+* The toolkit consists of two parts: a comprehensive [C++ API](http://nickgillian.com/grt/api/0.2.0) and a front-end [graphical user interface (GUI)](http://www.nickgillian.com/wiki/pmwiki.php/GRT/GUI). You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded [here](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * Both the C++ API and GUI are designed to work with real-time sensor data, but they can also be used for more conventional offline machine-learning tasks 
 * The input to the GRT can be any *N*-dimensional floating-point vector - this means you can use the GRT with Cameras, Kinect, Leap Motion, accelerometers, or any other custom sensor you might have built
 * The toolkit defines a generic [Float](#grt-floating-point-precision) type, this defaults to double precision float, but can easily be changed to single precision via the main GRT Typedefs header
@@ -26,9 +28,10 @@ Key things to know about the GRT:
 * Functions with an underscore, such as **train_( ... )**, pass the input arguments as references and are therefore more efficient to use with very large datasets
 
 ##Core Resources
+* GRT Website: [http://www.nickgillian.com/grt](http://www.nickgillian.com/grt)
 * GRT Wiki: [http://www.nickgillian.com/wiki](http://www.nickgillian.com/wiki)
 * GRT Forum: [http://www.nickgillian.com/forum](http://www.nickgillian.com/forum)
-* GRT API Reference: [http://www.nickgillian.com/archive/wiki/grt/doxygen/index.html](http://www.nickgillian.com/archive/wiki/grt/doxygen/index.html)
+* GRT API Reference: [http://nickgillian.com/grt/api/0.2.0/](http://nickgillian.com/grt/api/0.2.0/)
 * GRT Source Code: [https://github.com/nickgillian/grt](https://github.com/nickgillian/grt)
 * GRT GUI Download: [http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * GRT Journal of Machine Learning Research paper: [grt.pdf](http://jmlr.csail.mit.edu/papers/volume15/gillian14a/gillian14a.pdf)
@@ -55,16 +58,24 @@ The toolkit's source code is structured as following:
 
 ##Getting Started Example
 This example demonstrates a few key components of the GRT, such as:
-* how to generate and save a basic labeled dataset
-* how to save/load this data to/from a CSV file
-* how to split a dataset into a training and test partition
+* how to load a dataset from a file (e.g., a CSV file)
+* how to split a dataset into a training and test dataset
 * how to setup a new Gesture Recognition Pipeline and add a classification algorithm to the pipeline
 * how to use a training dataset to train a new classification model
 * how to save/load a trained pipeline to/from a file
-* how to use a test dataset to test the accuracy of a classification model
-* how to print the test results
+* how to use a automatically test dataset to test the accuracy of a classification model
+* how to use a manually test dataset to test the accuracy of a classification model
+* how to print detailed test results, such as precision, recall, and the confusion matrix
 
 You can find this source code and a large number of other examples and tutorials in the GRT examples folder.
+
+You should run this example with one argument, pointing to the file you want to load, for example:
+
+```
+ ./example my_data.csv
+```
+
+You can find several example CSV files and other datasets in the main GRT data directory.
 
 ```C++
 //Include the main GRT header
@@ -98,7 +109,7 @@ int main (int argc, const char * argv[])
     //Partition the training data into a training dataset and a test dataset. 80 means that 80%
     //of the data will be used for the training data and 20% will be returned as the test dataset
     cout << "Splitting data into training/test split..." << endl;
-    ClassificationData testData = trainingData.partition( 80 );
+    ClassificationData testData = trainingData.split( 80 );
 
     //Create a new Gesture Recognition Pipeline
     GestureRecognitionPipeline pipeline;
@@ -133,7 +144,17 @@ int main (int argc, const char * argv[])
     }
 
     //Print some stats about the testing
-    cout << "Test Accuracy: " << pipeline.getTestAccuracy() << endl;
+    cout << "Pipeline Test Accuracy: " << pipeline.getTestAccuracy() << endl;
+
+    //Manually project the test dataset through the pipeline
+    for(UINT i=0; i<testData.getNumSamples(); i++){
+        pipeline.predict( testData[i].getSample() );
+
+        if( testData[i].getClassLabel() == pipeline.getPredictedClassLabel() ){
+            testAccuracy++;
+        }
+    }
+    cout << "Manual test accuracy: " << testAccuracy / testData.getNumSamples() * 100.0 << endl;
    
     //Get the vector of class labels from the pipeline
     Vector< UINT > classLabels = pipeline.getClassLabels();

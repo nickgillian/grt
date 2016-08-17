@@ -55,7 +55,7 @@ int main (int argc, const char * argv[])
 	}
     
 	//Use 20% of the training dataset to create a test dataset
-	TimeSeriesClassificationData testData = trainingData.partition( 80 );
+	TimeSeriesClassificationData testData = trainingData.split( 80 );
 
 	//Trim the training data for any sections of non-movement at the start or end of the recordings
 	dtw.enableTrimTrainingData(true,0.1,90);

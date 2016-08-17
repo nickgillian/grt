@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#define GRT_DLL_EXPORTS
 #include "Regressifier.h"
 
 GRT_BEGIN_NAMESPACE
@@ -132,7 +133,6 @@ const Regressifier& Regressifier::getBaseRegressifier() const{
     return *this;
 }
     
-    
 bool Regressifier::saveBaseSettingsToFile( std::fstream &file ) const{
     
     if( !file.is_open() ){
@@ -157,7 +157,6 @@ bool Regressifier::saveBaseSettingsToFile( std::fstream &file ) const{
     
     return true;
 }
-
 
 bool Regressifier::loadBaseSettingsFromFile( std::fstream &file ){
     

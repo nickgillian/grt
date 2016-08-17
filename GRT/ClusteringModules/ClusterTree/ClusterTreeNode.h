@@ -247,7 +247,7 @@ public:
 protected:
     /**
      This saves the ClusterTreeNode custom parameters to a file. It will be called automatically by the Node base class
-     if the saveToFile function is called.
+     if the save function is called.
      
      @param file: a reference to the file the parameters will be saved to
      @return returns true if the model was saved successfully, false otherwise
@@ -279,7 +279,7 @@ protected:
         
         if(!file.is_open())
         {
-            errorLog << "loadFromFile(fstream &file) - File is not open!" << std::endl;
+            errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << std::endl;
             return false;
         }
         
