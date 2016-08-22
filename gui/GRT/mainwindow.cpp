@@ -19,8 +19,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //Register the custom data types
     qRegisterMetaType< QTextCursor >("QTextCursor");
     qRegisterMetaType< std::string >("std::string");
-    qRegisterMetaType< GRT::VectorDouble >("GRT::VectorDouble");
-    qRegisterMetaType< GRT::MatrixDouble >("GRT::MatrixDouble");
+    qRegisterMetaType< GRT::VectorFloat >("GRT::VectorFloat");
+    qRegisterMetaType< GRT::MatrixFloat >("GRT::MatrixFloat");
     qRegisterMetaType< std::vector<unsigned int> >("std::vector<unsigned int>");
     qRegisterMetaType< GRT::ClassificationData >("GRT::ClassificationData");
     qRegisterMetaType< GRT::ClassificationSample >("GRT::ClassificationSample");
@@ -817,14 +817,14 @@ bool MainWindow::initSignalsAndSlots(){
     connect(&core, SIGNAL(numInputDimensionsChanged(int)), this, SLOT(updateNumInputDimensions(const int)));
     connect(&core, SIGNAL(numTargetDimensionsChanged(int)), this, SLOT(updateNumTargetDimensions(const int)));
     connect(&core, SIGNAL(trainingClassLabelChanged(unsigned int)), this, SLOT(updateTrainingClassLabel(const unsigned int)));
-    connect(&core, SIGNAL(dataChanged(const GRT::VectorDouble&)), this, SLOT(updateData(const GRT::VectorDouble&)));
-    connect(&core, SIGNAL(targetDataChanged(const GRT::VectorDouble&)), this, SLOT(updateTargetVector(const GRT::VectorDouble&)));
+    connect(&core, SIGNAL(dataChanged(const GRT::VectorFloat&)), this, SLOT(updateData(const GRT::VectorFloat&)));
+    connect(&core, SIGNAL(targetDataChanged(const GRT::VectorFloat&)), this, SLOT(updateTargetVector(const GRT::VectorFloat&)));
     connect(&core, SIGNAL(recordStatusChanged(bool)), this, SLOT(updateRecordStatus(const bool)));
     connect(&core, SIGNAL(pipelineConfigurationChanged()), this, SLOT(updatePipelineConfiguration()));
     connect(&core, SIGNAL(pipelineConfigurationReset()), this, SLOT(resetPipelineConfiguration()));
     connect(&core, SIGNAL(numTrainingSamplesChanged( const unsigned int )), this, SLOT(updateNumTrainingSamples( const unsigned int )));
     connect(&core, SIGNAL(newTrainingSampleAdded( const unsigned int,const GRT::ClassificationSample& )), this, SLOT(addNewTrainingSample( const unsigned int,const GRT::ClassificationSample& )));
-    connect(&core, SIGNAL(newTrainingSampleAdded( const GRT::MatrixDouble& )), this, SLOT(addNewTrainingSample(const GRT::MatrixDouble&)));
+    connect(&core, SIGNAL(newTrainingSampleAdded( const GRT::MatrixFloat& )), this, SLOT(addNewTrainingSample(const GRT::MatrixFloat&)));
     connect(&core, SIGNAL(newTrainingSampleAdded( const unsigned int,const GRT::TimeSeriesClassificationSample& )), this, SLOT(addNewTrainingSample( const unsigned int,const GRT::TimeSeriesClassificationSample&)));
     connect(&core, SIGNAL(trainMessageReceived()), ui->trainingTool_trainButton, SLOT(click()));
     connect(&core, SIGNAL(trainingDataReset( const GRT::ClassificationData& )), this, SLOT(resetTrainingData( const GRT::ClassificationData& )));
@@ -832,12 +832,12 @@ bool MainWindow::initSignalsAndSlots(){
     connect(&core, SIGNAL(trainingDataReset( const GRT::TimeSeriesClassificationData& )), this, SLOT(resetTrainingData( const GRT::TimeSeriesClassificationData& )));
     connect(&core, SIGNAL(trainingDataReset( const GRT::UnlabelledData& )), this, SLOT(resetTrainingData( const GRT::UnlabelledData& )));
     connect(&core, SIGNAL(testDataReset( const GRT::ClassificationData& )), this, SLOT(resetTestData( const GRT::ClassificationData& )));
-    connect(&core, SIGNAL(preProcessingDataChanged( const GRT::VectorDouble& )), this, SLOT(updatePreProcessingData( const GRT::VectorDouble& )));
-    connect(&core, SIGNAL(featureExtractionDataChanged( const GRT::VectorDouble& )), this, SLOT(updateFeatureExtractionData( const GRT::VectorDouble& )));
-    connect(&core, SIGNAL(classificationResultsChanged( const unsigned int,double, const GRT::VectorDouble& , const GRT::VectorDouble& , const std::vector<unsigned int>& )), this, SLOT(updateClassificationResults( const unsigned int,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )));
-    connect(&core, SIGNAL(regressionResultsChanged( const GRT::VectorDouble& )), this, SLOT(updateRegressionResults( const GRT::VectorDouble& )));
-    connect(&core, SIGNAL(timeseriesClassificationResultsChanged( const unsigned int, const double,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )), this, SLOT(updateTimeseriesClassificationResults( const unsigned int,const double,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )));
-    connect(&core, SIGNAL(clusterResultsChanged( const unsigned int,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )), this, SLOT(updateClusterResults( const unsigned int,const double,const GRT::VectorDouble&,const GRT::VectorDouble&,const std::vector<unsigned int>& )) );
+    connect(&core, SIGNAL(preProcessingDataChanged( const GRT::VectorFloat& )), this, SLOT(updatePreProcessingData( const GRT::VectorFloat& )));
+    connect(&core, SIGNAL(featureExtractionDataChanged( const GRT::VectorFloat& )), this, SLOT(updateFeatureExtractionData( const GRT::VectorFloat& )));
+    connect(&core, SIGNAL(classificationResultsChanged( const unsigned int,double, const GRT::VectorFloat& , const GRT::VectorFloat& , const std::vector<unsigned int>& )), this, SLOT(updateClassificationResults( const unsigned int,const double,const GRT::VectorFloat&,const GRT::VectorFloat&,const std::vector<unsigned int>& )));
+    connect(&core, SIGNAL(regressionResultsChanged( const GRT::VectorFloat& )), this, SLOT(updateRegressionResults( const GRT::VectorFloat& )));
+    connect(&core, SIGNAL(timeseriesClassificationResultsChanged( const unsigned int, const double,const double,const GRT::VectorFloat&,const GRT::VectorFloat&,const std::vector<unsigned int>& )), this, SLOT(updateTimeseriesClassificationResults( const unsigned int,const double,const double,const GRT::VectorFloat&,const GRT::VectorFloat&,const std::vector<unsigned int>& )));
+    connect(&core, SIGNAL(clusterResultsChanged( const unsigned int,const double,const GRT::VectorFloat&,const GRT::VectorFloat&,const std::vector<unsigned int>& )), this, SLOT(updateClusterResults( const unsigned int,const double,const GRT::VectorFloat&,const GRT::VectorFloat&,const std::vector<unsigned int>& )) );
     connect(&core, SIGNAL(pipelineTrainingStarted()), this, SLOT(pipelineTrainingStarted()));
     connect(&core, SIGNAL(pipelineTrainingFinished(const bool)), this, SLOT(pipelineTrainingFinished(const bool)));
     connect(&core, SIGNAL(pipelineTestingFinished(const bool)), this, SLOT(pipelineTestingFinished(const bool)));
@@ -1348,7 +1348,7 @@ void MainWindow::updateTrainingClassLabel(const unsigned int trainingClassLabel)
 void MainWindow::updateTargetVectorValue(const double value){
 
     //Get the current target vector from the core
-    GRT::VectorDouble targetVector = core.getTargetVector();
+    GRT::VectorFloat targetVector = core.getTargetVector();
 
     //Update the target vector with the new value
     int index = ui->dataLabellingTool_targetVectorDimensionSpinBox->value();
@@ -1408,7 +1408,7 @@ void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,cons
 
 }
 
-void MainWindow::addNewTrainingSample(const GRT::MatrixDouble &trainingSample){
+void MainWindow::addNewTrainingSample(const GRT::MatrixFloat &trainingSample){
 
     ui->dataLabellingTool_timeseriesSampleLength->setText( QString::fromStdString( GRT::Util::toString( trainingSample.getNumRows() ) ) );
 
@@ -1790,7 +1790,7 @@ void MainWindow::updatePCAProjectionGraph(){
 
     //Get the training data
     GRT::ClassificationData trainingData = core.getClassificationTrainingData();
-    GRT::MatrixDouble data = trainingData.getDataAsMatrixDouble();
+    GRT::MatrixFloat data = trainingData.getDataAsMatrixDouble();
 
     if( trainingData.getNumSamples() == 0 ){
         return;
@@ -1810,7 +1810,7 @@ void MainWindow::updatePCAProjectionGraph(){
     }
 
     //Project the data
-    GRT::MatrixDouble prjData;
+    GRT::MatrixFloat prjData;
     if( !pca.project(data,prjData) ){
         errorLog << "Failed to project data!" << std::endl;
         return;
@@ -1829,7 +1829,7 @@ void MainWindow::updatePCAProjectionGraph(){
     const unsigned int M = trainingData.getNumSamples();
     const unsigned int N = 2;
     GRT::ClassificationData projectedTrainingData;
-    GRT::VectorDouble projectedSample( N );
+    GRT::VectorFloat projectedSample( N );
     projectedTrainingData.setNumDimensions( N );
 
     for(unsigned int i=0; i<M; i++){
@@ -1855,7 +1855,7 @@ void MainWindow::updateTimeseriesGraph(){
     const unsigned int numDimensions = classificationData.getNumDimensions();
     const unsigned int graphWidth = classificationData.getNumSamples();
     bool lockRanges = false;
-    GRT::MatrixDouble data(graphWidth,numDimensions);
+    GRT::MatrixFloat data(graphWidth,numDimensions);
     vector< unsigned int > labels(graphWidth);
     double minRange = numeric_limits< double >::max();
     double maxRange = numeric_limits< double >::min();
@@ -2500,7 +2500,7 @@ void MainWindow::updateTestResults(const GRT::TestInstanceResult &testResult){
 
 }
 
-void MainWindow::updatePrecisionGraph(const GRT::VectorDouble &precision,const vector< unsigned int > &classLabels){
+void MainWindow::updatePrecisionGraph(const GRT::VectorFloat &precision,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_precisionGraph;
     unsigned int K = (unsigned int)classLabels.size();
@@ -2539,7 +2539,7 @@ void MainWindow::updatePrecisionGraph(const GRT::VectorDouble &precision,const v
     plot->replot();
 }
 
-void MainWindow::updateRecallGraph(const GRT::VectorDouble &recall,const vector< unsigned int > &classLabels){
+void MainWindow::updateRecallGraph(const GRT::VectorFloat &recall,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_recallGraph;
     unsigned int K = (unsigned int)classLabels.size();
@@ -2578,7 +2578,7 @@ void MainWindow::updateRecallGraph(const GRT::VectorDouble &recall,const vector<
     plot->replot();
 }
 
-void MainWindow::updateFmeasureGraph(const GRT::VectorDouble &fmeasure,const vector< unsigned int > &classLabels){
+void MainWindow::updateFmeasureGraph(const GRT::VectorFloat &fmeasure,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_fmeasureGraph;
     unsigned int K = (unsigned int)classLabels.size();
@@ -2625,7 +2625,7 @@ void MainWindow::updateFmeasureGraph(const GRT::VectorDouble &fmeasure,const vec
     plot->replot();
 }
 
-void MainWindow::updateConfusionMatrixGraph(const GRT::MatrixDouble &confusionMatrix,const vector< unsigned int > &classLabels){
+void MainWindow::updateConfusionMatrixGraph(const GRT::MatrixFloat &confusionMatrix,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_confusionMatrixGraph;
     const unsigned int K = (unsigned int)classLabels.size();
@@ -3380,7 +3380,7 @@ void MainWindow::updateClassifier(const unsigned int classifierType,const bool u
 /////////////////////////////// PREDICTION VIEW FUNCTIONS ///////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::updatePreProcessingData(const GRT::VectorDouble &preProcessedData){
+void MainWindow::updatePreProcessingData(const GRT::VectorFloat &preProcessedData){
 
     QString infoText;
     for(size_t k=0; k<preProcessedData.size(); k++){
@@ -3392,7 +3392,7 @@ void MainWindow::updatePreProcessingData(const GRT::VectorDouble &preProcessedDa
     preProcessedDataGraph->update( preProcessedData );
 }
 
-void MainWindow::updateFeatureExtractionData(const GRT::VectorDouble &featureExtractionData){
+void MainWindow::updateFeatureExtractionData(const GRT::VectorFloat &featureExtractionData){
 
     QString infoText;
     for(size_t k=0; k<featureExtractionData.size(); k++){
@@ -3404,7 +3404,7 @@ void MainWindow::updateFeatureExtractionData(const GRT::VectorDouble &featureExt
     featureExtractionDataGraph->update( featureExtractionData );
 }
 
-void MainWindow::updateClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels){
+void MainWindow::updateClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorFloat &classLikelihoods,const GRT::VectorFloat &classDistances,const std::vector<unsigned int> &classLabels){
 
     const size_t K = classLabels.size();
     QString infoText;
@@ -3418,7 +3418,7 @@ void MainWindow::updateClassificationResults(const unsigned int predictedClassLa
         return;
     }
 
-    classPredictionsGraph->update( GRT::VectorDouble(1,predictedClassLabel) );
+    classPredictionsGraph->update( GRT::VectorFloat(1,predictedClassLabel) );
     classLikelihoodsGraph->update( classLikelihoods );
     classDistancesGraph->update( classDistances );
 
@@ -3451,7 +3451,7 @@ void MainWindow::updateClassificationResults(const unsigned int predictedClassLa
 
 }
 
-void MainWindow::updateRegressionResults(const GRT::VectorDouble &regressionData){
+void MainWindow::updateRegressionResults(const GRT::VectorFloat &regressionData){
 
     const size_t N = regressionData.size();
 
@@ -3467,7 +3467,7 @@ void MainWindow::updateRegressionResults(const GRT::VectorDouble &regressionData
 
 }
 
-void MainWindow::updateTimeseriesClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const double phase,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels){
+void MainWindow::updateTimeseriesClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const double phase,const GRT::VectorFloat &classLikelihoods,const GRT::VectorFloat &classDistances,const std::vector<unsigned int> &classLabels){
 
     const size_t K = classLabels.size();
     QString infoText;
@@ -3481,7 +3481,7 @@ void MainWindow::updateTimeseriesClassificationResults(const unsigned int predic
         return;
     }
 
-    classPredictionsGraph->update( GRT::VectorDouble(1,predictedClassLabel) );
+    classPredictionsGraph->update( GRT::VectorFloat(1,predictedClassLabel) );
     classLikelihoodsGraph->update( classLikelihoods );
     classDistancesGraph->update( classDistances );
 
@@ -3514,9 +3514,9 @@ void MainWindow::updateTimeseriesClassificationResults(const unsigned int predic
     ui->predictionWindow_timeseriesClassification_classLabels->setText( infoText );
 }
 
-void MainWindow::updateClusterResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels){
+void MainWindow::updateClusterResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorFloat &classLikelihoods,const GRT::VectorFloat &classDistances,const std::vector<unsigned int> &classLabels){
 
-    clusterPredictionsGraph->update( GRT::VectorDouble(1,predictedClassLabel) );
+    clusterPredictionsGraph->update( GRT::VectorFloat(1,predictedClassLabel) );
     clusterLikelihoodsGraph->update( classLikelihoods );
     clusterDistancesGraph->update( classDistances );
     ui->predictionWindow_clusterer_predictedClusterLabel->setText( QString::number( predictedClassLabel ) );
@@ -3706,7 +3706,7 @@ void MainWindow::coreTick(){
     if( ui->dataIO_enableMouseInputButton->isChecked() ){
 
         //Generate a dummy OSC data message for the mouse
-        GRT::VectorDouble mouseData(2);
+        GRT::VectorFloat mouseData(2);
         mouseData[0] = this->mapFromGlobal(QCursor::pos()).x();
         mouseData[1] = this->mapFromGlobal(QCursor::pos()).y();
 
@@ -3722,7 +3722,7 @@ void MainWindow::coreTick(){
     }
 }
 
-void MainWindow::updateData(const GRT::VectorDouble &data){
+void MainWindow::updateData(const GRT::VectorFloat &data){
     QString text = "";
     for(size_t i=0; i<data.size(); i++){
         text += "[" + QString::number( i ) + "]: ";
@@ -3738,7 +3738,7 @@ void MainWindow::updateData(const GRT::VectorDouble &data){
 
         if( swipeDetector.getTrained() ){
             swipeDetector.predict( data );
-            GRT::VectorDouble swipeDetectionData( 3 );
+            GRT::VectorFloat swipeDetectionData( 3 );
             swipeDetectionData[0] = swipeDetector.getSwipeValue();
             swipeDetectionData[1] = swipeDetector.getSwipeThreshold();
             swipeDetectionData[2] = swipeDetector.getHysteresisThreshold();
@@ -3749,7 +3749,7 @@ void MainWindow::updateData(const GRT::VectorDouble &data){
     }
 }
 
-void MainWindow::updateTargetVector(const GRT::VectorDouble &targetVector){
+void MainWindow::updateTargetVector(const GRT::VectorFloat &targetVector){
 
     QString text = "";
     for(size_t i=0; i<targetVector.size(); i++){

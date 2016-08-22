@@ -624,7 +624,7 @@ vector<unsigned int> Core::getClassLabels(){
     return pipeline.getClassLabels();
 }
 
-GRT::VectorDouble Core::getTargetVector(){
+GRT::VectorFloat Core::getTargetVector(){
     std::unique_lock< std::mutex > lock( mutex );
     return targetVector;
 }
@@ -1023,7 +1023,7 @@ bool Core::setPipeline( const GRT::GestureRecognitionPipeline &pipeline ){
     return true;
 }
 
-bool Core::setTargetVector( const GRT::VectorDouble &targetVector_ ){
+bool Core::setTargetVector( const GRT::VectorFloat &targetVector_ ){
 
     bool emitTargetDataChanged = false;
     {
@@ -1261,7 +1261,7 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
     if( m.getAddressPattern() == dataAddress ){
         bool emitInputDataChanged = false;
         bool emitInputDataSizeWarning = false;
-        GRT::VectorDouble newInputData_;
+        GRT::VectorFloat newInputData_;
 
         {
             std::unique_lock< std::mutex > lock( mutex );
@@ -1398,19 +1398,19 @@ bool Core::processNewData(){
     unsigned int predictedClusterLabel = 0;
     double maximumLikelihood = 0;
     double phase = 0;
-    GRT::VectorDouble preProcessedData;
-    GRT::VectorDouble featureData;
-    GRT::VectorDouble classLikelihoods;
-    GRT::VectorDouble classDistances;
-    GRT::VectorDouble clusterLikelihoods;
-    GRT::VectorDouble clusterDistances;
-    GRT::VectorDouble regressionData;
+    GRT::VectorFloat preProcessedData;
+    GRT::VectorFloat featureData;
+    GRT::VectorFloat classLikelihoods;
+    GRT::VectorFloat classDistances;
+    GRT::VectorFloat clusterLikelihoods;
+    GRT::VectorFloat clusterDistances;
+    GRT::VectorFloat regressionData;
     GRT::Vector<unsigned int> classLabels;
     GRT::Vector<unsigned int> clusterLabels;
     GRT::ClassificationSample newSample;
     GRT::RegressionSample newRegressionSample;
-    GRT::MatrixDouble newTimeseriesSample;
-    GRT::VectorDouble newClusterSample;
+    GRT::MatrixFloat newTimeseriesSample;
+    GRT::VectorFloat newClusterSample;
 
     {
         std::unique_lock< std::mutex > lock( mutex );
@@ -1738,7 +1738,7 @@ bool Core::enablePrediction( const bool state ){
     return true;
 }
 
-void Core::sendPreProcessedData( const GRT::VectorDouble &preProcessedData ){
+void Core::sendPreProcessedData( const GRT::VectorFloat &preProcessedData ){
 
      const unsigned int msgBufferSize = 1024;
      char msgBuffer[ msgBufferSize ];
@@ -1755,7 +1755,7 @@ void Core::sendPreProcessedData( const GRT::VectorDouble &preProcessedData ){
     socket->Send( msg.Data(), msg.Size() );
 }
 
-void Core::sendFeatureExtractionData( const GRT::VectorDouble &featureData ){
+void Core::sendFeatureExtractionData( const GRT::VectorFloat &featureData ){
 
     const unsigned int msgBufferSize = 1024;
     char msgBuffer[ msgBufferSize ];
@@ -1785,7 +1785,7 @@ void Core::sendPredictionResults( const unsigned int predictedClassLabel, const 
 
 }
 
-void Core::sendClassLikelihoods( const GRT::VectorDouble &classLikelihoods ){
+void Core::sendClassLikelihoods( const GRT::VectorFloat &classLikelihoods ){
 
     const unsigned int msgBufferSize = 1024;
     char msgBuffer[ msgBufferSize ];
@@ -1802,7 +1802,7 @@ void Core::sendClassLikelihoods( const GRT::VectorDouble &classLikelihoods ){
     socket->Send( msg.Data(), msg.Size() );
 }
 
-void Core::sendClassDistances( const GRT::VectorDouble &classDistances ){
+void Core::sendClassDistances( const GRT::VectorFloat &classDistances ){
 
     const unsigned int msgBufferSize = 1024;
     char msgBuffer[ msgBufferSize ];
@@ -1836,7 +1836,7 @@ void Core::sendClassLabels( const vector< unsigned int > &classLabels ){
     socket->Send( msg.Data(), msg.Size() );
 }
 
-void Core::sendRegressionData( const GRT::VectorDouble &regressionData ){
+void Core::sendRegressionData( const GRT::VectorFloat &regressionData ){
 
     const unsigned int msgBufferSize = 1024;
     char msgBuffer[ msgBufferSize ];

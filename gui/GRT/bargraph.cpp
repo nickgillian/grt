@@ -40,7 +40,7 @@ bool BarGraph::init(const unsigned int numDimensions){
     return true;
 }
 
-bool BarGraph::update(const GRT::VectorDouble &data ){
+bool BarGraph::update(const GRT::VectorFloat &data ){
     if( !initialized ) return false;
     //If the plot is hidden then there is no point in updating the graph
     if( this->isHidden() ){
