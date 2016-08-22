@@ -2,6 +2,12 @@
 
 This file contains some notes about significant changes to the GRT.
 
+# Version 0.2.2
+
+## 21th August 2016
+- **fixed minor bug in TimeSeriesClassificationData:** added if statement to catch K==0
+- **updated wiki:** migrating wiki from nickgillian.com/wiki to GRT github wiki page
+
 # Version 0.2.1
 
 ## 11th August 2016
