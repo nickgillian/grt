@@ -1,6 +1,14 @@
 /**
  @author Nicholas Gillian <nick@nickgillian.com>
- @brief This file implements a basic tool for processing data files and training a logistic regression model.
+ @brief This file implements a basic tool for training a logistic regression model. The dataset used to train the model can be in two formats, (1) a GRT RegressionData formatted file or (2)
+ a CSV formatted file.  If the data is formatted as a CSV file then it should be formatted as follows:
+ - each row should contain a sample
+ - the first N columns should contain the input attributes (a.k.a. features)
+ - the last T columns should contain the target attributes
+ - columns should be seperated by a comma delimiter ','
+ - rows should be ended with a new line operator '\n'
+ Note, if the CSV option is used, then the user must also specifiy the number of input dimensions and number of target dimensions via the command line options (-n and -t respectively). These
+ additional arguments are not required if the GRT RegressionData file format is used (as this information is contained in the meta data section of the file).
 */
 
 //You might need to set the specific path of the GRT header relative to your project
@@ -85,7 +93,8 @@ bool train( CommandLineParser &parser ){
     unsigned int numInputDimensions = 0;
     unsigned int numTargetDimensions = 0;
     if( parser.get("num-input-dimensions",numInputDimensions) && parser.get("num-target-dimensions",numTargetDimensions) ){
-      trainingData.setInputAndTargetDimensions( numTargetDimensions, numTargetDimensions );
+      infoLog << "num input dimensions: " << numInputDimensions << " num target dimensions: " << numTargetDimensions << endl;
+      trainingData.setInputAndTargetDimensions( numInputDimensions, numTargetDimensions );
     }
 
     infoLog << "- Loading Training Data..." << endl;
