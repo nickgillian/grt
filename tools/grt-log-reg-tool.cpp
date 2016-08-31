@@ -14,10 +14,9 @@ ErrorLog errorLog("[ERROR grt-log-reg-tool]");
 
 bool printUsage(){
     infoLog << "grt-log-reg-tool [options]\n";
-    infoLog << "\t-m: sets the current application mode, can be: \n";
-    infoLog << "\t\t[1] 'train-model': trains a regression model, using a pre-recorded training dataset.\n";
-    infoLog << "\t-f: sets the main filename. \n";
-    infoLog << "\t\tIn 'train-model' mode, this sets the name of the file the training data will be loaded from.\n";
+    infoLog << "\t-f: sets the filename the training data will be loaded from. The training data can either be a GRT RegressionData file or a CSV file. \n";
+    infoLog << "\t-n: sets the number of input dimensions in the dataset, only required if the input data format is a CSV file. \n";
+    infoLog << "\t-t: sets the number of target dimensions in the dataset, only required if the input data format is a CSV file. \n";
     infoLog << "\t--model: sets the filename the regression model will be saved to\n";
     infoLog << endl;
     return true;
@@ -41,33 +40,21 @@ int main(int argc, char * argv[])
     parser.setWarningLoggingEnabled( false );
 
     //Add some options and identifiers that can be used to get the results
-    parser.addOption( "-m", "mode" );
     parser.addOption( "-f", "filename" );
+    parser.addOption( "-n", "num-input-dimensions" );
+    parser.addOption( "-t", "num-target-dimensions" );
     parser.addOption( "--model", "model-filename" );
 
     //Parse the command line
     parser.parse( argc, argv );
 
-    string mode = "";
-    string filename = "";
-
-    //Get the application mode
-    if( !parser.get("mode",mode) ){
-        errorLog << "Failed to parse mode from command line! You can set the mode using the -m option." << endl;
-        printUsage();
-        return EXIT_FAILURE;
+    //Train the model model
+    if( train( parser ) ){
+      infoLog << "Model Trained!" << endl;
+      return EXIT_SUCCESS;
     }
 
-    //Train RF model
-    if( mode == "train-model" ){
-        if( train( parser ) ){
-            infoLog << "Model Trained!" << endl;
-            return EXIT_SUCCESS;
-        }
-        return EXIT_FAILURE;
-    }
-
-    errorLog << "Unknown application mode: " << mode << endl;
+    errorLog << "Failed to train model!" << endl;
     printUsage();
 
     return EXIT_FAILURE;
@@ -80,8 +67,6 @@ bool train( CommandLineParser &parser ){
     string trainDatasetFilename = "";
     string modelFilename = "";
     string defaultFilename = "linear-regression-model.grt";
-    bool removeFeatures = false;
-    bool defaultRemoveFeatures = false;
 
     //Get the filename
     if( !parser.get("filename",trainDatasetFilename) ){
@@ -96,6 +81,13 @@ bool train( CommandLineParser &parser ){
     //Load the training data to train the model
     RegressionData trainingData;
 
+    //Try and parse the input and target dimensions
+    unsigned int numInputDimensions = 0;
+    unsigned int numTargetDimensions = 0;
+    if( parser.get("num-input-dimensions",numInputDimensions) && parser.get("num-target-dimensions",numTargetDimensions) ){
+      trainingData.setInputAndTargetDimensions( numTargetDimensions, numTargetDimensions );
+    }
+
     infoLog << "- Loading Training Data..." << endl;
     if( !trainingData.load( trainDatasetFilename ) ){
         errorLog << "Failed to load training data!\n";
@@ -107,7 +99,7 @@ bool train( CommandLineParser &parser ){
     infoLog << "- Num training samples: " << trainingData.getNumSamples() << endl;
     infoLog << "- Num input dimensions: " << N << endl;
     infoLog << "- Num target dimensions: " << T << endl;
-    
+
     //Create a new regression instance
     LogisticRegression regression;
 
