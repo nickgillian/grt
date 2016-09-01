@@ -172,16 +172,26 @@ public:
      @param value: the value you want to set all the Vector values to
      @return returns true or false, indicating if the set was successful 
     */
-	bool setAll(const T &value){
+    bool fill(const T &value){
 
         const unsigned int N = this->size();
-
-		if( N == 0 ) return false;
+        
+        if( N == 0 ) return false;
 
         std::fill(this->begin(),this->end(),value);
 
         return true;
-	}
+    }
+
+    /**
+     Sets all the values in the Vector to the input value
+     
+     @param value: the value you want to set all the Vector values to
+     @return returns true or false, indicating if the set was successful 
+    */
+    bool setAll(const T &value){
+      return fill(value);
+    }
 
     /**
      Gets the size of the Vector
