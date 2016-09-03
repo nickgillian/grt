@@ -751,7 +751,7 @@ protected:
     VectorFloat validationSetPrecision;
     VectorFloat validationSetRecall;
     Random random;
-    std::vector< TrainingResult > trainingResults;
+    Vector< TrainingResult > trainingResults;
     TrainingResultsObserverManager trainingResultsObserverManager;
     TestResultsObserverManager testResultsObserverManager;
     
