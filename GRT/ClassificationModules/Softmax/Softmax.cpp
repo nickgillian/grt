@@ -26,12 +26,13 @@ GRT_BEGIN_NAMESPACE
 //Register the Softmax module with the Classifier base class
 RegisterClassifierModule< Softmax >  Softmax::registerModule("Softmax");
 
-Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minChange,const UINT maxNumEpochs)
+Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minChange,const UINT maxNumEpochs,const UINT batchSize)
 {
     this->useScaling = useScaling;
     this->learningRate = learningRate;
     this->minChange = minChange;
     this->maxNumEpochs = maxNumEpochs;
+    this->batchSize = batchSize;
     classType = "Softmax";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -58,9 +59,7 @@ Softmax::~Softmax(void)
 
 Softmax& Softmax::operator=(const Softmax &rhs){
     if( this != &rhs ){
-        this->learningRate = rhs.learningRate;
-        this->minChange = rhs.minChange;
-        this->maxNumEpochs = rhs.maxNumEpochs;
+        this->batchSize = rhs.batchSize;
         this->models = rhs.models;
         
         //Copy the base classifier variables
@@ -76,9 +75,7 @@ bool Softmax::deepCopyFrom(const Classifier *classifier){
     if( this->getClassifierType() == classifier->getClassifierType() ){
         Softmax *ptr = (Softmax*)classifier;
         
-        this->learningRate = ptr->learningRate;
-        this->minChange = ptr->minChange;
-        this->maxNumEpochs = ptr->maxNumEpochs;
+        this->batchSize = ptr->batchSize;
         this->models = ptr->models;
         
         //Copy the base classifier variables
@@ -199,7 +196,6 @@ bool Softmax::trainSoftmaxModel(UINT classLabel,SoftmaxModel &model,Classificati
     const UINT N = data.getNumDimensions();
     const UINT M = data.getNumSamples();
     UINT iter = 0;
-    UINT batchSize = 50;
     bool keepTraining = true;
     Random random;
     VectorFloat y(M);
@@ -222,6 +218,11 @@ bool Softmax::trainSoftmaxModel(UINT classLabel,SoftmaxModel &model,Classificati
         randomTrainingOrder[i] = i;
     }
     std::random_shuffle(randomTrainingOrder.begin(), randomTrainingOrder.end());
+    
+    //Clear any previous training results
+    trainingResults.clear();
+    trainingResults.reserve( maxNumEpochs );
+    TrainingResult epochResult;
 
     //Run the main stochastic gradient descent training algorithm
     while( keepTraining ){
@@ -255,6 +256,8 @@ bool Softmax::trainSoftmaxModel(UINT classLabel,SoftmaxModel &model,Classificati
             model.w[j] += learningRate  * error * batchMean[j];
           }
           model.w0 += learningRate  * error;
+
+          m += roundSize;
         }
 
         //Compute the error
@@ -271,6 +274,8 @@ bool Softmax::trainSoftmaxModel(UINT classLabel,SoftmaxModel &model,Classificati
         }
         
         trainingLog << "Class: " << classLabel << " Epoch: " << iter << " TotalError: " << errorSum << " Delta: " << delta << std::endl;
+        epochResult.setClassificationResult( iter, errorSum, this );
+        trainingResults.push_back( epochResult );
     }
     
     return true;
