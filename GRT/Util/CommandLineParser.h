@@ -67,6 +67,29 @@ public:
 
         //Add the option and id
         options[option] = id;
+        parsed[ id ] = false; //Flag that this ID has not been parsed
+        return true;
+    }
+
+    /**
+     Adds an option with a specific retrival id. For example, addOption("-f","filename") would add the option "-f" which can be retrived using the "filename" id.
+
+     @param const std::string &option: the command line option you want to store when the command line is parsed
+     @param const std::string &id: the id that will be used to retrieve the data associated with the option
+     @return returns true if the option was added succesfully, false otherwise
+    */
+    template<class T> bool addOption(const std::string &option,const std::string &id,const T &defaultValue){
+
+        //Make sure the option has not already been added
+        std::map<std::string,std::string>::iterator it = options.find( option );
+        if( it != options.end() ){
+            return false;
+        }
+
+        //Add the option and id
+        options[option] = id;
+        results[ id ] = toString( defaultValue ); //Set the default value
+        parsed[ id ] = false; //Flag that this ID has not been parsed
         return true;
     }
 
@@ -78,20 +101,31 @@ public:
      @return returns true if the command line was parsed succesfully, false otherwise
     */
     bool parse( const int argc, char * argv[] ){
-        
-        results.clear();
-        
-        std::map<std::string,std::string>::iterator it;
-        for(int i=1; i<argc; i++){
-            
-            //Search for a match in the options map
-            it = options.find( std::string(argv[i]) );
-            if( it != options.end() ){
-                results[  it->second ] = std::string(argv[i+1]);
-            }
+ 
+      //Reset the parsed state
+      {
+        std::map<std::string,bool>::iterator it;
+        it = parsed.begin();
+        while( it != parsed.end() ){
+          it->second = false;
+          ++it;
         }
-        
-        return true;
+      }
+
+      std::map<std::string,std::string>::iterator it;
+      for(int i=1; i<argc; i++){
+        //Search for a match in the options map
+        it = options.find( std::string(argv[i]) );
+        if( it != options.end() ){
+          if( i+1 <= argc ){
+            results[ it->second ] = std::string(argv[i+1]);
+          }else{
+            results[ it->second ] = "";
+          }
+          parsed[ it->second ] = true;
+        }
+      }
+      return true;
     }
     
     /**
@@ -103,16 +137,16 @@ public:
      @param T defaultValue = T(): sets the default return value if the id is not found
      @return returns true if the value associated with the id was found succesfully, false otherwise
     */
-    template<class T> bool get(const std::string &id,T &value,T defaultValue = T()){
+    template<class T> bool get(const std::string &id,T &value){
         
         //Find the option in the results buffer
         std::map<std::string,std::string>::iterator it;
         it = results.find( id );
-        
+
+        //If the iterator is empty, then we failed to find a match
         if( it == results.end() ){
-            value = defaultValue;
-            warningLog << "get(const std::string &id,T &value) - Failed to find id: " << id << std::endl;
-            return false;
+          warningLog << "get(const std::string &id,T &value) - Failed to find id: " << id << ", it must not have been parsed and no default value set!" << std::endl;
+          return false;
         }
         
         //Convert the data associated with the id to the relevant type
@@ -121,33 +155,59 @@ public:
             s >> value;
             return true;
         }catch( ... ){
-            value = defaultValue;
-            warningLog << "get(const std::string &id,T &value) - Can not parse type: " << typeid( value ).name() << std::endl;
+            warningLog << "get(const std::string &id,T &value) - Failed to convert type: " << typeid( value ).name() << " from: " << it->second << " for " << it->first << std::endl;
         }
 
         return false;
     }
     
     /**
-     Validates if id was succesfully parsed from the command line.
-     If the id is invalid or was not parsed, then the function will return false.
+     Validates if id is validate (i.e., it exists in the lookup table). Any value in the lookup table will be validate, regardless of its parsed state.
+     If the id is invalid, then the function will return false.
 
      @param const std::string &id: the search id
-     @return returns true if the value associated with the id was parsed succesfully, false otherwise
+     @return returns true if the value associated with the id is valid, false otherwise
     */
-    bool validate(const std::string &id){
+    bool getValidId(const std::string &id){
         
-        //Find the option in the results buffer
-        std::map<std::string,std::string>::iterator it;
-        it = results.find( id );
+        //Find the option in the parsed buffer
+        std::map<std::string,bool>::iterator it;
+        it = parsed.find( id );
         
-        if( it == results.end() ){
-            warningLog << "validate(const std::string ) - Failed to find id: " << id << std::endl;
+        if( it == parsed.end() ){
             return false;
         }
         
-        //If we get this far then we've found a match
+        //If we get this far then we've found a match, we don't care about the
+        //parsed state
         return true;
+    }
+
+    /**
+     Checks if the id was succesfully parsed from the command line.
+     If the id is invalid or was not parsed, then the function will return false.
+
+     @param const std::string &id: the search id
+     @return returns true if the value associated with the id was parsed from the command line succesfully, false otherwise
+    */
+    bool getOptionParsed(const std::string &id){
+        //Find the id in the parsed buffer
+        std::map<std::string,bool>::iterator it;
+        it = parsed.find( id );
+        
+        if( it == parsed.end() ){
+            return false;
+        }
+        
+        //If we get this far then we've found a match, return the parsed state
+        return it->second;
+    }
+
+    /**
+     @return returns the number of options in the options map
+    */
+    unsigned int getNumOptions() const {
+      return (unsigned int)options.size();
     }
 
     /**
@@ -187,9 +247,16 @@ protected:
     InfoLog infoLog;
     WarningLog warningLog;
     ErrorLog errorLog;
-    std::map< std::string, std::string > options;
-    std::map< std::string, std::string > results;
+    std::map< std::string, std::string > options; ///<Holds the options lookup map
+    std::map< std::string, std::string > results; ///<Stores the results for each option in the options lookup map
+    std::map< std::string, bool > parsed; ///<Stores the results that have been parsed
 
+    template <class T>
+    std::string toString(const T&value){
+      std::ostringstream out;
+      out << value;
+      return out.str();
+    }
 };
 
 GRT_END_NAMESPACE
