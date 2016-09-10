@@ -121,7 +121,7 @@ namespace Ui {
 }
 
 Q_DECLARE_METATYPE(std::string);
-Q_DECLARE_METATYPE(GRT::VectorDouble);
+Q_DECLARE_METATYPE(GRT::VectorFloat);
 Q_DECLARE_METATYPE(std::vector<unsigned int>);
 Q_DECLARE_METATYPE(GRT::ClassificationData);
 Q_DECLARE_METATYPE(GRT::ClassificationSample);
@@ -197,7 +197,7 @@ private slots:
     void updateRecordStatus(const bool recordStatus);
     void updateNumTrainingSamples(const unsigned int numTrainingSamples);
     void addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::ClassificationSample &trainingSample);
-    void addNewTrainingSample(const GRT::MatrixDouble &trainingSample);
+    void addNewTrainingSample(const GRT::MatrixFloat &trainingSample);
     void addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::TimeSeriesClassificationSample &trainingSample);
     void resetTrainingData(const GRT::ClassificationData &trainingData);
     void resetTrainingData(const GRT::RegressionData &trainingData);
@@ -261,10 +261,10 @@ private slots:
     void updateTrainingToolLog(const std::string message);
     void updateTrainingResults(const GRT::TrainingResult &trainingResult);
     void updateTestResults(const GRT::TestInstanceResult &testResult);
-    void updatePrecisionGraph(const GRT::VectorDouble &precision,const vector< unsigned int > &classLabels);
-    void updateRecallGraph(const GRT::VectorDouble &recall,const vector< unsigned int > &classLabels);
-    void updateFmeasureGraph(const GRT::VectorDouble &fmeasure,const vector< unsigned int > &classLabels);
-    void updateConfusionMatrixGraph(const GRT::MatrixDouble &confusionMatrix,const vector< unsigned int > &classLabels);
+    void updatePrecisionGraph(const GRT::VectorFloat &precision,const vector< unsigned int > &classLabels);
+    void updateRecallGraph(const GRT::VectorFloat &recall,const vector< unsigned int > &classLabels);
+    void updateFmeasureGraph(const GRT::VectorFloat &fmeasure,const vector< unsigned int > &classLabels);
+    void updateConfusionMatrixGraph(const GRT::MatrixFloat &confusionMatrix,const vector< unsigned int > &classLabels);
     void clearPrecisionGraph();
     void clearRecallGraph();
     void clearFmeasureGraph();
@@ -272,12 +272,12 @@ private slots:
 
     /////////////////////////////// PREDICTION VIEW FUNCTIONS ///////////////////////////////
     void showPredictionToolInfo();
-    void updatePreProcessingData(const GRT::VectorDouble &preProcessedData);
-    void updateFeatureExtractionData(const GRT::VectorDouble &featureExtractionData);
-    void updateClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels);
-    void updateRegressionResults(const GRT::VectorDouble &regressionData);
-    void updateTimeseriesClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const double phase,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels);
-    void updateClusterResults(const unsigned int predictedClusterLabel,const double maximumLikelihood,const GRT::VectorDouble &clusterLikelihoods,const GRT::VectorDouble &clusterDistances,const std::vector<unsigned int> &clusterLabels);
+    void updatePreProcessingData(const GRT::VectorFloat &preProcessedData);
+    void updateFeatureExtractionData(const GRT::VectorFloat &featureExtractionData);
+    void updateClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorFloat &classLikelihoods,const GRT::VectorFloat &classDistances,const std::vector<unsigned int> &classLabels);
+    void updateRegressionResults(const GRT::VectorFloat &regressionData);
+    void updateTimeseriesClassificationResults(const unsigned int predictedClassLabel,const double maximumLikelihood,const double phase,const GRT::VectorFloat &classLikelihoods,const GRT::VectorFloat &classDistances,const std::vector<unsigned int> &classLabels);
+    void updateClusterResults(const unsigned int predictedClusterLabel,const double maximumLikelihood,const GRT::VectorFloat &clusterLikelihoods,const GRT::VectorFloat &clusterDistances,const std::vector<unsigned int> &clusterLabels);
     void resetPredictionViewGraphs();
 
     ///////////////////////////////    LOG VIEW FUNCTIONS     ///////////////////////////////
@@ -298,8 +298,8 @@ private slots:
 
     /////////////////////////////////// CORE DATA FUNCTIONS /////////////////////////////////
     void coreTick();
-    void updateData( const GRT::VectorDouble &data );
-    void updateTargetVector( const GRT::VectorDouble &targetVector );
+    void updateData( const GRT::VectorFloat &data );
+    void updateTargetVector( const GRT::VectorFloat &targetVector );
 
 private:
     bool initMainMenu();

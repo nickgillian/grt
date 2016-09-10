@@ -16,7 +16,7 @@ public:
     explicit BarGraph(QWidget *parent = 0);
     virtual ~BarGraph();
     bool init(const unsigned int numDimensions);
-    bool update(const GRT::VectorDouble &sample );
+    bool update(const GRT::VectorFloat &sample );
     static bool setMaximumGraphRefreshRate(const double framerate);
 
 private:

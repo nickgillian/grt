@@ -2884,6 +2884,10 @@ MatrixFloat GestureRecognitionPipeline::getTestConfusionMatrix() const{
     return testConfusionMatrix; 
 }
     
+Vector< TrainingResult > GestureRecognitionPipeline::getTrainingResults() const{
+  return getIsClassifierSet() || getIsRegressifierSet() ? classifier->getTrainingResults() : Vector< TrainingResult >();
+}
+    
 TestResult GestureRecognitionPipeline::getTestResults() const {
     TestResult testResults;
     testResults.numTrainingSamples = numTrainingSamples;

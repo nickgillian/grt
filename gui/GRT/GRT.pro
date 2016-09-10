@@ -51,8 +51,10 @@ macx{
  #Add the custom resources file
  ICON = Resources/OSX/GRT.icns
 
- #Flag that we want to use the GRT library
+ #Flag that we want to use a pre-built version of the GRT library (this should be installed in /user/local/lib
  USE_GRT_LIB = "true"
+
+ #Flag that we want to include the GRT library directly as source code
  #USE_GRT_SOURCE = "true"
 }
 
@@ -75,8 +77,10 @@ unix:!macx:!android{
  CONFIG += link_pkgconfig
  PKGCONFIG += grt
 
- #Flag that we want to use the GRT library
+ #Flag that we want to use a pre-built version of the GRT library (this should be installed in /user/local/lib
  #USE_GRT_LIB = "true"
+
+ #Flag that we want to include the GRT library directly as source code
  USE_GRT_SOURCE_CODE = "true"
 }
 

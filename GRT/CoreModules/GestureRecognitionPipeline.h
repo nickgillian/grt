@@ -658,6 +658,15 @@ public:
     MatrixFloat getTestConfusionMatrix() const;
     
     /**
+     This function returns the results from the most recent round of training.
+     The TrainingResults vector contains the results for each epoch of training, such as the accuracy, error, RMSError, etc.. The exact contents of the TrainingResults data will vary 
+     based on the actual ML algorithm at the core of the pipeline.
+     
+     @return returns a vector containing the results from the most recent round of training, an empty vector will be returned if the model has not been trained
+     */
+    Vector< TrainingResult > getTrainingResults() const;
+    
+    /**
      This function returns all the results from the most recent round of testing.
      The TestResult contains all of the test metrics, such as the accuracy, precision, recall, training and test times, etc. These are the
      same results that you would get if you called the individaul functions (such as getTestAccuracy()).

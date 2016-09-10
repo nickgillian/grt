@@ -33,7 +33,7 @@ public:
     unsigned int getNumClasses();
     unsigned int getNumClassesInTrainingData();
     vector<unsigned int> getClassLabels();
-    GRT::VectorDouble getTargetVector();
+    GRT::VectorFloat getTargetVector();
     GRT::ClassificationData getClassificationTrainingData();
     GRT::ClassificationData getClassificationTestData();
     GRT::RegressionData getRegressionTrainingData();
@@ -66,8 +66,8 @@ signals:
     void pipelineModeChanged( const unsigned int pipelineMode );
     void numInputDimensionsChanged( const int newSize );
     void numTargetDimensionsChanged( const int newSize );
-    void dataChanged( const GRT::VectorDouble &data );
-    void targetDataChanged( const GRT::VectorDouble &data );
+    void dataChanged( const GRT::VectorFloat &data );
+    void targetDataChanged( const GRT::VectorFloat &data );
     void trainingClassLabelChanged( const unsigned int trainingClassLabel );
     void recordStatusChanged( const bool record );
     void pipelineConfigurationReset();
@@ -77,8 +77,8 @@ signals:
     void newTrainingSampleAdded( const unsigned int numTrainingSamples,const GRT::ClassificationSample &trainingSample );
     void newTrainingSampleAdded( const unsigned int numTrainingSamples,const GRT::RegressionSample &trainingSample );
     void newTrainingSampleAdded( const unsigned int numTrainingSamples,const GRT::TimeSeriesClassificationSample &trainingSample );
-    void newTrainingSampleAdded( const GRT::MatrixDouble &trainingSample );
-    void newTrainingSampleAdded( const GRT::VectorDouble &trainingSample );
+    void newTrainingSampleAdded( const GRT::MatrixFloat &trainingSample );
+    void newTrainingSampleAdded( const GRT::VectorFloat &trainingSample );
     void numTrainingSamplesChanged( const unsigned int numTrainingSamples );
     void trainMessageReceived();
     void trainingDataReset( const GRT::ClassificationData &trainingData );
@@ -92,12 +92,12 @@ signals:
     void saveTrainingDataToFileResult( const bool result );
     void loadTrainingDataFromFileResult( const bool result );
     void loadTestDataFromFileResult( const bool result );
-    void preProcessingDataChanged( const GRT::VectorDouble &preProcessedData );
-    void featureExtractionDataChanged( const GRT::VectorDouble &featureExtractionData );
-    void classificationResultsChanged( const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels );
-    void regressionResultsChanged( const GRT::VectorDouble &regressionData );
-    void timeseriesClassificationResultsChanged( const unsigned int predictedClassLabel,const double maximumLikelihood,const double phase,const GRT::VectorDouble &classLikelihoods,const GRT::VectorDouble &classDistances,const std::vector<unsigned int> &classLabels );
-    void clusterResultsChanged( const unsigned int predictedClusterLabel,const double maximumLikelihood,const GRT::VectorDouble &clusterLikelihoods,const GRT::VectorDouble &clusterDistances,const std::vector<unsigned int> &clusterLabels );
+    void preProcessingDataChanged( const GRT::VectorFloat &preProcessedData );
+    void featureExtractionDataChanged( const GRT::VectorFloat &featureExtractionData );
+    void classificationResultsChanged( const unsigned int predictedClassLabel,const double maximumLikelihood,const GRT::VectorFloat &classLikelihoods,const GRT::VectorFloat &classDistances,const std::vector<unsigned int> &classLabels );
+    void regressionResultsChanged( const GRT::VectorFloat &regressionData );
+    void timeseriesClassificationResultsChanged( const unsigned int predictedClassLabel,const double maximumLikelihood,const double phase,const GRT::VectorFloat &classLikelihoods,const GRT::VectorFloat &classDistances,const std::vector<unsigned int> &classLabels );
+    void clusterResultsChanged( const unsigned int predictedClusterLabel,const double maximumLikelihood,const GRT::VectorFloat &clusterLikelihoods,const GRT::VectorFloat &clusterDistances,const std::vector<unsigned int> &clusterLabels );
     void pipelineTrainingStarted();
     void pipelineTrainingFinished( const bool result );
     void pipelineTestingFinished( const bool result );
@@ -135,7 +135,7 @@ public slots:
     bool setClusterer( const GRT::Clusterer &clusterer );
     bool setPostProcessing( const GRT::PostProcessing &postProcessing );
     bool setPipeline( const GRT::GestureRecognitionPipeline &pipeline );
-    bool setTargetVector( const GRT::VectorDouble &targetVector );
+    bool setTargetVector( const GRT::VectorFloat &targetVector );
     bool removeAllPreProcessingModules();
     bool removeAllPostProcessingModules();
     bool savePipelineToFile( const std::string filename );
@@ -148,13 +148,13 @@ protected:
     void mainThreadFunction();
     bool processOSCMessage( const OSCMessagePtr m );
     bool processNewData();
-    void sendPreProcessedData( const GRT::VectorDouble &preProcessedData );
-    void sendFeatureExtractionData( const GRT::VectorDouble &featureData );
+    void sendPreProcessedData( const GRT::VectorFloat &preProcessedData );
+    void sendFeatureExtractionData( const GRT::VectorFloat &featureData );
     void sendPredictionResults( unsigned int predictedClassLabel, double maximumLikelihood );
-    void sendClassLikelihoods( const GRT::VectorDouble &classLikelihoods );
-    void sendClassDistances( const GRT::VectorDouble &classDistances );
+    void sendClassLikelihoods( const GRT::VectorFloat &classLikelihoods );
+    void sendClassDistances( const GRT::VectorFloat &classDistances );
     void sendClassLabels( const vector< unsigned int > &classLabels );
-    void sendRegressionData( const GRT::VectorDouble &regressionData );
+    void sendRegressionData( const GRT::VectorFloat &regressionData );
     void sendStatusMessage( const int pipelineMode,const int trained,const int recording,const int numTrainingSamples,const int numClassesInTrainingData,const std::string infoMessage,const std::string version );
 
     //Core Stuff
@@ -181,8 +181,8 @@ protected:
     unsigned int targetVectorSize;
     unsigned int trainingClassLabel;
     unsigned int pipelineMode;
-    GRT::VectorDouble inputData;
-    GRT::VectorDouble targetVector;
+    GRT::VectorFloat inputData;
+    GRT::VectorFloat targetVector;
     bool newDataReceived;
     bool recordTrainingData;
     bool predictionModeEnabled;
@@ -192,7 +192,7 @@ protected:
     GRT::RegressionData regressionTestData;
     GRT::TimeSeriesClassificationData timeseriesClassificationTrainingData;
     GRT::TimeSeriesClassificationData timeseriesClassificationTestData;
-    GRT::MatrixDouble timeseriesSample;
+    GRT::MatrixFloat timeseriesSample;
     GRT::UnlabelledData clusterTrainingData;
     GRT::UnlabelledData clusterTestData;
     GRT::GestureRecognitionPipeline pipeline;

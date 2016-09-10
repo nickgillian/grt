@@ -26,7 +26,7 @@ using namespace LIBSVM;
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to indentify the object
-std::string SVM::id = "DecisionTree";
+std::string SVM::id = "SVM";
 std::string SVM::getId() { return SVM::id; }
 
 //Register the SVM module with the Classifier base class
@@ -290,7 +290,7 @@ bool SVM::validateProblemAndParameters(){
     const char *errorMsg = svm_check_parameter(&prob,&param);
     
     if( errorMsg ){
-        errorLog << "validateProblemAndParameters() - Parameters do not match problem!" << std::endl;
+        errorLog << "validateProblemAndParameters() - Parameters do not match problem! error: " << errorMsg << std::endl;
         return false;
     }
     

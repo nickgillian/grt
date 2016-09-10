@@ -822,7 +822,7 @@ bool TimeSeriesClassificationData::spiltDataIntoKFolds(const UINT K,const bool u
     crossValidationIndexs.clear();
 
     //K can not be zero
-    if( K > totalNumSamples ){
+    if( K == 0 ){
         errorLog << "spiltDataIntoKFolds(UINT K) - K can not be zero!" << std::endl;
         return false;
     }
