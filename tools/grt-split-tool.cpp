@@ -39,15 +39,15 @@ int main(int argc, char * argv[])
     parser.setWarningLoggingEnabled( false );
 
     //Add some options and identifiers that can be used to get the results
-    parser.addOption( "--split-perc", "split-percentage" );
-    parser.addOption( "--use-strat", "stratified-sampling" );
+    parser.addOption( "--split-perc", "split-percentage", 80 ); //Set the default split percentage to 80% (80% train, 20% test)
+    parser.addOption( "--use-strat", "stratified-sampling", true );
 
     //Parse the command line
     parser.parse( argc, argv );
 
     //Get the options
-    parser.get( "split-percentage", splitPercentage, (UINT)80 );
-    parser.get( "stratified-sampling", useStratifiedSampling, true );
+    parser.get( "split-percentage", splitPercentage );
+    parser.get( "stratified-sampling", useStratifiedSampling );
 
     infoLog << "- Loading main dataset: " << inputFilename << endl;
 

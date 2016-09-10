@@ -187,6 +187,15 @@ public:
         return sum;
     }
 
+    /**
+     Gets the classLikelihoods associated with this result. This is only useful in CLASSIFICATION_MODE.
+     
+     @return returns the classLikelihoods vector, there will be one element for each class in the original model
+     */
+    VectorFloat getClassLikelihoods() const{
+        return classLikelihoods;
+    }
+
 protected:
 	unsigned int testMode;
 	unsigned int testIteration;

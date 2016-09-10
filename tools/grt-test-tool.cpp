@@ -21,7 +21,13 @@ bool printUsage(){
     return true;
 }
 
-bool test( CommandLineParser &parser );
+enum Mode{
+  CLASSIFICATION_MODE=0,
+  REGRESSION_MODE
+};
+
+bool test_classification( CommandLineParser &parser );
+bool test_regression( CommandLineParser &parser );
 bool saveResults( const GestureRecognitionPipeline &pipeline, const string &filename );
 
 int main(int argc, char * argv[])
@@ -40,25 +46,38 @@ int main(int argc, char * argv[])
     parser.setWarningLoggingEnabled( false );
 
     //Add some options and identifiers that can be used to get the results
-    parser.addOption( "-f", "dataset-filename" );
-    parser.addOption( "-m", "model-filename" );
-    parser.addOption( "-r", "results-filename" );
+    parser.addOption( "-f", "dataset-filename" ); //This should be supplied by the user as an input argument
+    parser.addOption( "-m", "model-filename", "model.grt" );
+    parser.addOption( "-r", "results-filename", "results.txt" );
+    parser.addOption( "--mode", "mode" );
 
     //Parse the command line
     parser.parse( argc, argv );
 
-    //Test the model
-    if( test( parser ) ){
-        infoLog << "Model Tested!" << endl;
-        return EXIT_SUCCESS;
-    }
+    //Get the mode
+    Mode mode = CLASSIFICATION_MODE;
 
-    infoLog << "Failed to test model!" << endl;
-    
+    switch( mode ){
+      case CLASSIFICATION_MODE:
+          if( test_classification( parser ) ){
+            return EXIT_SUCCESS;
+          }
+        break;
+      case REGRESSION_MODE:
+          if( test_regression( parser ) ){
+            return EXIT_SUCCESS;
+          }
+        break;
+      default:
+        errorLog << "Unkown mode!" << endl;
+        return EXIT_FAILURE;
+        break;
+    }
+ 
     return EXIT_FAILURE;
 }
 
-bool test( CommandLineParser &parser ){
+bool test_classification( CommandLineParser &parser ){
 
     infoLog << "Testing model..." << endl;
 
@@ -81,7 +100,13 @@ bool test( CommandLineParser &parser ){
     }
 
     //Get the model filename
-    parser.get("results-filename",resultsFilename,string("results.txt"));
+    if( !parser.get("results-filename",resultsFilename) ){
+        errorLog << "Failed to parse results filename from command line! You can set the results filename using the -r." << endl;
+        printUsage();
+        return false; 
+    }
+
+    std::cout << "RESULTS FILENAME: " << resultsFilename << endl;
 
     //Load the pipeline from a file
     GestureRecognitionPipeline pipeline;
@@ -109,6 +134,70 @@ bool test( CommandLineParser &parser ){
     infoLog << "- Num training samples: " << data.getNumSamples() << endl;
     infoLog << "- Num dimensions: " << N << endl;
     infoLog << "- Num classes: " << data.getNumClasses() << endl;
+
+    //Test the classifier
+    if( !pipeline.test( data ) ){
+        errorLog << "Failed to test pipeline!" << endl;
+        return false;
+    }
+
+    infoLog << "- Test complete in " << pipeline.getTestTime()/1000.0 << " seconds with and accuracy of: " << pipeline.getTestAccuracy() << endl;
+
+    return saveResults( pipeline, resultsFilename );
+}
+
+bool test_regression( CommandLineParser &parser ){
+
+    infoLog << "Testing model..." << endl;
+
+    string datasetFilename = "";
+    string modelFilename = "";
+    string resultsFilename = "";
+
+    //Get the model filename
+    if( !parser.get("model-filename",modelFilename) ){
+        errorLog << "Failed to parse model filename from command line! You can set the model filename using the -m." << endl;
+        printUsage();
+        return false;
+    }
+
+    //Get the filename
+    if( !parser.get("dataset-filename",datasetFilename) ){
+        errorLog << "Failed to parse dataset filename from command line! You can set the dataset filename using the -f." << endl;
+        printUsage();
+        return false;
+    }
+
+    //Get the model filename
+    parser.get("results-filename",resultsFilename);
+
+    //Load the pipeline from a file
+    GestureRecognitionPipeline pipeline;
+
+    infoLog << "- Loading model..." << endl;
+
+    if( !pipeline.load( modelFilename ) ){
+        errorLog << "Failed to load model from file: " << modelFilename << endl;
+        printUsage();
+        return false;
+    }
+
+    infoLog << "- Model loaded!" << endl;
+
+    //Load the data to test the model
+    RegressionData data;
+
+    infoLog << "- Loading Training Data..." << endl;
+    if( !data.load( datasetFilename ) ){
+        errorLog << "Failed to load data!\n";
+        return false;
+    }
+
+    const unsigned int N = data.getNumInputDimensions();
+    const unsigned int T = data.getNumTargetDimensions();
+    infoLog << "- Num training samples: " << data.getNumSamples() << endl;
+    infoLog << "- Num input dimensions: " << N << endl;
+    infoLog << "- Num target dimensions: " << T << endl;
 
     //Test the classifier
     if( !pipeline.test( data ) ){
@@ -160,6 +249,15 @@ bool saveResults( const GestureRecognitionPipeline &pipeline, const string &file
             file << confusionMatrix[i][j];
             if( j+1 < confusionMatrix.getNumCols() ) file << "\t";
         }file << endl;
+    }
+
+    Vector< TestInstanceResult > results = pipeline.getTestInstanceResults();
+    for(UINT i=0; i<results.getSize(); i++){
+      file << results[i].getClassLabel() << "\t" << results[i].getPredictedClassLabel();
+      for(UINT j=0; j<pipeline.getNumClassesInModel(); j++){
+        file << "\t" << results[i].getClassLikelihoods()[j];
+      }
+      file << endl;
     }
 
     file.close();

@@ -101,14 +101,14 @@ T grt_scale(const T &x,const T &minSource,const T &maxSource,const T &minTarget,
 
 template< class T >
 std::string grt_to_str( const T &value ){
-    std::stringstream s;
+    std::ostringstream s;
     s << value;
     return s.str();
 }
 
 template< class T >
 T grt_from_str( const std::string &str ){
-	std::stringstream s( str );
+    std::stringstream s( str );
     T i;
     s >> i;
     return i;

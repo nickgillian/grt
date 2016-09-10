@@ -34,6 +34,11 @@ bool printHelp(){
   infoLog << "\t--help: prints this help message\n";
   infoLog << "\t-f: sets the filename the training data will be loaded from. The training data can either be a GRT ClassificationData file or a CSV file (see help below)\n";
   infoLog << "\t--model: sets the filename the Softmax model will be saved to\n";
+  infoLog << "\t--batch-size: sets the number of training samples used in each batch update of the learning algorithm (default: 50)\n";
+  infoLog << "\t--learning-rate: sets the rate at which the learning algorithm will update the model weights at each batch update (default: 0.01)\n";
+  infoLog << "\t--min-change: sets the minimum change needed to signal convergence of the learning algorithm (default: 0.001)\n";
+  infoLog << "\t--max-epoch: sets the maximum number of epochs that the learning algorithm can run for, an epoch is one iteration over the entire training dataset (default: 500)\n";
+  infoLog << "\t--training-log-file: \n";
   infoLog << "\nhelp:\n" << help;
   infoLog << endl;
   return true;
@@ -57,16 +62,19 @@ int main(int argc, char * argv[])
     parser.setWarningLoggingEnabled( false );
 
     //Add some options and identifiers that can be used to get the results
-    parser.addOption( "-f", "filename" );
-    parser.addOption( "-n", "num-input-dimensions" );
-    parser.addOption( "-t", "num-target-dimensions" );
-    parser.addOption( "--model", "model-filename" );
     parser.addOption( "--help", "help" );
+    parser.addOption( "-f", "filename" );
+    parser.addOption( "--model", "model-filename" );
+    parser.addOption( "--batch-size", "batch-size", 50 ); //Set the default batch size to 50
+    parser.addOption( "--learning-rate", "learning-rate", 0.01 ); //Set the default learning rate to 0.01
+    parser.addOption( "--min-change", "min-change", 0.001 ); //Set the default min change to 0.001
+    parser.addOption( "--max-epoch", "max-epoch", 500 ); //Set the default max number of epochs to 500
+    parser.addOption( "--log", "log-filename" );
 
     //Parse the command line
     parser.parse( argc, argv );
 
-    if( parser.optionParsed("help") ){
+    if( parser.getOptionParsed("help") ){
       printHelp();
       return EXIT_SUCCESS;
     }
@@ -89,7 +97,6 @@ bool train( CommandLineParser &parser ){
 
     string trainDatasetFilename = "";
     string modelFilename = "";
-    string defaultFilename = "linear-regression-model.grt";
 
     //Get the filename
     if( !parser.get("filename",trainDatasetFilename) ){
@@ -99,7 +106,7 @@ bool train( CommandLineParser &parser ){
     }
 
     //Get the model filename
-    parser.get("model-filename",modelFilename,defaultFilename);
+    parser.get("model-filename",modelFilename);
 
     //Load the training data to train the model
     ClassificationData trainingData;
@@ -115,13 +122,22 @@ bool train( CommandLineParser &parser ){
     infoLog << "- Num training samples: " << trainingData.getNumSamples() << endl;
     infoLog << "- Num input dimensions: " << N << endl;
     infoLog << "- Num classes: " << K << endl;
+    
+    float learningRate = 0;
+    float minChange = 0;
+    unsigned int maxEpoch = 0;
+    unsigned int batchSize = 0;
+
+    parser.get( "learning-rate", learningRate );
+    parser.get( "min-change", minChange );
+    parser.get( "max-epoch", maxEpoch );
+    parser.get( "batch-size", batchSize );
+
+    infoLog << "Softmax settings: learning-rate: " << learningRate << " min-change: " << minChange << " max-epoch: " << maxEpoch << " batch-size: " << batchSize << endl;
 
     //Create a new softmax instance
     bool enableScaling = true;
-    float learningRate = 0.01;
-    float minChange = 1.0e-5;
-    unsigned int maxEpochs = 1000;
-    Softmax classifier(enableScaling,learningRate,minChange,maxEpochs);
+    Softmax classifier(enableScaling,learningRate,minChange,maxEpoch,batchSize);
 
     //Create a new pipeline that will hold the classifier
     GestureRecognitionPipeline pipeline;
@@ -147,6 +163,26 @@ bool train( CommandLineParser &parser ){
     }else warningLog << "Failed to save model to file: " << modelFilename << endl;
 
     infoLog << "- TrainingTime: " << pipeline.getTrainingTime() << endl;
+    
+    string logFilename = "";
+    if( parser.get( "log-filename", logFilename ) && logFilename.length() > 0 ){
+      infoLog << "Writing training log to: " << logFilename << endl;
+
+      fstream logFile( logFilename.c_str(), fstream::out );
+
+      if( !logFile.is_open() ){
+        errorLog << "Failed to open training log file: " << logFilename << endl;
+        return false;
+      }
+
+      Vector< TrainingResult > trainingResults = pipeline.getTrainingResults();
+
+      for(UINT i=0; i<trainingResults.getSize(); i++){
+        logFile << trainingResults[i].getTrainingIteration() << "\t" << trainingResults[i].getAccuracy() << endl;
+      }
+
+      logFile.close();
+    }
 
     return true;
 }
