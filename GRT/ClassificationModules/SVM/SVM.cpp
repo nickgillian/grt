@@ -284,7 +284,7 @@ bool SVM::validateProblemAndParameters(){
     const char *errorMsg = svm_check_parameter(&prob,&param);
     
     if( errorMsg ){
-        errorLog << "validateProblemAndParameters() - Parameters do not match problem!" << std::endl;
+        errorLog << "validateProblemAndParameters() - Parameters do not match problem! error: " << errorMsg << std::endl;
         return false;
     }
     
