@@ -14,11 +14,15 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMA
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
 #ifndef GRT_DICT_HEADER
 #define GRT_DICT_HEADER
+
 #include "GRTTypedefs.h"
 #include "DynamicType.h"
+
 GRT_BEGIN_NAMESPACE
+
 /**
 	@brief This class implements a flexible dictionary that supports multiple data types.  Elements in the dictionary
 	consist of key-value pairs, where keys are std::strings and values can be any data type, as they are stored as a
