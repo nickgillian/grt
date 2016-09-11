@@ -44,6 +44,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <atomic>
 #include <thread>
 #include <mutex>
+#include <memory>
 #endif //GRT_CXX11_ENABLED
 
 //Include the main GRT version and typedef headers
@@ -79,6 +80,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "ObserverManager.h"
 #include "ThreadPool.h"
 #include "DataType.h"
+#include "DynamicType.h"
+#include "Dict.h"
 
 GRT_BEGIN_NAMESPACE
 
