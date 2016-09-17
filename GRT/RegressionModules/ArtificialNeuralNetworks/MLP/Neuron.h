@@ -40,7 +40,7 @@ public:
     Neuron();
     ~Neuron();
     
-    bool init(const UINT numInputs,const UINT actvationFunction);
+    bool init(const UINT numInputs,const UINT actvationFunction,const Float minWeightRange = -0.1, const Float maxWeightRange = 0.1);
     void clear();
     Float fire(const VectorFloat &x);
 	Float getDerivative(const Float &y);
@@ -54,7 +54,7 @@ public:
     UINT numInputs;
     UINT activationFunction;
     
-    enum ActivationFunctions{LINEAR=0,SIGMOID,BIPOLAR_SIGMOID,NUMBER_OF_ACTIVATION_FUNCTIONS};
+    enum ActivationFunctions{LINEAR=0,SIGMOID,BIPOLAR_SIGMOID,TANH,NUMBER_OF_ACTIVATION_FUNCTIONS};
 };
 
 GRT_END_NAMESPACE

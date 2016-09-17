@@ -96,26 +96,30 @@ int main (int argc, const char * argv[])
     //Setup the MLP, the number of input and output neurons must match the dimensionality of the training/test datasets
     MLP mlp;
     unsigned int numInputNeurons = trainingData.getNumInputDimensions();
-    unsigned int numHiddenNeurons = 5;
+    unsigned int numHiddenNeurons = 2;
     unsigned int numOutputNeurons = trainingData.getNumTargetDimensions();
+    unsigned int inputActivationFunction = Neuron::ActivationFunctions::LINEAR;
+    unsigned int hiddenActivationFunction = Neuron::ActivationFunctions::SIGMOID;
+    unsigned int outputActivationFunction = Neuron::ActivationFunctions::SIGMOID;
     
     //Initialize the MLP
-    mlp.init(numInputNeurons, numHiddenNeurons, numOutputNeurons);
+    mlp.init(numInputNeurons, numHiddenNeurons, numOutputNeurons, inputActivationFunction, hiddenActivationFunction, outputActivationFunction );
     
     //Set the training settings
     mlp.setMaxNumEpochs( 1000 ); //This sets the maximum number of epochs (1 epoch is 1 complete iteration of the training data) that are allowed
-    mlp.setMinChange( 1.0e-10 ); //This sets the minimum change allowed in training error between any two epochs
-    mlp.setLearningRate( 0.001 ); //This sets the rate at which the learning algorithm updates the weights of the neural network
-    mlp.setNumRandomTrainingIterations( 5 ); //This sets the number of times the MLP will be trained, each training iteration starts with new random values
-    mlp.setUseValidationSet( true ); //This sets aside a small portiion of the training data to be used as a validation set to mitigate overfitting
+    mlp.setMinChange( 0 ); //This sets the minimum change allowed in training error between any two epochs
+    mlp.setLearningRate( 0.1 ); //This sets the rate at which the learning algorithm updates the weights of the neural network
+    mlp.setMomentum( 0.5 );
+    mlp.setNumRandomTrainingIterations( 1 ); //This sets the number of times the MLP will be trained, each training iteration starts with new random values
+    mlp.setUseValidationSet( false ); //This sets aside a small portiion of the training data to be used as a validation set to mitigate overfitting
     mlp.setValidationSetSize( 20 ); //Use 20% of the training data for validation during the training phase
-    mlp.setRandomiseTrainingOrder( true ); //Randomize the order of the training data so that the training algorithm does not bias the training
+    mlp.setRandomiseTrainingOrder( false ); //Randomize the order of the training data so that the training algorithm does not bias the training
     
     //The MLP generally works much better if the training and prediction data is first scaled to a common range (i.e. [0.0 1.0])
-    mlp.enableScaling( true );
+    mlp.enableScaling( false );
     
     //Add the MLP to the pipeline
-    pipeline.setRegressifier( mlp );
+    pipeline << mlp;
     
     //Train the MLP model
     cout << "Training MLP model...\n";
@@ -137,7 +141,7 @@ int main (int argc, const char * argv[])
     
     //Run back over the test data again and output the results to a file 
     fstream file;
-    file.open("MLPResultsData.csv", fstream::out);
+    file.open("mlp_results.csv", fstream::out);
     
     VectorFloat inputVector, targetVector, outputVector;
     for(UINT i=0; i<testData.getNumSamples(); i++){

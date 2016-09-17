@@ -279,13 +279,13 @@ const UINT outputLayerActivationFunction){
     
     for(UINT i=0; i<numHiddenNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of input neurons
-        hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction);
+        hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction,-0.2,0.2);
         hiddenLayer[i].gamma = gamma;
     }
     
     for(UINT i=0; i<numOutputNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of hidden neurons
-        outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction);
+        outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction,-2.0,2.0);
         outputLayer[i].gamma = gamma;
     }
     
@@ -417,8 +417,8 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     UINT bestIter = 0;
     UINT bestIndex = 0;
     UINT classLabel = 0;
-    Float alpha = learningRate;
-    Float beta = momentum;
+    Float lRate = learningRate;
+    Float lMomentum = momentum;
     Float error = 0;
     Float lastError = 0;
     Float accuracy = 0;
@@ -467,7 +467,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
                 const VectorFloat &targetVector = trainingData[ indexList[i] ].getTargetVector();
                 
                 //Perform the back propagation
-                backPropError = back_prop(trainingExample,targetVector,alpha,beta);
+                backPropError = back_prop(trainingExample,targetVector,lRate,lMomentum);
                 
                 //debugLog << "i: " << i << " backPropError: " << backPropError << std::endl;
                 
@@ -720,6 +720,8 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     for(UINT i=0; i<M; i++) indexList[i] = i;
     
     for(UINT iter=0; iter<numRandomTrainingIterations; iter++){
+
+        std::cout << "iter: " << iter << std::endl;
         
         epoch = 0;
         keepTraining = true;
@@ -735,15 +737,24 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
         }
         
         while( keepTraining ){
+
+            std::cout << "epoch: " << epoch << std::endl;
             
             //Perform one training epoch
             totalSquaredTrainingError = 0;
             
             for(UINT i=0; i<M; i++){
+
+                std::cout << "i: " << i << std::endl;
+
                 //Get the i'th training and target Vectors
-                const VectorFloat &trainingExample = trainingData[ indexList[i] ].getInputVector();
-                const VectorFloat &targetVector = trainingData[ indexList[i] ].getTargetVector();
+                const UINT randomIndex = indexList[i];
+                const VectorFloat &trainingExample = trainingData[ randomIndex ].getInputVector();
+                const VectorFloat &targetVector = trainingData[ randomIndex ].getTargetVector();
                 
+                std::cout << "input: "; for(UINT j=0; j<trainingExample.getSize(); j++) std::cout << trainingExample[j] << " "; std::cout << std::endl;
+                std::cout << "target: "; for(UINT j=0; j<targetVector.getSize(); j++) std::cout << targetVector[j] << " "; std::cout << std::endl;
+
                 //Perform the back propagation
                 Float backPropError = back_prop(trainingExample,targetVector,alpha,beta);
                 
@@ -756,6 +767,18 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
                 
                 //Compute the error for the i'th example
                 totalSquaredTrainingError += backPropError; //The backPropError is already squared
+            }
+
+            std::cout << "current status: \n";
+            for(UINT i=0; i<M; i++){
+                const VectorFloat &trainingExample = trainingData[ i ].getInputVector();
+                const VectorFloat &targetVector = trainingData[ i ].getTargetVector();
+                VectorFloat y = feedforward( trainingExample );
+                std::cout << "input: "; for(UINT j=0; j<trainingExample.getSize(); j++) std::cout << trainingExample[j] << " "; std::cout << std::endl;
+                std::cout << "output: "; for(UINT j=0; j<y.getSize(); j++) std::cout << y[j] << " "; std::cout << std::endl;
+                std::cout << "target: "; for(UINT j=0; j<targetVector.getSize(); j++) std::cout << targetVector[j] << " "; std::cout << std::endl;
+                std::cout << "error: " << Util::squaredEuclideanDistance( y, targetVector ) << std::endl;
+
             }
             
             if( checkForNAN() ){
@@ -770,9 +793,9 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
                 totalSquaredTrainingError = 0;
                 
                 //Iterate over the validation samples
-                for(UINT i=0; i<numValidationSamples; i++){
-                    const VectorFloat &trainingExample = validationData[i].getInputVector();
-                    const VectorFloat &targetVector = validationData[i].getTargetVector();
+                for(UINT n=0; n<numValidationSamples; n++){
+                    const VectorFloat &trainingExample = validationData[n].getInputVector();
+                    const VectorFloat &targetVector = validationData[n].getTargetVector();
                     
                     VectorFloat y = feedforward(trainingExample);
                     
@@ -849,35 +872,47 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     return true;
 }
 
-Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targetVector,const Float alpha,const Float beta){
+Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targetVector,const Float learningRate,const Float learningMomentum){
     
+    UINT i,j,k = 0;
     Float update = 0;
     Float sum = 0;
-    Float omBeta = 1.0 - beta;
+    Float omBeta = 1.0 - learningMomentum;
+
+    std::cout << "back_prop\n";
     
     //Forward propagation
     feedforward(trainingExample,inputNeuronsOuput,hiddenNeuronsOutput,outputNeuronsOutput);
+
+    std::cout << "output: "; for(k=0; k<numOutputNeurons; k++) std::cout << outputNeuronsOutput[k] << " "; std::cout << std::endl;
     
     //Compute the error of the output layer: the derivative of the function times the error of the output
-    for(UINT i=0; i<numOutputNeurons; i++){
-        deltaO[i] = outputLayer[i].getDerivative( outputNeuronsOutput[i] ) * (targetVector[i]-outputNeuronsOutput[i]);
+    for(k=0; k<numOutputNeurons; k++){
+        deltaO[k] = outputLayer[k].getDerivative( outputNeuronsOutput[k] ) * (targetVector[k]-outputNeuronsOutput[k]);
     }
+    std::cout << "deltaO: "; for(k=0; k<numOutputNeurons; k++) std::cout << deltaO[k] << " "; std::cout << std::endl;
     
     //Compute the error of the hidden layer
-    for(UINT i=0; i<numHiddenNeurons; i++){
+    for(j=0; j<numHiddenNeurons; j++){
         sum = 0;
-        for(UINT j=0; j<numOutputNeurons; j++){
-            sum += outputLayer[j].weights[i] * deltaO[j];
+        for(k=0; k<numOutputNeurons; k++){
+            sum += outputLayer[k].weights[j] * deltaO[k];
         }
-        deltaH[i] = hiddenLayer[i].getDerivative( hiddenNeuronsOutput[i] ) * sum;
+        deltaH[j] = hiddenLayer[j].getDerivative( hiddenNeuronsOutput[j] ) * sum;
     }
+
+    std::cout << "deltaH: "; for(j=0; j<numHiddenNeurons; j++) std::cout << deltaH[j] << " "; std::cout << std::endl;
     
+    /*
     //Update the hidden weights: old hidden weights + (learningRate * inputToTheHiddenNeuron * deltaHidden )
-    for(UINT i=0; i<numHiddenNeurons; i++){
-        for(UINT j=0; j<numInputNeurons; j++){
+    for(j=0; j<numHiddenNeurons; j++){
+        for(i=0; i<numInputNeurons; i++){
             //Compute the update
             //update = alpha * ((beta * hiddenLayer[i].previousUpdate[j]) + (omBeta * inputNeuronsOuput[j])) * deltaH[i];
-            update = alpha * inputNeuronsOuput[j] * deltaH[i];
+            //update = learningRate * inputNeuronsOuput[i] * deltaH[k];
+            update = deltaH[i]
+
+            //delta_w = tmp_error * prev_neurons[i].value + learning_momentum * weights_deltas[i];
             
             //Update the weights
             hiddenLayer[i].weights[j] += update;
@@ -886,13 +921,35 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
             hiddenLayer[i].previousUpdate[j] = update;
         }
     }
-    
+    */
+
     //Update the output weights
-    for(UINT i=0; i<numOutputNeurons; i++){
-        for(UINT j=0; j<numHiddenNeurons; j++){
+    for(j=0; j<numHiddenNeurons; j++){
+        for(k=0; k<numOutputNeurons; k++){
+            update = deltaO[k] * hiddenNeuronsOutput[j];
+            outputLayer[k].weights[j] += learningRate*update + learningMomentum*outputLayer[k].previousUpdate[j];
+            outputLayer[k].previousUpdate[j] = update;
+            std::cout << "output: " << k << " update: " << update << " weight: " << outputLayer[k].weights[j] << std::endl;
+        }
+    }
+    
+    //Update the input weights
+    for(i=0; i<numInputNeurons; i++){
+        for(j=0; j<numHiddenNeurons; j++){
+            update = deltaH[j] * inputNeuronsOuput[i];
+            hiddenLayer[j].weights[i] += learningRate*update + learningMomentum*hiddenLayer[j].previousUpdate[i];
+            hiddenLayer[j].previousUpdate[i] = update;
+            std::cout << "hidden: " << j << " update: " << update << " weight: " << hiddenLayer[j].weights[i] << std::endl;
+        }
+    }
+
+    /*
+    //Update the output weights
+    for(i=0; i<numOutputNeurons; i++){
+        for(j=0; j<numHiddenNeurons; j++){
             //Compute the update
             //update = alpha * ((beta * outputLayer[i].previousUpdate[j]) + (omBeta * hiddenNeuronsOutput[j])) * deltaO[i];
-            update = alpha * hiddenNeuronsOutput[j] * deltaO[i];
+            update = learningRate * hiddenNeuronsOutput[j] * deltaO[i];
             
             //Update the weights
             outputLayer[i].weights[j] += update;
@@ -901,38 +958,44 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
             outputLayer[i].previousUpdate[j] = update;
         }
     }
+    */
     
     //Update the hidden bias
-    for(UINT i=0; i<numHiddenNeurons; i++){
+    for(j=0; j<numHiddenNeurons; j++){
         //Compute the update
         //update = alpha * ((beta * hiddenLayer[i].previousBiasUpdate) + (omBeta * deltaH[i]));
-        update = alpha * deltaH[i];
+        update = learningRate * deltaH[j];
         
         //Update the bias
-        hiddenLayer[i].bias += update;
+        hiddenLayer[j].bias += update;
         
         //Store the update
-        hiddenLayer[i].previousBiasUpdate = update;
+        hiddenLayer[j].previousBiasUpdate = update;
+
+        std::cout << "hidden bias: " << j << " update: " << update << " weight: " << hiddenLayer[j].bias << std::endl;
     }
     
     //Update the output bias
-    for(UINT i=0; i<numOutputNeurons; i++){
+    for(k=0; k<numOutputNeurons; k++){
         //Compute the update
         //update = alpha * (beta * outputLayer[i].previousBiasUpdate) + (omBeta * deltaO[i]);
-        update = alpha * deltaO[i];
+        update = learningRate * deltaO[k];
         
         //Update the bias
-        outputLayer[i].bias += update;
+        outputLayer[k].bias += update;
         
         //Store the update
-        outputLayer[i].previousBiasUpdate = update;
+        outputLayer[k].previousBiasUpdate = update;
+        std::cout << "output bias: " << k << " update: " << update << " weight: " << outputLayer[k].bias << std::endl;
     }
     
     //Compute the squared error between the output of the network and the target Vector
     Float error = 0;
-    for(UINT i=0; i<numOutputNeurons; i++){
-        error += SQR( targetVector[i] - outputNeuronsOutput[i] );
+    for(k=0; k<numOutputNeurons; k++){
+        error += 0.5 * SQR( targetVector[k] - outputNeuronsOutput[k] );
     }
+
+    std::cout << "back_prop error: " << error << std::endl;
     
     return error;
 }
