@@ -234,7 +234,7 @@ public:
     Computes the dot product between the two input vectors. The two input vectors must have the same size.
 
     @param a: the first vector for the dot product
-    @param a: the second vector for the dot product
+    @param b: the second vector for the dot product
 	@return double: the dot product between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
     static Float dotProduct(const VectorFloat &a,const VectorFloat &b);
@@ -243,17 +243,26 @@ public:
     Computes the euclidean distance between the two input vectors. The two input vectors must have the same size.
 
     @param a: the first vector for the euclidean distance
-    @param a: the second vector for the euclidean distance
+    @param b: the second vector for the euclidean distance
 	@return the euclidean distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
     static Float euclideanDistance(const VectorFloat &a,const VectorFloat &b);
+
+    /**
+    Computes the squared euclidean distance between the two input vectors. The two input vectors must have the same size.
+
+    @param a: the first vector for the euclidean distance
+    @param b: the second vector for the euclidean distance
+    @return the euclidean distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
+    */
+    static Float squaredEuclideanDistance(const VectorFloat &a,const VectorFloat &b);
 
     /**
     Computes the manhattan distance between the two input vectors. The two input vectors must have the same size.
     The manhattan distance is also known as the L1 norm, taxicab distance, city block distance, or rectilinear distance.
 
     @param a: the first vector for the manhattan distance
-    @param a: the second vector for the manhattan distance
+    @param b: the second vector for the manhattan distance
 	@return the manhattan distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
     static Float manhattanDistance(const VectorFloat &a,const VectorFloat &b);
@@ -264,7 +273,7 @@ public:
     with 0 usually indicating independence, and in-between values indicating intermediate similarity or dissimilarity.
 
     @param a: the first vector for the cosine distance
-    @param a: the second vector for the cosine distance
+    @param b: the second vector for the cosine distance
 	@return the cosine distance between the two input vectors, if the two input vectors are not the same size then the dist will be INF
 	*/
     static Float cosineDistance(const VectorFloat &a,const VectorFloat &b);

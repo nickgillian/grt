@@ -196,6 +196,16 @@ Float Util::euclideanDistance(const VectorFloat &a,const VectorFloat &b){
 	return sqrt( d );
 }
 
+Float Util::squaredEuclideanDistance(const VectorFloat &a,const VectorFloat &b){
+    if( a.size() != b.size() ) return std::numeric_limits< Float >::max();
+    std::size_t N = a.size();
+    Float d = 0;
+    for(std::size_t i=0; i<N; i++){
+        d += (a[i]-b[i])*(a[i]-b[i]);
+    }
+    return d;
+}
+
 Float Util::manhattanDistance(const VectorFloat &a,const VectorFloat &b){
 	if( a.size() != b.size() ) return std::numeric_limits< Float >::max();
 	std::size_t N = a.size();
