@@ -61,9 +61,9 @@ Float Util::scale(const Float &x,const Float &minSource,const Float &maxSource,c
     return (((x-minSource)*(maxTarget-minTarget))/(maxSource-minSource))+minTarget;
 }
 
-std::string Util::timeAsString(const bool includeDate=true){
+std::string Util::timeAsString(const bool includeDate){
     TimeStamp timestamp("now");
-    return ts.getTimeStampAsString( includeDate );
+    return timestamp.getTimeStampAsString( includeDate );
 }
     
 std::string Util::intToString(const int &i){
