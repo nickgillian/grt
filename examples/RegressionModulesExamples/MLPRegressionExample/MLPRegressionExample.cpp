@@ -107,7 +107,7 @@ int main (int argc, const char * argv[])
     
     //Set the training settings
     mlp.setMaxNumEpochs( 1000 ); //This sets the maximum number of epochs (1 epoch is 1 complete iteration of the training data) that are allowed
-    mlp.setMinChange( 0 ); //This sets the minimum change allowed in training error between any two epochs
+    mlp.setMinChange( 1.0e-10 ); //This sets the minimum change allowed in training error between any two epochs
     mlp.setLearningRate( 0.1 ); //This sets the rate at which the learning algorithm updates the weights of the neural network
     mlp.setMomentum( 0.5 );
     mlp.setNumRandomTrainingIterations( 1 ); //This sets the number of times the MLP will be trained, each training iteration starts with new random values
