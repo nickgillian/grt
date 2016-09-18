@@ -28,12 +28,16 @@
  The trained MLP algorithm is then used to perform regression on the test data.
  
  This example shows you how to:
- - Create an initialize the MLP algorithm for regression
+ - Create and initialize the MLP algorithm for regression
  - Create a new instance of a GestureRecognitionPipeline and add the regression instance to the pipeline
  - Load some RegressionData from a file
  - Train the MLP algorithm using the training dataset
  - Test the MLP algorithm using the test dataset
  - Save the output of the MLP algorithm to a file
+
+ To use this example, run the example and pass in two arguments pointing to two files, one for training the model and one for testing the model. You 
+ can find example datasets in the main GRT data directory, a good example dataset to use here is the xor.grt file (you can use the same file for training
+ and testing if needed).
 */
 
 //You might need to set the specific path of the GRT header relative to your project
@@ -100,7 +104,7 @@ int main (int argc, const char * argv[])
     unsigned int numOutputNeurons = trainingData.getNumTargetDimensions();
     Neuron::Type inputActivationFunction = Neuron::LINEAR;
     Neuron::Type hiddenActivationFunction = Neuron::TANH;
-    Neuron::Type outputActivationFunction = Neuron::TANH;
+    Neuron::Type outputActivationFunction = Neuron::LINEAR;
     
     //Initialize the MLP
     mlp.init(numInputNeurons, numHiddenNeurons, numOutputNeurons, inputActivationFunction, hiddenActivationFunction, outputActivationFunction );
@@ -116,7 +120,7 @@ int main (int argc, const char * argv[])
     mlp.setRandomiseTrainingOrder( false ); //Randomize the order of the training data so that the training algorithm does not bias the training
     
     //The MLP generally works much better if the training and prediction data is first scaled to a common range (i.e. [0.0 1.0])
-    mlp.enableScaling( false );
+    mlp.enableScaling( true );
     
     //Add the MLP to the pipeline
     pipeline << mlp;
