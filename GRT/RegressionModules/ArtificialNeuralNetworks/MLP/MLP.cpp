@@ -856,30 +856,29 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
     
     UINT i,j,k = 0;
     Float update = 0;
-    Float sum = 0;
     Float error = 0;
     Float sqrError = 0;
     
-    //Forward propagation
+    //Forward propagation based on the current weights
     feedforward(trainingExample,inputNeuronsOuput,hiddenNeuronsOutput,outputNeuronsOutput);
     
-    //Compute the error of the output layer: the derivative of the function times the error of the output
+    //Compute the error of the output layer: the derivative of the output neuron, times the error of the output
     for(k=0; k<numOutputNeurons; k++){
         error = targetVector[k]-outputNeuronsOutput[k];
         sqrError += 0.5 * SQR( error );
         deltaO[k] = outputLayer[k].getDerivative( outputNeuronsOutput[k] ) * error;
     }
     
-    //Compute the error of the hidden layer
+    //Compute the error of the hidden layer: the derivative of the hidden neuron, times the total error of the hidden output 
     for(j=0; j<numHiddenNeurons; j++){
-        sum = 0;
+        error = 0;
         for(k=0; k<numOutputNeurons; k++){
-            sum += outputLayer[k].weights[j] * deltaO[k];
+            error += outputLayer[k].weights[j] * deltaO[k];
         }
-        deltaH[j] = hiddenLayer[j].getDerivative( hiddenNeuronsOutput[j] ) * sum;
+        deltaH[j] = hiddenLayer[j].getDerivative( hiddenNeuronsOutput[j] ) * error;
     }
 
-    //Update the output weights, new weight = old weight + learningRate * change + momenutum * previousChange
+    //Update the output weights, new weight = old weight + (learningRate * change) + (momenutum * previousChange)
     for(j=0; j<numHiddenNeurons; j++){
         for(k=0; k<numOutputNeurons; k++){
             update = deltaO[k] * hiddenNeuronsOutput[j];
@@ -887,8 +886,8 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
             outputLayer[k].previousUpdate[j] = update;
         }
     }
-    
-    //Update the input weights
+
+    //Update the hidden weights, new weight = old weight + (learningRate * change) + (momenutum * previousChange)
     for(i=0; i<numInputNeurons; i++){
         for(j=0; j<numHiddenNeurons; j++){
             update = deltaH[j] * inputNeuronsOuput[i];
@@ -897,19 +896,7 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
         }
     }
     
-    //Update the hidden bias
-    for(j=0; j<numHiddenNeurons; j++){
-        //Compute the update
-        update = learningRate*deltaH[j] + learningMomentum*hiddenLayer[j].previousBiasUpdate;
-        
-        //Update the bias
-        hiddenLayer[j].bias += update;
-        
-        //Store the update
-        hiddenLayer[j].previousBiasUpdate = update;
-    }
-    
-    //Update the output bias
+    //Update the output bias, new weight = old weight + (learningRate * change) + (momenutum * previousChange)
     for(k=0; k<numOutputNeurons; k++){
         //Compute the update
         update = learningRate*deltaO[k] + learningMomentum*outputLayer[k].previousBiasUpdate;
@@ -919,6 +906,18 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
         
         //Store the update
         outputLayer[k].previousBiasUpdate = update;
+    }
+
+    //Update the hidden bias, new weight = old weight + (learningRate * change) + (momenutum * previousChange)
+    for(j=0; j<numHiddenNeurons; j++){
+        //Compute the update
+        update = learningRate*deltaH[j] + learningMomentum*hiddenLayer[j].previousBiasUpdate;
+        
+        //Update the bias
+        hiddenLayer[j].bias += update;
+        
+        //Store the update
+        hiddenLayer[j].previousBiasUpdate = update;
     }
     
     //Return the squared error between the output of the network and the target Vector
