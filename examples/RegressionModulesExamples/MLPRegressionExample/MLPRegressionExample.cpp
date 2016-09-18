@@ -98,9 +98,9 @@ int main (int argc, const char * argv[])
     unsigned int numInputNeurons = trainingData.getNumInputDimensions();
     unsigned int numHiddenNeurons = 2;
     unsigned int numOutputNeurons = trainingData.getNumTargetDimensions();
-    unsigned int inputActivationFunction = Neuron::ActivationFunctions::LINEAR;
-    unsigned int hiddenActivationFunction = Neuron::ActivationFunctions::SIGMOID;
-    unsigned int outputActivationFunction = Neuron::ActivationFunctions::SIGMOID;
+    Neuron::Type inputActivationFunction = Neuron::LINEAR;
+    Neuron::Type hiddenActivationFunction = Neuron::TANH;
+    Neuron::Type outputActivationFunction = Neuron::TANH;
     
     //Initialize the MLP
     mlp.init(numInputNeurons, numHiddenNeurons, numOutputNeurons, inputActivationFunction, hiddenActivationFunction, outputActivationFunction );

@@ -39,7 +39,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 class GRT_API MLP : public Regressifier{
-    public:
+public:
+    enum TrainingAlgorithm{ONLINE_GRADIENT_DESCENT=0}; ///<The various training algorithms supported by the MLP algorithm
+
     /**
     Default Constructor
     */
@@ -174,8 +176,8 @@ class GRT_API MLP : public Regressifier{
     @param outputLayerActivationFunction: the activation function to use for the input layer
     @return returns true if the MLP was initialized, false otherwise
     */
-    bool init(const UINT numInputNeurons, const UINT numHiddenNeurons, const UINT numOutputNeurons, const UINT inputLayerActivationFunction,
-    const UINT hiddenLayerActivationFunction, const UINT outputLayerActivationFunction);
+    bool init(const UINT numInputNeurons, const UINT numHiddenNeurons, const UINT numOutputNeurons, const Neuron::Type inputLayerActivationFunction,
+    const Neuron::Type hiddenLayerActivationFunction, const Neuron::Type outputLayerActivationFunction);
     
     /**
     Prints the current MLP weights and coefficents to std out.
@@ -196,15 +198,15 @@ class GRT_API MLP : public Regressifier{
     @param activationFunction: the activation function you want to convert to a string
     @return returns a string representation of the activation function, returns UNKNOWN if the activation function is invalid
     */
-    std::string activationFunctionToString(const UINT activationFunction) const;
+    std::string activationFunctionToString(const Neuron::Type activationFunction) const;
     
     /**
     Gets the activation function value from a string.
     
     @param activationName: the activation function as a string
-    @return returns an UINT activation function
+    @return returns the activation function
     */
-    UINT activationFunctionFromString(const std::string activationName) const;
+    Neuron::Type activationFunctionFromString(const std::string activationName) const;
     
     /**
     Validates if the activationFunction is valid.
@@ -212,7 +214,7 @@ class GRT_API MLP : public Regressifier{
     @param activationFunction: the activation function you want to valid
     @return returns true if the activation function is valid, false otherwise
     */
-    bool validateActivationFunction(const UINT avactivationFunction) const;
+    bool validateActivationFunction(const Neuron::Type avactivationFunction) const;
     
     /**
     Gets the number of input neurons.
@@ -234,28 +236,7 @@ class GRT_API MLP : public Regressifier{
     @return returns the number of output neurons
     */
     UINT getNumOutputNeurons() const;
-    
-    /**
-    Gets the input layer activation function.
-    
-    @return returns the input layer activation function
-    */
-    UINT getInputLayerActivationFunction() const;
-    
-    /**
-    Gets the hidden layer activation function.
-    
-    @return returns the hidden layer activation function
-    */
-    UINT getHiddenLayerActivationFunction() const;
-    
-    /**
-    Gets the output layer activation function.
-    
-    @return returns the output layer activation function
-    */
-    UINT getOutputLayerActivationFunction() const;
-    
+
     /**
     Gets the number of random training iterations that should be performed during the training phase.
     The MLP back propagation algorithm starts with random values, and the accuracy of a trained model can depend on which random values
@@ -265,6 +246,27 @@ class GRT_API MLP : public Regressifier{
     @return returns the number of random training iterations that should be performed during the training phase
     */
     UINT getNumRandomTrainingIterations() const;
+    
+    /**
+    Gets the input layer activation function.
+    
+    @return returns the input layer activation function
+    */
+    Neuron::Type getInputLayerActivationFunction() const;
+    
+    /**
+    Gets the hidden layer activation function.
+    
+    @return returns the hidden layer activation function
+    */
+    Neuron::Type getHiddenLayerActivationFunction() const;
+    
+    /**
+    Gets the output layer activation function.
+    
+    @return returns the output layer activation function
+    */
+    Neuron::Type getOutputLayerActivationFunction() const;
     
     /**
     Gets the training rate. This should be a value between [0 1]
@@ -401,7 +403,7 @@ class GRT_API MLP : public Regressifier{
     @param activationFunction: the activation function for the input layer, this should be one of the Neuron ActivationFunctions enums
     @return returns true if the input layer activation function was set successfully, false otherwise
     */
-    bool setInputLayerActivationFunction(const UINT activationFunction);
+    bool setInputLayerActivationFunction(const Neuron::Type activationFunction);
     
     /**
     This function sets the activation function for all the Neurons in the hidden layer.  If the MLP instance has been initialized
@@ -410,7 +412,7 @@ class GRT_API MLP : public Regressifier{
     @param activationFunction: the activation function for the hidden layer, this should be one of the Neuron ActivationFunctions enums
     @return returns true if the hidden layer activation function was set successfully, false otherwise
     */
-    bool setHiddenLayerActivationFunction(const UINT activationFunction);
+    bool setHiddenLayerActivationFunction(const Neuron::Type activationFunction);
     
     /**
     This function sets the activation function for all the Neurons in the output layer.  If the MLP instance has been initialized
@@ -419,7 +421,7 @@ class GRT_API MLP : public Regressifier{
     @param activationFunction: the activation function for the output layer, this should be one of the Neuron ActivationFunctions enums
     @return returns true if the output layer activation function was set successfully, false otherwise
     */
-    bool setOutputLayerActivationFunction(const UINT activationFunction);
+    bool setOutputLayerActivationFunction(const Neuron::Type activationFunction);
     
     /**
     Sets the training rate, which controls the learning rate parameter. This is used to update the weights at each step of the stochastic gradient descent.
@@ -488,7 +490,7 @@ class GRT_API MLP : public Regressifier{
     using MLBase::predict;
     using MLBase::predict_;
     
-    protected:
+protected:
     bool inline isNAN(const Float v) const;
     
     bool trainModel(RegressionData &trainingData);
@@ -531,9 +533,9 @@ class GRT_API MLP : public Regressifier{
     UINT numInputNeurons;
     UINT numHiddenNeurons;
     UINT numOutputNeurons;
-    UINT inputLayerActivationFunction;
-    UINT hiddenLayerActivationFunction;
-    UINT outputLayerActivationFunction;
+    Neuron::Type inputLayerActivationFunction;
+    Neuron::Type hiddenLayerActivationFunction;
+    Neuron::Type outputLayerActivationFunction;
     UINT numRandomTrainingIterations;
     UINT trainingMode;
     Float momentum;
@@ -564,10 +566,7 @@ class GRT_API MLP : public Regressifier{
     VectorFloat outputNeuronsOutput;
     VectorFloat deltaO;
     VectorFloat deltaH;
-    
-    public:
-    enum TrainingModes{ONLINE_GRADIENT_DESCENT};
-    
+     
 };
 
 GRT_END_NAMESPACE

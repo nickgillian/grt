@@ -37,14 +37,16 @@ GRT_BEGIN_NAMESPACE
 
 class GRT_API Neuron{
 public:
+    enum Type{LINEAR=0,SIGMOID,BIPOLAR_SIGMOID,TANH,NUMBER_OF_ACTIVATION_FUNCTIONS};
+    
     Neuron();
     ~Neuron();
     
-    bool init(const UINT numInputs,const UINT actvationFunction,const Float minWeightRange = -0.1, const Float maxWeightRange = 0.1);
+    bool init(const UINT numInputs,const Type actvationFunction,const Float minWeightRange = -0.1, const Float maxWeightRange = 0.1);
     void clear();
     Float fire(const VectorFloat &x);
 	Float getDerivative(const Float &y);
-    static bool validateActivationFunction(const UINT actvationFunction);
+    static bool validateActivationFunction(const Type activationFunction);
     
 	Float gamma;
     Float bias;
@@ -53,8 +55,6 @@ public:
 	VectorFloat previousUpdate;
     UINT numInputs;
     UINT activationFunction;
-    
-    enum ActivationFunctions{LINEAR=0,SIGMOID,BIPOLAR_SIGMOID,TANH,NUMBER_OF_ACTIVATION_FUNCTIONS};
 };
 
 GRT_END_NAMESPACE

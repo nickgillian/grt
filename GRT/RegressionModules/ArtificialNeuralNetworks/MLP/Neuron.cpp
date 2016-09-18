@@ -33,7 +33,7 @@ Neuron::Neuron(){
 
 Neuron::~Neuron(){}
 
-bool Neuron::init(const UINT numInputs,const UINT activationFunction,const Float minWeightRange, const Float maxWeightRange){
+bool Neuron::init(const UINT numInputs,const Type activationFunction,const Float minWeightRange, const Float maxWeightRange){
     
     if( !validateActivationFunction(activationFunction) ){
         return false;
@@ -145,7 +145,7 @@ Float Neuron::getDerivative(const Float &y){
     return yy;
 }
     
-bool Neuron::validateActivationFunction(const UINT actvationFunction){
+bool Neuron::validateActivationFunction(const Type actvationFunction){
     if( actvationFunction >= LINEAR && actvationFunction < NUMBER_OF_ACTIVATION_FUNCTIONS ) return true;
     return false;
 }
