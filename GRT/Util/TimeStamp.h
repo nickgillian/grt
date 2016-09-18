@@ -470,13 +470,16 @@ public:
         return true;
     }
     
-    std::string getTimeStampAsString() const {
-        std::string timeString = grt_to_str< unsigned int >(year);
-        timeString += grt_to_str("_");
-        timeString += grt_to_str< unsigned int >(month);
-        timeString += grt_to_str("_");
-        timeString += grt_to_str< unsigned int >(day);
-        timeString += grt_to_str("_");
+    std::string getTimeStampAsString( const bool includeDate = true ) const {
+        std::string timeString = "";
+        if( includeDate ){
+            timeString = grt_to_str< unsigned int >(year);
+            timeString += grt_to_str("_");
+            timeString += grt_to_str< unsigned int >(month);
+            timeString += grt_to_str("_");
+            timeString += grt_to_str< unsigned int >(day);
+            timeString += grt_to_str("_");
+        }
         timeString += grt_to_str< unsigned int >(hour);
         timeString += grt_to_str("_");
         timeString += grt_to_str< unsigned int >(minute);
