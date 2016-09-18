@@ -117,7 +117,7 @@ public:
         //Search for a match in the options map
         it = options.find( std::string(argv[i]) );
         if( it != options.end() ){
-          if( i+1 <= argc ){
+          if( i+1 < argc ){
             results[ it->second ] = std::string(argv[i+1]);
           }else{
             results[ it->second ] = "";

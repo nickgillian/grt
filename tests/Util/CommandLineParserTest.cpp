@@ -53,13 +53,13 @@ TEST(CommandLineParser, BasicGetterSetters) {
   int idx = 1; //Start at 1 because the defauly command line argument will have the application as the first arg
   int argc = 1 + 7;
   char *argv[argc];
-  argv[idx++] = "--apple";
-  argv[idx++] = "5";
-  argv[idx++] = "--kiwi";
-  argv[idx++] = "15";
-  argv[idx++] = "--pi";
-  argv[idx++] = "3.1415";
-  argv[idx++] = "--verbose"; //note, this option doesn't get a second arg
+  argv[idx++] = (char*)"--apple";
+  argv[idx++] = (char*)"5";
+  argv[idx++] = (char*)"--kiwi";
+  argv[idx++] = (char*)"15";
+  argv[idx++] = (char*)"--pi";
+  argv[idx++] = (char*)"3.1415";
+  argv[idx++] = (char*)"--verbose"; //note, this option doesn't get a second arg
 
   EXPECT_TRUE( parser.parse( argc, argv ) );
   
