@@ -454,13 +454,20 @@ public:
     @return returns the current learningRate value
     */
     Float getLearningRate() const;
+
+    /**
+    Gets the root mean squared error on the training data during the training phase.
+    
+    @return returns the RMS error (on the training data during the training phase)
+    */
+    Float getRMSTrainingError() const;
     
     /**
     Gets the root mean squared error on the training data during the training phase.
     
     @return returns the RMS error (on the training data during the training phase)
     */
-    Float getRootMeanSquaredTrainingError() const;
+    GRT_DEPRECATED_MSG( "getRootMeanSquaredTrainingError() is deprecated, use getRMSTrainingError() instead", Float getRootMeanSquaredTrainingError() const );
     
     /**
     Gets the total squared error on the training data during the training phase.
@@ -468,6 +475,13 @@ public:
     @return returns the total squared error (on the training data during the training phase)
     */
     Float getTotalSquaredTrainingError() const;
+
+    /**
+    Gets the root mean squared error on the validation data during the training phase, this will be zero if no validation set was used.
+    
+    @return returns the RMS error (on the validation data during the training phase)
+    */
+    Float getRMSValidationError() const;
     
     /**
     Gets the accuracy of the validation set on the trained model, only valid if the model was trained with useValidationSet=true.
@@ -743,7 +757,8 @@ protected:
     UINT validationSetSize;
     Float learningRate;
     Float minChange;
-    Float rootMeanSquaredTrainingError;
+    Float rmsTrainingError;
+    Float rmsValidationError;
     Float totalSquaredTrainingError;
     Float validationSetAccuracy;
     bool useValidationSet;

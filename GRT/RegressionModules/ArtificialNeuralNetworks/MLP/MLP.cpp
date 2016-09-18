@@ -410,7 +410,8 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     //Setup the training loop
     MLP bestNetwork;
     totalSquaredTrainingError = 0;
-    rootMeanSquaredTrainingError = 0;
+    rmsTrainingError = 0;
+    rmsValidationError = 0;
     trainingError = 0;
     bool keepTraining = true;
     UINT epoch = 0;
@@ -569,11 +570,11 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
                 }
                 
                 accuracy = (accuracy/Float(numValidationSamples))*Float(numValidationSamples);
-                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
+                rmsValidationError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
                 
             }else{//We are not using a validation set
                 accuracy = (accuracy/Float(M))*Float(M);
-                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
+                rmsTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
             }
             
             //Store the errors
@@ -612,7 +613,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             bestIter = iter;
             bestError = lastError;
             bestTSError = totalSquaredTrainingError;
-            bestRMSError = rootMeanSquaredTrainingError;
+            bestRMSError = rmsTrainingError;
             bestAccuracy = accuracy;
             bestNetwork = *this;
             trainingErrorLog = tempTrainingErrorLog;
@@ -702,7 +703,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     UINT bestIter = 0;
     MLP bestNetwork;
     totalSquaredTrainingError = 0;
-    rootMeanSquaredTrainingError = 0;
+    rmsTrainingError = 0;
     trainingError = 0;
     Float error = 0;
     Float lastError = 0;
@@ -785,22 +786,22 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
                     
                 }
                 
-                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
+                rmsTrainingError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
                 
             }else{//We are not using a validation set
-                rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
+                rmsTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
             }
             
             //Store the errors
             VectorFloat temp(2);
             temp[0] = trainingSetTotalSquaredError;
-            temp[1] = rootMeanSquaredTrainingError;
+            temp[1] = rmsTrainingError;
             tempTrainingErrorLog.push_back( temp );
             
-            error = rootMeanSquaredTrainingError;
+            error = rmsTrainingError;
             
             //Store the training results
-            result.setRegressionResult(iter,totalSquaredTrainingError,rootMeanSquaredTrainingError,this);
+            result.setRegressionResult(iter,totalSquaredTrainingError,rmsTrainingError,this);
             trainingResults.push_back( result );
             
             delta = fabs( error - lastError );
@@ -828,7 +829,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
             bestIter = iter;
             bestError = lastError;
             bestTSError = totalSquaredTrainingError;
-            bestRMSError = rootMeanSquaredTrainingError;
+            bestRMSError = rmsTrainingError;
             bestNetwork = *this;
             trainingErrorLog = tempTrainingErrorLog;
         }
@@ -998,6 +999,20 @@ void MLP::printNetwork() const{
     std::cout<<"NumInputNeurons: "<<numInputNeurons<< std::endl;
     std::cout<<"NumHiddenNeurons: "<<numHiddenNeurons<< std::endl;
     std::cout<<"NumOutputNeurons: "<<numOutputNeurons<< std::endl;
+
+    std::cout << "ScalingEnabled: " << useScaling << std::endl;
+
+    if( useScaling ){
+        std::cout << "InputRanges: " << std::endl;
+        for(UINT i=0; i<numInputNeurons; i++){
+            std::cout << "Input: " << i << "\t" << inputVectorRanges[i].minValue << "\t" << inputVectorRanges[i].maxValue << std::endl;
+        }
+
+        std::cout << "OutputRanges: " << std::endl;
+        for(UINT i=0; i<numOutputNeurons; i++){
+            std::cout << "Output: " << i << "\t" << targetVectorRanges[i].minValue << "\t" << targetVectorRanges[i].maxValue << std::endl;
+        }
+    }
     
     std::cout<<"InputWeights:\n";
     for(UINT i=0; i<numInputNeurons; i++){

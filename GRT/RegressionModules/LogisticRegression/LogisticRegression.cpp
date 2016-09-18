@@ -178,8 +178,8 @@ bool LogisticRegression::train_(RegressionData &trainingData){
         }
         
         //Store the training results
-        rootMeanSquaredTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
-        result.setRegressionResult(iter,totalSquaredTrainingError,rootMeanSquaredTrainingError,this);
+        rmsTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
+        result.setRegressionResult(iter,totalSquaredTrainingError,rmsTrainingError,this);
         trainingResults.push_back( result );
         
         //Notify any observers of the new result

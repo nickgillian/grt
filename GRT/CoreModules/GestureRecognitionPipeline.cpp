@@ -2873,7 +2873,7 @@ Float GestureRecognitionPipeline::getTrainingTime() const{
 }
 
 Float GestureRecognitionPipeline::getTrainingRMSError() const{
-    return getIsRegressifierSet() ? regressifier->getRootMeanSquaredTrainingError() : 0;
+    return getIsRegressifierSet() ? regressifier->getRMSTrainingError() : 0;
 }
 
 Float GestureRecognitionPipeline::getTrainingSSError() const{

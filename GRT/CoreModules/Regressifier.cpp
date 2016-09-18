@@ -90,8 +90,6 @@ bool Regressifier::reset(){
     //Reset the base class
     MLBase::reset();
     
-    rootMeanSquaredTrainingError = 0;
-    totalSquaredTrainingError = 0;
     return true;
 }
 
@@ -101,8 +99,6 @@ bool Regressifier::clear(){
     MLBase::clear();
     
     //Clear the regressifier variables
-    rootMeanSquaredTrainingError = 0;
-    totalSquaredTrainingError = 0;
     regressionData.clear();
     inputVectorRanges.clear();
     targetVectorRanges.clear();

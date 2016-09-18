@@ -39,7 +39,8 @@ MLBase::MLBase(void){
     learningRate = 0.1;
     useValidationSet = false;
     randomiseTrainingOrder = true;
-    rootMeanSquaredTrainingError = 0;
+    rmsTrainingError = 0;
+    rmsValidationError = 0;
     totalSquaredTrainingError = 0;
 }
 
@@ -74,7 +75,8 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     this->validationSetRecall = mlBase->validationSetRecall;
     this->minChange = mlBase->minChange;
     this->learningRate = mlBase->learningRate;
-    this->rootMeanSquaredTrainingError = mlBase->rootMeanSquaredTrainingError;
+    this->rmsTrainingError = mlBase->rmsTrainingError;
+    this->rmsValidationError = mlBase->rmsValidationError;
     this->totalSquaredTrainingError = mlBase->totalSquaredTrainingError;
     this->useValidationSet = mlBase->useValidationSet;
     this->randomiseTrainingOrder = mlBase->randomiseTrainingOrder;
@@ -129,7 +131,8 @@ bool MLBase::clear(){
     numInputDimensions = 0;
     numOutputDimensions = 0;
     numTrainingIterationsToConverge = 0;
-    rootMeanSquaredTrainingError = 0;
+    rmsTrainingError = 0;
+    rmsValidationError = 0;
     totalSquaredTrainingError = 0;
     trainingResults.clear();
     validationSetPrecision.clear();
@@ -236,12 +239,20 @@ Float MLBase::getLearningRate() const{
     return learningRate;
 }
 
+Float MLBase::getRMSTrainingError() const{
+    return rmsTrainingError;
+}
+
 Float MLBase::getRootMeanSquaredTrainingError() const{
-    return rootMeanSquaredTrainingError;
+    return getRMSTrainingError();
 }
 
 Float MLBase::getTotalSquaredTrainingError() const{
     return totalSquaredTrainingError;
+}
+
+Float MLBase::getRMSValidationError() const{
+    return rmsValidationError;
 }
 
 Float MLBase::getValidationSetAccuracy() const {
