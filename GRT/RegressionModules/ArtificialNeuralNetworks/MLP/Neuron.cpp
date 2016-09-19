@@ -31,7 +31,31 @@ Neuron::Neuron(){
     previousBiasUpdate = 0;
 }
 
+Neuron::Neuron( const Neuron &rhs ){
+    this->gamma = rhs.gamma;
+    this->bias = rhs.bias;
+    this->previousBiasUpdate = rhs.previousBiasUpdate;
+    this->weights = rhs.weights;
+    this->previousUpdate = rhs.previousUpdate;
+    this->numInputs = rhs.numInputs;
+    this->activationFunction = rhs.activationFunction;
+}
+
 Neuron::~Neuron(){}
+
+Neuron& Neuron::operator=(const Neuron &rhs){
+    if( this != &rhs ){
+        this->gamma = rhs.gamma;
+        this->bias = rhs.bias;
+        this->previousBiasUpdate = rhs.previousBiasUpdate;
+        this->weights = rhs.weights;
+        this->previousUpdate = rhs.previousUpdate;
+        this->numInputs = rhs.numInputs;
+        this->activationFunction = rhs.activationFunction;
+    }
+
+    return *this;
+}
 
 bool Neuron::init(const UINT numInputs,const Type activationFunction,const Float minWeightRange, const Float maxWeightRange){
     

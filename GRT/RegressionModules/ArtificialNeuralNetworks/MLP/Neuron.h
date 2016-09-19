@@ -40,12 +40,18 @@ public:
     enum Type{LINEAR=0,SIGMOID,BIPOLAR_SIGMOID,TANH,NUMBER_OF_ACTIVATION_FUNCTIONS};
     
     Neuron();
+
+    Neuron( const Neuron &rhs );
+
     ~Neuron();
+
+    Neuron& operator=(const Neuron &rhs);
     
     bool init(const UINT numInputs,const Type actvationFunction,const Float minWeightRange = -0.1, const Float maxWeightRange = 0.1);
     void clear();
     Float fire(const VectorFloat &x);
 	Float getDerivative(const Float &y);
+    
     static bool validateActivationFunction(const Type activationFunction);
     
 	Float gamma;
