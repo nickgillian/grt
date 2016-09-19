@@ -2,6 +2,14 @@
 
 This file contains some notes about significant changes to the GRT.
 
+# Version 0.2.3
+
+## 18th September 2016
+- **improved MLP learning algorithm:** improved back propagation algorithm and added TANH function
+- **added Dict class:** added new dictionary class that can be used to dynamically store pairs of key-values, where keys are strings and values can be any type
+- **added unit tests:** added unit tests for MLP and Dict classes
+- **added XOR dataset:** added XOR dataset for regression
+
 # Version 0.2.2
 
 ## 21th August 2016
