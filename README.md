@@ -40,8 +40,8 @@ Key things to know about the GRT:
 There are now several extensions and third party applications that use the GRT as the backend machine learning system, these include:
 
 * [ofGrt](https://github.com/nickgillian/ofxGrt): an extension of the GRT for [openFrameworks](http://openframeworks.cc)
-* [ml-lib](https://github.com/cmuartfab/ml-lib), [Ali Momeni](http://alimomeni.net/) and [Jamie Bullock](http://jamiebullock.com): ml-lib is a library of machine learning externals for Max and Pure Data, designed to work on a variety of platforms including OS X, Windows, Linux, on Intel and ARM architectures.
-* [ESP](https://github.com/damellis/ESP), [David A. Mellis](https://github.com/damellis) and [Ben Zhang](https://www.benzhang.name): An interactive application that aims to help novices make sophisticated use of sensors in interactive projects through the application of machine learning.  The system is built using [openFrameworks](http://openframeworks.cc) and has several interesting examples built for [Arduino sensor modules](https://create.arduino.cc/projecthub/mellis/gesture-recognition-using-accelerometer-and-esp-71faa1) and more generic input data streams (e.g., network data).
+* [ml-lib](https://github.com/cmuartfab/ml-lib), by [Ali Momeni](http://alimomeni.net/) and [Jamie Bullock](http://jamiebullock.com): ml-lib is a library of machine learning externals for Max and Pure Data, designed to work on a variety of platforms including OS X, Windows, Linux, on Intel and ARM architectures.
+* [ESP](https://github.com/damellis/ESP), by [David A. Mellis](https://github.com/damellis) and [Ben Zhang](https://www.benzhang.name): An interactive application that aims to help novices make sophisticated use of sensors in interactive projects through the application of machine learning.  The system is built using [openFrameworks](http://openframeworks.cc) and has several interesting examples built for [Arduino sensor modules](https://create.arduino.cc/projecthub/mellis/gesture-recognition-using-accelerometer-and-esp-71faa1) and more generic input data streams (e.g., network data).
 * [Android Port](http://hollyhook.de/wp/grt-for-android): you can find a specific Android port of the GRT [here](http://hollyhook.de/wp/grt-for-android).
 
 ##GRT Architecture
@@ -295,10 +295,6 @@ Read the readme file in the build folder to see how to build the GRT as a static
 ##Installing and using the GRT in your C++ projects
 
 See the build directory for details on how to build, install, and use the GRT in your C++ projects.
-
-##Android port of the Gesture Recognition Toolkit
-
-
 
 ##License
 
