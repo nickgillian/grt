@@ -214,6 +214,10 @@ where *ExampleName* is the name of the example application you want to run.
 
 You can find the main GRT forum at: [http://www.nickgillian.com/forum/](http://www.nickgillian.com/forum/)
 
+##Bugs
+
+Please submit bugs to the [github bug tracker](https://github.com/nickgillian/grt/issues).
+
 ##GRT Floating Point Precision
 The GRT defaults to double precision floating point values.  The precision of the toolkit is defined by the following **Float** typedef:
 
