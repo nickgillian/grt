@@ -42,6 +42,7 @@ There are now several extensions and third party applications that use GRT as th
 * [ofGrt](https://github.com/nickgillian/ofxGrt): an extension of the GRT for [openFrameworks](http://openframeworks.cc)
 * [ml-lib](https://github.com/cmuartfab/ml-lib), [Ali Momeni](http://alimomeni.net/) and [Jamie Bullock](http://jamiebullock.com): ml-lib is a library of machine learning externals for Max and Pure Data, designed to work on a variety of platforms including OS X, Windows, Linux, on Intel and ARM architectures.
 * [ESP](https://github.com/damellis/ESP), [David A. Mellis](https://github.com/damellis) and [Ben Zhang](https://www.benzhang.name): An interactive application that aims to help novices make sophisticated use of sensors in interactive projects through the application of machine learning.  The system is built using [openFrameworks](http://openframeworks.cc) and has several interesting examples built for [Arduino sensor modules](https://create.arduino.cc/projecthub/mellis/gesture-recognition-using-accelerometer-and-esp-71faa1) and more generic input data streams (e.g., network data).
+* [Android Port](http://hollyhook.de/wp/grt-for-android): you can find a specific Android port of the GRT [here](http://hollyhook.de/wp/grt-for-android).
 
 ##GRT Architecture
 To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set 
@@ -218,6 +219,17 @@ You can find the main GRT forum at: [http://www.nickgillian.com/forum/](http://w
 
 Please submit bugs to the [github bug tracker](https://github.com/nickgillian/grt/issues).
 
+##Contributions
+
+All contributions are welcome, there are several ways in which users can contribute to the toolkit:
+
+* improving the doxygen generated [API](http://nickgillian.com/grt/api/0.2.3) (by improving coverage and quality of the current documents in the existing code) 
+* improving the higher-level documentation that can be found in the [wiki](https://github.com/nickgillian/grt/wiki)
+* adding new examples or tutorials, or improving the existing ones
+* adding new [unit tests](https://github.com/nickgillian/grt/tree/master/tests), to help ensure the quality of the current functions and catch potential bugs in the future
+
+Please submit [pull requests](https://help.github.com/articles/about-pull-requests/) for any contribution.
+
 ##GRT Floating Point Precision
 The GRT defaults to double precision floating point values.  The precision of the toolkit is defined by the following **Float** typedef:
 
@@ -286,7 +298,7 @@ See the build directory for details on how to build, install, and use the GRT in
 
 ##Android port of the Gesture Recognition Toolkit
 
-as described [http://hollyhook.de/wp/grt-for-android/] extended and fixed
+
 
 ##License
 
