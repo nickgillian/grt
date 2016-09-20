@@ -36,6 +36,18 @@ Key things to know about the GRT:
 * GRT GUI Download: [http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * GRT Journal of Machine Learning Research paper: [grt.pdf](http://jmlr.csail.mit.edu/papers/volume15/gillian14a/gillian14a.pdf)
 
+##Core Algorithms
+The GRT supports a wide number of supervised and unsupervised machine learning algorithms for classification, regression, and clustering, including:
+* **Classification:** [Adaboost](https://github.com/nickgillian/grt/wiki/adaboost), [Decision Tree](https://github.com/nickgillian/grt/wiki/decision_tree), [Dynamic Time Warping](https://github.com/nickgillian/grt/wiki/dtw), [Gaussian Mixture Models](https://github.com/nickgillian/grt/wiki/gmm), [Hidden Markov Models](https://github.com/nickgillian/grt/wiki/hmm_discrete), [k-nearest neighbor](https://github.com/nickgillian/grt/wiki/knn), [Naive Bayes](https://github.com/nickgillian/grt/wiki/anbc), [Random Forests](https://github.com/nickgillian/grt/wiki/random_forests), [Support Vector Machine](https://github.com/nickgillian/grt/wiki/svm), [Softmax](https://github.com/nickgillian/grt/wiki/softmax), and [more...](https://github.com/nickgillian/grt/wiki/reference#classifiers)
+
+* **Regression:** [Linear Regression](https://github.com/nickgillian/grt/wiki/linear_regression), [Logistic Regression](https://github.com/nickgillian/grt/wiki/logistic_regression), [Neural Networks (Multilayer Perceptron)](https://github.com/nickgillian/grt/wiki/mlp)
+
+* **Clustering:** [k-means](https://github.com/nickgillian/grt/blob/master/examples/ClusteringModulesExamples/KMeansExample/KMeansExample.cpp), [cluster tree](https://github.com/nickgillian/grt/blob/master/examples/ClusteringModulesExamples/ClusterTreeExample/ClusterTreeExample.cpp), [Gaussian Mixture Models](https://github.com/nickgillian/grt/blob/master/examples/ClusteringModulesExamples/GaussianMixtureModelsExample/GaussianMixtureModelsExample.cpp)
+
+In addition to the machine learning algorithms above, the toolkit also includes a large number of algorithms for [preprocessing](https://github.com/nickgillian/grt/wiki/reference#pre-processing), [feature extraction](https://github.com/nickgillian/grt/wiki/reference#feature-extraction), and [post processing](https://github.com/nickgillian/grt/wiki/reference#post-processing).
+
+See the [wiki](https://github.com/nickgillian/grt/wiki) for more details.
+
 ##GRT Extensions
 There are now several extensions and third party applications that use the GRT as the backend machine learning system, these include:
 
