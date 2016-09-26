@@ -16,7 +16,7 @@ TEST(RandomForests, Constructor) {
   EXPECT_TRUE( !rf.getTrained() );
 }
 
-// Tests the default constructor
+// Tests the learning algorithm on a basic dataset
 TEST(RandomForests, TrainBasicDataset) {
   
   RandomForests rf;

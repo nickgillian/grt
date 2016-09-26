@@ -16,7 +16,7 @@ TEST(DecisionTree, Constructor) {
   EXPECT_TRUE( !tree.getTrained() );
 }
 
-// Tests the default constructor
+// Tests the learning algorithm on a basic dataset
 TEST(DecisionTree, TrainBasicDataset) {
   
   DecisionTree tree;
