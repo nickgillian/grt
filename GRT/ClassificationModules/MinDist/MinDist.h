@@ -165,6 +165,13 @@ class GRT_API MinDist : public Classifier
     */
     bool setNumClusters(UINT numClusters);
     
+    /**
+    Gets a string that represents the MinDist class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
@@ -176,6 +183,7 @@ class GRT_API MinDist : public Classifier
     
     UINT numClusters;
     Vector< MinDistModel > models;            //A buffer to hold all the models
+    static std::string id;
     
     private:
     static RegisterClassifierModule< MinDist > registerModule;

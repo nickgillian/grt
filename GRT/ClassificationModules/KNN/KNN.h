@@ -213,6 +213,14 @@ public:
     */
     bool setDistanceMethod(UINT distanceMethod);
     
+
+    /**
+    Gets a string that represents the KNN class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
@@ -238,7 +246,8 @@ protected:
     VectorFloat trainingSigma;                 ///> Holds the stddev of the max-class distance of the training data for each of classes
     
     static RegisterClassifierModule< KNN > registerModule;
-    
+    static std::string id;
+
     public:
     enum DistanceMethods{EUCLIDEAN_DISTANCE=0,COSINE_DISTANCE,MANHATTAN_DISTANCE};
     

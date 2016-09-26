@@ -23,6 +23,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string Softmax::id = "Softmax";
+std::string Softmax::getId() { return Softmax::id; }
+
 //Register the Softmax module with the Classifier base class
 RegisterClassifierModule< Softmax >  Softmax::registerModule("Softmax");
 
@@ -36,10 +40,10 @@ Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minC
     classType = "Softmax";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG Softmax]");
-    errorLog.setProceedingText("[ERROR Softmax]");
-    trainingLog.setProceedingText("[TRAINING Softmax]");
-    warningLog.setProceedingText("[WARNING Softmax]");
+    debugLog.setProceedingText("[DEBUG" + Softmax::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + Softmax::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + Softmax::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + Softmax::getId() + "]");
 }
 
 Softmax::Softmax(const Softmax &rhs){

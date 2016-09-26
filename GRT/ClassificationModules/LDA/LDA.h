@@ -147,11 +147,21 @@ public:
     //Getters
     Vector< LDAClassModel > getModels(){ if( trained ){ return models; } return Vector< LDAClassModel >(); }
     
+    /**
+    Gets a string that represents the LDA class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
     //Setters
 
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
+
+protected:
+    static std::string id;
 
 private:
 	MatrixFloat computeBetweenClassScatterMatrix( ClassificationData &data );

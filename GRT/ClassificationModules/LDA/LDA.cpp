@@ -23,6 +23,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string LDA::id = "LDA";
+std::string LDA::getId() { return LDA::id; }
+
 LDA::LDA(bool useScaling,bool useNullRejection,Float nullRejectionCoeff)
 {
     this->useScaling = useScaling;
@@ -31,10 +35,10 @@ LDA::LDA(bool useScaling,bool useNullRejection,Float nullRejectionCoeff)
     classType = "LDA";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG LDA]");
-    errorLog.setProceedingText("[ERROR LDA]");
-    trainingLog.setProceedingText("[TRAINING LDA]");
-    warningLog.setProceedingText("[WARNING LDA]");
+    debugLog.setProceedingText("[DEBUG" + LDA::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + LDA::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + LDA::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + LDA::getId() + "]");
 }
 
 LDA::~LDA(void)

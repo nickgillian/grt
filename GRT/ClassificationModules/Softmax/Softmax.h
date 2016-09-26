@@ -131,6 +131,14 @@ class GRT_API Softmax : public Classifier
     @return returns a vector of softmax models, with each element representing the model for a specific class
     */
     Vector< SoftmaxModel > getModels() const;
+
+
+    /**
+    Gets a string that represents the Softmax class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
@@ -142,6 +150,7 @@ protected:
     
     UINT batchSize;
     Vector< SoftmaxModel > models;
+    static std::string id;
     
     static RegisterClassifierModule< Softmax > registerModule;
 };

@@ -159,6 +159,13 @@ public:
     bool setStateTransitionSmoothingCoeff(const Float stateTransitionSmoothingCoeff);
     bool setMeasurementNoise(const Float measurementNoise);
     
+    /**
+    Gets a string that represents the FiniteStateMachine class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
@@ -181,6 +188,7 @@ protected:
     Vector< Vector< VectorFloat > > pe;    ///<This stores the stateEmissions model in a format more efficient for the particle filter
     
     static RegisterClassifierModule< FiniteStateMachine > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

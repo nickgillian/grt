@@ -23,6 +23,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string FiniteStateMachine::id = "FiniteStateMachine";
+std::string FiniteStateMachine::getId() { return FiniteStateMachine::id; }
+
 //Register the FiniteStateMachine module with the Classifier base class
 RegisterClassifierModule< FiniteStateMachine > FiniteStateMachine::registerModule("FiniteStateMachine");
 
@@ -35,10 +39,10 @@ FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClu
     classType = "FiniteStateMachine";
     classifierType = classType;
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG FiniteStateMachine]");
-    errorLog.setProceedingText("[ERROR FiniteStateMachine]");
-    trainingLog.setProceedingText("[TRAINING FiniteStateMachine]");
-    warningLog.setProceedingText("[WARNING FiniteStateMachine]");
+    debugLog.setProceedingText("[DEBUG" + FiniteStateMachine::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + FiniteStateMachine::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + FiniteStateMachine::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + FiniteStateMachine::getId() + "]");
     
     //Set the learning settings that will be used to build the KMeans model
     minChange = 1.0e-5;
@@ -50,10 +54,10 @@ FiniteStateMachine::FiniteStateMachine(const FiniteStateMachine &rhs){
     classType = "FiniteStateMachine";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG FiniteStateMachine]");
-    errorLog.setProceedingText("[ERROR FiniteStateMachine]");
-    trainingLog.setProceedingText("[TRAINING FiniteStateMachine]");
-    warningLog.setProceedingText("[WARNING FiniteStateMachine]");
+    debugLog.setProceedingText("[DEBUG" + FiniteStateMachine::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + FiniteStateMachine::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + FiniteStateMachine::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + FiniteStateMachine::getId() + "]");
     *this = rhs;
 }
 

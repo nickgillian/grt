@@ -23,6 +23,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string MinDist::id = "MinDist";
+std::string MinDist::getId() { return MinDist::id; }
+
 //Register the MinDist module with the Classifier base class
 RegisterClassifierModule< MinDist > MinDist::registerModule("MinDist");
 
@@ -36,20 +40,20 @@ MinDist::MinDist(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,
     classType = "MinDist";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG MinDist]");
-    errorLog.setProceedingText("[ERROR MinDist]");
-    trainingLog.setProceedingText("[TRAINING MinDist]");
-    warningLog.setProceedingText("[WARNING MinDist]");
+    debugLog.setProceedingText("[DEBUG" + MinDist::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + MinDist::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + MinDist::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + MinDist::getId() + "]");
 }
 
 MinDist::MinDist(const MinDist &rhs){
     classType = "MinDist";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG MinDist]");
-    errorLog.setProceedingText("[ERROR MinDist]");
-    trainingLog.setProceedingText("[TRAINING MinDist]");
-    warningLog.setProceedingText("[WARNING MinDist]");
+    debugLog.setProceedingText("[DEBUG" + MinDist::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + MinDist::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + MinDist::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + MinDist::getId() + "]");
     *this = rhs;
 }
 

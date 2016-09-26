@@ -116,6 +116,13 @@ public:
     */
     virtual bool reset();
     
+    /**
+    Gets a string that represents the ParticleClassifier class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
     const Vector< ParticleClassifierGestureTemplate >& getGestureTemplates() const;
     
     const ParticleClassifierParticleFilter& getParticleFilter() const;
@@ -146,6 +153,7 @@ protected:
     Float phaseSigma;
     Float velocitySigma;
     ParticleClassifierParticleFilter particleFilter;
+    static std::string id;
     
 private:
     static RegisterClassifierModule< ParticleClassifier > registerModule;

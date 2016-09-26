@@ -227,6 +227,13 @@ public:
      */
     bool setSwipeIntegrationCoeff(const Float swipeIntegrationCoeff);
 
+    /**
+    Gets a string that represents the SwipeDetector class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
@@ -252,6 +259,7 @@ protected:
     VectorFloat lastX;
     GRT::ThresholdCrossingDetector thresholdDetector;
     GRT::MedianFilter contextFilter;
+    static std::string id;
     
     static RegisterClassifierModule< SwipeDetector > registerModule;
     

@@ -214,6 +214,13 @@ class GRT_API AdaBoost : public Classifier
     @return a vector containing the current AdaBoostClassModel models.
     */
     Vector< AdaBoostClassModel > getModels() const { return models; }
+
+    /**
+    Gets a string that represents the AdaBoost class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -232,6 +239,7 @@ protected:
     Vector< AdaBoostClassModel > models;
     
     static RegisterClassifierModule< AdaBoost > registerModule;
+    static std::string id;
     
 public:
     /**

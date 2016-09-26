@@ -23,6 +23,10 @@
 
 GRT_BEGIN_NAMESPACE
     
+//Define the string that will be used to indentify the object
+std::string ParticleClassifier::id = "ParticleClassifier";
+std::string ParticleClassifier::getId() { return ParticleClassifier::id; }
+
 //Register the ParticleClassifier module with the Classifier base class
 RegisterClassifierModule< ParticleClassifier > ParticleClassifier::registerModule("ParticleClassifier");
 
@@ -38,10 +42,10 @@ ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const Fl
     classType = "ParticleClassifier";
     classifierType = classType;
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG ParticleClassifier]");
-    errorLog.setProceedingText("[ERROR ParticleClassifier]");
-    trainingLog.setProceedingText("[TRAINING ParticleClassifier]");
-    warningLog.setProceedingText("[WARNING ParticleClassifier]");
+    debugLog.setProceedingText("[DEBUG" + ParticleClassifier::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + ParticleClassifier::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + ParticleClassifier::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + ParticleClassifier::getId() + "]");
 }
 
 ParticleClassifier::ParticleClassifier(const ParticleClassifier &rhs){

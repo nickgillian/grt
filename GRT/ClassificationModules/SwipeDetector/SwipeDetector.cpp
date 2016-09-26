@@ -23,6 +23,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string SwipeDetector::id = "SwipeDetector";
+std::string SwipeDetector::getId() { return SwipeDetector::id; }
+
 //Register the SwipeDetector module with the Classifier base class
 RegisterClassifierModule< SwipeDetector > SwipeDetector::registerModule("SwipeDetector");
 
@@ -40,10 +44,10 @@ SwipeDetector::SwipeDetector(const unsigned int swipeIndex, const unsigned int s
     classType = "SwipeDetector";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG SwipeDetector]");
-    errorLog.setProceedingText("[ERROR SwipeDetector]");
-    trainingLog.setProceedingText("[TRAINING SwipeDetector]");
-    warningLog.setProceedingText("[WARNING SwipeDetector]");
+    debugLog.setProceedingText("[DEBUG" + SwipeDetector::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + SwipeDetector::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + SwipeDetector::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + SwipeDetector::getId() + "]");
     
     swipeIntegrationCoeff = 0.92;
     movementIntegrationCoeff = 0.90;

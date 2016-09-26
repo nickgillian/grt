@@ -177,6 +177,13 @@ public:
     */
     bool setMaxIter(UINT maxIter);
     
+    /**
+    Gets a string that represents the GMM class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
@@ -197,7 +204,7 @@ protected:
     WarningLog warningLog;
     
     static RegisterClassifierModule< GMM > registerModule;
-    
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

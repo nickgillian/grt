@@ -23,6 +23,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string GMM::id = "GMM";
+std::string GMM::getId() { return GMM::id; }
+
 //Register the GMM module with the Classifier base class
 RegisterClassifierModule< GMM > GMM::registerModule("GMM");
 
@@ -30,9 +34,9 @@ GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullR
     classType = "GMM";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG GMM]");
-    errorLog.setProceedingText("[ERROR GMM]");
-    warningLog.setProceedingText("[WARNING GMM]");
+    debugLog.setProceedingText("[DEBUG" + GMM::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + GMM::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + GMM::getId() + "]");
     
     this->numMixtureModels = numMixtureModels;
     this->useScaling = useScaling;
