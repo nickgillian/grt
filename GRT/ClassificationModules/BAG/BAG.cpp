@@ -23,6 +23,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to indentify the object
+std::string BAG::id = "BAG";
+std::string BAG::getId() { return BAG::id; }
+
 //Register the BAG module with the Classifier base class
 RegisterClassifierModule< BAG >  BAG::registerModule("BAG");
 
@@ -33,20 +37,20 @@ BAG::BAG(bool useScaling)
     classType = "BAG";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG BAG]");
-    errorLog.setProceedingText("[ERROR BAG]");
-    trainingLog.setProceedingText("[TRAINING BAG]");
-    warningLog.setProceedingText("[WARNING BAG]");
+    debugLog.setProceedingText("[DEBUG" + BAG::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + BAG::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + BAG::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + BAG::getId() + "]");
 }
 
 BAG::BAG(const BAG &rhs){
     classType = "BAG";
     classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG BAG]");
-    errorLog.setProceedingText("[ERROR BAG]");
-    trainingLog.setProceedingText("[TRAINING BAG]");
-    warningLog.setProceedingText("[WARNING BAG]");
+    debugLog.setProceedingText("[DEBUG" + BAG::getId() + "]");
+    errorLog.setProceedingText("[ERROR" + BAG::getId() + "]");
+    trainingLog.setProceedingText("[TRAINING" + BAG::getId() + "]");
+    warningLog.setProceedingText("[WARNING" + BAG::getId() + "]");
     *this = rhs;
 }
 

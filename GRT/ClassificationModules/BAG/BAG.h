@@ -181,6 +181,14 @@ public:
     */
     bool setWeights(const VectorFloat &weights);
     
+
+    /**
+    Gets a string that represents the AdaBoost class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
@@ -194,6 +202,7 @@ protected:
     Vector< Classifier* > ensemble;
     
     static RegisterClassifierModule< BAG > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE
