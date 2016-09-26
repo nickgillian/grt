@@ -50,8 +50,12 @@ public:
     Float& operator[](const UINT index){
         return weights[ index ];
     }
+
+    const Float& operator[](const UINT index) const{
+        return weights[ index ];
+    }
     
-    bool init(const UINT numInputs,const Float sigma = 2.0){
+    bool init(const UINT numInputs,const Float sigma = 2.0,const Float minWeightRange = -1.0,const Float maxWeightRange = 1.0){
         
         this->numInputs = numInputs;
         this->sigma = sigma;
@@ -61,9 +65,9 @@ public:
         Random random;
         random.setSeed( (unsigned long long)time(NULL) );
         
-        //Randomise the weights between [0.4 0.6]
+        //Randomise the weights between [minWeightRange maxWeightRange]
         for(unsigned int i=0; i<numInputs; i++){
-            weights[i] = random.getRandomNumberUniform(0.4,0.6);
+            weights[i] = random.getRandomNumberUniform(minWeightRange,maxWeightRange);
         }
         
         initialized = true;
@@ -116,7 +120,7 @@ public:
         return exp( - (y/(2*grt_sqr(sigma))) );
     }
     
-    bool saveNeuronToFile( std::fstream &file ) const {
+    bool save( std::fstream &file ) const {
         
         if( !file.is_open() ){
             return false;
@@ -139,7 +143,7 @@ public:
         return true;
     }
     
-    bool loadNeuronFromFile( std::fstream &file ){
+    bool load( std::fstream &file ){
         
         if( !file.is_open() ){
             return false;
@@ -200,7 +204,7 @@ public:
 	/**
      Default Constructor.
      */
-	SelfOrganizingMap(const UINT networkSize = 20, const UINT networkTypology = RANDOM_NETWORK, const UINT maxNumEpochs = 1000,const Float alphaStart = 0.8, const Float alphaEnd = 0.1);
+	SelfOrganizingMap(const UINT networkSize = 5, const UINT networkTypology = RANDOM_NETWORK, const UINT maxNumEpochs = 1000,const Float sigmaWeight = 0.2, const Float alphaStart = 0.3, const Float alphaEnd = 0.1);
     
     /**
      Defines how the data from the rhs SelfOrganizingMap should be copied to this SelfOrganizingMap
@@ -291,7 +295,7 @@ public:
      @param file: a reference to the file the SOM model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads a trained SOM model from a file.
@@ -300,7 +304,7 @@ public:
      @param file: a reference to the file the SOM model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file );
+    virtual bool load( std::fstream &file );
     
     /**
      This function validates the network typology to ensure it is one of the NetworkTypology enums.
@@ -324,11 +328,11 @@ public:
     
     VectorFloat getMappedData() const;
     
-    Vector< GaussNeuron > getNeurons() const;
+    Matrix< GaussNeuron > getNeurons() const;
     
-    const Vector< GaussNeuron > &getNeuronsRef() const;
-    
-    MatrixFloat getNetworkWeights() const;
+    const Matrix< GaussNeuron > &getNeuronsRef() const;
+
+    Matrix< VectorFloat > getWeightsMatrix() const;
     
     bool setNetworkSize( const UINT networkSize );
     
@@ -337,18 +341,20 @@ public:
     bool setAlphaStart( const Float alphaStart );
     
     bool setAlphaEnd( const Float alphaEnd );
+
+    bool setSigmaWeight( const Float sigmaWeight );
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
-    using MLBase::saveModelToFile;
-    using MLBase::loadModelFromFile;
+    using MLBase::save;
+    using MLBase::load;
     
 protected:
     UINT networkTypology;
+    Float sigmaWeight;
     Float alphaStart;
     Float alphaEnd;
     VectorFloat mappedData;
-    Vector< GaussNeuron > neurons;
-    MatrixFloat networkWeights;
+    Matrix< GaussNeuron > neurons;
     
 private:
     static RegisterClustererModule< SelfOrganizingMap > registerModule;

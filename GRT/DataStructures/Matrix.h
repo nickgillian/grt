@@ -61,6 +61,19 @@ public:
         rowPtr = NULL;
         resize(rows,cols);
 	}
+
+    /**
+    Constructor, sets the size of the matrix to [rows cols] and initalizes all the data to data
+     
+     @param rows: sets the number of rows in the matrix, must be a value greater than zero
+     @param cols: sets the number of columns in the matrix, must be a value greater than zero
+     @param data: default value that will be used to initalize all the values in the matrix
+    */
+    Matrix(const unsigned int rows,const unsigned int cols, const T &data ):errorLog("[ERROR Matrix]"){
+        dataPtr = NULL;
+        rowPtr = NULL;
+        resize(rows,cols,data);
+    }
     
     /**
      Copy Constructor, copies the values from the rhs Matrix to this Matrix instance
@@ -296,6 +309,23 @@ public:
 		}
 		return false;
 	}
+
+    /**
+     Resizes the Matrix to the new size of [r c].  If [r c] matches the previous size then the matrix will not be resized but the function will return true.
+     
+     @param r: the number of rows, must be greater than zero
+     @param c: the number of columns, must be greater than zero
+     @param value: the default value that will be set across all values in the buffer
+     @return returns true or false, indicating if the resize was successful 
+    */
+    virtual bool resize(const unsigned int r,const unsigned int c,const T &value){
+        
+        if( !resize( r, c) ){
+            return false;
+        }
+
+        return setAll( value );
+    }
               
     /**
      Copies the data from the rhs matrix to this matrix.
