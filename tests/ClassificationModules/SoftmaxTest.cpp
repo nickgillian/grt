@@ -2,20 +2,27 @@
 #include "gtest/gtest.h"
 using namespace GRT;
 
-//Unit tests for the GRT ANBC Classifeir
+//Unit tests for the GRT Softmax module
 
-// Tests the load function
-TEST(ANBC, Load) {
-	//TODO
+// Tests the default constructor
+TEST(Softmax, Constructor) {
+  
+  Softmax sm;
+
+  //Check the type matches
+  EXPECT_TRUE( sm.getClassifierType() == RandomForests::getId() );
+
+  //Check the module is not trained
+  EXPECT_TRUE( !sm.getTrained() );
 }
 
 // Tests the learning algorithm on a basic dataset
-TEST(ANBC, TrainBasicDataset) {
+TEST(Softmax, TrainBasicDataset) {
   
-  ANBC anbc;
+  Softmax sm;
 
   //Check the module is not trained
-  EXPECT_TRUE( !anbc.getTrained() );
+  EXPECT_TRUE( !sm.getTrained() );
 
   //Generate a basic dataset
   const UINT numSamples = 10 * 1000;
@@ -28,28 +35,28 @@ TEST(ANBC, TrainBasicDataset) {
   ClassificationData testData = trainingData.split( 50 );
 
   //Train the classifier
-  EXPECT_TRUE( anbc.train( trainingData ) );
+  EXPECT_TRUE( sm.train( trainingData ) );
 
-  EXPECT_TRUE( anbc.getTrained() );
+  EXPECT_TRUE( sm.getTrained() );
 
-  EXPECT_TRUE( anbc.print() );
+  EXPECT_TRUE( sm.print() );
 
   for(UINT i=0; i<testData.getNumSamples(); i++){
-    EXPECT_TRUE( anbc.predict( testData[i].getSample() ) );
+    EXPECT_TRUE( sm.predict( testData[i].getSample() ) );
   }
 
-  EXPECT_TRUE( anbc.save( "anbc_model.grt" ) );
+  EXPECT_TRUE( sm.save( "sm_model.grt" ) );
 
-  anbc.clear();
+  sm.clear();
 
-  EXPECT_TRUE( !anbc.getTrained() );
+  EXPECT_TRUE( !sm.getTrained() );
 
-  EXPECT_TRUE( anbc.load( "anbc_model.grt" ) );
+  EXPECT_TRUE( sm.load( "sm_model.grt" ) );
 
-  EXPECT_TRUE( anbc.getTrained() );
+  EXPECT_TRUE( sm.getTrained() );
 
   for(UINT i=0; i<testData.getNumSamples(); i++){
-    EXPECT_TRUE( anbc.predict( testData[i].getSample() ) );
+    EXPECT_TRUE( sm.predict( testData[i].getSample() ) );
   }
 
 
