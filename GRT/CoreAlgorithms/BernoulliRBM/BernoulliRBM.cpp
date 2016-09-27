@@ -66,6 +66,7 @@ bool BernoulliRBM::predict_(VectorFloat &inputData,VectorFloat &outputData){
     //Propagate the data up through the RBM
     Float x = 0.0;
     for(UINT i=0; i<numHiddenUnits; i++){
+        x = 0.0;
         for(UINT j=0; j<numVisibleUnits; j++) {
             x += weightsMatrix[i][j] * inputData[j];
         }
