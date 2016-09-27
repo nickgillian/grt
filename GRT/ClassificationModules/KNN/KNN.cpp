@@ -28,9 +28,10 @@ std::string KNN::id = "KNN";
 std::string KNN::getId() { return KNN::id; }
 
 //Register the KNN module with the Classifier base class
-RegisterClassifierModule< KNN > KNN::registerModule("KNN");
+RegisterClassifierModule< KNN > KNN::registerModule( getId() );
 
-KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,bool searchForBestKValue,UINT minKSearchValue,UINT maxKSearchValue){
+KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,bool searchForBestKValue,UINT minKSearchValue,UINT maxKSearchValue) : Classifier( getId() )
+{
     this->K = K;
     this->distanceMethod = EUCLIDEAN_DISTANCE;
     this->useScaling = useScaling;
@@ -40,24 +41,13 @@ KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectio
     this->minKSearchValue = minKSearchValue;
     this->maxKSearchValue = maxKSearchValue;
     supportsNullRejection = true;
-    classType = "KNN";
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
     distanceMethod = EUCLIDEAN_DISTANCE;
-    debugLog.setProceedingText("[DEBUG" + KNN::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + KNN::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + KNN::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + KNN::getId() + "]");
 }
 
-KNN::KNN(const KNN &rhs){
-    classType = "KNN";
-    classifierType = classType;
+KNN::KNN(const KNN &rhs) : Classifier( getId() )
+{
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG" + KNN::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + KNN::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + KNN::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + KNN::getId() + "]");
     *this = rhs;
 }
 

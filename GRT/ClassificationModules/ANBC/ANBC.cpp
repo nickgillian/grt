@@ -23,33 +23,26 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the ANBC module with the Classifier base class
-RegisterClassifierModule< ANBC > ANBC::registerModule("ANBC");
+//Define the string that will be used to indentify the object
+std::string ANBC::id = "ANBC";
+std::string ANBC::getId() { return ANBC::id; }
 
-ANBC::ANBC(bool useScaling,bool useNullRejection,Float nullRejectionCoeff)
+//Register the ANBC module with the Classifier base class
+RegisterClassifierModule< ANBC > ANBC::registerModule( ANBC::getId() );
+
+ANBC::ANBC(bool useScaling,bool useNullRejection,Float nullRejectionCoeff) : Classifier( ANBC::getId() )
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
     supportsNullRejection = true;
     weightsDataSet = false;
-    classType = "ANBC";
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG ANBC]");
-    errorLog.setProceedingText("[ERROR ANBC]");
-    trainingLog.setProceedingText("[TRAINING ANBC]");
-    warningLog.setProceedingText("[WARNING ANBC]");
 }
 
-ANBC::ANBC(const ANBC &rhs){
-    classType = "ANBC";
-    classifierType = classType;
+ANBC::ANBC(const ANBC &rhs) : Classifier( ANBC::getId() ) 
+{
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG ANBC]");
-    errorLog.setProceedingText("[ERROR ANBC]");
-    trainingLog.setProceedingText("[TRAINING ANBC]");
-    warningLog.setProceedingText("[WARNING ANBC]");
     *this = rhs;
 }
 

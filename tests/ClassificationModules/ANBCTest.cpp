@@ -2,11 +2,18 @@
 #include "gtest/gtest.h"
 using namespace GRT;
 
-//Unit tests for the GRT ANBC Classifeir
+//Unit tests for the GRT ANBC Classifier
 
-// Tests the load function
-TEST(ANBC, Load) {
-	//TODO
+// Tests the default constructor
+TEST(ANBC, Constructor) {
+  
+  ANBC anbc;
+
+  //Check the type matches
+  EXPECT_TRUE( anbc.getClassifierType() == ANBC::getId() );
+
+  //Check the module is not trained
+  EXPECT_TRUE( !anbc.getTrained() );
 }
 
 // Tests the learning algorithm on a basic dataset

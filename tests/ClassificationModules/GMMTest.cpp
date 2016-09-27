@@ -56,7 +56,7 @@ TEST(GMM, TrainBasicDataset) {
   EXPECT_TRUE( gmm.getTrained() );
 
   for(UINT i=0; i<testData.getNumSamples(); i++){
-    EXPECT_TRUE( gmm.predict( gmm[i].getSample() ) );
+    EXPECT_TRUE( gmm.predict( testData[i].getSample() ) );
   }
 
 

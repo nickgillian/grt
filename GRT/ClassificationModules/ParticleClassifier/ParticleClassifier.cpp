@@ -28,9 +28,9 @@ std::string ParticleClassifier::id = "ParticleClassifier";
 std::string ParticleClassifier::getId() { return ParticleClassifier::id; }
 
 //Register the ParticleClassifier module with the Classifier base class
-RegisterClassifierModule< ParticleClassifier > ParticleClassifier::registerModule("ParticleClassifier");
+RegisterClassifierModule< ParticleClassifier > ParticleClassifier::registerModule( getId() );
 
-ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const Float sensorNoise,const Float transitionSigma,const Float phaseSigma,const Float velocitySigma )
+ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const Float sensorNoise,const Float transitionSigma,const Float phaseSigma,const Float velocitySigma ) : Classifier( getId() )
 {
     this->numParticles = numParticles;
     this->sensorNoise = sensorNoise;
@@ -39,16 +39,11 @@ ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const Fl
     this->velocitySigma = velocitySigma;
     useNullRejection = true;
     supportsNullRejection = true;
-    classType = "ParticleClassifier";
-    classifierType = classType;
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG" + ParticleClassifier::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + ParticleClassifier::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + ParticleClassifier::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + ParticleClassifier::getId() + "]");
 }
 
-ParticleClassifier::ParticleClassifier(const ParticleClassifier &rhs){
+ParticleClassifier::ParticleClassifier(const ParticleClassifier &rhs) : Classifier( getId() )
+{
     *this = rhs;
 }
 

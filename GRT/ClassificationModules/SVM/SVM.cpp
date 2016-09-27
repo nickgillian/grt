@@ -30,9 +30,10 @@ std::string SVM::id = "SVM";
 std::string SVM::getId() { return SVM::id; }
 
 //Register the SVM module with the Classifier base class
-RegisterClassifierModule< SVM > SVM::registerModule( SVM::getId() );
+RegisterClassifierModule< SVM > SVM::registerModule( getId() );
 
-SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue){
+SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue) : Classifier( getId() )
+{
     
     //Setup the default SVM parameters
     model = NULL;
@@ -65,31 +66,20 @@ SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejec
     classificationThreshold = 0.5;
     crossValidationResult = 0;
     
-    classType = getId();
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    Classifier::debugLog.setProceedingText("[DEBUG " + getId() + "]");
-    Classifier::errorLog.setProceedingText("[ERROR " + getId() + "]");
-    Classifier::trainingLog.setProceedingText("[TRAINING " + getId() + "]");
-    Classifier::warningLog.setProceedingText("[WARNING " + getId() + "]");
     
     init(kernelType,svmType,useScaling,useNullRejection,useAutoGamma,gamma,degree,coef0,nu,C,useCrossValidation,kFoldValue);
 }
 
-SVM::SVM(const SVM &rhs){
+SVM::SVM(const SVM &rhs) : Classifier( getId() )
+{
     model = NULL;
     param.weight_label = NULL;
     param.weight = NULL;
     prob.l = 0;
     prob.x = NULL;
     prob.y = NULL;
-    classType = getId();
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    Classifier::debugLog.setProceedingText("[DEBUG " + getId() + "]");
-    Classifier::errorLog.setProceedingText("[ERROR " + getId() + "]");
-    Classifier::trainingLog.setProceedingText("[TRAINING " + getId() + "]");
-    Classifier::warningLog.setProceedingText("[WARNING " + getId() + "]");
     *this = rhs;
 }
 

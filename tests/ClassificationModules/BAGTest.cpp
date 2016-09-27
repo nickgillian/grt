@@ -34,6 +34,19 @@ TEST(BAG, TrainBasicDataset) {
 
   ClassificationData testData = trainingData.split( 50 );
 
+  //Add an adaptive naive bayes classifier to the BAG ensemble
+  bag.addClassifierToEnsemble( ANBC() );
+  
+  //Add a MinDist classifier to the BAG ensemble, using two clusters
+  MinDist min_dist_two_clusters;
+  min_dist_two_clusters.setNumClusters(2);
+  bag.addClassifierToEnsemble( min_dist_two_clusters );
+  
+  //Add a MinDist classifier to the BAG ensemble, using five clusters
+  MinDist min_dist_five_clusters;
+  min_dist_five_clusters.setNumClusters(5);
+  bag.addClassifierToEnsemble( min_dist_five_clusters );
+
   //Train the classifier
   EXPECT_TRUE( bag.train( trainingData ) );
 

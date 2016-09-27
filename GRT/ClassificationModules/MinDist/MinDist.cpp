@@ -28,32 +28,21 @@ std::string MinDist::id = "MinDist";
 std::string MinDist::getId() { return MinDist::id; }
 
 //Register the MinDist module with the Classifier base class
-RegisterClassifierModule< MinDist > MinDist::registerModule("MinDist");
+RegisterClassifierModule< MinDist > MinDist::registerModule( getId() );
 
-MinDist::MinDist(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numClusters)
+MinDist::MinDist(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numClusters) : Classifier( getId() )
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
     this->numClusters = numClusters;
     supportsNullRejection = true;
-    classType = "MinDist";
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG" + MinDist::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + MinDist::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + MinDist::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + MinDist::getId() + "]");
 }
 
-MinDist::MinDist(const MinDist &rhs){
-    classType = "MinDist";
-    classifierType = classType;
+MinDist::MinDist(const MinDist &rhs) : Classifier( getId() )
+{
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG" + MinDist::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + MinDist::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + MinDist::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + MinDist::getId() + "]");
     *this = rhs;
 }
 

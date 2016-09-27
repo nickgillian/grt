@@ -23,10 +23,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the DTW module with the Classifier base class
-RegisterClassifierModule< DTW > DTW::registerModule("DTW");
+//Define the string that will be used to indentify the object
+std::string DTW::id = "DTW";
+std::string DTW::getId() { return DTW::id; }
 
-DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,Float radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,Float nullRejectionLikelihoodThreshold){
+//Register the DTW module with the Classifier base class
+RegisterClassifierModule< DTW > DTW::registerModule( getId() );
+
+DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,Float radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,Float nullRejectionLikelihoodThreshold) : Classifier( getId() )
+{
     
     this->useScaling=useScaling;
     this->useNullRejection = useNullRejection;
@@ -54,16 +59,11 @@ DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rej
     
     averageTemplateLength =0;
     
-    classType = "DTW";
-    classifierType = classType;
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG NDDTW]");
-    errorLog.setProceedingText("[ERROR NDDTW]");
-    trainingLog.setProceedingText("[TRAINING NDDTW]");
-    warningLog.setProceedingText("[WARNING NDDTW]");
 }
 
-DTW::DTW(const DTW &rhs){
+DTW::DTW(const DTW &rhs) : Classifier( getId() )
+{
     *this = rhs;
 }
 

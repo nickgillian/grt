@@ -30,7 +30,8 @@ std::string DecisionTree::getId() { return DecisionTree::id; }
 //Register the DecisionTree module with the Classifier base class
 RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule( DecisionTree::getId() );
 
-DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const UINT numSplittingSteps,const bool useScaling){
+DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const UINT numSplittingSteps,const bool useScaling) : Classifier( DecisionTree::getId() )
+{
 
     this->tree = NULL;
     this->decisionTreeNode = NULL;
@@ -42,28 +43,16 @@ DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT m
     this->useScaling = useScaling;
     this->supportsNullRejection = true;
     this->numTrainingIterationsToConverge = 20; //Retrain the model 20 times and pick the best one
-    Classifier::classType = DecisionTree::getId();
-    classifierType = Classifier::classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    Classifier::debugLog.setProceedingText("[DEBUG " + DecisionTree::getId() + "]");
-    Classifier::errorLog.setProceedingText("[ERROR " + DecisionTree::getId() + "]");
-    Classifier::trainingLog.setProceedingText("[TRAINING " + DecisionTree::getId() + "]");
-    Classifier::warningLog.setProceedingText("[WARNING " + DecisionTree::getId() + "]");
-    
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     
 }
 
-DecisionTree::DecisionTree(const DecisionTree &rhs){
+DecisionTree::DecisionTree(const DecisionTree &rhs) : Classifier( DecisionTree::getId() )
+{
     tree = NULL;
     decisionTreeNode = NULL;
-    Classifier::classType = DecisionTree::getId();
-    classifierType = Classifier::classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    Classifier:: debugLog.setProceedingText("[DEBUG " + DecisionTree::getId() + "]");
-    Classifier::errorLog.setProceedingText("[ERROR " + DecisionTree::getId() + "]");
-    Classifier::trainingLog.setProceedingText("[TRAINING " + DecisionTree::getId() + "]");
-    Classifier::warningLog.setProceedingText("[WARNING " + DecisionTree::getId() + "]");
     *this = rhs;
 }
 

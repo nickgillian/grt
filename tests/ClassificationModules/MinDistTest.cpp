@@ -56,7 +56,7 @@ TEST(MinDist, TrainBasicDataset) {
   EXPECT_TRUE( md.getTrained() );
 
   for(UINT i=0; i<testData.getNumSamples(); i++){
-    EXPECT_TRUE( md.predict( md[i].getSample() ) );
+    EXPECT_TRUE( md.predict( testData[i].getSample() ) );
   }
 
 

@@ -35,12 +35,12 @@ Classifier* Classifier::createInstanceFromString(std::string const &classifierTy
     return iter->second();
 }
 Classifier* Classifier::createNewInstance() const{
-    return createInstanceFromString( classifierType );
+    return createInstanceFromString( MLBase::getClassType() );
 }
     
 Classifier* Classifier::deepCopy() const{
     
-    Classifier *newInstance = createInstanceFromString( classifierType );
+    Classifier *newInstance = createInstanceFromString( MLBase::getClassType() );
     
     if( newInstance == NULL ) return NULL;
     
@@ -66,10 +66,10 @@ Vector< std::string > Classifier::getRegisteredClassifiers(){
 	return registeredClassifiers;
 }
     
-Classifier::Classifier(void){
+Classifier::Classifier( const std::string &classifierType ){
     baseType = MLBase::CLASSIFIER;
+    classType = classifierType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    classifierType = "NOT_SET";
     supportsNullRejection = false;
     useNullRejection = false;
     numInputDimensions = 0;
@@ -81,6 +81,10 @@ Classifier::Classifier(void){
     phase = 0;
     nullRejectionCoeff = 5;
     numClassifierInstances++;
+    debugLog.setProceedingText("[DEBUG" + classifierType + "]");
+    errorLog.setProceedingText("[ERROR" + classifierType + "]");
+    trainingLog.setProceedingText("[TRAINING" + classifierType + "]");
+    warningLog.setProceedingText("[WARNING" + classifierType + "]");
 }
     
 Classifier::~Classifier(void){
@@ -101,7 +105,6 @@ bool Classifier::copyBaseVariables(const Classifier *classifier){
         return false;
     }
     
-    this->classifierType = classifier->classifierType;
     this->classifierMode = classifier->classifierMode;
     this->supportsNullRejection = classifier->supportsNullRejection;
     this->useNullRejection = classifier->useNullRejection;
@@ -159,7 +162,7 @@ bool Classifier::clear(){
 }
 
 std::string Classifier::getClassifierType() const{
-    return classifierType; 
+    return MLBase::getClassType(); 
 }
     
 bool Classifier::getSupportsNullRejection() const{

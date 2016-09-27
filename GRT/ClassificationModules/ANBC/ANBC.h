@@ -49,7 +49,7 @@ GRT_BEGIN_NAMESPACE
 
 class GRT_API ANBC : public Classifier
 {
-    public:
+public:
     /**
     Default Constructor
     
@@ -187,6 +187,13 @@ class GRT_API ANBC : public Classifier
     @return returns true if the weights were correctly cleared, false otherwise
     */
     bool clearWeights(){ weightsDataSet = false; weightsData.clear(); return true; }
+
+    /**
+    Gets a string that represents the ANBC class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -202,6 +209,7 @@ protected:
     Vector< ANBC_Model > models;          //A buffer to hold all the models
     
     static RegisterClassifierModule< ANBC > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

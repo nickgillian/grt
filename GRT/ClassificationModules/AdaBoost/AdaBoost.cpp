@@ -28,9 +28,9 @@ std::string AdaBoost::id = "AdaBoost";
 std::string AdaBoost::getId() { return AdaBoost::id; }
 
 //Register the AdaBoost module with the Classifier base class
-RegisterClassifierModule< AdaBoost > AdaBoost::registerModule("AdaBoost");
+RegisterClassifierModule< AdaBoost > AdaBoost::registerModule( AdaBoost::getId() );
 
-AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numBoostingIterations,UINT predictionMethod)
+AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numBoostingIterations,UINT predictionMethod) : Classifier( AdaBoost::getId() )
 {
     setWeakClassifier( weakClassifier );
     this->useScaling = useScaling;
@@ -38,22 +38,11 @@ AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool use
     this->nullRejectionCoeff = nullRejectionCoeff;
     this->numBoostingIterations = numBoostingIterations;
     this->predictionMethod = predictionMethod;
-    classType = "AdaBoost";
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG" + AdaBoost::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + AdaBoost::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + AdaBoost::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + AdaBoost::getId() + "]");
 }
 
-AdaBoost::AdaBoost(const AdaBoost &rhs){
-    classifierType = "AdaBoost";
+AdaBoost::AdaBoost(const AdaBoost &rhs):Classifier(AdaBoost::getId()){
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG" + AdaBoost::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + AdaBoost::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + AdaBoost::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + AdaBoost::getId() + "]");
     *this = rhs;
 }
 

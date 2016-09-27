@@ -28,9 +28,9 @@ std::string RandomForests::id = "RandomForests";
 std::string RandomForests::getId() { return RandomForests::id; }
 
 //Register the RandomForests module with the Classifier base class
-RegisterClassifierModule< RandomForests >  RandomForests::registerModule( RandomForests::getId() );
+RegisterClassifierModule< RandomForests >  RandomForests::registerModule( getId() );
 
-RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight)
+RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight) : Classifier( getId() )
 {
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->forestSize = forestSize;
@@ -41,28 +41,17 @@ RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT
     this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
     this->useScaling = useScaling;
     this->bootstrappedDatasetWeight = bootstrappedDatasetWeight;
-    classType = RandomForests::getId();
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
     useNullRejection = false;
     supportsNullRejection = false;
     useValidationSet = true;
     validationSetSize = 20;
-    debugLog.setProceedingText("[DEBUG " + RandomForests::getId() + "]");
-    errorLog.setProceedingText("[ERROR " + RandomForests::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING " + RandomForests::getId() + "]");
-    warningLog.setProceedingText("[WARNING " + RandomForests::getId() + "]");
 }
 
-RandomForests::RandomForests(const RandomForests &rhs){
+RandomForests::RandomForests(const RandomForests &rhs) : Classifier( getId() )
+{
     this->decisionTreeNode = NULL;
-    classType = RandomForests::getId();
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG " + RandomForests::getId() + "]");
-    errorLog.setProceedingText("[ERROR " + RandomForests::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING " + RandomForests::getId() + "]");
-    warningLog.setProceedingText("[WARNING " + RandomForests::getId() + "]");
     *this = rhs;
 }
 

@@ -325,6 +325,13 @@ public:
     @return returns a vector of vectors containing the warping paths from the last prediction, or an empty vector if no prediction has been made
     */
     const Vector< Vector< IndexDist > >& getWarpingPaths() const { return warpPaths; }
+
+    /**
+    Gets a string that represents the DTW class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
@@ -332,7 +339,7 @@ public:
     using MLBase::train_;
     using MLBase::predict_;
     
-private:
+protected:
     //Public training and prediction methods
     bool train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dtwTemplate,UINT &bestIndex);
     
@@ -349,11 +356,10 @@ private:
     void smoothData(VectorFloat &data,UINT smoothFactor,VectorFloat &resultsData);
     void smoothData(MatrixFloat &data,UINT smoothFactor,MatrixFloat &resultsData);
     void offsetTimeseries(MatrixFloat &timeseries);
+    bool loadLegacyModelFromFile( std::fstream &file );
     
     static RegisterClassifierModule< DTW > registerModule;
-    
-protected:
-    bool loadLegacyModelFromFile( std::fstream &file );
+    static std::string id;
     
     Vector< DTWTemplate > templatesBuffer;      //A buffer to store the templates for each time series
     Vector< MatrixFloat > distanceMatrices;

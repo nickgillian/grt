@@ -23,10 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the HMM with the classifier base type
-RegisterClassifierModule< HMM > HMM::registerModule("HMM");
+//Define the string that will be used to indentify the object
+std::string HMM::id = "HMM";
+std::string HMM::getId() { return HMM::id; }
 
-HMM::HMM(const UINT hmmType,const UINT modelType,const UINT delta,const bool useScaling,const bool useNullRejection)
+//Register the HMM with the classifier base type
+RegisterClassifierModule< HMM > HMM::registerModule( getId() );
+
+HMM::HMM(const UINT hmmType,const UINT modelType,const UINT delta,const bool useScaling,const bool useNullRejection) : Classifier( getId() )
 {
     this->hmmType = hmmType;
     this->modelType = modelType;
@@ -48,20 +52,11 @@ HMM::HMM(const UINT hmmType,const UINT modelType,const UINT delta,const bool use
     
     supportsNullRejection = false; //TODO - need to add better null rejection support
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
-    classType = "HMM";
-    classifierType = classType;
-    debugLog.setProceedingText("[DEBUG HMM]");
-    errorLog.setProceedingText("[ERROR HMM]");
-    warningLog.setProceedingText("[WARNING HMM]");
 }
 
-HMM::HMM(const HMM &rhs){
+HMM::HMM(const HMM &rhs) : Classifier( getId() )
+{
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
-    classType = "HMM";
-    classifierType = classType;
-    debugLog.setProceedingText("[DEBUG HMM]");
-    errorLog.setProceedingText("[ERROR HMM]");
-    warningLog.setProceedingText("[WARNING HMM]");
     *this = rhs;
 }
 

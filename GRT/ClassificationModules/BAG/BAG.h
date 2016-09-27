@@ -181,9 +181,8 @@ public:
     */
     bool setWeights(const VectorFloat &weights);
     
-
     /**
-    Gets a string that represents the AdaBoost class.
+    Gets a string that represents the BAG class.
     
     @return returns a string containing the ID of this class
     */

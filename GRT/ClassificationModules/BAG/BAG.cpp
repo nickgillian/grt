@@ -28,29 +28,17 @@ std::string BAG::id = "BAG";
 std::string BAG::getId() { return BAG::id; }
 
 //Register the BAG module with the Classifier base class
-RegisterClassifierModule< BAG >  BAG::registerModule("BAG");
+RegisterClassifierModule< BAG >  BAG::registerModule( BAG::getId() );
 
-BAG::BAG(bool useScaling)
+BAG::BAG(bool useScaling) : Classifier( BAG::getId() )
 {
     this->useScaling = useScaling;
     useNullRejection = false;
-    classType = "BAG";
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG" + BAG::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + BAG::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + BAG::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + BAG::getId() + "]");
 }
 
-BAG::BAG(const BAG &rhs){
-    classType = "BAG";
-    classifierType = classType;
+BAG::BAG(const BAG &rhs):Classifier( BAG::getId() ){
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG" + BAG::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + BAG::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + BAG::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + BAG::getId() + "]");
     *this = rhs;
 }
 

@@ -213,7 +213,6 @@ public:
     */
     bool setDistanceMethod(UINT distanceMethod);
     
-
     /**
     Gets a string that represents the KNN class.
     
@@ -248,7 +247,7 @@ protected:
     static RegisterClassifierModule< KNN > registerModule;
     static std::string id;
 
-    public:
+public:
     enum DistanceMethods{EUCLIDEAN_DISTANCE=0,COSINE_DISTANCE,MANHATTAN_DISTANCE};
     
 };

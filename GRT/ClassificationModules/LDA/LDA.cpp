@@ -27,18 +27,12 @@ GRT_BEGIN_NAMESPACE
 std::string LDA::id = "LDA";
 std::string LDA::getId() { return LDA::id; }
 
-LDA::LDA(bool useScaling,bool useNullRejection,Float nullRejectionCoeff)
+LDA::LDA(bool useScaling,bool useNullRejection,Float nullRejectionCoeff) : Classifier( getId() )
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
-    classType = "LDA";
-    classifierType = classType;
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    debugLog.setProceedingText("[DEBUG" + LDA::getId() + "]");
-    errorLog.setProceedingText("[ERROR" + LDA::getId() + "]");
-    trainingLog.setProceedingText("[TRAINING" + LDA::getId() + "]");
-    warningLog.setProceedingText("[WARNING" + LDA::getId() + "]");
 }
 
 LDA::~LDA(void)

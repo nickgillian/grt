@@ -13,7 +13,7 @@ TEST(KNN, Constructor) {
   EXPECT_TRUE( knn.getClassifierType() == KNN::getId() );
 
   //Check the module is not trained
-  EXPECT_TRUE( !hmm.getTrained() );
+  EXPECT_TRUE( !knn.getTrained() );
 }
 
 // Tests the learning algorithm on a basic dataset
@@ -56,7 +56,7 @@ TEST(KNN, TrainBasicDataset) {
   EXPECT_TRUE( knn.getTrained() );
 
   for(UINT i=0; i<testData.getNumSamples(); i++){
-    EXPECT_TRUE( knn.predict( knn[i].getSample() ) );
+    EXPECT_TRUE( knn.predict( testData[i].getSample() ) );
   }
 
 

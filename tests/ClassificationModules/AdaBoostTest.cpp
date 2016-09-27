@@ -7,13 +7,13 @@ using namespace GRT;
 // Tests the default constructor
 TEST(AdaBoost, Constructor) {
   
-  AdaBoost boost;
+  AdaBoost adaBoost;
 
   //Check the type matches
-  EXPECT_TRUE( boost.getClassifierType() == AdaBoost::getId() );
+  EXPECT_TRUE( adaBoost.getClassifierType() == AdaBoost::getId() );
 
   //Check the module is not trained
-  EXPECT_TRUE( !boost.getTrained() );
+  EXPECT_TRUE( !adaBoost.getTrained() );
 }
 
 // Tests the learning algorithm on a basic dataset
@@ -57,7 +57,6 @@ TEST(AdaBoost, TrainBasicDataset) {
   for(UINT i=0; i<testData.getNumSamples(); i++){
     EXPECT_TRUE( adaBoost.predict( testData[i].getSample() ) );
   }
-
 
 }
 

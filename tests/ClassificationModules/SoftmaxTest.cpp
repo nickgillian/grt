@@ -10,7 +10,7 @@ TEST(Softmax, Constructor) {
   Softmax sm;
 
   //Check the type matches
-  EXPECT_TRUE( sm.getClassifierType() == RandomForests::getId() );
+  EXPECT_TRUE( sm.getClassifierType() == Softmax::getId() );
 
   //Check the module is not trained
   EXPECT_TRUE( !sm.getTrained() );

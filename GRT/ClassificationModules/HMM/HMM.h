@@ -328,6 +328,13 @@ public:
     bool setSigma(const Float sigma);
     
     bool setAutoEstimateSigma(const bool autoEstimateSigma);
+
+    /**
+    Gets a string that represents the KNN class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
@@ -364,6 +371,7 @@ protected:
     Vector< ContinuousHiddenMarkovModel > continuousModels;
     
     static RegisterClassifierModule< HMM > registerModule;
+     static std::string id;
 };
 
 GRT_END_NAMESPACE

@@ -45,8 +45,9 @@ public:
 
     /**
     Default Classifier Constructor
+    @param classifierType: the id of the parent classifier (e.g., DecisionTree)
     */
-    Classifier(void);
+    Classifier( const std::string &classifierType = "" );
     
     /**
     Default Classifier Destructor
@@ -309,7 +310,6 @@ protected:
     */
     bool loadBaseSettingsFromFile( std::fstream &file );
     
-    std::string classifierType;
     bool supportsNullRejection;
     bool useNullRejection;
     UINT numClasses;
