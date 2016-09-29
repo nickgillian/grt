@@ -2,8 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief The RMSFilter implements a root mean squared (RMS) filter.
 */
 
 /**
@@ -33,6 +31,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief The RMSFilter implements a root mean squared (RMS) filter.
+*/
 class RMSFilter : public PreProcessing {
 public:
     /**
@@ -162,3 +163,6 @@ protected:
 };
 
 GRT_END_NAMESPACE
+
+#endif //GRT_RMS_FILTER_HEADER
+

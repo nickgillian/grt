@@ -26,13 +26,8 @@ GRT_BEGIN_NAMESPACE
 //Register the FIRFilter module with the PreProcessing base class
 RegisterPreProcessingModule< FIRFilter > FIRFilter::registerModule("FIRFilter");
 
-FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sampleRate,const Float cutoffFrequency,const Float gain,const UINT numDimensions){
-    classType = "FIRFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG FIRFilter]");
-    errorLog.setProceedingText("[ERROR FIRFilter]");
-    warningLog.setProceedingText("[WARNING FIRFilter]");
-    
+FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sampleRate,const Float cutoffFrequency,const Float gain,const UINT numDimensions) : PreProcessing( "FIRFilter" )
+{
     initialized = false;
     this->numInputDimensions = numDimensions;
     
@@ -60,13 +55,8 @@ FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sample
     }
 }
 
-FIRFilter::FIRFilter(const FIRFilter &rhs){
-    classType = "FIRFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG FIRFilter]");
-    errorLog.setProceedingText("[ERROR FIRFilter]");
-    warningLog.setProceedingText("[WARNING FIRFilter]");
-    
+FIRFilter::FIRFilter(const FIRFilter &rhs) : PreProcessing( "FIRFilter" )
+{
     *this = rhs;
 }
 
@@ -98,7 +88,7 @@ bool FIRFilter::deepCopyFrom(const PreProcessing *preProcessing){
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
         //Call the equals operator
-        *this = *(FIRFilter*)preProcessing;
+        *this = *dynamic_cast<const FIRFilter*>(preProcessing);
         
         return true;
     }

@@ -2,9 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief The MedianFilter implements a simple median filter.
-
 @example PreprocessingModulesExamples/MedianFilterExample/MedianFilterExample.cpp
 */
 
@@ -35,6 +32,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief The MedianFilter implements a simple median filter: https://en.wikipedia.org/wiki/Median_filter
+*/
 class GRT_API MedianFilter : public PreProcessing {
     public:
     /**
@@ -43,7 +43,7 @@ class GRT_API MedianFilter : public PreProcessing {
     @param filterSize: the size of the median filter, should be a value greater than zero. Default filterSize = 5
     @param numDimensions: the dimensionality of the data to filter.  Default numDimensions = 1
     */
-    MedianFilter(UINT filterSize = 5,UINT numDimensions = 1);
+    MedianFilter(const UINT filterSize = 5,const UINT numDimensions = 1);
     
     /**
     Copy Constructor, copies the MedianFilter from the rhs instance to this instance
@@ -119,7 +119,7 @@ class GRT_API MedianFilter : public PreProcessing {
     @param filterSize: the size of the moving average filter, should be a value greater than zero
     @return true if the filter was initiliazed, false otherwise
     */
-    bool init(UINT filterSize,UINT numDimensions);
+    bool init(const UINT filterSize,const UINT numDimensions);
     
     /**
     Filters the input, this should only be called if the dimensionality of the filter was set to 1.
@@ -142,14 +142,14 @@ class GRT_API MedianFilter : public PreProcessing {
     
     @return returns the filter size
     */
-    UINT getFilterSize() const { return filterSize; }
+    UINT getFilterSize() const;
     
     /**
     Returns the last value(s) that were filtered.
     
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
-    VectorFloat getFilteredData() const { return processedData; }
+    VectorFloat getFilteredData() const;
     
     /**
     Returns the current data in the dataBuffer.
@@ -165,7 +165,7 @@ class GRT_API MedianFilter : public PreProcessing {
     using MLBase::save;
     using MLBase::load;
     
-    protected:
+protected:
     UINT filterSize;                                        ///< The size of the filter
     UINT inputSampleCounter;                                ///< A counter to keep track of the number of input samples
     CircularBuffer< VectorFloat > dataBuffer;           ///< A buffer to store the previous N values, N = filterSize

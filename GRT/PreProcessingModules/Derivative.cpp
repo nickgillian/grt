@@ -26,18 +26,13 @@ GRT_BEGIN_NAMESPACE
 //Register the Derivative module with the PreProcessing base class
 RegisterPreProcessingModule< Derivative > Derivative::registerModule("Derivative");
 
-Derivative::Derivative(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize){
-    classType = "Derivative";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG Derivative]");
-    errorLog.setProceedingText("[ERROR Derivative]");
-    warningLog.setProceedingText("[WARNING Derivative]");
-    if( derivativeOrder == FIRST_DERIVATIVE || derivativeOrder == SECOND_DERIVATIVE ){
-        init(derivativeOrder,delta,numDimensions,filterData,filterSize);
-    }
+Derivative::Derivative(const UINT derivativeOrder,const Float delta,const UINT numDimensions,const bool filterData,const UINT filterSize) : PreProcessing( "Derivative" )
+{
+    init(derivativeOrder,delta,numDimensions,filterData,filterSize);
 }
 
-Derivative::Derivative(const Derivative &rhs){
+Derivative::Derivative(const Derivative &rhs) : PreProcessing( "Derivative" )
+{
     
     this->derivativeOrder = rhs.derivativeOrder;
     this->filterSize = rhs.filterSize;
@@ -46,12 +41,6 @@ Derivative::Derivative(const Derivative &rhs){
     this->filter = rhs.filter;
     this->yy = rhs.yy;
     this->yyy = rhs.yyy;
-    
-    classType = "Derivative";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG Derivative]");
-    errorLog.setProceedingText("[ERROR Derivative]");
-    warningLog.setProceedingText("[WARNING Derivative]");
     
     copyBaseVariables( (PreProcessing*)&rhs );
 }
@@ -80,7 +69,7 @@ bool Derivative::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
-        Derivative *ptr = (Derivative*)preProcessing;
+        const Derivative *ptr = dynamic_cast<const Derivative*>(preProcessing);
         
         //Clone the Derivative values
         this->derivativeOrder = ptr->derivativeOrder;
@@ -211,7 +200,7 @@ bool Derivative::load(std::fstream &file){
     return init(derivativeOrder,delta,numInputDimensions,filterData,filterSize);
 }
 
-bool Derivative::init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize){
+bool Derivative::init(const UINT derivativeOrder,const Float delta,const UINT numDimensions,const bool filterData,const UINT filterSize){
     
     initialized = false;
     
@@ -300,7 +289,7 @@ VectorFloat Derivative::computeDerivative(const VectorFloat &x){
     return processedData;
 }
 
-bool Derivative::setDerivativeOrder(UINT derivativeOrder){
+bool Derivative::setDerivativeOrder(const UINT derivativeOrder){
     if( derivativeOrder == FIRST_DERIVATIVE || derivativeOrder == SECOND_DERIVATIVE ){
         this->derivativeOrder = derivativeOrder;
         if( initialized ) init(derivativeOrder, delta, numInputDimensions,filterData,filterSize);
@@ -310,7 +299,7 @@ bool Derivative::setDerivativeOrder(UINT derivativeOrder){
     return false;
 }
 
-bool Derivative::setFilterSize(UINT filterSize){
+bool Derivative::setFilterSize(const UINT filterSize){
     if( filterSize > 0  ){
         this->filterSize = filterSize;
         if( initialized ) init(derivativeOrder, delta, numInputDimensions,filterData,filterSize);
@@ -320,13 +309,18 @@ bool Derivative::setFilterSize(UINT filterSize){
     return false;
 }
 
-bool Derivative::enableFiltering(bool filterData){
+bool Derivative::enableFiltering(const bool filterData){
     this->filterData = filterData;
     if( initialized ) init(derivativeOrder, delta, numInputDimensions,filterData,filterSize);
     return true;
 }
 
-Float Derivative::getDerivative(UINT derivativeOrder){
+UINT Derivative::getFilterSize() const { 
+    if( initialized ){ return filterSize; } 
+    return 0; 
+}
+
+Float Derivative::getDerivative(const UINT derivativeOrder) const {
     
     switch( derivativeOrder ){
         case 0:
@@ -346,7 +340,7 @@ Float Derivative::getDerivative(UINT derivativeOrder){
     return 0;
 }
 
-VectorFloat Derivative::getDerivatives(UINT derivativeOrder){
+VectorFloat Derivative::getDerivatives(const UINT derivativeOrder) const {
     
     switch( derivativeOrder ){
         case 0:

@@ -26,13 +26,8 @@ GRT_BEGIN_NAMESPACE
 //Register the LowPassFilter module with the PreProcessing base class
 RegisterPreProcessingModule< LowPassFilter > LowPassFilter::registerModule("LowPassFilter");
 
-LowPassFilter::LowPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta){
-    
-    classType = "LowPassFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG LowPassFilter]");
-    errorLog.setProceedingText("[ERROR LowPassFilter]");
-    warningLog.setProceedingText("[WARNING LowPassFilter]");
+LowPassFilter::LowPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta) : PreProcessing( "LowPassFilter" )
+{
     init(filterFactor,gain,numDimensions);
     
     if( cutoffFrequency != -1 && delta != -1 ){
@@ -40,12 +35,8 @@ LowPassFilter::LowPassFilter(Float filterFactor,Float gain,UINT numDimensions,Fl
     }
 }
 
-LowPassFilter::LowPassFilter(const LowPassFilter &rhs){
-    classType = "LowPassFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG LowPassFilter]");
-    errorLog.setProceedingText("[ERROR LowPassFilter]");
-    warningLog.setProceedingText("[WARNING LowPassFilter]");
+LowPassFilter::LowPassFilter(const LowPassFilter &rhs) : PreProcessing( "LowPassFilter" )
+{
     *this = rhs;
 }
 
@@ -70,12 +61,12 @@ bool LowPassFilter::deepCopyFrom(const PreProcessing *preProcessing){
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
         //Call the equals operator
-        *this = *(LowPassFilter*)preProcessing;
+        *this = *dynamic_cast<const LowPassFilter*>(preProcessing);
         
         return true;
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -174,7 +165,7 @@ bool LowPassFilter::load( std::fstream &file ){
     return init(filterFactor,gain,numInputDimensions);
 }
 
-bool LowPassFilter::init(Float filterFactor,Float gain,UINT numDimensions){
+bool LowPassFilter::init(const Float filterFactor,const Float gain,const UINT numDimensions){
     
     initialized = false;
     
@@ -206,7 +197,7 @@ bool LowPassFilter::init(Float filterFactor,Float gain,UINT numDimensions){
     return true;
 }
 
-Float LowPassFilter::filter(Float x){
+Float LowPassFilter::filter(const Float x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
@@ -241,7 +232,7 @@ VectorFloat LowPassFilter::filter(const VectorFloat &x){
     return processedData;
 }
 
-bool LowPassFilter::setGain(Float gain){
+bool LowPassFilter::setGain(const Float gain){
     if( gain > 0 ){
         this->gain = gain;
         reset();
@@ -251,7 +242,7 @@ bool LowPassFilter::setGain(Float gain){
     return false;
 }
 
-bool LowPassFilter::setFilterFactor(Float filterFactor){
+bool LowPassFilter::setFilterFactor(const Float filterFactor){
     if( filterFactor > 0 ){
         this->filterFactor = filterFactor;
         reset();
@@ -261,7 +252,7 @@ bool LowPassFilter::setFilterFactor(Float filterFactor){
     return false;
 }
 
-bool LowPassFilter::setCutoffFrequency(Float cutoffFrequency,Float delta){
+bool LowPassFilter::setCutoffFrequency(const Float cutoffFrequency,const Float delta){
     if( cutoffFrequency > 0 && delta > 0 ){
         Float RC = (1.0/TWO_PI) /cutoffFrequency;
         filterFactor = delta / (RC+delta);

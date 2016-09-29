@@ -26,24 +26,13 @@ GRT_BEGIN_NAMESPACE
 //Register the MedianFilter module with the PreProcessing base class
 RegisterPreProcessingModule< MedianFilter > MedianFilter::registerModule("MedianFilter");
 
-MedianFilter::MedianFilter(UINT filterSize,UINT numDimensions){
-    
-    classType = "MedianFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG MedianFilter]");
-    errorLog.setProceedingText("[ERROR MedianFilter]");
-    warningLog.setProceedingText("[WARNING MedianFilter]");
+MedianFilter::MedianFilter(UINT filterSize,UINT numDimensions) : PreProcessing( "MedianFilter" )
+{
     init(filterSize,numDimensions);
 }
 
-MedianFilter::MedianFilter(const MedianFilter &rhs){
-    
-    classType = "MedianFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG MedianFilter]");
-    errorLog.setProceedingText("[ERROR MedianFilter]");
-    warningLog.setProceedingText("[WARNING MedianFilter]");
-    
+MedianFilter::MedianFilter(const MedianFilter &rhs) : PreProcessing( "MedianFilter" )
+{
     //Zero this instance
     this->filterSize = 0;
     this->inputSampleCounter = 0;
@@ -82,12 +71,12 @@ bool MedianFilter::deepCopyFrom(const PreProcessing *preProcessing){
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
         //Call the equals operator
-        *this = *(MedianFilter*)preProcessing;
+        *this = *dynamic_cast<const MedianFilter*>(preProcessing);
         
         return true;
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -178,7 +167,7 @@ bool MedianFilter::load( std::fstream &file ){
     return init(filterSize,numInputDimensions);
 }
 
-bool MedianFilter::init(UINT filterSize,UINT numDimensions){
+bool MedianFilter::init(const UINT filterSize,const UINT numDimensions){
     
     //Cleanup the old memory
     initialized = false;
@@ -250,6 +239,10 @@ VectorFloat MedianFilter::filter(const VectorFloat &x){
     
     return processedData;
 }
+
+UINT MedianFilter::getFilterSize() const { return filterSize; }
+    
+VectorFloat MedianFilter::getFilteredData() const { return processedData; }
 
 Vector< VectorFloat > MedianFilter::getDataBuffer() const {
     

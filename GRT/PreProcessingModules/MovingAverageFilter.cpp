@@ -26,24 +26,13 @@ GRT_BEGIN_NAMESPACE
 //Register the MovingAverageFilter module with the PreProcessing base class
 RegisterPreProcessingModule< MovingAverageFilter > MovingAverageFilter::registerModule("MovingAverageFilter");
 
-MovingAverageFilter::MovingAverageFilter(UINT filterSize,UINT numDimensions){
-    
-    classType = "MovingAverageFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG MovingAverageFilter]");
-    errorLog.setProceedingText("[ERROR MovingAverageFilter]");
-    warningLog.setProceedingText("[WARNING MovingAverageFilter]");
+MovingAverageFilter::MovingAverageFilter(UINT filterSize,UINT numDimensions) : PreProcessing( "MovingAverageFilter" )
+{
     init(filterSize,numDimensions);
 }
 
-MovingAverageFilter::MovingAverageFilter(const MovingAverageFilter &rhs){
-    
-    classType = "MovingAverageFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG MovingAverageFilter]");
-    errorLog.setProceedingText("[ERROR MovingAverageFilter]");
-    warningLog.setProceedingText("[WARNING MovingAverageFilter]");
-    
+MovingAverageFilter::MovingAverageFilter(const MovingAverageFilter &rhs) : PreProcessing( "MovingAverageFilter" )
+{
     //Zero this instance
     this->filterSize = 0;
     this->inputSampleCounter = 0;
@@ -82,12 +71,12 @@ bool MovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
         //Call the equals operator
-        *this = *(MovingAverageFilter*)preProcessing;
+        *this = *dynamic_cast<const MovingAverageFilter*>(preProcessing);
         
         return true;
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -251,5 +240,9 @@ VectorFloat MovingAverageFilter::filter(const VectorFloat &x){
     
     return processedData;
 }
+
+UINT MovingAverageFilter::getFilterSize() const { return filterSize; }
+    
+VectorFloat MovingAverageFilter::getFilteredData() const { return processedData; }
 
 GRT_END_NAMESPACE

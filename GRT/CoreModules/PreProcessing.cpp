@@ -35,8 +35,14 @@ PreProcessing* PreProcessing::createInstanceFromString( const std::string &prePr
     return iter->second();
 }
     
-PreProcessing::PreProcessing(void){
-    preProcessingType = "NOT_SET"; 
+PreProcessing::PreProcessing( const std::string &id ){
+
+    debugLog.setProceedingText("[DEBUG " + id + "]");
+    errorLog.setProceedingText("[ERROR " + id + "]");
+    warningLog.setProceedingText("[WARNING " + id + "]");
+    trainingLog.setProceedingText("[WARNING " + id + "]");
+
+    preProcessingType = id; 
     initialized = false; 
     numInputDimensions = 0;
     numOutputDimensions = 0;

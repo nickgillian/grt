@@ -2,8 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
- 
- @brief This class implements a Finite Impulse Response (FIR) Filter.
  */
 
 /**
@@ -33,6 +31,9 @@
 
 GRT_BEGIN_NAMESPACE
     
+/**
+  @brief This class implements a Finite Impulse Response (FIR) Filter.
+*/
 class GRT_API FIRFilter : public PreProcessing{
 public:
     enum FilterTypes{LPF=0, HPF, BPF};

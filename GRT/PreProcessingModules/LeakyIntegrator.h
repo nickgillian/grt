@@ -2,8 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief The LeakyIntegrator class computes the following signal: y = y*z + x, where x is the input, y is the output and z is the leakrate.
 */
 
 /**
@@ -33,6 +31,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/** 
+ @brief The LeakyIntegrator class computes the following signal: y = y*z + x, where x is the input, y is the output and z is the leakrate.
+*/
 class GRT_API LeakyIntegrator : public PreProcessing{
 public:
     /**
@@ -149,7 +150,7 @@ public:
     
     @return returns the current leak rate
     */
-    Float getLeakRate();
+    Float getLeakRate() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;

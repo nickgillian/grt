@@ -26,24 +26,13 @@ GRT_BEGIN_NAMESPACE
 //Register the WeightedAverageFilter module with the PreProcessing base class
 RegisterPreProcessingModule< WeightedAverageFilter > WeightedAverageFilter::registerModule("WeightedAverageFilter");
 
-WeightedAverageFilter::WeightedAverageFilter(UINT filterSize,UINT numDimensions){
-    
-    classType = "WeightedAverageFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG WeightedAverageFilter]");
-    errorLog.setProceedingText("[ERROR WeightedAverageFilter]");
-    warningLog.setProceedingText("[WARNING WeightedAverageFilter]");
+WeightedAverageFilter::WeightedAverageFilter(const UINT filterSize,const UINT numDimensions) : PreProcessing( "WeightedAverageFilter" )
+{
     init(filterSize,numDimensions);
 }
 
-WeightedAverageFilter::WeightedAverageFilter(const WeightedAverageFilter &rhs){
-    
-    classType = "WeightedAverageFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG WeightedAverageFilter]");
-    errorLog.setProceedingText("[ERROR WeightedAverageFilter]");
-    warningLog.setProceedingText("[WARNING WeightedAverageFilter]");
-    
+WeightedAverageFilter::WeightedAverageFilter(const WeightedAverageFilter &rhs) : PreProcessing( "WeightedAverageFilter" )
+{   
     //Zero this instance
     this->filterSize = 0;
     this->inputSampleCounter = 0;
@@ -83,12 +72,12 @@ bool WeightedAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
         //Call the equals operator
-        *this = *(WeightedAverageFilter*)preProcessing;
+        *this = *dynamic_cast<const WeightedAverageFilter*>(preProcessing);
         
         return true;
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -125,7 +114,7 @@ bool WeightedAverageFilter::save( std::fstream &file ) const{
         return false;
     }
     
-    file << "GRT_MOVING_AVERAGE_FILTER_FILE_V1.0" << std::endl;
+    file << "GRT_WEIGHTED_AVERAGE_FILTER_FILE_V1.0" << std::endl;
     
     file << "NumInputDimensions: " << numInputDimensions << std::endl;
     file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
@@ -146,7 +135,7 @@ bool WeightedAverageFilter::load( std::fstream &file ){
     //Load the header
     file >> word;
     
-    if( word != "GRT_MOVING_AVERAGE_FILTER_FILE_V1.0" ){
+    if( word != "GRT_WEIGHTED_AVERAGE_FILTER_FILE_V1.0" ){
         errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
         return false;
     }
@@ -179,7 +168,7 @@ bool WeightedAverageFilter::load( std::fstream &file ){
     return init(filterSize,numInputDimensions);
 }
 
-bool WeightedAverageFilter::init(UINT filterSize,UINT numDimensions){
+bool WeightedAverageFilter::init(const UINT filterSize,const UINT numDimensions){
     
     //Cleanup the old memory
     initialized = false;
@@ -262,5 +251,9 @@ VectorFloat WeightedAverageFilter::filter(const VectorFloat &x){
     
     return processedData;
 }
+
+UINT WeightedAverageFilter::getFilterSize() const { return filterSize; }
+    
+VectorFloat WeightedAverageFilter::getFilteredData() const { return processedData; }
 
 GRT_END_NAMESPACE

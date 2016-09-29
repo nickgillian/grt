@@ -2,10 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief The DeadZone class sets any values in the input signal that fall within the dead-zone region to zero.
-Any values outside of the dead-zone region will be offset by the dead zone's lower limit and upper limit.
-
 @example PreprocessingModulesExamples/DeadZoneExample/DeadZoneExample.cpp
 */
 
@@ -36,6 +32,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief The DeadZone class sets any values in the input signal that fall within the dead-zone region to zero. Any values outside of the dead-zone region will be offset by the dead zone's lower limit and upper limit.
+*/
 class GRT_API DeadZone : public PreProcessing{
 public:
     /**
@@ -45,7 +44,7 @@ public:
     @param upperLimit: sets the upper limit of the dead-zone region.  Default upperLimit = 0.1
     @param numDimensions: the dimensionality of the input data.  Default numDimensions = 1
     */
-    DeadZone(Float lowerLimit = -0.1,Float upperLimit = 0.1,UINT numDimensions = 1);
+    DeadZone( const Float lowerLimit = -0.1, const Float upperLimit = 0.1, const UINT numDimensions = 1 );
     
     /**
     Copy Constructor, copies the DeadZone from the rhs instance to this instance
@@ -117,9 +116,9 @@ public:
     /**
     Initializes the instance, sets the lower and upper limits of the dead-zone region and the dimensionality of the input data.
     
-    @param Float lowerLimit: sets the lower limit of the dead-zone region
-    @param UINT upperLimit: sets the upper limit of the dead-zone region
-    @param UINT numDimensions: the dimensionality of the input data
+    @param lowerLimit: sets the lower limit of the dead-zone region
+    @param upperLimit: sets the upper limit of the dead-zone region
+    @param numDimensions: the dimensionality of the input data
     @return true if the instance was initiliazed, false otherwise
     */
     bool init(Float lowerLimit,Float upperLimit,UINT numDimensions);
@@ -127,7 +126,7 @@ public:
     /**
     Filters the value x using the dead-zone values, this should only be called if the dimensionality of the instance was set to 1.
     
-    @param const Float x: the value to be filtered, this should only be called if the dimensionality of the filter was set to 1
+    @param x: the value to be filtered, this should only be called if the dimensionality of the filter was set to 1
     @return the filtered input value.  Zero will be returned if the value was not computed
     */
     Float filter(const Float x);
@@ -135,15 +134,29 @@ public:
     /**
     Filters x using the dead-zone values, the dimensionality of the input should match the number of inputs for the dead zone
     
-    @param const VectorFloat &x: the values to be filtered, the dimensionality of the input should match the number of inputs for the derivative
+    @param &x: the values to be filtered, the dimensionality of the input should match the number of inputs for the derivative
     @return the filtered input values.  An empty vector will be returned if the values were not filtered
     */
     VectorFloat filter(const VectorFloat &x);
+
+    /**
+    Gets the lower limit of the dead-zone region.
+    
+    @return returns the lower limit if the DeadZone has been initialized, zero otherwise
+    */
+    Float getLowerLimit() const;
+    
+    /**
+    Gets the upper limit of the dead-zone region.
+    
+    @return returns the upper limit if the DeadZone has been initialized, zero otherwise
+    */
+    Float getUpperLimit() const;
     
     /**
     Sets the lower limit of the dead-zone region.
     
-    @param Float lowerLimit: the new lower limit for the dead zone
+    @param lowerLimit: the new lower limit for the dead zone
     @return returns true if the lowerLimit value was set, false otherwise
     */
     bool setLowerLimit(Float lowerLimit);
@@ -151,24 +164,10 @@ public:
     /**
     Sets the upper limit of the dead-zone region.
     
-    @param Float upperLimit: the new upper limit for the dead zone
+    @param upperLimit: the new upper limit for the dead zone
     @return returns true if the upperLimit value was set, false otherwise
     */
     bool setUpperLimit(Float upperLimit);
-    
-    /**
-    Gets the lower limit of the dead-zone region.
-    
-    @return returns the lower limit if the DeadZone has been initialized, zero otherwise
-    */
-    Float getLowerLimit(){ if( initialized ){ return lowerLimit; } return 0; }
-    
-    /**
-    Gets the upper limit of the dead-zone region.
-    
-    @return returns the upper limit if the DeadZone has been initialized, zero otherwise
-    */
-    Float getUpperLimit(){ if( initialized ){ return upperLimit; } return 0; }
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;

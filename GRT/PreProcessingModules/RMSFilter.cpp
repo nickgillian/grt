@@ -23,15 +23,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the RMS module with the PreProcessing base class
-RegisterPreProcessingModule< RMS > RMS::registerModule("RMSFilter");
+//Register the RMSFiltermodule with the PreProcessing base class
+RegisterPreProcessingModule< RMSFilter> RMSFilter::registerModule("RMSFilter");
 
-RMS::RMS(UINT filterSize,UINT numDimensions) : PreProcessing( "RMSFilter" )
+RMSFilter::RMSFilter(UINT filterSize,UINT numDimensions) : PreProcessing( "RMSFilter" )
 {
     init(filterSize,numDimensions);
 }
 
-RMS::RMS(const RMS &rhs) : PreProcessing( "RMSFilter" )
+RMSFilter::RMSFilter(const RMSFilter&rhs) : PreProcessing( "RMSFilter" )
 { 
     //Zero this instance
     this->filterSize = 0;
@@ -41,11 +41,11 @@ RMS::RMS(const RMS &rhs) : PreProcessing( "RMSFilter" )
     *this = rhs;
 }
 
-RMS::~RMS(){
+RMSFilter::~RMSFilter(){
     
 }
 
-RMS& RMS::operator=(const RMS &rhs){
+RMSFilter& RMSFilter::operator=(const RMSFilter&rhs){
     if(this!=&rhs){
         //Clear this instance
         this->filterSize = 0;
@@ -64,14 +64,14 @@ RMS& RMS::operator=(const RMS &rhs){
     return *this;
 }
 
-bool RMS::deepCopyFrom(const PreProcessing *preProcessing){
+bool RMSFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
         //Call the equals operator
-        *this = *dynamic_cast<RMS*>(preProcessing);
+        *this = *dynamic_cast<const RMSFilter*>(preProcessing);
         
         return true;
     }
@@ -82,7 +82,7 @@ bool RMS::deepCopyFrom(const PreProcessing *preProcessing){
 }
 
 
-bool RMS::process(const VectorFloat &inputVector){
+bool RMSFilter::process(const VectorFloat &inputVector){
     
     if( !initialized ){
         errorLog << "process(const VectorFloat &inputVector) - The filter has not been initialized!" << std::endl;
@@ -101,19 +101,19 @@ bool RMS::process(const VectorFloat &inputVector){
     return false;
 }
 
-bool RMS::reset(){
+bool RMSFilter::reset(){
     if( initialized ) return init(filterSize,numInputDimensions);
     return false;
 }
 
-bool RMS::save(std::fstream &file) const{
+bool RMSFilter::save(std::fstream &file) const{
     
     if( !file.is_open() ){
         errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
-    file << "GRT_MOVING_AVERAGE_FILTER_FILE_V1.0" << std::endl;
+    file << "GRT_RMS_FILTER_FILE_V1.0" << std::endl;
     
     file << "NumInputDimensions: " << numInputDimensions << std::endl;
     file << "NumOutputDimensions: " << numOutputDimensions << std::endl;
@@ -122,7 +122,7 @@ bool RMS::save(std::fstream &file) const{
     return true;
 }
 
-bool RMS::load(std::fstream &file){
+bool RMSFilter::load(std::fstream &file){
     
     if( !file.is_open() ){
         errorLog << "load(fstream &file) - The file is not open!" << std::endl;
@@ -134,7 +134,7 @@ bool RMS::load(std::fstream &file){
     //Load the header
     file >> word;
     
-    if( word != "GRT_MOVING_AVERAGE_FILTER_FILE_V1.0" ){
+    if( word != "GRT_RMS_FILTER_FILE_V1.0" ){
         errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
         return false;
     }
@@ -167,7 +167,7 @@ bool RMS::load(std::fstream &file){
     return init(filterSize,numInputDimensions);
 }
 
-bool RMS::init(UINT filterSize,UINT numDimensions){
+bool RMSFilter::init(UINT filterSize,UINT numDimensions){
     
     //Cleanup the old memory
     initialized = false;
@@ -198,7 +198,7 @@ bool RMS::init(UINT filterSize,UINT numDimensions){
     return initialized;
 }
 
-Float RMS::filter(const Float x){
+Float RMSFilter::filter(const Float x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){
@@ -212,7 +212,7 @@ Float RMS::filter(const Float x){
     return y[0];
 }
 
-VectorFloat RMS::filter(const VectorFloat &x){
+VectorFloat RMSFilter::filter(const VectorFloat &x){
     
     //If the filter has not been initialised then return 0, otherwise filter x and return y
     if( !initialized ){

@@ -2,9 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief This implements a Savitzky-Golay filter. This code is based on the Savitzky Golay filter code from Numerical Recipes 3.
-
 @example PreprocessingModulesExamples/SavitzkyGolayFilterExample/SavitzkyGolayFilterExample.cpp
 */
 
@@ -36,6 +33,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This implements a Savitzky-Golay filter. This code is based on the Savitzky Golay filter code from Numerical Recipes 3.
+*/
 class GRT_API SavitzkyGolayFilter : public PreProcessing{
 public:
     /**
@@ -47,7 +47,7 @@ public:
     @param smoothingPolynomialOrder: the order of the polynomial used to design the filter, should be either 2 or 4.  Default: smoothingPolynomialOrder = 2
     @param numDimensions: the dimensionality of the data to filter.  Default numDimensions = 1
     */
-    SavitzkyGolayFilter(UINT numLeftHandPoints=10,UINT numRightHandPoints=10,UINT derivativeOrder=0,UINT smoothingPolynomialOrder=2,UINT numDimensions = 1);
+    SavitzkyGolayFilter(const UINT numLeftHandPoints=10,const UINT numRightHandPoints=10,const UINT derivativeOrder=0,const UINT smoothingPolynomialOrder=2,const UINT numDimensions = 1);
     
     /**
     Copy Constructor, copies the SavitzkyGolayFilter from the rhs instance to this instance
@@ -122,7 +122,7 @@ public:
     
     @return true if the filter was reset, false otherwise
     */
-    bool init(UINT numLeftHandPoints,UINT numRightHandPoints,UINT derivativeOrder,UINT smoothingPolynomialOrder,UINT numDimensions);
+    bool init(const UINT numLeftHandPoints,const UINT numRightHandPoints,const UINT derivativeOrder,const UINT smoothingPolynomialOrder,const UINT numDimensions);
     
     /**
     Filters the input, this should only be called if the dimensionality of the filter was set to 1.
@@ -145,7 +145,7 @@ public:
     
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
-    VectorFloat getFilteredData() const { return processedData; }
+    VectorFloat getFilteredData() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;

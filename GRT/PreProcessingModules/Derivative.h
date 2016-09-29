@@ -2,9 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief The Derivative class computes either the first or second order derivative of the input signal.
-
 @example PreprocessingModulesExamples/DerivativeExample/DerivativeExample.cpp
 */
 
@@ -36,6 +33,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief The Derivative class computes either the first or second order derivative of the input signal.
+*/
 class GRT_API Derivative : public PreProcessing{
 public:
     enum DerivativeOrders{FIRST_DERIVATIVE=1,SECOND_DERIVATIVE};
@@ -50,12 +50,12 @@ public:
     @param filterData: a flag that sets if the data should be filtered before computing the derivative.  Default filterData = true
     @param filterSize: the size of the filter if the data is to be filtered
     */
-    Derivative(UINT derivativeOrder=FIRST_DERIVATIVE,Float delta = 1,UINT numDimensions = 1,bool filterData = true,UINT filterSize = 3);
+    Derivative(const UINT derivativeOrder=FIRST_DERIVATIVE,const Float delta = 1,const UINT numDimensions = 1,const bool filterData = true,const UINT filterSize = 3);
     
     /**
     Copy Constructor, copies the Derivative from the rhs instance to this instance
     
-    @param const Derivative &rhs: another instance of the Derivative class from which the data will be copied to this instance
+    @param &rhs: another instance of the Derivative class from which the data will be copied to this instance
     */
     Derivative(const Derivative &rhs);
     
@@ -130,7 +130,7 @@ public:
     @param filterSize: the size of the filter if the data is to be filtered
     @return true if the instance was initiliazed, false otherwise
     */
-    bool init(UINT derivativeOrder,Float delta,UINT numDimensions,bool filterData,UINT filterSize);
+    bool init(const UINT derivativeOrder,const Float delta,const UINT numDimensions,const bool filterData,const UINT filterSize);
     
     /**
     Computes the derivative of the input, this should only be called if the dimensionality of the instance was set to 1.
@@ -155,7 +155,7 @@ public:
     @param derivativeOrder: the derivative order you wish to set, this should either be FIRST_DERIVATIVE (1) or SECOND_DERIVATIVE (2)
     @return returns true if the derivative order was set, false otherwise
     */
-    bool setDerivativeOrder(UINT derivativeOrder);
+    bool setDerivativeOrder(const UINT derivativeOrder);
     
     /**
     Sets the size of the moving average filter used to smooth the input data (if the filterData parameter is set to true).
@@ -165,7 +165,7 @@ public:
     @param filterSize: the size of the moving average filter used to smooth the input data, must be greater than zero
     @return returns true if the filterSize was set, false otherwise
     */
-    bool setFilterSize(UINT filterSize);
+    bool setFilterSize(const UINT filterSize);
     
     /**
     Sets the delta value.  This is the time between samples and should be set to sampleRate/1000.0, where sampleRate is the sample rate of your sensor data.
@@ -176,7 +176,7 @@ public:
     @param delta: the estimated sampling time between sensor samples, must be greater than zero
     @return returns true if delta was set, false otherwise
     */
-    bool setDelta(Float delta);
+    bool setDelta(const Float delta);
     
     /**
     Sets if the input data will be filtered using a moving average filter before the derivative is computed.
@@ -185,14 +185,14 @@ public:
     @param filterData: sets if the data should be filtered before computing the derivative
     @return returns true if the filterData parameter was set, false otherwise
     */
-    bool enableFiltering(bool filterData);
+    bool enableFiltering(const bool filterData);
     
     /**
     Gets the size of the moving average filter.  If the instance has not been initialized then zero will be returned.
     
     @return returns the size of the moving average filter, will return 0 if no values have been computed
     */
-    UINT getFilterSize(){ if( initialized ){ return filterSize; } return 0; }
+    UINT getFilterSize() const;
     
     /**
     Gets the last computed derivative value.
@@ -201,7 +201,7 @@ public:
     @param derivativeOrder: flags which derivative order you want, the default value is 0 which will return whatever the current derivativeOrder is
     @return returns the last computed derivative value, will return 0 if no values have been computed
     */
-    Float getDerivative(UINT derivativeOrder = FIRST_DERIVATIVE);
+    Float getDerivative(const UINT derivativeOrder = FIRST_DERIVATIVE) const;
     
     /**
     Gets the last computed derivative values.
@@ -210,7 +210,7 @@ public:
     @param derivativeOrder: flags which derivative order you want, the default value is 0 which will return whatever the current derivativeOrder is
     @return returns the last computed derivative values, will return 0 if no values have been computed
     */
-    VectorFloat getDerivatives(UINT derivativeOrder = FIRST_DERIVATIVE);
+    VectorFloat getDerivatives(const UINT derivativeOrder = FIRST_DERIVATIVE) const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;

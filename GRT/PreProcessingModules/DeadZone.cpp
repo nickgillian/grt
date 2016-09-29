@@ -26,23 +26,15 @@ GRT_BEGIN_NAMESPACE
 //Register the DeadZone module with the PreProcessing base class
 RegisterPreProcessingModule< DeadZone > DeadZone::registerModule("DeadZone");
 
-DeadZone::DeadZone(Float lowerLimit,Float upperLimit,UINT numDimensions){
-    classType = "DeadZone";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG DeadZone]");
-    errorLog.setProceedingText("[ERROR DeadZone]");
-    warningLog.setProceedingText("[WARNING DeadZone]");
+DeadZone::DeadZone( const Float lowerLimit, const Float upperLimit, const UINT numDimensions) : PreProcessing( "DeadZone" )
+{
     init(lowerLimit,upperLimit,numDimensions);
 }
 
-DeadZone::DeadZone(const DeadZone &rhs){
+DeadZone::DeadZone(const DeadZone &rhs) : PreProcessing( "DeadZone" )
+{
     this->lowerLimit = rhs.lowerLimit;
     this->upperLimit = rhs.upperLimit;
-    classType = "DeadZone";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG DeadZone]");
-    errorLog.setProceedingText("[ERROR DeadZone]");
-    warningLog.setProceedingText("[WARNING DeadZone]");
     copyBaseVariables( (PreProcessing*)&rhs );
 }
 
@@ -65,7 +57,7 @@ bool DeadZone::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
-        DeadZone *ptr = (DeadZone*)preProcessing;
+        const DeadZone *ptr = dynamic_cast<const DeadZone*>(preProcessing);
         //Clone the DeadZone values
         this->lowerLimit = ptr->lowerLimit;
         this->upperLimit = ptr->upperLimit;
@@ -222,6 +214,16 @@ VectorFloat DeadZone::filter(const VectorFloat &x){
             }
     }
     return processedData;
+}
+
+Float DeadZone::getLowerLimit() const { 
+    if( initialized ){ return lowerLimit; } 
+    return 0; 
+}
+    
+Float DeadZone::getUpperLimit() const { 
+    if( initialized ){ return upperLimit; } 
+    return 0; 
 }
 
 bool DeadZone::setLowerLimit(Float lowerLimit){

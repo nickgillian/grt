@@ -26,27 +26,14 @@ GRT_BEGIN_NAMESPACE
 //Register the LeakyIntegrator module with the PreProcessing base class
 RegisterPreProcessingModule< LeakyIntegrator > LeakyIntegrator::registerModule("LeakyIntegrator");
 
-LeakyIntegrator::LeakyIntegrator(const Float leakRate,const UINT numDimensions){
-    classType = "LeakyIntegrator";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG LeakyIntegrator]");
-    errorLog.setProceedingText("[ERROR LeakyIntegrator]");
-    warningLog.setProceedingText("[WARNING LeakyIntegrator]");
+LeakyIntegrator::LeakyIntegrator(const Float leakRate,const UINT numDimensions) : PreProcessing( "LeakyIntegrator" )
+{
     init(leakRate,numDimensions);
 }
 
-LeakyIntegrator::LeakyIntegrator(const LeakyIntegrator &rhs){
-    
-    classType = "LeakyIntegrator";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG LeakyIntegrator]");
-    errorLog.setProceedingText("[ERROR LeakyIntegrator]");
-    warningLog.setProceedingText("[WARNING LeakyIntegrator]");
-    
-    this->leakRate = rhs.leakRate;
-    this->y = rhs.y;
-    
-    copyBaseVariables( (PreProcessing*)&rhs );
+LeakyIntegrator::LeakyIntegrator(const LeakyIntegrator &rhs) : PreProcessing( "LeakyIntegrator" )
+{
+    *this = rhs;
 }
 
 LeakyIntegrator::~LeakyIntegrator(){
@@ -68,7 +55,7 @@ bool LeakyIntegrator::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
-        LeakyIntegrator *ptr = (LeakyIntegrator*)preProcessing;
+        const LeakyIntegrator *ptr = dynamic_cast<const LeakyIntegrator*>(preProcessing);
         
         //Clone the LeakyIntegrator values
         this->leakRate = ptr->leakRate;
@@ -228,7 +215,7 @@ bool LeakyIntegrator::setLeakRate(const Float leakRate){
     return false;
 }
 
-Float LeakyIntegrator::getLeakRate(){
+Float LeakyIntegrator::getLeakRate() const {
     return leakRate;
 }
 

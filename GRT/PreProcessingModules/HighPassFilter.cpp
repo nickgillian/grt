@@ -26,13 +26,8 @@ GRT_BEGIN_NAMESPACE
 //Register the HighPassFilter module with the PreProcessing base class
 RegisterPreProcessingModule< HighPassFilter > HighPassFilter::registerModule("HighPassFilter");
 
-HighPassFilter::HighPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta){
-    
-    classType = "HighPassFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG HighPassFilter]");
-    errorLog.setProceedingText("[ERROR HighPassFilter]");
-    warningLog.setProceedingText("[WARNING HighPassFilter]");
+HighPassFilter::HighPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta) : PreProcessing( "HighPassFilter" )
+{
     init(filterFactor,gain,numDimensions);
     
     if( cutoffFrequency != -1 && delta != -1 ){
@@ -40,19 +35,9 @@ HighPassFilter::HighPassFilter(Float filterFactor,Float gain,UINT numDimensions,
     }
 }
 
-HighPassFilter::HighPassFilter(const HighPassFilter &rhs){
-    
-    preProcessingType = classType;
-    preProcessingType = "HighPassFilter";
-    debugLog.setProceedingText("[DEBUG HighPassFilter]");
-    errorLog.setProceedingText("[ERROR HighPassFilter]");
-    warningLog.setProceedingText("[WARNING HighPassFilter]");
-    
-    this->filterFactor = rhs.filterFactor;
-    this->gain = rhs.gain;
-    this->xx = rhs.xx;
-    this->yy = rhs.yy;
-    copyBaseVariables( (PreProcessing*)&rhs );
+HighPassFilter::HighPassFilter(const HighPassFilter &rhs) : PreProcessing( "HighPassFilter" )
+{
+    *this = rhs;
 }
 
 HighPassFilter::~HighPassFilter(){
@@ -76,7 +61,7 @@ bool HighPassFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
-        HighPassFilter *ptr = (HighPassFilter*)preProcessing;
+        const HighPassFilter *ptr = dynamic_cast<const HighPassFilter*>(preProcessing);
         
         //Clone the HighPassFilter values
         this->filterFactor = ptr->filterFactor;
@@ -88,7 +73,7 @@ bool HighPassFilter::deepCopyFrom(const PreProcessing *preProcessing){
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -187,7 +172,7 @@ bool HighPassFilter::load( std::fstream &file ){
     return init(filterFactor,gain,numInputDimensions);
 }
 
-bool HighPassFilter::init(Float filterFactor,Float gain,UINT numDimensions){
+bool HighPassFilter::init(const Float filterFactor,const Float gain,const UINT numDimensions){
     
     initialized = false;
     
@@ -261,7 +246,13 @@ VectorFloat HighPassFilter::filter(const VectorFloat &x){
     return processedData;
 }
 
-bool HighPassFilter::setGain(Float gain){
+Float HighPassFilter::getFilterFactor() const { if( initialized ){ return filterFactor; } return 0; }
+
+Float HighPassFilter::getGain() const { if( initialized ){ return gain; } return 0; }
+
+VectorFloat HighPassFilter::getFilteredValues() const { if( initialized ){ return yy; } return VectorFloat(); }
+
+bool HighPassFilter::setGain(const Float gain){
     if( gain > 0 ){
         this->gain = gain;
         return true;
@@ -270,7 +261,7 @@ bool HighPassFilter::setGain(Float gain){
     return false;
 }
 
-bool HighPassFilter::setFilterFactor(Float filterFactor){
+bool HighPassFilter::setFilterFactor(const Float filterFactor){
     if( filterFactor > 0 ){
         this->filterFactor = filterFactor;
         return true;
@@ -279,7 +270,7 @@ bool HighPassFilter::setFilterFactor(Float filterFactor){
     return false;
 }
 
-bool HighPassFilter::setCutoffFrequency(Float cutoffFrequency,Float delta){
+bool HighPassFilter::setCutoffFrequency(const Float cutoffFrequency,const Float delta){
     if( cutoffFrequency > 0 && delta > 0 ){
         Float RC = (1.0/TWO_PI) / cutoffFrequency;
         filterFactor = RC / (RC+delta);

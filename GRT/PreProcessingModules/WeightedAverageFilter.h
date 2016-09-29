@@ -2,9 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief The WeightedAverageFilter implements a weighted average filter that gives a larger weight
-to more recent samples, and a smaller weight to older samples.
 */
 
 /**
@@ -34,6 +31,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief The WeightedAverageFilter implements a weighted average filter that gives a larger weight to more recent samples, and a smaller weight to older samples.
+*/
 class GRT_API WeightedAverageFilter : public PreProcessing {
 public:
     /**
@@ -42,7 +42,7 @@ public:
     @param filterSize: the size of the weighted average filter, should be a value greater than zero. Default filterSize = 5
     @param numDimensions: the dimensionality of the data to filter.  Default numDimensions = 1
     */
-    WeightedAverageFilter(UINT filterSize = 5,UINT numDimensions = 1);
+    WeightedAverageFilter(const UINT filterSize = 5,const UINT numDimensions = 1);
     
     /**
     Copy Constructor, copies the WeightedAverageFilter from the rhs instance to this instance
@@ -118,7 +118,7 @@ public:
     @param filterSize: the size of the moving average filter, should be a value greater than zero
     @return true if the filter was initiliazed, false otherwise
     */
-    bool init(UINT filterSize,UINT numDimensions);
+    bool init(const UINT filterSize,const UINT numDimensions);
     
     /**
     Filters the input, this should only be called if the dimensionality of the filter was set to 1.
@@ -141,13 +141,13 @@ public:
     
     @return returns the filter size
     */
-    UINT getFilterSize() const { return filterSize; }
+    UINT getFilterSize() const;
     
     /**
     Returns the last value(s) that were filtered.
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
-    VectorFloat getFilteredData() const { return processedData; }
+    VectorFloat getFilteredData() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;

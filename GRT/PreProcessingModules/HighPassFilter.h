@@ -2,9 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief This class implements a High Pass Filter.
-
 @example PreprocessingModulesExamples/HighPassFilterExample/HighPassFilterExample.cpp
 */
 
@@ -35,6 +32,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This class implements a High Pass Filter.
+*/
 class GRT_API HighPassFilter : public PreProcessing{
 public:
     /**
@@ -49,7 +49,7 @@ public:
     @param cutoffFrequency: sets the cutoffFrequency of the filter (in Hz). If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.  Default value cutoffFrequency = -1.0
     @param delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor.  Default value delta = -1.0
     */
-    HighPassFilter(Float filterFactor = 0.1,Float gain = 1,UINT numDimensions = 1,Float cutoffFrequency = -1,Float delta = -1);
+    HighPassFilter(const Float filterFactor = 0.1,const Float gain = 1,const UINT numDimensions = 1,const Float cutoffFrequency = -1,const Float delta = -1);
     
     /**
     Copy Constructor, copies the HighPassFilter from the rhs instance to this instance
@@ -127,7 +127,7 @@ public:
     @param numDimensions: the dimensionality of the input data to filter
     @return true if the filter was initiliazed, false otherwise
     */
-    bool init(Float filterFactor,Float gain,UINT numDimensions);
+    bool init(const Float filterFactor,const Float gain,const UINT numDimensions);
     
     /**
     Filters the input, this should only be called if the dimensionality of the filter was set to 1.
@@ -152,7 +152,7 @@ public:
     @param gain: the new gain value, this multiples the filtered values by a constant ampltidue
     @return true if the gain value was set, false otherwise
     */
-    bool setGain(Float gain);
+    bool setGain(const Float gain);
     
     /**
     Sets the filter factor, this controls the high pass filter, a smaller value will result in a more aggresive attenuation of low frequency signals in the input signal.
@@ -162,7 +162,7 @@ public:
     @param filterFactor: the new filterFactor value
     @return true if the filterFactor value was set, false otherwise
     */
-    bool setFilterFactor(Float filterFactor);
+    bool setFilterFactor(const Float filterFactor);
     
     /**
     Sets the cutoff frequency of the filter, this updates the filterFactor.  The cutoffFrequency should in Hz.
@@ -172,28 +172,28 @@ public:
     @param delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor
     @return true if the filterFactor value was set, false otherwise
     */
-    bool setCutoffFrequency(Float cutoffFrequency,Float delta);
+    bool setCutoffFrequency(const Float cutoffFrequency,const Float delta);
     
     /**
     Gets the current filter factor if the filter has been initialized.
     
     @return the current filter factor if the filter has been initialized, zero otherwise
     */
-    Float getFilterFactor(){ if( initialized ){ return filterFactor; } return 0; }
+    Float getFilterFactor() const;
     
     /**
     Gets the current gain value if the filter has been initialized.
     
     @return the currentgain value if the filter has been initialized, zero otherwise
     */
-    Float getGain(){ if( initialized ){ return gain; } return 0; }
+    Float getGain() const;
     
     /**
     Returns the last value(s) that were filtered.
     
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
-    VectorFloat getFilteredValues(){ if( initialized ){ return yy; } return VectorFloat(); }
+    VectorFloat getFilteredValues() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;

@@ -45,9 +45,9 @@ public:
 
     /**
     Default Classifier Constructor
-    @param classifierType: the id of the parent classifier (e.g., DecisionTree)
+    @param classifierId: the id of the parent classifier (e.g., DecisionTree)
     */
-    Classifier( const std::string &classifierType = "" );
+    Classifier( const std::string &classifierId = "" );
     
     /**
     Default Classifier Destructor

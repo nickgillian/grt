@@ -35,28 +35,14 @@ GRT_BEGIN_NAMESPACE
 //Register the DoubleMovingAverageFilter module with the PreProcessing base class
 RegisterPreProcessingModule< DoubleMovingAverageFilter > DoubleMovingAverageFilter::registerModule("DoubleMovingAverageFilter");
 
-DoubleMovingAverageFilter::DoubleMovingAverageFilter(UINT filterSize,UINT numDimensions){
-    classType = "DoubleMovingAverageFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG DoubleMovingAverageFilter]");
-    errorLog.setProceedingText("[ERROR DoubleMovingAverageFilter]");
-    warningLog.setProceedingText("[WARNING DoubleMovingAverageFilter]");
+DoubleMovingAverageFilter::DoubleMovingAverageFilter(UINT filterSize,UINT numDimensions) : PreProcessing( "DoubleMovingAverageFilter" )
+{
     init(filterSize,numDimensions);
 }
 
-DoubleMovingAverageFilter::DoubleMovingAverageFilter(const DoubleMovingAverageFilter &rhs){
-    
-    this->filterSize = rhs.filterSize;
-    this->filter1 = rhs.filter1;
-    this->filter2 = rhs.filter2;
-    classType = "DoubleMovingAverageFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG DoubleMovingAverageFilter]");
-    errorLog.setProceedingText("[ERROR DoubleMovingAverageFilter]");
-    warningLog.setProceedingText("[WARNING DoubleMovingAverageFilter]");
-    
-    //Copy the base variables
-    copyBaseVariables( (PreProcessing*)&rhs );
+DoubleMovingAverageFilter::DoubleMovingAverageFilter(const DoubleMovingAverageFilter &rhs) : PreProcessing( "DoubleMovingAverageFilter" )
+{
+    *this = rhs;
 }
 
 DoubleMovingAverageFilter::~DoubleMovingAverageFilter(){
@@ -81,7 +67,7 @@ bool DoubleMovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing)
     
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
-        DoubleMovingAverageFilter *ptr = (DoubleMovingAverageFilter*)preProcessing;
+        const DoubleMovingAverageFilter *ptr = dynamic_cast<const DoubleMovingAverageFilter*>(preProcessing);
         
         //Clone the classLabelTimeoutFilter values
         this->filterSize = ptr->filterSize;
@@ -92,7 +78,7 @@ bool DoubleMovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing)
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -182,7 +168,7 @@ bool DoubleMovingAverageFilter::load( std::fstream &file ){
     return init(filterSize,numInputDimensions);
 }
 
-bool DoubleMovingAverageFilter::init(UINT filterSize,UINT numDimensions){
+bool DoubleMovingAverageFilter::init(const UINT filterSize,const UINT numDimensions){
     
     //Cleanup the old memory
     initialized = false;
@@ -266,5 +252,7 @@ VectorFloat DoubleMovingAverageFilter::filter(const VectorFloat &x){
     
     return yy;
 }
+
+VectorFloat DoubleMovingAverageFilter::getFilteredData() const { return processedData; }
 
 GRT_END_NAMESPACE

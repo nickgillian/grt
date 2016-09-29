@@ -40,8 +40,9 @@ class GRT_API PreProcessing : public MLBase
 public:
     /**
      Default Constructor
+     @param id: the id of the parent PreProcessing module (e.g., LowPassFilter)
      */
-	PreProcessing(void);
+	PreProcessing( const std::string &id = "" );
 	
     /**
      Default Destructor

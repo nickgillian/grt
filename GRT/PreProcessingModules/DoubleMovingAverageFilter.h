@@ -2,9 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief The class implements a Float moving average filter.
-
 @example PreprocessingModulesExamples/DoubleMovingAverageFilterExample/DoubleMovingAverageFilterExample.cpp
 */
 
@@ -36,6 +33,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief The class implements a Float moving average filter.
+*/
 class GRT_API DoubleMovingAverageFilter : public PreProcessing {
 public:
     /**
@@ -44,7 +44,7 @@ public:
     @param filterSize: the size of the moving average filter, should be a value greater than zero. Default filterSize = 5
     @param numDimensions: the dimensionality of the data to filter.  Default numDimensions = 1
     */
-    DoubleMovingAverageFilter(UINT filterSize = 5,UINT numDimensions = 1);
+    DoubleMovingAverageFilter(const UINT filterSize = 5,const UINT numDimensions = 1);
     
     /**
     Copy Constructor, copies the DoubleMovingAverageFilter from the rhs instance to this instance
@@ -144,7 +144,7 @@ public:
     
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
-    VectorFloat getFilteredData(){ return processedData; }
+    VectorFloat getFilteredData() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;

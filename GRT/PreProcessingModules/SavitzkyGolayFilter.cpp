@@ -26,17 +26,13 @@ GRT_BEGIN_NAMESPACE
 //Register the SavitzkyGolayFilter module with the PreProcessing base class
 RegisterPreProcessingModule< SavitzkyGolayFilter > SavitzkyGolayFilter::registerModule("SavitzkyGolayFilter");
 
-SavitzkyGolayFilter::SavitzkyGolayFilter(UINT numLeftHandPoints,UINT numRightHandPoints,UINT derivativeOrder,UINT smoothingPolynomialOrder,UINT numDimensions){
-    
-    classType = "SavitzkyGolayFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG SavitzkyGolayFilter]");
-    errorLog.setProceedingText("[ERROR SavitzkyGolayFilter]");
-    warningLog.setProceedingText("[WARNING SavitzkyGolayFilter]");
+SavitzkyGolayFilter::SavitzkyGolayFilter(const UINT numLeftHandPoints,const UINT numRightHandPoints,const UINT derivativeOrder,const UINT smoothingPolynomialOrder,const UINT numDimensions) : PreProcessing( "SavitzkyGolayFilter" )
+{
     init(numLeftHandPoints,numRightHandPoints,derivativeOrder,smoothingPolynomialOrder,numDimensions);
 }
 
-SavitzkyGolayFilter::SavitzkyGolayFilter(const SavitzkyGolayFilter &rhs){
+SavitzkyGolayFilter::SavitzkyGolayFilter(const SavitzkyGolayFilter &rhs) : PreProcessing( "SavitzkyGolayFilter" )
+{
     
     this->numPoints = rhs.numPoints;
     this->numLeftHandPoints = rhs.numLeftHandPoints;
@@ -46,12 +42,6 @@ SavitzkyGolayFilter::SavitzkyGolayFilter(const SavitzkyGolayFilter &rhs){
     this->data = rhs.data;
     this->yy = rhs.yy;
     this->coeff = rhs.coeff;
-    
-    classType = "SavitzkyGolayFilter";
-    preProcessingType = classType;
-    debugLog.setProceedingText("[DEBUG SavitzkyGolayFilter]");
-    errorLog.setProceedingText("[ERROR SavitzkyGolayFilter]");
-    warningLog.setProceedingText("[WARNING SavitzkyGolayFilter]");
     
     copyBaseVariables( (PreProcessing*)&rhs );
 }
@@ -81,7 +71,7 @@ bool SavitzkyGolayFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
         
-        SavitzkyGolayFilter *ptr = (SavitzkyGolayFilter*)preProcessing;
+        const SavitzkyGolayFilter *ptr = dynamic_cast<const SavitzkyGolayFilter*>(preProcessing);
         
         //Clone the SavitzkyGolayFilter values
         this->numPoints = ptr->numPoints;
@@ -97,7 +87,7 @@ bool SavitzkyGolayFilter::deepCopyFrom(const PreProcessing *preProcessing){
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -322,39 +312,41 @@ bool SavitzkyGolayFilter::calCoeff(){
         for (k=1; k<=nr; k++) sum += pow(Float(k),Float(ipj));
             for (k=1; k<=nl; k++) sum += pow(Float(-k),Float(ipj));
                 
-            mm = min_(ipj,2*m-ipj);
+        mm = min_(ipj,2*m-ipj);
             
-            for (imj = -mm; imj<=mm; imj+=2) a[(ipj+imj)/2][(ipj-imj)/2] = sum;
-            }
+        for (imj = -mm; imj<=mm; imj+=2) a[(ipj+imj)/2][(ipj-imj)/2] = sum;
+    }
         
-        LUDecomposition alud(a);
-        for (j=0;j<m+1;j++) b[j]=0.0;
-            b[ld]=1.0;
-        if( !alud.solve_vector(b,b) ){
-            return false;
-        }
+    LUDecomposition alud(a);
+    for (j=0;j<m+1;j++) b[j]=0.0;
+        b[ld]=1.0;
+    if( !alud.solve_vector(b,b) ){
+        return false;
+    }
         
-        for (kk=0; kk<np; kk++) c[kk]=0.0;
-        for (k = -nl; k<=nr; k++) {
-            sum=b[0];
-            fac=1.0;
-            
-            for(mm=1; mm<=m; mm++)
-            sum += b[mm]*(fac *= k);
-            
-            kk=(np-k) % np;
-            c[kk]=sum;
-        }
+    for (kk=0; kk<np; kk++) c[kk]=0.0;
+    for (k = -nl; k<=nr; k++) {
+        sum=b[0];
+        fac=1.0;
         
-        //Reorder coefficients and place them in coeff
-        //Reorder last=0 future = np-1
-        pos = nl;
-        for(i=0; i<np; i++){
-            coeff[i] = c[pos--];
-            if(pos==0)pos=np-1;
-        }
-        return true;
+        for(mm=1; mm<=m; mm++)
+        sum += b[mm]*(fac *= k);
+        
+        kk=(np-k) % np;
+        c[kk]=sum;
     }
     
-    GRT_END_NAMESPACE
+    //Reorder coefficients and place them in coeff
+    //Reorder last=0 future = np-1
+    pos = nl;
+    for(i=0; i<np; i++){
+        coeff[i] = c[pos--];
+        if(pos==0)pos=np-1;
+    }
+    return true;
+}
+
+VectorFloat SavitzkyGolayFilter::getFilteredData() const { return processedData; }
+    
+GRT_END_NAMESPACE
     
