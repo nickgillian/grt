@@ -70,12 +70,14 @@ class GRT_API TestResultsObserverManager : public ObserverManager< TestInstanceR
 class GRT_API MLBase : public GRTBase, public Observer< TrainingResult >, public Observer< TestInstanceResult >
 {
 public:
-    enum BaseTypes{BASE_TYPE_NOT_SET=0,CLASSIFIER,REGRESSIFIER,CLUSTERER}; ///<Enum that defines the type of inherited class
+    enum BaseType{BASE_TYPE_NOT_SET=0,CLASSIFIER,REGRESSIFIER,CLUSTERER,PRE_PROCSSING,POST_PROCESSING,FEATURE_EXTRACTION}; ///<Enum that defines the type of inherited class
 
     /**
     Default MLBase Constructor
+    @param id: the id of the inheriting class
+    @param type: the type of the inheriting class
     */
-    MLBase(void);
+    MLBase( const std::string &id = "", const BaseType type = BASE_TYPE_NOT_SET );
     
     /**
     Default MLBase Destructor
@@ -365,6 +367,13 @@ public:
     @return returns a std::string containing the model
     */
     virtual std::string getModelAsString() const;
+
+    /**
+    Gets the id of the class that is inheriting from this base class, e.g., if the KNN Classifier class inherits from  Classifier, which inherits from MLBase, then the baseId will be the id of the KNN class
+    
+    @return returns a string representing the id of the inheriting class
+    */
+    std::string getId() const;
     
     /**
     Gets the expected input data type for the module
@@ -383,9 +392,9 @@ public:
     /**
     Gets the current ML base type.
     
-    @return returns an UINT representing the current ML base type, this will be one of the BaseTypes enumerations
+    @return returns an enum representing the current ML base type, this will be one of the BaseType enumerations
     */
-    UINT getBaseType() const;
+    BaseType getType() const;
     
     /**
     Gets the number of input dimensions in trained model.
@@ -748,7 +757,8 @@ protected:
     bool useScaling;
     DataType inputType;
     DataType outputType;
-    UINT baseType;
+    BaseType baseType;
+    std::string baseId;
     UINT numInputDimensions;
     UINT numOutputDimensions;
     UINT numTrainingIterationsToConverge;

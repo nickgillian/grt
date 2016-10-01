@@ -23,10 +23,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-MLBase::MLBase(void){
+MLBase::MLBase( const std::string &id, const BaseType type ){
+    baseId = id;
+    baseType = type;
     trained = false;
     useScaling = false;
-    baseType = BASE_TYPE_NOT_SET;
     inputType = DATA_TYPE_UNKNOWN;
     outputType = DATA_TYPE_UNKNOWN;
     numInputDimensions = 0;
@@ -42,6 +43,10 @@ MLBase::MLBase(void){
     rmsTrainingError = 0;
     rmsValidationError = 0;
     totalSquaredTrainingError = 0;
+    debugLog.setProceedingText("[DEBUG" + id + "]");
+    errorLog.setProceedingText("[ERROR" + id + "]");
+    trainingLog.setProceedingText("[TRAINING" + id + "]");
+    warningLog.setProceedingText("[WARNING" + id + "]");
 }
 
 MLBase::~MLBase(void){
@@ -62,6 +67,7 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     
     this->trained = mlBase->trained;
     this->useScaling = mlBase->useScaling;
+    this->baseId = mlBase->baseId;
     this->baseType = mlBase->baseType;
     this->inputType = mlBase->inputType;
     this->outputType = mlBase->outputType;
@@ -200,15 +206,13 @@ std::string MLBase::getModelAsString() const{
     return "";
 }
 
-DataType MLBase::getInputType() const {
-    return inputType;
-}
+std::string MLBase::getId() const { return baseId; }
 
-DataType MLBase::getOutputType() const {
-    return outputType;
-}
+DataType MLBase::getInputType() const { return inputType; }
 
-UINT MLBase::getBaseType() const{ return baseType; }
+DataType MLBase::getOutputType() const { return outputType; }
+
+MLBase::BaseType MLBase::getType() const{ return baseType; }
 
 UINT MLBase::getNumInputFeatures() const{ return getNumInputDimensions(); }
 

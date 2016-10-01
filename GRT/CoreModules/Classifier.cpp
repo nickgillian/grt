@@ -69,14 +69,13 @@ Vector< std::string > Classifier::getRegisteredClassifiers(){
 	StringClassifierMap::iterator iter = getMap()->begin();
 	while( iter != getMap()->end() ){
 		registeredClassifiers.push_back( iter->first );
-		iter++;
+		++iter; //++iter is faster than iter++ as it does not require a copy/move operator
 	}
 	return registeredClassifiers;
 }
     
-Classifier::Classifier( const std::string &classifierType ){
-    baseType = MLBase::CLASSIFIER;
-    classType = classifierType;
+Classifier::Classifier( const std::string &id ) : MLBase( id, MLBase::CLASSIFIER )
+{
     classifierMode = STANDARD_CLASSIFIER_MODE;
     supportsNullRejection = false;
     useNullRejection = false;
@@ -89,10 +88,6 @@ Classifier::Classifier( const std::string &classifierType ){
     phase = 0;
     nullRejectionCoeff = 5;
     numClassifierInstances++;
-    debugLog.setProceedingText("[DEBUG" + classifierType + "]");
-    errorLog.setProceedingText("[ERROR" + classifierType + "]");
-    trainingLog.setProceedingText("[TRAINING" + classifierType + "]");
-    warningLog.setProceedingText("[WARNING" + classifierType + "]");
 }
     
 Classifier::~Classifier(void){

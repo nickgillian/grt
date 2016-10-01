@@ -25,35 +25,26 @@ GRT_BEGIN_NAMESPACE
 
 #define SOM_MIN_TARGET -1.0
 #define SOM_MAX_TARGET 1.0
+
+//Define the string that will be used to identify the object
+std::string SelfOrganizingMap::id = "SelfOrganizingMap";
+std::string SelfOrganizingMap::getId() { return SelfOrganizingMap::id; }
     
 //Register the SelfOrganizingMap class with the Clusterer base class
-RegisterClustererModule< SelfOrganizingMap > SelfOrganizingMap::registerModule("SelfOrganizingMap");
+RegisterClustererModule< SelfOrganizingMap > SelfOrganizingMap::registerModule( getId() );
 
-SelfOrganizingMap::SelfOrganizingMap( const UINT networkSize, const UINT networkTypology, const UINT maxNumEpochs, const Float sigmaWeight, const Float alphaStart, const Float alphaEnd ){
-    
+SelfOrganizingMap::SelfOrganizingMap( const UINT networkSize, const UINT networkTypology, const UINT maxNumEpochs, const Float sigmaWeight, const Float alphaStart, const Float alphaEnd ) : Clusterer( getId() )
+{
     this->numClusters = networkSize;
     this->networkTypology = networkTypology;
     this->maxNumEpochs = maxNumEpochs;
     this->sigmaWeight = sigmaWeight;
     this->alphaStart = alphaStart;
     this->alphaEnd = alphaEnd;
-    
-    classType = "SelfOrganizingMap";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG SelfOrganizingMap]");
-    errorLog.setProceedingText("[ERROR SelfOrganizingMap]");
-    trainingLog.setProceedingText("[TRAINING SelfOrganizingMap]");
-    warningLog.setProceedingText("[WARNING SelfOrganizingMap]");
 }
     
-SelfOrganizingMap::SelfOrganizingMap(const SelfOrganizingMap &rhs){
-    
-    classType = "SelfOrganizingMap";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG KMeans]");
-    errorLog.setProceedingText("[ERROR KMeans]");
-    trainingLog.setProceedingText("[TRAINING KMeans]");
-    warningLog.setProceedingText("[WARNING KMeans]");
+SelfOrganizingMap::SelfOrganizingMap(const SelfOrganizingMap &rhs) : Clusterer( getId() )
+{
     
     if( this != &rhs ){
         

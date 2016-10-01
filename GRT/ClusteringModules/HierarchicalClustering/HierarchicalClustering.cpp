@@ -22,27 +22,21 @@
 #include "HierarchicalClustering.h"
 
 GRT_BEGIN_NAMESPACE
+
+//Define the string that will be used to identify the object
+std::string HierarchicalClustering::id = "HierarchicalClustering";
+std::string HierarchicalClustering::getId() { return HierarchicalClustering::id; }
     
 //Register the HierarchicalClustering class with the Clusterer base class
-RegisterClustererModule< HierarchicalClustering > HierarchicalClustering::registerModule("HierarchicalClustering");
+RegisterClustererModule< HierarchicalClustering > HierarchicalClustering::registerModule( getId() );
 
-HierarchicalClustering::HierarchicalClustering(){
+HierarchicalClustering::HierarchicalClustering() : Clusterer( getId() )
+{
     M = N = 0;
-    classType = "HierarchicalClustering";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG HierarchicalClustering]");
-    errorLog.setProceedingText("[ERROR HierarchicalClustering]");
-    trainingLog.setProceedingText("[TRAINING HierarchicalClustering]");
-    warningLog.setProceedingText("[WARNING HierarchicalClustering]");
 }
     
-HierarchicalClustering::HierarchicalClustering(const HierarchicalClustering &rhs){
-    classType = "HierarchicalClustering";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG HierarchicalClustering]");
-    errorLog.setProceedingText("[ERROR HierarchicalClustering]");
-    trainingLog.setProceedingText("[TRAINING HierarchicalClustering]");
-    warningLog.setProceedingText("[WARNING HierarchicalClustering]");
+HierarchicalClustering::HierarchicalClustering(const HierarchicalClustering &rhs) : Clusterer( getId() )
+{
     *this = rhs;
 }
 

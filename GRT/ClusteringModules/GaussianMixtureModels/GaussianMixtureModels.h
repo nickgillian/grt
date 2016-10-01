@@ -167,6 +167,13 @@ public:
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
+
+    /**
+    Gets a string that represents the GaussianMixtureModels class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
 	
 protected:
     bool estep( const MatrixFloat &data, VectorDouble &u, VectorDouble &v, Float &change );
@@ -209,6 +216,7 @@ protected:
     
 private:
     static RegisterClustererModule< GaussianMixtureModels > registerModule;
+    static std::string id;
 };
     
 GRT_END_NAMESPACE

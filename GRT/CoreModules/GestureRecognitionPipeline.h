@@ -912,14 +912,12 @@ public:
      
      @return returns a pointer to the cluster module, or NULL if the cluster has not been set
      */
-    template <class T> T* getCluster() const{
+    template <class T> const T* getCluster() const{
         
         if( clusterer == NULL ) return NULL;
         
-        T temp;
-        
-        if( temp.getClassifierType() == clusterer->getClustererType() ){
-            return (T*)clusterer;
+        if( T::getId() == clusterer->getId() ){
+            return dynamic_cast<const T*>(clusterer);
         }
         
         return NULL;

@@ -23,7 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
+//Define the string that will be used to identify the object
 std::string BAG::id = "BAG";
 std::string BAG::getId() { return BAG::id; }
 
@@ -371,7 +371,7 @@ bool BAG::load( std::fstream &file ){
         }
         ensemble.resize(ensembleSize,NULL);
         for(UINT i=0; i<ensembleSize; i++){
-            ensemble[i] = createInstanceFromString( classifierTypes[i] );
+            ensemble[i] = create( classifierTypes[i] );
             
             if( ensemble[i] == NULL ){
                 errorLog << "load(string filename) - Could not create a new classifier instance from the classifierType: " << classifierTypes[i] << std::endl;
@@ -415,7 +415,7 @@ bool BAG::addClassifierToEnsemble(const Classifier &classifier,Float weight){
     
     trained = false;
     
-    Classifier *newClassifier = classifier.createNewInstance();
+    Classifier *newClassifier = classifier.create();
     
     if( newClassifier == NULL ){
         return false;
@@ -434,7 +434,7 @@ bool BAG::addClassifierToEnsemble(const Classifier &classifier,Float weight){
 bool BAG::clearEnsemble(){
     
     trained = false;
-    for(UINT i=0; i<ensemble.size(); i++){
+    for(UINT i=0; i<ensemble.getSize(); i++){
         if( ensemble[i] != NULL ){
             delete ensemble[i];
             ensemble[i] = NULL;

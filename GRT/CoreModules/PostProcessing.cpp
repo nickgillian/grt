@@ -35,8 +35,8 @@ PostProcessing* PostProcessing::createInstanceFromString(std::string const &post
     return iter->second();
 }
     
-PostProcessing::PostProcessing(void){
-    postProcessingType = "NOT_SET";
+PostProcessing::PostProcessing( const std::string &id ) : MLBase( id, MLBase::POST_PROCESSING )
+{
     postProcessingInputMode = INPUT_MODE_NOT_SET;
     postProcessingOutputMode = OUTPUT_MODE_NOT_SET;
     initialized = false; 

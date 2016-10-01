@@ -1,11 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @brief This is the main base class that all GRT PostProcessing algorithms should inherit from.
- 
- A large number of the functions in this class are virtual and simply return false as these functions must be overwridden by the inheriting class.
  */
 
 /**
@@ -35,13 +30,17 @@
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This is the main base class that all GRT PostProcessing algorithms should inherit from.
+ A large number of the functions in this class are virtual and simply return false as these functions must be overwridden by the inheriting class.
+*/
 class GRT_API PostProcessing : public MLBase
 {
 public:
     /**
      Default Constructor
      */
-	PostProcessing(void);
+	PostProcessing( const std::string &id = "" );
 	
     /**
      Default Destructor

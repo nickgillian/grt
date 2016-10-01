@@ -39,8 +39,8 @@ FeatureExtraction* FeatureExtraction::createNewInstance() const{
     return createInstanceFromString(featureExtractionType);
 }
     
-FeatureExtraction::FeatureExtraction(){
-    featureExtractionType = "NOT_SET"; 
+FeatureExtraction::FeatureExtraction( const std::string id ) : MLBase( id, MLBase::FEATURE_EXTRACTION )
+{
     initialized = false; 
     featureDataReady = false;
     numInputDimensions = 0;

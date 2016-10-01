@@ -354,8 +354,8 @@ Classifier* createNewClassifierInstance() { return new T; } ///< Returns a point
 template< typename T >
 class RegisterClassifierModule : public Classifier {
 public:
-    RegisterClassifierModule( std::string const &newClassificationModuleName ) {
-        getMap()->insert( std::pair< std::string, Classifier*(*)() >(newClassificationModuleName, &createNewClassifierInstance< T > ) );
+    RegisterClassifierModule( std::string const &newModuleId ) {
+        getMap()->insert( std::pair< std::string, Classifier*(*)() >(newModuleId, &createNewClassifierInstance< T > ) );
     }
 };
 

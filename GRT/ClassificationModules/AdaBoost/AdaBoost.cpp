@@ -23,12 +23,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
+//Define the string that will be used to identify the object
 std::string AdaBoost::id = "AdaBoost";
 std::string AdaBoost::getId() { return AdaBoost::id; }
 
 //Register the AdaBoost module with the Classifier base class
-RegisterClassifierModule< AdaBoost > AdaBoost::registerModule( AdaBoost::getId() );
+RegisterClassifierModule< AdaBoost > AdaBoost::registerModule( getId() );
 
 AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numBoostingIterations,UINT predictionMethod) : Classifier( AdaBoost::getId() )
 {
@@ -41,7 +41,8 @@ AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool use
     classifierMode = STANDARD_CLASSIFIER_MODE;
 }
 
-AdaBoost::AdaBoost(const AdaBoost &rhs):Classifier(AdaBoost::getId()){
+AdaBoost::AdaBoost(const AdaBoost &rhs) : Classifier( AdaBoost::getId() )
+{
     classifierMode = STANDARD_CLASSIFIER_MODE;
     *this = rhs;
 }

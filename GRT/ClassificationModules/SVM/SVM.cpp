@@ -25,7 +25,7 @@ using namespace LIBSVM;
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
+//Define the string that will be used to identify the object
 std::string SVM::id = "SVM";
 std::string SVM::getId() { return SVM::id; }
 

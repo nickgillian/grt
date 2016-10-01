@@ -22,12 +22,17 @@
 #include "KMeans.h"
 
 GRT_BEGIN_NAMESPACE
+
+//Define the string that will be used to identify the object
+std::string KMeans::id = "KMeans";
+std::string KMeans::getId() { return KMeans::id; }
     
 //Register the KMeans class with the Clusterer base class
-RegisterClustererModule< KMeans > KMeans::registerModule("KMeans");
+RegisterClustererModule< KMeans > KMeans::registerModule( getId() );
 
 //Constructor,destructor
-KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange,const bool computeTheta){
+KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange,const bool computeTheta) : Clusterer( getId() )
+{
     
     this->numClusters = numClusters;
     this->minNumEpochs = minNumEpochs;
@@ -40,24 +45,10 @@ KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumE
     finalTheta = 0;
     numTrainingIterationsToConverge = 0;
     trained = false;
-    
-    classType = "KMeans";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG KMeans]");
-    errorLog.setProceedingText("[ERROR KMeans]");
-    trainingLog.setProceedingText("[TRAINING KMeans]");
-    warningLog.setProceedingText("[WARNING KMeans]");
 }
     
-KMeans::KMeans(const KMeans &rhs){
-    
-    classType = "KMeans";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG KMeans]");
-    errorLog.setProceedingText("[ERROR KMeans]");
-    trainingLog.setProceedingText("[TRAINING KMeans]");
-    warningLog.setProceedingText("[WARNING KMeans]");
-    
+KMeans::KMeans(const KMeans &rhs) : Clusterer( getId() )
+{    
     if( this != &rhs ){
         
         this->numTrainingSamples = rhs.numTrainingSamples;
@@ -104,7 +95,7 @@ bool KMeans::deepCopyFrom(const Clusterer *clusterer){
     
     if( this->getClustererType() == clusterer->getClustererType() ){
         //Clone the KMeans values
-        KMeans *ptr = (KMeans*)clusterer;
+        const KMeans *ptr = dynamic_cast<const KMeans*>(clusterer);
         
         this->numTrainingSamples = ptr->numTrainingSamples;
         this->nchg = ptr->nchg;

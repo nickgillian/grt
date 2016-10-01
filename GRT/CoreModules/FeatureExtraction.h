@@ -40,8 +40,9 @@ class GRT_API FeatureExtraction : public MLBase
 public:
     /**
      Default FeatureExtraction Constructor
+     @param id: the id of the class inheriting from the FeatureExtraction base class
      */
-	FeatureExtraction();
+	FeatureExtraction( const std::string id = "" );
     
     /**
      Default FeatureExtraction Destructor

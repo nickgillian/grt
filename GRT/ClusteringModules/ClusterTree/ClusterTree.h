@@ -177,6 +177,13 @@ public:
     using MLBase::loadModelFromFile;
     using MLBase::train;
     using MLBase::predict;
+
+    /**
+    Gets a string that represents the ClusterTree class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     Float minRMSErrorPerNode;
@@ -186,8 +193,9 @@ protected:
     bool computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
     bool computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
 
+private:
     static RegisterClustererModule< ClusterTree > registerModule;
-    
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

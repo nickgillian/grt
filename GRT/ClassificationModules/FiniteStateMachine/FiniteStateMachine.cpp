@@ -23,7 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
+//Define the string that will be used to identify the object
 std::string FiniteStateMachine::id = "FiniteStateMachine";
 std::string FiniteStateMachine::getId() { return FiniteStateMachine::id; }
 

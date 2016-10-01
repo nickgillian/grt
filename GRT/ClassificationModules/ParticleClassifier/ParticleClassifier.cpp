@@ -23,7 +23,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-//Define the string that will be used to indentify the object
+//Define the string that will be used to identify the object
 std::string ParticleClassifier::id = "ParticleClassifier";
 std::string ParticleClassifier::getId() { return ParticleClassifier::id; }
 

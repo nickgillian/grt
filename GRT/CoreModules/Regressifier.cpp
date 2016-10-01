@@ -26,9 +26,9 @@ GRT_BEGIN_NAMESPACE
 Regressifier::StringRegressifierMap* Regressifier::stringRegressifierMap = NULL;
 UINT Regressifier::numRegressifierInstances = 0;
     
-Regressifier* Regressifier::createInstanceFromString( const std::string &regressifierType ){
+Regressifier* Regressifier::createInstanceFromString( const std::string &id ){
     
-    StringRegressifierMap::iterator iter = getMap()->find( regressifierType );
+    StringRegressifierMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
         return NULL;
     }
@@ -36,12 +36,12 @@ Regressifier* Regressifier::createInstanceFromString( const std::string &regress
 }
     
 Regressifier* Regressifier::createNewInstance() const{
-    return createInstanceFromString( regressifierType );
+    return createInstanceFromString( baseId );
 }
 
 Regressifier* Regressifier::deepCopy() const{
     
-    Regressifier *newInstance = createInstanceFromString( regressifierType );
+    Regressifier *newInstance = createInstanceFromString( baseId );
     
     if( newInstance == NULL ) return NULL;
     
@@ -52,13 +52,12 @@ Regressifier* Regressifier::deepCopy() const{
     return newInstance;
 }
     
-Regressifier::Regressifier( const std::string &id ){
-    baseType = MLBase::REGRESSIFIER;
-    regressifierType = id;
-    debugLog.setProceedingText("[DEBUG" + regressifierType + "]");
-    errorLog.setProceedingText("[ERROR" + regressifierType + "]");
-    trainingLog.setProceedingText("[TRAINING" + regressifierType + "]");
-    warningLog.setProceedingText("[WARNING" + regressifierType + "]");
+Regressifier::Regressifier( const std::string &id ) : MLBase( id, MLBase::REGRESSIFIER )
+{
+    debugLog.setProceedingText("[DEBUG" + id + "]");
+    errorLog.setProceedingText("[ERROR" + id + "]");
+    trainingLog.setProceedingText("[TRAINING" + id + "]");
+    warningLog.setProceedingText("[WARNING" + id + "]");
     numOutputDimensions = 0;
     numRegressifierInstances++;
 }

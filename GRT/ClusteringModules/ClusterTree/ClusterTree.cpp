@@ -23,13 +23,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to identify the object
+std::string ClusterTree::id = "ClusterTree";
+std::string ClusterTree::getId() { return ClusterTree::id; }
+
 //Register the ClusterTreeNode with the Node base class
 RegisterNode< ClusterTreeNode > ClusterTreeNode::registerModule("ClusterTreeNode");
     
 //Register the ClusterTree module with the Clusterer base class
-RegisterClustererModule< ClusterTree >  ClusterTree::registerModule("ClusterTree");
+RegisterClustererModule< ClusterTree >  ClusterTree::registerModule( getId() );
 
-ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode){
+ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Clusterer( getId() )
+{
     tree = NULL;
     predictedClusterLabel = 0;
     this->numSplittingSteps = numSplittingSteps;
@@ -38,23 +43,12 @@ ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPe
     this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
     this->trainingMode = trainingMode;
     this->minRMSErrorPerNode = minRMSErrorPerNode;
-    Clusterer::classType = "ClusterTree";
-    clustererType = Clusterer::classType;
-    Clusterer::debugLog.setProceedingText("[DEBUG ClusterTree]");
-    Clusterer::errorLog.setProceedingText("[ERROR ClusterTree]");
-    Clusterer::trainingLog.setProceedingText("[TRAINING ClusterTree]");
-    Clusterer::warningLog.setProceedingText("[WARNING ClusterTree]");
 }
     
-ClusterTree::ClusterTree(const ClusterTree &rhs){
+ClusterTree::ClusterTree(const ClusterTree &rhs) : Clusterer( getId() )
+{
     tree = NULL;
     predictedClusterLabel = 0;
-    Clusterer::classType = "ClusterTree";
-    clustererType = Clusterer::classType;
-    Clusterer::debugLog.setProceedingText("[DEBUG ClusterTree]");
-    Clusterer::errorLog.setProceedingText("[ERROR ClusterTree]");
-    Clusterer::trainingLog.setProceedingText("[TRAINING ClusterTree]");
-    Clusterer::warningLog.setProceedingText("[WARNING ClusterTree]");
     *this = rhs;
 }
     

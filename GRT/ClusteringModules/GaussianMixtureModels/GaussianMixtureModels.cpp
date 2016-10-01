@@ -3,12 +3,17 @@
 #include "GaussianMixtureModels.h"
 
 GRT_BEGIN_NAMESPACE
+
+//Define the string that will be used to identify the object
+std::string GaussianMixtureModels::id = "GaussianMixtureModels";
+std::string GaussianMixtureModels::getId() { return GaussianMixtureModels::id; }
     
 //Register the GaussianMixtureModels class with the Clusterer base class
-RegisterClustererModule< GaussianMixtureModels > GaussianMixtureModels::registerModule("GaussianMixtureModels");
+RegisterClustererModule< GaussianMixtureModels > GaussianMixtureModels::registerModule( getId() );
 
 //Constructor,destructor
-GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange){
+GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange) : Clusterer( getId() )
+{
     
     this->numClusters = numClusters;
     this->minNumEpochs = minNumEpochs;
@@ -18,23 +23,10 @@ GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT m
     numTrainingSamples = 0;
     numTrainingIterationsToConverge = 0;
     trained = false;
-    
-    classType = "GaussianMixtureModels";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG GaussianMixtureModels]");
-    errorLog.setProceedingText("[ERROR GaussianMixtureModels]");
-    trainingLog.setProceedingText("[TRAINING GaussianMixtureModels]");
-    warningLog.setProceedingText("[WARNING GaussianMixtureModels]");
 }
 
-GaussianMixtureModels::GaussianMixtureModels(const GaussianMixtureModels &rhs){
-    
-    classType = "GaussianMixtureModels";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG GaussianMixtureModels]");
-    errorLog.setProceedingText("[ERROR GaussianMixtureModels]");
-    trainingLog.setProceedingText("[TRAINING GaussianMixtureModels]");
-    warningLog.setProceedingText("[WARNING GaussianMixtureModels]");
+GaussianMixtureModels::GaussianMixtureModels(const GaussianMixtureModels &rhs) : Clusterer( getId() )
+{
     
     if( this != &rhs ){
         

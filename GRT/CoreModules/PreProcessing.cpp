@@ -35,14 +35,14 @@ PreProcessing* PreProcessing::createInstanceFromString( const std::string &prePr
     return iter->second();
 }
     
-PreProcessing::PreProcessing( const std::string &id ){
+PreProcessing::PreProcessing( const std::string &id ) : MLBase( id, MLBase::PRE_PROCSSING )
+{
 
     debugLog.setProceedingText("[DEBUG " + id + "]");
     errorLog.setProceedingText("[ERROR " + id + "]");
     warningLog.setProceedingText("[WARNING " + id + "]");
     trainingLog.setProceedingText("[WARNING " + id + "]");
 
-    preProcessingType = id; 
     initialized = false; 
     numInputDimensions = 0;
     numOutputDimensions = 0;
