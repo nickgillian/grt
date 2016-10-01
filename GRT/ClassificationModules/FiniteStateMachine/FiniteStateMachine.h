@@ -1,7 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
 */
 
 /**
@@ -187,6 +186,7 @@ protected:
     Vector< Vector< IndexedDouble > > pt;   ///<This stores the stateTransitions matrix in a format more efficient for the particle filter
     Vector< Vector< VectorFloat > > pe;    ///<This stores the stateEmissions model in a format more efficient for the particle filter
     
+private:
     static RegisterClassifierModule< FiniteStateMachine > registerModule;
     static std::string id;
 };

@@ -1,11 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @brief This class implements the Linear Discriminant Analysis Classification algorithm.
- 
- @warning: This algorithm is still under development and has not been fully implemented yet!
  */
 
 /**
@@ -55,6 +50,11 @@ public:
     
 };
     
+/**
+ @brief This class implements the Linear Discriminant Analysis Classification algorithm.
+ 
+ @warning: This algorithm is still under development and has not been fully implemented yet!
+*/
 class GRT_API LDA : public Classifier
 {
 public:
@@ -62,6 +62,13 @@ public:
      Default Constructor
      */
 	LDA(bool useScaling=false,bool useNullRejection=true,Float nullRejectionCoeff=10.0);
+
+    /**
+    Defines the copy constructor.
+    
+    @param const LDA &rhs: the instance from which all the data will be copied into this instance
+    */
+    LDA(const LDA &rhs);
     
     /**
      Default Destructor
@@ -161,13 +168,14 @@ public:
     using MLBase::loadModelFromFile;
 
 protected:
-    static std::string id;
-
-private:
 	MatrixFloat computeBetweenClassScatterMatrix( ClassificationData &data );
 	MatrixFloat computeWithinClassScatterMatrix( ClassificationData &data );
 	
     Vector< LDAClassModel > models;
+
+private:
+    static RegisterClassifierModule< LDA > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

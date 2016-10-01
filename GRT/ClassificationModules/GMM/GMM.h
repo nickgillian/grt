@@ -1,17 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements the Gaussian Mixture Model Classifier algorithm. The Gaussian Mixture Model
-Classifier (GMM) is basic but useful classification algorithm that can be used to classify an N-dimensional signal.
-
-@remark This implementation is based on Duda, Richard O., and Peter E. Hart. Pattern classification and scene analysis. Vol. 3. New York: Wiley, 1973.
-
-@example ClassificationModulesExamples/GMMExample/GMMExample.cpp
-
-@note The GMM algorithm can fail to train on some occasions, if this happens just try and run the training algorithm
-again and it should eventially converge.
 */
 
 /**
@@ -46,6 +35,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief This class implements the Gaussian Mixture Model Classifier algorithm. The Gaussian Mixture Model
+Classifier (GMM) is basic but useful classification algorithm that can be used to classify an N-dimensional signal.
+
+@remark This implementation is based on Duda, Richard O., and Peter E. Hart. Pattern classification and scene analysis. Vol. 3. New York: Wiley, 1973.
+
+@example ClassificationModulesExamples/GMMExample/GMMExample.cpp
+
+@note The GMM algorithm can fail to train on some occasions, if this happens just try and run the training algorithm again and it should eventially converge.
+*/
 class GRT_API GMM : public Classifier
 {
 public:
@@ -203,6 +202,7 @@ protected:
     ErrorLog errorLog;
     WarningLog warningLog;
     
+private:
     static RegisterClassifierModule< GMM > registerModule;
     static std::string id;
 };

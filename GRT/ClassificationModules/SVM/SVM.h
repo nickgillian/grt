@@ -1,16 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class acts as a front end for the LIBSVM library (http://www.csie.ntu.edu.tw/~cjlin/libsvm/).
-It implements a Support Vector Machine (SVM) classifier, a powerful classifier that works well on a wide
-range of classification problems, particularly on more complex problems that other classifiers (such as
-the KNN, GMM or ANBC algorithms) might not be able to solve.
-
-@example ClassificationModulesExamples/SVMExample/SVMExample.cpp
-
-@remark This implementation is a wrapper for LIBSVM: Chang, Chih-Chung, and Chih-Jen Lin. "LIBSVM: a library for support vector machines." ACM Transactions on Intelligent Systems and Technology (TIST) 2, no. 3 (2011): 27.
 */
 
 /**
@@ -56,6 +46,16 @@ typedef struct SVMModel{
 
 } SVMModel;
 
+/**
+@brief This class acts as a front end for the LIBSVM library (http://www.csie.ntu.edu.tw/~cjlin/libsvm/).
+It implements a Support Vector Machine (SVM) classifier, a powerful classifier that works well on a wide
+range of classification problems, particularly on more complex problems that other classifiers (such as
+the KNN, GMM or ANBC algorithms) might not be able to solve.
+
+@example ClassificationModulesExamples/SVMExample/SVMExample.cpp
+
+@remark This implementation is a wrapper for LIBSVM: Chang, Chih-Chung, and Chih-Jen Lin. "LIBSVM: a library for support vector machines." ACM Transactions on Intelligent Systems and Technology (TIST) 2, no. 3 (2011): 27.
+*/
 class GRT_API SVM : public Classifier{
 public:
     enum SVMType{ C_SVC = 0, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };
@@ -392,6 +392,7 @@ protected:
     bool useAutoGamma;
     bool useCrossValidation;
     
+private:
     static RegisterClassifierModule< SVM > registerModule;
     static std::string id;
 };

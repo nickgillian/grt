@@ -1,23 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements Dynamic Time Warping.  Dynamic Time Warping (DTW) is a powerful classifier that
-works very well for recognizing temporal gestures. Temporal gestures can be defined as a cohesive sequence of
-movements that occur over a variable time period.  The DTW algorithm is a supervised learning algorithm that
-can be used to classify any type of N-dimensional, temporal signal. The DTW algorithm works by creating a
-template time series for each gesture that needs to be recognized, and then warping the realtime signals to
-each of the templates to find the best match. The DTW algorithm also computes rejection thresholds that enable
-the algorithm to automatically reject sensor values that are not the K gestures the algorithm has been trained
-to recognized (without being explicitly told during the prediction phase if a gesture is, or is not, being performed).
-You can find out more about the DTW algorithm in <a href="http://www.nickgillian.com/papers/Gillian_NDDTW.pdf">Gillian, N. (2011) Recognition of multivariate temporal musical gestures using n-dimensional dynamic time warping</a>.
-
-The DTW algorithm is part of the GRT classification modules.
-
-@remark This implementation is based on <a href="http://www.nickgillian.com/papers/Gillian_NDDTW.pdf">Gillian, N. (2011) Recognition of multivariate temporal musical gestures using n-dimensional dynamic time warping</a>.
-
-@example ClassificationModulesExamples/DTWExample/DTWExample.cpp
 */
 
 /**
@@ -88,9 +71,29 @@ class GRT_API DTWTemplate{
     UINT averageTemplateLength;          //The average length of the examples used to train this template
 };
 
+/**
+@brief This class implements Dynamic Time Warping.  Dynamic Time Warping (DTW) is a powerful classifier that
+works very well for recognizing temporal gestures. Temporal gestures can be defined as a cohesive sequence of
+movements that occur over a variable time period.  The DTW algorithm is a supervised learning algorithm that
+can be used to classify any type of N-dimensional, temporal signal. The DTW algorithm works by creating a
+template time series for each gesture that needs to be recognized, and then warping the realtime signals to
+each of the templates to find the best match. The DTW algorithm also computes rejection thresholds that enable
+the algorithm to automatically reject sensor values that are not the K gestures the algorithm has been trained
+to recognized (without being explicitly told during the prediction phase if a gesture is, or is not, being performed).
+You can find out more about the DTW algorithm in <a href="http://www.nickgillian.com/papers/Gillian_NDDTW.pdf">Gillian, N. (2011) Recognition of multivariate temporal musical gestures using n-dimensional dynamic time warping</a>.
+
+The DTW algorithm is part of the GRT classification modules.
+
+@remark This implementation is based on <a href="http://www.nickgillian.com/papers/Gillian_NDDTW.pdf">Gillian, N. (2011) Recognition of multivariate temporal musical gestures using n-dimensional dynamic time warping</a>.
+
+@example ClassificationModulesExamples/DTWExample/DTWExample.cpp
+*/
 class GRT_API DTW : public Classifier
 {
 public:
+
+    enum DistanceMethods{ABSOLUTE_DIST=0,EUCLIDEAN_DIST,NORM_ABSOLUTE_DIST};
+    enum RejectionModes{TEMPLATE_THRESHOLDS=0,CLASS_LIKELIHOODS,THRESHOLDS_AND_LIKELIHOODS};
     
     /**
     Default Constructor
@@ -348,7 +351,7 @@ protected:
     Float d(int m,int n,MatrixFloat &distanceMatrix,const int M,const int N);
     Float inline MIN_(Float a,Float b, Float c);
     
-    //Private Scaling and Utility Functions
+    //Scaling and Utility Functions
     void scaleData(TimeSeriesClassificationData &trainingData);
     void scaleData(MatrixFloat &data,MatrixFloat &scaledData);
     void znormData(TimeSeriesClassificationData &trainingData);
@@ -357,9 +360,6 @@ protected:
     void smoothData(MatrixFloat &data,UINT smoothFactor,MatrixFloat &resultsData);
     void offsetTimeseries(MatrixFloat &timeseries);
     bool loadLegacyModelFromFile( std::fstream &file );
-    
-    static RegisterClassifierModule< DTW > registerModule;
-    static std::string id;
     
     Vector< DTWTemplate > templatesBuffer;      //A buffer to store the templates for each time series
     Vector< MatrixFloat > distanceMatrices;
@@ -386,10 +386,9 @@ protected:
     UINT                distanceMethod;         //The distance method to be used (should be of enum DISTANCE_METHOD)
     UINT                averageTemplateLength;  //The overall average template length (over all the templates)
     
-public:
-    enum DistanceMethods{ABSOLUTE_DIST=0,EUCLIDEAN_DIST,NORM_ABSOLUTE_DIST};
-    enum RejectionModes{TEMPLATE_THRESHOLDS=0,CLASS_LIKELIHOODS,THRESHOLDS_AND_LIKELIHOODS};
-    
+private:
+    static RegisterClassifierModule< DTW > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

@@ -27,12 +27,19 @@ GRT_BEGIN_NAMESPACE
 std::string LDA::id = "LDA";
 std::string LDA::getId() { return LDA::id; }
 
+//Register the LDA module with the Classifier base class
+RegisterClassifierModule< LDA > LDA::registerModule( getId() );
+
 LDA::LDA(bool useScaling,bool useNullRejection,Float nullRejectionCoeff) : Classifier( getId() )
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
-    classifierMode = STANDARD_CLASSIFIER_MODE;
+}
+
+LDA::LDA(const LDA &rhs) : Classifier( getId() )
+{
+    *this = rhs;
 }
 
 LDA::~LDA(void)

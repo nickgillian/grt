@@ -1,15 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements a basic Decision Tree classifier.  Decision Trees are conceptually simple
-classifiers that work well on even complex classification tasks.  Decision Trees partition the feature
-space into a set of rectangular regions, classifying a new datum by finding which region it belongs to.
-
-@remark This implementation is based on Ross Quinlan's ID3 Decision Tree algorithm: http://en.wikipedia.org/wiki/ID3_algorithm
-
-@example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
 */
 
 /**
@@ -44,6 +35,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief This class implements a basic Decision Tree classifier.  Decision Trees are conceptually simple
+classifiers that work well on even complex classification tasks.  Decision Trees partition the feature
+space into a set of rectangular regions, classifying a new datum by finding which region it belongs to.
+
+@remark This implementation is based on Ross Quinlan's ID3 Decision Tree algorithm: http://en.wikipedia.org/wiki/ID3_algorithm
+
+@example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
+*/
 class GRT_API DecisionTree : public Tree, public Classifier
 {
 public:
@@ -208,6 +208,8 @@ protected:
     std::map< UINT, VectorFloat > nodeClusters;
     VectorFloat classClusterMean;
     VectorFloat classClusterStdDev;
+
+private:
     static RegisterClassifierModule< DecisionTree > registerModule;
     static std::string id;
 };
