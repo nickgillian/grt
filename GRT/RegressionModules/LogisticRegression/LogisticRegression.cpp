@@ -23,21 +23,24 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the LogisticRegression module with the Classifier base class
-RegisterRegressifierModule< LogisticRegression >  LogisticRegression::registerModule("LogisticRegression");
+//Define the string that will be used to identify the object
+std::string LogisticRegression::id = "LogisticRegression";
+std::string LogisticRegression::getId() { return LogisticRegression::id; }
 
-LogisticRegression::LogisticRegression(const bool useScaling)
+//Register the LogisticRegression module with the Classifier base class
+RegisterRegressifierModule< LogisticRegression >  LogisticRegression::registerModule( getId() );
+
+LogisticRegression::LogisticRegression(const bool useScaling) : Regressifier( getId() )
 {
     this->useScaling = useScaling;
     minChange = 1.0e-5;
     maxNumEpochs = 500;
     learningRate = 0.01;
-    classType = "LogisticRegression";
-    regressifierType = classType;
-    debugLog.setProceedingText("[DEBUG LogisticRegression]");
-    errorLog.setProceedingText("[ERROR LogisticRegression]");
-    trainingLog.setProceedingText("[TRAINING LogisticRegression]");
-    warningLog.setProceedingText("[WARNING LogisticRegression]");
+}
+
+LogisticRegression::LogisticRegression(const LogisticRegression &rhs) : Regressifier( getId() )
+{
+    *this = rhs;
 }
 
 LogisticRegression::~LogisticRegression(void)

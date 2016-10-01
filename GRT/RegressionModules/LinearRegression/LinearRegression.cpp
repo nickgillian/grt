@@ -23,21 +23,24 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the LinearRegression module with the Classifier base class
-RegisterRegressifierModule< LinearRegression >  LinearRegression::registerModule("LinearRegression");
+//Define the string that will be used to identify the object
+std::string LinearRegression::id = "LinearRegression";
+std::string LinearRegression::getId() { return LinearRegression::id; }
 
-LinearRegression::LinearRegression(bool useScaling)
+//Register the LinearRegression module with the Classifier base class
+RegisterRegressifierModule< LinearRegression >  LinearRegression::registerModule( getId() );
+
+LinearRegression::LinearRegression(bool useScaling) : Regressifier( getId() )
 {
     this->useScaling = useScaling;
     minChange = 1.0e-5;
     maxNumEpochs = 500;
     learningRate = 0.01;
-    classType = "LinearRegression";
-    regressifierType = classType;
-    debugLog.setProceedingText("[DEBUG LinearRegression]");
-    errorLog.setProceedingText("[ERROR LinearRegression]");
-    trainingLog.setProceedingText("[TRAINING LinearRegression]");
-    warningLog.setProceedingText("[WARNING LinearRegression]");
+}
+
+LinearRegression::LinearRegression(const LinearRegression &rhs) : Regressifier( getId() )
+{
+    *this = rhs;
 }
 
 LinearRegression::~LinearRegression(void)

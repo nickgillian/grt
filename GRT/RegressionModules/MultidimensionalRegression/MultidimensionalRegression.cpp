@@ -23,19 +23,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the MultidimensionalRegression module with the Classifier base class
-RegisterRegressifierModule< MultidimensionalRegression >  MultidimensionalRegression::registerModule("MultidimensionalRegression");
+//Define the string that will be used to identify the object
+std::string MultidimensionalRegression::id = "MultidimensionalRegression";
+std::string MultidimensionalRegression::getId() { return MultidimensionalRegression::id; }
 
-MultidimensionalRegression::MultidimensionalRegression(const Regressifier &regressifier,bool useScaling):regressifier(NULL)
+//Register the MultidimensionalRegression module with the Classifier base class
+RegisterRegressifierModule< MultidimensionalRegression >  MultidimensionalRegression::registerModule( getId() );
+
+MultidimensionalRegression::MultidimensionalRegression(const Regressifier &regressifier,bool useScaling) : Regressifier( getId() ), regressifier(NULL)
 {
     this->useScaling = useScaling;
-    classType = "MultidimensionalRegression";
-    regressifierType = classType;
-    debugLog.setProceedingText("[DEBUG MultidimensionalRegression]");
-    errorLog.setProceedingText("[ERROR MultidimensionalRegression]");
-    trainingLog.setProceedingText("[TRAINING MultidimensionalRegression]");
-    warningLog.setProceedingText("[WARNING MultidimensionalRegression]");
-    
     setRegressionModule( regressifier );
 }
 

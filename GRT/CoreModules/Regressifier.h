@@ -45,8 +45,9 @@ class GRT_API Regressifier : public MLBase
 public:
     /**
      Default Regressifier Destructor
+     @param id: a unique string that identifies the Regressifier parent class (e.g., LinearRegression)
      */
-	Regressifier(void);
+	Regressifier( const std::string &id = "" );
     
     /**
      Default Regressifier Destructor

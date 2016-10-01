@@ -481,6 +481,13 @@ public:
     @return returns true if the value was updated successfully, false otherwise
     */
     bool setNullRejectionCoeff(const Float nullRejectionCoeff);
+
+    /**
+    Gets a string that represents the MLP class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -558,14 +565,16 @@ protected:
     Float maxLikelihood;
     VectorFloat classLikelihoods;
     
-    static RegisterRegressifierModule< MLP > registerModule;
-    
     //Temp Training Stuff
     VectorFloat inputNeuronsOuput;
     VectorFloat hiddenNeuronsOutput;
     VectorFloat outputNeuronsOutput;
     VectorFloat deltaO;
     VectorFloat deltaH;
+
+private:
+    static RegisterRegressifierModule< MLP > registerModule;
+    static std::string id;
      
 };
 

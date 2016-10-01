@@ -26,10 +26,14 @@ GRT_BEGIN_NAMESPACE
 //Register the RegressionTreeNode with the Node base class
 RegisterNode< RegressionTreeNode > RegressionTreeNode::registerModule("RegressionTreeNode");
 
-//Register the RegressionTree module with the Regressifier base class
-RegisterRegressifierModule< RegressionTree >  RegressionTree::registerModule("RegressionTree");
+//Define the string that will be used to identify the object
+std::string RegressionTree::id = "RegressionTree";
+std::string RegressionTree::getId() { return RegressionTree::id; }
 
-RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode)
+//Register the RegressionTree module with the Regressifier base class
+RegisterRegressifierModule< RegressionTree >  RegressionTree::registerModule( getId() );
+
+RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Regressifier( getId() )
 {
     tree = NULL;
     this->numSplittingSteps = numSplittingSteps;
@@ -39,23 +43,11 @@ RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSam
     this->trainingMode = trainingMode;
     this->useScaling = useScaling;
     this->minRMSErrorPerNode = minRMSErrorPerNode;
-    Regressifier::classType = "RegressionTree";
-    regressifierType = Regressifier::classType;
-    Regressifier::debugLog.setProceedingText("[DEBUG RegressionTree]");
-    Regressifier::errorLog.setProceedingText("[ERROR RegressionTree]");
-    Regressifier::trainingLog.setProceedingText("[TRAINING RegressionTree]");
-    Regressifier::warningLog.setProceedingText("[WARNING RegressionTree]");
-    
 }
 
-RegressionTree::RegressionTree(const RegressionTree &rhs){
+RegressionTree::RegressionTree(const RegressionTree &rhs) : Regressifier( getId() )
+{
     tree = NULL;
-    Regressifier::classType = "RegressionTree";
-    regressifierType = Regressifier::classType;
-    Regressifier::debugLog.setProceedingText("[DEBUG RegressionTree]");
-    Regressifier::errorLog.setProceedingText("[ERROR RegressionTree]");
-    Regressifier::trainingLog.setProceedingText("[TRAINING RegressionTree]");
-    Regressifier::warningLog.setProceedingText("[WARNING RegressionTree]");
     *this = rhs;
 }
 

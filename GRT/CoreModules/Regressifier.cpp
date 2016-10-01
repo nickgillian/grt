@@ -52,9 +52,13 @@ Regressifier* Regressifier::deepCopy() const{
     return newInstance;
 }
     
-Regressifier::Regressifier(void){
+Regressifier::Regressifier( const std::string &id ){
     baseType = MLBase::REGRESSIFIER;
-    regressifierType = "NOT_SET";
+    regressifierType = id;
+    debugLog.setProceedingText("[DEBUG" + regressifierType + "]");
+    errorLog.setProceedingText("[ERROR" + regressifierType + "]");
+    trainingLog.setProceedingText("[TRAINING" + regressifierType + "]");
+    warningLog.setProceedingText("[WARNING" + regressifierType + "]");
     numOutputDimensions = 0;
     numRegressifierInstances++;
 }

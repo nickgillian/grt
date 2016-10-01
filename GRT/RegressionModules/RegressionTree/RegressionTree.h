@@ -1,11 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @brief This class implements a basic Regression Tree.
- 
- @remark This algorithm is still under development.
  */
 
 /**
@@ -37,6 +32,10 @@
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief This class implements a basic Regression Tree. 
+@remark This algorithm is still under development.
+*/
 class GRT_API RegressionTree : public Tree, public Regressifier
 {
 public:
@@ -164,6 +163,13 @@ public:
      @return returns true if the parameter was updated
      */
     bool setMinRMSErrorPerNode(const Float minRMSErrorPerNode);
+
+    /**
+    Gets a string that represents the RegressionTree class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
@@ -180,7 +186,9 @@ protected:
     //bool computeBestSpiltBestRandomSpilt( const RegressionData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &threshold, Float &minError );
     bool computeNodeRegressionData( const RegressionData &trainingData, VectorFloat &regressionData );
 
+private:
     static RegisterRegressifierModule< RegressionTree > registerModule;
+    static std::string id;
     
 };
 

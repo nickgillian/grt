@@ -26,10 +26,15 @@ GRT_BEGIN_NAMESPACE
 const Float MLP_NEURON_MIN_TARGET = -1.0;
 const Float MLP_NEURON_MAX_TARGET = 1.0;
 
-//Register the MLP module with the Regressifier base class
-RegisterRegressifierModule< MLP > MLP::registerModule("MLP");
+//Define the string that will be used to identify the object
+std::string MLP::id = "MLP";
+std::string MLP::getId() { return MLP::id; }
 
-MLP::MLP(){
+//Register the MLP module with the base class
+RegisterRegressifierModule< MLP > MLP::registerModule( getId() );
+
+MLP::MLP() : Regressifier( getId() )
+{
     inputLayerActivationFunction = Neuron::LINEAR;
     hiddenLayerActivationFunction = Neuron::LINEAR;
     outputLayerActivationFunction = Neuron::LINEAR;
@@ -50,22 +55,10 @@ MLP::MLP(){
     classificationModeActive = false;
     useNullRejection = true;
     clear();
-    classType = "MLP";
-    regressifierType = classType;
-    debugLog.setProceedingText("[DEBUG MLP]");
-    errorLog.setProceedingText("[ERROR MLP]");
-    trainingLog.setProceedingText("[TRAINING MLP]");
-    warningLog.setProceedingText("[WARNING MLP]");
 }
 
-MLP::MLP(const MLP &rhs){
-    classType = "MLP";
-    regressifierType = classType;
-    debugLog.setProceedingText("[DEBUG MLP]");
-    errorLog.setProceedingText("[ERROR MLP]");
-    trainingLog.setProceedingText("[TRAINING MLP]");
-    warningLog.setProceedingText("[WARNING MLP]");
-    
+MLP::MLP(const MLP &rhs) : Regressifier( getId() )
+{  
     *this = rhs;
 }
 
