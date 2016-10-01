@@ -25,22 +25,30 @@ GRT_BEGIN_NAMESPACE
     
 Classifier::StringClassifierMap* Classifier::stringClassifierMap = NULL;
 UINT Classifier::numClassifierInstances = 0;
+
+Classifier* Classifier::createNewInstance() const { return create(); } ///<Legacy function
+Classifier* Classifier::createInstanceFromString(const std::string &id) { return create(id); } ///<Legacy function
     
-Classifier* Classifier::createInstanceFromString(std::string const &classifierType){
+Classifier* Classifier::create(const std::string &id){
+
+    //This function maps the input string and returns a pointer to a new instance 
     
-    StringClassifierMap::iterator iter = getMap()->find( classifierType );
+    StringClassifierMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
+        //If the iterator points to the end of the map, then no match was found so return NULL
         return NULL;
     }
+
     return iter->second();
 }
-Classifier* Classifier::createNewInstance() const{
-    return createInstanceFromString( MLBase::getClassType() );
+
+Classifier* Classifier::create() const{
+    return create( MLBase::getClassType() );
 }
     
 Classifier* Classifier::deepCopy() const{
     
-    Classifier *newInstance = createInstanceFromString( MLBase::getClassType() );
+    Classifier *newInstance = create( MLBase::getClassType() );
     
     if( newInstance == NULL ) return NULL;
     

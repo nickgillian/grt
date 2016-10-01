@@ -1,11 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This is the main base class that all GRT Classification algorithms should inherit from.
-
-A large number of the functions in this class are virtual and simply return false as these functions must be overwridden by the inheriting class.
 */
 
 /**
@@ -38,6 +33,11 @@ GRT_BEGIN_NAMESPACE
 #define DEFAULT_NULL_LIKELIHOOD_VALUE 0
 #define DEFAULT_NULL_DISTANCE_VALUE 0
 
+/**
+@brief This is the main base class that all GRT Classification algorithms should inherit from.
+
+A large number of the functions in this class are virtual and simply return false as these functions must be overwridden by the inheriting class.
+*/
 class GRT_API Classifier : public MLBase
 {
 public:
@@ -251,19 +251,22 @@ public:
     typedef std::map< std::string, Classifier*(*)() > StringClassifierMap;
     
     /**
-    Creates a new classifier instance based on the input string (which should contain the name of a valid classifier such as ANBC).
+    Creates a new classifier instance based on the input string (which should contain the name of a valid classifier such as KNN).
     
-    @param classifierType: the name of the classifier
+    @param id: the name of the classifier
     @return Classifier*: a pointer to the new instance of the classifier
     */
-    static Classifier* createInstanceFromString( std::string const &classifierType );
+    static Classifier* create( const std::string &id );
     
     /**
     Creates a new classifier instance based on the current classifierType string value.
     
     @return Classifier*: a pointer to the new instance of the classifier
     */
-    Classifier* createNewInstance() const;
+    Classifier* create() const;
+
+    GRT_DEPRECATED_MSG( "createNewInstance is deprecated, use create instead.", Classifier* createNewInstance() const );
+    GRT_DEPRECATED_MSG( "createInstanceFromString is deprecated, use create instead.", static Classifier* createInstanceFromString( const std::string &id ) );
     
     /**
     This creates a new Classifier instance and deep copies the variables and models from this instance into the deep copy.
@@ -324,7 +327,7 @@ protected:
     VectorFloat nullRejectionThresholds;
     Vector< UINT > classLabels;
     Vector< MinMax > ranges;
-    
+
     /**
     This function returns the classifier map, only one map should exist across all classifiers.
     If a map has not been created then one will be created, otherwise the current map will be returned.
@@ -341,14 +344,18 @@ private:
     
 };
 
-//These two functions/classes are used to register any new Classification Module with the Classifier base class
-template< typename T >  Classifier* getNewClassificationModuleInstance() { return new T; }
+template< typename T >  
+Classifier* createNewClassifierInstance() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
+/**
+ @brief This class provides an interface for classes to register themselves with the classifier base class, this enables Classifier algorithms to
+ be automatically be created from just a string, e.g.: Classifier *knn = createInstanceFromString( "KNN" );
+*/
 template< typename T >
 class RegisterClassifierModule : public Classifier {
 public:
     RegisterClassifierModule( std::string const &newClassificationModuleName ) {
-        getMap()->insert( std::pair< std::string, Classifier*(*)() >(newClassificationModuleName, &getNewClassificationModuleInstance< T > ) );
+        getMap()->insert( std::pair< std::string, Classifier*(*)() >(newClassificationModuleName, &createNewClassifierInstance< T > ) );
     }
 };
 
