@@ -40,7 +40,7 @@ FeatureExtraction* FeatureExtraction::create( const std::string &id ){
 }
     
 FeatureExtraction* FeatureExtraction::create() const{
-    return createInstanceFromString( MLBase::getId() );
+    return create( MLBase::getId() );
 }
     
 FeatureExtraction::FeatureExtraction( const std::string id ) : MLBase( id, MLBase::FEATURE_EXTRACTION )
@@ -52,9 +52,6 @@ FeatureExtraction::FeatureExtraction( const std::string id ) : MLBase( id, MLBas
     inputType = DATA_TYPE_VECTOR;
     outputType = DATA_TYPE_VECTOR;
     numFeatureExtractionInstances++;
-    infoLog.setProceedingText("[FeatureExtraction]");
-    warningLog.setProceedingText("[WARNING FeatureExtraction]");
-    errorLog.setProceedingText("[ERROR FeatureExtraction]");
 }
     
 FeatureExtraction::~FeatureExtraction(){
@@ -82,9 +79,6 @@ bool FeatureExtraction::copyBaseVariables(const FeatureExtraction *featureExtrac
     this->numOutputDimensions = featureExtractionModule->numOutputDimensions;
     this->featureVector = featureExtractionModule->featureVector;
     this->featureMatrix = featureExtractionModule->featureMatrix;
-    this->debugLog = featureExtractionModule->debugLog;
-    this->errorLog = featureExtractionModule->errorLog;
-    this->warningLog = featureExtractionModule->warningLog;
 
     return true;
 }

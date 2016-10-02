@@ -23,7 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
     
-GRTBase::GRTBase(void):classType(""),debugLog("[DEBUG]"),errorLog("[ERROR]"),trainingLog("[TRAINING]"),testingLog("[TESTING]"),warningLog("[WARNING]"){
+GRTBase::GRTBase(void):classType(""),debugLog("[DEBUG]"),errorLog("[ERROR]"),warningLog("[WARNING]"){
 
 }
     
@@ -41,8 +41,6 @@ bool GRTBase::copyGRTBaseVariables(const GRTBase *base){
     this->debugLog = base->debugLog;
     this->errorLog = base->errorLog;
     this->infoLog = base->infoLog;
-    this->trainingLog = base->trainingLog;
-    this->testingLog = base->testingLog;
     this->warningLog = base->warningLog;
     
     return true;
@@ -97,6 +95,9 @@ bool GRTBase::setErrorLoggingEnabled(const bool loggingEnabled){
     return true;
 }
 
+bool GRTBase::setDebugLoggingEnabled(const bool loggingEnabled){
+    debugLog.setEnableInstanceLogging( loggingEnabled );
+    return true;
+}
+
 GRT_END_NAMESPACE
-
-

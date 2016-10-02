@@ -653,6 +653,15 @@ public:
     @return returns true if the parameter was updated, false otherwise
     */
     bool setTrainingLoggingEnabled(const bool loggingEnabled);
+
+    /**
+    Sets if testing logging is enabled/disabled for this specific ML instance.
+    If you want to enable/disable testing logging globally, then you should use the TestingLog::enableLogging( bool ) function.
+    
+    @param loggingEnabled: if true then training logging will be enabled, if false then training logging will be disabled
+    @return returns true if the parameter was updated, false otherwise
+    */
+    bool setTestingLoggingEnabled(const bool loggingEnabled);
     
     /**
     Registers the observer with the training result observer manager. The observer will then be notified when any new training result is computed.
@@ -779,6 +788,8 @@ protected:
     Vector< TrainingResult > trainingResults;
     TrainingResultsObserverManager trainingResultsObserverManager;
     TestResultsObserverManager testResultsObserverManager;
+    TrainingLog trainingLog;
+    TestingLog testingLog;
     
 };
 

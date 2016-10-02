@@ -122,6 +122,14 @@ public:
      @return returns true if the parameter was updated, false otherwise
      */
     bool setErrorLoggingEnabled(const bool loggingEnabled);
+
+    /**
+     Sets if debug logging is enabled/disabled for this specific instance.
+     If you want to enable/disable error logging globally, then you should use the DebugLog::enableLogging( bool ) function.
+     
+     @return returns true if the parameter was updated, false otherwise
+     */
+    bool setDebugLoggingEnabled(const bool loggingEnabled);
     
     /**
      This functions the GRT version number and revision as a std::string. If you do not want the revision number then set the returnRevision
@@ -160,8 +168,6 @@ protected:
     DebugLog debugLog;
     ErrorLog errorLog;
     InfoLog infoLog;
-    TrainingLog trainingLog;
-    TestingLog testingLog;
     WarningLog warningLog;
     
 };

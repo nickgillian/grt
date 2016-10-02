@@ -43,10 +43,12 @@ MLBase::MLBase( const std::string &id, const BaseType type ){
     rmsTrainingError = 0;
     rmsValidationError = 0;
     totalSquaredTrainingError = 0;
+    infoLog.setProceedingText("[" + id + "]");
     debugLog.setProceedingText("[DEBUG" + id + "]");
     errorLog.setProceedingText("[ERROR" + id + "]");
-    trainingLog.setProceedingText("[TRAINING" + id + "]");
     warningLog.setProceedingText("[WARNING" + id + "]");
+    trainingLog.setProceedingText("[TRAINING" + id + "]");
+    testingLog.setProceedingText("[TESTING" + id + "]");
 }
 
 MLBase::~MLBase(void){
@@ -90,6 +92,8 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     this->trainingResults = mlBase->trainingResults;
     this->trainingResultsObserverManager = mlBase->trainingResultsObserverManager;
     this->testResultsObserverManager = mlBase->testResultsObserverManager;
+    this->trainingLog = mlBase->trainingLog;
+    this->testingLog = mlBase->testingLog;
     
     return true;
 }
@@ -340,6 +344,11 @@ bool MLBase::setRandomiseTrainingOrder(const bool randomiseTrainingOrder){
 
 bool MLBase::setTrainingLoggingEnabled(const bool loggingEnabled){
     this->trainingLog.setEnableInstanceLogging( loggingEnabled );
+    return true;
+}
+
+bool MLBase::setTestingLoggingEnabled(const bool loggingEnabled){
+    this->testingLog.setEnableInstanceLogging( loggingEnabled );
     return true;
 }
 
