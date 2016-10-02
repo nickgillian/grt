@@ -748,7 +748,7 @@ bool RandomForests::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEach
 }
 
 bool RandomForests::setTrainingMode(const Tree::TrainingMode trainingMode){
-    if( trainingMode == DecisionTree::BEST_ITERATIVE_SPILT || trainingMode == DecisionTree::BEST_RANDOM_SPLIT ){
+    if( trainingMode == Tree::BEST_ITERATIVE_SPILT || trainingMode == Tree::BEST_RANDOM_SPLIT ){
         this->trainingMode = trainingMode;
         return true;
     }

@@ -30,9 +30,8 @@ std::string DecisionTree::getId() { return DecisionTree::id; }
 //Register the DecisionTree module with the Classifier base class
 RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule( DecisionTree::getId() );
 
-DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const UINT numSplittingSteps,const bool useScaling) : Classifier( DecisionTree::getId() )
+DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const Tree::TrainingMode trainingMode,const UINT numSplittingSteps,const bool useScaling) : Classifier( DecisionTree::getId() )
 {
-
     this->tree = NULL;
     this->decisionTreeNode = NULL;
     this->minNumSamplesPerNode = minNumSamplesPerNode;
@@ -102,7 +101,7 @@ bool DecisionTree::deepCopyFrom(const Classifier *classifier){
     
     if( this->getClassifierType() == classifier->getClassifierType() ){
         
-        DecisionTree *ptr = (DecisionTree*)classifier;
+        const DecisionTree *ptr = dynamic_cast<const DecisionTree*>( classifier );
         
         //Clear this tree
         this->clear();
@@ -567,6 +566,8 @@ bool DecisionTree::save( std::fstream &file ) const{
 bool DecisionTree::load( std::fstream &file ){
     
     clear();
+
+    UINT tempTrainingMode = 0;
     
     if( decisionTreeNode != NULL ){
         delete decisionTreeNode;
@@ -658,7 +659,8 @@ bool DecisionTree::load( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    file >> tempTrainingMode;
+    trainingMode = static_cast<Tree::TrainingMode>(tempTrainingMode);
     
     file >> word;
     if(word != "NumSplittingSteps:"){
@@ -948,9 +950,80 @@ Float DecisionTree::getNodeDistance( const VectorFloat &x, const VectorFloat &y 
     return distance;
 }
 
+Tree::TrainingMode DecisionTree::getTrainingMode() const{
+    return trainingMode;
+}
+
+UINT DecisionTree::getNumSplittingSteps()const{
+    return numSplittingSteps;
+}
+
+UINT DecisionTree::getMinNumSamplesPerNode()const{
+    return minNumSamplesPerNode;
+}
+
+UINT DecisionTree::getMaxDepth()const{
+    return maxDepth;
+}
+
+UINT DecisionTree::getPredictedNodeID()const{
+    
+    if( tree == NULL ){
+        return 0;
+    }
+    
+    return tree->getPredictedNodeID();
+}
+
+bool DecisionTree::getRemoveFeaturesAtEachSpilt() const{
+    return removeFeaturesAtEachSpilt;
+}
+
+bool DecisionTree::setTrainingMode(const Tree::TrainingMode trainingMode){ 
+    if( trainingMode >= Tree::BEST_ITERATIVE_SPILT && trainingMode < Tree::NUM_TRAINING_MODES ){
+        this->trainingMode = trainingMode;
+        return true;
+    }
+    warningLog << "Unknown trainingMode: " << trainingMode << std::endl;
+    return false;
+}
+
+bool DecisionTree::setNumSplittingSteps(const UINT numSplittingSteps){
+    if( numSplittingSteps > 0 ){
+        this->numSplittingSteps = numSplittingSteps;
+        return true;
+    }
+    warningLog << "setNumSplittingSteps(const UINT numSplittingSteps) - The number of splitting steps must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool DecisionTree::setMinNumSamplesPerNode(const UINT minNumSamplesPerNode){
+    if( minNumSamplesPerNode > 0 ){
+        this->minNumSamplesPerNode = minNumSamplesPerNode;
+        return true;
+    }
+    warningLog << "setMinNumSamplesPerNode(const UINT minNumSamplesPerNode) - The minimum number of samples per node must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool DecisionTree::setMaxDepth(const UINT maxDepth){
+    if( maxDepth > 0 ){
+        this->maxDepth = maxDepth;
+        return true;
+    }
+    warningLog << "setMaxDepth(const UINT maxDepth) - The maximum depth must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool DecisionTree::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
+    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+    return true;
+}
+
 bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
     
     std::string word;
+    UINT tempTrainingMode = 0;
     
     file >> word;
     if(word != "NumFeatures:"){
@@ -1029,7 +1102,8 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    file >> tempTrainingMode;
+    trainingMode = static_cast<Tree::TrainingMode>(tempTrainingMode);
     
     file >> word;
     if(word != "TreeBuilt:"){
@@ -1068,6 +1142,7 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
 bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
     
     std::string word;
+    UINT tempTrainingMode = 0;
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
@@ -1108,7 +1183,8 @@ bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    file >> tempTrainingMode;
+    trainingMode = static_cast<Tree::TrainingMode>(tempTrainingMode);
     
     file >> word;
     if(word != "TreeBuilt:"){
@@ -1125,7 +1201,7 @@ bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
         }
         
         //Create a new DTree
-        tree = new DecisionTreeNode;
+        tree = dynamic_cast<Node*>( new DecisionTreeNode );
         
         if( tree == NULL ){
             clear();
@@ -1156,6 +1232,7 @@ bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
 bool DecisionTree::loadLegacyModelFromFile_v3( std::fstream &file ){
     
     std::string word;
+    UINT tempTrainingMode = 0;
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
@@ -1196,7 +1273,8 @@ bool DecisionTree::loadLegacyModelFromFile_v3( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    file >> tempTrainingMode;
+    trainingMode = static_cast<Tree::TrainingMode>(tempTrainingMode);
     
     file >> word;
     if(word != "TreeBuilt:"){

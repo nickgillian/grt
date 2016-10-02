@@ -33,7 +33,7 @@ RegisterNode< ClusterTreeNode > ClusterTreeNode::registerModule("ClusterTreeNode
 //Register the ClusterTree module with the Clusterer base class
 RegisterClustererModule< ClusterTree >  ClusterTree::registerModule( ClusterTree::getId() );
 
-ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Clusterer( ClusterTree::getId() )
+ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const Tree::TrainingMode trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Clusterer( ClusterTree::getId() )
 {
     tree = NULL;
     predictedClusterLabel = 0;
@@ -313,7 +313,9 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
     	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
     	return false;
 	}
-	file >> trainingMode;
+    UINT tempTrainingMode = 0;
+	file >> tempTrainingMode;
+    trainingMode = static_cast<Tree::TrainingMode>(tempTrainingMode);
 
 	file >> word;
 	if(word != "MinRMSErrorPerNode:"){
@@ -384,7 +386,77 @@ UINT ClusterTree::getPredictedClusterLabel() const{
 Float ClusterTree::getMinRMSErrorPerNode() const{
     return minRMSErrorPerNode;
 }
+
+Tree::TrainingMode ClusterTree::getTrainingMode() const{
+    return trainingMode;
+}
+
+UINT ClusterTree::getNumSplittingSteps()const{
+    return numSplittingSteps;
+}
+
+UINT ClusterTree::getMinNumSamplesPerNode()const{
+    return minNumSamplesPerNode;
+}
+
+UINT ClusterTree::getMaxDepth()const{
+    return maxDepth;
+}
+
+UINT ClusterTree::getPredictedNodeID()const{
     
+    if( tree == NULL ){
+        return 0;
+    }
+    
+    return tree->getPredictedNodeID();
+}
+
+bool ClusterTree::getRemoveFeaturesAtEachSpilt() const{
+    return removeFeaturesAtEachSpilt;
+}
+
+bool ClusterTree::setTrainingMode(const Tree::TrainingMode trainingMode){ 
+    if( trainingMode >= Tree::BEST_ITERATIVE_SPILT && trainingMode < Tree::NUM_TRAINING_MODES ){
+        this->trainingMode = trainingMode;
+        return true;
+    }
+    warningLog << "Unknown trainingMode: " << trainingMode << std::endl;
+    return false;
+}
+
+bool ClusterTree::setNumSplittingSteps(const UINT numSplittingSteps){
+    if( numSplittingSteps > 0 ){
+        this->numSplittingSteps = numSplittingSteps;
+        return true;
+    }
+    warningLog << "setNumSplittingSteps(const UINT numSplittingSteps) - The number of splitting steps must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool ClusterTree::setMinNumSamplesPerNode(const UINT minNumSamplesPerNode){
+    if( minNumSamplesPerNode > 0 ){
+        this->minNumSamplesPerNode = minNumSamplesPerNode;
+        return true;
+    }
+    warningLog << "setMinNumSamplesPerNode(const UINT minNumSamplesPerNode) - The minimum number of samples per node must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool ClusterTree::setMaxDepth(const UINT maxDepth){
+    if( maxDepth > 0 ){
+        this->maxDepth = maxDepth;
+        return true;
+    }
+    warningLog << "setMaxDepth(const UINT maxDepth) - The maximum depth must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool ClusterTree::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
+    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+    return true;
+}
+
 bool ClusterTree::setMinRMSErrorPerNode(const Float minRMSErrorPerNode){
     this->minRMSErrorPerNode = minRMSErrorPerNode;
     return true;
@@ -492,10 +564,10 @@ ClusterTreeNode* ClusterTree::buildTree(const MatrixFloat &trainingData,ClusterT
 bool ClusterTree::computeBestSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     switch( trainingMode ){
-        case BEST_ITERATIVE_SPILT:
+        case Tree::BEST_ITERATIVE_SPILT:
             return computeBestSpiltBestIterativeSpilt( trainingData, features, featureIndex, threshold, minError );
             break;
-        case BEST_RANDOM_SPLIT:
+        case Tree::BEST_RANDOM_SPLIT:
             return computeBestSpiltBestRandomSpilt( trainingData, features, featureIndex, threshold, minError );
             break;
         default:
@@ -592,7 +664,7 @@ bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingDa
     const UINT M = trainingData.getNumRows();
     const UINT N = (UINT)features.size();
     
-    Clusterer::debugLog << "computeBestSpiltBestRandomSpilt() M: " << M << std::endl;
+    debugLog << "computeBestSpiltBestRandomSpilt() M: " << M << std::endl;
     
     if( N == 0 ) return false;
     
