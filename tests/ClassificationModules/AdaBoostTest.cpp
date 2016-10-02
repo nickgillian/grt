@@ -39,7 +39,9 @@ TEST(AdaBoost, TrainBasicDataset) {
   EXPECT_TRUE( adaBoost.train( trainingData ) );
 
   EXPECT_TRUE( adaBoost.getTrained() );
-  EXPECT_TRUE( adaBoost.getNumInputs() == numDimensions );
+  EXPECT_TRUE( adaBoost.getNumInputDimensions() == numDimensions );
+  EXPECT_TRUE( adaBoost.getNumOutputDimensions() == numClasses );
+  EXPECT_TRUE( adaBoost.getNumClasses() == numClasses );
 
   EXPECT_TRUE( adaBoost.print() );
 

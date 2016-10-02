@@ -1,12 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @brief This class implements a template based EvolutionaryAlgorithm.
- 
- @remark This implementation is based on Michalewicz, Zbigniew. Genetic algorithms + data structures= evolution programs. springer, 1996.
- 
  */
 
 /*
@@ -27,7 +21,6 @@
  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
  */
 
 #ifndef GRT_EVOLUTIONARY_ALGORITHM_HEADER
@@ -37,8 +30,13 @@
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This class implements a template based EvolutionaryAlgorithm.
+ 
+ @remark This implementation is based on Michalewicz, Zbigniew. Genetic algorithms + data structures= evolution programs. springer, 1996.
+ */
 template <typename INDIVIDUAL>
-class EvolutionaryAlgorithm : public GRTBase{
+class EvolutionaryAlgorithm : public MLBase{
 
 public:
     /**

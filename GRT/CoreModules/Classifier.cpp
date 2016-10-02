@@ -80,7 +80,7 @@ Classifier::Classifier( const std::string &id ) : MLBase( id, MLBase::CLASSIFIER
     supportsNullRejection = false;
     useNullRejection = false;
     numInputDimensions = 0;
-    numOutputDimensions = 1;
+    numOutputDimensions = 0;
     numClasses = 0;
     predictedClassLabel = 0;
     maxLikelihood = 0;

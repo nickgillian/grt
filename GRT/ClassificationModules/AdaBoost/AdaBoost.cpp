@@ -117,6 +117,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
     }
     
     numInputDimensions = trainingData.getNumDimensions();
+    numOutputDimensions = trainingData.getNumClasses();
     numClasses = trainingData.getNumClasses();
     const UINT M = trainingData.getNumSamples();
     const UINT POSITIVE_LABEL = WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL;
