@@ -230,6 +230,13 @@ public:
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the ZeroCrossingCounter class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT searchWindowSize;                                  ///< The size of the search window, i.e. the amount of previous data stored and searched
@@ -239,7 +246,9 @@ protected:
     DeadZone deadZone;                                      ///< Used to remove small amounts of noise from the data
     CircularBuffer< VectorFloat > dataBuffer;              ///< A buffer used to store the previous derivative data
     
+private:
     static RegisterFeatureExtractionModule< ZeroCrossingCounter > registerModule;
+    static std::string id;
 
 };
 

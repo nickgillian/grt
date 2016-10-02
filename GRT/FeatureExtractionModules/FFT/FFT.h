@@ -321,6 +321,13 @@ public:
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
+
+    /**
+    Gets a string that represents the FFT class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     bool isPowerOfTwo(UINT x);                                   ///< A helper function to compute if the input is a power of two
@@ -338,7 +345,9 @@ protected:
     Vector< FastFourierTransform > fft;                         ///< A buffer used to store the FFT results
     std::map< unsigned int, unsigned int > windowSizeMap;       ///< A map to relate the FFTWindowSize enumerations to actual values
     
+private:
     static RegisterFeatureExtractionModule< FFT > registerModule;
+    static std::string id;
     
 };
 

@@ -23,14 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the ZeroCrossingCounter module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< MovementTrajectoryFeatures > MovementTrajectoryFeatures::registerModule("MovementTrajectoryFeatures");
+//Define the string that will be used to identify the object
+std::string MovementTrajectoryFeatures::id = "MovementTrajectoryFeatures";
+std::string MovementTrajectoryFeatures::getId() { return MovementTrajectoryFeatures::id; }
 
-MovementTrajectoryFeatures::MovementTrajectoryFeatures(UINT trajectoryLength,UINT numCentroids,UINT featureMode,UINT numHistogramBins,UINT numDimensions,bool useTrajStartAndEndValues,bool useWeightedMagnitudeValues){
+//Register the ZeroCrossingCounter module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< MovementTrajectoryFeatures > MovementTrajectoryFeatures::registerModule( MovementTrajectoryFeatures::getId() );
+
+MovementTrajectoryFeatures::MovementTrajectoryFeatures(UINT trajectoryLength,UINT numCentroids,UINT featureMode,UINT numHistogramBins,UINT numDimensions,bool useTrajStartAndEndValues,bool useWeightedMagnitudeValues) : FeatureExtraction( MovementTrajectoryFeatures::getId() )
+{
     init(trajectoryLength,numCentroids,featureMode,numHistogramBins,numDimensions,useTrajStartAndEndValues,useWeightedMagnitudeValues);
 }
 
-MovementTrajectoryFeatures::MovementTrajectoryFeatures(const MovementTrajectoryFeatures &rhs){
+MovementTrajectoryFeatures::MovementTrajectoryFeatures(const MovementTrajectoryFeatures &rhs) : FeatureExtraction( MovementTrajectoryFeatures::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

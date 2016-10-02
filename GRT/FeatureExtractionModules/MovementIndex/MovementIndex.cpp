@@ -23,14 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the MovementIndex module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< MovementIndex > MovementIndex::registerModule("MovementIndex");
+//Define the string that will be used to identify the object
+std::string MovementIndex::id = "MovementIndex";
+std::string MovementIndex::getId() { return MovementIndex::id; }
 
-MovementIndex::MovementIndex(UINT bufferLength,UINT numDimensions){
+//Register the MovementIndex module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< MovementIndex > MovementIndex::registerModule( MovementIndex::getId() );
+
+MovementIndex::MovementIndex(UINT bufferLength,UINT numDimensions) : FeatureExtraction( MovementIndex::getId() )
+{
     init(bufferLength,numDimensions);
 }
 
-MovementIndex::MovementIndex(const MovementIndex &rhs){
+MovementIndex::MovementIndex(const MovementIndex &rhs) : FeatureExtraction( MovementIndex::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

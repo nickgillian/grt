@@ -23,14 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the TimeseriesBuffer module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< TimeseriesBuffer > TimeseriesBuffer::registerModule("TimeseriesBuffer");
+//Define the string that will be used to identify the object
+std::string TimeseriesBuffer::id = "TimeseriesBuffer";
+std::string TimeseriesBuffer::getId() { return TimeseriesBuffer::id; }
 
-TimeseriesBuffer::TimeseriesBuffer(UINT bufferSize,UINT numDimensions){
+//Register the TimeseriesBuffer module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< TimeseriesBuffer > TimeseriesBuffer::registerModule( TimeseriesBuffer::getId() );
+
+TimeseriesBuffer::TimeseriesBuffer(UINT bufferSize,UINT numDimensions) : FeatureExtraction( TimeseriesBuffer::getId() )
+{
     init(bufferSize,numDimensions);
 }
 
-TimeseriesBuffer::TimeseriesBuffer(const TimeseriesBuffer &rhs){
+TimeseriesBuffer::TimeseriesBuffer(const TimeseriesBuffer &rhs) : FeatureExtraction( TimeseriesBuffer::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

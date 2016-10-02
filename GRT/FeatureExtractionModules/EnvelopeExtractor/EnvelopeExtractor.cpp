@@ -23,6 +23,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to identify the object
+std::string ClusterTree::id = "ClusterTree";
+std::string ClusterTree::getId() { return ClusterTree::id; }
+
 //Register your module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< EnvelopeExtractor > EnvelopeExtractor::registerModule("EnvelopeExtractor");
 

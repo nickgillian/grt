@@ -168,12 +168,21 @@ public:
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the TimeseriesBuffer class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT bufferSize;
     CircularBuffer< VectorFloat > dataBuffer;              ///< A buffer used to store the timeseries data
     
+private:
     static RegisterFeatureExtractionModule< TimeseriesBuffer > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

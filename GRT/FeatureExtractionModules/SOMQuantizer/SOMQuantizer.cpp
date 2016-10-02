@@ -23,14 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register your module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< SOMQuantizer > SOMQuantizer::registerModule("SOMQuantizer");
+//Define the string that will be used to identify the object
+std::string SOMQuantizer::id = "SOMQuantizer";
+std::string SOMQuantizer::getId() { return SOMQuantizer::id; }
 
-SOMQuantizer::SOMQuantizer(const UINT numClusters){
+//Register your module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< SOMQuantizer > SOMQuantizer::registerModule( SOMQuantizer::getId() );
+
+SOMQuantizer::SOMQuantizer(const UINT numClusters) : FeatureExtraction( SOMQuantizer::getId() )
+{
     this->numClusters = numClusters;
 }
 
-SOMQuantizer::SOMQuantizer(const SOMQuantizer &rhs){
+SOMQuantizer::SOMQuantizer(const SOMQuantizer &rhs) : FeatureExtraction( SOMQuantizer::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

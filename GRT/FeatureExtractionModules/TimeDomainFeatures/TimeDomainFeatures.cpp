@@ -23,14 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the TimeDomainFeatures module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< TimeDomainFeatures > TimeDomainFeatures::registerModule("TimeDomainFeatures");
+//Define the string that will be used to identify the object
+std::string TimeDomainFeatures::id = "TimeDomainFeatures";
+std::string TimeDomainFeatures::getId() { return TimeDomainFeatures::id; }
 
-TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS){
+//Register the TimeDomainFeatures module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< TimeDomainFeatures > TimeDomainFeatures::registerModule( TimeDomainFeatures::getId() );
+
+TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS) : FeatureExtraction( TimeseriesBuffer::getId() )
+{
     init(bufferLength,numFrames,numDimensions,offsetInput,useMean,useStdDev,useEuclideanNorm,useRMS);
 }
 
-TimeDomainFeatures::TimeDomainFeatures(const TimeDomainFeatures &rhs){
+TimeDomainFeatures::TimeDomainFeatures(const TimeDomainFeatures &rhs) : FeatureExtraction( TimeseriesBuffer::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

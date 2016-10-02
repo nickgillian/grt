@@ -23,14 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the ZeroCrossingCounter module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< ZeroCrossingCounter > ZeroCrossingCounter::registerModule("ZeroCrossingCounter");
+//Define the string that will be used to identify the object
+std::string ZeroCrossingCounter::id = "ZeroCrossingCounter";
+std::string ZeroCrossingCounter::getId() { return ZeroCrossingCounter::id; }
 
-ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode){
+//Register the ZeroCrossingCounter module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< ZeroCrossingCounter > ZeroCrossingCounter::registerModule( ZeroCrossingCounter::getId() );
+
+ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode) : FeatureExtraction( ZeroCrossingCounter::getId() )
+{
     init(searchWindowSize,deadZoneThreshold,numDimensions,featureMode);
 }
 
-ZeroCrossingCounter::ZeroCrossingCounter(const ZeroCrossingCounter &rhs){
+ZeroCrossingCounter::ZeroCrossingCounter(const ZeroCrossingCounter &rhs) : FeatureExtraction( ZeroCrossingCounter::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

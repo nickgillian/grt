@@ -23,11 +23,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Define the string that will be used to identify the object
+std::string KMeansFeatures::id = "KMeansFeatures";
+std::string KMeansFeatures::getId() { return KMeansFeatures::id; }
+
 //Register your module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< KMeansFeatures > KMeansFeatures::registerModule("KMeansFeatures");
 
-KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Float alpha,const bool useScaling){
-    
+KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Float alpha,const bool useScaling) : FeatureExtraction( KMeansFeatures::getId() )
+{
     this->numClustersPerLayer = numClustersPerLayer;
     this->alpha = alpha;
     this->useScaling = useScaling;
@@ -37,7 +41,8 @@ KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Fl
     }
 }
 
-KMeansFeatures::KMeansFeatures(const KMeansFeatures &rhs){
+KMeansFeatures::KMeansFeatures(const KMeansFeatures &rhs) : FeatureExtraction( KMeansFeatures::getId() )
+{
     
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;

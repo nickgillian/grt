@@ -122,7 +122,7 @@ public:
      Should be called before calling the computeFFT(...) or computeFeatures(...) methods.
      This function is automatically called by the constructor.
      
-	 @param  fftWindowSize: the window size of the FFT that will be used as input to this module. Default value = FFT::FFT_WINDOW_SIZE_512
+	 @param fftWindowSize: the window size of the FFT that will be used as input to this module. Default value = FFT::FFT_WINDOW_SIZE_512
 	 @param numChannelsInFFTSignal: the size of the FFT feature vector that will be used as input to this module.  Default value = 1
 	 @param computeMaxFreqFeature: sets if the maximum frequency feature will be included in the feature vector. Default value = true
 	 @param computeMaxFreqSpectrumRatio: sets if the maximum-frequency spectrum-frequency ratio feature will be included in the feature vector. Default value = true
@@ -136,6 +136,13 @@ public:
     //Tell the compiler we are using the following functions from the FeatureExtraction class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
+
+    /**
+    Gets a string that represents the FFTFeatures class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT fftWindowSize;
@@ -153,6 +160,7 @@ protected:
     
 private:
     static RegisterFeatureExtractionModule< FFTFeatures > registerModule;
+    static std::string id;
     
 };
 

@@ -23,14 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register your module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< RBMQuantizer > RBMQuantizer::registerModule("RBMQuantizer");
+//Define the string that will be used to identify the object
+std::string RBMQuantizer::id = "RBMQuantizer";
+std::string RBMQuantizer::getId() { return RBMQuantizer::id; }
 
-RBMQuantizer::RBMQuantizer(const UINT numClusters){
+//Register your module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< RBMQuantizer > RBMQuantizer::registerModule( RBMQuantizer::getId() );
+
+RBMQuantizer::RBMQuantizer(const UINT numClusters) : FeatureExtraction( RBMQuantizer::getId() )
+{
     this->numClusters = numClusters;
 }
 
-RBMQuantizer::RBMQuantizer(const RBMQuantizer &rhs){    
+RBMQuantizer::RBMQuantizer(const RBMQuantizer &rhs) : FeatureExtraction( RBMQuantizer::getId() )
+{    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

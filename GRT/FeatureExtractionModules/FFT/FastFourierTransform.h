@@ -34,6 +34,8 @@ GRT_BEGIN_NAMESPACE
 class GRT_API FastFourierTransform : public GRTBase{
 	
 public:
+
+    enum WindowFunctionOptions{RECTANGULAR_WINDOW=0,BARTLETT_WINDOW,HAMMING_WINDOW,HANNING_WINDOW};
 		
 	FastFourierTransform();
     
@@ -83,10 +85,6 @@ protected:
     Float averagePower;
     const static int MAX_FAST_BITS = 16;
     Vector< Vector< int > > bitTable;
-    
-public:
-    enum WindowFunctionOptions{RECTANGULAR_WINDOW=0,BARTLETT_WINDOW,HAMMING_WINDOW,HANNING_WINDOW};
-
 };
     
 GRT_END_NAMESPACE

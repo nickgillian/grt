@@ -23,14 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register your module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< KMeansQuantizer > KMeansQuantizer::registerModule("KMeansQuantizer");
+//Define the string that will be used to identify the object
+std::string KMeansQuantizer::id = "KMeansQuantizer";
+std::string KMeansQuantizer::getId() { return KMeansQuantizer::id; }
 
-KMeansQuantizer::KMeansQuantizer(const UINT numClusters){
+//Register your module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< KMeansQuantizer > KMeansQuantizer::registerModule( KMeansQuantizer::getId() );
+
+KMeansQuantizer::KMeansQuantizer(const UINT numClusters) : FeatureExtraction( KMeansQuantizer::getId() )
+{
     this->numClusters = numClusters;
 }
 
-KMeansQuantizer::KMeansQuantizer(const KMeansQuantizer &rhs){
+KMeansQuantizer::KMeansQuantizer(const KMeansQuantizer &rhs) : FeatureExtraction( KMeansQuantizer::getId() )
+{
     
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;

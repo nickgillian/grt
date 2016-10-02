@@ -22,6 +22,10 @@
 #include "FFTFeatures.h"
 
 GRT_BEGIN_NAMESPACE
+
+//Define the string that will be used to identify the object
+std::string ClusterTree::id = "ClusterTree";
+std::string ClusterTree::getId() { return ClusterTree::id; }
     
 //Register the FFTFeatures module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< FFTFeatures > FFTFeatures::registerModule("FFTFeatures");

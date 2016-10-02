@@ -171,6 +171,13 @@ public:
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the MovementTrajectoryFeatures class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     
@@ -183,7 +190,9 @@ protected:
     CircularBuffer< VectorFloat > trajectoryDataBuffer;
     MatrixDouble centroids;
     
+private:
     static RegisterFeatureExtractionModule< MovementTrajectoryFeatures > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE
