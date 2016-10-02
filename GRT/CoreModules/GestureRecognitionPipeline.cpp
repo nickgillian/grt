@@ -43,7 +43,7 @@ GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureR
         this->clear();
 
         //Copy the base class
-        this->copyMLBaseVariables( rhs );
+        this->copyMLBaseVariables( dynamic_cast<const MLBase*>(&rhs) );
 		
         //Copy the pipeline variables
 		this->initialized = rhs.initialized;
@@ -3049,7 +3049,7 @@ bool GestureRecognitionPipeline::addPreProcessingModule(const PreProcessing &pre
     }
     
     //Create a new instance of the preProcessing and then clone the values across from the reference preProcessing
-    PreProcessing *newInstance = preProcessingModule.createNewInstance();
+    PreProcessing *newInstance = preProcessingModule.create();
     
     //Verify that the clone was successful
     if( !newInstance->deepCopyFrom( &preProcessingModule ) ){
@@ -3087,7 +3087,7 @@ bool GestureRecognitionPipeline::addFeatureExtractionModule(const FeatureExtract
     }
     
     //Create a new instance of the preProcessing and then clone the values across from the reference preProcessing
-    FeatureExtraction *newInstance = featureExtractionModule.createNewInstance();
+    FeatureExtraction *newInstance = featureExtractionModule.create();
     
     //Verify that the clone was successful
     if( !newInstance->deepCopyFrom( &featureExtractionModule ) ){
@@ -3124,7 +3124,7 @@ bool GestureRecognitionPipeline::setClassifier(const Classifier &classifier){
     deleteClusterer();
 
     //Create a new instance of the classifier and then clone the values across from the reference classifier
-    this->classifier = classifier.createNewInstance();
+    this->classifier = classifier.create();
     
     if( this->classifier == NULL ){
         errorLog << "setClassifier(const Classifier classifier) - Classifier Module Not Set!" << std::endl;
@@ -3166,7 +3166,7 @@ bool GestureRecognitionPipeline::setRegressifier(const Regressifier &regressifie
     pipelineMode = REGRESSION_MODE;
     
     //Create a new instance of the regressifier and then clone the values across from the reference regressifier
-    this->regressifier = regressifier.createNewInstance();
+    this->regressifier = regressifier.create();
     
     //Validate that the regressifier was cloned correctly
     if( !this->regressifier->deepCopyFrom( &regressifier ) ){
@@ -3199,7 +3199,7 @@ bool GestureRecognitionPipeline::setClusterer(const Clusterer &clusterer){
     pipelineMode = CLUSTER_MODE;
     
     //Create a new instance of the clusterer and then clone the values across from the reference clusterer
-    this->clusterer = clusterer.createNewInstance();
+    this->clusterer = clusterer.create();
     
     //Validate that the regressifier was cloned correctly
     if( !this->clusterer->deepCopyFrom( &clusterer ) ){
@@ -3230,7 +3230,7 @@ bool GestureRecognitionPipeline::addPostProcessingModule(const PostProcessing &p
     }
     
     //Create a new instance of the preProcessing and then clone the values across from the reference preProcessing
-    PostProcessing *newInstance = postProcessingModule.createNewInstance();
+    PostProcessing *newInstance = postProcessingModule.create();
     
     //Verify that the clone was successful
     if( !newInstance->deepCopyFrom( &postProcessingModule ) ){

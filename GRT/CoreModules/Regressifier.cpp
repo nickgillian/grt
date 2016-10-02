@@ -41,7 +41,7 @@ Regressifier* Regressifier::create( const std::string &id ){
 }
     
 Regressifier* Regressifier::create() const{
-    return createInstanceFromString( MLBase::getId() );
+    return create( MLBase::getId() );
 }
 
 Regressifier* Regressifier::deepCopy() const{
