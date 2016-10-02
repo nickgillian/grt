@@ -9,8 +9,8 @@ TEST(AdaBoost, Constructor) {
   
   AdaBoost adaBoost;
 
-  //Check the type matches
-  EXPECT_TRUE( adaBoost.getClassifierType() == AdaBoost::getId() );
+  //Check the id's matches
+  EXPECT_TRUE( adaBoost.getId() == AdaBoost::getId() );
 
   //Check the module is not trained
   EXPECT_TRUE( !adaBoost.getTrained() );
@@ -18,19 +18,20 @@ TEST(AdaBoost, Constructor) {
 
 // Tests the learning algorithm on a basic dataset
 TEST(AdaBoost, TrainBasicDataset) {
+
+  //Note, the goal here is NOT to test the learning algorithm (i.e., accuracy of model), but instead to test the basic train/predict/getters/setters
   
+  //Create a default adaboost instance
   AdaBoost adaBoost;
 
   //Check the module is not trained
   EXPECT_TRUE( !adaBoost.getTrained() );
 
   //Generate a basic dataset
-  const UINT numSamples = 10000;
+  const UINT numSamples = 100;
   const UINT numClasses = 10;
-  const UINT numDimensions = 100;
-  ClassificationData::generateGaussDataset( "gauss_data.csv", numSamples, numClasses, numDimensions, 10, 1 );
-  ClassificationData trainingData;
-  EXPECT_TRUE( trainingData.load( "gauss_data.csv" ) );
+  const UINT numDimensions = 10;
+  ClassificationData trainingData = ClassificationData::generateGaussDataset( numSamples, numClasses, numDimensions, 10, 1 );
 
   ClassificationData testData = trainingData.split( 50 );
 

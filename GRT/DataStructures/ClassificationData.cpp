@@ -1033,7 +1033,7 @@ ClassificationData ClassificationData::getClassData(const UINT classLabel) const
     return classData;
 }
     
-ClassificationData ClassificationData::getBootstrappedDataset(UINT numSamples,bool balanceDataset) const{
+ClassificationData ClassificationData::getBootstrappedDataset(const UINT numSamples_,const bool balanceDataset) const{
     
     Random rand;
     ClassificationData newDataset;
@@ -1041,9 +1041,9 @@ ClassificationData ClassificationData::getBootstrappedDataset(UINT numSamples,bo
     newDataset.setAllowNullGestureClass( allowNullGestureClass );
     newDataset.setExternalRanges( externalRanges, useExternalRanges );
     
-    if( numSamples == 0 ) numSamples = totalNumSamples;
+    const UINT numBootstrapSamples = numSamples_ == 0 ? numSamples_ : totalNumSamples;
     
-    newDataset.reserve( numSamples );
+    newDataset.reserve( numBootstrapSamples );
 
     const UINT K = getNumClasses(); 
     
@@ -1060,13 +1060,13 @@ ClassificationData ClassificationData::getBootstrappedDataset(UINT numSamples,bo
         }
 
         //Get the class with the minimum number of examples
-        UINT numSamplesPerClass = (UINT)floor( numSamples / Float(K) );
+        UINT numSamplesPerClass = (UINT)floor( numBootstrapSamples / Float(K) );
 
         //Randomly select the training samples from each class
         UINT classIndex = 0;
         UINT classCounter = 0;
         UINT randomIndex = 0;
-        for(UINT i=0; i<numSamples; i++){
+        for(UINT i=0; i<numBootstrapSamples; i++){
             randomIndex = rand.getRandomNumberInt(0, (UINT)classIndexs[ classIndex ].size() );
             randomIndex = classIndexs[ classIndex ][ randomIndex ];
             newDataset.addSample(data[ randomIndex ].getClassLabel(), data[ randomIndex ].getSample());
@@ -1079,7 +1079,7 @@ ClassificationData ClassificationData::getBootstrappedDataset(UINT numSamples,bo
     }else{
         //Randomly select the training samples to add to the new data set
         UINT randomIndex;
-        for(UINT i=0; i<numSamples; i++){
+        for(UINT i=0; i<numBootstrapSamples; i++){
             randomIndex = rand.getRandomNumberInt(0, totalNumSamples);
             newDataset.addSample( data[randomIndex].getClassLabel(), data[randomIndex].getSample() );
         }
@@ -1168,7 +1168,7 @@ UINT ClassificationData::getMaximumClassLabel() const{
     return maxClassLabel;
 }
 
-UINT ClassificationData::getClassLabelIndexValue(UINT classLabel) const{
+UINT ClassificationData::getClassLabelIndexValue(const UINT classLabel) const{
     for(UINT k=0; k<classTracker.getSize(); k++){
         if( classTracker[k].classLabel == classLabel ){
             return k;
@@ -1178,7 +1178,7 @@ UINT ClassificationData::getClassLabelIndexValue(UINT classLabel) const{
     return 0;
 }
 
-std::string ClassificationData::getClassNameForCorrespondingClassLabel(UINT classLabel) const{
+std::string ClassificationData::getClassNameForCorrespondingClassLabel(const UINT classLabel) const{
 
     for(UINT i=0; i<classTracker.getSize(); i++){
         if( classTracker[i].classLabel == classLabel ){
@@ -1288,7 +1288,7 @@ VectorFloat ClassificationData::getStdDev() const{
 	return stdDev;
 }
 
-MatrixFloat ClassificationData::getClassHistogramData(UINT classLabel,UINT numBins) const{
+MatrixFloat ClassificationData::getClassHistogramData(const UINT classLabel,const UINT numBins) const{
 
     const UINT M = getNumSamples();
     const UINT N = getNumDimensions();
@@ -1400,7 +1400,7 @@ MatrixFloat ClassificationData::getCovarianceMatrix() const{
 	return covariance;
 }
 
-Vector< MatrixFloat > ClassificationData::getHistogramData(UINT numBins) const{
+Vector< MatrixFloat > ClassificationData::getHistogramData(const UINT numBins) const{
     const UINT K = getNumClasses();
     Vector< MatrixFloat > histData(K);
 
@@ -1440,7 +1440,7 @@ VectorFloat ClassificationData::getClassProbabilities( const Vector< UINT > &cla
     return x;
 }
 
-Vector< UINT > ClassificationData::getClassDataIndexes(UINT classLabel) const{
+Vector< UINT > ClassificationData::getClassDataIndexes(const UINT classLabel) const{
 
     const UINT M = getNumSamples();
     const UINT K = getNumClasses();
@@ -1496,6 +1496,15 @@ MatrixFloat ClassificationData::getDataAsMatrixFloat() const {
 
 bool ClassificationData::generateGaussDataset( const std::string filename, const UINT numSamples, const UINT numClasses, const UINT numDimensions, const Float range, const Float sigma ){
     
+    //Generate the dataset
+    ClassificationData data = generateGaussDataset( numSamples, numClasses, numDimensions, range, sigma );
+    
+    //Save the dataset to a CSV file
+    return data.save( filename );
+}
+
+ClassificationData ClassificationData::generateGaussDataset( const UINT numSamples, const UINT numClasses, const UINT numDimensions, const Float range, const Float sigma ){
+    
     Random random;
     
     //Generate a simple model that will be used to generate the main dataset
@@ -1509,6 +1518,7 @@ bool ClassificationData::generateGaussDataset( const std::string filename, const
     //Use the model above to generate the main dataset
     ClassificationData data;
     data.setNumDimensions( numDimensions );
+    data.reserve( numSamples );
     
     for(UINT i=0; i<numSamples; i++){
         
@@ -1528,8 +1538,8 @@ bool ClassificationData::generateGaussDataset( const std::string filename, const
         data.addSample( classLabel, sample );
     }
     
-    //Save the dataset to a CSV file
-    return data.save( filename );
+    //Return the datset
+    return data;
 }
 
 GRT_END_NAMESPACE
