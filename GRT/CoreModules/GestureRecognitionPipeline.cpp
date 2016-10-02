@@ -23,24 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-GestureRecognitionPipeline::GestureRecognitionPipeline(void)
+GestureRecognitionPipeline::GestureRecognitionPipeline(void) : MLBase( "Pipeline" )
 {
     init();
-
-    debugLog.setProceedingText("[DEBUG GRP]");
-    errorLog.setProceedingText("[ERROR GRP]");
-    warningLog.setProceedingText("[WARNING GRP]");
-    testingLog.setProceedingText("[TEST GRP]");
 }
 
-GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionPipeline &rhs){
-	
+GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionPipeline &rhs) : MLBase( "Pipeline" )
+{
 	init();
-    
-    debugLog.setProceedingText("[DEBUG GRP]");
-    errorLog.setProceedingText("[ERROR GRP]");
-    warningLog.setProceedingText("[WARNING GRP]");
-    testingLog.setProceedingText("[TEST GRP]");
 
     //Invoke the equals operator to copy the rhs data to this instance
 	*this = rhs;
@@ -51,6 +41,9 @@ GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureR
 	
 	if( this != &rhs ){
         this->clear();
+
+        //Copy the base class
+        this->copyMLBaseVariables( rhs );
 		
         //Copy the pipeline variables
 		this->initialized = rhs.initialized;
@@ -78,13 +71,6 @@ GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureR
 	    this->testConfusionMatrix = rhs.testConfusionMatrix;
         this->crossValidationResults = rhs.crossValidationResults;
         this->testResults = rhs.testResults;
-
-        //Copy the GRT Base variables
-        this->debugLog = rhs.debugLog;
-        this->errorLog = rhs.errorLog;
-        this->trainingLog = rhs.trainingLog;
-        this->testingLog = rhs.testingLog;
-        this->warningLog = rhs.warningLog;
 	
 		for(unsigned int i=0; i<rhs.preProcessingModules.size(); i++){
 			this->addPreProcessingModule( *(rhs.preProcessingModules[i]) );
