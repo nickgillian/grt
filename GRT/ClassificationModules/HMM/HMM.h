@@ -372,7 +372,7 @@ protected:
     
 private:
     static RegisterClassifierModule< HMM > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

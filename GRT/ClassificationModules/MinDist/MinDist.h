@@ -185,7 +185,7 @@ protected:
     Vector< MinDistModel > models;            //A buffer to hold all the models
     
 private:
-    static std::string id;
+    static const std::string id;
     static RegisterClassifierModule< MinDist > registerModule;
 };
 

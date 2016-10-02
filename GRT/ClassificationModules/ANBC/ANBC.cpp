@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string ANBC::id = "ANBC";
+const std::string ANBC::id = "ANBC";
 std::string ANBC::getId() { return ANBC::id; }
 
 //Register the ANBC module with the Classifier base class

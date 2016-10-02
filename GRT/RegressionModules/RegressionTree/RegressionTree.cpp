@@ -27,13 +27,13 @@ GRT_BEGIN_NAMESPACE
 RegisterNode< RegressionTreeNode > RegressionTreeNode::registerModule("RegressionTreeNode");
 
 //Define the string that will be used to identify the object
-std::string RegressionTree::id = "RegressionTree";
+const std::string RegressionTree::id = "RegressionTree";
 std::string RegressionTree::getId() { return RegressionTree::id; }
 
 //Register the RegressionTree module with the Regressifier base class
-RegisterRegressifierModule< RegressionTree >  RegressionTree::registerModule( getId() );
+RegisterRegressifierModule< RegressionTree >  RegressionTree::registerModule( RegressionTree::getId() );
 
-RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Regressifier( getId() )
+RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Regressifier( RegressionTree::getId() )
 {
     tree = NULL;
     this->numSplittingSteps = numSplittingSteps;
@@ -45,7 +45,7 @@ RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSam
     this->minRMSErrorPerNode = minRMSErrorPerNode;
 }
 
-RegressionTree::RegressionTree(const RegressionTree &rhs) : Regressifier( getId() )
+RegressionTree::RegressionTree(const RegressionTree &rhs) : Regressifier( RegressionTree::getId() )
 {
     tree = NULL;
     *this = rhs;

@@ -263,7 +263,7 @@ protected:
     GRT::MedianFilter contextFilter;
 
 private:
-    static std::string id;
+    static const std::string id;
     static RegisterClassifierModule< SwipeDetector > registerModule;
 };
 

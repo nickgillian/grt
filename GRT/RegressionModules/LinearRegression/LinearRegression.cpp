@@ -24,13 +24,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string LinearRegression::id = "LinearRegression";
+const std::string LinearRegression::id = "LinearRegression";
 std::string LinearRegression::getId() { return LinearRegression::id; }
 
 //Register the LinearRegression module with the Classifier base class
-RegisterRegressifierModule< LinearRegression >  LinearRegression::registerModule( getId() );
+RegisterRegressifierModule< LinearRegression >  LinearRegression::registerModule( LinearRegression::getId() );
 
-LinearRegression::LinearRegression(bool useScaling) : Regressifier( getId() )
+LinearRegression::LinearRegression(bool useScaling) : Regressifier( LinearRegression::getId() )
 {
     this->useScaling = useScaling;
     minChange = 1.0e-5;
@@ -38,7 +38,7 @@ LinearRegression::LinearRegression(bool useScaling) : Regressifier( getId() )
     learningRate = 0.01;
 }
 
-LinearRegression::LinearRegression(const LinearRegression &rhs) : Regressifier( getId() )
+LinearRegression::LinearRegression(const LinearRegression &rhs) : Regressifier( LinearRegression::getId() )
 {
     *this = rhs;
 }

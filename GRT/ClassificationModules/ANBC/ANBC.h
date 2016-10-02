@@ -210,7 +210,7 @@ protected:
     
 private:
     static RegisterClassifierModule< ANBC > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

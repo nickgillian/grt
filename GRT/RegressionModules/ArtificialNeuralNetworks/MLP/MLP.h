@@ -574,7 +574,7 @@ protected:
 
 private:
     static RegisterRegressifierModule< MLP > registerModule;
-    static std::string id;
+    static const std::string id;
      
 };
 

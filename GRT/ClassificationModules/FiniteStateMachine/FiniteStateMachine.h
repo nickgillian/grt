@@ -188,7 +188,7 @@ protected:
     
 private:
     static RegisterClassifierModule< FiniteStateMachine > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

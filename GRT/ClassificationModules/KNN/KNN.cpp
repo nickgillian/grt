@@ -24,13 +24,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string KNN::id = "KNN";
+const std::string KNN::id = "KNN";
 std::string KNN::getId() { return KNN::id; }
 
 //Register the KNN module with the Classifier base class
-RegisterClassifierModule< KNN > KNN::registerModule( getId() );
+RegisterClassifierModule< KNN > KNN::registerModule( KNN::getId() );
 
-KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,bool searchForBestKValue,UINT minKSearchValue,UINT maxKSearchValue) : Classifier( getId() )
+KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,bool searchForBestKValue,UINT minKSearchValue,UINT maxKSearchValue) : Classifier( KNN::getId() )
 {
     this->K = K;
     this->distanceMethod = EUCLIDEAN_DISTANCE;
@@ -45,7 +45,7 @@ KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectio
     distanceMethod = EUCLIDEAN_DISTANCE;
 }
 
-KNN::KNN(const KNN &rhs) : Classifier( getId() )
+KNN::KNN(const KNN &rhs) : Classifier( KNN::getId() )
 {
     classifierMode = STANDARD_CLASSIFIER_MODE;
     *this = rhs;
@@ -77,9 +77,9 @@ bool KNN::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         //Get a pointer the KNN copy instance
-        KNN *ptr = (KNN*)classifier;
+        const KNN *ptr = dynamic_cast<const KNN*>(classifier);
         
         this->K = ptr->K;
         this->distanceMethod = ptr->distanceMethod;

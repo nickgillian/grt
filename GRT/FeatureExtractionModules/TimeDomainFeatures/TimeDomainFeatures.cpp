@@ -30,12 +30,12 @@ std::string TimeDomainFeatures::getId() { return TimeDomainFeatures::id; }
 //Register the TimeDomainFeatures module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< TimeDomainFeatures > TimeDomainFeatures::registerModule( TimeDomainFeatures::getId() );
 
-TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS) : FeatureExtraction( TimeseriesBuffer::getId() )
+TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS) : FeatureExtraction( TimeDomainFeatures::getId() )
 {
     init(bufferLength,numFrames,numDimensions,offsetInput,useMean,useStdDev,useEuclideanNorm,useRMS);
 }
 
-TimeDomainFeatures::TimeDomainFeatures(const TimeDomainFeatures &rhs) : FeatureExtraction( TimeseriesBuffer::getId() )
+TimeDomainFeatures::TimeDomainFeatures(const TimeDomainFeatures &rhs) : FeatureExtraction( TimeDomainFeatures::getId() )
 {
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;

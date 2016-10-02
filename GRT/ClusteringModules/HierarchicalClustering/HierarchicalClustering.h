@@ -253,7 +253,7 @@ protected:
 
 private:
     static RegisterClustererModule< HierarchicalClustering > registerModule;
-    static std::string id;
+    static const std::string id;
 		
 };
     

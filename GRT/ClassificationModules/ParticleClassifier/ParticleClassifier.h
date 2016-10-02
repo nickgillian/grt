@@ -155,7 +155,7 @@ protected:
     ParticleClassifierParticleFilter particleFilter;
     
 private:
-    static std::string id;
+    static const std::string id;
     static RegisterClassifierModule< ParticleClassifier > registerModule;
     
 };

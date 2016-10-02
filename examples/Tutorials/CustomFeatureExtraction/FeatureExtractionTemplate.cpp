@@ -20,18 +20,17 @@
 
 #include "FeatureExtractionTemplate.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE //This macro places all the following code inside the GRT namespace
+
+const std::string FeatureExtractionTemplate::id = "FeatureExtractionTemplate";
+std::string FeatureExtractionTemplate::getId() { return FeatureExtractionTemplate::id; }
     
 //Register your module with the FeatureExtraction base class
 //The string you pass to the registerModule function must match the string you use for the featureExtractionType
-RegisterFeatureExtractionModule< FeatureExtractionTemplate > FeatureExtractionTemplate::registerModule("FeatureExtractionTemplate");
+RegisterFeatureExtractionModule< FeatureExtractionTemplate > FeatureExtractionTemplate::registerModule( FeatureExtractionTemplate::getId() );
     
-FeatureExtractionTemplate::FeatureExtractionTemplate(){
-    featureExtractionType = "FeatureExtractionTemplate";
-    debugLog.setProceedingText("[DEBUG FeatureExtractionTemplate]");
-    errorLog.setProceedingText("[ERROR FeatureExtractionTemplate]");
-    warningLog.setProceedingText("[WARNING FeatureExtractionTemplate]");
-    
+FeatureExtractionTemplate::FeatureExtractionTemplate() : FeatureExtraction( FeatureExtractionTemplate::getId() )
+{    
     //Here you should add any specific code to init your custom feature extraction module
     //You might want to add this code to a specific init function (so you can call this from other functions such as the loadSettingsFromFile(..) function for instance)
     //Don't forget to resize the featureVector (which is in the FeatureExtraction base class) to the appropriate size
@@ -42,7 +41,8 @@ FeatureExtractionTemplate::FeatureExtractionTemplate(){
     //UINT numOutputDimensions: sets the size of the featureVector (the output of the feature extraction module)
 }
     
-FeatureExtractionTemplate::FeatureExtractionTemplate(const FeatureExtractionTemplate &rhs){
+FeatureExtractionTemplate::FeatureExtractionTemplate(const FeatureExtractionTemplate &rhs) : FeatureExtraction( FeatureExtractionTemplate::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -65,15 +65,15 @@ bool FeatureExtractionTemplate::deepCopyFrom(const FeatureExtraction *featureExt
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Cast the feature extraction pointer to a pointer to your custom feature extraction module
         //Then invoke the equals operator
-        *this = *(FeatureExtractionTemplate*)featureExtraction;
+        *this = *dynamic_cast<const FeatureExtractionTemplate*>( featureExtraction );
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -86,8 +86,8 @@ bool FeatureExtractionTemplate::computeFeatures(const VectorFloat &inputVector){
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
 #endif
@@ -163,4 +163,4 @@ bool FeatureExtractionTemplate::load( std::fstream &file ){
     return true;
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE //This macro places all the code above inside the GRT namespace

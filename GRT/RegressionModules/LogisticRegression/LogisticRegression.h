@@ -146,7 +146,7 @@ protected:
 
 private:
     static RegisterRegressifierModule< LogisticRegression > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

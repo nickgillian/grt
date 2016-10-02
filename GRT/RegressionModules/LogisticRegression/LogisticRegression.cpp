@@ -24,13 +24,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string LogisticRegression::id = "LogisticRegression";
+const std::string LogisticRegression::id = "LogisticRegression";
 std::string LogisticRegression::getId() { return LogisticRegression::id; }
 
 //Register the LogisticRegression module with the Classifier base class
-RegisterRegressifierModule< LogisticRegression >  LogisticRegression::registerModule( getId() );
+RegisterRegressifierModule< LogisticRegression >  LogisticRegression::registerModule( LogisticRegression::getId() );
 
-LogisticRegression::LogisticRegression(const bool useScaling) : Regressifier( getId() )
+LogisticRegression::LogisticRegression(const bool useScaling) : Regressifier( LogisticRegression::getId() )
 {
     this->useScaling = useScaling;
     minChange = 1.0e-5;
@@ -38,7 +38,7 @@ LogisticRegression::LogisticRegression(const bool useScaling) : Regressifier( ge
     learningRate = 0.01;
 }
 
-LogisticRegression::LogisticRegression(const LogisticRegression &rhs) : Regressifier( getId() )
+LogisticRegression::LogisticRegression(const LogisticRegression &rhs) : Regressifier( LogisticRegression::getId() )
 {
     *this = rhs;
 }

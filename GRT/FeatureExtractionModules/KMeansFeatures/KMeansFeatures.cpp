@@ -28,7 +28,7 @@ std::string KMeansFeatures::id = "KMeansFeatures";
 std::string KMeansFeatures::getId() { return KMeansFeatures::id; }
 
 //Register your module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< KMeansFeatures > KMeansFeatures::registerModule("KMeansFeatures");
+RegisterFeatureExtractionModule< KMeansFeatures > KMeansFeatures::registerModule( KMeansFeatures::getId() );
 
 KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Float alpha,const bool useScaling) : FeatureExtraction( KMeansFeatures::getId() )
 {

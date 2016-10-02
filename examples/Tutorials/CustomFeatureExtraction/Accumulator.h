@@ -1,13 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @brief This class provides a simple working example of some custom feature extraction.
- 
- The class implements an Accumulator feature extraction, this is a very simple feature extraction 
- (which is probably not very useful but is good for demonstrating how to create your own feature extraction)
- that takes the input, sums up the values, and then adds the last value (which is first multipled by a weight).
  */
 
 /*
@@ -36,8 +29,15 @@
 //Include the main GRT header to get access to the FeatureExtraction base class
 #include <GRT/GRT.h>
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE //This macro places all the following code inside the GRT namespace
     
+/**
+ @brief This class provides a simple working example of some custom feature extraction.
+ 
+ The class implements an Accumulator feature extraction, this is a very simple feature extraction 
+ (which is probably not very useful but is good for demonstrating how to create your own feature extraction)
+ that takes the input, sums up the values, and then adds the last value (which is first multipled by a weight).
+*/
 class Accumulator : public FeatureExtraction{
 public:
     /**
@@ -46,7 +46,7 @@ public:
      @param numDimensions: the number of dimensions in the input data, must be greater than 0. Default value = 1
      @param lastValueWeight: the weight assigned to the last input value. Default value = 0.9
      */
-    Accumulator(UINT numDimensions=1,Float lastValueWeight=0.9);
+    Accumulator(const UINT numDimensions=1,const Float lastValueWeight=0.9);
 	
     /**
      Copy constructor, copies the Accumulator from the rhs instance to this instance.
@@ -122,44 +122,54 @@ public:
      @param lastValueWeight: the weight assigned to the last input value
      @return returns true if the instance was initilized successfully, false otherwise
      */
-    bool init(UINT numDimensions,Float lastValueWeight);
+    bool init(const UINT numDimensions,const Float lastValueWeight);
     
     /**
      Gets the last weight value. The lastWeightValue is the weight assigned to the last input.
      
      @return returns the lastValueWeight if the instance is initilized, 0 otherwise
      */
-    Float getLastValueWeight();
+    Float getLastValueWeight() const;
     
     /**
      Gets the last value. The lastValue is the (weighted) last value of the accumulator instance.
      
      @return returns the lastValue if the instance is initilized, 0 otherwise
      */
-    Float getLastValue();
+    Float getLastValue() const;
     
     /**
      Sets the lastValueWeight. The lastWeightValue is the weight assigned to the last input.
      
      @return returns true if the lastValueWeight was updated successfully, false otherwise
      */
-    bool setLastValueWeight(Float lastValueWeight);
+    bool setLastValueWeight(const Float lastValueWeight);
     
     /**
      Sets the lastValue. The lastValue is the value added to the current input.
      
      @return returns true if the lastValue was updated successfully, false otherwise
      */
-    bool setLastValue(Float lastValue);
+    bool setLastValue(const Float lastValue);
 
-    using FeatureExtraction::save;
-    using FeatureExtraction::load;
+    //Tell the compiler we are using the following functions from the base class to stop hidden virtual function warnings
+    using MLBase::save;
+    using MLBase::load;
+
+    /**
+    Gets a string that represents the Accumulator class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
 
 protected:
     Float lastValueWeight;
     Float lastValue;
     
-    static RegisterFeatureExtractionModule< Accumulator > registerModule; //This is used to register the Accumulator module with the FeatureExtraction base class
+private:
+    static RegisterFeatureExtractionModule< Accumulator > registerModule; ///<This is used to register the Accumulator module with the FeatureExtraction base class
+    const static std::string id; ///<Define the ID that will be used to identify and dynamical cast to this class
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE

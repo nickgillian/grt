@@ -24,13 +24,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string DTW::id = "DTW";
+const std::string DTW::id = "DTW";
 std::string DTW::getId() { return DTW::id; }
 
 //Register the DTW module with the Classifier base class
-RegisterClassifierModule< DTW > DTW::registerModule( getId() );
+RegisterClassifierModule< DTW > DTW::registerModule( DTW::getId() );
 
-DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,Float radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,Float nullRejectionLikelihoodThreshold) : Classifier( getId() )
+DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rejectionMode,bool constrainWarpingPath,Float radius,bool offsetUsingFirstSample,bool useSmoothing,UINT smoothingFactor,Float nullRejectionLikelihoodThreshold) : Classifier( DTW::getId() )
 {
     
     this->useScaling=useScaling;
@@ -62,7 +62,7 @@ DTW::DTW(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT rej
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
 }
 
-DTW::DTW(const DTW &rhs) : Classifier( getId() )
+DTW::DTW(const DTW &rhs) : Classifier( DTW::getId() )
 {
     *this = rhs;
 }

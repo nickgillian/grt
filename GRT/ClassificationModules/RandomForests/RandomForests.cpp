@@ -24,13 +24,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string RandomForests::id = "RandomForests";
+const std::string RandomForests::id = "RandomForests";
 std::string RandomForests::getId() { return RandomForests::id; }
 
 //Register the RandomForests module with the Classifier base class
-RegisterClassifierModule< RandomForests >  RandomForests::registerModule( getId() );
+RegisterClassifierModule< RandomForests >  RandomForests::registerModule( RandomForests::getId() );
 
-RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight) : Classifier( getId() )
+RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight) : Classifier( RandomForests::getId() )
 {
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->forestSize = forestSize;
@@ -48,7 +48,7 @@ RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT
     validationSetSize = 20;
 }
 
-RandomForests::RandomForests(const RandomForests &rhs) : Classifier( getId() )
+RandomForests::RandomForests(const RandomForests &rhs) : Classifier( RandomForests::getId() )
 {
     this->decisionTreeNode = NULL;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -104,9 +104,9 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         
-        RandomForests *ptr = (RandomForests*)classifier;
+        const RandomForests *ptr = dynamic_cast<const RandomForests*>(classifier);
         
         //Clear this tree
         this->clear();

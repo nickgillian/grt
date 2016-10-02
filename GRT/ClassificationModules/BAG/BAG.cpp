@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string BAG::id = "BAG";
+const std::string BAG::id = "BAG";
 std::string BAG::getId() { return BAG::id; }
 
 //Register the BAG module with the Classifier base class

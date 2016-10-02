@@ -24,7 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string AdaBoost::id = "AdaBoost";
+const std::string AdaBoost::id = "AdaBoost";
 std::string AdaBoost::getId() { return AdaBoost::id; }
 
 //Register the AdaBoost module with the Classifier base class

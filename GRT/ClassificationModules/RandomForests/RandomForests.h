@@ -354,7 +354,7 @@ protected:
     
 private:
     static RegisterClassifierModule< RandomForests > registerModule;
-    static std::string id;
+    static const std::string id;
     
 };
 

@@ -188,7 +188,7 @@ protected:
 
 private:
     static RegisterRegressifierModule< RegressionTree > registerModule;
-    static std::string id;
+    static const std::string id;
     
 };
 

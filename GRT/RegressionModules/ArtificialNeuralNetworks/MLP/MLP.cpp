@@ -27,13 +27,13 @@ const Float MLP_NEURON_MIN_TARGET = -1.0;
 const Float MLP_NEURON_MAX_TARGET = 1.0;
 
 //Define the string that will be used to identify the object
-std::string MLP::id = "MLP";
+const std::string MLP::id = "MLP";
 std::string MLP::getId() { return MLP::id; }
 
 //Register the MLP module with the base class
-RegisterRegressifierModule< MLP > MLP::registerModule( getId() );
+RegisterRegressifierModule< MLP > MLP::registerModule( MLP::getId() );
 
-MLP::MLP() : Regressifier( getId() )
+MLP::MLP() : Regressifier( MLP::getId() )
 {
     inputLayerActivationFunction = Neuron::LINEAR;
     hiddenLayerActivationFunction = Neuron::LINEAR;
@@ -57,7 +57,7 @@ MLP::MLP() : Regressifier( getId() )
     clear();
 }
 
-MLP::MLP(const MLP &rhs) : Regressifier( getId() )
+MLP::MLP(const MLP &rhs) : Regressifier( MLP::getId() )
 {  
     *this = rhs;
 }

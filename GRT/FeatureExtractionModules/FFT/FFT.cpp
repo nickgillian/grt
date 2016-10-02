@@ -24,13 +24,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string ClusterTree::id = "ClusterTree";
-std::string ClusterTree::getId() { return ClusterTree::id; }
+std::string FFT::id = "FFT";
+std::string FFT::getId() { return FFT::id; }
 
 //Register the FFT module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< FFT > FFT::registerModule("FFT");
 
-FFT::FFT(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase){
+FFT::FFT(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase) : FeatureExtraction( FFT::getId() )
+{
     
     initialized = false;
     featureDataReady = false;
@@ -42,7 +43,8 @@ FFT::FFT(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFuncti
     }
 }
 
-FFT::FFT(const FFT &rhs){
+FFT::FFT(const FFT &rhs) : FeatureExtraction( FFT::getId() )
+{
     
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;

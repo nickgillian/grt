@@ -24,14 +24,14 @@
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string KMeans::id = "KMeans";
+const std::string KMeans::id = "KMeans";
 std::string KMeans::getId() { return KMeans::id; }
     
 //Register the KMeans class with the Clusterer base class
-RegisterClustererModule< KMeans > KMeans::registerModule( getId() );
+RegisterClustererModule< KMeans > KMeans::registerModule( KMeans::getId() );
 
 //Constructor,destructor
-KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange,const bool computeTheta) : Clusterer( getId() )
+KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange,const bool computeTheta) : Clusterer( KMeans::getId() )
 {
     
     this->numClusters = numClusters;
@@ -47,7 +47,7 @@ KMeans::KMeans(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumE
     trained = false;
 }
     
-KMeans::KMeans(const KMeans &rhs) : Clusterer( getId() )
+KMeans::KMeans(const KMeans &rhs) : Clusterer( KMeans::getId() )
 {    
     if( this != &rhs ){
         
@@ -63,7 +63,6 @@ KMeans::KMeans(const KMeans &rhs) : Clusterer( getId() )
         //Clone the Clusterer variables
         copyBaseVariables( (Clusterer*)&rhs );
     }
-    
 }
 
 KMeans::~KMeans(){

@@ -24,24 +24,24 @@
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string ClusterTree::id = "ClusterTree";
-std::string ClusterTree::getId() { return ClusterTree::id; }
+std::string FFTFeatures::id = "FFTFeatures";
+std::string FFTFeatures::getId() { return FFTFeatures::id; }
     
 //Register the FFTFeatures module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< FFTFeatures > FFTFeatures::registerModule("FFTFeatures");
     
 bool sortIndexDoubleDecendingValue(IndexedDouble i,IndexedDouble j) { return (i.value<j.value); }
     
-FFTFeatures::FFTFeatures(UINT fftWindowSize,UINT numChannelsInFFTSignal,bool computeMaxFreqFeature,bool computeMaxFreqSpectrumRatio,bool computeCentroidFeature,bool computeTopNFreqFeatures,UINT N){ 
-  
+FFTFeatures::FFTFeatures(UINT fftWindowSize,UINT numChannelsInFFTSignal,bool computeMaxFreqFeature,bool computeMaxFreqSpectrumRatio,bool computeCentroidFeature,bool computeTopNFreqFeatures,UINT N) : FeatureExtraction( FFTFeatures::getId() )
+{ 
     initialized = false; 
     featureDataReady = false;
     
     init(fftWindowSize,numChannelsInFFTSignal,computeMaxFreqFeature,computeMaxFreqSpectrumRatio,computeCentroidFeature,computeTopNFreqFeatures,N);
 }
     
-FFTFeatures::FFTFeatures(const FFTFeatures &rhs){
-    
+FFTFeatures::FFTFeatures(const FFTFeatures &rhs) : FeatureExtraction( FFTFeatures::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

@@ -5,16 +5,15 @@
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string GaussianMixtureModels::id = "GaussianMixtureModels";
+const std::string GaussianMixtureModels::id = "GaussianMixtureModels";
 std::string GaussianMixtureModels::getId() { return GaussianMixtureModels::id; }
     
 //Register the GaussianMixtureModels class with the Clusterer base class
-RegisterClustererModule< GaussianMixtureModels > GaussianMixtureModels::registerModule( getId() );
+RegisterClustererModule< GaussianMixtureModels > GaussianMixtureModels::registerModule( GaussianMixtureModels::getId() );
 
 //Constructor,destructor
-GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange) : Clusterer( getId() )
+GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange) : Clusterer( GaussianMixtureModels::getId() )
 {
-    
     this->numClusters = numClusters;
     this->minNumEpochs = minNumEpochs;
     this->maxNumEpochs = maxNumEpochs;
@@ -25,9 +24,8 @@ GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT m
     trained = false;
 }
 
-GaussianMixtureModels::GaussianMixtureModels(const GaussianMixtureModels &rhs) : Clusterer( getId() )
+GaussianMixtureModels::GaussianMixtureModels(const GaussianMixtureModels &rhs) : Clusterer( GaussianMixtureModels::getId() )
 {
-    
     if( this != &rhs ){
         
         this->numTrainingSamples = rhs.numTrainingSamples;
@@ -43,7 +41,6 @@ GaussianMixtureModels::GaussianMixtureModels(const GaussianMixtureModels &rhs) :
         //Clone the Clusterer variables
         copyBaseVariables( (Clusterer*)&rhs );
     }
-    
 }
 
 GaussianMixtureModels::~GaussianMixtureModels(){

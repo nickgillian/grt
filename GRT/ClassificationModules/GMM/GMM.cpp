@@ -24,13 +24,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string GMM::id = "GMM";
+const std::string GMM::id = "GMM";
 std::string GMM::getId() { return GMM::id; }
 
 //Register the GMM module with the Classifier base class
-RegisterClassifierModule< GMM > GMM::registerModule( getId() );
+RegisterClassifierModule< GMM > GMM::registerModule( GMM::getId() );
 
-GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT maxIter,Float minChange) : Classifier( getId() )
+GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT maxIter,Float minChange) : Classifier( GMM::getId() )
 {
     classifierMode = STANDARD_CLASSIFIER_MODE;
     this->numMixtureModels = numMixtureModels;
@@ -41,7 +41,7 @@ GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullR
     this->minChange = minChange;
 }
 
-GMM::GMM(const GMM &rhs) : Classifier( getId() )
+GMM::GMM(const GMM &rhs) : Classifier( GMM::getId() )
 {
     classifierMode = STANDARD_CLASSIFIER_MODE;
     *this = rhs;

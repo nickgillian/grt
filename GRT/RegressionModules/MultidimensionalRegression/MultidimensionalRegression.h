@@ -167,7 +167,7 @@ protected:
 
 private:
     static RegisterRegressifierModule< MultidimensionalRegression > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

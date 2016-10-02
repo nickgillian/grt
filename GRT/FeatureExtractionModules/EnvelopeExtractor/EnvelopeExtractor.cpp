@@ -24,14 +24,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string ClusterTree::id = "ClusterTree";
-std::string ClusterTree::getId() { return ClusterTree::id; }
+std::string EnvelopeExtractor::id = "EnvelopeExtractor";
+std::string EnvelopeExtractor::getId() { return EnvelopeExtractor::id; }
 
 //Register your module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< EnvelopeExtractor > EnvelopeExtractor::registerModule("EnvelopeExtractor");
+RegisterFeatureExtractionModule< EnvelopeExtractor > EnvelopeExtractor::registerModule( EnvelopeExtractor::getId() );
 
-EnvelopeExtractor::EnvelopeExtractor( const UINT bufferSize,const UINT numDimensions ){
-    
+EnvelopeExtractor::EnvelopeExtractor( const UINT bufferSize,const UINT numDimensions ) : FeatureExtraction( EnvelopeExtractor::getId() )
+{
     this->bufferSize = 0;
     
     if( bufferSize > 0 && numDimensions > 0 ){
@@ -39,8 +39,8 @@ EnvelopeExtractor::EnvelopeExtractor( const UINT bufferSize,const UINT numDimens
     }
 }
 
-EnvelopeExtractor::EnvelopeExtractor(const EnvelopeExtractor &rhs){
-    
+EnvelopeExtractor::EnvelopeExtractor(const EnvelopeExtractor &rhs) : FeatureExtraction( EnvelopeExtractor::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

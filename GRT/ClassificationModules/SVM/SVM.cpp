@@ -26,13 +26,13 @@ using namespace LIBSVM;
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string SVM::id = "SVM";
+const std::string SVM::id = "SVM";
 std::string SVM::getId() { return SVM::id; }
 
 //Register the SVM module with the Classifier base class
-RegisterClassifierModule< SVM > SVM::registerModule( getId() );
+RegisterClassifierModule< SVM > SVM::registerModule( SVM::getId() );
 
-SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue) : Classifier( getId() )
+SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue) : Classifier( SVM::getId() )
 {
     
     //Setup the default SVM parameters
@@ -71,7 +71,7 @@ SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejec
     init(kernelType,svmType,useScaling,useNullRejection,useAutoGamma,gamma,degree,coef0,nu,C,useCrossValidation,kFoldValue);
 }
 
-SVM::SVM(const SVM &rhs) : Classifier( getId() )
+SVM::SVM(const SVM &rhs) : Classifier( SVM::getId() )
 {
     model = NULL;
     param.weight_label = NULL;
@@ -114,8 +114,8 @@ bool SVM::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
-        SVM *ptr = (SVM*)classifier;
+    if( this->getId() == classifier->getId() ){
+        const SVM *ptr = dynamic_cast<const SVM*>(classifier);
         
         this->clear();
         

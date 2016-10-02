@@ -175,7 +175,7 @@ protected:
 
 private:
     static RegisterClassifierModule< LDA > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

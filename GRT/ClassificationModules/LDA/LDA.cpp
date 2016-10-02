@@ -24,20 +24,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string LDA::id = "LDA";
+const std::string LDA::id = "LDA";
 std::string LDA::getId() { return LDA::id; }
 
 //Register the LDA module with the Classifier base class
-RegisterClassifierModule< LDA > LDA::registerModule( getId() );
+RegisterClassifierModule< LDA > LDA::registerModule( LDA::getId() );
 
-LDA::LDA(bool useScaling,bool useNullRejection,Float nullRejectionCoeff) : Classifier( getId() )
+LDA::LDA(bool useScaling,bool useNullRejection,Float nullRejectionCoeff) : Classifier( LDA::getId() )
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
 }
 
-LDA::LDA(const LDA &rhs) : Classifier( getId() )
+LDA::LDA(const LDA &rhs) : Classifier( LDA::getId() )
 {
     *this = rhs;
 }

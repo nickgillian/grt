@@ -27,13 +27,13 @@ GRT_BEGIN_NAMESPACE
 #define SOM_MAX_TARGET 1.0
 
 //Define the string that will be used to identify the object
-std::string SelfOrganizingMap::id = "SelfOrganizingMap";
+const std::string SelfOrganizingMap::id = "SelfOrganizingMap";
 std::string SelfOrganizingMap::getId() { return SelfOrganizingMap::id; }
     
 //Register the SelfOrganizingMap class with the Clusterer base class
-RegisterClustererModule< SelfOrganizingMap > SelfOrganizingMap::registerModule( getId() );
+RegisterClustererModule< SelfOrganizingMap > SelfOrganizingMap::registerModule( SelfOrganizingMap::getId() );
 
-SelfOrganizingMap::SelfOrganizingMap( const UINT networkSize, const UINT networkTypology, const UINT maxNumEpochs, const Float sigmaWeight, const Float alphaStart, const Float alphaEnd ) : Clusterer( getId() )
+SelfOrganizingMap::SelfOrganizingMap( const UINT networkSize, const UINT networkTypology, const UINT maxNumEpochs, const Float sigmaWeight, const Float alphaStart, const Float alphaEnd ) : Clusterer( SelfOrganizingMap::getId() )
 {
     this->numClusters = networkSize;
     this->networkTypology = networkTypology;
@@ -43,9 +43,8 @@ SelfOrganizingMap::SelfOrganizingMap( const UINT networkSize, const UINT network
     this->alphaEnd = alphaEnd;
 }
     
-SelfOrganizingMap::SelfOrganizingMap(const SelfOrganizingMap &rhs) : Clusterer( getId() )
+SelfOrganizingMap::SelfOrganizingMap(const SelfOrganizingMap &rhs) : Clusterer( SelfOrganizingMap::getId() )
 {
-    
     if( this != &rhs ){
         
         this->numClusters = rhs.numClusters;

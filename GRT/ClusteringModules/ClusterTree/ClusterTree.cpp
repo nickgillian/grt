@@ -24,16 +24,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string ClusterTree::id = "ClusterTree";
+const std::string ClusterTree::id = "ClusterTree";
 std::string ClusterTree::getId() { return ClusterTree::id; }
 
 //Register the ClusterTreeNode with the Node base class
 RegisterNode< ClusterTreeNode > ClusterTreeNode::registerModule("ClusterTreeNode");
     
 //Register the ClusterTree module with the Clusterer base class
-RegisterClustererModule< ClusterTree >  ClusterTree::registerModule( getId() );
+RegisterClustererModule< ClusterTree >  ClusterTree::registerModule( ClusterTree::getId() );
 
-ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Clusterer( getId() )
+ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Clusterer( ClusterTree::getId() )
 {
     tree = NULL;
     predictedClusterLabel = 0;
@@ -45,7 +45,7 @@ ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPe
     this->minRMSErrorPerNode = minRMSErrorPerNode;
 }
     
-ClusterTree::ClusterTree(const ClusterTree &rhs) : Clusterer( getId() )
+ClusterTree::ClusterTree(const ClusterTree &rhs) : Clusterer( ClusterTree::getId() )
 {
     tree = NULL;
     predictedClusterLabel = 0;
@@ -64,7 +64,7 @@ ClusterTree& ClusterTree::operator=(const ClusterTree &rhs){
         
         if( rhs.getTrained() ){
             //Deep copy the tree
-            this->tree = (ClusterTreeNode*)rhs.deepCopyTree();
+            this->tree = dynamic_cast<ClusterTreeNode*>( rhs.deepCopyTree() );
         }
         
         this->numSplittingSteps = rhs.numSplittingSteps;
@@ -94,7 +94,7 @@ bool ClusterTree::deepCopyFrom(const Clusterer *clusterer){
         
         if( ptr->getTrained() ){
             //Deep copy the tree
-            this->tree = dynamic_cast<ClusterTreeNode*>(ptr->deepCopyTree());
+            this->tree = dynamic_cast<ClusterTreeNode*>( ptr->deepCopyTree() );
         }
         
         this->numSplittingSteps = ptr->numSplittingSteps;

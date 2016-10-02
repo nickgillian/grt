@@ -24,13 +24,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string Softmax::id = "Softmax";
+const std::string Softmax::id = "Softmax";
 std::string Softmax::getId() { return Softmax::id; }
 
 //Register the Softmax module with the Classifier base class
-RegisterClassifierModule< Softmax >  Softmax::registerModule( getId() );
+RegisterClassifierModule< Softmax >  Softmax::registerModule( Softmax::getId() );
 
-Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minChange,const UINT maxNumEpochs,const UINT batchSize) : Classifier( getId() )
+Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minChange,const UINT maxNumEpochs,const UINT batchSize) : Classifier( Softmax::getId() )
 {
     this->useScaling = useScaling;
     this->learningRate = learningRate;
@@ -40,7 +40,7 @@ Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minC
     classifierMode = STANDARD_CLASSIFIER_MODE;
 }
 
-Softmax::Softmax(const Softmax &rhs) : Classifier( getId() )
+Softmax::Softmax(const Softmax &rhs) : Classifier( Softmax::getId() )
 {
     classifierMode = STANDARD_CLASSIFIER_MODE;
     *this = rhs;
@@ -65,8 +65,8 @@ bool Softmax::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
-        Softmax *ptr = (Softmax*)classifier;
+    if( this->getId() == classifier->getId() ){
+        const Softmax *ptr = dynamic_cast<const Softmax*>(classifier);
         
         this->batchSize = ptr->batchSize;
         this->models = ptr->models;

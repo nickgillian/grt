@@ -20,21 +20,21 @@
 
 #include "Accumulator.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
+
+const std::string Accumulator::id = "Accumulator";
+std::string Accumulator::getId() { return Accumulator::id; }
     
-//Register the Accumulator module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< Accumulator > Accumulator::registerModule("Accumulator");
+//Register the module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< Accumulator > Accumulator::registerModule( Accumulator::getId() );
     
-Accumulator::Accumulator(UINT numDimensions,Float lastValueWeight){
-    featureExtractionType = "Accumulator";
-    debugLog.setProceedingText("[DEBUG Accumulator]");
-    errorLog.setProceedingText("[ERROR Accumulator]");
-    warningLog.setProceedingText("[WARNING Accumulator]");
-    
+Accumulator::Accumulator(const UINT numDimensions,const Float lastValueWeight) : FeatureExtraction( Accumulator::getId() )
+{
     init(numDimensions, lastValueWeight);
 }
     
-Accumulator::Accumulator(const Accumulator &rhs){
+Accumulator::Accumulator(const Accumulator &rhs) : FeatureExtraction( Accumulator::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -58,15 +58,15 @@ bool Accumulator::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Cast the feature extraction pointer to a pointer to your custom feature extraction module
         //Then invoke the equals operator
-        *this = *(Accumulator*)featureExtraction;
+        *this = *dynamic_cast<const Accumulator*>(featureExtraction);
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -170,7 +170,7 @@ bool Accumulator::load( std::fstream &file ){
     return init(numInputDimensions,lastValueWeight);
 }
     
-bool Accumulator::init(UINT numDimensions,Float lastValueWeight){
+bool Accumulator::init(const UINT numDimensions,const Float lastValueWeight){
     
     initialized = false;
     
@@ -195,24 +195,24 @@ bool Accumulator::init(UINT numDimensions,Float lastValueWeight){
     return true;
 }
     
-Float Accumulator::getLastValueWeight(){
+Float Accumulator::getLastValueWeight() const {
     if( !initialized ) return 0;
     return lastValueWeight;
 }
 
-Float Accumulator::getLastValue(){
+Float Accumulator::getLastValue() const {
     if( !initialized ) return 0;
     return lastValue;
 }
     
-bool Accumulator::setLastValueWeight(Float lastValueWeight){
+bool Accumulator::setLastValueWeight(const Float lastValueWeight){
     this->lastValueWeight = lastValueWeight;
     return true;
 }
     
-bool Accumulator::setLastValue(Float lastValue){
+bool Accumulator::setLastValue(const Float lastValue){
     this->lastValue = lastValue;
     return true;
 }
     
-}//End of namespace GRT
+GRT_END_NAMESPACE

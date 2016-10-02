@@ -24,18 +24,18 @@
 GRT_BEGIN_NAMESPACE
 
 //Define the string that will be used to identify the object
-std::string HierarchicalClustering::id = "HierarchicalClustering";
+const std::string HierarchicalClustering::id = "HierarchicalClustering";
 std::string HierarchicalClustering::getId() { return HierarchicalClustering::id; }
     
 //Register the HierarchicalClustering class with the Clusterer base class
-RegisterClustererModule< HierarchicalClustering > HierarchicalClustering::registerModule( getId() );
+RegisterClustererModule< HierarchicalClustering > HierarchicalClustering::registerModule( HierarchicalClustering::getId() );
 
-HierarchicalClustering::HierarchicalClustering() : Clusterer( getId() )
+HierarchicalClustering::HierarchicalClustering() : Clusterer( HierarchicalClustering::getId() )
 {
     M = N = 0;
 }
     
-HierarchicalClustering::HierarchicalClustering(const HierarchicalClustering &rhs) : Clusterer( getId() )
+HierarchicalClustering::HierarchicalClustering(const HierarchicalClustering &rhs) : Clusterer( HierarchicalClustering::getId() )
 {
     *this = rhs;
 }
