@@ -45,6 +45,7 @@ TEST(AdaBoost, TrainBasicDataset) {
 
   EXPECT_TRUE( adaBoost.print() );
 
+  //Test the prediction, we don't care about accuracy here, just that the prediction is successfull
   for(UINT i=0; i<testData.getNumSamples(); i++){
     EXPECT_TRUE( adaBoost.predict( testData[i].getSample() ) );
   }
@@ -58,6 +59,7 @@ TEST(AdaBoost, TrainBasicDataset) {
 
   EXPECT_TRUE( adaBoost.getTrained() );
 
+  //Test the prediction, we don't care about accuracy here, just that the prediction is successfull
   for(UINT i=0; i<testData.getNumSamples(); i++){
     EXPECT_TRUE( adaBoost.predict( testData[i].getSample() ) );
   }
