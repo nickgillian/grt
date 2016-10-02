@@ -27,23 +27,10 @@ GRT_BEGIN_NAMESPACE
 RegisterFeatureExtractionModule< MovementIndex > MovementIndex::registerModule("MovementIndex");
 
 MovementIndex::MovementIndex(UINT bufferLength,UINT numDimensions){
-    
-    classType = "MovementIndex";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG MovementIndex]");
-    errorLog.setProceedingText("[ERROR MovementIndex]");
-    warningLog.setProceedingText("[WARNING MovementIndex]");
     init(bufferLength,numDimensions);
 }
 
 MovementIndex::MovementIndex(const MovementIndex &rhs){
-    
-    classType = "MovementIndex";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG MovementIndex]");
-    errorLog.setProceedingText("[ERROR MovementIndex]");
-    warningLog.setProceedingText("[WARNING MovementIndex]");
-    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -67,15 +54,15 @@ bool MovementIndex::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(MovementIndex*)featureExtraction;
+        *this = *dynamic_cast<const MovementIndex*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

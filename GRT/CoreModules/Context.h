@@ -38,8 +38,8 @@ GRT_BEGIN_NAMESPACE
 class GRT_API Context : public MLBase
 {
 public:
-	Context(void){ 
-        contextType = "NOT_SET"; 
+	Context( const std::string &id = "" ) : MLBase( id, MLBase::CONTEXT )
+    {
         initialized = false; 
         okToContinue = true;
         numInputDimensions = 0;
@@ -68,7 +68,6 @@ public:
             return false;
         }
         
-        this->contextType = context->contextType;
         this->initialized = context->initialized;
         this->okToContinue = context->okToContinue;
         this->numInputDimensions = context->numInputDimensions;

@@ -65,7 +65,7 @@ bool DoubleMovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing)
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const DoubleMovingAverageFilter *ptr = dynamic_cast<const DoubleMovingAverageFilter*>(preProcessing);
         

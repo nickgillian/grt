@@ -55,7 +55,7 @@ GRT_BEGIN_NAMESPACE
 
 class GRT_API FFT : public FeatureExtraction
 {
-    public:
+public:
     enum FFTWindowFunctionOptions{RECTANGULAR_WINDOW=0,BARTLETT_WINDOW,HAMMING_WINDOW,HANNING_WINDOW};
     
     /**

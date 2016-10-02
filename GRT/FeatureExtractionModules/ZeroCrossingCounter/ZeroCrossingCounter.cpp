@@ -27,24 +27,10 @@ GRT_BEGIN_NAMESPACE
 RegisterFeatureExtractionModule< ZeroCrossingCounter > ZeroCrossingCounter::registerModule("ZeroCrossingCounter");
 
 ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode){
-    
-    classType = "ZeroCrossingCounter";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG ZeroCrossingCounter]");
-    errorLog.setProceedingText("[ERROR ZeroCrossingCounter]");
-    warningLog.setProceedingText("[WARNING ZeroCrossingCounter]");
-    
     init(searchWindowSize,deadZoneThreshold,numDimensions,featureMode);
 }
 
 ZeroCrossingCounter::ZeroCrossingCounter(const ZeroCrossingCounter &rhs){
-    
-    classType = "ZeroCrossingCounter";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG ZeroCrossingCounter]");
-    errorLog.setProceedingText("[ERROR ZeroCrossingCounter]");
-    warningLog.setProceedingText("[WARNING ZeroCrossingCounter]");
-    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -71,13 +57,13 @@ bool ZeroCrossingCounter::deepCopyFrom(const FeatureExtraction *featureExtractio
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(ZeroCrossingCounter*)featureExtraction;
+        *this = *dynamic_cast<const ZeroCrossingCounter*>(featureExtraction);
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -89,8 +75,8 @@ bool ZeroCrossingCounter::computeFeatures(const VectorFloat &inputVector){
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     

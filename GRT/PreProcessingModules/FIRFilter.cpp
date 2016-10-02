@@ -85,7 +85,7 @@ bool FIRFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         //Call the equals operator
         *this = *dynamic_cast<const FIRFilter*>(preProcessing);

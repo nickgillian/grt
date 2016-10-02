@@ -93,7 +93,7 @@ bool KMeans::deepCopyFrom(const Clusterer *clusterer){
     
     if( clusterer == NULL ) return false;
     
-    if( this->getClustererType() == clusterer->getClustererType() ){
+    if( this->getId() == clusterer->getId() ){
         //Clone the KMeans values
         const KMeans *ptr = dynamic_cast<const KMeans*>(clusterer);
         

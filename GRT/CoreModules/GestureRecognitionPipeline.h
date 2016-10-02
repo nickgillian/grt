@@ -848,23 +848,90 @@ public:
      @param moduleIndex: the index of the pre processing module you want
      @return returns a pointer to the preprocessing module at the specific moduleIndex, or NULL if the moduleIndex is invalid
      */
-    template <class T> T* getPreProcessingModule(const UINT moduleIndex) const{
-        if( moduleIndex < preProcessingModules.size() ){
-            return (T*)preProcessingModules[ moduleIndex ];
+    template <class T> const T* getPreProcessingModule(const UINT moduleIndex) const{
+        if( moduleIndex < preProcessingModules.getSize() ){
+
+            if( preProcessingModules[ moduleIndex ] == NULL ) return NULL;
+        
+            if( T::getId() == preProcessingModules[ moduleIndex ]->getId() ){
+                return dynamic_cast<const T*>( preProcessingModules[ moduleIndex ] );
+            }
         }
+
+        return NULL;
+    }
+
+    /**
+     Gets a pointer to the preprocessing module at the specific moduleIndex.  You should make sure that the type of the preprocessing module matches the template type. 
+     
+     @param moduleIndex: the index of the pre processing module you want
+     @return returns a pointer to the preprocessing module at the specific moduleIndex, or NULL if the moduleIndex is invalid
+     */
+    template <class T> T* getPreProcessingModule(const UINT moduleIndex) {
+        if( moduleIndex < preProcessingModules.getSize() ){
+
+            if( preProcessingModules[ moduleIndex ] == NULL ) return NULL;
+        
+            if( T::getId() == preProcessingModules[ moduleIndex ]->getId() ){
+                return dynamic_cast<T*>( preProcessingModules[ moduleIndex ] );
+            }
+        }
+
         return NULL;
     }
     
+    /**
+     Gets a const pointer to the feature extraction module at the specific moduleIndex.  You should make sure that the type of the feature extraction module matches the template type. 
+     
+     @param moduleIndex: the index of the feature extraction module you want
+     @return returns a pointer to the feature extraction module at the specific moduleIndex, or NULL if the moduleIndex is invalid
+     */
+    template <class T> const T* getFeatureExtractionModule(const UINT moduleIndex) const{
+        if( moduleIndex < featureExtractionModules.getSize() ){
+
+            if( featureExtractionModules[ moduleIndex ] == NULL ) return NULL;
+        
+            if( T::getId() == featureExtractionModules[ moduleIndex ]->getId() ){
+                return dynamic_cast<const T*>( featureExtractionModules[ moduleIndex ] );
+            }
+        }
+
+        return NULL;
+    }
+
     /**
      Gets a pointer to the feature extraction module at the specific moduleIndex.  You should make sure that the type of the feature extraction module matches the template type. 
      
      @param moduleIndex: the index of the feature extraction module you want
      @return returns a pointer to the feature extraction module at the specific moduleIndex, or NULL if the moduleIndex is invalid
      */
-    template <class T> T* getFeatureExtractionModule(const UINT moduleIndex) const{
-        if( moduleIndex < featureExtractionModules.size() ){
-            return (T*)featureExtractionModules[ moduleIndex ];
+    template <class T> T* getFeatureExtractionModule(const UINT moduleIndex){
+        if( moduleIndex < featureExtractionModules.getSize() ){
+
+            if( featureExtractionModules[ moduleIndex ] == NULL ) return NULL;
+        
+            if( T::getId() == featureExtractionModules[ moduleIndex ]->getId() ){
+                return dynamic_cast<T*>( featureExtractionModules[ moduleIndex ] );
+            }
         }
+
+        return NULL;
+    }
+
+    /**
+     Gets a const pointer to the classifier module. If the classifier has not been set, or the template type T does not match the current
+     classifier type then the function will return NULL.
+     
+     @return returns a pointer to the classifier module, or NULL if the classifier has not been set
+     */
+    template <class T> const T* getClassifier() const{
+        
+        if( classifier == NULL ) return NULL;
+        
+        if( T::getId() == classifier->getId() ){
+            return dynamic_cast<const T*>( classifier );
+        }
+        
         return NULL;
     }
 
@@ -874,14 +941,29 @@ public:
      
      @return returns a pointer to the classifier module, or NULL if the classifier has not been set
      */
-    template <class T> T* getClassifier() const{
+    template <class T> T* getClassifier(){
         
         if( classifier == NULL ) return NULL;
         
-        T temp;
+        if( T::getId() == classifier->getId() ){
+            return dynamic_cast<T*>( classifier );
+        }
         
-        if( temp.getClassifierType() == classifier->getClassifierType() ){
-            return dynamic_cast<T*>(classifier);
+        return NULL;
+    }
+
+    /**
+     Gets a const pointer to the regressifier module.  If the regressifier has not been set, or the template type T does not match the current
+     regressifier type then the function will return NULL.
+     
+     @return returns a pointer to the regressifier module, or NULL if the regressifier has not been set
+     */
+    template <class T> const T* getRegressifier() const{
+        
+        if( regressifier == NULL ) return NULL;
+        
+        if( T::getId() == regressifier->getId() ){
+            return dynamic_cast<const T*>( regressifier );
         }
         
         return NULL;
@@ -893,21 +975,19 @@ public:
      
      @return returns a pointer to the regressifier module, or NULL if the regressifier has not been set
      */
-    template <class T> T* getRegressifier() const{
+    template <class T> T* getRegressifier(){
         
         if( regressifier == NULL ) return NULL;
         
-        T temp;
-        
-        if( temp.getRegressifierType() == regressifier->getRegressifierType() ){
-            return (T*)regressifier;
+        if( T::getId() == regressifier->getId() ){
+            return dynamic_cast<T*>( regressifier );
         }
         
         return NULL;
     }
     
     /**
-     Gets a pointer to the cluster module. If the cluster has not been set, or the template type T does not match the current
+     Gets a const pointer to the cluster module. If the cluster has not been set, or the template type T does not match the current
      cluster type then the function will return NULL.
      
      @return returns a pointer to the cluster module, or NULL if the cluster has not been set
@@ -917,21 +997,59 @@ public:
         if( clusterer == NULL ) return NULL;
         
         if( T::getId() == clusterer->getId() ){
-            return dynamic_cast<const T*>(clusterer);
+            return dynamic_cast<const T*>( clusterer );
+        }
+        
+        return NULL;
+    }
+
+    /**
+     Gets a pointer to the cluster module. If the cluster has not been set, or the template type T does not match the current
+     cluster type then the function will return NULL.
+     
+     @return returns a pointer to the cluster module, or NULL if the cluster has not been set
+     */
+    template <class T> T* getCluster(){
+        
+        if( clusterer == NULL ) return NULL;
+        
+        if( T::getId() == clusterer->getId() ){
+            return dynamic_cast<T*>( clusterer );
         }
         
         return NULL;
     }
     
     /**
+     Gets a const pointer to the post processing module at the specific moduleIndex.  You should make sure that the type of the post processing module matches the template type. 
+     
+     @param moduleIndex: the index of the post processing module you want
+     @return returns a pointer to the post processing module at the specific moduleIndex, or NULL if the moduleIndex is invalid
+     */
+    template <class T> const T* getPostProcessingModule(const UINT moduleIndex) const{
+        if( moduleIndex < postProcessingModules.getSize() ){
+            if( postProcessingModules[ moduleIndex ] == NULL ) return NULL;
+        
+            if( T::getId() == postProcessingModules[ moduleIndex ]->getId() ){
+                return dynamic_cast<const T*>( postProcessingModules[ moduleIndex ] );
+            }
+        }
+        return NULL;
+    }
+
+    /**
      Gets a pointer to the post processing module at the specific moduleIndex.  You should make sure that the type of the post processing module matches the template type. 
      
      @param moduleIndex: the index of the post processing module you want
      @return returns a pointer to the post processing module at the specific moduleIndex, or NULL if the moduleIndex is invalid
      */
-    template <class T> T* getPostProcessingModule(const UINT moduleIndex) const{
+    template <class T> T* getPostProcessingModule(const UINT moduleIndex){
         if( moduleIndex < postProcessingModules.getSize() ){
-            return (T*)postProcessingModules[ moduleIndex ];
+            if( postProcessingModules[ moduleIndex ] == NULL ) return NULL;
+        
+            if( T::getId() == postProcessingModules[ moduleIndex ]->getId() ){
+                return dynamic_cast<T*>( postProcessingModules[ moduleIndex ] );
+            }
         }
         return NULL;
     }
@@ -943,10 +1061,38 @@ public:
      @param moduleIndex: the index of the context module you want
      @return returns a pointer to the context module at the specific contextLevel and moduleIndex, or NULL if the contextLevel or moduleIndex are invalid
      */
-    template <class T> T* getContextModule(const UINT contextLevel,const UINT moduleIndex) const{
+    template <class T> T* const getContextModule(const UINT contextLevel,const UINT moduleIndex) const{
         if( contextLevel < contextModules.getSize() ){
-            if( moduleIndex < contextModules[ contextLevel ].getSize() ){
-                return (T*)contextModules[ contextLevel ][ moduleIndex ];
+            if( moduleIndex >= contextModules[ contextLevel ].getSize() ){
+                return NULL;
+            }
+
+            if( contextModules[ contextLevel ][ moduleIndex ] == NULL ) return NULL;
+        
+            if( T::getId() == contextModules[ contextLevel ][ moduleIndex ]->getId() ){
+                return dynamic_cast<const T*>(contextModules[ contextLevel ][ moduleIndex ]);
+            }
+        }
+        return NULL;
+    }
+
+    /**
+     Gets a pointer to the context module at the specific contextLevel and moduleIndex.  You should make sure that the type of the context module matches the template type. 
+     
+     @param contextLevel: the context level that contains the context module you want
+     @param moduleIndex: the index of the context module you want
+     @return returns a pointer to the context module at the specific contextLevel and moduleIndex, or NULL if the contextLevel or moduleIndex are invalid
+     */
+    template <class T> T* getContextModule(const UINT contextLevel,const UINT moduleIndex){
+        if( contextLevel < contextModules.getSize() ){
+            if( moduleIndex >= contextModules[ contextLevel ].getSize() ){
+                return NULL;
+            }
+
+            if( contextModules[ contextLevel ][ moduleIndex ] == NULL ) return NULL;
+        
+            if( T::getId() == contextModules[ contextLevel ][ moduleIndex ]->getId() ){
+                return dynamic_cast<T*>(contextModules[ contextLevel ][ moduleIndex ]);
             }
         }
         return NULL;

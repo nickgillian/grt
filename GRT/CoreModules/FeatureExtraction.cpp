@@ -25,18 +25,22 @@ GRT_BEGIN_NAMESPACE
     
 FeatureExtraction::StringFeatureExtractionMap* FeatureExtraction::stringFeatureExtractionMap = NULL;
 UINT FeatureExtraction::numFeatureExtractionInstances = 0;
+
+std::string FeatureExtraction::getFeatureExtractionType() const { return MLBase::getId(); } //Legacy
+FeatureExtraction* FeatureExtraction::createInstanceFromString( const std::string &id ){ return create(id); }
+FeatureExtraction* FeatureExtraction::createNewInstance() const{ return create(); }
     
-FeatureExtraction* FeatureExtraction::createInstanceFromString( const std::string &featureExtractionType){
+FeatureExtraction* FeatureExtraction::create( const std::string &id ){
     
-    StringFeatureExtractionMap::iterator iter = getMap()->find( featureExtractionType );
+    StringFeatureExtractionMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
         return NULL;
     }
     return iter->second();
 }
     
-FeatureExtraction* FeatureExtraction::createNewInstance() const{
-    return createInstanceFromString(featureExtractionType);
+FeatureExtraction* FeatureExtraction::create() const{
+    return createInstanceFromString( MLBase::getId() );
 }
     
 FeatureExtraction::FeatureExtraction( const std::string id ) : MLBase( id, MLBase::FEATURE_EXTRACTION )
@@ -160,10 +164,6 @@ bool FeatureExtraction::loadFeatureExtractionSettingsFromFile( std::fstream &fil
     }
     
     return true;
-}
-    
-std::string FeatureExtraction::getFeatureExtractionType() const{ 
-    return featureExtractionType; 
 }
 
 UINT FeatureExtraction::getNumInputDimensions() const{ 

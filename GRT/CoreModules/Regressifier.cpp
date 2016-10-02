@@ -25,8 +25,13 @@ GRT_BEGIN_NAMESPACE
     
 Regressifier::StringRegressifierMap* Regressifier::stringRegressifierMap = NULL;
 UINT Regressifier::numRegressifierInstances = 0;
+
     
-Regressifier* Regressifier::createInstanceFromString( const std::string &id ){
+Regressifier* Regressifier::createNewInstance() const{ return create(); } //Legacy
+Regressifier* Regressifier::createInstanceFromString( const std::string &id ){ return create(id); } //Legacy
+std::string Regressifier::getRegressifierType() const{ return MLBase::getId(); } //Legacy
+    
+Regressifier* Regressifier::create( const std::string &id ){
     
     StringRegressifierMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
@@ -35,13 +40,13 @@ Regressifier* Regressifier::createInstanceFromString( const std::string &id ){
     return iter->second();
 }
     
-Regressifier* Regressifier::createNewInstance() const{
-    return createInstanceFromString( baseId );
+Regressifier* Regressifier::create() const{
+    return createInstanceFromString( MLBase::getId() );
 }
 
 Regressifier* Regressifier::deepCopy() const{
     
-    Regressifier *newInstance = createInstanceFromString( baseId );
+    Regressifier *newInstance = create( baseId );
     
     if( newInstance == NULL ) return NULL;
     
@@ -54,10 +59,6 @@ Regressifier* Regressifier::deepCopy() const{
     
 Regressifier::Regressifier( const std::string &id ) : MLBase( id, MLBase::REGRESSIFIER )
 {
-    debugLog.setProceedingText("[DEBUG" + id + "]");
-    errorLog.setProceedingText("[ERROR" + id + "]");
-    trainingLog.setProceedingText("[TRAINING" + id + "]");
-    warningLog.setProceedingText("[WARNING" + id + "]");
     numOutputDimensions = 0;
     numRegressifierInstances++;
 }
@@ -107,10 +108,6 @@ bool Regressifier::clear(){
     targetVectorRanges.clear();
     
     return true;
-}
-
-std::string Regressifier::getRegressifierType() const{ 
-    return regressifierType; 
 }
     
 VectorFloat Regressifier::getRegressionData() const{ 

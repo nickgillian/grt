@@ -27,24 +27,10 @@ GRT_BEGIN_NAMESPACE
 RegisterFeatureExtractionModule< KMeansQuantizer > KMeansQuantizer::registerModule("KMeansQuantizer");
 
 KMeansQuantizer::KMeansQuantizer(const UINT numClusters){
-    
     this->numClusters = numClusters;
-    classType = "KMeansQuantizer";
-    featureExtractionType = classType;
-    
-    debugLog.setProceedingText("[DEBUG KMeansQuantizer]");
-    errorLog.setProceedingText("[ERROR KMeansQuantizer]");
-    warningLog.setProceedingText("[WARNING KMeansQuantizer]");
 }
 
 KMeansQuantizer::KMeansQuantizer(const KMeansQuantizer &rhs){
-    
-    classType = "KMeansQuantizer";
-    featureExtractionType = classType;
-    
-    debugLog.setProceedingText("[DEBUG KMeansQuantizer]");
-    errorLog.setProceedingText("[ERROR KMeansQuantizer]");
-    warningLog.setProceedingText("[WARNING KMeansQuantizer]");
     
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
@@ -70,16 +56,16 @@ bool KMeansQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Cast the feature extraction pointer to a pointer to your custom feature extraction module
         //Then invoke the equals operator
-        *this = *(KMeansQuantizer*)featureExtraction;
+        *this = *dynamic_cast<const KMeansQuantizer*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

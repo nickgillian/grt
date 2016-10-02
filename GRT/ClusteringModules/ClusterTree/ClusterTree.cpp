@@ -85,16 +85,16 @@ bool ClusterTree::deepCopyFrom(const Clusterer *clusterer){
     
     if( clusterer == NULL ) return false;
     
-    if( this->getClustererType() == clusterer->getClustererType() ){
+    if( this->getId() == clusterer->getId() ){
         
-        ClusterTree *ptr = (ClusterTree*)clusterer;
+        const ClusterTree *ptr = dynamic_cast<const ClusterTree*>(clusterer);
         
         //Clear this tree
         this->clear();
         
         if( ptr->getTrained() ){
             //Deep copy the tree
-            this->tree = (ClusterTreeNode*)ptr->deepCopyTree();
+            this->tree = dynamic_cast<ClusterTreeNode*>(ptr->deepCopyTree());
         }
         
         this->numSplittingSteps = ptr->numSplittingSteps;

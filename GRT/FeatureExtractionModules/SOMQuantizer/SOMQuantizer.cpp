@@ -27,24 +27,10 @@ GRT_BEGIN_NAMESPACE
 RegisterFeatureExtractionModule< SOMQuantizer > SOMQuantizer::registerModule("SOMQuantizer");
 
 SOMQuantizer::SOMQuantizer(const UINT numClusters){
-    
     this->numClusters = numClusters;
-    
-    classType = "SOMQuantizer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG SOMQuantizer]");
-    errorLog.setProceedingText("[ERROR SOMQuantizer]");
-    warningLog.setProceedingText("[WARNING SOMQuantizer]");
 }
 
 SOMQuantizer::SOMQuantizer(const SOMQuantizer &rhs){
-    
-    classType = "SOMQuantizer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG SOMQuantizer]");
-    errorLog.setProceedingText("[ERROR SOMQuantizer]");
-    warningLog.setProceedingText("[WARNING SOMQuantizer]");
-    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -70,16 +56,16 @@ bool SOMQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Cast the feature extraction pointer to a pointer to your custom feature extraction module
         //Then invoke the equals operator
-        *this = *(SOMQuantizer*)featureExtraction;
+        *this = *dynamic_cast<const SOMQuantizer*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

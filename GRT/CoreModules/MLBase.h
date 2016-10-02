@@ -70,7 +70,7 @@ class GRT_API TestResultsObserverManager : public ObserverManager< TestInstanceR
 class GRT_API MLBase : public GRTBase, public Observer< TrainingResult >, public Observer< TestInstanceResult >
 {
 public:
-    enum BaseType{BASE_TYPE_NOT_SET=0,CLASSIFIER,REGRESSIFIER,CLUSTERER,PRE_PROCSSING,POST_PROCESSING,FEATURE_EXTRACTION}; ///<Enum that defines the type of inherited class
+    enum BaseType{BASE_TYPE_NOT_SET=0,CLASSIFIER,REGRESSIFIER,CLUSTERER,PRE_PROCSSING,POST_PROCESSING,FEATURE_EXTRACTION,CONTEXT}; ///<Enum that defines the type of inherited class
 
     /**
     Default MLBase Constructor

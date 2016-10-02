@@ -59,7 +59,7 @@ bool HighPassFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const HighPassFilter *ptr = dynamic_cast<const HighPassFilter*>(preProcessing);
         

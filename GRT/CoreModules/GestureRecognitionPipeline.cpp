@@ -2202,13 +2202,13 @@ bool GestureRecognitionPipeline::save(const std::string &filename) const {
     //Write the module datatype names
     file << "PreProcessingModuleDatatypes:";
     for(UINT i=0; i<getNumPreProcessingModules(); i++){
-        file << "\t" << preProcessingModules[i]->getPreProcessingType();
+        file << "\t" << preProcessingModules[i]->getId();
     }
     file << std::endl;
     
     file << "FeatureExtractionModuleDatatypes:";
     for(UINT i=0; i<getNumFeatureExtractionModules(); i++){
-        file << "\t" << featureExtractionModules[i]->getFeatureExtractionType();
+        file << "\t" << featureExtractionModules[i]->getId();
     }
     file << std::endl;
     
@@ -2216,15 +2216,15 @@ bool GestureRecognitionPipeline::save(const std::string &filename) const {
         case PIPELINE_MODE_NOT_SET:
             break;
         case CLASSIFICATION_MODE:
-            if( getIsClassifierSet() ) file << "ClassificationModuleDatatype:\t" << classifier->getClassifierType() << std::endl;
+            if( getIsClassifierSet() ) file << "ClassificationModuleDatatype:\t" << classifier->getId() << std::endl;
             else file << "ClassificationModuleDatatype:\tCLASSIFIER_NOT_SET" << std::endl;
             break;
         case REGRESSION_MODE:
-            if( getIsRegressifierSet() ) file << "RegressionModuleDatatype:\t" << regressifier->getRegressifierType() << std::endl;
+            if( getIsRegressifierSet() ) file << "RegressionModuleDatatype:\t" << regressifier->getId() << std::endl;
             else file << "RegressionModuleDatatype:\tREGRESSIFIER_NOT_SET" << std::endl;
             break;
         case CLUSTER_MODE:
-            if( getIsClustererSet() ) file << "ClusterModuleDatatype:\t" << clusterer->getClustererType() << std::endl;
+            if( getIsClustererSet() ) file << "ClusterModuleDatatype:\t" << clusterer->getId() << std::endl;
             else file << "ClusterModuleDatatype:\tCLUSTERER_NOT_SET" << std::endl;
             break;
         default:
@@ -2233,7 +2233,7 @@ bool GestureRecognitionPipeline::save(const std::string &filename) const {
     
     file << "PostProcessingModuleDatatypes:";
     for(UINT i=0; i<getNumPostProcessingModules(); i++){
-        file << "\t" << postProcessingModules[i]->getPostProcessingType();
+        file << "\t" << postProcessingModules[i]->getId();
     }
     file << std::endl;
     
@@ -2412,7 +2412,7 @@ bool GestureRecognitionPipeline::load(const std::string &filename){
 	}
     for(UINT i=0; i<numPreprocessingModules; i++){
 		file >> word;
-		preProcessingModules[i] = PreProcessing::createInstanceFromString( word );
+		preProcessingModules[i] = PreProcessing::create( word );
 		if( preProcessingModules[i] == NULL ){
             errorLog << "loadPipelineFromFile(string filename) - Failed to create preprocessing instance from string: " << word << std::endl;
 			file.close();
@@ -2429,7 +2429,7 @@ bool GestureRecognitionPipeline::load(const std::string &filename){
 	}
     for(UINT i=0; i<numFeatureExtractionModules; i++){
 		file >> word;
-		featureExtractionModules[i] = FeatureExtraction::createInstanceFromString( word );
+		featureExtractionModules[i] = FeatureExtraction::create( word );
 		if( featureExtractionModules[i] == NULL ){
             errorLog << "loadPipelineFromFile(string filename) - Failed to create feature extraction instance from string: " << word << std::endl;
 			file.close();
@@ -2451,7 +2451,7 @@ bool GestureRecognitionPipeline::load(const std::string &filename){
 			file >> word;
 			
 			//Initialize the classifier
-			classifier = Classifier::createInstanceFromString( word );
+			classifier = Classifier::create( word );
 			if( classifier == NULL ){
                 errorLog << "loadPipelineFromFile(string filename) - Failed to create classifier instance from string: " << word << std::endl;
 				file.close();
@@ -2469,7 +2469,7 @@ bool GestureRecognitionPipeline::load(const std::string &filename){
 			file >> word;
 			
 			//Initialize the regressifier
-			regressifier = Regressifier::createInstanceFromString( word );
+			regressifier = Regressifier::create( word );
 			if( regressifier == NULL ){
                 errorLog << "loadPipelineFromFile(string filename) - Failed to create regressifier instance from string: " << word << std::endl;
 				file.close();
@@ -2487,7 +2487,7 @@ bool GestureRecognitionPipeline::load(const std::string &filename){
 			file >> word;
 			
 			//Initialize the clusterer
-			clusterer = Clusterer::createInstanceFromString( word );
+			clusterer = Clusterer::create( word );
 			if( clusterer == NULL ){
                 errorLog << "loadPipelineFromFile(string filename) - Failed to create clusterer instance from string: " << word << std::endl;
 				file.close();
@@ -2507,7 +2507,7 @@ bool GestureRecognitionPipeline::load(const std::string &filename){
 	}
 	for(UINT i=0; i<numPostprocessingModules; i++){
 		file >> word;
-		postProcessingModules[i] = PostProcessing::createInstanceFromString( word );
+		postProcessingModules[i] = PostProcessing::create( word );
 	}
 	
 	//Load the preprocessing module data from the file

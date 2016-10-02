@@ -27,24 +27,10 @@ GRT_BEGIN_NAMESPACE
 RegisterFeatureExtractionModule< MovementTrajectoryFeatures > MovementTrajectoryFeatures::registerModule("MovementTrajectoryFeatures");
 
 MovementTrajectoryFeatures::MovementTrajectoryFeatures(UINT trajectoryLength,UINT numCentroids,UINT featureMode,UINT numHistogramBins,UINT numDimensions,bool useTrajStartAndEndValues,bool useWeightedMagnitudeValues){
-    
-    classType = "MovementTrajectoryFeatures";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG MovementTrajectoryFeatures]");
-    errorLog.setProceedingText("[ERROR MovementTrajectoryFeatures]");
-    warningLog.setProceedingText("[WARNING ZeroCrossingCounter]");
-    
     init(trajectoryLength,numCentroids,featureMode,numHistogramBins,numDimensions,useTrajStartAndEndValues,useWeightedMagnitudeValues);
 }
 
 MovementTrajectoryFeatures::MovementTrajectoryFeatures(const MovementTrajectoryFeatures &rhs){
-    
-    classType = "MovementTrajectoryFeatures";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG MovementTrajectoryFeatures]");
-    errorLog.setProceedingText("[ERROR MovementTrajectoryFeatures]");
-    warningLog.setProceedingText("[WARNING ZeroCrossingCounter]");
-    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -74,15 +60,15 @@ bool MovementTrajectoryFeatures::deepCopyFrom(const FeatureExtraction *featureEx
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(MovementTrajectoryFeatures*)featureExtraction;
+        *this = *dynamic_cast<const MovementTrajectoryFeatures*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

@@ -62,7 +62,7 @@ bool LinearRegression::deepCopyFrom(const Regressifier *regressifier){
     
     if( regressifier == NULL ) return false;
     
-    if( this->getRegressifierType() == regressifier->getRegressifierType() ){
+    if( this->getId() == regressifier->getId() ){
         
         const LinearRegression *ptr = dynamic_cast<const LinearRegression*>(regressifier);
         

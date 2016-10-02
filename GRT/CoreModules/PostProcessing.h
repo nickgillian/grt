@@ -114,11 +114,6 @@ public:
      @return returns true if the settings were loaded successfully, false otherwise (the base class always returns false)
      */
     virtual bool loadModelFromFile(std::fstream &file){ return false; }
-	
-    /**
-     @return returns the post processing type as a string, e.g. ClassLabelTimeoutFilter
-     */
-	std::string getPostProcessingType() const;
     
     /**
      @return returns the post processing input mode, this will be one of the PostprocessingInputModes enums
@@ -187,15 +182,19 @@ public:
      @param postProcessingType: the name of the PostProcessing class you want to dynamically create
      @return a pointer to the new PostProcessing instance that was created
      */
-    static PostProcessing* createInstanceFromString(std::string const &postProcessingType);
+    static PostProcessing* create(const std::string &postProcessingType);
     
     /**
      This static function will dynamically create a new PostProcessing instance based on the type of this instance
      */
-    PostProcessing* createNewInstance() const;
+    PostProcessing* create() const;
     
     enum PostprocessingInputModes{INPUT_MODE_NOT_SET=0,INPUT_MODE_PREDICTED_CLASS_LABEL,INPUT_MODE_CLASS_LIKELIHOODS};
     enum PostprocessingOutputModes{OUTPUT_MODE_NOT_SET=0,OUTPUT_MODE_PREDICTED_CLASS_LABEL,OUTPUT_MODE_CLASS_LIKELIHOODS};
+
+    GRT_DEPRECATED_MSG( "createNewInstance is deprecated, use create instead.", PostProcessing* createNewInstance() const );
+    GRT_DEPRECATED_MSG( "createInstanceFromString is deprecated, use create instead.", static PostProcessing* createInstanceFromString( const std::string &id ) );
+    GRT_DEPRECATED_MSG( "getPostProcessingType is deprecated, use getId() instead", std::string getPostProcessingType() const );
     
 protected:
     /**
@@ -236,14 +235,13 @@ private:
     static UINT numPostProcessingInstances;
 };
 
-//These two functions/classes are used to register any new PostProcessing Module with the PostProcessing base class
-template< typename T >  PostProcessing *newPostProcessingModuleInstance() { return new T; }
+template< typename T >  PostProcessing *createNewPostProcessingModule() { return new T; } ///<Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
 template< typename T > 
 class RegisterPostProcessingModule : PostProcessing { 
 public:
-    RegisterPostProcessingModule( std::string const &newPostProcessingModuleName ) { 
-        getMap()->insert( std::pair< std::string, PostProcessing*(*)() >(newPostProcessingModuleName, &newPostProcessingModuleInstance< T > ) );
+    RegisterPostProcessingModule( std::string const &newModuleId ) { 
+        getMap()->insert( std::pair< std::string, PostProcessing*(*)() >(newModuleId, &createNewPostProcessingModule< T > ) );
     }
 };
 

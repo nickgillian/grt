@@ -74,9 +74,9 @@ bool GaussianMixtureModels::deepCopyFrom(const Clusterer *clusterer){
     
     if( clusterer == NULL ) return false;
     
-    if( this->getClustererType() == clusterer->getClustererType() ){
+    if( this->getId() == clusterer->getId() ){
         //Clone the GaussianMixtureModels values
-        GaussianMixtureModels *ptr = (GaussianMixtureModels*)clusterer;
+        const GaussianMixtureModels *ptr = dynamic_cast<const GaussianMixtureModels*>(clusterer);
         
         this->numTrainingSamples = ptr->numTrainingSamples;
         this->loglike = ptr->loglike;

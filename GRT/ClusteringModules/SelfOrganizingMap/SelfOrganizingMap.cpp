@@ -88,7 +88,7 @@ bool SelfOrganizingMap::deepCopyFrom(const Clusterer *clusterer){
     
     if( clusterer == NULL ) return false;
     
-    if( this->getClustererType() == clusterer->getClustererType() ){
+    if( this->getId() == clusterer->getId() ){
         //Clone the SelfOrganizingMap values
         const SelfOrganizingMap *ptr = dynamic_cast<const SelfOrganizingMap*>(clusterer);
         

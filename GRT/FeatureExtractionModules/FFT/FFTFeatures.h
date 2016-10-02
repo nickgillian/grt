@@ -98,40 +98,24 @@ public:
 	 @return true if the FFTFeatures was reset, false otherwise
      */    
     virtual bool reset();
+
+    /**
+    This saves the feature extraction settings to a file.
+    This overrides the save function in the FeatureExtraction base class.
+    
+    @param file: a reference to the file to save the settings to
+    @return returns true if the settings were saved successfully, false otherwise
+    */
+    virtual bool save( std::fstream &file ) const;
     
     /**
-     This saves the feature extraction settings to a file.
-     
-     @param filename: the filename to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile( std::string filename ) const;
+    This loads the feature extraction settings from a file.
+    This overrides the load function in the FeatureExtraction base class.
     
-    /**
-     This saves the feature extraction settings to a file.
-     
-     @param file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool loadModelFromFile( std::string filename );
-    
-    /**
-     This saves the feature extraction settings to a file.
-     This overrides the saveSettingsToFile function in the FeatureExtraction base class.
-     
-     @param file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile( std::fstream &file ) const;
-    
-    /**
-     This loads the feature extraction settings from a file.
-     This overrides the loadSettingsFromFile function in the FeatureExtraction base class.
-     
-     @param file: a reference to the file to load the settings from
-     @return returns true if the settings were loaded successfully, false otherwise
-     */
-    virtual bool loadModelFromFile( std::fstream &file );
+    @param file: a reference to the file to load the settings from
+    @return returns true if the settings were loaded successfully, false otherwise
+    */
+    virtual bool load( std::fstream &file );
     
     /**
      Initializes the FFTFeatures. 
@@ -150,6 +134,8 @@ public:
     bool init(UINT fftWindowSize,UINT numChannelsInFFTSignal,bool computeMaxFreqFeature,bool computeMaxFreqSpectrumRatio,bool computeCentroidFeature,bool computeTopNFreqFeatures,UINT N);
     
     //Tell the compiler we are using the following functions from the FeatureExtraction class to stop hidden virtual function warnings
+    using MLBase::save;
+    using MLBase::load;
     
 protected:
     UINT fftWindowSize;
@@ -165,9 +151,9 @@ protected:
     Float centroidFeature;
     VectorFloat topNFreqFeatures;
     
+private:
     static RegisterFeatureExtractionModule< FFTFeatures > registerModule;
     
-public:
 };
 
 GRT_END_NAMESPACE

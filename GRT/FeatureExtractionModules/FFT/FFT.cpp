@@ -28,17 +28,10 @@ RegisterFeatureExtractionModule< FFT > FFT::registerModule("FFT");
 
 FFT::FFT(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase){
     
-    classType = "FFT";
-    featureExtractionType = classType;
-    
     initialized = false;
     featureDataReady = false;
     numInputDimensions = 0;
     numOutputDimensions = 0;
-    
-    infoLog.setProceedingText("[FFT]");
-    warningLog.setProceedingText("[WARNING FFT]");
-    errorLog.setProceedingText("[ERROR FFT]");
     
     if( isPowerOfTwo(fftWindowSize) && hopSize > 0 && numDimensions > 0 ){
         init(fftWindowSize,hopSize,numDimensions,fftWindowFunction,computeMagnitude,computePhase);
@@ -46,9 +39,6 @@ FFT::FFT(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFuncti
 }
 
 FFT::FFT(const FFT &rhs){
-    infoLog.setProceedingText("[FFT]");
-    warningLog.setProceedingText("[WARNING FFT]");
-    errorLog.setProceedingText("[ERROR FFT]");
     
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
@@ -86,15 +76,15 @@ bool FFT::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(FFT*)featureExtraction;
+        *this = *dynamic_cast<const FFT*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

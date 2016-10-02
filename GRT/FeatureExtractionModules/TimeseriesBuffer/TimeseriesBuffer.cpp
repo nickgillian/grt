@@ -27,24 +27,10 @@ GRT_BEGIN_NAMESPACE
 RegisterFeatureExtractionModule< TimeseriesBuffer > TimeseriesBuffer::registerModule("TimeseriesBuffer");
 
 TimeseriesBuffer::TimeseriesBuffer(UINT bufferSize,UINT numDimensions){
-    
-    classType = "TimeseriesBuffer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG TimeseriesBuffer]");
-    errorLog.setProceedingText("[ERROR TimeseriesBuffer]");
-    warningLog.setProceedingText("[WARNING TimeseriesBuffer]");
-    
     init(bufferSize,numDimensions);
 }
 
 TimeseriesBuffer::TimeseriesBuffer(const TimeseriesBuffer &rhs){
-    
-    classType = "TimeseriesBuffer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG TimeseriesBuffer]");
-    errorLog.setProceedingText("[ERROR TimeseriesBuffer]");
-    warningLog.setProceedingText("[WARNING TimeseriesBuffer]");
-    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -67,15 +53,15 @@ bool TimeseriesBuffer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(TimeseriesBuffer*)featureExtraction;
+        *this = *dynamic_cast<const TimeseriesBuffer*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

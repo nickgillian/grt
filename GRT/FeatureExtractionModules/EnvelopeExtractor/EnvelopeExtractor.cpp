@@ -28,13 +28,7 @@ RegisterFeatureExtractionModule< EnvelopeExtractor > EnvelopeExtractor::register
 
 EnvelopeExtractor::EnvelopeExtractor( const UINT bufferSize,const UINT numDimensions ){
     
-    classType = "EnvelopeExtractor";
-    featureExtractionType = classType;
     this->bufferSize = 0;
-    
-    debugLog.setProceedingText("[DEBUG EnvelopeExtractor]");
-    errorLog.setProceedingText("[ERROR EnvelopeExtractor]");
-    warningLog.setProceedingText("[WARNING EnvelopeExtractor]");
     
     if( bufferSize > 0 && numDimensions > 0 ){
         init( bufferSize, numDimensions );
@@ -43,19 +37,11 @@ EnvelopeExtractor::EnvelopeExtractor( const UINT bufferSize,const UINT numDimens
 
 EnvelopeExtractor::EnvelopeExtractor(const EnvelopeExtractor &rhs){
     
-    classType = "EnvelopeExtractor";
-    featureExtractionType = classType;
-    
-    debugLog.setProceedingText("[DEBUG EnvelopeExtractor]");
-    errorLog.setProceedingText("[ERROR EnvelopeExtractor]");
-    warningLog.setProceedingText("[WARNING EnvelopeExtractor]");
-    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
 
 EnvelopeExtractor::~EnvelopeExtractor(){
-    //Here you should add any specific code to cleanup your custom feature extraction module if needed
 }
 
 EnvelopeExtractor& EnvelopeExtractor::operator=(const EnvelopeExtractor &rhs){
@@ -75,16 +61,16 @@ bool EnvelopeExtractor::deepCopyFrom(const FeatureExtraction *featureExtraction)
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Cast the feature extraction pointer to a pointer to your custom feature extraction module
         //Then invoke the equals operator
-        *this = *(EnvelopeExtractor*)featureExtraction;
+        *this = *dynamic_cast<const EnvelopeExtractor*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

@@ -64,9 +64,9 @@ bool HierarchicalClustering::deepCopyFrom(const Clusterer *clusterer){
     
     if( clusterer == NULL ) return false;
     
-    if( this->getClustererType() == clusterer->getClustererType() ){
+    if( this->getId() == clusterer->getId() ){
         //Clone the HierarchicalClustering values
-        HierarchicalClustering *ptr = (HierarchicalClustering*)clusterer;
+        const HierarchicalClustering *ptr = dynamic_cast<const HierarchicalClustering*>(clusterer);
         
         this->M = ptr->M;
         this->N = ptr->N;

@@ -55,7 +55,7 @@ bool DeadZone::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const DeadZone *ptr = dynamic_cast<const DeadZone*>(preProcessing);
         //Clone the DeadZone values
@@ -66,7 +66,7 @@ bool DeadZone::deepCopyFrom(const PreProcessing *preProcessing){
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }

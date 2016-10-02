@@ -53,7 +53,7 @@ bool LeakyIntegrator::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const LeakyIntegrator *ptr = dynamic_cast<const LeakyIntegrator*>(preProcessing);
         
@@ -65,7 +65,7 @@ bool LeakyIntegrator::deepCopyFrom(const PreProcessing *preProcessing){
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }

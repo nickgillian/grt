@@ -109,7 +109,7 @@ bool MLP::deepCopyFrom(const Regressifier *regressifier){
         return false;
     }
     
-    if( this->getRegressifierType() != regressifier->getRegressifierType() ){
+    if( this->getId() != regressifier->getId() ){
         errorLog << "deepCopyFrom(const Regressifier *regressifier) - regressifier is not the correct type!" << std::endl;
         return false;
     }

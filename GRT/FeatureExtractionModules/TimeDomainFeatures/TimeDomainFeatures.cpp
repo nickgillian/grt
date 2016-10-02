@@ -27,24 +27,10 @@ GRT_BEGIN_NAMESPACE
 RegisterFeatureExtractionModule< TimeDomainFeatures > TimeDomainFeatures::registerModule("TimeDomainFeatures");
 
 TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS){
-    
-    classType = "TimeDomainFeatures";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG TimeDomainFeatures]");
-    errorLog.setProceedingText("[ERROR TimeDomainFeatures]");
-    warningLog.setProceedingText("[WARNING TimeDomainFeatures]");
-    
     init(bufferLength,numFrames,numDimensions,offsetInput,useMean,useStdDev,useEuclideanNorm,useRMS);
 }
 
 TimeDomainFeatures::TimeDomainFeatures(const TimeDomainFeatures &rhs){
-    
-    classType = "TimeDomainFeatures";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG TimeDomainFeatures]");
-    errorLog.setProceedingText("[ERROR TimeDomainFeatures]");
-    warningLog.setProceedingText("[WARNING TimeDomainFeatures]");
-    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -74,15 +60,15 @@ bool TimeDomainFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(TimeDomainFeatures*)featureExtraction;
+        *this = *dynamic_cast<const TimeDomainFeatures*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -94,8 +80,8 @@ bool TimeDomainFeatures::computeFeatures(const VectorFloat &inputVector){
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     

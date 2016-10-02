@@ -27,25 +27,15 @@ GRT_BEGIN_NAMESPACE
 RegisterPostProcessingModule< ClassLabelTimeoutFilter > ClassLabelTimeoutFilter::registerModule("ClassLabelTimeoutFilter");
 
 ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(unsigned long timeoutDuration,UINT filterMode){
-    classType = "ClassLabelTimeoutFilter";
-    postProcessingType = classType;
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
-    debugLog.setProceedingText("[DEBUG ClassLabelTimeoutFilter]");
-    errorLog.setProceedingText("[ERROR ClassLabelTimeoutFilter]");
-    warningLog.setProceedingText("[WARNING ClassLabelTimeoutFilter]");
     init(timeoutDuration,filterMode);
 }
 
 ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(const ClassLabelTimeoutFilter &rhs){
     
-    classType = "ClassLabelTimeoutFilter";
-    postProcessingType = classType;
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
-    debugLog.setProceedingText("[DEBUG ClassLabelTimeoutFilter]");
-    errorLog.setProceedingText("[ERROR ClassLabelTimeoutFilter]");
-    warningLog.setProceedingText("[WARNING ClassLabelTimeoutFilter]");
     
     //Copy the classLabelTimeoutFilter values
     this->filteredClassLabel = rhs.filteredClassLabel;
@@ -80,9 +70,9 @@ bool ClassLabelTimeoutFilter::deepCopyFrom(const PostProcessing *postProcessing)
     
     if( postProcessing == NULL ) return false;
     
-    if( this->getPostProcessingType() == postProcessing->getPostProcessingType() ){
+    if( this->getId() == postProcessing->getId() ){
         
-        ClassLabelTimeoutFilter *ptr = (ClassLabelTimeoutFilter*)postProcessing;
+        const ClassLabelTimeoutFilter *ptr = dynamic_cast<const ClassLabelTimeoutFilter*>(postProcessing);
         
         //Clone the classLabelTimeoutFilter values
         this->filteredClassLabel = ptr->filterMode;
@@ -98,7 +88,7 @@ bool ClassLabelTimeoutFilter::deepCopyFrom(const PostProcessing *postProcessing)
 
 bool ClassLabelTimeoutFilter::process(const VectorDouble &inputVector){
     
-    #ifdef GRT_SAFE_CHECKING
+#ifdef GRT_SAFE_CHECKING
     if( !initialized ){
         errorLog << "process(const VectorDouble &inputVector) - Not initialized!" << std::endl;
         return false;
@@ -108,7 +98,7 @@ bool ClassLabelTimeoutFilter::process(const VectorDouble &inputVector){
         errorLog << "process(const VectorDouble &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
-    #endif
+#endif
     
     //Use only the first value (as that is the predicted class label)
     processedData[0] = filter( (UINT)inputVector[0] );

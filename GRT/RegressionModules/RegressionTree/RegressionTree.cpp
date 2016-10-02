@@ -83,9 +83,9 @@ bool RegressionTree::deepCopyFrom(const Regressifier *regressifier){
     
     if( regressifier == NULL ) return false;
     
-    if( this->getRegressifierType() == regressifier->getRegressifierType() ){
+    if( this->getId() == regressifier->getId() ){
         
-        RegressionTree *ptr = (RegressionTree*)regressifier;
+        const RegressionTree *ptr = dynamic_cast<const RegressionTree*>(regressifier);
         
         //Clear this tree
         this->clear();

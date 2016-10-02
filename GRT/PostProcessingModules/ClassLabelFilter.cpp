@@ -27,25 +27,15 @@ GRT_BEGIN_NAMESPACE
 RegisterPostProcessingModule< ClassLabelFilter > ClassLabelFilter::registerModule("ClassLabelFilter");
 
 ClassLabelFilter::ClassLabelFilter(UINT minimumCount,UINT bufferSize){
-    classType = "ClassLabelFilter";
-    postProcessingType = classType;
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
-    debugLog.setProceedingText("[DEBUG ClassLabelFilter]");
-    errorLog.setProceedingText("[ERROR ClassLabelFilter]");
-    warningLog.setProceedingText("[WARNING ClassLabelFilter]");
     init(minimumCount,bufferSize);
 }
 
 ClassLabelFilter::ClassLabelFilter(const ClassLabelFilter &rhs){
     
-    classType = "ClassLabelFilter";
-    postProcessingType = classType;
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
-    debugLog.setProceedingText("[DEBUG ClassLabelFilter]");
-    errorLog.setProceedingText("[ERROR ClassLabelFilter]");
-    warningLog.setProceedingText("[WARNING ClassLabelFilter]");
     
     //Copy the ClassLabelFilter values
     this->filteredClassLabel = rhs.filteredClassLabel;
@@ -81,9 +71,9 @@ bool ClassLabelFilter::deepCopyFrom(const PostProcessing *postProcessing){
     
     if( postProcessing == NULL ) return false;
     
-    if( this->getPostProcessingType() == postProcessing->getPostProcessingType() ){
+    if( this->getId() == postProcessing->getId() ){
         
-        ClassLabelFilter *ptr = (ClassLabelFilter*)postProcessing;
+        const ClassLabelFilter *ptr = dynamic_cast<const ClassLabelFilter*>(postProcessing);
         
         //Clone the ClassLabelFilter values
         this->filteredClassLabel = ptr->filteredClassLabel;

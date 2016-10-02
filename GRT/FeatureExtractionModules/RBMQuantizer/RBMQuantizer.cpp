@@ -27,23 +27,10 @@ GRT_BEGIN_NAMESPACE
 RegisterFeatureExtractionModule< RBMQuantizer > RBMQuantizer::registerModule("RBMQuantizer");
 
 RBMQuantizer::RBMQuantizer(const UINT numClusters){
-    
     this->numClusters = numClusters;
-    classType = "RBMQuantizer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG RBMQuantizer]");
-    errorLog.setProceedingText("[ERROR RBMQuantizer]");
-    warningLog.setProceedingText("[WARNING RBMQuantizer]");
 }
 
-RBMQuantizer::RBMQuantizer(const RBMQuantizer &rhs){
-    
-    classType = "RBMQuantizer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG RBMQuantizer]");
-    errorLog.setProceedingText("[ERROR RBMQuantizer]");
-    warningLog.setProceedingText("[WARNING RBMQuantizer]");
-    
+RBMQuantizer::RBMQuantizer(const RBMQuantizer &rhs){    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -67,15 +54,15 @@ bool RBMQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //invoke the equals operator
-        *this = *(RBMQuantizer*)featureExtraction;
+        *this = *dynamic_cast<const RBMQuantizer*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

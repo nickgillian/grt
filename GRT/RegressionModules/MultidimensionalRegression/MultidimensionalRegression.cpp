@@ -66,7 +66,7 @@ bool MultidimensionalRegression::deepCopyFrom(const Regressifier *regressifier){
     
     if( regressifier == NULL ) return false;
     
-    if( this->getRegressifierType() == regressifier->getRegressifierType() ){
+    if( this->getId() == regressifier->getId() ){
         
         const MultidimensionalRegression *ptr = dynamic_cast<const MultidimensionalRegression*>(regressifier);
         

@@ -69,7 +69,7 @@ bool SavitzkyGolayFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const SavitzkyGolayFilter *ptr = dynamic_cast<const SavitzkyGolayFilter*>(preProcessing);
         

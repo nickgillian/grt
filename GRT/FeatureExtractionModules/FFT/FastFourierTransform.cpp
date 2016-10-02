@@ -37,10 +37,6 @@ FastFourierTransform::FastFourierTransform(){
 	windowFunction = RECTANGULAR_WINDOW;
 	averagePower = 0;
     
-	infoLog.setProceedingText("[FastFourierTransform]");
-	warningLog.setProceedingText("[WARNING FastFourierTransform]");
-	errorLog.setProceedingText("[ERROR FastFourierTransform]");
-    
 	initFFT();
 }
     
