@@ -28,8 +28,8 @@ GRT_BEGIN_NAMESPACE
     
 class GRT_API WarningLogMessage{
 public:
-    WarningLogMessage(std::string proceedingText = "",std::string message = ""){
-        this->proceedingText = proceedingText;
+    WarningLogMessage(std::string key = "",std::string message = ""){
+        this->key = key;
         this->message = message;
     }
     ~WarningLogMessage(){
@@ -37,21 +37,21 @@ public:
     }
     
     std::string getProceedingText() const {
-        return proceedingText;
+        return key;
     }
     
     std::string getMessage() const {
         return message;
     }
     
-    std::string proceedingText;
+    std::string key;
     std::string message;
 };
 
 class GRT_API WarningLog : public GRT::Log{
 public:
-    WarningLog(std::string proceedingText =""){
-        setProceedingText(proceedingText);
+    WarningLog(const std::string &key = "" ) : Log( key )
+    {
         Log::loggingEnabledPtr = &warningLoggingEnabled;
     }
 
@@ -59,12 +59,7 @@ public:
 
     WarningLog& operator=(const WarningLog &rhs){
         if( this != &rhs ){
-            this->proceedingText = rhs.proceedingText;
-            this->writeProceedingText = rhs.writeProceedingText;
-            this->lastMessage = rhs.lastMessage;
             this->loggingEnabledPtr = &warningLoggingEnabled;
-            this->writeProceedingTextPtr = &writeProceedingText;
-            this->lastMessagePtr = &lastMessage;
         }
         return *this;
     }
@@ -81,7 +76,7 @@ public:
 
 protected:
     virtual void triggerCallback( const std::string &message ) const{
-        observerManager.notifyObservers( WarningLogMessage(proceedingText,message) );
+        observerManager.notifyObservers( WarningLogMessage(key,message) );
         return;
     }
     

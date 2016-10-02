@@ -86,6 +86,7 @@ Classifier::Classifier( const std::string &id ) : MLBase( id, MLBase::CLASSIFIER
     maxLikelihood = 0;
     bestDistance = 0;
     phase = 0;
+    trainingSetAccuracy = 0;
     nullRejectionCoeff = 5;
     numClassifierInstances++;
 }
@@ -122,6 +123,7 @@ bool Classifier::copyBaseVariables(const Classifier *classifier){
     this->classDistances = classifier->classDistances;
     this->nullRejectionThresholds = classifier->nullRejectionThresholds;
 	this->ranges = classifier->ranges;
+    this->trainingSetAccuracy = classifier->trainingSetAccuracy;
     
     return true;
 }
@@ -155,6 +157,7 @@ bool Classifier::clear(){
     maxLikelihood = 0;
     bestDistance = 0;
     phase = 0;
+    trainingSetAccuracy = 0;
     classLikelihoods.clear();
     classDistances.clear();
     nullRejectionThresholds.clear();
@@ -187,6 +190,10 @@ Float Classifier::getMaximumLikelihood() const{
   
 Float Classifier::getPhase() const{
     return phase;
+}
+
+Float Classifier::getTrainingSetAccuracy() const{
+    return trainingSetAccuracy;
 }
     
 Float Classifier::getBestDistance() const{ 

@@ -24,16 +24,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
    
 MatrixFloat::MatrixFloat(){
-    warningLog.setProceedingText("[WARNING MatrixFloat]");
-    errorLog.setProceedingText("[ERROR MatrixFloat]");
+    warningLog.setKey("[WARNING MatrixFloat]");
+    errorLog.setKey("[ERROR MatrixFloat]");
     this->dataPtr = NULL;
     this->rows = 0;
     this->cols = 0;
 }
     
 MatrixFloat::MatrixFloat(const unsigned int rows,const unsigned int cols){
-    warningLog.setProceedingText("[WARNING MatrixFloat]");
-    errorLog.setProceedingText("[ERROR MatrixFloat]");
+    warningLog.setKey("[WARNING MatrixFloat]");
+    errorLog.setKey("[ERROR MatrixFloat]");
     this->dataPtr = NULL;
     if( rows > 0 && cols > 0 ){
         resize(rows, cols);
@@ -41,16 +41,16 @@ MatrixFloat::MatrixFloat(const unsigned int rows,const unsigned int cols){
 }
     
 MatrixFloat::MatrixFloat(const MatrixFloat &rhs){
-    warningLog.setProceedingText("[WARNING MatrixFloat]");
-    errorLog.setProceedingText("[ERROR MatrixFloat]");
+    warningLog.setKey("[WARNING MatrixFloat]");
+    errorLog.setKey("[ERROR MatrixFloat]");
     this->dataPtr = NULL;
     this->rowPtr = NULL;
     this->copy( rhs );
 }
     
 MatrixFloat::MatrixFloat(const Matrix< Float > &rhs){
-    warningLog.setProceedingText("[WARNING MatrixFloat]");
-    errorLog.setProceedingText("[ERROR MatrixFloat]");
+    warningLog.setKey("[WARNING MatrixFloat]");
+    errorLog.setKey("[ERROR MatrixFloat]");
     this->dataPtr = NULL;
     this->rowPtr = NULL;
     this->copy( rhs );

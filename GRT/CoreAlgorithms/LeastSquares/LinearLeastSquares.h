@@ -39,14 +39,7 @@ GRT_BEGIN_NAMESPACE
 
 class LinearLeastSquares : public MLBase{
 public:
-    LinearLeastSquares() {
-        classType = "LinearLeastSquares";
-        infoLog.setProceedingText("[LinearLeastSquares]");
-        debugLog.setProceedingText("[DEBUG LinearLeastSquares]");
-        errorLog.setProceedingText("[ERROR LinearLeastSquares]");
-        trainingLog.setProceedingText("[TRAINING LinearLeastSquares]");
-        warningLog.setProceedingText("[WARNING LinearLeastSquares]");
-        
+    LinearLeastSquares() : MLBase("LinearLeastSquares") {        
         m = 0;
         b = 0;
         r = 0;

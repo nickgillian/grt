@@ -32,10 +32,10 @@ ClassificationData::ClassificationData(const UINT numDimensions,const std::strin
     useExternalRanges = false;
     allowNullGestureClass = true;
     if( numDimensions > 0 ) setNumDimensions( numDimensions );
-    infoLog.setProceedingText("[ClassificationData]");
-    debugLog.setProceedingText("[DEBUG ClassificationData]");
-    errorLog.setProceedingText("[ERROR ClassificationData]");
-    warningLog.setProceedingText("[WARNING ClassificationData]");
+    infoLog.setKey("[ClassificationData]");
+    debugLog.setKey("[DEBUG ClassificationData]");
+    errorLog.setKey("[ERROR ClassificationData]");
+    warningLog.setKey("[WARNING ClassificationData]");
 }
 
 ClassificationData::ClassificationData(const ClassificationData &rhs){

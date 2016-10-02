@@ -31,57 +31,82 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief The Log class provides the base class for all GRT logging functionality.  The log 
+*/
 class GRT_API Log{
 public:
-    Log(std::string proceedingText = ""){
-        setProceedingText(proceedingText);
-        loggingEnabledPtr = NULL;
+    typedef std::basic_ostream<char, std::char_traits<char> > CoutType; ///< this is the type of std::cout
+    typedef CoutType& (*StandardEndLine)(CoutType&); ///< this is the function signature of std::endl
+
+    Log(const std::string &key = ""){
+        setKey(key);
         instanceLoggingEnabled = true;
-        writeProceedingText = true;
-        writeProceedingTextPtr = &writeProceedingText;
+        writeKey = true;
+        loggingEnabledPtr = &instanceLoggingEnabled;
+        writeKeyPtr = &writeKey;
         lastMessagePtr = &lastMessage;
+    }
+
+    Log(const Log &rhs){
+        this->key = rhs.key;
+        this->writeKey = rhs.writeKey;
+        this->lastMessage = rhs.lastMessage;
+        this->instanceLoggingEnabled = rhs.instanceLoggingEnabled;
+        this->loggingEnabledPtr = &(this->instanceLoggingEnabled);
+        this->writeKeyPtr = &(this->writeKey);
+        this->lastMessagePtr = &(this->lastMessage);
     }
 
     virtual ~Log(){}
 
-    template < class T >
-    const Log& operator<< (const T val ) const{
-
-#ifdef GRT_CXX11_ENABLED
-        std::unique_lock<std::mutex> lock( logMutex );
-#endif
-        
-        if( *loggingEnabledPtr && instanceLoggingEnabled ){
-            if( *writeProceedingTextPtr ){
-                *writeProceedingTextPtr = false;
-                std::cout << proceedingText.c_str();
-                *lastMessagePtr = "";
-            }
-            std::cout << val;
-            std::stringstream stream;
-            stream << val;
-            *lastMessagePtr += stream.str();
+    Log& operator=(const Log &rhs){
+        if( this != &rhs ){
+            this->key = rhs.key;
+            this->writeKey = rhs.writeKey;
+            this->lastMessage = rhs.lastMessage;
+            this->instanceLoggingEnabled = rhs.instanceLoggingEnabled;
+            this->loggingEnabledPtr = &(this->instanceLoggingEnabled);
+            this->writeKeyPtr = &(this->writeKey);
+            this->lastMessagePtr = &(this->lastMessage);
         }
         return *this;
     }
 
-    // this is the type of std::cout
-    typedef std::basic_ostream<char, std::char_traits<char> > CoutType;
-    
-    // this is the function signature of std::endl
-    typedef CoutType& (*StandardEndLine)(CoutType&);
-    
+    template < class T >
+    const Log& operator<< (const T &val ) const{
+
+#ifdef GRT_CXX11_ENABLED
+        std::unique_lock<std::mutex> lock( logMutex );
+#endif
+        if( !logLoggingEnabled ) return *this; //If the base class global logging is disabled, then there is nothing to do
+        
+        if( *loggingEnabledPtr && instanceLoggingEnabled ){
+            if( *writeKeyPtr ){
+                *writeKeyPtr = false;
+                std::cout << key.c_str();
+                *lastMessagePtr = ""; //Reset the last message
+            }
+            std::cout << val;
+            std::stringstream stream;
+            stream << val;
+            *lastMessagePtr += stream.str(); //Update the last message
+        }
+        return *this;
+    }
+
     // define an operator<< to take in std::endl
     const Log& operator<<(const StandardEndLine manip) const{
 
 #ifdef GRT_CXX11_ENABLED
         std::unique_lock<std::mutex> lock( logMutex );
 #endif
+        if( !logLoggingEnabled ) return *this; //If the base class global logging is disabled, then there is nothing to do
 
         if( *loggingEnabledPtr && instanceLoggingEnabled ){
             // call the function, but we cannot return it's value
             manip(std::cout);
-            *writeProceedingTextPtr = true;
+            *writeKeyPtr = true; //The message is now complete, so toggle back the key
             
             //Trigger any logging callbacks
             triggerCallback( lastMessage );
@@ -91,18 +116,38 @@ public:
     }
 
     //Getters
-    virtual bool getLoggingEnabled() const{ return false; }
+    virtual bool getLoggingEnabled() const{ return logLoggingEnabled; }
     
     bool getInstanceLoggingEnabled() const { return instanceLoggingEnabled; };
 
-    std::string getProceedingText() const{ return proceedingText; }
+    std::string getProceedingText() const{ return key; }
 
-    virtual std::string getLastMessage() const{ return lastMessage; }
     
-    //Setters
-    void setProceedingText(const std::string &proceedingText){
-        if( proceedingText.length() == 0 ) this->proceedingText = "";
-        else this->proceedingText = proceedingText + " ";
+    /**
+     @brief returns the key that gets written at the start of each message
+     @return returns the key used to tag each message
+    */
+    virtual std::string getKey() const {
+        return key;
+    }
+
+    /**
+     @brief returns the last message written by the log
+     @return returns a string containing the last message written by the log
+    */
+    virtual std::string getLastMessage() const{ 
+        return lastMessage; 
+    }
+    
+    /**
+     @brief sets the key that gets written at the start of each message, this will be written in the format 'key message'. The key can be empty.
+     @param key: the new key, this can be empty
+     @return returns true if the key was updated
+    */
+    virtual bool setKey(const std::string &key){
+        if( key.length() == 0 ) this->key = "";
+        else this->key = key + " "; //Add a space to ensure pretty logging
+        return true;
     }
     
     bool setEnableInstanceLogging(bool loggingEnabled){
@@ -110,10 +155,16 @@ public:
         return true;
     }
 
+    GRT_DEPRECATED_MSG("setProceedingText is deprecated, use setKey instead", void setProceedingText(std::string proceedingText) );
+
 protected:
-    virtual void triggerCallback( const std::string &message ) const{
-        return;
-    }
+    /**
+     @brief This callback can be used to propagate messages to other interfaces (e.g., a GUI built on top of the GRT). It gets triggered anytime
+     a message is ended (with std::endl), the message will contain the full message + the log key. To use this, inherit from the log base class
+     and overwrite the contents of this virtual function.
+     @param message: the message from the latest log
+    */
+    virtual void triggerCallback( const std::string &message ) const{ return; }
 
     template< class T >
     std::string to_str( const T &val ) const {
@@ -122,13 +173,16 @@ protected:
         return s.str();
     }
     
-    std::string proceedingText;
-    std::string lastMessage;
-    bool instanceLoggingEnabled;
+    std::string key; ///<The key that will be written at the start of each log
+    std::string lastMessage; ///<The last message written
+    bool writeKey; ///<If true, then the key will be written at the start of each log message
+    bool instanceLoggingEnabled; ///<If true, then this instance should log messages
+
     bool *loggingEnabledPtr;
-    bool *writeProceedingTextPtr;
+    bool *writeKeyPtr;
     std::string *lastMessagePtr;
-    bool writeProceedingText;
+
+    static bool logLoggingEnabled; ///<This controls logging across all Log instances, as opposed to a single instance
 
 #ifdef GRT_CXX11_ENABLED
     static std::mutex logMutex;

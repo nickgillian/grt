@@ -112,14 +112,7 @@ template< class T >
 class GridSearch : public MLBase{
 public:
     enum SearchType {MaxValueSearch=0,MinValueSearch};
-    GridSearch() {
-        classType = "GridSearch";
-        infoLog.setProceedingText("[GridSearch]");
-        debugLog.setProceedingText("[DEBUG GridSearch]");
-        errorLog.setProceedingText("[ERROR GridSearch");
-        trainingLog.setProceedingText("[TRAINING GridSearch]");
-        warningLog.setProceedingText("[WARNING GridSearch]");
-    }
+    GridSearch() : MLBase("GridSearch") {}
     
     virtual ~GridSearch(){
         

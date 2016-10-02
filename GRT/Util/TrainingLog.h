@@ -28,8 +28,8 @@ GRT_BEGIN_NAMESPACE
     
 class GRT_API TrainingLogMessage{
 public:
-    TrainingLogMessage(std::string proceedingText = "",std::string message = ""){
-        this->proceedingText = proceedingText;
+    TrainingLogMessage(std::string key = "",std::string message = ""){
+        this->key = key;
         this->message = message;
     }
     ~TrainingLogMessage(){
@@ -37,31 +37,29 @@ public:
     }
     
     std::string getProceedingText() const {
-        return proceedingText;
+        return key;
     }
     
     std::string getMessage() const {
         return message;
     }
     
-    std::string proceedingText;
+    std::string key;
     std::string message;
 };
 
 class GRT_API TrainingLog : public Log{
 public:
-    TrainingLog(std::string proceedingText = ""){ setProceedingText(proceedingText); Log::loggingEnabledPtr = &trainingLoggingEnabled; }
+    TrainingLog( const std::string &key = "" ) : Log( key )
+    {
+        Log::loggingEnabledPtr = &trainingLoggingEnabled; 
+    }
 
     virtual ~TrainingLog(){}
 
     TrainingLog& operator=(const TrainingLog &rhs){
         if( this != &rhs ){
-            this->proceedingText = rhs.proceedingText;
-            this->writeProceedingText = rhs.writeProceedingText;
-            this->lastMessage = rhs.lastMessage;
             this->loggingEnabledPtr = &trainingLoggingEnabled;
-            this->writeProceedingTextPtr = &writeProceedingText;
-            this->lastMessagePtr = &lastMessage;
         }
         return *this;
     }
@@ -78,7 +76,7 @@ public:
     
 protected:
     virtual void triggerCallback( const std::string &message ) const{
-        observerManager.notifyObservers( TrainingLogMessage(proceedingText,message) );
+        observerManager.notifyObservers( TrainingLogMessage(key,message) );
         return;
     }
     

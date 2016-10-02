@@ -23,8 +23,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
     
-GRTBase::GRTBase(void):classType(""),debugLog("[DEBUG]"),errorLog("[ERROR]"),warningLog("[WARNING]"){
-
+GRTBase::GRTBase(const std::string &id):classType(id){
+    if( id == "" ){
+        infoLog.setKey("[" + id + "]");
+        debugLog.setKey("[DEBUG " + id + "]");
+        errorLog.setKey("[ERROR " + id + "]");
+        warningLog.setKey("[WARNING " + id + "]");
+    }else{
+        infoLog.setKey("[" + id + "]");
+        debugLog.setKey("[DEBUG]");
+        errorLog.setKey("[ERROR]");
+        warningLog.setKey("[WARNING]");
+    }
 }
     
 GRTBase::~GRTBase(void){

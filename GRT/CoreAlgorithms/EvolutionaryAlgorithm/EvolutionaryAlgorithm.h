@@ -46,7 +46,8 @@ public:
      @param populationSize: the number of individuals in the population. Default value = 0
      @param geneSize: the number of elements in each individuals gene. Default value = 0
      */
-    EvolutionaryAlgorithm(const UINT populationSize = 0,const UINT geneSize = 0){
+    EvolutionaryAlgorithm(const UINT populationSize = 0,const UINT geneSize = 0) : MLBase("EVO")
+    {
         maxIteration = 1000;
         minNumIterationsNoChange = 1;
         storeRate = 1;
@@ -59,10 +60,6 @@ public:
         useElitism = true;
         storeHistory = true;
         baiseWeights = true;
-        
-        errorLog.setProceedingText("[EVO ERROR]");
-        trainingLog.setProceedingText("[EVO TRAINING]");
-        warningLog.setProceedingText("[EVO WARNING]");
         
         initPopulation( populationSize, geneSize );
     }

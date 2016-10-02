@@ -573,6 +573,20 @@ public:
     @return returns true if the derived class type is CLUSTERER, false otherwise
     */
     bool getIsBaseTypeClusterer() const;
+
+    /**
+    Gets the logging state for the training log, note this returns the logging state for this specific instance of the training log, not the global TrainingLog state.
+    
+    @return returns true if logging is enabled, false otherwise
+    */
+    bool getTrainingLoggingEnabled() const;
+
+    /**
+    Gets the logging state for the testing log, note this returns the logging state for this specific instance of the training log, not the global TestingLog state.
+    
+    @return returns true if logging is enabled, false otherwise
+    */
+    bool getTestingLoggingEnabled() const;
     
     /**
     Sets if scaling should be used during the training and prediction phases.

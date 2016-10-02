@@ -43,12 +43,12 @@ MLBase::MLBase( const std::string &id, const BaseType type ){
     rmsTrainingError = 0;
     rmsValidationError = 0;
     totalSquaredTrainingError = 0;
-    infoLog.setProceedingText("[" + id + "]");
-    debugLog.setProceedingText("[DEBUG" + id + "]");
-    errorLog.setProceedingText("[ERROR" + id + "]");
-    warningLog.setProceedingText("[WARNING" + id + "]");
-    trainingLog.setProceedingText("[TRAINING" + id + "]");
-    testingLog.setProceedingText("[TESTING" + id + "]");
+    infoLog.setKey("[" + id + "]");
+    debugLog.setKey("[DEBUG " + id + "]");
+    errorLog.setKey("[ERROR " + id + "]");
+    warningLog.setKey("[WARNING " + id + "]");
+    trainingLog.setKey("[TRAINING " + id + "]");
+    testingLog.setKey("[TESTING " + id + "]");
 }
 
 MLBase::~MLBase(void){
@@ -288,6 +288,16 @@ bool MLBase::getIsBaseTypeRegressifier() const{ return baseType==REGRESSIFIER; }
 bool MLBase::getIsBaseTypeClusterer() const{ return baseType==CLUSTERER; }
 
 bool MLBase::enableScaling(bool useScaling){ this->useScaling = useScaling; return true; }
+
+bool MLBase::getUseValidationSet() const { return useValidationSet; }
+
+bool MLBase::getTrainingLoggingEnabled() const {
+    return trainingLog.loggingEnabled();
+}
+
+bool MLBase::getTestingLoggingEnabled() const {
+    return testingLog.loggingEnabled();
+}
 
 bool MLBase::setMaxNumEpochs(const UINT maxNumEpochs){
     if( maxNumEpochs == 0 ){

@@ -28,8 +28,8 @@ GRT_BEGIN_NAMESPACE
     
 class GRT_API InfoLogMessage{
 public:
-    InfoLogMessage(std::string proceedingText = "",std::string message = ""){
-        this->proceedingText = proceedingText;
+    InfoLogMessage(std::string key = "",std::string message = ""){
+        this->key = key;
         this->message = message;
     }
     ~InfoLogMessage(){
@@ -37,29 +37,29 @@ public:
     }
     
     std::string getProceedingText() const {
-        return proceedingText;
+        return key;
     }
     
     std::string getMessage() const {
         return message;
     }
     
-    std::string proceedingText;
+    std::string key;
     std::string message;
 };
 
 class GRT_API InfoLog : public Log{
 public:
-    InfoLog(std::string proceedingText = ""){ setProceedingText(proceedingText); Log::loggingEnabledPtr = &infoLoggingEnabled; }
+    InfoLog( const std::string &key = "" ) : Log( key )
+    { 
+        Log::loggingEnabledPtr = &infoLoggingEnabled; 
+    }
 
     virtual ~InfoLog(){}
 
     InfoLog& operator=(const InfoLog &rhs){
         if( this != &rhs ){
-            this->proceedingText = rhs.proceedingText;
-            this->writeProceedingText = rhs.writeProceedingText;
             this->loggingEnabledPtr = &infoLoggingEnabled;
-            this->writeProceedingTextPtr = &writeProceedingText;
         }
         return *this;
     }
@@ -76,7 +76,7 @@ public:
 
 protected:
     virtual void triggerCallback( const std::string &message ) const{
-        observerManager.notifyObservers( InfoLogMessage(proceedingText,message) );
+        observerManager.notifyObservers( InfoLogMessage(key,message) );
         return;
     }
     

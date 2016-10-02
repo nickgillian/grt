@@ -549,6 +549,13 @@ public:
     Float getPhase() const;
 
     /**
+    This function returns the estimated training set accuracy from the most recent round of training.  This value is only relevant if the classifier has been trained.
+    
+    @return Float representing the training set accuracy
+    */
+    Float getTrainingSetAccuracy() const;
+
+    /**
 	 This function returns the cross validation value from the most recent cross validation test.  If the pipeline is in prediction mode, then the cross
      validation accuracy will be the average accuracy across each fold of testing. If the pipeline is in regression mode, then the cross validation 
      accuracy will be the average RMS error across each fold of testing.

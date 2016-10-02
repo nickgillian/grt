@@ -2786,6 +2786,13 @@ Float GestureRecognitionPipeline::getPhase() const{
     }
     return 0;
 }
+
+Float GestureRecognitionPipeline::getTrainingSetAccuracy() const{
+    if( getIsClassifierSet() ){
+        return classifier->getTrainingSetAccuracy();
+    }
+    return 0;
+}
     
 Float GestureRecognitionPipeline::getCrossValidationAccuracy() const{ 
     return (getIsClassifierSet()||getIsRegressifierSet() ? testAccuracy : 0);
@@ -3663,13 +3670,13 @@ std::string GestureRecognitionPipeline::getModelAsString() const{
             break;
         case CLASSIFICATION_MODE:
             if( getIsClassifierSet() ){
-                model += "Classifier: " + classifier->getClassifierType() + "\n";
+                model += "Classifier: " + classifier->getId() + "\n";
                 model += classifier->getModelAsString();
             }
             break;
         case REGRESSION_MODE:
             if( getIsRegressifierSet() ){
-                model += "Regressifier: " + regressifier->getRegressifierType() + "\n";
+                model += "Regressifier: " + regressifier->getId() + "\n";
                 model += regressifier->getModelAsString();
             }
             break;

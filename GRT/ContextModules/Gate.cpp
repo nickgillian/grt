@@ -30,9 +30,9 @@ Gate::Gate(bool gateOpen){
     contextType = "GATE";
     this->gateOpen = gateOpen;
     initialized = true;
-    debugLog.setProceedingText("[DEBUG Gate]");
-    errorLog.setProceedingText("[ERROR Gate]");
-    warningLog.setProceedingText("[WARNING Gate]");
+    debugLog.setKey("[DEBUG Gate]");
+    errorLog.setKey("[ERROR Gate]");
+    warningLog.setKey("[WARNING Gate]");
 }
 
 Gate::~Gate(){

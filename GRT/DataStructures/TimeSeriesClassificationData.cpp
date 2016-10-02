@@ -24,9 +24,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 TimeSeriesClassificationData::TimeSeriesClassificationData(UINT numDimensions,std::string datasetName,std::string infoText){
-    debugLog.setProceedingText("[DEBUG TSCD]");
-    errorLog.setProceedingText("[ERROR TSCD]");
-    warningLog.setProceedingText("[WARNING TSCD]");
+    debugLog.setKey("[DEBUG TSCD]");
+    errorLog.setKey("[ERROR TSCD]");
+    warningLog.setKey("[WARNING TSCD]");
 
     this->numDimensions = numDimensions;
     this->datasetName = datasetName;
@@ -42,9 +42,9 @@ TimeSeriesClassificationData::TimeSeriesClassificationData(UINT numDimensions,st
 
 TimeSeriesClassificationData::TimeSeriesClassificationData(const TimeSeriesClassificationData &rhs){
     
-    debugLog.setProceedingText("[DEBUG TSCD]");
-    errorLog.setProceedingText("[ERROR TSCD]");
-    warningLog.setProceedingText("[WARNING TSCD]");
+    debugLog.setKey("[DEBUG TSCD]");
+    errorLog.setKey("[ERROR TSCD]");
+    warningLog.setKey("[WARNING TSCD]");
     
     *this = rhs;
 }

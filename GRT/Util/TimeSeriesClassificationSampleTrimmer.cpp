@@ -26,9 +26,8 @@ GRT_BEGIN_NAMESPACE
 TimeSeriesClassificationSampleTrimmer::TimeSeriesClassificationSampleTrimmer(Float trimThreshold,Float maximumTrimPercentage){
     this->trimThreshold = trimThreshold;
     this->maximumTrimPercentage = maximumTrimPercentage;
-    debugLog.setProceedingText("[DEBUG TimeSeriesTrimmer]");
-    warningLog.setProceedingText("[WARNING TimeSeriesTrimmer]");
-    errorLog.setProceedingText("[ERROR TimeSeriesTrimmer]");
+    warningLog.setKey("[WARNING TimeSeriesTrimmer]");
+    errorLog.setKey("[ERROR TimeSeriesTrimmer]");
 }
 
 TimeSeriesClassificationSampleTrimmer::~TimeSeriesClassificationSampleTrimmer(){}

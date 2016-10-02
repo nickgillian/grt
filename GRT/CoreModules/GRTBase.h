@@ -54,8 +54,9 @@ class GRT_API GRTBase
 public:
     /**
      Default GRTBase Constructor
+     @param id: a string representing the class ID of the inheriting type
      */
-	GRTBase(void);
+	GRTBase(const std::string &id="");
     
     /**
      Default GRTBase Destructor
@@ -168,8 +169,7 @@ protected:
     DebugLog debugLog;
     ErrorLog errorLog;
     InfoLog infoLog;
-    WarningLog warningLog;
-    
+    WarningLog warningLog;  
 };
 
 GRT_END_NAMESPACE

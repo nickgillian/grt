@@ -39,13 +39,7 @@ GRT_BEGIN_NAMESPACE
 
 class MeanShift : public MLBase{
 public:
-    MeanShift() {
-        classType = "MeanShift";
-        infoLog.setProceedingText("[MeanShift]");
-        debugLog.setProceedingText("[DEBUG MeanShift]");
-        errorLog.setProceedingText("[ERROR MeanShift]");
-        trainingLog.setProceedingText("[TRAINING MeanShift]");
-        warningLog.setProceedingText("[WARNING MeanShift]");
+    MeanShift() : MLBase("MeanShift") {
     }
     
     virtual ~MeanShift(){

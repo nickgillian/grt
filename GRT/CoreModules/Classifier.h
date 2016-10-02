@@ -139,6 +139,13 @@ public:
     @return Float representing the gesture phase value from the most likely class from the most recent prediction
     */
     Float getPhase() const;
+
+    /**
+    This function returns the estimated training set accuracy from the most recent round of training.  This value is only relevant if the classifier has been trained.
+    
+    @return Float representing the training set accuracy
+    */
+    Float getTrainingSetAccuracy() const;
     
     /**
     Gets the number of classes in trained model.
@@ -322,6 +329,7 @@ protected:
     Float maxLikelihood;
     Float bestDistance;
     Float phase;
+    Float trainingSetAccuracy;
     VectorFloat classLikelihoods;
     VectorFloat classDistances;
     VectorFloat nullRejectionThresholds;

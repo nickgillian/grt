@@ -115,22 +115,27 @@ bool AdaBoost::train_(ClassificationData &trainingData){
         errorLog << "train_(ClassificationData &trainingData) - There are not enough training samples to train a model! Number of samples: " << trainingData.getNumSamples()  << std::endl;
         return false;
     }
-    
+
     numInputDimensions = trainingData.getNumDimensions();
     numOutputDimensions = trainingData.getNumClasses();
     numClasses = trainingData.getNumClasses();
-    const UINT M = trainingData.getNumSamples();
     const UINT POSITIVE_LABEL = WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL;
     const UINT NEGATIVE_LABEL = WEAK_CLASSIFIER_NEGATIVE_CLASS_LABEL;
     Float alpha = 0;
     const Float beta = 0.001;
     Float epsilon = 0;
     TrainingResult trainingResult;
+    ClassificationData validationData;
     
-    const UINT K = (UINT)weakClassifiers.size();
+    const UINT K = weakClassifiers.getSize();
     if( K == 0 ){
         errorLog << "train_(ClassificationData &trainingData) - No weakClassifiers have been set. You need to set at least one weak classifier first." << std::endl;
         return false;
+    }
+
+    //Pass the logging state onto the weak classifiers
+    for(UINT k=0; k<K; k++){
+        weakClassifiers[k]->setTrainingLoggingEnabled( this->getTrainingLoggingEnabled() );
     }
     
     classLabels.resize(numClasses);
@@ -141,7 +146,14 @@ bool AdaBoost::train_(ClassificationData &trainingData){
     if( useScaling ){
         trainingData.scale(ranges,0,1);
     }
-    
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
+    }
+
+    const UINT M = trainingData.getNumSamples();
+    trainingLog << "Training AdaBoost model, num training examples: " << M << ", num validation examples: " << validationData.getNumSamples() << ", num classes: " << numClasses << ", num weak learners: " << K << std::endl;
+
     //Create the weights vector
     VectorFloat weights(M);
     
@@ -272,7 +284,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
         models[k].normalizeWeights();
     }
     
-    //Flag that the model has been trained
+    //Flag that the model has been fully trained
     trained = true;
     
     //Setup the data for prediction
@@ -280,7 +292,52 @@ bool AdaBoost::train_(ClassificationData &trainingData){
     maxLikelihood = 0;
     classLikelihoods.resize(numClasses);
     classDistances.resize(numClasses);
-    
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially
+    bool scalingState = useScaling;
+    useScaling = false;
+    for(UINT i=0; i<M; i++){
+        if( !predict_( trainingData[i].getSample() ) ){
+            trained = false;
+            errorLog << "Failed to run prediction for training sample: " << i << "! Failed to fully train model!" << std::endl;
+            return false;
+        }
+
+        if( predictedClassLabel == trainingData[i].getClassLabel() ){
+            trainingSetAccuracy++;
+        }
+    }
+
+    if( useValidationSet ){
+        for(UINT i=0; i<validationData.getNumSamples(); i++){
+            if( !predict_( validationData[i].getSample() ) ){
+                trained = false;
+                errorLog << "Failed to run prediction for validation sample: " << i << "! Failed to fully train model!" << std::endl;
+                return false;
+            }
+
+            if( predictedClassLabel == validationData[i].getClassLabel() ){
+                validationSetAccuracy++;
+            }
+        }
+    }
+
+    trainingSetAccuracy = trainingSetAccuracy / M * 100.0;
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        validationSetAccuracy = validationSetAccuracy / validationData.getNumSamples() * 100.0;
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+
     return true;
 }
 

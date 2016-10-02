@@ -59,8 +59,8 @@ public:
         resampleThreshold = 1.0e-5;
         robustMeanWeightDistance = 0.2;
         estimationLikelihood = 0;
-        warningLog.setProceedingText("[WARNING ParticleFilter]");
-        errorLog.setProceedingText("[ERROR ParticleFilter]");
+        warningLog.setKey("[WARNING ParticleFilter]");
+        errorLog.setKey("[ERROR ParticleFilter]");
     }
     
     /**

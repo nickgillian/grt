@@ -162,6 +162,14 @@ public:
     UINT getNumInputDimensions() const{
         return numInputDimensions;
     }
+
+    bool getTrainingLoggingEnabled() const{
+        return trainingLog.loggingEnabled();
+    }
+
+    bool setTrainingLoggingEnabled(const bool enabled){
+        return trainingLog.enableLogging(enabled);
+    }
     
     /**
      Defines a map between a string (which will contain the name of the WeakClassifier, such as DecisionStump) and a function returns a new instance of that WeakClassifier

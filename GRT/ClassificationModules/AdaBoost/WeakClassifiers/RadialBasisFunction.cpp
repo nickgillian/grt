@@ -43,9 +43,9 @@ RadialBasisFunction::RadialBasisFunction(UINT numSteps,Float positiveClassificat
     alpha = 0;
     gamma = 0;
     weakClassifierType = "RadialBasisFunction";
-    trainingLog.setProceedingText("[DEBUG RadialBasisFunction]");
-    warningLog.setProceedingText("[WARNING RadialBasisFunction]");
-    errorLog.setProceedingText("[ERROR RadialBasisFunction]");
+    trainingLog.setKey("[DEBUG RadialBasisFunction]");
+    warningLog.setKey("[WARNING RadialBasisFunction]");
+    errorLog.setKey("[ERROR RadialBasisFunction]");
 }
     
 RadialBasisFunction::~RadialBasisFunction(){

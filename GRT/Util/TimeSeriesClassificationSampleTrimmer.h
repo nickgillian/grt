@@ -70,7 +70,6 @@ public:
     if( this != &rhs){
       this->trimThreshold = rhs.trimThreshold;
       this->maximumTrimPercentage = rhs.maximumTrimPercentage;
-      this->debugLog = rhs.debugLog;
       this->warningLog = rhs.warningLog;
       this->errorLog = rhs.errorLog;
     }
@@ -96,7 +95,6 @@ public:
 protected:
     Float trimThreshold;
     Float maximumTrimPercentage;
-    DebugLog debugLog;
     WarningLog warningLog;
     ErrorLog errorLog;
     

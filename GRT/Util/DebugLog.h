@@ -28,8 +28,8 @@ GRT_BEGIN_NAMESPACE
     
 class GRT_API DebugLogMessage{
 public:
-    DebugLogMessage(std::string proceedingText = "",std::string message = ""){
-        this->proceedingText = proceedingText;
+    DebugLogMessage(std::string key = "",std::string message = ""){
+        this->key = key;
         this->message = message;
     }
     ~DebugLogMessage(){
@@ -37,29 +37,29 @@ public:
     }
     
     std::string getProceedingText() const {
-        return proceedingText;
+        return key;
     }
     
     std::string getMessage() const {
         return message;
     }
     
-    std::string proceedingText;
+    std::string key;
     std::string message;
 };
 
 class DebugLog : public Log{
 public:
-    DebugLog(std::string proceedingText = ""){ setProceedingText(proceedingText); Log::loggingEnabledPtr = &debugLoggingEnabled; }
+    DebugLog( const std::string &key = "" ) : Log( key )
+    { 
+        Log::loggingEnabledPtr = &debugLoggingEnabled; 
+    }
 
     virtual ~DebugLog(){}
 
     DebugLog& operator=(const DebugLog &rhs){
         if( this != &rhs ){
-            this->proceedingText = rhs.proceedingText;
-            this->writeProceedingText = rhs.writeProceedingText;
             this->loggingEnabledPtr = &debugLoggingEnabled;
-            this->writeProceedingTextPtr = &writeProceedingText;
         }
         return *this;
     }
@@ -76,12 +76,12 @@ public:
     
 protected:
     virtual void triggerCallback( const std::string &message ) const{
-        observerManager.notifyObservers( DebugLogMessage(proceedingText,message) );
+        observerManager.notifyObservers( DebugLogMessage(key,message) );
         return;
     }
     
     static ObserverManager< DebugLogMessage > observerManager;
-    static bool debugLoggingEnabled;
+    static bool debugLoggingEnabled; ///<Enables/disables logging across all DebugLog instances
 };
 
 GRT_END_NAMESPACE

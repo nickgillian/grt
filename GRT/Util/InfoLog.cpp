@@ -23,6 +23,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+bool Log::logLoggingEnabled = true; ///<Global logging for base class
+void Log::setProceedingText(std::string proceedingText){ Log::setKey( proceedingText ); } //Legacy
+
 #ifdef GRT_CXX11_ENABLED
 std::mutex Log::logMutex;
 #endif

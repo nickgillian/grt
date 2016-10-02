@@ -28,8 +28,8 @@ GRT_BEGIN_NAMESPACE
     
 class TestingLogMessage{
 public:
-    TestingLogMessage(std::string proceedingText = "",std::string message = ""){
-        this->proceedingText = proceedingText;
+    TestingLogMessage(std::string key = "",std::string message = ""){
+        this->key = key;
         this->message = message;
     }
     ~TestingLogMessage(){
@@ -37,30 +37,33 @@ public:
     }
     
     std::string getProceedingText() const {
-        return proceedingText;
+        return key;
     }
     
     std::string getMessage() const {
         return message;
     }
     
-    std::string proceedingText;
+    std::string key;
     std::string message;
 };
 
 class GRT_API TestingLog : public Log{
 public:
-    TestingLog(std::string proceedingText =""){ setProceedingText(proceedingText); Log::loggingEnabledPtr = &testingLoggingEnabled; }
+    TestingLog( const std::string &key = "" ) : Log( key )
+    {
+        Log::loggingEnabledPtr = &testingLoggingEnabled; 
+    }
 
     virtual ~TestingLog(){}
 
     TestingLog& operator=(const TestingLog &rhs){
         if( this != &rhs ){
-            this->proceedingText = rhs.proceedingText;
-            this->writeProceedingText = rhs.writeProceedingText;
+            this->key = rhs.key;
+            this->writeKey = rhs.writeKey;
             this->lastMessage = rhs.lastMessage;
             this->loggingEnabledPtr = &testingLoggingEnabled;
-            this->writeProceedingTextPtr = &writeProceedingText;
+            this->writeKeyPtr = &writeKey;
             this->lastMessagePtr = &lastMessage;
         }
         return *this;
@@ -78,7 +81,7 @@ public:
     
 protected:
     virtual void triggerCallback( const std::string &message ) const{
-        observerManager.notifyObservers( TestingLogMessage(proceedingText,message) );
+        observerManager.notifyObservers( TestingLogMessage(key,message) );
         return;
     }
     
