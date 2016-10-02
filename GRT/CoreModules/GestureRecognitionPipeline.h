@@ -51,7 +51,7 @@ GRT_BEGIN_NAMESPACE
     
 #define INSERT_AT_END_INDEX 99999
 
-class GRT_API GestureRecognitionPipeline : public GRTBase
+class GRT_API GestureRecognitionPipeline : public MLBase
 {
 public:
     enum ContextLevels{START_OF_PIPELINE=0,AFTER_PREPROCESSING,AFTER_FEATURE_EXTRACTION,AFTER_CLASSIFIER,END_OF_PIPELINE,NUM_CONTEXT_LEVELS};
@@ -133,7 +133,7 @@ public:
 	@param trainingData: the labelled classification training data that will be used to train the classifier at the core of the pipeline
 	@return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    bool train(const ClassificationData &trainingData);
+    virtual bool train(const ClassificationData &trainingData);
 
 	/**
      This is the main training interface for training a Classifier with ClassificationData using K-fold cross validation.  This function will pass
@@ -146,7 +146,7 @@ public:
 	@param useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
 	@return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    bool train(const ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false );
+    virtual bool train(const ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false );
 
 	/**
      This is the main training interface for training a Classifier with TimeSeriesClassificationData.  This function will pass
@@ -157,7 +157,7 @@ public:
     @param trainingData: the time-series classification training data that will be used to train the classifier at the core of the pipeline
     @return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    bool train(const TimeSeriesClassificationData &trainingData);
+    virtual bool train(const TimeSeriesClassificationData &trainingData);
     
     /**
      This is the main training interface for training a Classifier with TimeSeriesClassificationData using K-fold cross validation.
@@ -169,7 +169,7 @@ public:
      @param useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
      @return bool returns true if the classifier was trained and tested successfully, false otherwise
      */
-    bool train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
+    virtual bool train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
 
     /**
      This is the main training interface for training a Classifier with ClassificationDataStream.  This function will pass
@@ -180,7 +180,7 @@ public:
     @param trainingData: the time-series classification training data that will be used to train the classifier at the core of the pipeline
     @return bool returns true if the classifier was trained successfully, false otherwise
     */
-    bool train(const ClassificationDataStream &trainingData);
+    virtual bool train(const ClassificationDataStream &trainingData);
 
 	/**
      This is the main training interface for training a regression module with RegressionData.  This function will pass
@@ -191,7 +191,7 @@ public:
     @param trainingData: the labelled regression training data that will be used to train the regression module at the core of the pipeline
     @return bool returns true if the regression module was trained successfully, false otherwise
 	*/
-    bool train(const RegressionData &trainingData);
+    virtual bool train(const RegressionData &trainingData);
     
     /**
      This is the main training interface for training a Regressifier with RegressionData using K-fold cross validation.  This function will pass
@@ -203,7 +203,7 @@ public:
      @param kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples in the LabelledRegressionData
      @return bool returns true if the regressifier was trained and tested successfully, false otherwise
      */
-    bool train(const RegressionData &trainingData,const UINT kFoldValue);
+    virtual bool train(const RegressionData &trainingData,const UINT kFoldValue);
     
     /**
      This is the main training interface for training a Clusterer with UnlabelledData using K-fold cross validation.  This function will pass
@@ -214,7 +214,7 @@ public:
      @param trainingData: the unlabelledData training data that will be used to train the clusterer at the core of the pipeline
      @return bool returns true if the clusterer was trained and tested successfully, false otherwise
      */
-    bool train(const UnlabelledData &trainingData);
+    virtual bool train(const UnlabelledData &trainingData);
     
     /**
      This function is the main interface for testing the accuracy of a pipeline with ClassificationData.  This function will pass
@@ -225,7 +225,7 @@ public:
      @param testData: the labelled classification data that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
 	*/
-    bool test(const ClassificationData &testData);
+    virtual bool test(const ClassificationData &testData);
 
     /**
      This function is the main interface for testing the accuracy of a pipeline with TimeSeriesClassificationData.  This function will pass
@@ -236,7 +236,7 @@ public:
      @param testData: the labelled timeseries classification data that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
 	*/
-    bool test(const TimeSeriesClassificationData &testData);
+    virtual bool test(const TimeSeriesClassificationData &testData);
 
     /**
      This function is the main interface for testing the accuracy of a pipeline with ClassificationDataStream.  This function will pass
@@ -247,7 +247,7 @@ public:
      @param testData: the timeseries classification data stream that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
 	*/
-    bool test(const ClassificationDataStream &testData);
+    virtual bool test(const ClassificationDataStream &testData);
 
     /**
      This function is the main interface for testing the accuracy of a pipeline with RegressionData.  This function will pass
@@ -258,7 +258,7 @@ public:
      @param testData: the labelled regression data that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
 	*/
-    bool test(const RegressionData &testData);
+    virtual bool test(const RegressionData &testData);
     
     /**
      This function is the main interface for all predictions using the gesture recognition pipeline.  You can use this function for both classification
@@ -267,7 +267,7 @@ public:
      @param inputVector: the input data that will be passed through the pipeline for classification or regression
      @return bool returns true if the prediction was successful, false otherwise
 	*/
-    bool predict(const VectorFloat &inputVector);
+    virtual bool predict(const VectorFloat &inputVector);
     
     /**
      This function is an interface for predictions using timeseries or Matrix data.
@@ -276,7 +276,7 @@ public:
      @param inputMatrix: the input atrix that will be passed through the pipeline for classification
      @return bool returns true if the prediction was successful, false otherwise
      */
-    bool predict(const MatrixFloat &inputMatrix);
+    virtual bool predict(const MatrixFloat &inputMatrix);
 
     /**
      This function is now depreciated, you should use the predict function instead.
@@ -295,7 +295,7 @@ public:
 
      @return bool returns true if the reset was successful, false otherwise
 	*/
-    bool reset();
+    virtual bool reset();
 
     /**
      This function is the main interface for clearing the entire gesture recognition pipeline.  This function will remove any module added to the pipeline and
@@ -303,7 +303,7 @@ public:
 
      @return bool returns true if the cleared was successful, false otherwise
     */
-    bool clear();
+    virtual bool clear();
 
     /**
      This function is the main interface for clearing any trained model stored by the gesture recognition pipeline.  This function will call clear on all the modules in the pipeline,
@@ -311,7 +311,7 @@ public:
 
      @return bool returns true if the cleared was successful, false otherwise
     */
-    bool clearModel();
+    virtual bool clearModel();
 
     /**
      This function will save the entire pipeline to a file.  This includes all the modules types, settings, and models.
@@ -319,7 +319,7 @@ public:
      @param filename: the name of the file you want to save the pipeline to
      @return bool returns true if the pipeline was saved successful, false otherwise
      */
-    bool save(const std::string &filename) const;
+    virtual bool save(const std::string &filename) const;
     
     /**
      @deprecated use save(std::string &filename) instead
@@ -335,7 +335,7 @@ public:
      @param filename: the name of the file you want to load the pipeline from
      @return bool returns true if the pipeline was loaded successful, false otherwise
      */
-    bool load(const std::string &filename);
+    virtual bool load(const std::string &filename);
     
     /**
      @deprecated use load(std::string &filename) instead
@@ -365,14 +365,14 @@ public:
     
     @return bool returns true if the pipeline has been initialized, false otherwise.
 	*/
-    bool getIsInitialized() const;
+    virtual bool getIsInitialized() const;
 
     /**
 	 This function returns true if the classifier or regressifier at the core of the pipeline has been trained.
      
      @return bool returns true if the classifier or regressifier at the core of the pipeline has been trained, false otherwise.
      */
-    bool getTrained() const;
+    virtual bool getTrained() const;
 
     /**
 	 This function returns true if any preprocessing modules have been added to the pipeline.
