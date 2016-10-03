@@ -67,9 +67,10 @@ bool ANBC::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         
-        ANBC *ptr = (ANBC*)classifier;
+        const ANBC *ptr = dynamic_cast<const ANBC*>(classifier);
+
         //Clone the ANBC values
         this->weightsDataSet = ptr->weightsDataSet;
         this->weightsData = ptr->weightsData;
@@ -86,11 +87,10 @@ bool ANBC::train_(ClassificationData &trainingData){
     //Clear any previous model
     clear();
     
-    const unsigned int M = trainingData.getNumSamples();
     const unsigned int N = trainingData.getNumDimensions();
     const unsigned int K = trainingData.getNumClasses();
     
-    if( M == 0 ){
+    if( trainingData.getNumSamples() == 0 ){
         errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
@@ -108,12 +108,20 @@ bool ANBC::train_(ClassificationData &trainingData){
     models.resize(K);
     classLabels.resize(K);
     ranges = trainingData.getRanges();
+    ClassificationData validationData;
     
     //Scale the training data if needed
     if( useScaling ){
         //Scale the training data between 0 and 1
         trainingData.scale(0, 1);
     }
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
+    }
+
+    const UINT M = trainingData.getNumSamples();
+    trainingLog << "Training Naive Bayes model, num training examples: " << M << ", num validation examples: " << validationData.getNumSamples() << ", num classes: " << numClasses << std::endl;
     
     //Train each of the models
     for(UINT k=0; k<numClasses; k++){
@@ -188,6 +196,52 @@ bool ANBC::train_(ClassificationData &trainingData){
     
     //Flag that the models have been trained
     trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially
+    bool scalingState = useScaling;
+    useScaling = false;
+    for(UINT i=0; i<M; i++){
+        if( !predict_( trainingData[i].getSample() ) ){
+            trained = false;
+            errorLog << "Failed to run prediction for training sample: " << i << "! Failed to fully train model!" << std::endl;
+            return false;
+        }
+
+        if( predictedClassLabel == trainingData[i].getClassLabel() ){
+            trainingSetAccuracy++;
+        }
+    }
+
+    if( useValidationSet ){
+        for(UINT i=0; i<validationData.getNumSamples(); i++){
+            if( !predict_( validationData[i].getSample() ) ){
+                trained = false;
+                errorLog << "Failed to run prediction for validation sample: " << i << "! Failed to fully train model!" << std::endl;
+                return false;
+            }
+
+            if( predictedClassLabel == validationData[i].getClassLabel() ){
+                validationSetAccuracy++;
+            }
+        }
+    }
+
+    trainingSetAccuracy = trainingSetAccuracy / M * 100.0;
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        validationSetAccuracy = validationSetAccuracy / validationData.getNumSamples() * 100.0;
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+
     return trained;
 }
 
