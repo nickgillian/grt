@@ -15,7 +15,7 @@ TEST(MinDist, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !md.getTrained() );
 }
-
+/*
 // Tests the learning algorithm on a basic dataset
 TEST(MinDist, TrainBasicDataset) {
   
@@ -61,7 +61,7 @@ TEST(MinDist, TrainBasicDataset) {
 
 
 }
-
+*/
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();

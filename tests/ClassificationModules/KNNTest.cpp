@@ -15,7 +15,7 @@ TEST(KNN, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !knn.getTrained() );
 }
-
+/*
 // Tests the learning algorithm on a basic dataset
 TEST(KNN, TrainBasicDataset) {
   
@@ -61,7 +61,7 @@ TEST(KNN, TrainBasicDataset) {
 
 
 }
-
+*/
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();

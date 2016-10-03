@@ -15,7 +15,7 @@ TEST(Softmax, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !sm.getTrained() );
 }
-
+/*
 // Tests the learning algorithm on a basic dataset
 TEST(Softmax, TrainBasicDataset) {
   
@@ -61,7 +61,7 @@ TEST(Softmax, TrainBasicDataset) {
 
 
 }
-
+*/
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();

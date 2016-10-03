@@ -15,7 +15,7 @@ TEST(GMM, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !gmm.getTrained() );
 }
-
+/*
 // Tests the learning algorithm on a basic dataset
 TEST(GMM, TrainBasicDataset) {
   
@@ -61,7 +61,7 @@ TEST(GMM, TrainBasicDataset) {
 
 
 }
-
+*/
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();

@@ -3,7 +3,7 @@
 using namespace GRT;
 
 //Unit tests for the GRT ANBC Classifier
-
+/*
 // Tests the default constructor
 TEST(ANBC, Constructor) {
   
@@ -61,7 +61,7 @@ TEST(ANBC, TrainBasicDataset) {
 
 
 }
-
+*/
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();
