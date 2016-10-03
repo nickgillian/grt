@@ -292,11 +292,11 @@ bool MLBase::enableScaling(bool useScaling){ this->useScaling = useScaling; retu
 bool MLBase::getUseValidationSet() const { return useValidationSet; }
 
 bool MLBase::getTrainingLoggingEnabled() const {
-    return trainingLog.loggingEnabled();
+    return trainingLog.getLoggingEnabled();
 }
 
 bool MLBase::getTestingLoggingEnabled() const {
-    return testingLog.loggingEnabled();
+    return testingLog.getLoggingEnabled();
 }
 
 bool MLBase::setMaxNumEpochs(const UINT maxNumEpochs){
@@ -353,13 +353,11 @@ bool MLBase::setRandomiseTrainingOrder(const bool randomiseTrainingOrder){
 }
 
 bool MLBase::setTrainingLoggingEnabled(const bool loggingEnabled){
-    this->trainingLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return this->trainingLog.setInstanceLoggingEnabled( loggingEnabled );
 }
 
 bool MLBase::setTestingLoggingEnabled(const bool loggingEnabled){
-    this->testingLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return this->testingLog.setInstanceLoggingEnabled( loggingEnabled );
 }
 
 bool MLBase::registerTrainingResultsObserver( Observer< TrainingResult > &observer ){
