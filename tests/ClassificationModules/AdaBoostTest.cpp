@@ -52,18 +52,15 @@ TEST(AdaBoost, TestBasicTrainPredictFunctions ) {
   EXPECT_TRUE( !adaBoost.getTrained() );
 
   //Generate a basic dataset
-  const UINT numSamples = 20;
+  const UINT numSamples = 1000;
   const UINT numClasses = 5;
   const UINT numDimensions = 3;
   ClassificationData trainingData = ClassificationData::generateGaussDataset( numSamples, numClasses, numDimensions, 10, 1 );
 
-  ClassificationData testData = trainingData.split( 50 );
+  ClassificationData testData = trainingData.split( 50, true );
 
   //Train the classifier
   EXPECT_TRUE( adaBoost.train( trainingData ) );
-
-  std::cerr << "adaBoost.getNumClasses(): " << adaBoost.getNumClasses() << " numClasses: " << numClasses << std::endl;
-
   EXPECT_TRUE( adaBoost.getTrained() );
   EXPECT_TRUE( adaBoost.getNumInputDimensions() == numDimensions );
   EXPECT_TRUE( adaBoost.getNumOutputDimensions() == numClasses );
@@ -112,7 +109,7 @@ TEST(AdaBoost, TrainGaussDataset) {
   const UINT numDimensions = 10;
   ClassificationData trainingData = ClassificationData::generateGaussDataset( numSamples, numClasses, numDimensions, 10, 1 );
 
-  ClassificationData testData = trainingData.split( 50 );
+  ClassificationData testData = trainingData.split( 50, true );
 
   //Turn off the validation set for training
   EXPECT_TRUE( adaBoost.setUseValidationSet( false ) );
@@ -124,7 +121,6 @@ TEST(AdaBoost, TrainGaussDataset) {
   EXPECT_TRUE( adaBoost.getTrained() );
   EXPECT_TRUE( adaBoost.getNumInputDimensions() == numDimensions );
   EXPECT_TRUE( adaBoost.getNumOutputDimensions() == numClasses );
-  std::cout << "adaBoost.getNumClasses(): " << adaBoost.getNumClasses() << " numClasses: " << numClasses << std::endl;
   EXPECT_TRUE( adaBoost.getNumClasses() == numClasses );
   EXPECT_TRUE( adaBoost.getTrainingSetAccuracy() >= 75.0 ); //On this basic dataset we expect to get at least 75% accuracy
   EXPECT_TRUE( adaBoost.getValidationSetAccuracy() == 0.0 ); //Validation is off, so the validation accuracy should be zero

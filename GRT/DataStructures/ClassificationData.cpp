@@ -729,6 +729,16 @@ ClassificationData ClassificationData::split(const UINT trainingSizePercentage,c
     UINT randomIndex = 0;
     UINT K = getNumClasses();
 
+    //Make sure both datasets get all the class labels, even if they have no samples in each
+    trainingSet.classTracker.resize( K );
+    testSet.classTracker.resize( K );
+    for(UINT k=0; k<K; k++){
+        trainingSet.classTracker[k].classLabel = classTracker[k].classLabel;
+        testSet.classTracker[k].classLabel = classTracker[k].classLabel;
+        trainingSet.classTracker[k].counter = 0;
+        testSet.classTracker[k].counter = 0;
+    }
+
     if( useStratifiedSampling ){
         //Break the data into seperate classes
         Vector< Vector< UINT > > classData( K );
@@ -791,6 +801,10 @@ ClassificationData ClassificationData::split(const UINT trainingSizePercentage,c
             testSet.addSample( data[ indexs[i] ].getClassLabel(), data[ indexs[i] ].getSample() );
         }
     }
+
+    //The training and test datasets MUST have the same number of classes as the original data
+    grt_assert( trainingSet.getNumClasses() == K );
+    grt_assert( testSet.getNumClasses() == K );
 
     //Overwrite the training data in this instance with the training data of the trainingSet
     *this = trainingSet;
@@ -857,7 +871,7 @@ bool ClassificationData::spiltDataIntoKFolds(const UINT K,const bool useStratifi
 
     //K can not be larger than the number of examples in a specific class if the stratified sampling option is true
     if( useStratifiedSampling ){
-        for(UINT c=0; c<classTracker.size(); c++){
+        for(UINT c=0; c<classTracker.getSize(); c++){
             if( K > classTracker[c].counter ){
                 errorLog << "spiltDataIntoKFolds(const UINT K,const bool useStratifiedSampling) - K can not be larger than the number of samples in any given class!" << std::endl;
                 return false;

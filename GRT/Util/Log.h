@@ -178,6 +178,14 @@ public:
     }
 
     /**
+     @brief returns if logging is enabled for this specific instance
+     @return returns true if logging is enabled for this specific instance, false otherwise
+    */
+    virtual bool getInstanceLoggingEnabled(){
+        return this->instanceLoggingEnabled;
+    }
+
+    /**
      @brief sets if logging is enabled for this class, this supersedes the specific instance logging
      @return returns true if the parameter was updated successfully, false otherwise
     */
@@ -188,7 +196,7 @@ public:
 
     /**
      @brief sets if logging is enabled for this specific instance
-     @return returns true if logging is enabled for this specific instance, false otherwise
+     @return returns true if the parameter was updated successfully, false otherwise
     */
     virtual bool setInstanceLoggingEnabled(const bool loggingEnabled){
         this->instanceLoggingEnabled = loggingEnabled;

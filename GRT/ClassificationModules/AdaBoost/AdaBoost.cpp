@@ -62,15 +62,16 @@ AdaBoost& AdaBoost::operator=(const AdaBoost &rhs){
         this->predictionMethod = rhs.predictionMethod;
         this->models = rhs.models;
         
-        if( rhs.weakClassifiers.size() > 0 ){
-            for(UINT i=0; i<rhs.weakClassifiers.size(); i++){
+        if( rhs.weakClassifiers.getSize() > 0 ){
+            this->weakClassifiers.reserve( rhs.weakClassifiers.getSize() );
+            for(UINT i=0; i<rhs.weakClassifiers.getSize(); i++){
                 WeakClassifier *weakClassiferPtr = rhs.weakClassifiers[i]->createNewInstance();
                 weakClassifiers.push_back( weakClassiferPtr );
             }
         }
         
         //Clone the classifier variables
-        copyBaseVariables( (Classifier*)&rhs );
+        copyBaseVariables( dynamic_cast<const Classifier*>( &rhs ) );
     }
     return *this;
 }
@@ -82,9 +83,9 @@ bool AdaBoost::deepCopyFrom(const Classifier *classifier){
         return false;
     }
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         //Clone the AdaBoost values
-        AdaBoost *ptr = (AdaBoost*)classifier;
+        const AdaBoost *ptr = dynamic_cast<const AdaBoost*>( classifier );
         
         //Clear the current weak classifiers
         clearWeakClassifiers();
@@ -94,9 +95,9 @@ bool AdaBoost::deepCopyFrom(const Classifier *classifier){
         this->models = ptr->models;
         
         if( ptr->weakClassifiers.size() > 0 ){
-            for(UINT i=0; i<ptr->weakClassifiers.size(); i++){
-                WeakClassifier *weakClassiferPtr = ptr->weakClassifiers[i]->createNewInstance();
-                weakClassifiers.push_back( weakClassiferPtr );
+            this->weakClassifiers.resize( ptr->weakClassifiers.getSize() );
+            for(UINT i=0; i<ptr->weakClassifiers.getSize(); i++){
+                weakClassifiers[i] = ptr->weakClassifiers[i]->createNewInstance();
             }
         }
         

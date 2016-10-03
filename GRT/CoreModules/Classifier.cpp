@@ -114,16 +114,17 @@ bool Classifier::copyBaseVariables(const Classifier *classifier){
     this->useNullRejection = classifier->useNullRejection;
     this->numClasses = classifier->numClasses;
     this->predictedClassLabel = classifier->predictedClassLabel;
+    this->classifierMode = classifier->classifierMode;
     this->nullRejectionCoeff = classifier->nullRejectionCoeff;
     this->maxLikelihood = classifier->maxLikelihood;
     this->bestDistance = classifier->bestDistance;
     this->phase = classifier->phase;
+    this->trainingSetAccuracy = classifier->trainingSetAccuracy;
     this->classLabels = classifier->classLabels;
     this->classLikelihoods = classifier->classLikelihoods;
     this->classDistances = classifier->classDistances;
     this->nullRejectionThresholds = classifier->nullRejectionThresholds;
 	this->ranges = classifier->ranges;
-    this->trainingSetAccuracy = classifier->trainingSetAccuracy;
     
     return true;
 }

@@ -91,23 +91,19 @@ const GRTBase* GRTBase::getGRTBasePointer() const{
 }
 
 bool GRTBase::setInfoLoggingEnabled(const bool loggingEnabled){
-    infoLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return infoLog.setInstanceLoggingEnabled( loggingEnabled );
 }
     
 bool GRTBase::setWarningLoggingEnabled(const bool loggingEnabled){
-    warningLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return warningLog.setInstanceLoggingEnabled( loggingEnabled );
 }
     
 bool GRTBase::setErrorLoggingEnabled(const bool loggingEnabled){
-    errorLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return errorLog.setInstanceLoggingEnabled( loggingEnabled );
 }
 
 bool GRTBase::setDebugLoggingEnabled(const bool loggingEnabled){
-    debugLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return debugLog.setInstanceLoggingEnabled( loggingEnabled );
 }
 
 GRT_END_NAMESPACE

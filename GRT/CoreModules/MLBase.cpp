@@ -292,11 +292,11 @@ bool MLBase::enableScaling(bool useScaling){ this->useScaling = useScaling; retu
 bool MLBase::getUseValidationSet() const { return useValidationSet; }
 
 bool MLBase::getTrainingLoggingEnabled() const {
-    return trainingLog.getLoggingEnabled();
+    return trainingLog.getInstanceLoggingEnabled();
 }
 
 bool MLBase::getTestingLoggingEnabled() const {
-    return testingLog.getLoggingEnabled();
+    return testingLog.getInstanceLoggingEnabled();
 }
 
 bool MLBase::setMaxNumEpochs(const UINT maxNumEpochs){
