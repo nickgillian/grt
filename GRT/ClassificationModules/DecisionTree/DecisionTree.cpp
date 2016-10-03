@@ -137,16 +137,15 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     clear();
     
     if( decisionTreeNode == NULL ){
-        Classifier::errorLog << "train_(ClassificationData &trainingData) - The decision tree node has not been set! You must set this first before training a model." << std::endl;
+        errorLog << "train_(ClassificationData &trainingData) - The decision tree node has not been set! You must set this first before training a model." << std::endl;
         return false;
     }
     
-    const unsigned int M = trainingData.getNumSamples();
     const unsigned int N = trainingData.getNumDimensions();
     const unsigned int K = trainingData.getNumClasses();
     
-    if( M == 0 ){
-        Classifier::errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
+    if( trainingData.getNumSamples() == 0 ){
+        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
     
@@ -164,6 +163,8 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         validationSetPrecision.resize( useNullRejection ? K+1 : K, 0 );
         validationSetRecall.resize( useNullRejection ? K+1 : K, 0 );
     }
+
+    const unsigned int M = trainingData.getNumSamples();
     
     //Scale the training data if needed
     if( useScaling ){
@@ -184,7 +185,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     }
 
     numTrainingIterationsToConverge = 1;
-    Classifier::trainingLog << "numTrainingIterationsToConverge " << numTrainingIterationsToConverge << " useValidationSet: " << useValidationSet << std::endl;
+    trainingLog << "numTrainingIterationsToConverge " << numTrainingIterationsToConverge << " useValidationSet: " << useValidationSet << std::endl;
 
     if( useValidationSet ){
 
@@ -226,7 +227,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         }
 
         //Use the best tree
-        Classifier::trainingLog << "Best tree index: " << bestTreeIndex+1 << " validation set accuracy: " << bestValidationSetAccuracy << std::endl;
+        trainingLog << "Best tree index: " << bestTreeIndex+1 << " validation set accuracy: " << bestValidationSetAccuracy << std::endl;
         
         if( bestTree != tree ){
             //Delete the tree if it exists
@@ -240,14 +241,67 @@ bool DecisionTree::train_(ClassificationData &trainingData){
             tree = bestTree;
         }
 
-        //If we get this far, then the model was trained successfully
-        return true;
     }else{
         //If we get here, then we are going to train the tree once
-        return trainTree( trainingData, trainingDataCopy, validationData, features );
+        if( !trainTree( trainingData, trainingDataCopy, validationData, features ) ){
+            return false;
+        }
     }
 
-    return false;
+    //If we get this far, then a model has been trained
+
+    //Setup the data for prediction
+    predictedClassLabel = 0;
+    maxLikelihood = 0;
+    classLikelihoods.resize(numClasses);
+    classDistances.resize(numClasses);
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially
+    bool scalingState = useScaling;
+    useScaling = false;
+    for(UINT i=0; i<M; i++){
+        if( !predict_( trainingData[i].getSample() ) ){
+            trained = false;
+            errorLog << "Failed to run prediction for training sample: " << i << "! Failed to fully train model!" << std::endl;
+            return false;
+        }
+
+        if( predictedClassLabel == trainingData[i].getClassLabel() ){
+            trainingSetAccuracy++;
+        }
+    }
+
+    if( useValidationSet ){
+        for(UINT i=0; i<validationData.getNumSamples(); i++){
+            if( !predict_( validationData[i].getSample() ) ){
+                trained = false;
+                errorLog << "Failed to run prediction for validation sample: " << i << "! Failed to fully train model!" << std::endl;
+                return false;
+            }
+
+            if( predictedClassLabel == validationData[i].getClassLabel() ){
+                validationSetAccuracy++;
+            }
+        }
+    }
+
+    trainingSetAccuracy = trainingSetAccuracy / M * 100.0;
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        validationSetAccuracy = validationSetAccuracy / validationData.getNumSamples() * 100.0;
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+
+    return true;
 }
 
 bool DecisionTree::trainTree( ClassificationData trainingData, const ClassificationData &trainingDataCopy, const ClassificationData &validationData, Vector< UINT > features ){
