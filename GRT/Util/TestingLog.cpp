@@ -41,4 +41,6 @@ bool TestingLog::removeObserver(Observer< TestingLogMessage > &observer)
     return observerManager.removeObserver(observer);
 }
 
+bool TestingLog::loggingEnabled() const { return testingLoggingEnabled; } //Legacy
+
 GRT_END_NAMESPACE

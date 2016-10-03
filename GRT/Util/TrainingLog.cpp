@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_DLL_EXPORTS
 #include "TrainingLog.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 bool TrainingLog::trainingLoggingEnabled = true;
 ObserverManager< TrainingLogMessage > TrainingLog::observerManager;
@@ -41,4 +41,6 @@ bool TrainingLog::removeObserver(Observer< TrainingLogMessage > &observer)
     return observerManager.removeObserver(observer);
 }
 
-}; //End of namespace GRT
+bool TrainingLog::loggingEnabled() const { return trainingLoggingEnabled; } //Legacy
+
+GRT_END_NAMESPACE

@@ -164,11 +164,11 @@ public:
     }
 
     bool getTrainingLoggingEnabled() const{
-        return trainingLog.loggingEnabled();
+        return trainingLog.getLoggingEnabled();
     }
 
     bool setTrainingLoggingEnabled(const bool enabled){
-        return trainingLog.enableLogging(enabled);
+        return trainingLog.setLoggingEnabled(enabled);
     }
     
     /**

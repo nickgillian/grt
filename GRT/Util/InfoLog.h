@@ -55,24 +55,49 @@ public:
         Log::loggingEnabledPtr = &infoLoggingEnabled; 
     }
 
+    InfoLog(const InfoLog &rhs)
+    {
+        *this = rhs;
+    }
+
     virtual ~InfoLog(){}
 
     InfoLog& operator=(const InfoLog &rhs){
         if( this != &rhs ){
+            //Copy the base class
+            Log *thisBase = this;
+            const Log *rhsBase = &rhs;
+            *thisBase = *rhsBase;
+
+            //Perform any custom copies
             this->loggingEnabledPtr = &infoLoggingEnabled;
         }
         return *this;
     }
 
-    //Getters
-    virtual bool loggingEnabled(){ return infoLoggingEnabled; }
-    
-    //Setters
-    static bool enableLogging(bool loggingEnabled);
+    /**
+     @brief returns true if logging is enabled for this class, this supersedes the specific instance logging
+     @return returns true if logging is enabled for this class, false otherwise
+    */
+    static bool getLoggingEnabled() { 
+        return infoLoggingEnabled; 
+    }
+
+    /**
+     @brief sets if logging is enabled for this class, this supersedes the specific instance logging
+     @return returns true if the parameter was updated successfully, false otherwise
+    */
+    static bool setLoggingEnabled(const bool enabled) { 
+        infoLoggingEnabled = enabled; 
+        return true; 
+    }
     
     static bool registerObserver(Observer< InfoLogMessage > &observer);
 
     static bool removeObserver(Observer< InfoLogMessage > &observer);
+
+    GRT_DEPRECATED_MSG("enableLogging is deprecated, use setLoggingEnabled instead", static bool enableLogging(bool loggingEnabled) );
+    GRT_DEPRECATED_MSG("loggingEnabled is deprecated, use getLoggingEnabled instead", bool loggingEnabled() const );
 
 protected:
     virtual void triggerCallback( const std::string &message ) const{

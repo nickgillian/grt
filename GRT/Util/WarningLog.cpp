@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_DLL_EXPORTS
 #include "WarningLog.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 bool WarningLog::warningLoggingEnabled = true;
 ObserverManager< WarningLogMessage > WarningLog::observerManager;
@@ -41,4 +41,6 @@ bool WarningLog::removeObserver(Observer< WarningLogMessage > &observer)
     return observerManager.removeObserver(observer);
 }
 
-} //End of namespace GRT
+bool WarningLog::loggingEnabled() const { return warningLoggingEnabled; } //Legacy
+
+GRT_END_NAMESPACE

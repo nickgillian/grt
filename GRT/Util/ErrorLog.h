@@ -52,27 +52,51 @@ class GRT_API ErrorLog : public Log {
 public:
     ErrorLog(const std::string &key = "" ) : Log( key )
     {
-        Log::loggingEnabledPtr = &errorLoggingEnabled;
+        loggingEnabledPtr = &errorLoggingEnabled;
+    }
+
+    ErrorLog(const ErrorLog &rhs)
+    {
+        *this = rhs;
     }
     
     virtual ~ErrorLog(){}
 
     ErrorLog& operator=(const ErrorLog &rhs){
         if( this != &rhs ){
+            //Copy the base class
+            Log *thisBase = this;
+            const Log *rhsBase = &rhs;
+            *thisBase = *rhsBase;
+
+            //Perform any custom copies
             this->loggingEnabledPtr = &errorLoggingEnabled;
         }
         return *this;
     }
-    
-    //Getters
-    virtual bool getLoggingEnabled() const{ return errorLoggingEnabled; }
-    
-    //Setters
-    static bool enableLogging(bool loggingEnabled);
+
+    /**
+     @brief returns true if logging is enabled for this class, this supersedes the specific instance logging
+     @return returns true if logging is enabled for this class, false otherwise
+    */
+    static bool getLoggingEnabled() { 
+        return errorLoggingEnabled; 
+    }
+
+    /**
+     @brief sets if logging is enabled for this class, this supersedes the specific instance logging
+     @return returns true if the parameter was updated successfully, false otherwise
+    */
+    static bool setLoggingEnabled(const bool enabled) { 
+        errorLoggingEnabled = enabled; 
+        return true; 
+    }
     
     static bool registerObserver(Observer< ErrorLogMessage > &observer);
 
     static bool removeObserver(Observer< ErrorLogMessage > &observer);
+
+    GRT_DEPRECATED_MSG("enableLogging is deprecated, use setLoggingEnabled instead", static bool enableLogging(bool loggingEnabled) );
     
 protected:
     virtual void triggerCallback( const std::string &message ) const{

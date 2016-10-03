@@ -24,7 +24,8 @@
 GRT_BEGIN_NAMESPACE
 
 //Default constructor
-DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(){
+DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel() : MLBase( "DiscreteHiddenMarkovModel" )
+{
 	numStates = 0;
 	numSymbols = 0;
 	delta = 1;
@@ -34,15 +35,11 @@ DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(){
 	modelType = HMM_LEFTRIGHT;
 	logLikelihood = 0.0;
 	minChange = 1.0e-5;
-    
-    debugLog.setProceedingText("[DEBUG DiscreteHiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR DiscreteHiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING DiscreteHiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING DiscreteHiddenMarkovModel]");
 }
 
 //Init the model with a set number of states and symbols
-DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta){
+DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const UINT numStates,const UINT numSymbols,const UINT modelType,const UINT delta) : MLBase( "DiscreteHiddenMarkovModel" )
+{
     this->numStates = numStates;
     this->numSymbols = numSymbols;
 	this->modelType = modelType;
@@ -52,16 +49,12 @@ DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const UINT numStates,const 
 	cThreshold = -1000;
 	logLikelihood = 0.0;
     
-    debugLog.setProceedingText("[DEBUG DiscreteHiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR DiscreteHiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING DiscreteHiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING DiscreteHiddenMarkovModel]");
-    
 	randomizeMatrices(numStates,numSymbols);
 }
 
 //Init the model with a pre-trained a, b, and pi matrices
-DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const MatrixFloat &a,const MatrixFloat &b,const VectorFloat &pi,const UINT modelType,const UINT delta){
+DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const MatrixFloat &a,const MatrixFloat &b,const VectorFloat &pi,const UINT modelType,const UINT delta) : MLBase( "DiscreteHiddenMarkovModel" )
+{
     
     numStates = 0;
     numSymbols = 0;
@@ -70,11 +63,6 @@ DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const MatrixFloat &a,const 
 	cThreshold = -1000;
 	logLikelihood = 0.0;
 	minChange = 1.0e-5;
-    
-    debugLog.setProceedingText("[DEBUG DiscreteHiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR DiscreteHiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING DiscreteHiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING DiscreteHiddenMarkovModel]");
 
     if( a.getNumRows() == a.getNumRows() && a.getNumRows() == b.getNumRows() && a.getNumRows() == pi.size() ){
         this->a = a;
@@ -90,7 +78,8 @@ DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const MatrixFloat &a,const 
     }
 }
     
-DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const DiscreteHiddenMarkovModel &rhs){
+DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const DiscreteHiddenMarkovModel &rhs) : MLBase( "DiscreteHiddenMarkovModel" )
+{
     this->numStates = rhs.numStates;
 	this->numSymbols = rhs.numSymbols;
 	this->delta = rhs.delta;
@@ -102,11 +91,6 @@ DiscreteHiddenMarkovModel::DiscreteHiddenMarkovModel(const DiscreteHiddenMarkovM
 	this->b = rhs.b;
 	this->pi = rhs.pi;
     this->trainingLog = rhs.trainingLog;
-
-    debugLog.setProceedingText("[DEBUG DiscreteHiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR DiscreteHiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING DiscreteHiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING DiscreteHiddenMarkovModel]");
 }
     
 //Default destructor
