@@ -115,6 +115,7 @@ bool KNN::train_(ClassificationData &trainingData){
     
     //Store the number of features, classes and the training data
     this->numInputDimensions = trainingData.getNumDimensions();
+    this->numOutputDimensions = trainingData.getNumClasses();
     this->numClasses = trainingData.getNumClasses();
     
     //TODO: In the future need to build a kdtree from the training data to allow better realtime prediction

@@ -166,6 +166,7 @@ bool GMM::train_(ClassificationData &trainingData){
     
     //Set the number of features and number of classes and resize the models buffer
     numInputDimensions = trainingData.getNumDimensions();
+    numOutputDimensions = trainingData.getNumClasses();
     numClasses = trainingData.getNumClasses();
     models.resize(numClasses);
     

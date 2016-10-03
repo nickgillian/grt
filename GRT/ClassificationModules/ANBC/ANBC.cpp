@@ -103,6 +103,7 @@ bool ANBC::train_(ClassificationData &trainingData){
     }
     
     numInputDimensions = N;
+    numOutputDimensions = K;
     numClasses = K;
     models.resize(K);
     classLabels.resize(K);

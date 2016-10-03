@@ -103,6 +103,7 @@ bool BAG::train_(ClassificationData &trainingData){
     }
     
     numInputDimensions = N;
+    numOutputDimensions = K;
     numClasses = K;
     classLabels.resize(K);
     ranges = trainingData.getRanges();

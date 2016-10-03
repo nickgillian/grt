@@ -151,6 +151,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     }
     
     numInputDimensions = N;
+    numOutputDimensions = K;
     numClasses = K;
     classLabels = trainingData.getClassLabels();
     ranges = trainingData.getRanges();

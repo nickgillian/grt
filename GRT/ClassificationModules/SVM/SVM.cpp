@@ -466,6 +466,7 @@ bool SVM::convertClassificationDataToLIBSVMFormat(ClassificationData &trainingDa
     
     const UINT numTrainingExamples = trainingData.getNumSamples();
     numInputDimensions = trainingData.getNumDimensions();
+    numOutputDimensions = trainingData.getNumClasses();
     
     //Compute the ranges encase the data should be scaled
     ranges = trainingData.getRanges();
