@@ -3,7 +3,7 @@
 using namespace GRT;
 
 //Unit tests for the GRT GMM module
-
+/*
 // Tests the default constructor
 TEST(GMM, Constructor) {
   
@@ -15,7 +15,7 @@ TEST(GMM, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !gmm.getTrained() );
 }
-/*
+
 // Tests the learning algorithm on a basic dataset
 TEST(GMM, TrainBasicDataset) {
   

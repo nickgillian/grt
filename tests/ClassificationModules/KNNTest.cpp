@@ -3,7 +3,7 @@
 using namespace GRT;
 
 //Unit tests for the GRT KNN module
-
+/*
 // Tests the default constructor
 TEST(KNN, Constructor) {
   
@@ -15,7 +15,7 @@ TEST(KNN, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !knn.getTrained() );
 }
-/*
+
 // Tests the learning algorithm on a basic dataset
 TEST(KNN, TrainBasicDataset) {
   

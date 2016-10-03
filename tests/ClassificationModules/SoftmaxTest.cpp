@@ -3,7 +3,7 @@
 using namespace GRT;
 
 //Unit tests for the GRT Softmax module
-
+/*
 // Tests the default constructor
 TEST(Softmax, Constructor) {
   
@@ -15,7 +15,7 @@ TEST(Softmax, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !sm.getTrained() );
 }
-/*
+
 // Tests the learning algorithm on a basic dataset
 TEST(Softmax, TrainBasicDataset) {
   

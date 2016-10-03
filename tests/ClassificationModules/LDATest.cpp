@@ -3,7 +3,7 @@
 using namespace GRT;
 
 //Unit tests for the GRT LDA module
-
+/*
 // Tests the default constructor
 TEST(LDA, Constructor) {
   
@@ -15,7 +15,7 @@ TEST(LDA, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !lda.getTrained() );
 }
-
+*/
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();

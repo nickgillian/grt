@@ -3,7 +3,7 @@
 using namespace GRT;
 
 //Unit tests for the GRT DWT module
-
+/*
 // Tests the default constructor
 TEST(DTW, Constructor) {
   
@@ -15,7 +15,7 @@ TEST(DTW, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !dtw.getTrained() );
 }
-
+*/
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();

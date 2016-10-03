@@ -3,7 +3,7 @@
 using namespace GRT;
 
 //Unit tests for the GRT RandomForest module
-
+/*
 // Tests the default constructor
 TEST(RandomForests, Constructor) {
   
@@ -15,7 +15,7 @@ TEST(RandomForests, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !rf.getTrained() );
 }
-/*
+
 // Tests the learning algorithm on a basic dataset
 TEST(RandomForests, TrainBasicDataset) {
   

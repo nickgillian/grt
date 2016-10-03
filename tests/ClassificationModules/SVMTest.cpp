@@ -3,7 +3,7 @@
 using namespace GRT;
 
 //Unit tests for the GRT SVM module
-
+/*
 // Tests the default constructor
 TEST(SVM, Constructor) {
   
@@ -15,7 +15,7 @@ TEST(SVM, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !svm.getTrained() );
 }
-/*
+
 // Tests the learning algorithm on a basic dataset
 TEST(SVM, TrainBasicDataset) {
   

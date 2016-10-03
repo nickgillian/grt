@@ -3,7 +3,7 @@
 using namespace GRT;
 
 //Unit tests for the GRT MinDist module
-
+/*
 // Tests the default constructor
 TEST(MinDist, Constructor) {
   
@@ -15,7 +15,7 @@ TEST(MinDist, Constructor) {
   //Check the module is not trained
   EXPECT_TRUE( !md.getTrained() );
 }
-/*
+
 // Tests the learning algorithm on a basic dataset
 TEST(MinDist, TrainBasicDataset) {
   
