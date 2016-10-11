@@ -241,7 +241,7 @@ VectorFloat HighPassFilter::filter(const VectorFloat &x){
         xx[n] = x[n];
         
         //Store the current output in processed data so it can be accessed by the base class
-        processedData[n] = processedData[n];
+        processedData[n] = yy[n];
     }
     return processedData;
 }
