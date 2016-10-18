@@ -80,17 +80,20 @@ int main (int argc, const char * argv[])
 
     Matrix< VectorFloat > weights = som.getWeightsMatrix();
 
-    fstream file = fstream( "weights.csv", fstream::out );
-    for(UINT i=0; i<weights.getNumRows(); i++){
-    	for(UINT j=0; j<weights.getNumCols(); j++){
-    		for(UINT n=0; n<weights[i][j].getSize(); n++){
-    			file << weights[i][j][n];
-    			if( n+1 < weights[i][j].getSize() ) file << ",";
-    			else file << "\n";
-    		}
-    	}
+    fstream file;
+    file.open( "weights.csv", fstream::out );
+    if( file.is_open() ){
+    	for(UINT i=0; i<weights.getNumRows(); i++){
+	    	for(UINT j=0; j<weights.getNumCols(); j++){
+	    		for(UINT n=0; n<weights[i][j].getSize(); n++){
+	    			file << weights[i][j][n];
+	    			if( n+1 < weights[i][j].getSize() ) file << ",";
+	    			else file << "\n";
+	    		}
+	    	}
+	    }
+	    file.close();
     }
-    file.close();
 	
     return EXIT_SUCCESS;
 }
