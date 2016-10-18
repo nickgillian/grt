@@ -2,9 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
-
- @brief This file contains the Random class, a useful wrapper for generating cross platform random functions. 
- This includes functions for uniform distributions (both integer and Float) and Gaussian distributions.
  */
 
 /*
@@ -37,6 +34,10 @@
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This file contains the Random class, a useful wrapper for generating cross platform random functions. 
+ This includes functions for uniform distributions (both integer and Float) and Gaussian distributions.
+*/
 class Random{
 public:
 	/**
@@ -81,8 +82,8 @@ public:
     /**
 	Gets a random integer in the range [minRange maxRange-1], using a uniform distribution
 	
-	@param int minRange: the minimum value in the range (inclusive)
-	@param int maxRange: the maximum value in the range (not inclusive)
+	@param minRange: the minimum value in the range (inclusive)
+	@param maxRange: the maximum value in the range (not inclusive)
 	@return returns an integer in the range [minRange maxRange-1]
 	*/
     inline int getRandomNumberInt(int minRange,int maxRange){
@@ -98,8 +99,8 @@ public:
      be randomly returned 70% of the time, the 2 value returned 20% of the time and the 3 value returned
      10% of the time.
      
-     @param const Vector< int > &values: a Vector containing the N possible values the function can return
-     @param const Vector< Float > &weights: the corresponding weights for the values Vector (must be the same size as the values Vector)
+     @param values: a Vector containing the N possible values the function can return
+     @param weights: the corresponding weights for the values Vector (must be the same size as the values Vector)
      @return returns a random integer from the values Vector, with a probability relative to the values weight
      */
     int getRandomNumberWeighted(const Vector< int > &values,const VectorFloat &weights){
@@ -123,7 +124,7 @@ public:
      For example, if the input values are: [{1 0.7},{2 0.2}, {3 0.1}], then the 1 value would be randomly returned 
      70% of the time, the 2 value returned 20% of the time and the 3 value returned 10% of the time.
      
-     @param Vector< IndexedDouble > weightedValues: a Vector of IndexedDouble values, the (int) indexs represent the value that will be returned while the (Float) values represent the weight of choosing that specific index 
+     @param weightedValues: a Vector of IndexedDouble values, the (int) indexs represent the value that will be returned while the (Float) values represent the weight of choosing that specific index 
      @return returns a random integer from the values Vector, with a probability relative to the values weight
      */
     int getRandomNumberWeighted(Vector< IndexedDouble > weightedValues){

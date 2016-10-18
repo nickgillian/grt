@@ -69,6 +69,17 @@ Regressifier::~Regressifier(void){
         stringRegressifierMap = NULL;
     }
 }
+
+Vector< std::string > Regressifier::getRegisteredRegressifiers(){
+    Vector< std::string > registeredRegressifiers;
+    
+    StringRegressifierMap::iterator iter = getMap()->begin();
+    while( iter != getMap()->end() ){
+        registeredRegressifiers.push_back( iter->first );
+        ++iter; //++iter is faster than iter++ as it does not require a copy/move operator
+    }
+    return registeredRegressifiers;
+}
     
 bool Regressifier::copyBaseVariables(const Regressifier *regressifier){
     
