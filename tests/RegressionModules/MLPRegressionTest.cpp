@@ -8,7 +8,7 @@ using namespace GRT;
 TEST(MLP, XOR) {
 
   //Disable the training log messages
-  TrainingLog::enableLogging( false ); 
+  TrainingLog::setLoggingEnabled( false ); 
 
   //Create a new MLP module
   MLP mlp;
@@ -89,7 +89,7 @@ TEST(MLP, XOR) {
 TEST(MLP, XORScaled) {
 
   //Disable the training log messages
-  TrainingLog::enableLogging( false ); 
+  TrainingLog::setLoggingEnabled( false ); 
 
   //Create a new MLP module
   MLP mlp;
