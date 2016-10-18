@@ -109,8 +109,6 @@ bool test_classification( CommandLineParser &parser ){
         return false; 
     }
 
-    std::cout << "RESULTS FILENAME: " << resultsFilename << endl;
-
     //Get the export all parameter
     parser.get("export-timeseries",exportTimeseries);
 
@@ -130,14 +128,14 @@ bool test_classification( CommandLineParser &parser ){
     //Load the data to test the classifier
     ClassificationData data;
 
-    infoLog << "- Loading Training Data..." << endl;
+    infoLog << "- Loading test dataset..." << endl;
     if( !data.load( datasetFilename ) ){
         errorLog << "Failed to load data!\n";
         return false;
     }
 
     const unsigned int N = data.getNumDimensions();
-    infoLog << "- Num training samples: " << data.getNumSamples() << endl;
+    infoLog << "- Num test samples: " << data.getNumSamples() << endl;
     infoLog << "- Num dimensions: " << N << endl;
     infoLog << "- Num classes: " << data.getNumClasses() << endl;
 
@@ -193,7 +191,7 @@ bool test_regression( CommandLineParser &parser ){
     //Load the data to test the model
     RegressionData data;
 
-    infoLog << "- Loading Training Data..." << endl;
+    infoLog << "- Loading test dataset..." << endl;
     if( !data.load( datasetFilename ) ){
         errorLog << "Failed to load data!\n";
         return false;
@@ -201,7 +199,7 @@ bool test_regression( CommandLineParser &parser ){
 
     const unsigned int N = data.getNumInputDimensions();
     const unsigned int T = data.getNumTargetDimensions();
-    infoLog << "- Num training samples: " << data.getNumSamples() << endl;
+    infoLog << "- Num test samples: " << data.getNumSamples() << endl;
     infoLog << "- Num input dimensions: " << N << endl;
     infoLog << "- Num target dimensions: " << T << endl;
 

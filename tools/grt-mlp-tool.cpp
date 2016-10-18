@@ -16,25 +16,26 @@
 using namespace GRT;
 using namespace std;
 
-const char *help = "This tool can be used for training a Logistic Regression model. The tool will wrap the Logistic Regression model in the GRT MDRegression algorithm, this enables the number\n"
-                   "of target dimensions to be >= 1\n"
-                   "The dataset used to train the model can be in three formats, (1) a GRT ClassificationData formatted file, (2) a GRT RegressionData formatted file or (3) a CSV formatted file.\n"
-                   "If the data is formatted as a CSV file, then it should be formatted as GRT CSV RegressionData, which is as follows:\n"
+const char *help = "This tool can be used for training a MLP Neural Net regression model.\n"
+                   "The dataset used to train the model can be in two format, (1) a GRT RegressionData formatted file or (2) a CSV formatted file.\n"
+                   "If the data is formatted as a CSV file, then it should be formatted as follows:\n"
                      "\t- each row should contain a sample\n"
                      "\t- the first N columns should contain the input attributes (a.k.a. features)\n"
-                     "\t- the last K columns should contain the target attributes (a.k.a. regression targets or classes)\n"
+                     "\t- the last K columns should contain the target attributes (a.k.a. targets or classes)\n"
                      "\t- columns should be seperated by a comma delimiter \',\'\n"
                      "\t- rows should be terminated by a new line operator \'\\n\'";
                                           
-InfoLog infoLog("[grt-log-reg-tool]");
-WarningLog warningLog("[WARNING grt-log-reg-tool]");
-ErrorLog errorLog("[ERROR grt-log-reg-tool]");
+InfoLog infoLog("[grt-mlp-tool]");
+WarningLog warningLog("[WARNING grt-mlp-tool]");
+ErrorLog errorLog("[ERROR grt-mlp-tool]");
 
 bool printHelp(){
-  infoLog << "\nusage: grt-log-reg-tool [options]\n";
+  infoLog << "\nusage: grt-mlp-tool [options]\n";
   infoLog << "\t--help: prints this help message\n";
-  infoLog << "\t-f: sets the filename the training data will be loaded from. The training data can either be a GRT ClassificationData, a GRT RegressionData file or a CSV file (see help below). \n";
+  infoLog << "\t-f: sets the filename the training data will be loaded from. The training data can either be a GRT RegressionData file or a CSV file (see help below). \n";
   infoLog << "\t--model: sets the filename the model will be saved to\n";
+  infoLog << "\t--num-inputs: sets the number of inputs in the CSV file, required if the input data format is a CSV file\n";
+  infoLog << "\t--num-targets: sets the number of targets in the CSV file, required if the input data format is a CSV file\n";
   infoLog << "\t--batch-size: sets the number of training samples used in each batch update of the learning algorithm (default: 50)\n";
   infoLog << "\t--learning-rate: sets the rate at which the learning algorithm will update the model weights at each batch update (default: 0.01)\n";
   infoLog << "\t--min-change: sets the minimum change needed to signal convergence of the learning algorithm (default: 0.001)\n";
@@ -64,9 +65,10 @@ int main(int argc, char * argv[])
 
     //Add some options and identifiers that can be used to get the results
     parser.addOption( "-f", "filename" );
-    parser.addOption( "--model", "model-filename", "log-regression-model.grt" ); //Set the default filename to log-regression-model.grt
-    parser.addOption( "--num-inputs", "num-inputs" ); //The number of features, only required if the input file is a CSV file
-    parser.addOption( "--num-targets", "num-targets" ); //The number of targets, only required if the input file is a CSV file
+    parser.addOption( "--model", "model-filename", "mlp-model.grt" ); //Set the default filename to log-regression-model.grt
+    parser.addOption( "--num-inputs", "num-inputs" );
+    parser.addOption( "--num-targets", "num-targets" );
+    parser.addOption( "--num-hidden", "num-hidden" );
     parser.addOption( "--batch-size", "batch-size", 50 ); //Set the default batch size to 50
     parser.addOption( "--learning-rate", "learning-rate", 0.01 ); //Set the default learning rate to 0.01
     parser.addOption( "--min-change", "min-change", 0.001 ); //Set the default min change to 0.001
@@ -98,6 +100,7 @@ bool train( CommandLineParser &parser ){
     float minChange = 0;
     unsigned int maxEpoch = 0;
     unsigned int batchSize = 0;
+    unsigned int numHiddenNeurons = 0;
 
     //Get the filename
     if( !parser.get("filename",trainDatasetFilename) ){
@@ -112,8 +115,9 @@ bool train( CommandLineParser &parser ){
     parser.get( "min-change", minChange );
     parser.get( "max-epoch", maxEpoch );
     parser.get( "batch-size", batchSize );
+    parser.get( "num-hidden", numHiddenNeurons );
 
-    infoLog << "settings: learning-rate: " << learningRate << " min-change: " << minChange << " max-epoch: " << maxEpoch << " batch-size: " << batchSize << endl;
+    infoLog << "settings: num hidden neurons: " << numHiddenNeurons << " learning-rate: " << learningRate << " min-change: " << minChange << " max-epoch: " << maxEpoch << " batch-size: " << batchSize << endl;
 
     //Load the training data to train the model
     RegressionData trainingData;
@@ -129,7 +133,7 @@ bool train( CommandLineParser &parser ){
     if( (numInputDimensions == 0 || numTargetDimensions == 0) && Util::stringEndsWith( trainDatasetFilename, ".csv" ) ){
       errorLog << "Failed to parse num input dimensions and num target dimensions from input arguments. You must supply the input and target dimensions if the data format is CSV!" << endl;
       printHelp();
-      return false;
+      return false; 
     }
 
     infoLog << "- Loading Training Data..." << endl;
@@ -145,7 +149,7 @@ bool train( CommandLineParser &parser ){
     infoLog << "- Num target dimensions: " << T << endl;
 
     //Create a new regression instance
-    LogisticRegression regression;
+    MLP regression;
 
     regression.setMaxNumEpochs( maxEpoch );
     regression.setMinChange( minChange );
@@ -153,6 +157,7 @@ bool train( CommandLineParser &parser ){
     regression.setValidationSetSize( 20 );
     regression.setRandomiseTrainingOrder( true );
     regression.enableScaling( true );
+    regression.init( N, numHiddenNeurons, T );
 
     //Create a new pipeline that will hold the regression algorithm
     GestureRecognitionPipeline pipeline;

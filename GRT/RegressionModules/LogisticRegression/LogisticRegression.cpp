@@ -165,6 +165,7 @@ bool LogisticRegression::train_(RegressionData &trainingData){
         //Compute the error
         delta = fabs( totalSquaredTrainingError-lastSquaredError );
         lastSquaredError = totalSquaredTrainingError;
+        rmsTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
         
         //Check to see if we should stop
         if( delta <= minChange ){
@@ -188,7 +189,7 @@ bool LogisticRegression::train_(RegressionData &trainingData){
         //Notify any observers of the new result
         trainingResultsObserverManager.notifyObservers( result );
         
-        trainingLog << "Epoch: " << iter << " SSE: " << totalSquaredTrainingError << " Delta: " << delta << std::endl;
+        trainingLog << "Epoch: " << iter << " RMS Training Error: " << rmsTrainingError << " Total Squared Training Error: " << totalSquaredTrainingError << " Delta: " << delta << std::endl;
     }
     
     //Flag that the algorithm has been trained
