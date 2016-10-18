@@ -92,7 +92,7 @@
 #include "PreProcessingModules/MovingAverageFilter.h"
 #include "PreProcessingModules/MedianFilter.h"
 #include "PreProcessingModules/DoubleMovingAverageFilter.h"
- #include "PreProcessingModules/RMSFilter.h"
+#include "PreProcessingModules/RMSFilter.h"
 #include "PreProcessingModules/SavitzkyGolayFilter.h"
 #include "PreProcessingModules/DeadZone.h"
 #include "PreProcessingModules/WeightedAverageFilter.h"
