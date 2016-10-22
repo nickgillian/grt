@@ -3131,7 +3131,7 @@ bool GestureRecognitionPipeline::setClassifier(const Classifier &classifier){
     deleteClusterer();
 
     //Create a new instance of the classifier and then clone the values across from the reference classifier
-    this->classifier = classifier.create();
+    this->classifier = classifier.create( classifier.getId() );
     
     if( this->classifier == NULL ){
         errorLog << "setClassifier(const Classifier classifier) - Classifier Module Not Set!" << std::endl;
@@ -3173,7 +3173,7 @@ bool GestureRecognitionPipeline::setRegressifier(const Regressifier &regressifie
     pipelineMode = REGRESSION_MODE;
     
     //Create a new instance of the regressifier and then clone the values across from the reference regressifier
-    this->regressifier = regressifier.create();
+    this->regressifier = regressifier.create( regressifier.getId() );
     
     //Validate that the regressifier was cloned correctly
     if( !this->regressifier->deepCopyFrom( &regressifier ) ){
@@ -3206,7 +3206,7 @@ bool GestureRecognitionPipeline::setClusterer(const Clusterer &clusterer){
     pipelineMode = CLUSTER_MODE;
     
     //Create a new instance of the clusterer and then clone the values across from the reference clusterer
-    this->clusterer = clusterer.create();
+    this->clusterer = clusterer.create( clusterer.getId() );
     
     //Validate that the regressifier was cloned correctly
     if( !this->clusterer->deepCopyFrom( &clusterer ) ){
