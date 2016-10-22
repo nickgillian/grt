@@ -59,6 +59,10 @@ typedef long double LongFloat; ///<This typedef is used to set long floating-poi
 #ifndef TWO_PI
 #define TWO_PI 6.28318530718
 #endif
+
+#ifndef ONE_OVER_TWO_PI
+#define ONE_OVER_TWO_PI (1.0/TWO_PI)
+#endif
     
 #ifndef SQRT_TWO_PI
 #define SQRT_TWO_PI 2.506628274631
