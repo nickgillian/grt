@@ -173,8 +173,13 @@ private:
     static UINT numPreProcessingInstances;
 };
 
-template< typename T >  PreProcessing *createNewPreProcessingModule() { return new T; } ///<Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
+template< typename T >  
+PreProcessing *createNewPreProcessingModule() { return new T; } ///<Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
+/**
+ @brief This class provides an interface for classes to register themselves with the preprocessing base class, this enables PreProcessing algorithms to
+ be automatically be created from just a string, e.g.: PreProcessing *lpf = create( "LowPassFilter" );
+*/
 template< typename T > 
 class RegisterPreProcessingModule : PreProcessing { 
 public:

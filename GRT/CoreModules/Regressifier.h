@@ -188,14 +188,18 @@ private:
 
 };
     
-//These two functions/classes are used to register any new Regression Module with the Regressifier base class
-template< typename T >  Regressifier *newRegressionModuleInstance() { return new T; }
+template< typename T >  
+Regressifier *createNewRegressionInstance() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
+/**
+ @brief This class provides an interface for classes to register themselves with the regressifier base class, this enables Regression algorithms to
+ be automatically be created from just a string, e.g.: Regressifier *mlp = create( "MLP" );
+*/
 template< typename T > 
 class RegisterRegressifierModule : public Regressifier { 
 public:
     RegisterRegressifierModule( const std::string &newRegresionModuleName ) { 
-        getMap()->insert( std::pair< std::string, Regressifier*(*)() >(newRegresionModuleName, &newRegressionModuleInstance< T > ) );
+        getMap()->insert( std::pair< std::string, Regressifier*(*)() >(newRegresionModuleName, &createNewRegressionInstance< T > ) );
     }
 };
 

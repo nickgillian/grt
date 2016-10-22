@@ -357,13 +357,13 @@ Classifier* createNewClassifierInstance() { return new T; } ///< Returns a point
 
 /**
  @brief This class provides an interface for classes to register themselves with the classifier base class, this enables Classifier algorithms to
- be automatically be created from just a string, e.g.: Classifier *knn = createInstanceFromString( "KNN" );
+ be automatically be created from just a string, e.g.: Classifier *knn = create( "KNN" );
 */
 template< typename T >
 class RegisterClassifierModule : public Classifier {
 public:
     RegisterClassifierModule( std::string const &newModuleId ) {
-        getMap()->insert( std::pair< std::string, Classifier*(*)() >(newModuleId, &createNewClassifierInstance< T > ) );
+        getMap()->insert( std::pair< std::string, Classifier*(*)() >(newModuleId, &createNewClassifierInstance<T> ) );
     }
 };
 
