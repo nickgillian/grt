@@ -198,7 +198,7 @@ public:
     VectorFloat getFilteredValues() const { if( initialized ){ return yy; } return VectorFloat(); }
 
     /**
-    Gets a string that represents the LowPassFilter class.
+    Gets a string that represents the ID of this class.
     
     @return returns a string containing the ID of this class
     */

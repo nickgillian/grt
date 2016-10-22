@@ -211,6 +211,13 @@ public:
     @return returns the last computed derivative values, will return 0 if no values have been computed
     */
     VectorFloat getDerivatives(const UINT derivativeOrder = FIRST_DERIVATIVE) const;
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -229,6 +236,8 @@ protected:
     VectorFloat yy;                        ///< A buffer holding the previous input value(s)
     VectorFloat yyy;                       ///< A buffer holding the previous first derivative values
     
+private:
+    static const std::string id;   
     static RegisterPreProcessingModule< Derivative > registerModule;
     
 };

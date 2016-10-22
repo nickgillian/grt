@@ -3237,7 +3237,7 @@ bool GestureRecognitionPipeline::addPostProcessingModule(const PostProcessing &p
     }
     
     //Create a new instance of the preProcessing and then clone the values across from the reference preProcessing
-    PostProcessing *newInstance = postProcessingModule.create();
+    PostProcessing *newInstance = postProcessingModule.create( postProcessingModule.getId() );
     
     //Verify that the clone was successful
     if( !newInstance->deepCopyFrom( &postProcessingModule ) ){

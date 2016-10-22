@@ -23,10 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the FIRFilter module with the PreProcessing base class
-RegisterPreProcessingModule< FIRFilter > FIRFilter::registerModule("FIRFilter");
+//Define the string that will be used to identify the object
+const std::string FIRFilter::id = "FIRFilter";
+std::string FIRFilter::getId() { return FIRFilter::id; }
 
-FIRFilter::FIRFilter(const FilterType filterType,const UINT numTaps,const Float sampleRate,const Float cutoffFrequency,const Float gain,const UINT numDimensions) : PreProcessing( "FIRFilter" )
+//Register the FIRFilter module with the PreProcessing base class
+RegisterPreProcessingModule< FIRFilter > FIRFilter::registerModule( FIRFilter::getId() );
+
+FIRFilter::FIRFilter(const FilterType filterType,const UINT numTaps,const Float sampleRate,const Float cutoffFrequency,const Float gain,const UINT numDimensions) : PreProcessing( FIRFilter::getId() )
 {
     initialized = false;
     this->numInputDimensions = numDimensions;
@@ -55,7 +59,7 @@ FIRFilter::FIRFilter(const FilterType filterType,const UINT numTaps,const Float 
     }
 }
 
-FIRFilter::FIRFilter(const FIRFilter &rhs) : PreProcessing( "FIRFilter" )
+FIRFilter::FIRFilter(const FIRFilter &rhs) : PreProcessing( FIRFilter::getId() )
 {
     *this = rhs;
 }

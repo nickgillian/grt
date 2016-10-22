@@ -23,15 +23,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the LeakyIntegrator module with the PreProcessing base class
-RegisterPreProcessingModule< LeakyIntegrator > LeakyIntegrator::registerModule("LeakyIntegrator");
+//Define the string that will be used to identify the object
+const std::string LeakyIntegrator::id = "LeakyIntegrator";
+std::string LeakyIntegrator::getId() { return LeakyIntegrator::id; }
 
-LeakyIntegrator::LeakyIntegrator(const Float leakRate,const UINT numDimensions) : PreProcessing( "LeakyIntegrator" )
+//Register the LeakyIntegrator module with the PreProcessing base class
+RegisterPreProcessingModule< LeakyIntegrator > LeakyIntegrator::registerModule( LeakyIntegrator::getId() );
+
+LeakyIntegrator::LeakyIntegrator(const Float leakRate,const UINT numDimensions) : PreProcessing( LeakyIntegrator::getId() )
 {
     init(leakRate,numDimensions);
 }
 
-LeakyIntegrator::LeakyIntegrator(const LeakyIntegrator &rhs) : PreProcessing( "LeakyIntegrator" )
+LeakyIntegrator::LeakyIntegrator(const LeakyIntegrator &rhs) : PreProcessing( LeakyIntegrator::getId() )
 {
     *this = rhs;
 }

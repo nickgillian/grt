@@ -23,16 +23,22 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the ClassLabelTimeoutFilter module with the PostProcessing base class
-RegisterPostProcessingModule< ClassLabelTimeoutFilter > ClassLabelTimeoutFilter::registerModule("ClassLabelTimeoutFilter");
+//Define the string that will be used to identify the object
+const std::string ClassLabelTimeoutFilter::id = "ClassLabelTimeoutFilter";
+std::string ClassLabelTimeoutFilter::getId() { return ClassLabelTimeoutFilter::id; }
 
-ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(unsigned long timeoutDuration,UINT filterMode){
+//Register the ClassLabelTimeoutFilter module with the PostProcessing base class
+RegisterPostProcessingModule< ClassLabelTimeoutFilter > ClassLabelTimeoutFilter::registerModule( ClassLabelTimeoutFilter::getId() );
+
+ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(const unsigned long timeoutDuration,const UINT filterMode) : PostProcessing( ClassLabelTimeoutFilter::getId() )
+{
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
     init(timeoutDuration,filterMode);
 }
 
-ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(const ClassLabelTimeoutFilter &rhs){
+ClassLabelTimeoutFilter::ClassLabelTimeoutFilter(const ClassLabelTimeoutFilter &rhs) : PostProcessing( ClassLabelTimeoutFilter::getId() )
+{
     
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
@@ -113,7 +119,7 @@ bool ClassLabelTimeoutFilter::reset(){
     return true;
 }
 
-bool ClassLabelTimeoutFilter::init(unsigned long timeoutDuration,UINT filterMode){
+bool ClassLabelTimeoutFilter::init(const unsigned long timeoutDuration,const UINT filterMode){
     
     initialized = false;
     
@@ -130,7 +136,7 @@ bool ClassLabelTimeoutFilter::init(unsigned long timeoutDuration,UINT filterMode
     return true;
 }
 
-UINT ClassLabelTimeoutFilter::filter(UINT predictedClassLabel){
+UINT ClassLabelTimeoutFilter::filter(const UINT predictedClassLabel){
     
     //If we get the NULL class and there are no active timers running then we do not need to do anything
     if( predictedClassLabel == 0 && classLabelTimers.size() == 0 ){
@@ -208,7 +214,7 @@ UINT ClassLabelTimeoutFilter::filter(UINT predictedClassLabel){
     return filteredClassLabel;
 }
 
-bool ClassLabelTimeoutFilter::isTimeoutActive(){
+bool ClassLabelTimeoutFilter::isTimeoutActive() {
     
     for(UINT i=0; i<classLabelTimers.getSize(); i++){
         if( classLabelTimers[i].timerReached() ){
@@ -286,7 +292,7 @@ bool ClassLabelTimeoutFilter::load( std::fstream &file ){
     return init(timeoutDuration,filterMode);
 }
 
-bool ClassLabelTimeoutFilter::setTimeoutDuration(unsigned long timeoutDuration){
+bool ClassLabelTimeoutFilter::setTimeoutDuration(const unsigned long timeoutDuration){
     this->timeoutDuration = timeoutDuration;
     if( initialized ){
         return reset();
@@ -294,7 +300,7 @@ bool ClassLabelTimeoutFilter::setTimeoutDuration(unsigned long timeoutDuration){
     return true;
 }
 
-bool ClassLabelTimeoutFilter::setFilterMode(UINT filterMode){
+bool ClassLabelTimeoutFilter::setFilterMode(const UINT filterMode){
     if( filterMode != ALL_CLASS_LABELS && filterMode != INDEPENDENT_CLASS_LABELS ) return false;
     this->filterMode = filterMode;
     if( initialized ){

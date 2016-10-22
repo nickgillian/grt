@@ -146,6 +146,13 @@ public:
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
     VectorFloat getFilteredData() const;
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -165,6 +172,8 @@ protected:
     VectorFloat yy;                       //The filtered values
     VectorFloat coeff;                    //Buffer for the filter coefficients
     
+private:
+    static const std::string id;   
     static RegisterPreProcessingModule< SavitzkyGolayFilter > registerModule;
     
 };

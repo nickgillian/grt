@@ -268,6 +268,13 @@ public:
      */
     bool setGain(const Float gain);
 
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
@@ -283,6 +290,8 @@ protected:
     CircularBuffer< VectorFloat > y;
     VectorFloat z;
     
+private:
+    static const std::string id;   
     static RegisterPreProcessingModule< FIRFilter > registerModule;
 };
 
