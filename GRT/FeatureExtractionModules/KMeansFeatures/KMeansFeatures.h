@@ -156,7 +156,7 @@ public:
      */
     virtual bool train_(MatrixFloat &trainingData);
     
-    bool computeFeatures(VectorFloat &inputVector,VectorFloat &outputVector);
+    bool computeFeatures(const VectorFloat &inputVector,VectorFloat &outputVector);
     
     bool init( const Vector< UINT > numClustersPerLayer );
     

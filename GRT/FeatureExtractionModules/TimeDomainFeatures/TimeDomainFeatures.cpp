@@ -30,7 +30,7 @@ std::string TimeDomainFeatures::getId() { return TimeDomainFeatures::id; }
 //Register the TimeDomainFeatures module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< TimeDomainFeatures > TimeDomainFeatures::registerModule( TimeDomainFeatures::getId() );
 
-TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS) : FeatureExtraction( TimeDomainFeatures::getId() )
+TimeDomainFeatures::TimeDomainFeatures(const UINT bufferLength,const UINT numFrames,const UINT numDimensions,const bool offsetInput,const bool useMean,const bool useStdDev,const bool useEuclideanNorm,const bool useRMS) : FeatureExtraction( TimeDomainFeatures::getId() )
 {
     init(bufferLength,numFrames,numDimensions,offsetInput,useMean,useStdDev,useEuclideanNorm,useRMS);
 }
@@ -213,7 +213,7 @@ bool TimeDomainFeatures::load( std::fstream &file ){
     return init(bufferLength,numFrames,numInputDimensions,offsetInput,useMean,useStdDev,useEuclideanNorm,useRMS);
 }
 
-bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS){
+bool TimeDomainFeatures::init(const UINT bufferLength, const UINT numFrames,const UINT numDimensions,const bool offsetInput,const bool useMean,const bool useStdDev,const bool useEuclideanNorm,const bool useRMS){
     
     initialized = false;
     
@@ -268,7 +268,7 @@ bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimension
 }
 
 
-VectorFloat TimeDomainFeatures::update(Float x){
+VectorFloat TimeDomainFeatures::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -399,13 +399,6 @@ VectorFloat TimeDomainFeatures::update(const VectorFloat &x){
     }
     
     return featureVector;
-}
-
-CircularBuffer< VectorFloat > TimeDomainFeatures::getBufferData(){
-    if( initialized ){
-        return dataBuffer;
-    }
-    return CircularBuffer< VectorFloat >();
 }
 
 const CircularBuffer< VectorFloat > &TimeDomainFeatures::getBufferData() const {

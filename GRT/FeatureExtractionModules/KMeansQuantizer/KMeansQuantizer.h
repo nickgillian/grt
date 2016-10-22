@@ -174,7 +174,7 @@ public:
     @param inputValue: the value you want to quantize
     @return returns the quantized value
     */
-    UINT quantize(Float inputValue);
+    UINT quantize(const Float inputValue);
     
     /**
     Quantizes the input value using the quantization model. The quantization model must be trained first before you call this function.

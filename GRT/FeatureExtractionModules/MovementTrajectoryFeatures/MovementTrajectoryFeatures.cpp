@@ -30,7 +30,7 @@ std::string MovementTrajectoryFeatures::getId() { return MovementTrajectoryFeatu
 //Register the ZeroCrossingCounter module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< MovementTrajectoryFeatures > MovementTrajectoryFeatures::registerModule( MovementTrajectoryFeatures::getId() );
 
-MovementTrajectoryFeatures::MovementTrajectoryFeatures(UINT trajectoryLength,UINT numCentroids,UINT featureMode,UINT numHistogramBins,UINT numDimensions,bool useTrajStartAndEndValues,bool useWeightedMagnitudeValues) : FeatureExtraction( MovementTrajectoryFeatures::getId() )
+MovementTrajectoryFeatures::MovementTrajectoryFeatures(const UINT trajectoryLength,const UINT numCentroids,const UINT featureMode,const UINT numHistogramBins,const UINT numDimensions,const bool useTrajStartAndEndValues,const bool useWeightedMagnitudeValues) : FeatureExtraction( MovementTrajectoryFeatures::getId() )
 {
     init(trajectoryLength,numCentroids,featureMode,numHistogramBins,numDimensions,useTrajStartAndEndValues,useWeightedMagnitudeValues);
 }
@@ -204,7 +204,7 @@ bool MovementTrajectoryFeatures::load( std::fstream &file ){
     return init(trajectoryLength,numCentroids,featureMode,numHistogramBins,numInputDimensions,useTrajStartAndEndValues,useWeightedMagnitudeValues);
 }
 
-bool MovementTrajectoryFeatures::init(UINT trajectoryLength,UINT numCentroids,UINT featureMode,UINT numHistogramBins,UINT numDimensions,bool useTrajStartAndEndValues,bool useWeightedMagnitudeValues){
+bool MovementTrajectoryFeatures::init(const UINT trajectoryLength,const UINT numCentroids,const UINT featureMode,const UINT numHistogramBins,const UINT numDimensions,const bool useTrajStartAndEndValues,const bool useWeightedMagnitudeValues){
     
     initialized = false;
     
@@ -285,7 +285,7 @@ bool MovementTrajectoryFeatures::init(UINT trajectoryLength,UINT numCentroids,UI
     return true;
 }
 
-VectorFloat MovementTrajectoryFeatures::update(Float x){
+VectorFloat MovementTrajectoryFeatures::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -435,21 +435,21 @@ VectorFloat MovementTrajectoryFeatures::update(const VectorFloat &x){
     return featureVector;
 }
 
-CircularBuffer< VectorFloat > MovementTrajectoryFeatures::getTrajectoryData(){
+CircularBuffer< VectorFloat > MovementTrajectoryFeatures::getTrajectoryData() const{
     if( initialized ){
         return trajectoryDataBuffer;
     }
     return CircularBuffer< VectorFloat >();
 }
 
-MatrixFloat MovementTrajectoryFeatures::getCentroids(){
+MatrixFloat MovementTrajectoryFeatures::getCentroids() const{
     if( initialized ){
         return centroids;
     }
     return MatrixFloat();
 }
 
-UINT MovementTrajectoryFeatures::getFeatureMode(){
+UINT MovementTrajectoryFeatures::getFeatureMode() const{
     if( initialized ){
         return featureMode;
     }

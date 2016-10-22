@@ -37,7 +37,6 @@ KMeansQuantizer::KMeansQuantizer(const UINT numClusters) : FeatureExtraction( KM
 
 KMeansQuantizer::KMeansQuantizer(const KMeansQuantizer &rhs) : FeatureExtraction( KMeansQuantizer::getId() )
 {
-    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -250,7 +249,7 @@ bool KMeansQuantizer::train_(MatrixFloat &trainingData){
     return true;
 }
 
-UINT KMeansQuantizer::quantize(Float inputValue){
+UINT KMeansQuantizer::quantize(const Float inputValue){
     return quantize( VectorFloat(1,inputValue) );
 }
 

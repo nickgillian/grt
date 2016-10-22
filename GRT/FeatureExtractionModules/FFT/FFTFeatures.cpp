@@ -32,7 +32,7 @@ RegisterFeatureExtractionModule< FFTFeatures > FFTFeatures::registerModule("FFTF
     
 bool sortIndexDoubleDecendingValue(IndexedDouble i,IndexedDouble j) { return (i.value<j.value); }
     
-FFTFeatures::FFTFeatures(UINT fftWindowSize,UINT numChannelsInFFTSignal,bool computeMaxFreqFeature,bool computeMaxFreqSpectrumRatio,bool computeCentroidFeature,bool computeTopNFreqFeatures,UINT N) : FeatureExtraction( FFTFeatures::getId() )
+FFTFeatures::FFTFeatures(const UINT fftWindowSize,const UINT numChannelsInFFTSignal,const bool computeMaxFreqFeature,const bool computeMaxFreqSpectrumRatio,const bool computeCentroidFeature, const bool computeTopNFreqFeatures,const UINT N) : FeatureExtraction( FFTFeatures::getId() )
 { 
     initialized = false; 
     featureDataReady = false;
@@ -191,7 +191,7 @@ bool FFTFeatures::load( std::fstream &file ){
     return init(fftWindowSize,numChannelsInFFTSignal,computeMaxFreqFeature,computeMaxFreqSpectrumRatio,computeCentroidFeature,computeTopNFreqFeatures,N);
 }
 
-bool FFTFeatures::init(UINT fftWindowSize,UINT numChannelsInFFTSignal,bool computeMaxFreqFeature,bool computeMaxFreqSpectrumRatio,bool computeCentroidFeature,bool computeTopNFreqFeatures,UINT N){
+bool FFTFeatures::init(const UINT fftWindowSize,const UINT numChannelsInFFTSignal,const bool computeMaxFreqFeature,const bool computeMaxFreqSpectrumRatio,const bool computeCentroidFeature,const bool computeTopNFreqFeatures,const UINT N){
     
     initialized = false;
     featureDataReady = false;
