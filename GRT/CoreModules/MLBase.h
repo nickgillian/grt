@@ -759,8 +759,6 @@ public:
     @return returns a vector of TrainingResult instances containing the training results from the most recent training phase
     */
     Vector< TrainingResult > getTrainingResults() const;
-
-    template< typename ClassType, typename ModuleType >  ModuleType* create() { return new ClassType; } 
     
 protected:
     
