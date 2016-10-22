@@ -41,16 +41,16 @@ public:
     Constructor, sets the filter factor, gain and dimensionality of the low pass filter.
     If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.
     If the cutoffFrequency and delta values are kept at their default values of -1 then the values will be ignored and the filter factor will be used instead.
-    Otherwise the fiterFactor will control the low pass filter, with a smaller filterFactor (i.e. 0.1) resulting in a more aggresive smoothing
+    Otherwise the fiterFactor will control the low pass filter, with a larger filterFactor (i.e. 0.995) resulting in a more aggresive smoothing
     of the input signal.  The filterFactor should be in the range [0.0 1.0].
     
-    @param filterFactor: controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal.
+    @param filterFactor: controls the low pass filter, a larger value will result in a more aggresive smoothing of the input signal.
     @param gain: multiples the filtered values by a constant ampltidue.
     @param numDimensions: the dimensionality of the input data to filter.
     @param cutoffFrequency: sets the cutoffFrequency of the filter (in Hz). If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.
     @param delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor.
     */
-    LowPassFilter(const Float filterFactor = 0.1,const Float gain = 1,const UINT numDimensions = 1,const Float cutoffFrequency = -1,const Float delta = -1);
+    LowPassFilter(const Float filterFactor = 0.995,const Float gain = 1,const UINT numDimensions = 1,const Float cutoffFrequency = -1,const Float delta = -1);
     
     /**
     Copy Constructor, copies the LowPassFilter from the rhs instance to this instance
@@ -123,7 +123,7 @@ public:
     Initializes the filter, setting the filter size and dimensionality of the data it will filter.
     Sets all the filter values to zero.
     
-    @param filterFactor: controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal
+    @param filterFactor: controls the low pass filter, a larger value will result in a more aggresive smoothing of the input signal
     @param gain: multiples the filtered values by a constant ampltidue
     @param numDimensions: the dimensionality of the input data to filter
     @return true if the filter was initiliazed, false otherwise
@@ -156,7 +156,7 @@ public:
     bool setGain(const Float gain);
     
     /**
-    Sets the filter factor, this controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal.
+    Sets the filter factor, this controls the low pass filter, a larger value will result in a more aggresive smoothing of the input signal.
     This should be a value in the range [0.0 1.0].
     This will also reset the filter.
     

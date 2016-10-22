@@ -26,7 +26,7 @@ GRT_BEGIN_NAMESPACE
 //Register the FIRFilter module with the PreProcessing base class
 RegisterPreProcessingModule< FIRFilter > FIRFilter::registerModule("FIRFilter");
 
-FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sampleRate,const Float cutoffFrequency,const Float gain,const UINT numDimensions) : PreProcessing( "FIRFilter" )
+FIRFilter::FIRFilter(const FilterType filterType,const UINT numTaps,const Float sampleRate,const Float cutoffFrequency,const Float gain,const UINT numDimensions) : PreProcessing( "FIRFilter" )
 {
     initialized = false;
     this->numInputDimensions = numDimensions;
@@ -40,17 +40,17 @@ FIRFilter::FIRFilter(const UINT filterType,const UINT numTaps,const Float sample
     switch( filterType ){
         case LPF:
         case HPF:
-        setCutoffFrequency( cutoffFrequency );
-        this->cutoffFrequencyLower = 0;
-        this->cutoffFrequencyUpper = 0;
-        //Build the filter
-        buildFilter();
+            setCutoffFrequency( cutoffFrequency );
+            this->cutoffFrequencyLower = 0;
+            this->cutoffFrequencyUpper = 0;
+            //Build the filter
+            buildFilter();
         break;
         case BPF:
-        this->cutoffFrequency = 0;
-        setCutoffFrequency(cutoffFrequency, cutoffFrequency);
-        //Build the filter
-        buildFilter();
+            this->cutoffFrequency = 0;
+            setCutoffFrequency(cutoffFrequency, cutoffFrequency);
+            //Build the filter
+            buildFilter();
         break;
     }
 }
@@ -219,7 +219,9 @@ bool FIRFilter::load( std::fstream &file ){
         clear();
         return false;
     }
-    file >> filterType;
+    UINT tmpFilterType;
+    file >> tmpFilterType
+    filterType = tmpFilterType;
     
     //Load if the number of taps
     file >> word;
@@ -412,7 +414,7 @@ VectorFloat FIRFilter::filter(const VectorFloat &x){
     return processedData;
 }
 
-UINT FIRFilter::getFilterType() const{
+FIRFilter::FilterType FIRFilter::getFilterType() const{
     return filterType;
 }
 
@@ -454,7 +456,7 @@ VectorFloat FIRFilter::getFilterCoefficents() const{
     return VectorFloat();
 }
 
-bool FIRFilter::setFilterType(const UINT filterType){
+bool FIRFilter::setFilterType(const FilterType filterType){
     
     if( filterType == LPF || filterType == HPF || filterType == BPF ){
         this->filterType = filterType;
@@ -462,7 +464,7 @@ bool FIRFilter::setFilterType(const UINT filterType){
         return true;
     }
     
-    errorLog << "setFilterType(const UINT filterType) - Failed to set filter type, unknown filter type!" << std::endl;
+    errorLog << "setFilterType(const FilterType filterType) - Failed to set filter type, unknown filter type!" << std::endl;
     
     return false;
 }

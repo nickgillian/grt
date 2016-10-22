@@ -36,7 +36,7 @@ RegisterRegressifierModule< MLP > MLP::registerModule( MLP::getId() );
 MLP::MLP() : Regressifier( MLP::getId() )
 {
     inputLayerActivationFunction = Neuron::LINEAR;
-    hiddenLayerActivationFunction = Neuron::LINEAR;
+    hiddenLayerActivationFunction = Neuron::TANH;
     outputLayerActivationFunction = Neuron::LINEAR;
     minNumEpochs = 10;
     numRandomTrainingIterations = 10;
