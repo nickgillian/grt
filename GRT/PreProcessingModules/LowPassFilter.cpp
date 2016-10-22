@@ -23,10 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the LowPassFilter module with the PreProcessing base class
-RegisterPreProcessingModule< LowPassFilter > LowPassFilter::registerModule("LowPassFilter");
+//Define the string that will be used to identify the object
+const std::string LowPassFilter::id = "LowPassFilter";
+std::string LowPassFilter::getId() { return LowPassFilter::id; }
 
-LowPassFilter::LowPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta) : PreProcessing( "LowPassFilter" )
+//Register the LowPassFilter module with the PreProcessing base class
+RegisterPreProcessingModule< LowPassFilter > LowPassFilter::registerModule( LowPassFilter::getId() );
+
+LowPassFilter::LowPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta) : PreProcessing( LowPassFilter::getId() )
 {
     init(filterFactor,gain,numDimensions);
     
@@ -35,7 +39,7 @@ LowPassFilter::LowPassFilter(Float filterFactor,Float gain,UINT numDimensions,Fl
     }
 }
 
-LowPassFilter::LowPassFilter(const LowPassFilter &rhs) : PreProcessing( "LowPassFilter" )
+LowPassFilter::LowPassFilter(const LowPassFilter &rhs) : PreProcessing( LowPassFilter::getId() )
 {
     *this = rhs;
 }
@@ -243,7 +247,7 @@ bool LowPassFilter::setGain(const Float gain){
 }
 
 bool LowPassFilter::setFilterFactor(const Float filterFactor){
-    if( filterFactor > 0 ){
+    if( filterFactor >= 0 && filterFactor <= 1.0 ){
         this->filterFactor = filterFactor;
         reset();
         return true;
@@ -254,11 +258,12 @@ bool LowPassFilter::setFilterFactor(const Float filterFactor){
 
 bool LowPassFilter::setCutoffFrequency(const Float cutoffFrequency,const Float delta){
     if( cutoffFrequency > 0 && delta > 0 ){
-        Float RC = (1.0/TWO_PI) /cutoffFrequency;
+        Float RC = ONE_OVER_TWO_PI / cutoffFrequency;
         filterFactor = delta / (RC+delta);
         reset();
         return true;
     }
+    errorLog << "setCutoffFrequency(const Float cutoffFrequency,const Float delta) - cutoffFrequency and delta must be greater than 0!" << std::endl;
     return false;
 }
 

@@ -220,8 +220,8 @@ bool FIRFilter::load( std::fstream &file ){
         return false;
     }
     UINT tmpFilterType;
-    file >> tmpFilterType
-    filterType = tmpFilterType;
+    file >> tmpFilterType;
+    filterType = static_cast<FilterType>(tmpFilterType);
     
     //Load if the number of taps
     file >> word;

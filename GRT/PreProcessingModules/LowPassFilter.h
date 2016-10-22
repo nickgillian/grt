@@ -149,6 +149,7 @@ public:
     /**
     Sets the gain of the low pass filter.
     This will also reset the filter.
+    The gain must be greater than zero, values larger than 1.0 are OK.
     
     @param gain: the new gain value, this multiples the filtered values by a constant ampltidue
     @return true if the gain value was set, false otherwise
@@ -195,6 +196,13 @@ public:
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
     VectorFloat getFilteredValues() const { if( initialized ){ return yy; } return VectorFloat(); }
+
+    /**
+    Gets a string that represents the LowPassFilter class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -205,6 +213,8 @@ protected:
     Float gain;                        ///< The gain factor of the filter
     VectorFloat yy;                ///< The previous output value(s)
     
+private:
+    static const std::string id;
     static RegisterPreProcessingModule< LowPassFilter > registerModule;
 };
 
