@@ -231,8 +231,8 @@ TEST(MatrixFloat, SetColVector) {
 
 // Tests the CSV save and load functions
 TEST(MatrixFloat, SaveLoad) {
-	const UINT numRows = 5000;
-	const UINT numCols = 10000;
+	const UINT numRows = 100;
+	const UINT numCols = 1000;
 	MatrixFloat mat( numRows, numCols );
 	EXPECT_EQ(numRows, mat.getNumRows());
   	EXPECT_EQ(numCols, mat.getNumCols());
