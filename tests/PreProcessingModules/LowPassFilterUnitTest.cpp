@@ -5,7 +5,7 @@ using namespace GRT;
 //Unit tests for the GRT LowPassFilter module
 const std::string modelFilename = "lpf_model.grt";
 Float ROUND( const Float x ){ return roundf(x*100.0)/100.0; } //Round the value to 3 decimal places
-Float GET_FILTER_FACTOR( const Float freq, const Float delta ){ return delta / ((ONE_OVER_TWO_PI/10.0) + delta); }
+Float GET_FILTER_FACTOR( const Float freq, const Float delta ){ return delta / ((ONE_OVER_TWO_PI/freq) + delta); }
 
 // Tests the default constructor
 TEST(LowPassFilter, TestDefaultConstructor) {

@@ -266,7 +266,7 @@ bool HighPassFilter::setGain(const Float gain){
 }
 
 bool HighPassFilter::setFilterFactor(const Float filterFactor){
-    if( filterFactor > 0 ){
+    if( filterFactor > 0.0 && filterFactor <= 1.0 ){
         this->filterFactor = filterFactor;
         return true;
     }
