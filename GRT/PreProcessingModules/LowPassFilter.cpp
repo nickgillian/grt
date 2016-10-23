@@ -95,7 +95,14 @@ bool LowPassFilter::process(const VectorFloat &inputVector){
 }
 
 bool LowPassFilter::reset(){
-    if( initialized ) return init(filterFactor,gain,numInputDimensions);
+    if( initialized )
+    {
+        yy.clear();
+        yy.resize(numInputDimensions,0);
+        processedData.clear();
+        processedData.resize(numInputDimensions,0);
+        return true;
+    }
     return false;
 }
 
@@ -235,6 +242,12 @@ VectorFloat LowPassFilter::filter(const VectorFloat &x){
     }
     return processedData;
 }
+
+Float LowPassFilter::getFilterFactor() const { if( initialized ){ return filterFactor; } return 0; }
+    
+Float LowPassFilter::getGain() const { if( initialized ){ return gain; } return 0; }
+    
+VectorFloat LowPassFilter::getFilteredValues() const { if( initialized ){ return yy; } return VectorFloat(); }
 
 bool LowPassFilter::setGain(const Float gain){
     if( gain > 0 ){

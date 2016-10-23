@@ -265,13 +265,17 @@ private:
     
 };
     
-template< typename T >  Clusterer* getNewClustererModuleInstance() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
+template< typename T >  Clusterer* createNewClustererModuleInstance() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
+/**
+ @brief This class provides an interface for classes to register themselves with the clusterer base class, this enables Cluterer algorithms to
+ be automatically be created from just a string, e.g.: Clusterer *kmeans = create( "KMeans" );
+*/
 template< typename T >
 class RegisterClustererModule : Clusterer { 
 public:
     RegisterClustererModule( const std::string &newModuleId ) { 
-        getMap()->insert( std::pair< std::string, Clusterer*(*)() >(newModuleId, &getNewClustererModuleInstance< T > ) );
+        getMap()->insert( std::pair< std::string, Clusterer*(*)() >(newModuleId, &createNewClustererModuleInstance< T > ) );
     }
 };
 

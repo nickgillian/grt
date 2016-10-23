@@ -181,21 +181,21 @@ public:
     
     @return the current filter factor if the filter has been initialized, zero otherwise
     */
-    Float getFilterFactor() const { if( initialized ){ return filterFactor; } return 0; }
+    Float getFilterFactor() const;
     
     /**
     Gets the current gain value if the filter has been initialized.
     
     @return the currentgain value if the filter has been initialized, zero otherwise
     */
-    Float getGain() const { if( initialized ){ return gain; } return 0; }
+    Float getGain() const;
     
     /**
     Returns the last value(s) that were filtered.
     
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
-    VectorFloat getFilteredValues() const { if( initialized ){ return yy; } return VectorFloat(); }
+    VectorFloat getFilteredValues() const;
 
     /**
     Gets a string that represents the ID of this class.
@@ -209,9 +209,9 @@ public:
     using MLBase::load;
     
 protected:
-    Float filterFactor;                ///< The filter factor (alpha) of the filter
-    Float gain;                        ///< The gain factor of the filter
-    VectorFloat yy;                ///< The previous output value(s)
+    Float filterFactor;  ///< The filter factor (alpha) of the filter
+    Float gain;          ///< The gain factor of the filter
+    VectorFloat yy;      ///< The previous output value(s)
     
 private:
     static const std::string id;

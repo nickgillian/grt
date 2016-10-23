@@ -134,9 +134,6 @@ public:
      @return a Vector containing the names of the regressifiers that have been registered with the base regressifier
      */
 	static Vector< std::string > getRegisteredRegressifiers();
-	
-	//Tell the compiler we are explicitly using the following classes from the base class (this stops hidden overloaded virtual function warnings)
-    using MLBase::train;
 
     /**
      Creates a new regressifier instance based on the input string (which should contain the name of a valid regressifier such as LinearRegression).

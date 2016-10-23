@@ -3280,7 +3280,7 @@ bool GestureRecognitionPipeline::addContextModule(const Context &contextModule,U
     }
     
     //Create a new instance of the preProcessing and then clone the values across from the reference preProcessing
-    Context *newInstance = contextModule.createNewInstance();
+    Context *newInstance = contextModule.create( contextModule.getId() );
     
     //Verify that the clone was successful
     if( !newInstance->deepCopyFrom( &contextModule ) ){

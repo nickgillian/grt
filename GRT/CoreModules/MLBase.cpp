@@ -155,12 +155,11 @@ bool MLBase::print() const { std::cout << getModelAsString(); return true; }
 
 bool MLBase::save(const std::string filename) const {
     
-    if( !trained ) return false;
-    
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
     
-    if( !save( file ) ){
+    if( !save( file ) )
+    {
         return false;
     }
     
