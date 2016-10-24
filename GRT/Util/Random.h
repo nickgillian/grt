@@ -35,14 +35,14 @@
 #include "../DataStructures/VectorFloat.h"
 #include "IndexedDouble.h"
 
-GRT_BEGIN_NAMESPACE
-
 #ifdef GRT_CXX11_ENABLED
 #include <random>
 #define NEW_RANDOM_ALGO 1
 #else
 #define NEW_RANDOM_ALGO 0
 #endif
+
+GRT_BEGIN_NAMESPACE
 
 /**
  @brief This file contains the Random class, a useful wrapper for generating cross platform random functions. 
