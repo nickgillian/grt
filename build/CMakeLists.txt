@@ -5,7 +5,7 @@ project(GRT C CXX)
 # GRT library
 set(GRT_LIB_NAME grt)
 
-#set the main options, you can control these dynamically via the command line by passing in the option -D OPTION_NAME=ON
+#set the main options, you can control these dynamically via the command line by passing in the option -DOPTION_NAME=ON
 #e.g., cmake .. -DBUILD_TESTS=ON
 option(BUILD_TESTS “build-unit-tests” ON)
 option(BUILD_EXAMPLES “build-examples” ON)
@@ -85,7 +85,7 @@ endif()
 endif() #end of else(APPLE)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE})
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
 
 message(STATUS "CXX Flags: " ${CMAKE_CXX_FLAGS})
 message(STATUS "CXX Flags Debug Build: " ${CMAKE_CXX_FLAGS_DEBUG})
