@@ -6,6 +6,9 @@ compiler:
  - gcc
  - clang
  - g++
+env:
+ - CONFIG=Release
+ - CONFIG=Debug
 before_install:
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test ; fi
@@ -17,15 +20,13 @@ before_install:
  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" = "g++" ]]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 before_script:
  - cd build
- - mkdir build
- - cd build
- - cmake .. -DCMAKE_BUILD_RELEASE
+ - mkdir build_{CONFIG}
+ - cd build_{CONFIG}
+ - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG}
 script:
-- make -j2
+- make -j4
 - make test
 branches:
   only:
     - master
     - dev
-
- 
