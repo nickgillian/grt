@@ -7,8 +7,9 @@ compiler:
  - clang
  - g++
 env:
- - CONFIG=Release
- - CONFIG=Debug
+  global:
+    - CONFIG=Release
+    - CONFIG=Debug
 before_install:
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test ; fi
