@@ -34,13 +34,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cmath>
 
 #ifdef __GRT_WINDOWS_BUILD__
-
 #define NOMINMAX
-
 #include <windows.h>
-
 #endif
-
 
 #define GRT_BEGIN_NAMESPACE namespace GRT {
 #define GRT_END_NAMESPACE }

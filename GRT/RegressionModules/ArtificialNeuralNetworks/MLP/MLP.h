@@ -552,7 +552,6 @@ protected:
     Float gamma;
     Float trainingError;
     bool initialized;
-    Random random;
     
     Vector< Neuron > inputLayer;
     Vector< Neuron > hiddenLayer;
