@@ -19,10 +19,11 @@ before_install:
  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" = "g++" ]]; then sudo apt-get install -qq libstdc++-4.8-dev; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" = "g++" ]]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 before_script:
+- echo $CONFIG
  - cd build
  - mkdir build
  - cd build
- - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG}
+ - cmake .. -DCMAKE_BUILD_TYPE=$CONFIG
 script:
 - make -j4
 - make test
