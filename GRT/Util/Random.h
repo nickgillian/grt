@@ -37,9 +37,9 @@
 
 #ifdef GRT_CXX11_ENABLED
 #include <random>
-#define NEW_RANDOM_ALGO 1
+#define GRT_USE_CXX11_RANDOM_ALGO 1
 #else
-#define NEW_RANDOM_ALGO 0
+#define GRT_USE_CXX11_RANDOM_ALGO 0
 #endif
 
 GRT_BEGIN_NAMESPACE
@@ -56,7 +56,7 @@ public:
 	
 	@param seed: sets the current seed, If no seed is supplied then the seed will be set using the current system time
 	*/
-#if NEW_RANDOM_ALGO
+#if GRT_USE_CXX11_RANDOM_ALGO
     Random( );
 #else
     Random(unsigned long long seed = 0);
@@ -178,7 +178,7 @@ public:
     
 private:
 
-#if NEW_RANDOM_ALGO
+#if GRT_USE_CXX11_RANDOM_ALGO
     std::default_random_engine generator;
     std::uniform_real_distribution< Float > uniformRealDistribution;
     std::normal_distribution< Float > normalDistribution;

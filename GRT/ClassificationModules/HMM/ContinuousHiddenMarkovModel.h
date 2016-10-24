@@ -131,8 +131,10 @@ class GRT_API ContinuousHiddenMarkovModel : public MLBase {
     
     using MLBase::save;
     using MLBase::load;
+    using MLBase::train_;
+    using MLBase::predict_;
     
-    protected:
+protected:
     
     Float gauss( const MatrixFloat &x, const MatrixFloat &y, const MatrixFloat &sigma, const unsigned int i,const unsigned int j,const unsigned int N );
     

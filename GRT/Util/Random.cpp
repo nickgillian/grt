@@ -29,7 +29,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-#if NEW_RANDOM_ALGO
+#if GRT_USE_CXX11_RANDOM_ALGO
 Random::Random( ) : uniformRealDistribution(0.0,1.0), normalDistribution(0.0,1.0){}
 #else
 Random::Random(unsigned long long seed):v(4101842887655102017LL), w(1), storedval(0.0){
@@ -44,7 +44,7 @@ Random::Random(unsigned long long seed):v(4101842887655102017LL), w(1), storedva
 Random::~Random(){}
     
 void Random::setSeed(unsigned long long seed){
-#if NEW_RANDOM_ALGO
+#if GRT_USE_CXX11_RANDOM_ALGO
 
 #else
     if( seed == 0 ){
@@ -61,7 +61,7 @@ void Random::setSeed(unsigned long long seed){
 }
 
 int Random::getRandomNumberInt(int minRange,int maxRange){
-#if NEW_RANDOM_ALGO
+#if GRT_USE_CXX11_RANDOM_ALGO
     std::uniform_int_distribution< int > uniformIntDistribution(minRange, maxRange);
     return uniformIntDistribution( generator );
 #else
@@ -131,7 +131,7 @@ int Random::getRandomNumberWeighted(Vector< IndexedDouble > &weightedValues, Vec
 }
 
 Float Random::getRandomNumberUniform(Float minRange,Float maxRange){
-#if NEW_RANDOM_ALGO
+#if GRT_USE_CXX11_RANDOM_ALGO
     Float r = uniformRealDistribution( generator );
 #else
     Float r = doub();
@@ -140,7 +140,7 @@ Float Random::getRandomNumberUniform(Float minRange,Float maxRange){
 }
 
 Float Random::getRandomNumberGauss(Float mu,Float sigma){
-#if NEW_RANDOM_ALGO
+#if GRT_USE_CXX11_RANDOM_ALGO
     return mu + (normalDistribution( generator )*sigma);
 #else
     Float v1,v2,rsq,fac;

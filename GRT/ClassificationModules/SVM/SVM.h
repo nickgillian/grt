@@ -34,18 +34,6 @@ GRT_BEGIN_NAMESPACE
 #define SVM_MIN_SCALE_RANGE -1.0
 #define SVM_MAX_SCALE_RANGE 1.0
 
-typedef struct SVMModel{
-    unsigned int numInputDimensions;
-    unsigned int numClasses;
-    unsigned int totalSV;
-    Vector<unsigned int> classLabels;
-    Vector<unsigned int> numSVPerClass;
-    VectorFloat rho;
-    Vector< MatrixFloat > sv;
-    Vector< VectorFloat > svCoeff;
-
-} SVMModel;
-
 /**
 @brief This class acts as a front end for the LIBSVM library (http://www.csie.ntu.edu.tw/~cjlin/libsvm/).
 It implements a Support Vector Machine (SVM) classifier, a powerful classifier that works well on a wide
@@ -263,9 +251,7 @@ public:
      
      @return returns a pointer to the svm_model.
      */
-    struct LIBSVM::svm_model *getLIBSVMModel() const;
-
-    SVMModel getModel() const;
+    const struct LIBSVM::svm_model *getLIBSVMModel() const;
     
     /**
      Sets the SVM type.
