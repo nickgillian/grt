@@ -36,11 +36,12 @@
 #include "IndexedDouble.h"
 
 #ifdef GRT_CXX11_ENABLED
+#include <random>
 /*
 #include <random>
 #define GRT_USE_CXX11_RANDOM_ALGO 1
 */ //Disable teh new random algo until it is fully tested
-#define GRT_USE_CXX11_RANDOM_ALGO 0
+#define GRT_USE_CXX11_RANDOM_ALGO 1
 #else
 #define GRT_USE_CXX11_RANDOM_ALGO 0
 #endif

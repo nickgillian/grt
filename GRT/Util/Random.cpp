@@ -1,9 +1,3 @@
-/**
- @file
- @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- */
-
 /*
  GRT MIT License
  Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
@@ -44,10 +38,10 @@ Random::Random(unsigned long long seed):v(4101842887655102017LL), w(1), storedva
 Random::~Random(){}
     
 bool Random::setSeed(const unsigned long long seed_){
-    unsigned long long seed = seed_;
 #if GRT_USE_CXX11_RANDOM_ALGO
-
+    generator.seed( seed_ );
 #else
+    unsigned long long seed = seed_;
     if( seed == 0 ){
         Timer t;
         seed = (unsigned long long)t.getSystemTime();
@@ -64,7 +58,7 @@ bool Random::setSeed(const unsigned long long seed_){
 
 int Random::getRandomNumberInt(int minRange,int maxRange){
 #if GRT_USE_CXX11_RANDOM_ALGO
-    std::uniform_int_distribution< int > uniformIntDistribution(minRange, maxRange);
+    std::uniform_int_distribution< int > uniformIntDistribution(minRange, maxRange-1);
     return uniformIntDistribution( generator );
 #else
     return int( floor(getRandomNumberUniform(minRange,maxRange)) );

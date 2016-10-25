@@ -151,7 +151,7 @@ TEST(Random, UniformGaussTest) {
   Float mean = values.getMean();
   Float stdDev = values.getStdDev();
   EXPECT_LT( mean-mu, 0.01 );
-  EXPECT_LT( sigma-stdDev, 0.01 );
+  EXPECT_LT( sigma-stdDev, 0.02 );
 }
 
 int main(int argc, char **argv) {
