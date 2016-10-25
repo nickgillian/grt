@@ -25,9 +25,9 @@ TEST(MinDist, TrainBasicDataset) {
   EXPECT_TRUE( !md.getTrained() );
 
   //Generate a basic dataset
-  const UINT numSamples = 10000;
+  const UINT numSamples = 1000;
   const UINT numClasses = 10;
-  const UINT numDimensions = 100;
+  const UINT numDimensions = 10;
   ClassificationData::generateGaussDataset( "gauss_data.csv", numSamples, numClasses, numDimensions, 10, 1 );
   ClassificationData trainingData;
   EXPECT_TRUE( trainingData.load( "gauss_data.csv" ) );

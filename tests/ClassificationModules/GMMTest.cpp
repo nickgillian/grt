@@ -59,7 +59,6 @@ TEST(GMM, TrainBasicDataset) {
     EXPECT_TRUE( gmm.predict( testData[i].getSample() ) );
   }
 
-
 }
 
 int main(int argc, char **argv) {
