@@ -4,6 +4,9 @@ This file contains some notes about significant changes to the GRT.
 
 # Version 0.2.3
 
+## 24th October 2016
+- **C++11:** moved to using C++11 as default
+
 ## 22nd October 2016
 - **backend updates:** set all classification, regression, cluster, preprocessing, and postprocessing modules to use new ID and base class functionality
 - **unit tests:** working to improve and extend all GRT unit tests

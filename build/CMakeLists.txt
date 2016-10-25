@@ -11,12 +11,14 @@ option(BUILD_TESTS “build-unit-tests” ON)
 option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
-option(ENABLE_CXX11_SUPPORT "enable-c++11-support" ON)
 option(EXCLUDE_FROM_INSTALL "exclude-from-install" OFF)
 
 #setup the default build flags
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
+
+#Define that we are now using C++11 by default
+add_definitions(-DGRT_CXX11_ENABLED)
 
 #Setup if the library should be built as static or shared, default is SHARED, turning shared off will make a static build
 if(BUILD_SHARED_LIB MATCHES ON)
@@ -27,12 +29,6 @@ else() #setup for static build
     set(LIB_BUILD_TYPE STATIC)
     set(LIB_BUILD_TYPE_INFO "static")
     set(BUILD_SHARED_LIB OFF) #Make sure the shared lib is off
-endif()
-
-#If C++11 is enabled, then define the relevant flag
-if( ENABLE_CXX11_SUPPORT MATCHES ON)
-    message(STATUS "Building with C++11")
-    add_definitions(-DGRT_CXX11_ENABLED)
 endif()
 
 #If static lib is enabled, then define the relevant flag
@@ -50,36 +46,23 @@ endif()
 if(APPLE)
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for OSX")
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-
-    #Add C++11 and multithreading support
-    if( ENABLE_CXX11_SUPPORT MATCHES ON )
-       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
-    endif()
 else()
 	
 #Add any custom Linux definitions
 if(UNIX) 
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for UNIX/Linux")
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-
-    #Add C++11 and multithreading support
-    if( ENABLE_CXX11_SUPPORT MATCHES ON )
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
-    endif()
-
 endif()
 
 if(MINGW)
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for Windows/MinGW")
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-
-    #Add C++11 and multithreading support
-    if( ENABLE_CXX11_SUPPORT MATCHES ON )
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
-    endif()
 endif()
 
 endif() #end of else(APPLE)
