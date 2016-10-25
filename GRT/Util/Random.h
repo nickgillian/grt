@@ -74,9 +74,9 @@ public:
 	Sets the current seed used to compute the random distrubutions.
 	
 	@param seed: sets the current seed, If no seed is supplied then the seed will be set using the current system time
-	@return returns void
+	@return returns true if the seed was set successfully, false otherwise
 	*/
-    void setSeed(unsigned long long seed = 0);
+    bool setSeed(const unsigned long long seed = 0);
     
     /**
 	Gets a random integer in the range [minRange maxRange-1], using a uniform distribution

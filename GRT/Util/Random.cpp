@@ -43,7 +43,8 @@ Random::Random(unsigned long long seed):v(4101842887655102017LL), w(1), storedva
 
 Random::~Random(){}
     
-void Random::setSeed(unsigned long long seed){
+bool Random::setSeed(const unsigned long long seed_){
+    unsigned long long seed = seed_;
 #if GRT_USE_CXX11_RANDOM_ALGO
 
 #else
@@ -58,6 +59,7 @@ void Random::setSeed(unsigned long long seed){
     v = u; int64();
     w = v; int64();
 #endif
+    return true;
 }
 
 int Random::getRandomNumberInt(int minRange,int maxRange){

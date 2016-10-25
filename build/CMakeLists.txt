@@ -84,9 +84,11 @@ endif()
 
 endif() #end of else(APPLE)
 
+#Add the common cxx flags to the debug and release flags
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
 
+#Print the flags for sanity checks
 message(STATUS "CXX Flags: " ${CMAKE_CXX_FLAGS})
 message(STATUS "CXX Flags Debug Build: " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "CXX Flags Release Build: " ${CMAKE_CXX_FLAGS_RELEASE})
