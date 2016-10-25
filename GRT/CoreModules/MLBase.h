@@ -277,7 +277,7 @@ public:
     @param filename: the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool save(const std::string filename) const;
+    virtual bool save(const std::string &filename) const;
     
     /**
     This saves the model to a file.
@@ -285,7 +285,7 @@ public:
     @param filename: the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool load(const std::string filename);
+    virtual bool load(const std::string &filename);
     
     /**
     This saves the trained model to a file.
@@ -310,7 +310,7 @@ public:
     @param the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    GRT_DEPRECATED_MSG( "saveModelToFile(std::string filename) is deprecated, use save(std::string filename) instead", virtual bool saveModelToFile(std::string filename) const );
+    GRT_DEPRECATED_MSG( "saveModelToFile(std::string filename) is deprecated, use save(const std::string &filename) instead", virtual bool saveModelToFile(const std::string &filename) const );
     
     /**
     @deprecated use save(std::fstream &file) instead
@@ -324,7 +324,7 @@ public:
     @param filename: the name of the file to load the model from
     @return returns true if the model was loaded successfully, false otherwise
     */
-    GRT_DEPRECATED_MSG( "loadModelFromFile(std::string filename) is deprecated, use load(std::string filename) instead",virtual bool loadModelFromFile(std::string filename) );
+    GRT_DEPRECATED_MSG( "loadModelFromFile(std::string filename) is deprecated, use load(const std::string &filename) instead",virtual bool loadModelFromFile(const std::string &filename) );
     
     /**
     @deprecated use load(std::fstream &file) instead

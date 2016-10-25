@@ -132,7 +132,7 @@ public:
 	@param trainingData: the classification data that will be used to train the classifier at the core of the pipeline
 	@return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    virtual bool train_(ClassificationData &trainingData);
+    virtual bool train_(ClassificationData &trainingData) override;
 
     /**
      This is the main training interface for training a Classifier with ClassificationData using K-fold cross validation.  This function calls train_(...), so if you
@@ -167,7 +167,7 @@ public:
     @param trainingData: the time-series classification training data that will be used to train the classifier at the core of the pipeline
     @return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    virtual bool train_(TimeSeriesClassificationData &trainingData);
+    virtual bool train_(TimeSeriesClassificationData &trainingData) override;
 
     /**
      This is the main training interface for training a Classifier with TimeSeriesClassificationData using K-fold cross validation. This function calls train_(...), so if you
@@ -201,7 +201,7 @@ public:
     @param trainingData: the time-series classification training data that will be used to train the classifier at the core of the pipeline
     @return bool returns true if the classifier was trained successfully, false otherwise
     */
-    virtual bool train_(ClassificationDataStream &trainingData);
+    virtual bool train_(ClassificationDataStream &trainingData) override;
 
 	/**
      This is the main training interface for training a regression module with RegressionData.  This function will pass
@@ -212,7 +212,7 @@ public:
     @param trainingData: the labelled regression training data that will be used to train the regression module at the core of the pipeline
     @return bool returns true if the regression module was trained successfully, false otherwise
 	*/
-    virtual bool train_(RegressionData &trainingData);
+    virtual bool train_(RegressionData &trainingData) override;
 
     /**
      This is the main training interface for training a Regressifier with RegressionData using K-fold cross validation.  This function calls train_(...), so if you
@@ -245,7 +245,7 @@ public:
      @param trainingData: the unlabelledData training data that will be used to train the clusterer at the core of the pipeline
      @return bool returns true if the clusterer was trained and tested successfully, false otherwise
      */
-    virtual bool train_(UnlabelledData &trainingData);
+    virtual bool train_(UnlabelledData &trainingData) override;
     
     /**
      This function is the main interface for testing the accuracy of a pipeline with ClassificationData.  This function will pass
@@ -298,7 +298,7 @@ public:
      @param inputVector: the input data that will be passed through the pipeline for classification or regression
      @return bool returns true if the prediction was successful, false otherwise
 	*/
-    virtual bool predict_(VectorFloat &inputVector);
+    virtual bool predict_(VectorFloat &inputVector) override;
     
     /**
      This function is an interface for predictions using timeseries or Matrix data.
@@ -307,7 +307,7 @@ public:
      @param inputMatrix: the input atrix that will be passed through the pipeline for classification
      @return bool returns true if the prediction was successful, false otherwise
      */
-    virtual bool predict_(MatrixFloat &inputMatrix);
+    virtual bool predict_(MatrixFloat &inputMatrix) override;
 
     /**
      This function is now depreciated, you should use the predict function instead.
@@ -318,7 +318,7 @@ public:
      @param inputVector: the input data that will be passed through the pipeline for regression
      @return bool returns true if the regression was successful, false otherwise
 	*/
-    virtual bool map_(VectorFloat &inputVector);
+    virtual bool map_(VectorFloat &inputVector) override;
     
     /**
      This function is the main interface for resetting the entire gesture recognition pipeline.  This function will call reset on all the modules in 
@@ -326,7 +326,7 @@ public:
 
      @return bool returns true if the reset was successful, false otherwise
 	*/
-    virtual bool reset();
+    virtual bool reset() override;
 
     /**
      This function is the main interface for clearing the entire gesture recognition pipeline.  This function will remove any module added to the pipeline and
@@ -334,7 +334,7 @@ public:
 
      @return bool returns true if the cleared was successful, false otherwise
     */
-    virtual bool clear();
+    virtual bool clear() override;
 
     /**
      This function is the main interface for clearing any trained model stored by the gesture recognition pipeline.  This function will call clear on all the modules in the pipeline,
@@ -350,7 +350,7 @@ public:
      @param filename: the name of the file you want to save the pipeline to
      @return bool returns true if the pipeline was saved successful, false otherwise
      */
-    virtual bool save(const std::string &filename) const;
+    virtual bool save(const std::string &filename) const override;
     
     /**
      @deprecated use save(std::string &filename) instead
@@ -366,7 +366,7 @@ public:
      @param filename: the name of the file you want to load the pipeline from
      @return bool returns true if the pipeline was loaded successful, false otherwise
      */
-    virtual bool load(const std::string &filename);
+    virtual bool load(const std::string &filename) override;
     
     /**
      @deprecated use load(std::string &filename) instead
@@ -397,13 +397,6 @@ public:
     @return bool returns true if the pipeline has been initialized, false otherwise.
 	*/
     virtual bool getIsInitialized() const;
-
-    /**
-	 This function returns true if the classifier or regressifier at the core of the pipeline has been trained.
-     
-     @return bool returns true if the classifier or regressifier at the core of the pipeline has been trained, false otherwise.
-     */
-    virtual bool getTrained() const;
 
     /**
 	 This function returns true if any preprocessing modules have been added to the pipeline.
@@ -1141,7 +1134,7 @@ public:
      
      @return returns the pipeline model as a string
      */
-    std::string getModelAsString() const;
+    virtual std::string getModelAsString() const override;
     
     /**
      Gets the pipeline mode as a string, this will be either "PIPELINE_MODE_NOT_SET","CLASSIFICATION_MODE", or "REGRESSION_MODE".

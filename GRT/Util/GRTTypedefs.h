@@ -232,6 +232,10 @@ abort(); \
 #else // !NDEBUG
 #define grt_assert(x)
 #endif // !NDEBUG
+
+#ifndef GRT_CXX11_ENABLED
+#define override ///Define the empty override macro
+#endif
     
 //Declare typedefs for the legacy data types
 class ClassificationData;

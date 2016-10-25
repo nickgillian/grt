@@ -36,7 +36,6 @@ GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionP
 	*this = rhs;
 }
 
-
 GestureRecognitionPipeline& GestureRecognitionPipeline::operator=(const GestureRecognitionPipeline &rhs){
 	
 	if( this != &rhs ){
@@ -280,9 +279,8 @@ bool GestureRecognitionPipeline::train_(ClassificationData &data,const UINT kFol
     timer.start();
 
     //Spilt the data into K folds
-    bool spiltResult = data.spiltDataIntoKFolds(kFoldValue, useStratifiedSampling);
-    
-    if( !spiltResult ){
+    if( !data.spiltDataIntoKFolds(kFoldValue, useStratifiedSampling) ){
+        errorLog << __FILENAME__ << " Failed To Train Classifier, failed to split data into K folds!" << std::endl;
         return false;
     }
     
@@ -390,8 +388,9 @@ bool GestureRecognitionPipeline::train_( TimeSeriesClassificationData &trainingD
             
             //Try to process the matrix data row-by-row
             bool resetPreprocessingModule = true;
+            VectorFloat sample;
             for(UINT r=0; r<trainingSample.getNumRows(); r++){
-                VectorFloat sample = trainingSample.getRow( r );
+                sample = trainingSample.getRow( r );
                 
                 for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
                     
@@ -526,7 +525,7 @@ bool GestureRecognitionPipeline::train_( TimeSeriesClassificationData &trainingD
 bool GestureRecognitionPipeline::train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling){
     //Get a copy of the data so we can split it
     TimeSeriesClassificationData data = trainingData;
-    return train( data, kFoldValue, useStratifiedSampling );
+    return train_( data, kFoldValue, useStratifiedSampling );
 }
 
 bool GestureRecognitionPipeline::train_(TimeSeriesClassificationData &data,const UINT kFoldValue,const bool useStratifiedSampling){
@@ -798,9 +797,7 @@ bool GestureRecognitionPipeline::train_(RegressionData &trainingData){
 bool GestureRecognitionPipeline::train(const RegressionData &trainingData,const UINT kFoldValue){
     //Get a copy of the training data so we can split it
     RegressionData data = trainingData;
-
     return train_( data, kFoldValue );
-
 }
 
 bool GestureRecognitionPipeline::train_(RegressionData &data,const UINT kFoldValue){
@@ -2645,10 +2642,6 @@ bool GestureRecognitionPipeline::preProcessData(VectorFloat inputVector,bool com
 /////////////////////////////// GETTERS ///////////////////////////////
 bool GestureRecognitionPipeline::getIsInitialized() const{ 
     return initialized; 
-}
-    
-bool GestureRecognitionPipeline::getTrained() const{ 
-    return trained;
 }
     
 bool GestureRecognitionPipeline::getIsPreProcessingSet() const{ 
