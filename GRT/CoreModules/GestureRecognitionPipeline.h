@@ -2,14 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
- 
- @brief This file contains the GestureRecognitionPipeline class.
- 
- The GestureRecognitionPipeline is the core module of the Gesture Recognition Toolkit.
- You can use the GestureRecognitionPipeline to link the various GRT modules together, for instace you can link a PreProcessing module to a FeatureExtraction
- module to a Classification module and then to a PostProcessing module.
- 
- @example Tutorials/MachineLearning101/MachineLearning101.cpp
  */
 
 /**
@@ -51,6 +43,13 @@ GRT_BEGIN_NAMESPACE
     
 #define INSERT_AT_END_INDEX 99999
 
+/**
+ @brief The GestureRecognitionPipeline is the core module of the Gesture Recognition Toolkit.
+ You can use the GestureRecognitionPipeline to link the various GRT modules together, for instace you can link a PreProcessing module to a FeatureExtraction
+ module to a Classification module and then to a PostProcessing module.
+ 
+ @example Tutorials/MachineLearning101/MachineLearning101.cpp
+ */
 class GRT_API GestureRecognitionPipeline : public MLBase
 {
 public:
@@ -1374,12 +1373,12 @@ public:
     using MLBase::predict;
 
 protected:
+    bool init();
     bool predict_classifier(const VectorFloat &inputVector);
     bool predict_timeseries( const MatrixFloat &input );
     bool predict_frame( const MatrixFloat &input );
     bool predict_regressifier(const VectorFloat &inputVector);
     bool predict_clusterer(const VectorFloat &inputVector);
-    bool init();
     void deleteAllPreProcessingModules();
     void deleteAllFeatureExtractionModules();
     void deleteClassifier();

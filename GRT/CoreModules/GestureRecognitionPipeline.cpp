@@ -25,17 +25,11 @@ GRT_BEGIN_NAMESPACE
 
 GestureRecognitionPipeline::GestureRecognitionPipeline(void) : MLBase( "Pipeline" )
 {
-    classifier = NULL;
-    regressifier = NULL;
-    clusterer = NULL;
     init();
 }
 
 GestureRecognitionPipeline::GestureRecognitionPipeline(const GestureRecognitionPipeline &rhs) : MLBase( "Pipeline" )
 {
-    classifier = NULL;
-    regressifier = NULL;
-    clusterer = NULL;
 	init();
 
     //Invoke the equals operator to copy the rhs data to this instance
