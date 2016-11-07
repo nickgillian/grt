@@ -30,7 +30,7 @@ std::string TimeseriesBuffer::getId() { return TimeseriesBuffer::id; }
 //Register the TimeseriesBuffer module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< TimeseriesBuffer > TimeseriesBuffer::registerModule( TimeseriesBuffer::getId() );
 
-TimeseriesBuffer::TimeseriesBuffer(UINT bufferSize,UINT numDimensions) : FeatureExtraction( TimeseriesBuffer::getId() )
+TimeseriesBuffer::TimeseriesBuffer(const UINT bufferSize,const UINT numDimensions) : FeatureExtraction( TimeseriesBuffer::getId() )
 {
     init(bufferSize,numDimensions);
 }
@@ -151,7 +151,7 @@ bool TimeseriesBuffer::load( std::fstream &file ){
     return init(bufferSize,numInputDimensions);
 }
 
-bool TimeseriesBuffer::init(UINT bufferSize,UINT numDimensions){
+bool TimeseriesBuffer::init(const UINT bufferSize,const UINT numDimensions){
     
     initialized = false;
     featureDataReady = false;
@@ -180,7 +180,7 @@ bool TimeseriesBuffer::init(UINT bufferSize,UINT numDimensions){
 }
 
 
-VectorFloat TimeseriesBuffer::update(Float x){
+VectorFloat TimeseriesBuffer::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -225,12 +225,12 @@ bool TimeseriesBuffer::setBufferSize(UINT bufferSize){
     return false;
 }
 
-UINT TimeseriesBuffer::getBufferSize(){
+UINT TimeseriesBuffer::getBufferSize() const {
     if( initialized ) return bufferSize;
     return 0;
 }
 
-Vector< VectorFloat > TimeseriesBuffer::getDataBuffer(){
+Vector< VectorFloat > TimeseriesBuffer::getDataBuffer() const {
     if( initialized ) return dataBuffer.getData();
     return Vector< VectorFloat >();
 }

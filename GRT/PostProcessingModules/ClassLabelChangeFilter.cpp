@@ -23,18 +23,22 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the ClassLabelChangeFilter module with the PostProcessing base class
-RegisterPostProcessingModule< ClassLabelChangeFilter > ClassLabelChangeFilter::registerModule("ClassLabelChangeFilter");
+//Define the string that will be used to identify the object
+const std::string ClassLabelChangeFilter::id = "ClassLabelChangeFilter";
+std::string ClassLabelChangeFilter::getId() { return ClassLabelChangeFilter::id; }
 
-ClassLabelChangeFilter::ClassLabelChangeFilter(){
-    
+//Register the ClassLabelChangeFilter module with the PostProcessing base class
+RegisterPostProcessingModule< ClassLabelChangeFilter > ClassLabelChangeFilter::registerModule( ClassLabelChangeFilter::getId() );
+
+ClassLabelChangeFilter::ClassLabelChangeFilter() : PostProcessing( ClassLabelChangeFilter::getId() )
+{
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
     init();
 }
 
-ClassLabelChangeFilter::ClassLabelChangeFilter(const ClassLabelChangeFilter &rhs){
-    
+ClassLabelChangeFilter::ClassLabelChangeFilter(const ClassLabelChangeFilter &rhs) : PostProcessing( ClassLabelChangeFilter::getId() )
+{
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
     
@@ -118,7 +122,7 @@ bool ClassLabelChangeFilter::init(){
     return true;
 }
 
-UINT ClassLabelChangeFilter::filter(UINT predictedClassLabel){
+UINT ClassLabelChangeFilter::filter(const UINT predictedClassLabel){
     
     labelChanged = false;
     
@@ -181,7 +185,7 @@ bool ClassLabelChangeFilter::load( std::fstream &file ){
     return init();
 }
 
-bool ClassLabelChangeFilter::getChange(){
+bool ClassLabelChangeFilter::getChange() const {
     return labelChanged;
 }
 

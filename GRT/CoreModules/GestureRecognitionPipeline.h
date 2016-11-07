@@ -2,14 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
- 
- @brief This file contains the GestureRecognitionPipeline class.
- 
- The GestureRecognitionPipeline is the core module of the Gesture Recognition Toolkit.
- You can use the GestureRecognitionPipeline to link the various GRT modules together, for instace you can link a PreProcessing module to a FeatureExtraction
- module to a Classification module and then to a PostProcessing module.
- 
- @example Tutorials/MachineLearning101/MachineLearning101.cpp
  */
 
 /**
@@ -51,6 +43,13 @@ GRT_BEGIN_NAMESPACE
     
 #define INSERT_AT_END_INDEX 99999
 
+/**
+ @brief The GestureRecognitionPipeline is the core module of the Gesture Recognition Toolkit.
+ You can use the GestureRecognitionPipeline to link the various GRT modules together, for instace you can link a PreProcessing module to a FeatureExtraction
+ module to a Classification module and then to a PostProcessing module.
+ 
+ @example Tutorials/MachineLearning101/MachineLearning101.cpp
+ */
 class GRT_API GestureRecognitionPipeline : public MLBase
 {
 public:
@@ -130,10 +129,21 @@ public:
      the Classification module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the classifier was trained successfully, false otherwise.
 
-	@param trainingData: the labelled classification training data that will be used to train the classifier at the core of the pipeline
+	@param trainingData: the classification data that will be used to train the classifier at the core of the pipeline
 	@return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    virtual bool train(const ClassificationData &trainingData);
+    virtual bool train_(ClassificationData &trainingData) override;
+
+    /**
+     This is the main training interface for training a Classifier with ClassificationData using K-fold cross validation.  This function calls train_(...), so if you
+     want to use a more efficient version of the algorithm (and don't care that your training data may get modified) then call train_(...) directly.
+
+    @param trainingData: the classification training data that will be used to train the classifier at the core of the pipeline
+    @param kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples int the LabelledClassificationData
+    @param useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
+    @return bool returns true if the classifier was trained successfully, false otherwise
+    */
+    virtual bool train(const ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false );
 
 	/**
      This is the main training interface for training a Classifier with ClassificationData using K-fold cross validation.  This function will pass
@@ -146,7 +156,7 @@ public:
 	@param useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
 	@return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    virtual bool train(const ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false );
+    virtual bool train_(ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
 
 	/**
      This is the main training interface for training a Classifier with TimeSeriesClassificationData.  This function will pass
@@ -157,7 +167,18 @@ public:
     @param trainingData: the time-series classification training data that will be used to train the classifier at the core of the pipeline
     @return bool returns true if the classifier was trained successfully, false otherwise
 	*/
-    virtual bool train(const TimeSeriesClassificationData &trainingData);
+    virtual bool train_(TimeSeriesClassificationData &trainingData) override;
+
+    /**
+     This is the main training interface for training a Classifier with TimeSeriesClassificationData using K-fold cross validation. This function calls train_(...), so if you
+     want to use a more efficient version of the algorithm (and don't care that your training data may get modified) then call train_(...) directly.
+     
+     @param trainingData: the labelled time-series classification training data that will be used to train the classifier at the core of the pipeline
+     @param kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples in the LabelledClassificationData
+     @param useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
+     @return bool returns true if the classifier was trained and tested successfully, false otherwise
+     */
+    virtual bool train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
     
     /**
      This is the main training interface for training a Classifier with TimeSeriesClassificationData using K-fold cross validation.
@@ -169,7 +190,7 @@ public:
      @param useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
      @return bool returns true if the classifier was trained and tested successfully, false otherwise
      */
-    virtual bool train(const TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
+    virtual bool train_(TimeSeriesClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
 
     /**
      This is the main training interface for training a Classifier with ClassificationDataStream.  This function will pass
@@ -180,7 +201,7 @@ public:
     @param trainingData: the time-series classification training data that will be used to train the classifier at the core of the pipeline
     @return bool returns true if the classifier was trained successfully, false otherwise
     */
-    virtual bool train(const ClassificationDataStream &trainingData);
+    virtual bool train_(ClassificationDataStream &trainingData) override;
 
 	/**
      This is the main training interface for training a regression module with RegressionData.  This function will pass
@@ -191,7 +212,17 @@ public:
     @param trainingData: the labelled regression training data that will be used to train the regression module at the core of the pipeline
     @return bool returns true if the regression module was trained successfully, false otherwise
 	*/
-    virtual bool train(const RegressionData &trainingData);
+    virtual bool train_(RegressionData &trainingData) override;
+
+    /**
+     This is the main training interface for training a Regressifier with RegressionData using K-fold cross validation.  This function calls train_(...), so if you
+     want to use a more efficient version of the algorithm (and don't care that your training data may get modified) then call train_(...) directly.
+     
+     @param trainingData: the regression training data that will be used to train the regressifier at the core of the pipeline
+     @param kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples in the LabelledRegressionData
+     @return bool returns true if the regressifier was trained and tested successfully, false otherwise
+     */
+    virtual bool train(const RegressionData &trainingData,const UINT kFoldValue);
     
     /**
      This is the main training interface for training a Regressifier with RegressionData using K-fold cross validation.  This function will pass
@@ -199,11 +230,11 @@ public:
      training function of the Regression module that has been added to the GestureRecognitionPipeline.
      The function will return true if the regressifier was trained successfully, false otherwise.
      
-     @param trainingData: the labelled regression training data that will be used to train the regressifier at the core of the pipeline
+     @param trainingData: the regression training data that will be used to train the regressifier at the core of the pipeline
      @param kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples in the LabelledRegressionData
      @return bool returns true if the regressifier was trained and tested successfully, false otherwise
      */
-    virtual bool train(const RegressionData &trainingData,const UINT kFoldValue);
+    virtual bool train_(RegressionData &trainingData,const UINT kFoldValue);
     
     /**
      This is the main training interface for training a Clusterer with UnlabelledData using K-fold cross validation.  This function will pass
@@ -214,7 +245,7 @@ public:
      @param trainingData: the unlabelledData training data that will be used to train the clusterer at the core of the pipeline
      @return bool returns true if the clusterer was trained and tested successfully, false otherwise
      */
-    virtual bool train(const UnlabelledData &trainingData);
+    virtual bool train_(UnlabelledData &trainingData) override;
     
     /**
      This function is the main interface for testing the accuracy of a pipeline with ClassificationData.  This function will pass
@@ -262,12 +293,12 @@ public:
     
     /**
      This function is the main interface for all predictions using the gesture recognition pipeline.  You can use this function for both classification
-     and regression.  You should only call this function if you  have trained the pipeline.  The input Vector should be the same size as your training data.
+     and regression.  You should only call this function if you have trained the pipeline.  The input Vector should be the same size as your training data.
 
      @param inputVector: the input data that will be passed through the pipeline for classification or regression
      @return bool returns true if the prediction was successful, false otherwise
 	*/
-    virtual bool predict(const VectorFloat &inputVector);
+    virtual bool predict_(VectorFloat &inputVector) override;
     
     /**
      This function is an interface for predictions using timeseries or Matrix data.
@@ -276,7 +307,7 @@ public:
      @param inputMatrix: the input atrix that will be passed through the pipeline for classification
      @return bool returns true if the prediction was successful, false otherwise
      */
-    virtual bool predict(const MatrixFloat &inputMatrix);
+    virtual bool predict_(MatrixFloat &inputMatrix) override;
 
     /**
      This function is now depreciated, you should use the predict function instead.
@@ -287,7 +318,7 @@ public:
      @param inputVector: the input data that will be passed through the pipeline for regression
      @return bool returns true if the regression was successful, false otherwise
 	*/
-    bool map(const VectorFloat &inputVector);
+    virtual bool map_(VectorFloat &inputVector) override;
     
     /**
      This function is the main interface for resetting the entire gesture recognition pipeline.  This function will call reset on all the modules in 
@@ -295,7 +326,7 @@ public:
 
      @return bool returns true if the reset was successful, false otherwise
 	*/
-    virtual bool reset();
+    virtual bool reset() override;
 
     /**
      This function is the main interface for clearing the entire gesture recognition pipeline.  This function will remove any module added to the pipeline and
@@ -303,7 +334,7 @@ public:
 
      @return bool returns true if the cleared was successful, false otherwise
     */
-    virtual bool clear();
+    virtual bool clear() override;
 
     /**
      This function is the main interface for clearing any trained model stored by the gesture recognition pipeline.  This function will call clear on all the modules in the pipeline,
@@ -319,7 +350,7 @@ public:
      @param filename: the name of the file you want to save the pipeline to
      @return bool returns true if the pipeline was saved successful, false otherwise
      */
-    virtual bool save(const std::string &filename) const;
+    virtual bool save(const std::string &filename) const override;
     
     /**
      @deprecated use save(std::string &filename) instead
@@ -335,7 +366,7 @@ public:
      @param filename: the name of the file you want to load the pipeline from
      @return bool returns true if the pipeline was loaded successful, false otherwise
      */
-    virtual bool load(const std::string &filename);
+    virtual bool load(const std::string &filename) override;
     
     /**
      @deprecated use load(std::string &filename) instead
@@ -366,13 +397,6 @@ public:
     @return bool returns true if the pipeline has been initialized, false otherwise.
 	*/
     virtual bool getIsInitialized() const;
-
-    /**
-	 This function returns true if the classifier or regressifier at the core of the pipeline has been trained.
-     
-     @return bool returns true if the classifier or regressifier at the core of the pipeline has been trained, false otherwise.
-     */
-    virtual bool getTrained() const;
 
     /**
 	 This function returns true if any preprocessing modules have been added to the pipeline.
@@ -1110,7 +1134,7 @@ public:
      
      @return returns the pipeline model as a string
      */
-    std::string getModelAsString() const;
+    virtual std::string getModelAsString() const override;
     
     /**
      Gets the pipeline mode as a string, this will be either "PIPELINE_MODE_NOT_SET","CLASSIFICATION_MODE", or "REGRESSION_MODE".
@@ -1337,13 +1361,17 @@ public:
      */
     bool setInfo(const std::string &info);
 
+    using MLBase::train;
+    using MLBase::train_;
+    using MLBase::predict;
+
 protected:
+    bool init();
     bool predict_classifier(const VectorFloat &inputVector);
     bool predict_timeseries( const MatrixFloat &input );
     bool predict_frame( const MatrixFloat &input );
     bool predict_regressifier(const VectorFloat &inputVector);
     bool predict_clusterer(const VectorFloat &inputVector);
-    bool init();
     void deleteAllPreProcessingModules();
     void deleteAllFeatureExtractionModules();
     void deleteClassifier();

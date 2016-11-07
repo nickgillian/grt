@@ -28,25 +28,44 @@ GRT_BEGIN_NAMESPACE
 
 class GRT_API Gate : public Context{
 public:
-    Gate(bool gateOpen=true);
-    virtual ~Gate(void);
+    /**
+    Default Constructor. Sets the gate status
+
+    @param gateOpen: sets the gate status (open or closed). Default value gateOpen=true
+    */
+    Gate(const bool gateOpen=true);
+
+    /**
+    Copy Constructor.
     
-    //Override the base class methods
-    virtual bool deepCopyFrom(const Context *context){
-        
-        if( context == NULL ) return false;
-        
-        if( this->getContextType() == context->getContextType() ){
-            
-            Gate *ptr = (Gate*)context;
-            //Clone the Gate values 
-            this->gateOpen = ptr->gateOpen;
-            
-            //Clone the base variables
-            return copyBaseVariables( context );
-        }
-        return false;
-    }
+    Copies the values from the rhs Gate to this instance of the Gate.
+    
+    @param rhs: the rhs from which the values will be copied to this this instance of the Gate
+    */
+    Gate(const Gate &rhs);
+
+    /**
+    Default Destructor
+    */
+    virtual ~Gate();
+
+    /**
+    Assigns the equals operator setting how the values from the rhs instance will be copied to this instance.
+    
+    @param rhs: the rhs instance from which the values will be copied to this this instance of the Gate
+    @return returns a reference to this instance of the Gate
+    */
+    Gate& operator=(const Gate &rhs);
+
+    /**
+    Sets the Context deepCopyFrom function, overwriting the base Context function.
+    This function is used to deep copy the values from the input pointer to this instance of the Context module.
+    This function is called by the GestureRecognitionPipeline when the user adds a new Context module to the pipeline.
+    
+    @param postProcessing: a pointer to another instance of a Gate, the values of that instance will be cloned to this instance
+    @return true if the deep copy was successful, false otherwise
+    */
+    virtual bool deepCopyFrom(const Context *context);
     
     virtual bool process(VectorDouble inputVector);
     virtual bool reset();
@@ -62,10 +81,19 @@ public:
     
     //Getters
     bool getGateStatus(){ return gateOpen; }
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     bool gateOpen;
     
+private:
+    static const std::string id;  
     static RegisterContextModule< Gate > registerModule;
 };
     

@@ -51,7 +51,7 @@ public:
     @param minimumCount: sets the minimumCount value. Default value minimumCount=1
     @param bufferSize: sets the size of the class labels buffer. Default value bufferSize=1
     */
-    ClassLabelFilter(UINT minimumCount = 1,UINT bufferSize = 1);
+    ClassLabelFilter(const UINT minimumCount = 1,const UINT bufferSize = 1);
     
     /**
     Copy Constructor.
@@ -129,7 +129,7 @@ public:
     @param bufferSize: sets the size of the class labels buffer
     @return returns true if the ClassLabelFilter was initialized, false otherwise
     */
-    bool init(UINT minimumCount,UINT bufferSize);
+    bool init(const UINT minimumCount,const UINT bufferSize);
     
     /**
     This is the main filter function which filters the input predictedClassLabel.
@@ -137,14 +137,14 @@ public:
     @param predictedClassLabel: the predictedClassLabel which should be filtered
     return returns the filtered class label
     */
-    UINT filter(UINT predictedClassLabel);
+    UINT filter(const UINT predictedClassLabel);
     
     /**
     Get the most recently filtered class label value.
     
     @return returns the filtered class label
     */
-    UINT getFilteredClassLabel(){ return filteredClassLabel; }
+    UINT getFilteredClassLabel() const { return filteredClassLabel; }
     
     /**
     Sets the minimumCount parameter.
@@ -155,7 +155,7 @@ public:
     @param minimumCount: the new minimumCount parameter
     @return returns true if the minimumCount parameter was updated, false otherwise
     */
-    bool setMinimumCount(UINT minimumCount);
+    bool setMinimumCount(const UINT minimumCount);
     
     /**
     Sets the bufferSize parameter.
@@ -165,7 +165,14 @@ public:
     @param bufferSize: the new bufferSize parameter
     @return returns true if the bufferSize parameter was updated, false otherwise
     */
-    bool setBufferSize(UINT bufferSize);
+    bool setBufferSize(const UINT bufferSize);
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -177,6 +184,8 @@ protected:
     UINT bufferSize;                    ///< The size of the Class Label Filter buffer
     CircularBuffer< UINT > buffer;      ///< The class label filter buffer
     
+private:
+    static const std::string id;  
     static RegisterPostProcessingModule< ClassLabelFilter > registerModule;
 };
 

@@ -41,16 +41,16 @@ public:
     Constructor, sets the filter factor, gain and dimensionality of the low pass filter.
     If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.
     If the cutoffFrequency and delta values are kept at their default values of -1 then the values will be ignored and the filter factor will be used instead.
-    Otherwise the fiterFactor will control the low pass filter, with a smaller filterFactor (i.e. 0.1) resulting in a more aggresive smoothing
+    Otherwise the fiterFactor will control the low pass filter, with a larger filterFactor (i.e. 0.995) resulting in a more aggresive smoothing
     of the input signal.  The filterFactor should be in the range [0.0 1.0].
     
-    @param filterFactor: controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal.
+    @param filterFactor: controls the low pass filter, a larger value will result in a more aggresive smoothing of the input signal.
     @param gain: multiples the filtered values by a constant ampltidue.
     @param numDimensions: the dimensionality of the input data to filter.
     @param cutoffFrequency: sets the cutoffFrequency of the filter (in Hz). If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.
     @param delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor.
     */
-    LowPassFilter(const Float filterFactor = 0.1,const Float gain = 1,const UINT numDimensions = 1,const Float cutoffFrequency = -1,const Float delta = -1);
+    LowPassFilter(const Float filterFactor = 0.995,const Float gain = 1,const UINT numDimensions = 1,const Float cutoffFrequency = -1,const Float delta = -1);
     
     /**
     Copy Constructor, copies the LowPassFilter from the rhs instance to this instance
@@ -123,7 +123,7 @@ public:
     Initializes the filter, setting the filter size and dimensionality of the data it will filter.
     Sets all the filter values to zero.
     
-    @param filterFactor: controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal
+    @param filterFactor: controls the low pass filter, a larger value will result in a more aggresive smoothing of the input signal
     @param gain: multiples the filtered values by a constant ampltidue
     @param numDimensions: the dimensionality of the input data to filter
     @return true if the filter was initiliazed, false otherwise
@@ -149,6 +149,7 @@ public:
     /**
     Sets the gain of the low pass filter.
     This will also reset the filter.
+    The gain must be greater than zero, values larger than 1.0 are OK.
     
     @param gain: the new gain value, this multiples the filtered values by a constant ampltidue
     @return true if the gain value was set, false otherwise
@@ -156,7 +157,7 @@ public:
     bool setGain(const Float gain);
     
     /**
-    Sets the filter factor, this controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal.
+    Sets the filter factor, this controls the low pass filter, a larger value will result in a more aggresive smoothing of the input signal.
     This should be a value in the range [0.0 1.0].
     This will also reset the filter.
     
@@ -180,31 +181,40 @@ public:
     
     @return the current filter factor if the filter has been initialized, zero otherwise
     */
-    Float getFilterFactor() const { if( initialized ){ return filterFactor; } return 0; }
+    Float getFilterFactor() const;
     
     /**
     Gets the current gain value if the filter has been initialized.
     
     @return the currentgain value if the filter has been initialized, zero otherwise
     */
-    Float getGain() const { if( initialized ){ return gain; } return 0; }
+    Float getGain() const;
     
     /**
     Returns the last value(s) that were filtered.
     
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
-    VectorFloat getFilteredValues() const { if( initialized ){ return yy; } return VectorFloat(); }
+    VectorFloat getFilteredValues() const;
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
     
 protected:
-    Float filterFactor;                ///< The filter factor (alpha) of the filter
-    Float gain;                        ///< The gain factor of the filter
-    VectorFloat yy;                ///< The previous output value(s)
+    Float filterFactor;  ///< The filter factor (alpha) of the filter
+    Float gain;          ///< The gain factor of the filter
+    VectorFloat yy;      ///< The previous output value(s)
     
+private:
+    static const std::string id;
     static RegisterPreProcessingModule< LowPassFilter > registerModule;
 };
 

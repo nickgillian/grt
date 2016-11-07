@@ -43,7 +43,7 @@ public:
     /**
      Default constructor.
     */
-    CommandLineParser():infoLog("[CommandLineParser]"),errorLog("[ERROR CommandLineParser]"),warningLog("[WARNING CommandLineParser]"){}
+    CommandLineParser():infoLog("[CommandLineParser]"),warningLog("[WARNING CommandLineParser]"),errorLog("[ERROR CommandLineParser]"){}
 
     /**
      Default destructor.

@@ -137,7 +137,6 @@ protected:
         
         Vector< std::string > vec;
         std::string line;
-        unsigned int lineCounter = 0;
         
         //Loop over each line of data and parse the contents
         while ( getline( file, line ) )

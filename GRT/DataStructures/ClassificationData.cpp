@@ -726,7 +726,6 @@ ClassificationData ClassificationData::split(const UINT trainingSizePercentage,c
 
 	//Create the random partion indexs
 	Random random;
-    UINT randomIndex = 0;
     UINT K = getNumClasses();
 
     //Make sure both datasets get all the class labels, even if they have no samples in each
@@ -784,7 +783,6 @@ ClassificationData ClassificationData::split(const UINT trainingSizePercentage,c
         const UINT numTrainingExamples = (UINT) floor( Float(totalNumSamples) / 100.0 * Float(trainingSizePercentage) );
 
         //Create the random partion indexs
-        UINT randomIndex = 0;
         Vector< UINT > indexs( totalNumSamples );
         for(UINT i=0; i<totalNumSamples; i++) indexs[i] = i;
         std::random_shuffle(indexs.begin(), indexs.end());

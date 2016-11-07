@@ -228,6 +228,9 @@ public:
     @return Classifier*: a pointer to the new instance of the classifier
     */
     Node* createNewInstance() const;
+
+    using MLBase::save;
+    using MLBase::load;
     
 protected:
     

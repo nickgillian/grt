@@ -30,7 +30,7 @@ std::string MovementIndex::getId() { return MovementIndex::id; }
 //Register the MovementIndex module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< MovementIndex > MovementIndex::registerModule( MovementIndex::getId() );
 
-MovementIndex::MovementIndex(UINT bufferLength,UINT numDimensions) : FeatureExtraction( MovementIndex::getId() )
+MovementIndex::MovementIndex(const UINT bufferLength,const UINT numDimensions) : FeatureExtraction( MovementIndex::getId() )
 {
     init(bufferLength,numDimensions);
 }
@@ -153,7 +153,7 @@ bool MovementIndex::load( std::fstream &file ){
     return init(bufferLength,numInputDimensions);
 }
 
-bool MovementIndex::init(UINT bufferLength,UINT numDimensions){
+bool MovementIndex::init(const UINT bufferLength,const UINT numDimensions){
     
     initialized = false;
     
@@ -185,7 +185,7 @@ bool MovementIndex::init(UINT bufferLength,UINT numDimensions){
 }
 
 
-VectorFloat MovementIndex::update(Float x){
+VectorFloat MovementIndex::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -237,7 +237,7 @@ VectorFloat MovementIndex::update(const VectorFloat &x){
     return featureVector;
 }
 
-CircularBuffer< VectorFloat > MovementIndex::getData(){
+CircularBuffer< VectorFloat > MovementIndex::getData() const{
     if( initialized ){
         return dataBuffer;
     }

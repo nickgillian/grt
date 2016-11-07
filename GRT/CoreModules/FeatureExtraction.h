@@ -206,8 +206,7 @@ private:
     
 };
     
-//These two functions/classes are used to register any new FeatureExtraction Module with the FeatureExtraction base class
-template< typename T >  FeatureExtraction *createNewFeatureExtractionModule() { return new T; }
+template< typename T >  FeatureExtraction *createNewFeatureExtractionModule() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
 template< typename T > 
 class RegisterFeatureExtractionModule : FeatureExtraction { 

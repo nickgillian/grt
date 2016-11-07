@@ -4,6 +4,14 @@ This file contains some notes about significant changes to the GRT.
 
 # Version 0.2.3
 
+## 24th October 2016
+- **C++11:** moved to using C++11 as default
+
+## 22nd October 2016
+- **backend updates:** set all classification, regression, cluster, preprocessing, and postprocessing modules to use new ID and base class functionality
+- **unit tests:** working to improve and extend all GRT unit tests
+- **removed LDA:** removing old algorithm as it has never been fully implemented, will add back again when it is complete
+
 ## 29th September 2016
 - **added RMSFilter class:** new filter class for root mean squared low pass filtering of data, in PreProcessing
 - **moved various PreProcessing init to PreProcessing base class:** moved several common init work to PreProcessing base class, such as module naming and init of logs

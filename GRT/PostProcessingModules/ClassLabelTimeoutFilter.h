@@ -72,6 +72,8 @@ class GRT_API ClassLabelAndTimer{
 
 class GRT_API ClassLabelTimeoutFilter : public PostProcessing{
 public:
+    enum FilterModes{ALL_CLASS_LABELS=0,INDEPENDENT_CLASS_LABELS};
+
     /**
     Default Constructor. Sets the timeoutDuration and filterMode parameters.
     
@@ -92,7 +94,7 @@ public:
     @param timeoutDuration: sets the timeoutDuration value (in milliseconds). Default value timeoutDuration=1000
     @param filterMode: sets the filterMode parameter. Default value filterMode=ALL_CLASS_LABELS
     */
-    ClassLabelTimeoutFilter(unsigned long timeoutDuration = 1000,UINT filterMode = ALL_CLASS_LABELS);
+    ClassLabelTimeoutFilter(const unsigned long timeoutDuration = 1000,const UINT filterMode = ALL_CLASS_LABELS);
     
     /**
     Copy Constructor.
@@ -170,7 +172,7 @@ public:
     @param filterMode: sets the filterMode parameter
     @return returns true if the ClassLabelTimeoutFilter was initialized, false otherwise
     */
-    bool init(unsigned long timeoutDuration,UINT filterMode = ALL_CLASS_LABELS);
+    bool init(const unsigned long timeoutDuration,const UINT filterMode = ALL_CLASS_LABELS);
     
     /**
     This is the main filter function which filters the input predictedClassLabel.
@@ -178,14 +180,14 @@ public:
     @param predictedClassLabel: the predictedClassLabel which should be filtered
     return returns the filtered class label
     */
-    UINT filter(UINT predictedClassLabel);
+    UINT filter(const UINT predictedClassLabel);
     
     /**
     Get the most recently filtered class label value.
     
     @return returns the filtered class label
     */
-    UINT getFilteredClassLabel(){ return filteredClassLabel; }
+    UINT getFilteredClassLabel() const { return filteredClassLabel; }
     
     /**
     Get if the filter is currently ignorning new inputs because the timeout is active.
@@ -206,7 +208,7 @@ public:
     @param timeoutDuration: the new timeoutDuration parameter
     @return returns true if the timeoutDuration parameter was updated, false otherwise
     */
-    bool setTimeoutDuration(unsigned long timeoutDuration);
+    bool setTimeoutDuration(const unsigned long timeoutDuration);
     
     /**
     Sets the filterMode parameter, must be a value greater than 0.
@@ -227,9 +229,14 @@ public:
     @param filterMode: the new filterMode parameter
     @return returns true if the filterMode parameter was updated, false otherwise
     */
-    bool setFilterMode(UINT filterMode);
+    bool setFilterMode(const UINT filterMode);
+
+    /**
+    Gets a string that represents the ID of this class.
     
-    enum FilterModes{ALL_CLASS_LABELS=0,INDEPENDENT_CLASS_LABELS};
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -241,6 +248,8 @@ protected:
     unsigned long timeoutDuration;
     Vector< ClassLabelAndTimer > classLabelTimers;
     
+private:
+    static const std::string id;  
     static RegisterPostProcessingModule< ClassLabelTimeoutFilter > registerModule;
 };
 

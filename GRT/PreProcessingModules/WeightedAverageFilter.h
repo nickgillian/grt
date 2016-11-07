@@ -148,16 +148,26 @@ public:
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
     VectorFloat getFilteredData() const;
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
     
 protected:
-    UINT filterSize;                                        ///< The size of the filter
-    UINT inputSampleCounter;                                ///< A counter to keep track of the number of input samples
-    CircularBuffer< VectorFloat > dataBuffer;              ///< A buffer to store the previous N values, N = filterSize
-    VectorFloat weights;                                   ///< Stores the weights for each sample in the buffer, the size of this vector will match the filterSize
+    UINT filterSize;                                ///< The size of the filter
+    UINT inputSampleCounter;                       ///< A counter to keep track of the number of input samples
+    CircularBuffer< VectorFloat > dataBuffer;      ///< A buffer to store the previous N values, N = filterSize
+    VectorFloat weights;                           ///< Stores the weights for each sample in the buffer, the size of this vector will match the filterSize
+
+private:
+    static const std::string id;                                 
     static RegisterPreProcessingModule< WeightedAverageFilter > registerModule;
 };
 

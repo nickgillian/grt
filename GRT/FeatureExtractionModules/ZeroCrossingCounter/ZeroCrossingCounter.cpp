@@ -30,7 +30,7 @@ std::string ZeroCrossingCounter::getId() { return ZeroCrossingCounter::id; }
 //Register the ZeroCrossingCounter module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< ZeroCrossingCounter > ZeroCrossingCounter::registerModule( ZeroCrossingCounter::getId() );
 
-ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode) : FeatureExtraction( ZeroCrossingCounter::getId() )
+ZeroCrossingCounter::ZeroCrossingCounter(const UINT searchWindowSize,const Float deadZoneThreshold,const UINT numDimensions,const UINT featureMode) : FeatureExtraction( ZeroCrossingCounter::getId() )
 {
     init(searchWindowSize,deadZoneThreshold,numDimensions,featureMode);
 }
@@ -169,7 +169,7 @@ bool ZeroCrossingCounter::load( std::fstream &file ){
     return init(searchWindowSize,deadZoneThreshold,numInputDimensions,featureMode);
 }
 
-bool ZeroCrossingCounter::init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode){
+bool ZeroCrossingCounter::init(const UINT searchWindowSize,const Float deadZoneThreshold,const UINT numDimensions,const UINT featureMode){
     
     initialized = false;
     featureDataReady = false;
@@ -212,7 +212,7 @@ bool ZeroCrossingCounter::init(UINT searchWindowSize,Float deadZoneThreshold,UIN
 }
 
 
-VectorFloat ZeroCrossingCounter::update(Float x){
+VectorFloat ZeroCrossingCounter::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -267,17 +267,17 @@ VectorFloat ZeroCrossingCounter::update(const VectorFloat &x){
     return featureVector;
 }
 
-bool ZeroCrossingCounter::setSearchWindowSize(UINT searchWindowSize){
+bool ZeroCrossingCounter::setSearchWindowSize(const UINT searchWindowSize){
     if( searchWindowSize > 0 ){
         this->searchWindowSize = searchWindowSize;
         if( initialized ) return reset();
         return true;
     }
-    errorLog << "setSearchWindowSize(UINT searchWindowSize) - The searchWindowSize must be larger than zero!" << std::endl;
+    errorLog << "setSearchWindowSize(const UINT searchWindowSize) - The searchWindowSize must be larger than zero!" << std::endl;
     return false;
 }
 
-bool ZeroCrossingCounter::setFeatureMode(UINT featureMode){
+bool ZeroCrossingCounter::setFeatureMode(const UINT featureMode){
     if( featureMode == INDEPENDANT_FEATURE_MODE || featureMode == COMBINED_FEATURE_MODE ){
         this->featureMode = featureMode;
         if( initialized ) return reset();
@@ -287,13 +287,13 @@ bool ZeroCrossingCounter::setFeatureMode(UINT featureMode){
     return false;
 }
 
-bool ZeroCrossingCounter::setDeadZoneThreshold(Float deadZoneThreshold){
+bool ZeroCrossingCounter::setDeadZoneThreshold(const Float deadZoneThreshold){
     if( deadZoneThreshold > 0 ){
         this->deadZoneThreshold = deadZoneThreshold;
         if( initialized ) return reset();
         return true;
     }
-    errorLog << "setDeadZoneThreshold(Float deadZoneThreshold) - The deadZoneThreshold must be larger than zero!" << std::endl;
+    errorLog << "setDeadZoneThreshold(const Float deadZoneThreshold) - The deadZoneThreshold must be larger than zero!" << std::endl;
     return false;
 }
 

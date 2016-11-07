@@ -43,7 +43,6 @@ KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Fl
 
 KMeansFeatures::KMeansFeatures(const KMeansFeatures &rhs) : FeatureExtraction( KMeansFeatures::getId() )
 {
-    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }

@@ -42,7 +42,7 @@ public:
     @param filterSize: the size of the RMS filter buffer, should be a value greater than zero
     @param numDimensions: the dimensionality of the data to filter
     */
-    RMSFilter(UINT filterSize = 5,UINT numDimensions = 1);
+    RMSFilter(const UINT filterSize = 5,const UINT numDimensions = 1);
     
     /**
     Copy Constructor, copies the RMSFilter from the rhs instance to this instance
@@ -149,6 +149,13 @@ public:
     @return the filtered values.  An empty vector will be returned if the values were not filtered
     */
     VectorFloat getFilteredData() const { return processedData; }
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -159,6 +166,8 @@ protected:
     UINT inputSampleCounter;                                ///< A counter to keep track of the number of input samples
     CircularBuffer< VectorFloat > dataBuffer;           ///< A buffer to store the previous N values, N = filterSize
     
+private:
+    static const std::string id;   
     static RegisterPreProcessingModule< RMSFilter > registerModule;
 };
 

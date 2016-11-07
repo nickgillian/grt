@@ -30,7 +30,7 @@ std::string FFT::getId() { return FFT::id; }
 //Register the FFT module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< FFT > FFT::registerModule("FFT");
 
-FFT::FFT(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase) : FeatureExtraction( FFT::getId() )
+FFT::FFT(const UINT fftWindowSize,const UINT hopSize,const UINT numDimensions,const UINT fftWindowFunction,const bool computeMagnitude,const bool computePhase) : FeatureExtraction( FFT::getId() )
 {
     
     initialized = false;
@@ -182,7 +182,7 @@ bool FFT::load( std::fstream &file ){
     return init(fftWindowSize,hopSize,numInputDimensions,fftWindowFunction,computeMagnitude,computePhase);
 }
 
-bool FFT::init(UINT fftWindowSize,UINT hopSize,UINT numDimensions,UINT fftWindowFunction,bool computeMagnitude,bool computePhase,DataType inputType,DataType outputType){
+bool FFT::init(const UINT fftWindowSize,const UINT hopSize,const UINT numDimensions,const UINT fftWindowFunction,const bool computeMagnitude,const bool computePhase,const DataType inputType,const DataType outputType){
     
     //Clear any previous setup
     clear();
@@ -403,33 +403,33 @@ bool FFT::reset(){
     return false;
 }
 
-UINT FFT::getHopSize(){
+UINT FFT::getHopSize() const {
     if(initialized){ return hopSize; }
     return 0;
 }
 
-UINT FFT::getDataBufferSize(){
+UINT FFT::getDataBufferSize() const {
     if(initialized){ return dataBufferSize; }
     return 0;
 }
 
-UINT FFT::getFFTWindowSize(){
+UINT FFT::getFFTWindowSize() const {
     
     if( !initialized ) return 0;
     return fftWindowSize;
 }
 
-UINT FFT::getFFTWindowFunction(){
+UINT FFT::getFFTWindowFunction() const {
     if(initialized){ return fftWindowFunction; }
     return 0;
 }
 
-UINT FFT::getHopCounter(){
+UINT FFT::getHopCounter() const {
     if(initialized){ return hopCounter; }
     return 0;
 }
 
-VectorFloat FFT::getFrequencyBins(const unsigned int sampleRate){
+VectorFloat FFT::getFrequencyBins(const unsigned int sampleRate) const {
     if( !initialized ){ return VectorFloat(); }
     
     VectorFloat freqBins( fftWindowSize );
@@ -439,7 +439,7 @@ VectorFloat FFT::getFrequencyBins(const unsigned int sampleRate){
     return freqBins;
 }
 
-bool FFT::setHopSize(UINT hopSize){
+bool FFT::setHopSize(const UINT hopSize){
     if( hopSize > 0 ){
         this->hopSize = hopSize;
         hopCounter = 0;
@@ -449,7 +449,7 @@ bool FFT::setHopSize(UINT hopSize){
     return false;
 }
 
-bool FFT::setFFTWindowSize(UINT fftWindowSize){
+bool FFT::setFFTWindowSize(const UINT fftWindowSize){
     if( isPowerOfTwo(fftWindowSize) ){
         if( initialized ) return init(fftWindowSize, hopSize, numInputDimensions, fftWindowFunction, computeMagnitude, computePhase);
         this->fftWindowSize = fftWindowSize;
@@ -460,7 +460,7 @@ bool FFT::setFFTWindowSize(UINT fftWindowSize){
     
 }
 
-bool FFT::setFFTWindowFunction(UINT fftWindowFunction){
+bool FFT::setFFTWindowFunction(const UINT fftWindowFunction){
     if( validateFFTWindowFunction( fftWindowFunction ) ){
         this->fftWindowFunction = fftWindowFunction;
         return true;
@@ -468,26 +468,26 @@ bool FFT::setFFTWindowFunction(UINT fftWindowFunction){
     return false;
 }
 
-bool FFT::setComputeMagnitude(bool computeMagnitude){
+bool FFT::setComputeMagnitude(const bool computeMagnitude){
     if( initialized ) return init(fftWindowSize, hopSize, numInputDimensions, fftWindowFunction, computeMagnitude, computePhase);
     this->computeMagnitude = computeMagnitude;
     return true;
 }
 
-bool FFT::setComputePhase(bool computePhase){
+bool FFT::setComputePhase(const bool computePhase){
     if( initialized ) return init(fftWindowSize, hopSize, numInputDimensions, fftWindowFunction, computeMagnitude, computePhase);
     this->computePhase = computePhase;
     return true;
     
 }
 
-bool FFT::isPowerOfTwo(unsigned int x){
+bool FFT::isPowerOfTwo(const unsigned int x){
     if (x < 2) return false;
     if (x & (x - 1)) return false;
     return true;
 }
 
-bool FFT::validateFFTWindowFunction(UINT fftWindowFunction){
+bool FFT::validateFFTWindowFunction(const UINT fftWindowFunction){
     if( fftWindowFunction != RECTANGULAR_WINDOW && fftWindowFunction != BARTLETT_WINDOW &&
     fftWindowFunction != HAMMING_WINDOW && fftWindowFunction != HANNING_WINDOW ){
         return false;

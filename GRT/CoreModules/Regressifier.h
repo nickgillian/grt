@@ -134,9 +134,6 @@ public:
      @return a Vector containing the names of the regressifiers that have been registered with the base regressifier
      */
 	static Vector< std::string > getRegisteredRegressifiers();
-	
-	//Tell the compiler we are explicitly using the following classes from the base class (this stops hidden overloaded virtual function warnings)
-    using MLBase::train;
 
     /**
      Creates a new regressifier instance based on the input string (which should contain the name of a valid regressifier such as LinearRegression).
@@ -188,14 +185,18 @@ private:
 
 };
     
-//These two functions/classes are used to register any new Regression Module with the Regressifier base class
-template< typename T >  Regressifier *newRegressionModuleInstance() { return new T; }
+template< typename T >  
+Regressifier *createNewRegressionInstance() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
+/**
+ @brief This class provides an interface for classes to register themselves with the regressifier base class, this enables Regression algorithms to
+ be automatically be created from just a string, e.g.: Regressifier *mlp = create( "MLP" );
+*/
 template< typename T > 
 class RegisterRegressifierModule : public Regressifier { 
 public:
     RegisterRegressifierModule( const std::string &newRegresionModuleName ) { 
-        getMap()->insert( std::pair< std::string, Regressifier*(*)() >(newRegresionModuleName, &newRegressionModuleInstance< T > ) );
+        getMap()->insert( std::pair< std::string, Regressifier*(*)() >(newRegresionModuleName, &createNewRegressionInstance< T > ) );
     }
 };
 

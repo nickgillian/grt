@@ -49,7 +49,7 @@ public:
 	 @param computeTopNFreqFeatures: sets if the top N frequency feature will be included in the feature vector. Default value = true
 	 @param N: sets if size of N for the top N frequency features. Default value = 10
      */
-	FFTFeatures(UINT fftWindowSize=512,UINT numChannelsInFFTSignal=1,bool computeMaxFreqFeature = true,bool computeMaxFreqSpectrumRatio = true,bool computeCentroidFeature = true,bool computeTopNFreqFeatures = true,UINT N = 10);
+	FFTFeatures(const UINT fftWindowSize=512,const UINT numChannelsInFFTSignal=1,const bool computeMaxFreqFeature = true,const bool computeMaxFreqSpectrumRatio = true,const bool computeCentroidFeature = true,const bool computeTopNFreqFeatures = true,const UINT N = 10);
     
     /**
      Copy Constructor, copies the FFTFeatures from the rhs instance to this instance
@@ -131,7 +131,7 @@ public:
 	 @param N: sets if size of N for the top N frequency features. Default value = 10
 	 @return true if the FTT was initialized, false otherwise
      */   
-    bool init(UINT fftWindowSize,UINT numChannelsInFFTSignal,bool computeMaxFreqFeature,bool computeMaxFreqSpectrumRatio,bool computeCentroidFeature,bool computeTopNFreqFeatures,UINT N);
+    bool init(const UINT fftWindowSize,const UINT numChannelsInFFTSignal,const bool computeMaxFreqFeature,const bool computeMaxFreqSpectrumRatio,const bool computeCentroidFeature,const bool computeTopNFreqFeatures,const UINT N);
     
     //Tell the compiler we are using the following functions from the FeatureExtraction class to stop hidden virtual function warnings
     using MLBase::save;

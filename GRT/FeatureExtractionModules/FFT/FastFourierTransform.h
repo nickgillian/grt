@@ -49,15 +49,15 @@ public:
     
     bool computeFFT( VectorFloat &data );
     
-	VectorFloat getMagnitudeData();
-	VectorFloat getPhaseData();
-	VectorFloat getPowerData();
-	Float getAveragePower();
+	VectorFloat getMagnitudeData() const;
+	VectorFloat getPhaseData() const;
+	VectorFloat getPowerData() const;
+	Float getAveragePower() const;
 	Float *getMagnitudeDataPtr();
 	Float *getPhaseDataPtr();
 	Float *getPowerDataPtr();
     
-	UINT getFFTSize(){ return windowSize; }
+	UINT getFFTSize() const { return windowSize; }
     
 protected:
     bool windowData( VectorFloat &data );

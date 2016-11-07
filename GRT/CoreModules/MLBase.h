@@ -2,10 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief This is the main base class that all GRT machine learning algorithms should inherit from.
-
-A large number of the functions in this class are virtual and simply return false as these functions must be overwridden by the inheriting class.
 */
 
 /**
@@ -67,6 +63,11 @@ class GRT_API TestResultsObserverManager : public ObserverManager< TestInstanceR
     
 };
 
+/**
+@brief This is the main base class that all GRT machine learning algorithms should inherit from.
+
+A large number of the functions in this class are virtual and simply return false as these functions must be overwridden by the inheriting class.
+*/
 class GRT_API MLBase : public GRTBase, public Observer< TrainingResult >, public Observer< TestInstanceResult >
 {
 public:
@@ -75,7 +76,7 @@ public:
     /**
     Default MLBase Constructor
     @param id: the id of the inheriting class
-    @param type: the type of the inheriting class
+    @param type: the type of the inheriting class (e.g., classifier, regressifier, etc.)
     */
     MLBase( const std::string &id = "", const BaseType type = BASE_TYPE_NOT_SET );
     
@@ -271,20 +272,20 @@ public:
     virtual bool print() const;
     
     /**
-    This saves the model to a file, it calls the saveModelToFile(std::string filename) function unless it is overwritten by the derived class.
+    This saves the model to a file.
     
     @param filename: the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool save(const std::string filename) const;
+    virtual bool save(const std::string &filename) const;
     
     /**
-    This saves the model to a file, it calls the loadModelFromFile(std::string filename) function unless it is overwritten by the derived class.
+    This saves the model to a file.
     
     @param filename: the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool load(const std::string filename);
+    virtual bool load(const std::string &filename);
     
     /**
     This saves the trained model to a file.
@@ -309,7 +310,7 @@ public:
     @param the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    GRT_DEPRECATED_MSG( "saveModelToFile(std::string filename) is deprecated, use save(std::string filename) instead", virtual bool saveModelToFile(std::string filename) const );
+    GRT_DEPRECATED_MSG( "saveModelToFile(std::string filename) is deprecated, use save(const std::string &filename) instead", virtual bool saveModelToFile(const std::string &filename) const );
     
     /**
     @deprecated use save(std::fstream &file) instead
@@ -323,7 +324,7 @@ public:
     @param filename: the name of the file to load the model from
     @return returns true if the model was loaded successfully, false otherwise
     */
-    GRT_DEPRECATED_MSG( "loadModelFromFile(std::string filename) is deprecated, use load(std::string filename) instead",virtual bool loadModelFromFile(std::string filename) );
+    GRT_DEPRECATED_MSG( "loadModelFromFile(std::string filename) is deprecated, use load(const std::string &filename) instead",virtual bool loadModelFromFile(const std::string &filename) );
     
     /**
     @deprecated use load(std::fstream &file) instead
@@ -340,26 +341,6 @@ public:
     @return returns true if the model was added successfully, false otherwise
     */
     virtual bool getModel(std::ostream &stream) const;
-    
-    /**
-    Scales the input value x (which should be in the range [minSource maxSource]) to a value in the new target range of [minTarget maxTarget].
-    
-    @param x: the value that should be scaled
-    @param minSource: the minimum range that x originates from
-    @param maxSource: the maximum range that x originates from
-    @param minTarget: the minimum range that x should be scaled to
-    @param maxTarget: the maximum range that x should be scaled to
-    @param constrain: sets if the scaled value should be constrained to the target range
-    @return returns a new value that has been scaled based on the input parameters
-    */
-    Float inline scale(const Float &x,const Float &minSource,const Float &maxSource,const Float &minTarget,const Float &maxTarget,const bool constrain=false){
-        if( constrain ){
-            if( x <= minSource ) return minTarget;
-            if( x >= maxSource ) return maxTarget;
-        }
-        if( minSource == maxSource ) return minTarget;
-        return (((x-minSource)*(maxTarget-minTarget))/(maxSource-minSource))+minTarget;
-    }
     
     /**
     Gets the current model and settings as a std::string.

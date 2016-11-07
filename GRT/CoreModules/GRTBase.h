@@ -162,8 +162,29 @@ public:
      */
     const GRTBase* getGRTBasePointer() const;
 
-protected:
+    /**
+    Scales the input value x (which should be in the range [minSource maxSource]) to a value in the new target range of [minTarget maxTarget].
+    
+    @param x: the value that should be scaled
+    @param minSource: the minimum range that x originates from
+    @param maxSource: the maximum range that x originates from
+    @param minTarget: the minimum range that x should be scaled to
+    @param maxTarget: the maximum range that x should be scaled to
+    @param constrain: sets if the scaled value should be constrained to the target range
+    @return returns a new value that has been scaled based on the input parameters
+    */
+    Float inline scale(const Float &x,const Float &minSource,const Float &maxSource,const Float &minTarget,const Float &maxTarget,const bool constrain=false){
+        if( constrain ){
+            if( x <= minSource ) return minTarget;
+            if( x >= maxSource ) return maxTarget;
+        }
+        if( minSource == maxSource ) return minTarget;
+        return (((x-minSource)*(maxTarget-minTarget))/(maxSource-minSource))+minTarget;
+    }
+
     inline Float SQR(const Float &x) const{ return x*x; }
+
+protected:
 
     std::string classType;
     DebugLog debugLog;
