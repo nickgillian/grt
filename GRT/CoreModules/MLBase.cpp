@@ -106,6 +106,10 @@ bool MLBase::train(RegressionData trainingData){ return train_( trainingData ); 
 
 bool MLBase::train_(RegressionData &trainingData){ return false; }
 
+bool MLBase::train(RegressionData trainingData,RegressionData validationData){ return train_( trainingData, validationData ); }
+
+bool MLBase::train_(RegressionData &trainingData,RegressionData &validationData){ return false; }
+
 bool MLBase::train(TimeSeriesClassificationData trainingData){ return train_( trainingData ); }
 
 bool MLBase::train_(TimeSeriesClassificationData &trainingData){ return false; }

@@ -1,17 +1,8 @@
 /**
  @author Nicholas Gillian <nick@nickgillian.com>
- @brief This file implements a basic tool for training a logistic regression model. The dataset used to train the model can be in two formats, (1) a GRT RegressionData formatted file or (2)
- a CSV formatted file.  If the data is formatted as a CSV file then it should be formatted as follows:
- - each row should contain a sample
- - the first N columns should contain the input attributes (a.k.a. features)
- - the last T columns should contain the target attributes
- - columns should be seperated by a comma delimiter ','
- - rows should be ended with a new line operator '\n'
- Note, if the CSV option is used, then the user must also specifiy the number of input dimensions and number of target dimensions via the command line options (-n and -t respectively). These
- additional arguments are not required if the GRT RegressionData file format is used (as this information is contained in the meta data section of the file).
+ @brief This file implements a basic tool for training a MLP neural net model. See the help string for more info.
 */
 
-//You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
 using namespace std;
@@ -73,6 +64,7 @@ int main(int argc, char * argv[])
     parser.addOption( "--learning-rate", "learning-rate", 0.01 ); //Set the default learning rate to 0.01
     parser.addOption( "--min-change", "min-change", 0.001 ); //Set the default min change to 0.001
     parser.addOption( "--max-epoch", "max-epoch", 500 ); //Set the default max number of epochs to 500
+    parser.addOption( "--enable-scaling", "enable-scaling", true ); //Set the default scaling option to true
     parser.addOption( "--log", "log-filename" );
 
     //Parse the command line
@@ -96,6 +88,7 @@ bool train( CommandLineParser &parser ){
 
     string trainDatasetFilename = "";
     string modelFilename = "";
+    bool enableScaling = true;
     float learningRate = 0;
     float minChange = 0;
     unsigned int maxEpoch = 0;
@@ -115,9 +108,10 @@ bool train( CommandLineParser &parser ){
     parser.get( "min-change", minChange );
     parser.get( "max-epoch", maxEpoch );
     parser.get( "batch-size", batchSize );
+    parser.get( "enable-scaling", enableScaling );
     parser.get( "num-hidden", numHiddenNeurons );
 
-    infoLog << "settings: num hidden neurons: " << numHiddenNeurons << " learning-rate: " << learningRate << " min-change: " << minChange << " max-epoch: " << maxEpoch << " batch-size: " << batchSize << endl;
+    infoLog << "settings: num hidden neurons: " << numHiddenNeurons << " learning-rate: " << learningRate << " min-change: " << minChange << " max-epoch: " << maxEpoch << " batch-size: " << batchSize << " scaling: " << enableScaling << endl;
 
     //Load the training data to train the model
     RegressionData trainingData;
@@ -156,14 +150,15 @@ bool train( CommandLineParser &parser ){
     regression.setUseValidationSet( true );
     regression.setValidationSetSize( 20 );
     regression.setRandomiseTrainingOrder( true );
-    regression.enableScaling( true );
-    regression.init( N, numHiddenNeurons, T );
+    regression.enableScaling( enableScaling );
+    regression.init( N, numHiddenNeurons, T, Neuron::LINEAR, Neuron::TANH, Neuron::TANH );
 
     //Create a new pipeline that will hold the regression algorithm
     GestureRecognitionPipeline pipeline;
 
     //Add a multidimensional regression instance and set the regression algorithm to Linear Regression
-    pipeline.setRegressifier( MultidimensionalRegression( regression, true ) );
+    //pipeline.setRegressifier( MultidimensionalRegression( regression, true ) );
+    pipeline << regression;
 
     infoLog << "- Training model...\n";
 

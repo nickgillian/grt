@@ -534,11 +534,11 @@ protected:
     Performs the feedforward step for back propagation, using the input data
     
     @param data: the input Vector to use for the feedforward
-    @param inputNeuronsOuput: the results of the input layer
+    @param inputNeuronsOutput: the results of the input layer
     @param hiddenNeuronsOutput: the results of the hidden layer
     @param outputNeuronsOutput: the results of the output layer
     */
-    void feedforward(const VectorFloat &data,VectorFloat &inputNeuronsOuput,VectorFloat &hiddenNeuronsOutput,VectorFloat &outputNeuronsOutput);
+    void feedforward(const VectorFloat &data,VectorFloat &inputNeuronsOutput,VectorFloat &hiddenNeuronsOutput,VectorFloat &outputNeuronsOutput);
     
     UINT numInputNeurons;
     UINT numHiddenNeurons;
@@ -568,7 +568,7 @@ protected:
     VectorFloat classLikelihoods;
     
     //Temp Training Stuff
-    VectorFloat inputNeuronsOuput;
+    VectorFloat inputNeuronsOutput;
     VectorFloat hiddenNeuronsOutput;
     VectorFloat outputNeuronsOutput;
     VectorFloat deltaO;

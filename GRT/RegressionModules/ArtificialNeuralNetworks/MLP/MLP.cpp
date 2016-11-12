@@ -20,6 +20,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define GRT_DLL_EXPORTS
 #include "MLP.h"
+#include "../../../CoreModules/Regressifier.h"
+#include "../../../CoreAlgorithms/Regularizer/Regularizer.h"
 
 GRT_BEGIN_NAMESPACE
 
@@ -272,13 +274,13 @@ bool MLP::init(const UINT numInputNeurons,
     
     for(UINT i=0; i<numHiddenNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of input neurons
-        hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction,-0.2,0.2);
+        hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction,-0.1,0.1);
         hiddenLayer[i].gamma = gamma;
     }
     
     for(UINT i=0; i<numOutputNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of hidden neurons
-        outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction,-0.5,0.5);
+        outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction,-0.1,0.1);
         outputLayer[i].gamma = gamma;
     }
     
@@ -332,11 +334,11 @@ bool MLP::trainModel(RegressionData &trainingData){
     const UINT T = trainingData.getNumTargetDimensions();
     
     if( N != numInputNeurons ){
-        errorLog << "train(LabelledRegressionData trainingData) - The number of input dimensions in the training data (" << N << ") does not match that of the MLP (" << numInputNeurons << ")" << std::endl;
+        errorLog << "train(RegressionData trainingData) - The number of input dimensions in the training data (" << N << ") does not match that of the MLP (" << numInputNeurons << ")" << std::endl;
         return false;
     }
     if( T != numOutputNeurons ){
-        errorLog << "train(LabelledRegressionData trainingData) - The number of target dimensions in the training data (" << T << ") does not match that of the MLP (" << numOutputNeurons << ")" << std::endl;
+        errorLog << "train(RegressionData trainingData) - The number of target dimensions in the training data (" << T << ") does not match that of the MLP (" << numOutputNeurons << ")" << std::endl;
         return false;
     }
     
@@ -366,7 +368,7 @@ bool MLP::trainModel(RegressionData &trainingData){
     
     //Setup the memory
     trainingErrorLog.clear();
-    inputNeuronsOuput.resize(numInputNeurons);
+    inputNeuronsOutput.resize(numInputNeurons);
     hiddenNeuronsOutput.resize(numHiddenNeurons);
     outputNeuronsOutput.resize(numOutputNeurons);
     deltaO.resize(numOutputNeurons);
@@ -391,7 +393,7 @@ bool MLP::trainModel(RegressionData &trainingData){
     //Reset the scaling state so the prediction data will be scaled if needed
     useScaling = tempScalingState;
     
-    return true;
+    return trained;
 }
 
 bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainingData,const RegressionData &validationData){
@@ -467,7 +469,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
                 
                 if( isNAN(backPropError) ){
                     keepTraining = false;
-                    errorLog << "train(RegressionData trainingData) - NaN found!" << std::endl;
+                    errorLog << "train(RegressionData trainingData) - NaN found in back propagation error, training index: " << indexList[i] << std::endl;
                     return false;
                 }
                 
@@ -508,7 +510,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             
             if( checkForNAN() ){
                 keepTraining = false;
-                errorLog << "train(RegressionData trainingData) - NaN found!" << std::endl;
+                errorLog << "train(RegressionData trainingData) - NaN found in weights at " << epoch << std::endl;
                 break;
             }
             
@@ -618,7 +620,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     
     //Check to make sure the best network has not got any NaNs in it
     if( checkForNAN() ){
-        errorLog << "train(LabelledRegressionData trainingData) - NAN Found!" << std::endl;
+        errorLog << "train(RegressionData trainingData) - NAN Found!" << std::endl;
         return false;
     }
     
@@ -742,22 +744,21 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
                 
                 //Perform the back propagation
                 Float backPropError = back_prop(trainingExample,targetVector,alpha,beta);
-                
-                //debugLog << "i: " << i << " backPropError: " << backPropError << std::endl;
-                
+                 
                 if( isNAN(backPropError) ){
                     keepTraining = false;
-                    errorLog << "train(RegressionData trainingData) - NaN found!" << std::endl;
+                    errorLog << "train(RegressionData trainingData) - NaN found in back propagation error, epoch: " << epoch << " training iter: " << i << " random index: " << indexList[ randomIndex ] << std::endl;
+                    return false;
                 }
-                
+
                 //Compute the error for the i'th example
                 totalSquaredTrainingError += backPropError; //The backPropError is already squared
             }
             
             if( checkForNAN() ){
                 keepTraining = false;
-                errorLog << "train(RegressionData trainingData) - NaN found!" << std::endl;
-                break;
+                errorLog << "train(RegressionData trainingData) - NaN found in weights at epoch " << epoch << std::endl;
+                return false;
             }
             
             //Compute the error over all the training/validation examples
@@ -851,10 +852,11 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
     Float update = 0;
     Float error = 0;
     Float sqrError = 0;
+    Regularizer regularizer( Regularizer::L2_NORM, 0.01 );
     
     //Forward propagation based on the current weights
-    feedforward(trainingExample,inputNeuronsOuput,hiddenNeuronsOutput,outputNeuronsOutput);
-    
+    feedforward(trainingExample,inputNeuronsOutput,hiddenNeuronsOutput,outputNeuronsOutput);
+ 
     //Compute the error of the output layer: the derivative of the output neuron, times the error of the output
     for(k=0; k<numOutputNeurons; k++){
         error = targetVector[k]-outputNeuronsOutput[k];
@@ -883,7 +885,7 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
     //Update the hidden weights, new weight = old weight + (learningRate * change) + (momenutum * previousChange)
     for(i=0; i<numInputNeurons; i++){
         for(j=0; j<numHiddenNeurons; j++){
-            update = deltaH[j] * inputNeuronsOuput[i];
+            update = deltaH[j] * inputNeuronsOutput[i];
             hiddenLayer[j].weights[i] += learningRate*update + learningMomentum*hiddenLayer[j].previousUpdate[i];
             hiddenLayer[j].previousUpdate[i] = update;
         }
@@ -912,6 +914,10 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
         //Store the update
         hiddenLayer[j].previousBiasUpdate = update;
     }
+
+    //Regularizer the weights
+    for(j=0; j<numHiddenNeurons; j++) regularizer.apply( hiddenLayer[j].weights );
+    for(k=0; k<numOutputNeurons; k++) regularizer.apply( outputLayer[k].weights );
     
     //Return the squared error between the output of the network and the target Vector
     return sqrError;
@@ -919,7 +925,7 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
 
 VectorFloat MLP::feedforward(VectorFloat trainingExample){
     
-    if( inputNeuronsOuput.size() != numInputNeurons ) inputNeuronsOuput.resize(numInputNeurons,0);
+    if( inputNeuronsOutput.size() != numInputNeurons ) inputNeuronsOutput.resize(numInputNeurons,0);
     if( hiddenNeuronsOutput.size() != numHiddenNeurons ) hiddenNeuronsOutput.resize(numHiddenNeurons,0);
     if( outputNeuronsOutput.size() != numOutputNeurons ) outputNeuronsOutput.resize(numOutputNeurons,0);
 
@@ -936,12 +942,12 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
     VectorFloat input(1);
     for(i=0; i<numInputNeurons; i++){
         input[0] = trainingExample[i];
-        inputNeuronsOuput[i] = inputLayer[i].fire( input );
+        inputNeuronsOutput[i] = inputLayer[i].fire( input );
     }
     
     //Hidden Layer
     for(j=0; j<numHiddenNeurons; j++){
-        hiddenNeuronsOutput[j] = hiddenLayer[j].fire( inputNeuronsOuput );
+        hiddenNeuronsOutput[j] = hiddenLayer[j].fire( inputNeuronsOutput );
     }
     
     //Output Layer
@@ -959,9 +965,9 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
     return outputNeuronsOutput;
 }
 
-void MLP::feedforward(const VectorFloat &data,VectorFloat &inputNeuronsOuput,VectorFloat &hiddenNeuronsOutput,VectorFloat &outputNeuronsOutput){
+void MLP::feedforward(const VectorFloat &data,VectorFloat &inputNeuronsOutput,VectorFloat &hiddenNeuronsOutput,VectorFloat &outputNeuronsOutput){
     
-    if( inputNeuronsOuput.size() != numInputNeurons ) inputNeuronsOuput.resize(numInputNeurons,0);
+    if( inputNeuronsOutput.size() != numInputNeurons ) inputNeuronsOutput.resize(numInputNeurons,0);
     if( hiddenNeuronsOutput.size() != numHiddenNeurons ) hiddenNeuronsOutput.resize(numHiddenNeurons,0);
     if( outputNeuronsOutput.size() != numOutputNeurons ) outputNeuronsOutput.resize(numOutputNeurons,0);
 
@@ -971,12 +977,12 @@ void MLP::feedforward(const VectorFloat &data,VectorFloat &inputNeuronsOuput,Vec
     VectorFloat input(1);
     for(i=0; i<numInputNeurons; i++){
         input[0] = data[i];
-        inputNeuronsOuput[i] = inputLayer[i].fire( input );
+        inputNeuronsOutput[i] = inputLayer[i].fire( input );
     }
     
     //Hidden Layer
     for(j=0; j<numHiddenNeurons; j++){
-        hiddenNeuronsOutput[j] = hiddenLayer[j].fire( inputNeuronsOuput );
+        hiddenNeuronsOutput[j] = hiddenLayer[j].fire( inputNeuronsOutput );
     }
     
     //Output Layer

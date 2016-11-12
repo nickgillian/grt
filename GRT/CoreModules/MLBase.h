@@ -126,6 +126,25 @@ public:
     @return returns true if a new regression model was trained, false otherwise
     */
     virtual bool train_(RegressionData &trainingData);
+     
+    /**
+    This is the main training interface for training a regression model using a training and validation dataset. This should be overwritten by the derived class.
+    By default it will call the train_ function, unless it is overwritten by the derived class.
+    
+    @param trainingData: the training data that will be used to train a new regression model
+    @param validationData: the validation data that will be used to validate the regression model
+    @return returns true if a new regression model was trained, false otherwise
+    */
+    virtual bool train(RegressionData trainingData,RegressionData validationData);
+    
+    /**
+    This is the main training interface for training a regression model using a training and validation dataset. This should be overwritten by the derived class.
+    
+    @param trainingData: the training data that will be used to train a new regression model
+    @param validationData: the validation data that will be used to validate the regression model
+    @return returns true if a new regression model was trained, false otherwise
+    */
+    virtual bool train_(RegressionData &trainingData,RegressionData &validationData);
     
     /**
     This is the main training interface for TimeSeriesClassificationData.

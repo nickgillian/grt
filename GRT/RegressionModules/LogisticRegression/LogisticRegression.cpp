@@ -76,6 +76,12 @@ bool LogisticRegression::deepCopyFrom(const Regressifier *regressifier){
 
 bool LogisticRegression::train_(RegressionData &trainingData){
     
+    //Create a validation dataset, if needed
+    RegressionData validationData;
+    if( useValidationSet ){
+        validationData = trainingData.split( 100 - validationSetSize );
+    }
+    
     const unsigned int M = trainingData.getNumSamples();
     const unsigned int N = trainingData.getNumInputDimensions();
     const unsigned int K = trainingData.getNumTargetDimensions();
@@ -96,7 +102,7 @@ bool LogisticRegression::train_(RegressionData &trainingData){
     numOutputDimensions = 1; //Logistic Regression will have 1 output
     inputVectorRanges.clear();
     targetVectorRanges.clear();
-    
+   
     //Scale the training and validation data, if needed
     if( useScaling ){
         //Find the ranges for the input data
@@ -107,6 +113,11 @@ bool LogisticRegression::train_(RegressionData &trainingData){
         
         //Scale the training data
         trainingData.scale(inputVectorRanges,targetVectorRanges,0.0,1.0);
+    
+        //Scale the validation data
+        if( useValidationSet ){
+          validationData.scale(inputVectorRanges,targetVectorRanges,0.0,1.0);
+        }
     }
     
     //Reset the weights
@@ -118,9 +129,9 @@ bool LogisticRegression::train_(RegressionData &trainingData){
     }
     
     Float error = 0;
-    Float lastSquaredError = 0;
+    Float lastError = 0;
     Float delta = 0;
-    UINT iter = 0;
+    UINT epoch = 0;
     bool keepTraining = true;
     Random random;
     Vector< UINT > randomTrainingOrder(M);
@@ -137,9 +148,10 @@ bool LogisticRegression::train_(RegressionData &trainingData){
     
     //Run the main stochastic gradient descent training algorithm
     while( keepTraining ){
+
+      rmsTrainingError = 0.0;
         
         //Run one epoch of training using stochastic gradient descent
-        totalSquaredTrainingError = 0;
         for(UINT m=0; m<M; m++){
             
             //Select the random sample
@@ -153,7 +165,7 @@ bool LogisticRegression::train_(RegressionData &trainingData){
                 h += x[j] * w[j];
             }
             error = y[0] - sigmoid( h );
-            totalSquaredTrainingError += SQR(error);
+            rmsTrainingError += SQR(error);
             
             //Update the weights
             for(UINT j=0; j<N; j++){
@@ -162,34 +174,50 @@ bool LogisticRegression::train_(RegressionData &trainingData){
             w0 += learningRate * error;
         }
         
+        //Compute the error on the validation set if needed
+        Float rmsValidationError = 0;
+        if( useValidationSet ){
+          for(UINT i=0; i<validationData.getNumSamples(); i++){
+            //Compute the error, given the current weights
+            const VectorFloat &x = validationData[i].getInputVector();
+            const VectorFloat &y = validationData[i].getTargetVector();
+            Float h = w0;
+            for(UINT j=0; j<N; j++){
+                h += x[j] * w[j];
+            }
+            error = y[0] - sigmoid( h );
+            rmsValidationError += SQR(error);
+          }
+          rmsValidationError = sqrt( rmsValidationError / Float(validationData.getNumSamples()) );
+        }
+
         //Compute the error
-        delta = fabs( totalSquaredTrainingError-lastSquaredError );
-        lastSquaredError = totalSquaredTrainingError;
-        rmsTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
-        
+        rmsTrainingError = sqrt( rmsTrainingError / Float(M) );
+        delta = epoch > 0 ? fabs( rmsTrainingError-lastError ) : rmsTrainingError;
+        lastError = rmsTrainingError;
+
         //Check to see if we should stop
         if( delta <= minChange ){
             keepTraining = false;
         }
         
-        if( ++iter >= maxNumEpochs ){
+        if( ++epoch >= maxNumEpochs ){
             keepTraining = false;
         }
         
-        if( grt_isinf( totalSquaredTrainingError ) || grt_isnan( totalSquaredTrainingError ) ){
-            errorLog << "train_(RegressionData &trainingData) - Training failed! Total squared error is NAN. If scaling is not enabled then you should try to scale your data and see if this solves the issue." << std::endl;
+        if( grt_isinf( rmsTrainingError ) || grt_isnan( rmsTrainingError ) ){
+            errorLog << "train_(RegressionData &trainingData) - Training failed! RMS error is NAN. If scaling is not enabled then you should try to scale your data and see if this solves the issue." << std::endl;
             return false;
         }
         
         //Store the training results
-        rmsTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
-        result.setRegressionResult(iter,totalSquaredTrainingError,rmsTrainingError,this);
+        result.setRegressionResult(epoch,rmsTrainingError,rmsValidationError,this);
         trainingResults.push_back( result );
         
         //Notify any observers of the new result
         trainingResultsObserverManager.notifyObservers( result );
         
-        trainingLog << "Epoch: " << iter << " RMS Training Error: " << rmsTrainingError << " Total Squared Training Error: " << totalSquaredTrainingError << " Delta: " << delta << std::endl;
+        trainingLog << "Epoch: " << epoch << " RMS Training Error: " << rmsTrainingError << " Delta: " << delta << " RMS Validation Error: " << rmsValidationError << std::endl;
     }
     
     //Flag that the algorithm has been trained
@@ -224,7 +252,6 @@ bool LogisticRegression::predict_(VectorFloat &inputVector){
     }
     Float sum = regressionData[0];
     regressionData[0] = sigmoid( regressionData[0] );
-    std::cout << "reg sum: " << sum << " sig: " << regressionData[0] << std::endl;
     if( useScaling ){
         for(UINT n=0; n<numOutputDimensions; n++){
             regressionData[n] = grt_scale(regressionData[n], 0.0, 1.0, targetVectorRanges[n].minValue, targetVectorRanges[n].maxValue);

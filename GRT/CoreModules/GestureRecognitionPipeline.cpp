@@ -794,6 +794,8 @@ bool GestureRecognitionPipeline::train_(RegressionData &trainingData){
     return true;
 }
 
+bool GestureRecognitionPipeline::train_(RegressionData &trainingData,RegressionData &validationData){ return false; } //TODO Need to add this function
+
 bool GestureRecognitionPipeline::train(const RegressionData &trainingData,const UINT kFoldValue){
     //Get a copy of the training data so we can split it
     RegressionData data = trainingData;

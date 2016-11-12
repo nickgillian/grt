@@ -213,6 +213,18 @@ public:
     @return bool returns true if the regression module was trained successfully, false otherwise
 	*/
     virtual bool train_(RegressionData &trainingData) override;
+	
+    /**
+     This is the main training interface for training a regression module with a regression training and validation dataset.  This function will pass
+     the training and validataion through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the 
+     training function of the regression module that has been added to the GestureRecognitionPipeline.  
+     The function will return true if the classifier was trained successfully, false otherwise.
+
+    @param trainingData: the regression training data that will be used to train the regression module at the core of the pipeline
+    @param validationData: the regression validation data that will be used to validate the regression module at the core of the pipeline
+    @return bool returns true if the regression module was trained successfully, false otherwise
+    */
+    virtual bool train_(RegressionData &trainingData,RegressionData &validationData) override;
 
     /**
      This is the main training interface for training a Regressifier with RegressionData using K-fold cross validation.  This function calls train_(...), so if you
@@ -1383,7 +1395,6 @@ protected:
     bool computeTestMetrics(VectorFloat &precisionCounter,VectorFloat &recallCounter,Float &rejectionPrecisionCounter,Float &rejectionRecallCounter,VectorFloat &confusionMatrixCounter,const UINT numTestSamples);
     
     bool initialized;
-    bool trained;
     std::string info;
     UINT inputVectorDimensions;
     UINT outputVectorDimensions;
