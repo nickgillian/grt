@@ -2953,9 +2953,9 @@ void MainWindow::updateRegressifierView(const int viewIndex){
     unsigned int numInputs = ui->setupView_numInputsSpinBox->value();
     unsigned int numOutputs = ui->setupView_numOutputsSpinBox->value();
     unsigned int numOutputNeurons = 0;
-    unsigned int inputLayerActivationFunction = GRT::Neuron::LINEAR;
-    unsigned int hiddenLayerActiviationFunction = GRT::Neuron::LINEAR;
-    unsigned int outputLayerActivationFunction = GRT::Neuron::LINEAR;
+    GRT::Neuron::Neuron::Type inputLayerActivationFunction = GRT::Neuron::LINEAR;
+    GRT::Neuron::Neuron::Type hiddenLayerActiviationFunction = GRT::Neuron::LINEAR;
+    GRT::Neuron::Neuron::Type outputLayerActivationFunction = GRT::Neuron::LINEAR;
 
     //Check to see if we should automatically use multidimensional regression
     if( numOutputs > 1 ){
@@ -2988,8 +2988,8 @@ void MainWindow::updateRegressifierView(const int viewIndex){
         break;
         case 2: //MLP
             //Set the activation functions
-            hiddenLayerActiviationFunction = ui->pipelineTool_mlpHiddenLayerType->currentIndex();
-            outputLayerActivationFunction = ui->pipelineTool_mlpOutputLayerType->currentIndex();
+            hiddenLayerActiviationFunction = static_cast<GRT::Neuron::Neuron::Type>(ui->pipelineTool_mlpHiddenLayerType->currentIndex());
+            outputLayerActivationFunction = static_cast<GRT::Neuron::Neuron::Type>(ui->pipelineTool_mlpOutputLayerType->currentIndex());
 
             //Init the mlp
             mlp.init( numInputs,
