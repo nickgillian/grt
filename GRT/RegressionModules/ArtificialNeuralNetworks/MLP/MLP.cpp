@@ -21,7 +21,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_DLL_EXPORTS
 #include "MLP.h"
 #include "../../../CoreModules/Regressifier.h"
-#include "../../../CoreAlgorithms/Regularizer/Regularizer.h"
 
 GRT_BEGIN_NAMESPACE
 
@@ -852,7 +851,6 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
     Float update = 0;
     Float error = 0;
     Float sqrError = 0;
-    Regularizer regularizer( Regularizer::L2_NORM, 0.01 );
     
     //Forward propagation based on the current weights
     feedforward(trainingExample,inputNeuronsOutput,hiddenNeuronsOutput,outputNeuronsOutput);
@@ -914,10 +912,6 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
         //Store the update
         hiddenLayer[j].previousBiasUpdate = update;
     }
-
-    //Regularizer the weights
-    for(j=0; j<numHiddenNeurons; j++) regularizer.apply( hiddenLayer[j].weights );
-    for(k=0; k<numOutputNeurons; k++) regularizer.apply( outputLayer[k].weights );
     
     //Return the squared error between the output of the network and the target Vector
     return sqrError;
