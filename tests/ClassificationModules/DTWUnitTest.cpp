@@ -1,22 +1,20 @@
-#include <GRT.h>
-#include "gtest/gtest.h"
-using namespace GRT;
+#include "ClassifierUnitTestHelper.h"
 
-//Unit tests for the GRT DWT module
-/*
 // Tests the default constructor
-TEST(DTW, Constructor) {
-  
-  DTW dtw;
-
-  //Check the type matches
-  EXPECT_TRUE( dtw.getClassifierType() == DTW::getId() );
-
-  //Check the module is not trained
-  EXPECT_TRUE( !dtw.getTrained() );
+TEST(DTW, TestDefaultConstructor) {
+  GRT::ClassifierUnitTestHelper<GRT::DTW> tester;
+  EXPECT_TRUE( tester.testDefaultConstructor() );
 }
-*/
+
+// Tests the copy constructor
+TEST(DTW, TestCopyConstructor) {
+  GRT::ClassifierUnitTestHelper<GRT::DTW> tester;
+  EXPECT_TRUE( tester.testCopyConstructor() );
+}
+
+//TODO: Need to implement temporal train unit tests
+
 int main(int argc, char **argv) {
-	::testing::InitGoogleTest( &argc, argv );
-	return RUN_ALL_TESTS();
+  ::testing::InitGoogleTest( &argc, argv );
+  return RUN_ALL_TESTS();
 }
