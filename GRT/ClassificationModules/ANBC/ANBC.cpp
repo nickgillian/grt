@@ -194,48 +194,34 @@ bool ANBC::train_(ClassificationData &trainingData){
         nullRejectionThresholds[k] = models[k].threshold;
     }
     
-    //Flag that the models have been trained
+    //Flag that the model has been trained
     trained = true;
 
     //Compute the final training stats
     trainingSetAccuracy = 0;
     validationSetAccuracy = 0;
 
-    //If scaling was on, then the data will already be scaled, so turn it off temporially
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
     bool scalingState = useScaling;
     useScaling = false;
-    for(UINT i=0; i<M; i++){
-        if( !predict_( trainingData[i].getSample() ) ){
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
+    
+    if( useValidationSet ){
+        if( !computeAccuracy( validationData, validationSetAccuracy ) ){
             trained = false;
-            errorLog << "Failed to run prediction for training sample: " << i << "! Failed to fully train model!" << std::endl;
+            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
             return false;
         }
-
-        if( predictedClassLabel == trainingData[i].getClassLabel() ){
-            trainingSetAccuracy++;
-        }
+        
     }
-
-    if( useValidationSet ){
-        for(UINT i=0; i<validationData.getNumSamples(); i++){
-            if( !predict_( validationData[i].getSample() ) ){
-                trained = false;
-                errorLog << "Failed to run prediction for validation sample: " << i << "! Failed to fully train model!" << std::endl;
-                return false;
-            }
-
-            if( predictedClassLabel == validationData[i].getClassLabel() ){
-                validationSetAccuracy++;
-            }
-        }
-    }
-
-    trainingSetAccuracy = trainingSetAccuracy / M * 100.0;
 
     trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
 
     if( useValidationSet ){
-        validationSetAccuracy = validationSetAccuracy / validationData.getNumSamples() * 100.0;
         trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
     }
 
@@ -258,7 +244,7 @@ bool ANBC::predict_(VectorFloat &inputVector){
     if( !trained ) return false;
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
+        errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
         return false;
     }
     
@@ -272,7 +258,7 @@ bool ANBC::predict_(VectorFloat &inputVector){
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
     Float classLikelihoodsSum = 0;
-    Float minDist = -99e+99;
+    Float minDist = 0;
     for(UINT k=0; k<numClasses; k++){
         classDistances[k] = models[k].predict( inputVector );
         
@@ -287,7 +273,7 @@ bool ANBC::predict_(VectorFloat &inputVector){
             classLikelihoodsSum += classLikelihoods[k];
             
             //The loglikelihood values are negative so we want the values closest to 0
-            if( classDistances[k] > minDist ){
+            if( classDistances[k] > minDist || k==0 ){
                 minDist = classDistances[k];
                 predictedClassLabel = k;
             }

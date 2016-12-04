@@ -18,26 +18,42 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef GRT_VERSION_INFO_HEADER
-#define GRT_VERSION_INFO_HEADER
+#define GRT_DLL_EXPORTS
+#include "Metrics.h"
+#include "../DataStructures/ClassificationData.h"
+#include "../CoreModules/Classifier.h"
 
-#define GRT_VERSION_MAJOR 0
-#define GRT_VERSION_MINOR 2
-#define GRT_VERSION_PATCH 4
-#define GRT_VERSION "0.2.4"
-#define GRT_REVISION "3-Dec-2016"
+GRT_BEGIN_NAMESPACE
 
-//Workout which platform we are using
-#if defined( __WIN32__ ) || defined( _WIN32 ) || defined(WIN32)
-	#define __GRT_WINDOWS_BUILD__
-#endif
+Metrics::Metrics(){}
+    
+Metrics::~Metrics(){}
 
-#if defined(__APPLE_CC__) || defined(__APPLE__)
-    #define __GRT_OSX_BUILD__
-#endif
+bool Metrics::computeAccuracy( GRT::Classifier &model, const GRT::ClassificationData &data, Float &accuracy ){
 
-#if defined(__linux__)
-    #define __GRT_LINUX_BUILD__
-#endif
+    accuracy = 0;
 
-#endif //GRT_VERSION_INFO_HEADER
+    if( !model.getTrained() ) return false;
+
+    const UINT M = data.getNumSamples();
+
+    UINT predictedClassLabel = 0;
+    for(UINT i=0; i<M; i++){
+        if( !model.predict( data[i].getSample() ) ){
+            accuracy = 0;
+            return false;
+        }
+
+        if( model.getPredictedClassLabel() == data[i].getClassLabel() ){
+            accuracy++;
+        }
+    }
+
+    //Convert the accuracy to a percentage
+    accuracy = accuracy / static_cast<Float>(M) * 100.0;
+
+    return true;
+}
+
+GRT_END_NAMESPACE
+

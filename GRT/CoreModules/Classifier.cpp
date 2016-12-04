@@ -43,12 +43,12 @@ Classifier* Classifier::create(const std::string &id){
 }
 
 Classifier* Classifier::create() const{
-    return create( MLBase::getClassType() );
+    return create( MLBase::getId() );
 }
     
 Classifier* Classifier::deepCopy() const{
     
-    Classifier *newInstance = create( MLBase::getClassType() );
+    Classifier *newInstance = create( MLBase::getId() );
     
     if( newInstance == NULL ) return NULL;
     
@@ -166,6 +166,10 @@ bool Classifier::clear(){
     ranges.clear();
     
     return true;
+}
+
+bool Classifier::computeAccuracy( const ClassificationData &data, Float &accuracy ){ 
+    return Metrics::computeAccuracy( *this, data, accuracy );
 }
 
 std::string Classifier::getClassifierType() const{

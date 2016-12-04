@@ -3,77 +3,204 @@
 using namespace GRT;
 
 //Unit tests for the GRT BAG module
-/*
-// Tests the default constructor
-TEST(BAG, Constructor) {
-  
-  BAG bag;
 
-  //Check the type matches
-  EXPECT_TRUE( bag.getClassifierType() == BAG::getId() );
+//Unit tests for the GRT BAG module
+typedef BAG CLASSIFIER;
+const std::string modelFilename = "bag_model.grt";
+
+// Tests the default constructor
+TEST(CLASSIFIER, TestDefaultConstructor) {
+  
+  CLASSIFIER classifier;
+
+  //Check the id's matches
+  EXPECT_TRUE( classifier.getId() == CLASSIFIER::getId() );
 
   //Check the module is not trained
-  EXPECT_TRUE( !bag.getTrained() );
+  EXPECT_TRUE( !classifier.getTrained() );
+}
+
+// Tests the copy constructor
+TEST(CLASSIFIER, TestCopyConstructor) {
+  
+  CLASSIFIER classifier;
+
+  //Check the id's matches
+  EXPECT_TRUE( classifier.getId() == CLASSIFIER::getId() );
+
+  //Check the module is not trained
+  EXPECT_TRUE( !classifier.getTrained() );
+
+  CLASSIFIER classifier2 = classifier;
+
+  //Check the id's matches
+  EXPECT_TRUE( classifier2.getId() == CLASSIFIER::getId() );
+
+  //Check the module is not trained
+  EXPECT_TRUE( !classifier2.getTrained() );
+}
+
+// Tests the main train/prediction functions using a basic dataset
+TEST(CLASSIFIER, TestBasicTrainPredictFunctions ) {
+
+  //Note, the goal here is NOT to test the learning algorithm (i.e., accuracy of model), but instead to test the basic train/predict/getters/setters
+  
+  //Create a default adaboost instance
+  CLASSIFIER classifier;
+
+  //Disable the training logging
+  EXPECT_TRUE( classifier.setTrainingLoggingEnabled( true ) );
+  //EXPECT_TRUE( !classifier.getTrainingLoggingEnabled() );
+
+  //Check the module is not trained
+  EXPECT_TRUE( !classifier.getTrained() );
+
+  //Generate a basic dataset
+  const UINT numSamples = 1000;
+  const UINT numClasses = 5;
+  const UINT numDimensions = 3;
+  ClassificationData trainingData = ClassificationData::generateGaussDataset( numSamples, numClasses, numDimensions, 10, 1 );
+
+  ClassificationData testData = trainingData.split( 50, true );
+
+  //Add an adaptive naive bayes classifier to the BAG ensemble
+  EXPECT_TRUE( classifier.addClassifierToEnsemble( ANBC() ) );
+  
+  //Add a MinDist classifier to the BAG ensemble, using two clusters
+  {
+    MinDist min_dist_two_clusters;
+    min_dist_two_clusters.setNumClusters(2);
+    EXPECT_TRUE( classifier.addClassifierToEnsemble( min_dist_two_clusters ) );
+  }
+  
+  //Add a MinDist classifier to the BAG ensemble, using five clusters
+  {
+    MinDist min_dist_five_clusters;
+    min_dist_five_clusters.setNumClusters(5);
+    EXPECT_TRUE( classifier.addClassifierToEnsemble( min_dist_five_clusters ) );
+  }
+
+  //Train the classifier
+  EXPECT_TRUE( classifier.train( trainingData ) );
+  EXPECT_TRUE( classifier.getTrained() );
+  EXPECT_TRUE( classifier.getNumInputDimensions() == numDimensions );
+  EXPECT_TRUE( classifier.getNumOutputDimensions() == numClasses );
+  EXPECT_TRUE( classifier.getNumClasses() == numClasses );
+
+  EXPECT_TRUE( classifier.print() );
+
+  //Test the prediction, we don't care about accuracy here, just that the prediction is successfull
+  if( classifier.getTrained() ){
+    for(UINT i=0; i<testData.getNumSamples(); i++){
+      EXPECT_TRUE( classifier.predict( testData[i].getSample() ) );
+    }
+  }
+
+  EXPECT_TRUE( classifier.save( modelFilename ) );
+
+  EXPECT_TRUE( classifier.clear() );
+  EXPECT_TRUE( !classifier.getTrained() );
+
+  EXPECT_TRUE( classifier.load( modelFilename ) );
+  EXPECT_TRUE( classifier.getTrained() );
+
+  //Test the prediction, we don't care about accuracy here, just that the prediction is successfull
+  if( classifier.getTrained() ){
+    for(UINT i=0; i<testData.getNumSamples(); i++){
+      EXPECT_TRUE( classifier.predict( testData[i].getSample() ) );
+    }
+  }
 }
 
 // Tests the learning algorithm on a basic dataset
-TEST(BAG, TrainBasicDataset) {
+TEST(CLASSIFIER, TrainGaussDataset) {
+
+  //Note, the goal here IS to test the learning algorithm (i.e., accuracy of model), the training data below is selected in a 
+  //way that is biased so the algorithm should be able to train a model....if it can't then this indicates there is a bug
   
-  BAG bag;
+  //Create a default adaboost instance
+  CLASSIFIER classifier;
+
+  //Disable the training logging
+  EXPECT_TRUE( classifier.setTrainingLoggingEnabled( false ) );
+  EXPECT_TRUE( !classifier.getTrainingLoggingEnabled() );
 
   //Check the module is not trained
-  EXPECT_TRUE( !bag.getTrained() );
+  EXPECT_TRUE( !classifier.getTrained() );
 
   //Generate a basic dataset
-  const UINT numSamples = 10000;
+  const UINT numSamples = 1000;
   const UINT numClasses = 10;
-  const UINT numDimensions = 100;
-  ClassificationData::generateGaussDataset( "gauss_data.csv", numSamples, numClasses, numDimensions, 10, 1 );
-  ClassificationData trainingData;
-  EXPECT_TRUE( trainingData.load( "gauss_data.csv" ) );
+  const UINT numDimensions = 10;
+  ClassificationData trainingData = ClassificationData::generateGaussDataset( numSamples, numClasses, numDimensions, 10, 1 );
 
-  ClassificationData testData = trainingData.split( 50 );
+  ClassificationData testData = trainingData.split( 50, true );
 
   //Add an adaptive naive bayes classifier to the BAG ensemble
-  bag.addClassifierToEnsemble( ANBC() );
+  EXPECT_TRUE( classifier.addClassifierToEnsemble( ANBC() ) );
   
   //Add a MinDist classifier to the BAG ensemble, using two clusters
-  MinDist min_dist_two_clusters;
-  min_dist_two_clusters.setNumClusters(2);
-  bag.addClassifierToEnsemble( min_dist_two_clusters );
+  {
+    MinDist min_dist_two_clusters;
+    min_dist_two_clusters.setNumClusters(2);
+    EXPECT_TRUE( classifier.addClassifierToEnsemble( min_dist_two_clusters ) );
+  }
   
   //Add a MinDist classifier to the BAG ensemble, using five clusters
-  MinDist min_dist_five_clusters;
-  min_dist_five_clusters.setNumClusters(5);
-  bag.addClassifierToEnsemble( min_dist_five_clusters );
+  {
+    MinDist min_dist_five_clusters;
+    min_dist_five_clusters.setNumClusters(5);
+    EXPECT_TRUE( classifier.addClassifierToEnsemble( min_dist_five_clusters ) );
+  }
+  
+  //Turn off the validation set for training
+  EXPECT_TRUE( classifier.setUseValidationSet( false ) );
+  EXPECT_TRUE( !classifier.getUseValidationSet() ); //This should now be false
 
   //Train the classifier
-  EXPECT_TRUE( bag.train( trainingData ) );
+  EXPECT_TRUE( classifier.train( trainingData ) );
 
-  EXPECT_TRUE( bag.getTrained() );
+  EXPECT_TRUE( classifier.getTrained() );
+  EXPECT_TRUE( classifier.getNumInputDimensions() == numDimensions );
+  EXPECT_TRUE( classifier.getNumOutputDimensions() == numClasses );
+  EXPECT_TRUE( classifier.getNumClasses() == numClasses );
+  EXPECT_TRUE( classifier.getTrainingSetAccuracy() >= 75.0 ); //On this basic dataset we expect to get at least 75% accuracy
+  EXPECT_TRUE( classifier.getValidationSetAccuracy() == 0.0 ); //Validation is off, so the validation accuracy should be zero
 
-  EXPECT_TRUE( bag.print() );
+  EXPECT_TRUE( classifier.print() );
 
+  //Test the prediction, we don't care about accuracy here, just that the prediction is successfull
   for(UINT i=0; i<testData.getNumSamples(); i++){
-    EXPECT_TRUE( bag.predict( testData[i].getSample() ) );
+    EXPECT_TRUE( classifier.predict( testData[i].getSample() ) );
   }
 
-  EXPECT_TRUE( bag.save( "bag_model.grt" ) );
+  //Save the model to a file
+  EXPECT_TRUE( classifier.save( modelFilename ) );
 
-  bag.clear();
-  EXPECT_TRUE( !bag.getTrained() );
+  //Clear the model
+  EXPECT_TRUE( classifier.clear() );
+  EXPECT_TRUE( !classifier.getTrained() );
 
-  EXPECT_TRUE( bag.load( "bag_model.grt" ) );
+  //Load it from a file again
+  EXPECT_TRUE( classifier.load( modelFilename ) );
+  EXPECT_TRUE( classifier.getTrained() );
 
-  EXPECT_TRUE( bag.getTrained() );
-
+  //Test the prediction, we don't care about accuracy here, just that the prediction is successfull
   for(UINT i=0; i<testData.getNumSamples(); i++){
-    EXPECT_TRUE( bag.predict( testData[i].getSample() ) );
+    EXPECT_TRUE( classifier.predict( testData[i].getSample() ) );
   }
 
+  //Test that the model can be copied to another instance
+  CLASSIFIER classifier2( classifier );
 
+  EXPECT_TRUE( classifier2.getTrained() );
+
+  //Test the prediction, we don't care about accuracy here, just that the prediction is successfull
+  for(UINT i=0; i<testData.getNumSamples(); i++){
+    EXPECT_TRUE( classifier2.predict( testData[i].getSample() ) );
+  }
 }
-*/
+
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();

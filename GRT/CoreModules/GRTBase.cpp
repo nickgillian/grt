@@ -23,14 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
     
-GRTBase::GRTBase(const std::string &id):classType(id){
-    if( id == "" ){
-        infoLog.setKey("[" + id + "]");
-        debugLog.setKey("[DEBUG " + id + "]");
-        errorLog.setKey("[ERROR " + id + "]");
-        warningLog.setKey("[WARNING " + id + "]");
+GRTBase::GRTBase(const std::string &id):classId(id){
+    if( classId == "" ){
+        infoLog.setKey("[" + classId + "]");
+        debugLog.setKey("[DEBUG " + classId + "]");
+        errorLog.setKey("[ERROR " + classId + "]");
+        warningLog.setKey("[WARNING " + classId + "]");
     }else{
-        infoLog.setKey("[" + id + "]");
+        infoLog.setKey("[" + classId + "]");
         debugLog.setKey("[DEBUG]");
         errorLog.setKey("[ERROR]");
         warningLog.setKey("[WARNING]");
@@ -47,7 +47,7 @@ bool GRTBase::copyGRTBaseVariables(const GRTBase *base){
         return false;
     }
 
-    this->classType = base->classType;
+    this->classId = base->classId;
     this->debugLog = base->debugLog;
     this->errorLog = base->errorLog;
     this->infoLog = base->infoLog;
@@ -79,7 +79,11 @@ std::string GRTBase::getGRTRevison(){
 }
     
 std::string GRTBase::getClassType() const{
-    return classType;
+    return getId();
+}
+
+std::string GRTBase::getId() const{
+    return classId;
 }
     
 GRTBase* GRTBase::getGRTBasePointer(){

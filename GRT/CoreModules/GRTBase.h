@@ -72,12 +72,20 @@ public:
     bool copyGRTBaseVariables(const GRTBase *GRTBase);
     
     /**
+     @deprecated use getId() instead
      This function returns the name of the current class as a std::string.  For example, if you asked AdaBoost for the class type then this function would
      return "AdaBoost".
      
      return returns a std::string representing the class type
      */
-    std::string getClassType() const;
+    GRT_DEPRECATED_MSG( "getClassType is deprecated, use getId() instead!", std::string getClassType() const );
+
+    /**
+    Gets the id of the class that is inheriting from this base class, e.g., if the KNN Classifier class inherits from Classifier, which inherits from MLBase, which inherits from GRTBase, then the classId will be the id of the KNN class
+    
+    @return returns a string representing the id of the inheriting class
+    */
+    std::string getId() const;
     
     /**
 	 This function returns the last warning message as a std::string. If no warnings have occured, the std::string will be empty.
@@ -186,7 +194,7 @@ public:
 
 protected:
 
-    std::string classType;
+    std::string classId;  ///<Stores the name of the class (e.g., MinDist)
     DebugLog debugLog;
     ErrorLog errorLog;
     InfoLog infoLog;

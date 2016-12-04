@@ -28,6 +28,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_MLBASE_HEADER
 
 #include "GRTBase.h"
+#include "../Util/Metrics.h"
 #include "../DataStructures/UnlabelledData.h"
 #include "../DataStructures/ClassificationData.h"
 #include "../DataStructures/ClassificationDataStream.h"
@@ -351,7 +352,7 @@ public:
     @return returns true if the model was loaded successfully, false otherwise
     */
     GRT_DEPRECATED_MSG( "loadModelFromFile(std::fstream &file) is deprecated, use load(std::fstream &file) instead",virtual bool loadModelFromFile(std::fstream &file) );
-    
+
     /**
     This function adds the current model to the formatted stream.
     This function should be overwritten by the derived class.
@@ -367,13 +368,6 @@ public:
     @return returns a std::string containing the model
     */
     virtual std::string getModelAsString() const;
-
-    /**
-    Gets the id of the class that is inheriting from this base class, e.g., if the KNN Classifier class inherits from  Classifier, which inherits from MLBase, then the baseId will be the id of the KNN class
-    
-    @return returns a string representing the id of the inheriting class
-    */
-    std::string getId() const;
     
     /**
     Gets the expected input data type for the module
@@ -472,6 +466,7 @@ public:
     Float getRMSTrainingError() const;
     
     /**
+    @deprecated use getRMSTrainingError() instead
     Gets the root mean squared error on the training data during the training phase.
     
     @return returns the RMS error (on the training data during the training phase)
@@ -781,7 +776,6 @@ protected:
     DataType inputType;
     DataType outputType;
     BaseType baseType;
-    std::string baseId;
     UINT numInputDimensions;
     UINT numOutputDimensions;
     UINT numTrainingIterationsToConverge;

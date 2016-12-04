@@ -107,11 +107,16 @@ bool BAG::train_(ClassificationData &trainingData){
     numClasses = K;
     classLabels.resize(K);
     ranges = trainingData.getRanges();
+    ClassificationData validationData;
     
     //Scale the training data if needed
     if( useScaling ){
         //Scale the training data between 0 and 1
         trainingData.scale(0, 1);
+    }
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
     }
     
     UINT ensembleSize = ensemble.getSize();
@@ -131,11 +136,14 @@ bool BAG::train_(ClassificationData &trainingData){
     //Train the ensemble
     for(UINT i=0; i<ensembleSize; i++){
         ClassificationData boostedDataset = trainingData.getBootstrappedDataset();
+
+        //Propagate the training logging to the ensemble
+        ensemble[i]->setTrainingLoggingEnabled( this->getTrainingLoggingEnabled() );
         
-        trainingLog << "Training ensemble " << i+1 << ". Ensemble type: " << ensemble[i]->getClassType() << std::endl;
+        trainingLog << "Training ensemble " << i+1 << ". Ensemble type: " << ensemble[i]->getId() << ". Num Training Samples: " << boostedDataset.getNumSamples() << std::endl;
         
         //Train the classifier with the bootstrapped dataset
-        if( !ensemble[i]->train( boostedDataset ) ){
+        if( !ensemble[i]->train_( boostedDataset ) ){
             errorLog << "train_(ClassificationData &trainingData) - The classifier at ensemble index " << i << " failed training!" << std::endl;
             return false;
         }
@@ -146,6 +154,37 @@ bool BAG::train_(ClassificationData &trainingData){
     
     //Flag that the model has been trained
     trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
+    
+    if( useValidationSet ){
+        if( !computeAccuracy( validationData, validationSetAccuracy ) ){
+            trained = false;
+            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            return false;
+        }
+        
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
     
     return trained;
 }
@@ -279,11 +318,11 @@ bool BAG::save( std::fstream &file ) const{
             //Save the classifier types
             file << "ClassifierTypes: ";
             for(UINT i=0; i<getEnsembleSize(); i++){
-                file << ensemble[i]->getClassifierType() << std::endl;
+                file << ensemble[i]->getId() << std::endl;
             }
             
             //Save the ensemble
-            file << "Ensemble: \n";
+            file << "Ensemble:" << std::endl;
             for(UINT i=0; i<getEnsembleSize(); i++){
                 if( !ensemble[i]->save( file ) ){
                     errorLog <<"save(fstream &file) - Failed to save classifier " << i << " to file!" << std::endl;
@@ -327,6 +366,7 @@ bool BAG::load( std::fstream &file ){
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
         errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
+        clear();
         return false;
     }
     
@@ -336,6 +376,7 @@ bool BAG::load( std::fstream &file ){
         file >> word;
         if(word != "EnsembleSize:"){
             errorLog << "load(string filename) - Could not find the EnsembleSize!" << std::endl;
+            clear();
             return false;
         }
         file >> ensembleSize;
@@ -346,6 +387,7 @@ bool BAG::load( std::fstream &file ){
         file >> word;
         if(word != "Weights:"){
             errorLog << "load(string filename) - Could not find the Weights!" << std::endl;
+            clear();
             return false;
         }
         for(UINT i=0; i<ensembleSize; i++){
@@ -358,6 +400,7 @@ bool BAG::load( std::fstream &file ){
         file >> word;
         if(word != "ClassifierTypes:"){
             errorLog << "load(string filename) - Could not find the ClassifierTypes!" << std::endl;
+            clear();
             return false;
         }
         for(UINT i=0; i<ensembleSize; i++){
@@ -367,7 +410,8 @@ bool BAG::load( std::fstream &file ){
         //Load the ensemble
         file >> word;
         if(word != "Ensemble:"){
-            errorLog << "load(string filename) - Could not find the Ensemble!" << std::endl;
+            errorLog << "load(string filename) - Could not find the Ensemble! Found: " << word << std::endl;
+            clear();
             return false;
         }
         ensemble.resize(ensembleSize,NULL);
@@ -376,12 +420,14 @@ bool BAG::load( std::fstream &file ){
             
             if( ensemble[i] == NULL ){
                 errorLog << "load(string filename) - Could not create a new classifier instance from the classifierType: " << classifierTypes[i] << std::endl;
+                clear();
                 clearEnsemble();
                 return false;
             }
             
             if( !ensemble[i]->load( file ) ){
                 errorLog << "load(string filename) - Failed to load ensemble classifier: " << i << std::endl;
+                clear();
                 clearEnsemble();
                 return false;
             }
@@ -416,7 +462,7 @@ bool BAG::addClassifierToEnsemble(const Classifier &classifier,Float weight){
     
     trained = false;
     
-    Classifier *newClassifier = classifier.create();
+    Classifier *newClassifier = classifier.create( classifier.getId() );
     
     if( newClassifier == NULL ){
         return false;
@@ -429,7 +475,7 @@ bool BAG::addClassifierToEnsemble(const Classifier &classifier,Float weight){
     weights.push_back( weight );
     ensemble.push_back( newClassifier );
     
-    return false;
+    return true;
 }
 
 bool BAG::clearEnsemble(){

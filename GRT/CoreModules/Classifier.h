@@ -85,6 +85,14 @@ public:
     @return returns true if the derived class was cleared succesfully, false otherwise
     */
     virtual bool clear();
+
+    /**
+    Computes the accuracy of the current model given the input dataset. The accuracy results will be stored in the accuracy parameter and will be in the range of [0., 100.0].
+    @param data: the dataset that will be used to test the model
+    @param accuracy: the variable to which the accuracy of the model will be stored 
+    @return returns true if the accuracy was computed, false otherwise
+    */
+    virtual bool computeAccuracy( const ClassificationData &data, Float &accuracy );
     
     /**
     Returns the classifier type as a string.

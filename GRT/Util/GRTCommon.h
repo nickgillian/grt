@@ -83,6 +83,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "DataType.h"
 #include "DynamicType.h"
 #include "Dict.h"
+#include "Metrics.h"
 
 GRT_BEGIN_NAMESPACE
 

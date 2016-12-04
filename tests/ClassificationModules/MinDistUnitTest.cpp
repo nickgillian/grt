@@ -2,10 +2,9 @@
 #include "gtest/gtest.h"
 using namespace GRT;
 
-/*
-//Unit tests for the GRT DecisionTree module
+//Unit tests for MinDist module
 typedef MinDist CLASSIFIER;
-const std::string modelFilename = "min_dist.grt";
+const std::string modelFilename = "mindist_model.grt";
 
 // Tests the default constructor
 TEST(CLASSIFIER, TestDefaultConstructor) {
@@ -125,6 +124,7 @@ TEST(CLASSIFIER, TrainGaussDataset) {
   EXPECT_TRUE( classifier.getNumInputDimensions() == numDimensions );
   EXPECT_TRUE( classifier.getNumOutputDimensions() == numClasses );
   EXPECT_TRUE( classifier.getNumClasses() == numClasses );
+  std::cout << "accuracy: " << classifier.getTrainingSetAccuracy() << std::endl;
   EXPECT_TRUE( classifier.getTrainingSetAccuracy() >= 75.0 ); //On this basic dataset we expect to get at least 75% accuracy
   EXPECT_TRUE( classifier.getValidationSetAccuracy() == 0.0 ); //Validation is off, so the validation accuracy should be zero
 
@@ -161,7 +161,7 @@ TEST(CLASSIFIER, TrainGaussDataset) {
     EXPECT_TRUE( classifier2.predict( testData[i].getSample() ) );
   }
 }
-*/
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest( &argc, argv );
   return RUN_ALL_TESTS();

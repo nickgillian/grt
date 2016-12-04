@@ -1055,8 +1055,6 @@ ClassificationData ClassificationData::getBootstrappedDataset(const UINT numSamp
     
     const UINT numBootstrapSamples = numSamples_ > 0 ? numSamples_ : totalNumSamples;
 
-    std::cout << "numBootstrapSamples: " << numBootstrapSamples << std::endl;
-
     grt_assert( numBootstrapSamples > 0 );
     
     newDataset.reserve( numBootstrapSamples );

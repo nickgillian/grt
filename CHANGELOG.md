@@ -2,6 +2,14 @@
 
 This file contains some notes about significant changes to the GRT.
 
+# Version 0.2.4
+
+## 3rd December 2016
+- **Better unit tests:** improved unit tests for MLP neural nets and several GRT classifiers
+- **Added Metrics class:** the Metrics class will act as the main backend for computing the various ML metrics needed for all GRT classification and regression modules
+- **Added Training and Validation metrics:** all GRT classifiers now automatically compute training accuracy and validation accuracy (if a validation set is used) when training the classification model. These metrics can be accessed via: classifier.getTrainingSetAccuracy(); classifier.getValidationSetAccuracy();
+- **Improved GMM and GaussianMixtureModels algorithm:** improved both the GMM and GaussianMixtureModels algorithms by adding a restart option, this allows the learning algorithm to reattempt to train a model if the previous attempt fails to converge
+
 # Version 0.2.3
 
 ## 24th October 2016

@@ -46,7 +46,7 @@ Regressifier* Regressifier::create() const{
 
 Regressifier* Regressifier::deepCopy() const{
     
-    Regressifier *newInstance = create( baseId );
+    Regressifier *newInstance = create( classId );
     
     if( newInstance == NULL ) return NULL;
     

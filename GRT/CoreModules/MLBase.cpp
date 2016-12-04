@@ -23,8 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-MLBase::MLBase( const std::string &id, const BaseType type ){
-    baseId = id;
+MLBase::MLBase( const std::string &id, const BaseType type ) : GRTBase( id ){
     baseType = type;
     trained = false;
     useScaling = false;
@@ -49,6 +48,14 @@ MLBase::MLBase( const std::string &id, const BaseType type ){
     warningLog.setKey("[WARNING " + id + "]");
     trainingLog.setKey("[TRAINING " + id + "]");
     testingLog.setKey("[TESTING " + id + "]");
+
+    if( id == "" ){
+        trainingLog.setKey("[TRAINING " + id + "]");
+        testingLog.setKey("[TESTING " + id + "]");
+    }else{
+        trainingLog.setKey("[TRAINING]");
+        testingLog.setKey("[TESTING]");
+    }
 }
 
 MLBase::~MLBase(void){
@@ -69,7 +76,6 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     
     this->trained = mlBase->trained;
     this->useScaling = mlBase->useScaling;
-    this->baseId = mlBase->baseId;
     this->baseType = mlBase->baseType;
     this->inputType = mlBase->inputType;
     this->outputType = mlBase->outputType;
@@ -212,8 +218,6 @@ std::string MLBase::getModelAsString() const{
     }
     return "";
 }
-
-std::string MLBase::getId() const { return baseId; }
 
 DataType MLBase::getInputType() const { return inputType; }
 

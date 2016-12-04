@@ -106,11 +106,16 @@ bool MinDist::train_(ClassificationData &trainingData){
     classLabels.resize(K);
     nullRejectionThresholds.resize(K);
     ranges = trainingData.getRanges();
+    ClassificationData validationData;
     
     //Scale the training data if needed
     if( useScaling ){
         //Scale the training data between 0 and 1
         trainingData.scale(0, 1);
+    }
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
     }
     
     //Train each of the models
@@ -148,9 +153,42 @@ bool MinDist::train_(ClassificationData &trainingData){
         nullRejectionThresholds[k] = models[k].getRejectionThreshold();
         
     }
-    
+
+    //Flag that the models have been trained
     trained = true;
-    return true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
+    
+    if( useValidationSet ){
+        if( !computeAccuracy( validationData, validationSetAccuracy ) ){
+            trained = false;
+            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            return false;
+        }
+        
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+
+    return trained;
 }
 
 
