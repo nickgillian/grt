@@ -8,10 +8,10 @@ Build Status:
 * Dev branch: 
   * ![Dev Build Status](https://travis-ci.org/nickgillian/grt.svg?branch=dev)
 
-Current version: [0.2.3](http://nickgillian.com/grt/api/0.2.3/)
+Current version: [0.2.4](http://nickgillian.com/grt/api/0.2.4/)
 
 Key things to know about the GRT:
-* The toolkit consists of two parts: a comprehensive [C++ API](http://nickgillian.com/grt/api/0.2.3) and a front-end [graphical user interface (GUI)](http://www.nickgillian.com/wiki/pmwiki.php/GRT/GUI). You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded [here](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
+* The toolkit consists of two parts: a comprehensive [C++ API](http://nickgillian.com/grt/api/0.2.4) and a front-end [graphical user interface (GUI)](http://www.nickgillian.com/wiki/pmwiki.php/GRT/GUI). You can access the source code for both the C++ API and GUI in this repository, a precompiled version of the GUI can be downloaded [here](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * Both the C++ API and GUI are designed to work with real-time sensor data, but they can also be used for more conventional offline machine-learning tasks 
 * The input to the GRT can be any *N*-dimensional floating-point vector - this means you can use the GRT with Cameras, Kinect, Leap Motion, accelerometers, or any other custom sensor you might have built
 * The toolkit defines a generic [Float](#grt-floating-point-precision) type, this defaults to double precision float, but can easily be changed to single precision via the main GRT Typedefs header
@@ -31,7 +31,7 @@ Key things to know about the GRT:
 * GRT Website: [http://www.nickgillian.com/grt](http://www.nickgillian.com/grt)
 * GRT Wiki: [https://github.com/nickgillian/grt/wiki](https://github.com/nickgillian/grt/wiki)
 * GRT Forum: [http://www.nickgillian.com/forum](http://www.nickgillian.com/forum)
-* GRT API Reference: [http://nickgillian.com/grt/api/0.2.3/](http://nickgillian.com/grt/api/0.2.3/)
+* GRT API Reference: [http://nickgillian.com/grt/api/0.2.4/](http://nickgillian.com/grt/api/0.2.4/)
 * GRT Source Code: [https://github.com/nickgillian/grt](https://github.com/nickgillian/grt)
 * GRT GUI Download: [http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * GRT Journal of Machine Learning Research paper: [grt.pdf](http://jmlr.csail.mit.edu/papers/volume15/gillian14a/gillian14a.pdf)
@@ -235,7 +235,7 @@ Please submit bugs to the [github bug tracker](https://github.com/nickgillian/gr
 
 All contributions are welcome, there are several ways in which users can contribute to the toolkit:
 
-* improving the doxygen generated [API](http://nickgillian.com/grt/api/0.2.3) (by improving coverage and quality of the current documents in the existing code) 
+* improving the doxygen generated [API](http://nickgillian.com/grt/api/0.2.4) (by improving coverage and quality of the current documents in the existing code) 
 * improving the higher-level documentation that can be found in the [wiki](https://github.com/nickgillian/grt/wiki)
 * adding new examples or tutorials, or improving the existing ones
 * adding new [unit tests](https://github.com/nickgillian/grt/tree/master/tests), to help ensure the quality of the current functions and catch potential bugs in the future
