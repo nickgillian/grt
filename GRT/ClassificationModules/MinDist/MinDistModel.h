@@ -81,9 +81,11 @@ public:
     bool setRejectionThreshold(Float rejectionThreshold);
     bool setTrainingSigma(Float trainingSigma);
     bool setTrainingMu(Float trainingMu);
+    bool setTrainingLoggingEnabled(bool enabled);
     
 private:
-    Float SQR(Float x){ return x*x; }
+    Float SQR(const Float &x){ return (x*x); }
+    bool trainingLoggingEnabled;
 	UINT classLabel;
 	UINT numFeatures;
 	UINT numClusters;
