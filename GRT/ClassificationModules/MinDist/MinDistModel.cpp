@@ -28,6 +28,7 @@ MinDistModel::MinDistModel(){
     gamma = 0;
     trainingMu = 0;
     trainingSigma = 0;
+    trainingLoggingEnabled = true;
 }
     
 MinDistModel::MinDistModel(const MinDistModel &rhs){
@@ -40,6 +41,7 @@ MinDistModel::MinDistModel(const MinDistModel &rhs){
     this->trainingMu = rhs.trainingMu;
     this->trainingSigma = rhs.trainingSigma;
     this->clusters = rhs.clusters;
+    this->trainingLoggingEnabled = rhs.trainingLoggingEnabled;
 }
     
 MinDistModel::~MinDistModel(void){}
@@ -55,6 +57,7 @@ MinDistModel& MinDistModel:: operator=(const MinDistModel &rhs){
 		this->trainingMu = rhs.trainingMu;
 		this->trainingSigma = rhs.trainingSigma;
 		this->clusters = rhs.clusters;
+		this->trainingLoggingEnabled = rhs.trainingLoggingEnabled;
 	}
 	return *this;
 }
@@ -74,6 +77,7 @@ bool MinDistModel::train(UINT classLabel,MatrixFloat &trainingData,UINT numClust
     kmeans.setNumClusters(numClusters);
 	kmeans.setMinChange( minChange );
 	kmeans.setMaxNumEpochs( maxNumEpochs );
+	kmeans.setTrainingLoggingEnabled( trainingLoggingEnabled );
 	
 	if( !kmeans.train_(trainingData) ){
 		return false;
@@ -201,6 +205,11 @@ bool MinDistModel::setTrainingSigma(Float trainingSigma){
 bool MinDistModel::setTrainingMu(Float trainingMu){
     this->trainingMu = trainingMu;
     return true;
+}
+
+bool MinDistModel::setTrainingLoggingEnabled(bool enabled){
+	this->trainingLoggingEnabled = enabled;
+	return true;
 }
 
 GRT_END_NAMESPACE

@@ -63,7 +63,7 @@ int main (int argc, const char * argv[])
     const string testDataFilename = argv[2];
 
     //Turn on the training log so we can print the training status of the MultidimensionalRegression to the screen
-    TrainingLog::enableLogging( true );
+    TrainingLog::setLoggingEnabled( true );
     
     //Load the training data
     RegressionData trainingData;

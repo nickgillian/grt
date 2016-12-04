@@ -38,7 +38,7 @@ int main (int argc, const char * argv[])
 	//- with unlablled training data (in the UnlabelledData format)
 	//- with unlabelled training data (in a simple MatrixDouble format)
 	
-	//This example shows you how to train the algorithm with ClassificationData
+	//This example shows you how to train the algorithm with unlabelled data (a simple matrix of RGB color values)
 	
 	MatrixFloat data;
 	VectorFloat row(3);

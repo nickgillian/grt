@@ -81,7 +81,6 @@ public:
         
         //Given the prior set of particles, randomly generate new state estimations using the process model
         const Float phase = p.x[1];
-        const Float velocity = p.x[2];
         
         //Update the phase
         p.x[1] = Util::limit( phase + rand.getRandomNumberGauss(0.0,processNoise[1]) , 0, 1);

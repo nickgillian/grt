@@ -23,12 +23,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string AdaBoost::id = "AdaBoost";
+//Define the string that will be used to identify the object
+const std::string AdaBoost::id = "AdaBoost";
 std::string AdaBoost::getId() { return AdaBoost::id; }
 
 //Register the AdaBoost module with the Classifier base class
-RegisterClassifierModule< AdaBoost > AdaBoost::registerModule( AdaBoost::getId() );
+RegisterClassifierModule< AdaBoost > AdaBoost::registerModule( getId() );
 
 AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numBoostingIterations,UINT predictionMethod) : Classifier( AdaBoost::getId() )
 {
@@ -41,7 +41,8 @@ AdaBoost::AdaBoost(const WeakClassifier &weakClassifier,bool useScaling,bool use
     classifierMode = STANDARD_CLASSIFIER_MODE;
 }
 
-AdaBoost::AdaBoost(const AdaBoost &rhs):Classifier(AdaBoost::getId()){
+AdaBoost::AdaBoost(const AdaBoost &rhs) : Classifier( AdaBoost::getId() )
+{
     classifierMode = STANDARD_CLASSIFIER_MODE;
     *this = rhs;
 }
@@ -61,15 +62,16 @@ AdaBoost& AdaBoost::operator=(const AdaBoost &rhs){
         this->predictionMethod = rhs.predictionMethod;
         this->models = rhs.models;
         
-        if( rhs.weakClassifiers.size() > 0 ){
-            for(UINT i=0; i<rhs.weakClassifiers.size(); i++){
+        if( rhs.weakClassifiers.getSize() > 0 ){
+            this->weakClassifiers.reserve( rhs.weakClassifiers.getSize() );
+            for(UINT i=0; i<rhs.weakClassifiers.getSize(); i++){
                 WeakClassifier *weakClassiferPtr = rhs.weakClassifiers[i]->createNewInstance();
                 weakClassifiers.push_back( weakClassiferPtr );
             }
         }
         
         //Clone the classifier variables
-        copyBaseVariables( (Classifier*)&rhs );
+        copyBaseVariables( dynamic_cast<const Classifier*>( &rhs ) );
     }
     return *this;
 }
@@ -81,9 +83,9 @@ bool AdaBoost::deepCopyFrom(const Classifier *classifier){
         return false;
     }
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         //Clone the AdaBoost values
-        AdaBoost *ptr = (AdaBoost*)classifier;
+        const AdaBoost *ptr = dynamic_cast<const AdaBoost*>( classifier );
         
         //Clear the current weak classifiers
         clearWeakClassifiers();
@@ -93,9 +95,9 @@ bool AdaBoost::deepCopyFrom(const Classifier *classifier){
         this->models = ptr->models;
         
         if( ptr->weakClassifiers.size() > 0 ){
-            for(UINT i=0; i<ptr->weakClassifiers.size(); i++){
-                WeakClassifier *weakClassiferPtr = ptr->weakClassifiers[i]->createNewInstance();
-                weakClassifiers.push_back( weakClassiferPtr );
+            this->weakClassifiers.resize( ptr->weakClassifiers.getSize() );
+            for(UINT i=0; i<ptr->weakClassifiers.getSize(); i++){
+                weakClassifiers[i] = ptr->weakClassifiers[i]->createNewInstance();
             }
         }
         
@@ -114,21 +116,27 @@ bool AdaBoost::train_(ClassificationData &trainingData){
         errorLog << "train_(ClassificationData &trainingData) - There are not enough training samples to train a model! Number of samples: " << trainingData.getNumSamples()  << std::endl;
         return false;
     }
-    
+
     numInputDimensions = trainingData.getNumDimensions();
+    numOutputDimensions = trainingData.getNumClasses();
     numClasses = trainingData.getNumClasses();
-    const UINT M = trainingData.getNumSamples();
     const UINT POSITIVE_LABEL = WEAK_CLASSIFIER_POSITIVE_CLASS_LABEL;
     const UINT NEGATIVE_LABEL = WEAK_CLASSIFIER_NEGATIVE_CLASS_LABEL;
     Float alpha = 0;
     const Float beta = 0.001;
     Float epsilon = 0;
     TrainingResult trainingResult;
+    ClassificationData validationData;
     
-    const UINT K = (UINT)weakClassifiers.size();
+    const UINT K = weakClassifiers.getSize();
     if( K == 0 ){
         errorLog << "train_(ClassificationData &trainingData) - No weakClassifiers have been set. You need to set at least one weak classifier first." << std::endl;
         return false;
+    }
+
+    //Pass the logging state onto the weak classifiers
+    for(UINT k=0; k<K; k++){
+        weakClassifiers[k]->setTrainingLoggingEnabled( this->getTrainingLoggingEnabled() );
     }
     
     classLabels.resize(numClasses);
@@ -139,7 +147,14 @@ bool AdaBoost::train_(ClassificationData &trainingData){
     if( useScaling ){
         trainingData.scale(ranges,0,1);
     }
-    
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
+    }
+
+    const UINT M = trainingData.getNumSamples();
+    trainingLog << "Training AdaBoost model, num training examples: " << M << ", num validation examples: " << validationData.getNumSamples() << ", num classes: " << numClasses << ", num weak learners: " << K << std::endl;
+
     //Create the weights vector
     VectorFloat weights(M);
     
@@ -270,7 +285,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
         models[k].normalizeWeights();
     }
     
-    //Flag that the model has been trained
+    //Flag that the model has been fully trained
     trained = true;
     
     //Setup the data for prediction
@@ -278,7 +293,52 @@ bool AdaBoost::train_(ClassificationData &trainingData){
     maxLikelihood = 0;
     classLikelihoods.resize(numClasses);
     classDistances.resize(numClasses);
-    
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially
+    bool scalingState = useScaling;
+    useScaling = false;
+    for(UINT i=0; i<M; i++){
+        if( !predict_( trainingData[i].getSample() ) ){
+            trained = false;
+            errorLog << "Failed to run prediction for training sample: " << i << "! Failed to fully train model!" << std::endl;
+            return false;
+        }
+
+        if( predictedClassLabel == trainingData[i].getClassLabel() ){
+            trainingSetAccuracy++;
+        }
+    }
+
+    if( useValidationSet ){
+        for(UINT i=0; i<validationData.getNumSamples(); i++){
+            if( !predict_( validationData[i].getSample() ) ){
+                trained = false;
+                errorLog << "Failed to run prediction for validation sample: " << i << "! Failed to fully train model!" << std::endl;
+                return false;
+            }
+
+            if( predictedClassLabel == validationData[i].getClassLabel() ){
+                validationSetAccuracy++;
+            }
+        }
+    }
+
+    trainingSetAccuracy = trainingSetAccuracy / M * 100.0;
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        validationSetAccuracy = validationSetAccuracy / validationData.getNumSamples() * 100.0;
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+
     return true;
 }
 

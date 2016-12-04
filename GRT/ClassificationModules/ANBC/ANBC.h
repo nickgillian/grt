@@ -1,19 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements the Adaptive Naive Bayes Classifier algorithm.  The Adaptive Naive Bayes Classifier (ANBC) is a naive but powerful classifier that works very well on both basic and more complex recognition problems.
-
-The ANBC algorithm is a supervised learning algorithm that can be used to classify any type of N-dimensional signal. The ANBC algorithm essentially works by fitting an N-dimensional Gaussian distribution to each class (i.e. gesture) during the training phase. New gestures can then be recognized in the prediction phase by finding the gesture that results in the maximum likelihood value (given the new sensor data and each of the Gaussian distributions). The ANBC algorithm also computes rejection thresholds that enable the algorithm to automatically reject sensor values that are not the K gestures the algorithm has been trained to recognized (without being explicitly told during the prediction phase if a gesture is, or is not, being performed).
-
-In addition, the ANBC algorithm enables you to weight the importance of each dimension for each gesture. For instance, imagine that you want to create a recognition system that can recognize a user's left-handed gestures, right-handed gestures, and two-handed gestures. To track the user's movements you use a depth sensor and skeleton-tracking algorithm that can track any user who stands in front of the depth sensor and sends out the x-y-z joint position of the user's two hands (along with the user's other joints) at 30Hz. You use the 3-dimensional joint data for each hand to create a 6-dimensional vector (containing {leftHandX, leftHandY, leftHandZ, rightHandX, rightHandY, rightHandZ}) as input to the ANBC algorithm. The ANBC algorithm enables you to weight each dimension of this vector for each of the 3 types of gestures you want to recognize (i.e. left-handed, right-handed, and two-handed gestures), so for a left-handed gesture you would set the weights for this class to {1,1,1,0,0,0}, for the right-handed gesture you would set the weights for this class to {0,0,0,1,1,1}, and for the two-handed gesture you would set the weights for this class to {1,1,1,1,1,1}. You only need to set these weights values once, before you train the ANBC model, the weights will then automatically be incorporated into the Gaussian models for each gesture (and therefore nothing special needs to be done for the prediction phase). You can set the weights using the setWeights(LabelledClassificationData weightsData) function.
-
-The ANBC algorithm is part of the GRT classification modules.
-
-@remark You can find out more about the ANBC algorithm in <a href="http://www.nickgillian.com/papers/Gillian_ANBC.pdf">ANBC.pdf</a>.
-
-@example ClassificationModulesExamples/ANBCExample/ANBCExample.cpp
 */
 
 /**
@@ -47,6 +34,19 @@ GRT_BEGIN_NAMESPACE
 #define MIN_SCALE_VALUE 1.0e-10
 #define MAX_SCALE_VALUE 1
 
+/**
+@brief This class implements the Adaptive Naive Bayes Classifier algorithm.  The Adaptive Naive Bayes Classifier (ANBC) is a naive but powerful classifier that works very well on both basic and more complex recognition problems.
+
+The ANBC algorithm is a supervised learning algorithm that can be used to classify any type of N-dimensional signal. The ANBC algorithm essentially works by fitting an N-dimensional Gaussian distribution to each class (i.e. gesture) during the training phase. New gestures can then be recognized in the prediction phase by finding the gesture that results in the maximum likelihood value (given the new sensor data and each of the Gaussian distributions). The ANBC algorithm also computes rejection thresholds that enable the algorithm to automatically reject sensor values that are not the K gestures the algorithm has been trained to recognized (without being explicitly told during the prediction phase if a gesture is, or is not, being performed).
+
+In addition, the ANBC algorithm enables you to weight the importance of each dimension for each gesture. For instance, imagine that you want to create a recognition system that can recognize a user's left-handed gestures, right-handed gestures, and two-handed gestures. To track the user's movements you use a depth sensor and skeleton-tracking algorithm that can track any user who stands in front of the depth sensor and sends out the x-y-z joint position of the user's two hands (along with the user's other joints) at 30Hz. You use the 3-dimensional joint data for each hand to create a 6-dimensional vector (containing {leftHandX, leftHandY, leftHandZ, rightHandX, rightHandY, rightHandZ}) as input to the ANBC algorithm. The ANBC algorithm enables you to weight each dimension of this vector for each of the 3 types of gestures you want to recognize (i.e. left-handed, right-handed, and two-handed gestures), so for a left-handed gesture you would set the weights for this class to {1,1,1,0,0,0}, for the right-handed gesture you would set the weights for this class to {0,0,0,1,1,1}, and for the two-handed gesture you would set the weights for this class to {1,1,1,1,1,1}. You only need to set these weights values once, before you train the ANBC model, the weights will then automatically be incorporated into the Gaussian models for each gesture (and therefore nothing special needs to be done for the prediction phase). You can set the weights using the setWeights(LabelledClassificationData weightsData) function.
+
+The ANBC algorithm is part of the GRT classification modules.
+
+@remark You can find out more about the ANBC algorithm in <a href="http://www.nickgillian.com/papers/Gillian_ANBC.pdf">ANBC.pdf</a>.
+
+@example ClassificationModulesExamples/ANBCExample/ANBCExample.cpp
+*/
 class GRT_API ANBC : public Classifier
 {
 public:
@@ -208,8 +208,9 @@ protected:
     ClassificationData weightsData;       //The weights of each feature for each class for training the algorithm
     Vector< ANBC_Model > models;          //A buffer to hold all the models
     
+private:
     static RegisterClassifierModule< ANBC > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

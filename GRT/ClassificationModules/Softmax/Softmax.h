@@ -1,13 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief The Softmax Classifier is a simple but effective classifier (based on logisitc regression) that works well on problems that are linearly separable.
-
-@example ClassificationModulesExamples/SoftmaxExample/SoftmaxExample.cpp
-
-@remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
 */
 
 /**
@@ -38,6 +31,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief The Softmax Classifier is a simple but effective classifier (based on logisitc regression) that works well on problems that are linearly separable.
+
+@example ClassificationModulesExamples/SoftmaxExample/SoftmaxExample.cpp
+
+@remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
+*/
 class GRT_API Softmax : public Classifier
 {
     public:
@@ -150,8 +150,9 @@ protected:
     
     UINT batchSize;
     Vector< SoftmaxModel > models;
-    static std::string id;
-    
+
+private:
+    static const std::string id;
     static RegisterClassifierModule< Softmax > registerModule;
 };
 

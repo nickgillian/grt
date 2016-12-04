@@ -2,10 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief This is the main base class that all GRT machine learning algorithms should inherit from.
-
-A large number of the functions in this class are virtual and simply return false as these functions must be overwridden by the inheriting class.
 */
 
 /**
@@ -32,6 +28,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_MLBASE_HEADER
 
 #include "GRTBase.h"
+#include "../Util/Metrics.h"
 #include "../DataStructures/UnlabelledData.h"
 #include "../DataStructures/ClassificationData.h"
 #include "../DataStructures/ClassificationDataStream.h"
@@ -67,15 +64,22 @@ class GRT_API TestResultsObserverManager : public ObserverManager< TestInstanceR
     
 };
 
+/**
+@brief This is the main base class that all GRT machine learning algorithms should inherit from.
+
+A large number of the functions in this class are virtual and simply return false as these functions must be overwridden by the inheriting class.
+*/
 class GRT_API MLBase : public GRTBase, public Observer< TrainingResult >, public Observer< TestInstanceResult >
 {
 public:
-    enum BaseTypes{BASE_TYPE_NOT_SET=0,CLASSIFIER,REGRESSIFIER,CLUSTERER}; ///<Enum that defines the type of inherited class
+    enum BaseType{BASE_TYPE_NOT_SET=0,CLASSIFIER,REGRESSIFIER,CLUSTERER,PRE_PROCSSING,POST_PROCESSING,FEATURE_EXTRACTION,CONTEXT}; ///<Enum that defines the type of inherited class
 
     /**
     Default MLBase Constructor
+    @param id: the id of the inheriting class
+    @param type: the type of the inheriting class (e.g., classifier, regressifier, etc.)
     */
-    MLBase(void);
+    MLBase( const std::string &id = "", const BaseType type = BASE_TYPE_NOT_SET );
     
     /**
     Default MLBase Destructor
@@ -123,6 +127,25 @@ public:
     @return returns true if a new regression model was trained, false otherwise
     */
     virtual bool train_(RegressionData &trainingData);
+     
+    /**
+    This is the main training interface for training a regression model using a training and validation dataset. This should be overwritten by the derived class.
+    By default it will call the train_ function, unless it is overwritten by the derived class.
+    
+    @param trainingData: the training data that will be used to train a new regression model
+    @param validationData: the validation data that will be used to validate the regression model
+    @return returns true if a new regression model was trained, false otherwise
+    */
+    virtual bool train(RegressionData trainingData,RegressionData validationData);
+    
+    /**
+    This is the main training interface for training a regression model using a training and validation dataset. This should be overwritten by the derived class.
+    
+    @param trainingData: the training data that will be used to train a new regression model
+    @param validationData: the validation data that will be used to validate the regression model
+    @return returns true if a new regression model was trained, false otherwise
+    */
+    virtual bool train_(RegressionData &trainingData,RegressionData &validationData);
     
     /**
     This is the main training interface for TimeSeriesClassificationData.
@@ -269,20 +292,20 @@ public:
     virtual bool print() const;
     
     /**
-    This saves the model to a file, it calls the saveModelToFile(std::string filename) function unless it is overwritten by the derived class.
+    This saves the model to a file.
     
     @param filename: the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool save(const std::string filename) const;
+    virtual bool save(const std::string &filename) const;
     
     /**
-    This saves the model to a file, it calls the loadModelFromFile(std::string filename) function unless it is overwritten by the derived class.
+    This saves the model to a file.
     
     @param filename: the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool load(const std::string filename);
+    virtual bool load(const std::string &filename);
     
     /**
     This saves the trained model to a file.
@@ -307,7 +330,7 @@ public:
     @param the name of the file to save the model to
     @return returns true if the model was saved successfully, false otherwise
     */
-    GRT_DEPRECATED_MSG( "saveModelToFile(std::string filename) is deprecated, use save(std::string filename) instead", virtual bool saveModelToFile(std::string filename) const );
+    GRT_DEPRECATED_MSG( "saveModelToFile(std::string filename) is deprecated, use save(const std::string &filename) instead", virtual bool saveModelToFile(const std::string &filename) const );
     
     /**
     @deprecated use save(std::fstream &file) instead
@@ -321,7 +344,7 @@ public:
     @param filename: the name of the file to load the model from
     @return returns true if the model was loaded successfully, false otherwise
     */
-    GRT_DEPRECATED_MSG( "loadModelFromFile(std::string filename) is deprecated, use load(std::string filename) instead",virtual bool loadModelFromFile(std::string filename) );
+    GRT_DEPRECATED_MSG( "loadModelFromFile(std::string filename) is deprecated, use load(const std::string &filename) instead",virtual bool loadModelFromFile(const std::string &filename) );
     
     /**
     @deprecated use load(std::fstream &file) instead
@@ -329,7 +352,7 @@ public:
     @return returns true if the model was loaded successfully, false otherwise
     */
     GRT_DEPRECATED_MSG( "loadModelFromFile(std::fstream &file) is deprecated, use load(std::fstream &file) instead",virtual bool loadModelFromFile(std::fstream &file) );
-    
+
     /**
     This function adds the current model to the formatted stream.
     This function should be overwritten by the derived class.
@@ -338,26 +361,6 @@ public:
     @return returns true if the model was added successfully, false otherwise
     */
     virtual bool getModel(std::ostream &stream) const;
-    
-    /**
-    Scales the input value x (which should be in the range [minSource maxSource]) to a value in the new target range of [minTarget maxTarget].
-    
-    @param x: the value that should be scaled
-    @param minSource: the minimum range that x originates from
-    @param maxSource: the maximum range that x originates from
-    @param minTarget: the minimum range that x should be scaled to
-    @param maxTarget: the maximum range that x should be scaled to
-    @param constrain: sets if the scaled value should be constrained to the target range
-    @return returns a new value that has been scaled based on the input parameters
-    */
-    Float inline scale(const Float &x,const Float &minSource,const Float &maxSource,const Float &minTarget,const Float &maxTarget,const bool constrain=false){
-        if( constrain ){
-            if( x <= minSource ) return minTarget;
-            if( x >= maxSource ) return maxTarget;
-        }
-        if( minSource == maxSource ) return minTarget;
-        return (((x-minSource)*(maxTarget-minTarget))/(maxSource-minSource))+minTarget;
-    }
     
     /**
     Gets the current model and settings as a std::string.
@@ -383,9 +386,9 @@ public:
     /**
     Gets the current ML base type.
     
-    @return returns an UINT representing the current ML base type, this will be one of the BaseTypes enumerations
+    @return returns an enum representing the current ML base type, this will be one of the BaseType enumerations
     */
-    UINT getBaseType() const;
+    BaseType getType() const;
     
     /**
     Gets the number of input dimensions in trained model.
@@ -463,6 +466,7 @@ public:
     Float getRMSTrainingError() const;
     
     /**
+    @deprecated use getRMSTrainingError() instead
     Gets the root mean squared error on the training data during the training phase.
     
     @return returns the RMS error (on the training data during the training phase)
@@ -564,6 +568,20 @@ public:
     @return returns true if the derived class type is CLUSTERER, false otherwise
     */
     bool getIsBaseTypeClusterer() const;
+
+    /**
+    Gets the logging state for the training log, note this returns the logging state for this specific instance of the training log, not the global TrainingLog state.
+    
+    @return returns true if logging is enabled, false otherwise
+    */
+    bool getTrainingLoggingEnabled() const;
+
+    /**
+    Gets the logging state for the testing log, note this returns the logging state for this specific instance of the training log, not the global TestingLog state.
+    
+    @return returns true if logging is enabled, false otherwise
+    */
+    bool getTestingLoggingEnabled() const;
     
     /**
     Sets if scaling should be used during the training and prediction phases.
@@ -644,6 +662,15 @@ public:
     @return returns true if the parameter was updated, false otherwise
     */
     bool setTrainingLoggingEnabled(const bool loggingEnabled);
+
+    /**
+    Sets if testing logging is enabled/disabled for this specific ML instance.
+    If you want to enable/disable testing logging globally, then you should use the TestingLog::enableLogging( bool ) function.
+    
+    @param loggingEnabled: if true then training logging will be enabled, if false then training logging will be disabled
+    @return returns true if the parameter was updated, false otherwise
+    */
+    bool setTestingLoggingEnabled(const bool loggingEnabled);
     
     /**
     Registers the observer with the training result observer manager. The observer will then be notified when any new training result is computed.
@@ -748,7 +775,7 @@ protected:
     bool useScaling;
     DataType inputType;
     DataType outputType;
-    UINT baseType;
+    BaseType baseType;
     UINT numInputDimensions;
     UINT numOutputDimensions;
     UINT numTrainingIterationsToConverge;
@@ -769,6 +796,8 @@ protected:
     Vector< TrainingResult > trainingResults;
     TrainingResultsObserverManager trainingResultsObserverManager;
     TestResultsObserverManager testResultsObserverManager;
+    TrainingLog trainingLog;
+    TestingLog testingLog;
     
 };
 

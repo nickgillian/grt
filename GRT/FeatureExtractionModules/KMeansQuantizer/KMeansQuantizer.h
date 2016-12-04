@@ -174,7 +174,7 @@ public:
     @param inputValue: the value you want to quantize
     @return returns the quantized value
     */
-    UINT quantize(Float inputValue);
+    UINT quantize(const Float inputValue);
     
     /**
     Quantizes the input value using the quantization model. The quantization model must be trained first before you call this function.
@@ -236,13 +236,22 @@ public:
     using MLBase::load;
     using MLBase::train_;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the KMeansQuantizer class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT numClusters;
     MatrixFloat clusters;
     VectorFloat quantizationDistances;
     
+private:
     static RegisterFeatureExtractionModule< KMeansQuantizer > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

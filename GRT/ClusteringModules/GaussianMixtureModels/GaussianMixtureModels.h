@@ -40,7 +40,7 @@ public:
     /**
      Default Constructor.
      */
-	GaussianMixtureModels(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const Float minChange=1.0e-5);
+	GaussianMixtureModels(const UINT numClusters=10,const UINT minNumEpochs=5,const UINT maxNumEpochs=1000,const Float minChange=1.0e-5,const UINT numRestarts=5);
     
     /**
      Defines how the data from the rhs instance should be copied to this instance
@@ -157,18 +157,31 @@ public:
      
      @return returns the sigma matrix for a specific cluster if the model has been trained, otherwise an empty MatrixFloat will be returned
      */
-    MatrixFloat getSigma(const UINT k) const{
-        if( k < numClusters && trained ){
-            return sigma[k];
-        }
-        return MatrixFloat();
-    }
+    MatrixFloat getSigma(const UINT k) const;
+
+    /**
+    Gets a string that represents the GaussianMixtureModels class.
     
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
+    /**
+     The Gaussian Mixture Model learning algorithm can fail if the algorithm starts at a bad initial starting point (which is picked at random).
+     To improve the robustness of the learning algorithm, the learning algorithm can be restarted from a new random location if it fails on the previous attempt. 
+     The numRestarts parameter controls the maximum number of times the learning algorithm can reattempt to converge, a value of 0 indicates that the learning
+     algorithm must converge on the first attempt, otherwise training will fail.
+     
+     @return returns true if the parameter was updated successfully, false otherwise
+     */
+    bool setNumRestarts(const UINT numRestarts);
+
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
 	
 protected:
+    bool train_( const UINT numTrainingSamples, const MatrixFloat &data );
     bool estep( const MatrixFloat &data, VectorDouble &u, VectorDouble &v, Float &change );
 	bool mstep( const MatrixFloat &data );
 	bool computeInvAndDet();
@@ -198,6 +211,7 @@ protected:
     }
     
 	UINT numTrainingSamples;                    ///< The number of samples in the training data
+    UINT numRestarts;                           ///<The number of times the learning algorithm can reattempt to train a model
 	Float loglike;                             ///< The current loglikelihood value of the models given the data
 	MatrixFloat mu;                            ///< A matrix holding the estimated mean values of each Gaussian
 	MatrixFloat resp;                          ///< The responsibility matrix
@@ -209,6 +223,7 @@ protected:
     
 private:
     static RegisterClustererModule< GaussianMixtureModels > registerModule;
+    static const std::string id;
 };
     
 GRT_END_NAMESPACE

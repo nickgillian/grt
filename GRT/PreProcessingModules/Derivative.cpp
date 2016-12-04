@@ -23,15 +23,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the Derivative module with the PreProcessing base class
-RegisterPreProcessingModule< Derivative > Derivative::registerModule("Derivative");
+//Define the string that will be used to identify the object
+const std::string Derivative::id = "Derivative";
+std::string Derivative::getId() { return Derivative::id; }
 
-Derivative::Derivative(const UINT derivativeOrder,const Float delta,const UINT numDimensions,const bool filterData,const UINT filterSize) : PreProcessing( "Derivative" )
+//Register the Derivative module with the PreProcessing base class
+RegisterPreProcessingModule< Derivative > Derivative::registerModule( Derivative::getId() );
+
+Derivative::Derivative(const UINT derivativeOrder,const Float delta,const UINT numDimensions,const bool filterData,const UINT filterSize) : PreProcessing( Derivative::getId() )
 {
     init(derivativeOrder,delta,numDimensions,filterData,filterSize);
 }
 
-Derivative::Derivative(const Derivative &rhs) : PreProcessing( "Derivative" )
+Derivative::Derivative(const Derivative &rhs) : PreProcessing( Derivative::getId() )
 {
     
     this->derivativeOrder = rhs.derivativeOrder;
@@ -67,7 +71,7 @@ bool Derivative::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const Derivative *ptr = dynamic_cast<const Derivative*>(preProcessing);
         
@@ -84,7 +88,7 @@ bool Derivative::deepCopyFrom(const PreProcessing *preProcessing){
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }

@@ -1,13 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements the Linear Regression algorithm.  Linear Regression is a simple but effective regression algorithm that can map an N-dimensional signal to a 1-dimensional signal.
-
-@example RegressionModulesExamples/LinearRegressionExample/LinearRegressionExample.cpp
-
-@remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
 */
 
 /**
@@ -37,6 +30,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This class implements the Linear Regression algorithm.  Linear Regression is a simple but effective regression algorithm that can map an N-dimensional signal to a 1-dimensional signal.
+ @remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
+ @example RegressionModulesExamples/LinearRegressionExample/LinearRegressionExample.cpp
+*/
 class GRT_API LinearRegression : public Regressifier
 {
     public:
@@ -46,6 +44,13 @@ class GRT_API LinearRegression : public Regressifier
     @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
     */
     LinearRegression(bool useScaling=false);
+
+    /**
+    Copy Constructor
+    
+    @param rhs: copies the settings and model (if trained) from the rhs instance to this instance
+    */
+    LinearRegression(const LinearRegression &rhs);
     
     /**
     Default Destructor
@@ -120,17 +125,27 @@ class GRT_API LinearRegression : public Regressifier
     @return returns true if the value was updated successfully, false otherwise
     */
     bool setMaxNumIterations(const UINT maxNumIterations);
+
+    /**
+    Gets a string that represents the LinearRegression class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
     
-    protected:
+protected:
     bool loadLegacyModelFromFile( std::fstream &file );
     
     Float w0;
     VectorFloat w;
+
+private:
     static RegisterRegressifierModule< LinearRegression > registerModule;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

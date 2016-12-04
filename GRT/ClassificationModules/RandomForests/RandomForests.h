@@ -1,15 +1,6 @@
 /**
+@file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements a Random Decision Forest classifier.
-
-Random Forests are an ensemble learning method that operate by building a number of decision
-trees at training time and outputting the class with the majority vote over all the trees in the ensemble.
-
-@example ClassificationModulesExamples/RandomForestsExample/RandomForestsExample.cpp
-
-@remark This implementation is based on Breiman, Leo. "Random forests." Machine learning 45, no. 1 (2001): 5-32.
 */
 
 /**
@@ -39,6 +30,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief This class implements a Random Decision Forest classifier.
+
+Random Forests are an ensemble learning method that operate by building a number of decision
+trees at training time and outputting the class with the majority vote over all the trees in the ensemble.
+
+@example ClassificationModulesExamples/RandomForestsExample/RandomForestsExample.cpp
+
+@remark This implementation is based on Breiman, Leo. "Random forests." Machine learning 45, no. 1 (2001): 5-32.
+*/
 class GRT_API RandomForests : public Classifier
 {
 public:
@@ -353,7 +354,7 @@ protected:
     
 private:
     static RegisterClassifierModule< RandomForests > registerModule;
-    static std::string id;
+    static const std::string id;
     
 };
 

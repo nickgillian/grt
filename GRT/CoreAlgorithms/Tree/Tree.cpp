@@ -23,7 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-Tree::Tree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const TrainingMode trainingMode)
+Tree::Tree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const TrainingMode trainingMode) : MLBase("Tree")
 {
     tree = NULL;
     this->numSplittingSteps = numSplittingSteps;
@@ -31,11 +31,6 @@ Tree::Tree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UI
     this->maxDepth = maxDepth;
     this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
     this->trainingMode = trainingMode;
-    classType = "Tree";
-    debugLog.setProceedingText("[DEBUG Tree]");
-    errorLog.setProceedingText("[ERROR Tree]");
-    trainingLog.setProceedingText("[TRAINING Tree]");
-    warningLog.setProceedingText("[WARNING Tree]");
 }
 
 Tree::~Tree(void)

@@ -3,42 +3,32 @@
 #include "GaussianMixtureModels.h"
 
 GRT_BEGIN_NAMESPACE
+
+//Define the string that will be used to identify the object
+const std::string GaussianMixtureModels::id = "GaussianMixtureModels";
+std::string GaussianMixtureModels::getId() { return GaussianMixtureModels::id; }
     
 //Register the GaussianMixtureModels class with the Clusterer base class
-RegisterClustererModule< GaussianMixtureModels > GaussianMixtureModels::registerModule("GaussianMixtureModels");
+RegisterClustererModule< GaussianMixtureModels > GaussianMixtureModels::registerModule( GaussianMixtureModels::getId() );
 
 //Constructor,destructor
-GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange){
-    
+GaussianMixtureModels::GaussianMixtureModels(const UINT numClusters,const UINT minNumEpochs,const UINT maxNumEpochs,const Float minChange,const UINT numRestarts) : Clusterer( GaussianMixtureModels::getId() )
+{
     this->numClusters = numClusters;
     this->minNumEpochs = minNumEpochs;
     this->maxNumEpochs = maxNumEpochs;
     this->minChange = minChange;
+    this->numRestarts = numRestarts;
     
     numTrainingSamples = 0;
-    numTrainingIterationsToConverge = 0;
-    trained = false;
-    
-    classType = "GaussianMixtureModels";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG GaussianMixtureModels]");
-    errorLog.setProceedingText("[ERROR GaussianMixtureModels]");
-    trainingLog.setProceedingText("[TRAINING GaussianMixtureModels]");
-    warningLog.setProceedingText("[WARNING GaussianMixtureModels]");
 }
 
-GaussianMixtureModels::GaussianMixtureModels(const GaussianMixtureModels &rhs){
-    
-    classType = "GaussianMixtureModels";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG GaussianMixtureModels]");
-    errorLog.setProceedingText("[ERROR GaussianMixtureModels]");
-    trainingLog.setProceedingText("[TRAINING GaussianMixtureModels]");
-    warningLog.setProceedingText("[WARNING GaussianMixtureModels]");
-    
+GaussianMixtureModels::GaussianMixtureModels(const GaussianMixtureModels &rhs) : Clusterer( GaussianMixtureModels::getId() )
+{
     if( this != &rhs ){
         
         this->numTrainingSamples = rhs.numTrainingSamples;
+        this->numRestarts = rhs.numRestarts;
         this->loglike = rhs.loglike;
         this->mu = rhs.mu;
         this->resp = rhs.resp;
@@ -51,7 +41,6 @@ GaussianMixtureModels::GaussianMixtureModels(const GaussianMixtureModels &rhs){
         //Clone the Clusterer variables
         copyBaseVariables( (Clusterer*)&rhs );
     }
-    
 }
 
 GaussianMixtureModels::~GaussianMixtureModels(){
@@ -62,6 +51,7 @@ GaussianMixtureModels& GaussianMixtureModels::operator=(const GaussianMixtureMod
     if( this != &rhs ){
         
         this->numTrainingSamples = rhs.numTrainingSamples;
+        this->numRestarts = rhs.numRestarts;
         this->loglike = rhs.loglike;
         this->mu = rhs.mu;
         this->resp = rhs.resp;
@@ -82,11 +72,12 @@ bool GaussianMixtureModels::deepCopyFrom(const Clusterer *clusterer){
     
     if( clusterer == NULL ) return false;
     
-    if( this->getClustererType() == clusterer->getClustererType() ){
+    if( this->getId() == clusterer->getId() ){
         //Clone the GaussianMixtureModels values
-        GaussianMixtureModels *ptr = (GaussianMixtureModels*)clusterer;
+        const GaussianMixtureModels *ptr = dynamic_cast<const GaussianMixtureModels*>(clusterer);
         
         this->numTrainingSamples = ptr->numTrainingSamples;
+        this->numRestarts = ptr->numRestarts;
         this->loglike = ptr->loglike;
         this->mu = ptr->mu;
         this->resp = ptr->resp;
@@ -170,7 +161,38 @@ bool GaussianMixtureModels::train_(MatrixFloat &data){
             }
         }
     }
+
+    //Run the training algorithm X times until it converges or we run out of restarts
+    UINT trainingIter = 0;
+    while(true){
+        if( train_( numTrainingSamples, data ) ) break;
+        if( ++trainingIter >= numRestarts ) break;
+    }
     
+    //Compute the inverse of sigma and the determinants for prediction
+    if( !computeInvAndDet() ){
+        det.clear();
+        invSigma.clear();
+        errorLog << "train_(MatrixFloat &data) - Failed to compute inverse and determinat!" << std::endl;
+        return false;
+    }
+    
+    //Flag that the model was trained
+    trained = true;
+    
+    //Setup the cluster labels
+    clusterLabels.resize(numClusters);
+    for(UINT i=0; i<numClusters; i++){
+        clusterLabels[i] = i+1;
+    }
+    clusterLikelihoods.resize(numClusters,0);
+    clusterDistances.resize(numClusters,0);
+    
+    return true;
+}
+
+bool GaussianMixtureModels::train_( const UINT numTrainingSamples, const MatrixFloat &data ){
+
     //Pick K random starting points for the inital guesses of Mu
     Random random;
     Vector< UINT > randomIndexs(numTrainingSamples);
@@ -198,7 +220,7 @@ bool GaussianMixtureModels::train_(MatrixFloat &data){
     Float change = 99.9e99;
     UINT numIterationsNoChange = 0;
     VectorFloat u(numInputDimensions);
-	VectorFloat v(numInputDimensions);
+    VectorFloat v(numInputDimensions);
     
     while( keepGoing ){
         
@@ -217,30 +239,11 @@ bool GaussianMixtureModels::train_(MatrixFloat &data){
             if( ++numTrainingIterationsToConverge >= maxNumEpochs ) keepGoing = false;
             
         }else{
-            errorLog << "train_(MatrixFloat &data) - Estep failed at iteration " << numTrainingIterationsToConverge << std::endl;
+            warningLog << "train_(const UINT numTrainingSamples, MatrixFloat &data) - Estep failed at iteration " << numTrainingIterationsToConverge << std::endl;
             return false;
         }
     }
-    
-    //Compute the inverse of sigma and the determinants for prediction
-    if( !computeInvAndDet() ){
-        det.clear();
-        invSigma.clear();
-        errorLog << "train_(MatrixFloat &data) - Failed to compute inverse and determinat!" << std::endl;
-        return false;
-    }
-    
-    //Flag that the model was trained
-    trained = true;
-    
-    //Setup the cluster labels
-    clusterLabels.resize(numClusters);
-    for(UINT i=0; i<numClusters; i++){
-        clusterLabels[i] = i+1;
-    }
-    clusterLikelihoods.resize(numClusters,0);
-    clusterDistances.resize(numClusters,0);
-    
+
     return true;
 }
 
@@ -538,7 +541,18 @@ bool GaussianMixtureModels::computeInvAndDet(){
 	}
 
     return true;
+}
 
+bool GaussianMixtureModels::setNumRestarts(const UINT numRestarts){
+    this->numRestarts = numRestarts;
+    return true;
+}
+
+MatrixFloat GaussianMixtureModels::getSigma(const UINT k) const{
+    if( k < numClusters && trained ){
+        return sigma[k];
+    }
+    return MatrixFloat();
 }
 
 GRT_END_NAMESPACE

@@ -2252,6 +2252,8 @@ void MainWindow::pipelineTrainingFinished(const bool result){
     unsigned int pipelineMode = core.getPipelineMode();
     unsigned int trainingMode = ui->trainingTool_trainingMode->currentIndex();
 
+    GRT::GestureRecognitionPipeline pipeline = core.getPipeline();
+
     switch( trainingMode ){
         case 0://No Validation
             testResult = core.getTestResults();
@@ -2272,14 +2274,29 @@ void MainWindow::pipelineTrainingFinished(const bool result){
             infoText += QString::number( (testResult.trainingTime>0?testResult.trainingTime:1) );
             infoText += "ms\n";
 
-            if( pipelineMode == Core::REGRESSION_MODE ){
-                infoText += "- RMS Error: \t";
-                infoText += QString::number( core.getTrainingRMSError() );
-                infoText += "\n";
+            switch( pipelineMode ){
+                case Core::CLASSIFICATION_MODE:
+                    infoText += "- Training set accuracy:    ";
+                    infoText += QString::number( pipeline.getTrainingSetAccuracy() );
+                    infoText += "%\n";
 
-                infoText += "- SSE Error: \t";
-                infoText += QString::number( core.getTrainingSSError() );
-                infoText += "\n";
+                    if( pipeline.getClassifier()->getUseValidationSet() ){
+                        infoText += "- Validation set accuracy:    ";
+                        infoText += QString::number( pipeline.getValidationSetAccuracy() );
+                        infoText += "%\n";
+                    }
+                    break;
+                case Core::REGRESSION_MODE:
+                    infoText += "- RMS Error: \t";
+                    infoText += QString::number( core.getTrainingRMSError() );
+                    infoText += "\n";
+
+                    infoText += "- SSE Error: \t";
+                    infoText += QString::number( core.getTrainingSSError() );
+                    infoText += "\n";
+                    break;
+                default:
+                    break;
             }
         break;
         case 1://Random Subset
@@ -2953,9 +2970,9 @@ void MainWindow::updateRegressifierView(const int viewIndex){
     unsigned int numInputs = ui->setupView_numInputsSpinBox->value();
     unsigned int numOutputs = ui->setupView_numOutputsSpinBox->value();
     unsigned int numOutputNeurons = 0;
-    unsigned int inputLayerActivationFunction = GRT::Neuron::LINEAR;
-    unsigned int hiddenLayerActiviationFunction = GRT::Neuron::LINEAR;
-    unsigned int outputLayerActivationFunction = GRT::Neuron::LINEAR;
+    GRT::Neuron::Type inputLayerActivationFunction = GRT::Neuron::LINEAR;
+    GRT::Neuron::Type hiddenLayerActiviationFunction = GRT::Neuron::LINEAR;
+    GRT::Neuron::Type outputLayerActivationFunction = GRT::Neuron::LINEAR;
 
     //Check to see if we should automatically use multidimensional regression
     if( numOutputs > 1 ){
@@ -2988,8 +3005,8 @@ void MainWindow::updateRegressifierView(const int viewIndex){
         break;
         case 2: //MLP
             //Set the activation functions
-            hiddenLayerActiviationFunction = ui->pipelineTool_mlpHiddenLayerType->currentIndex();
-            outputLayerActivationFunction = ui->pipelineTool_mlpOutputLayerType->currentIndex();
+            hiddenLayerActiviationFunction = static_cast<GRT::Neuron::Type>(ui->pipelineTool_mlpHiddenLayerType->currentIndex());
+            outputLayerActivationFunction = static_cast<GRT::Neuron::Type>(ui->pipelineTool_mlpOutputLayerType->currentIndex());
 
             //Init the mlp
             mlp.init( numInputs,

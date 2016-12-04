@@ -23,14 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string KNN::id = "KNN";
+//Define the string that will be used to identify the object
+const std::string KNN::id = "KNN";
 std::string KNN::getId() { return KNN::id; }
 
 //Register the KNN module with the Classifier base class
-RegisterClassifierModule< KNN > KNN::registerModule( getId() );
+RegisterClassifierModule< KNN > KNN::registerModule( KNN::getId() );
 
-KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,bool searchForBestKValue,UINT minKSearchValue,UINT maxKSearchValue) : Classifier( getId() )
+KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,bool searchForBestKValue,UINT minKSearchValue,UINT maxKSearchValue) : Classifier( KNN::getId() )
 {
     this->K = K;
     this->distanceMethod = EUCLIDEAN_DISTANCE;
@@ -45,7 +45,7 @@ KNN::KNN(unsigned int K,bool useScaling,bool useNullRejection,Float nullRejectio
     distanceMethod = EUCLIDEAN_DISTANCE;
 }
 
-KNN::KNN(const KNN &rhs) : Classifier( getId() )
+KNN::KNN(const KNN &rhs) : Classifier( KNN::getId() )
 {
     classifierMode = STANDARD_CLASSIFIER_MODE;
     *this = rhs;
@@ -77,9 +77,9 @@ bool KNN::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         //Get a pointer the KNN copy instance
-        KNN *ptr = (KNN*)classifier;
+        const KNN *ptr = dynamic_cast<const KNN*>(classifier);
         
         this->K = ptr->K;
         this->distanceMethod = ptr->distanceMethod;
@@ -105,20 +105,25 @@ bool KNN::train_(ClassificationData &trainingData){
         errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
-    
-    //Get the ranges of the data
-    ranges = trainingData.getRanges();
+
+    //Store the number of features, classes and the training data
+    this->numInputDimensions = trainingData.getNumDimensions();
+    this->numOutputDimensions = trainingData.getNumClasses();
+    this->numClasses = trainingData.getNumClasses();
+    this->ranges = trainingData.getRanges();
+
     if( useScaling ){
         //Scale the training data between 0 and 1
         trainingData.scale(0, 1);
     }
-    
-    //Store the number of features, classes and the training data
-    this->numInputDimensions = trainingData.getNumDimensions();
-    this->numClasses = trainingData.getNumClasses();
-    
+
     //TODO: In the future need to build a kdtree from the training data to allow better realtime prediction
     this->trainingData = trainingData;
+
+    ClassificationData validationData;
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
+    }
     
     //Set the class labels
     classLabels.resize( numClasses );
@@ -126,83 +131,133 @@ bool KNN::train_(ClassificationData &trainingData){
         classLabels[k] = trainingData.getClassTracker()[k].classLabel;
     }
     
-    //If we do not need to search for the best K value, then call the sub training function and return the result
+    //If we do not need to search for the best K value, then call the sub training function with the default value of K
     if( !searchForBestKValue ){
-        return train_(trainingData,K);
-    }
-    
-    //If we have got this far then we are going to search for the best K value
-    UINT index = 0;
-    Float bestAccuracy = 0;
-    Vector< IndexedDouble > trainingAccuracyLog;
-    
-    for(UINT k=minKSearchValue; k<=maxKSearchValue; k++){
-        //Randomly spilt the data and use 80% to train the algorithm and 20% to test it
-        ClassificationData trainingSet(trainingData);
-        ClassificationData testSet = trainingSet.split(80,true);
+        if( !train_(trainingData,K) ){
+            return false;
+        }
+    }else{
+        //If we have got this far then we are going to search for the best K value
+        UINT index = 0;
+        Float bestAccuracy = 0;
+        Vector< IndexedDouble > trainingAccuracyLog;
         
-        if( !train_(trainingSet, k) ){
-            errorLog << "Failed to train model for a k value of " << k << std::endl;
-        }else{
-                
-            //Compute the classification error
-            Float accuracy = 0;
-            for(UINT i=0; i<testSet.getNumSamples(); i++){
-                
-                VectorFloat sample = testSet[i].getSample();
-                
-                if( !predict( sample , k) ){
-                    errorLog << "Failed to predict label for test sample with a k value of " << k << std::endl;
-                        return false;
+        for(UINT k=minKSearchValue; k<=maxKSearchValue; k++){
+            //Randomly spilt the data and use 80% to train the algorithm and 20% to test it
+            ClassificationData testSet = useValidationSet ? validationData : trainingData.split(80,true);
+            
+            if( !train_(trainingData, k) ){
+                errorLog << "Failed to train model for a k value of " << k << std::endl;
+            }else{
+                    
+                //Compute the classification error
+                Float accuracy = 0;
+                for(UINT i=0; i<testSet.getNumSamples(); i++){
+                    
+                    VectorFloat sample = testSet[i].getSample();
+                    
+                    if( !predict( sample , k) ){
+                        errorLog << "Failed to predict label for test sample with a k value of " << k << std::endl;
+                            return false;
+                    }
+                    
+                    if( testSet[i].getClassLabel() == predictedClassLabel ){
+                        accuracy++;
+                    }
                 }
                 
-                if( testSet[i].getClassLabel() == predictedClassLabel ){
-                    accuracy++;
+                accuracy = accuracy /Float( testSet.getNumSamples() ) * 100.0;
+                trainingAccuracyLog.push_back( IndexedDouble(k,accuracy) );
+                
+                trainingLog << "K:\t" << k << "\tAccuracy:\t" << accuracy << std::endl;
+                
+                if( accuracy > bestAccuracy ){
+                    bestAccuracy = accuracy;
                 }
+                
+                index++;
             }
-            
-            accuracy = accuracy /Float( testSet.getNumSamples() ) * 100.0;
-            trainingAccuracyLog.push_back( IndexedDouble(k,accuracy) );
-            
-            trainingLog << "K:\t" << k << "\tAccuracy:\t" << accuracy << std::endl;
-            
-            if( accuracy > bestAccuracy ){
-                bestAccuracy = accuracy;
-            }
-            
-            index++;
+                
         }
             
-    }
-        
-    if( bestAccuracy > 0 ){
-        //Sort the training log by value
-        std::sort(trainingAccuracyLog.begin(),trainingAccuracyLog.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
-        
-        //Copy the top matching values into a temporary buffer
-        Vector< IndexedDouble > tempLog;
-        
-        //Add the first value
-        tempLog.push_back( trainingAccuracyLog[0] );
-        
-        //Keep adding values until the value changes
-        for(UINT i=1; i<trainingAccuracyLog.size(); i++){
-            if( trainingAccuracyLog[i].value == tempLog[0].value ){
-                tempLog.push_back( trainingAccuracyLog[i] );
-            }else break;
+        if( bestAccuracy > 0 ){
+            //Sort the training log by value
+            std::sort(trainingAccuracyLog.begin(),trainingAccuracyLog.end(),IndexedDouble::sortIndexedDoubleByValueDescending);
+            
+            //Copy the top matching values into a temporary buffer
+            Vector< IndexedDouble > tempLog;
+            
+            //Add the first value
+            tempLog.push_back( trainingAccuracyLog[0] );
+            
+            //Keep adding values until the value changes
+            for(UINT i=1; i<trainingAccuracyLog.size(); i++){
+                if( trainingAccuracyLog[i].value == tempLog[0].value ){
+                    tempLog.push_back( trainingAccuracyLog[i] );
+                }else break;
+            }
+            
+            //Sort the temp values by index (the index is the K value so we want to get the minimum K value with the maximum accuracy)
+            std::sort(tempLog.begin(),tempLog.end(),IndexedDouble::sortIndexedDoubleByIndexAscending);
+            
+            trainingLog << "Best K Value: " << tempLog[0].index << "\tAccuracy:\t" << tempLog[0].value << std::endl;
+            
+            //Use the minimum index, this should give us the best accuracy with the minimum K value
+            //We now need to train the model again to make sure all the training metrics are computed correctly
+            if( !train_(trainingData,tempLog[0].index) ){
+                return false;
+            }
         }
-        
-        //Sort the temp values by index (the index is the K value so we want to get the minimum K value with the maximum accuracy)
-        std::sort(tempLog.begin(),tempLog.end(),IndexedDouble::sortIndexedDoubleByIndexAscending);
-        
-        trainingLog << "Best K Value: " << tempLog[0].index << "\tAccuracy:\t" << tempLog[0].value << std::endl;
-        
-        //Use the minimum index, this should give us the best accuracy with the minimum K value
-        //We now need to train the model again to make sure all the training metrics are computed correctly
-        return train_(trainingData,tempLog[0].index);
     }
+
+    //If we get this far, then a model has been trained
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially
+    bool scalingState = useScaling;
+    useScaling = false;
+    for(UINT i=0; i<trainingData.getNumSamples(); i++){
+        if( !predict_( trainingData[i].getSample() ) ){
+            trained = false;
+            errorLog << "Failed to run prediction for training sample: " << i << "! Failed to fully train model!" << std::endl;
+            return false;
+        }
+
+        if( predictedClassLabel == trainingData[i].getClassLabel() ){
+            trainingSetAccuracy++;
+        }
+    }
+
+    if( useValidationSet ){
+        for(UINT i=0; i<validationData.getNumSamples(); i++){
+            if( !predict_( validationData[i].getSample() ) ){
+                trained = false;
+                errorLog << "Failed to run prediction for validation sample: " << i << "! Failed to fully train model!" << std::endl;
+                return false;
+            }
+
+            if( predictedClassLabel == validationData[i].getClassLabel() ){
+                validationSetAccuracy++;
+            }
+        }
+    }
+
+    trainingSetAccuracy = trainingSetAccuracy / trainingData.getNumSamples() * 100.0;
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        validationSetAccuracy = validationSetAccuracy / validationData.getNumSamples() * 100.0;
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
         
-    return false;
+    return true;
 }
     
 bool KNN::train_(const ClassificationData &trainingData,const UINT K){

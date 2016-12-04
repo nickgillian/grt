@@ -4,14 +4,8 @@
 
 GRT_BEGIN_NAMESPACE
 
-MovementDetector::MovementDetector( const UINT numDimensions, const Float upperThreshold, const Float lowerThreshold, const Float gamma, const UINT searchTimeout ) {
-    classType = "MovementDetector";
-    infoLog.setProceedingText("[MovementDetector]");
-    debugLog.setProceedingText("[DEBUG MovementDetector]");
-    errorLog.setProceedingText("[ERROR MovementDetector]");
-    trainingLog.setProceedingText("[TRAINING MovementDetector]");
-    warningLog.setProceedingText("[WARNING MovementDetector]");
-    
+MovementDetector::MovementDetector( const UINT numDimensions, const Float upperThreshold, const Float lowerThreshold, const Float gamma, const UINT searchTimeout ) : MLBase("MovementDetector")
+{    
     this->numInputDimensions = numDimensions;
     this->numOutputDimensions = 1;
     this->upperThreshold = upperThreshold;

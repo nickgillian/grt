@@ -38,8 +38,8 @@ GRT_BEGIN_NAMESPACE
 class GRT_API Context : public MLBase
 {
 public:
-	Context(void){ 
-        contextType = "NOT_SET"; 
+	Context( const std::string &id = "" ) : MLBase( id, MLBase::CONTEXT )
+    {
         initialized = false; 
         okToContinue = true;
         numInputDimensions = 0;
@@ -68,7 +68,6 @@ public:
             return false;
         }
         
-        this->contextType = context->contextType;
         this->initialized = context->initialized;
         this->okToContinue = context->okToContinue;
         this->numInputDimensions = context->numInputDimensions;
@@ -99,21 +98,24 @@ public:
      Defines a map between a string (which will contain the name of the context module, such as Gate) and a function returns a new instance of that context
      */
     typedef std::map< std::string, Context*(*)() > StringContextMap;
-    
+
     /**
-     Creates a new context instance based on the input string (which should contain the name of a valid context module such as Gate).
+     Creates a new Context instance based on the input string (which should contain the name of a valid Context such as Gate).
      
-     @param contextType: the name of the context module
-     @return Context*: a pointer to the new instance of the context module
+     @param id: the id of the Context
+     @return a pointer to the new instance of the Context
      */
-    static Context* createInstanceFromString( const std::string &contextType);
+    static Context* create( std::string const &id );
     
     /**
-     Creates a new context instance based on the current contextType string value.
+     Creates a new Context instance based on the current type string value.
      
-     @return Context*: a pointer to the new instance of the context module
+     @return Context*: a pointer to the new instance of the Context
     */
-    Context* createNewInstance() const;
+    Context* create() const;
+
+    GRT_DEPRECATED_MSG( "createNewInstance is deprecated, use create instead.", Context* createNewInstance() const );
+    GRT_DEPRECATED_MSG( "createInstanceFromString is deprecated, use create instead.", static Context* createInstanceFromString( const std::string &id ) );
     
 protected:
     /**
@@ -152,14 +154,17 @@ private:
     static UINT numContextInstances;
 };
 
-//These two functions/classes are used to register any new Context Module with the Context base class
-template< typename T >  Context *newContextModuleInstance() { return new T; }
+template< typename T >  Context *createNewContextModuleInstance() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
+/**
+ @brief This class provides an interface for classes to register themselves with the Context base class, this enables Context algorithms to
+ be automatically be created from just a string, e.g.: Context *gate = create( "Gate" );
+*/
 template< typename T > 
 class RegisterContextModule : Context { 
 public:
     RegisterContextModule( const std::string &newContextModuleName ) { 
-        getMap()->insert( std::pair< std::string, Context*(*)() >(newContextModuleName, &newContextModuleInstance< T > ) );
+        getMap()->insert( std::pair< std::string, Context*(*)() >(newContextModuleName, &createNewContextModuleInstance< T > ) );
     }
 };
 

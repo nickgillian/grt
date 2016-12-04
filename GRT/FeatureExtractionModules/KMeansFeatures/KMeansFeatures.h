@@ -156,7 +156,7 @@ public:
      */
     virtual bool train_(MatrixFloat &trainingData);
     
-    bool computeFeatures(VectorFloat &inputVector,VectorFloat &outputVector);
+    bool computeFeatures(const VectorFloat &inputVector,VectorFloat &outputVector);
     
     bool init( const Vector< UINT > numClustersPerLayer );
     
@@ -167,10 +167,19 @@ public:
     Vector< MatrixFloat > getClusters() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
+    using MLBase::save;
+    using MLBase::load;
     using MLBase::train;
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the KMeansFeatures class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     Float alpha;
@@ -178,7 +187,9 @@ protected:
     Vector< MinMax > ranges;
     Vector< MatrixFloat > clusters;
     
+private:
     static RegisterFeatureExtractionModule< KMeansFeatures > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

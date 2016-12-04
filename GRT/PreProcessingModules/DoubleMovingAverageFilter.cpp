@@ -32,15 +32,19 @@ The DoubleMovingAverageFilter implements a low pass Float moving average filter.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the DoubleMovingAverageFilter module with the PreProcessing base class
-RegisterPreProcessingModule< DoubleMovingAverageFilter > DoubleMovingAverageFilter::registerModule("DoubleMovingAverageFilter");
+//Define the string that will be used to identify the object
+const std::string DoubleMovingAverageFilter::id = "DoubleMovingAverageFilter";
+std::string DoubleMovingAverageFilter::getId() { return DoubleMovingAverageFilter::id; }
 
-DoubleMovingAverageFilter::DoubleMovingAverageFilter(UINT filterSize,UINT numDimensions) : PreProcessing( "DoubleMovingAverageFilter" )
+//Register the DoubleMovingAverageFilter module with the PreProcessing base class
+RegisterPreProcessingModule< DoubleMovingAverageFilter > DoubleMovingAverageFilter::registerModule( DoubleMovingAverageFilter::getId() );
+
+DoubleMovingAverageFilter::DoubleMovingAverageFilter(UINT filterSize,UINT numDimensions) : PreProcessing( DoubleMovingAverageFilter::getId() )
 {
     init(filterSize,numDimensions);
 }
 
-DoubleMovingAverageFilter::DoubleMovingAverageFilter(const DoubleMovingAverageFilter &rhs) : PreProcessing( "DoubleMovingAverageFilter" )
+DoubleMovingAverageFilter::DoubleMovingAverageFilter(const DoubleMovingAverageFilter &rhs) : PreProcessing( DoubleMovingAverageFilter::getId() )
 {
     *this = rhs;
 }
@@ -65,7 +69,7 @@ bool DoubleMovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing)
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const DoubleMovingAverageFilter *ptr = dynamic_cast<const DoubleMovingAverageFilter*>(preProcessing);
         

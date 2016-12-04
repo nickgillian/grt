@@ -1,13 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements the MinDist classifier algorithm.
-
-@example ClassificationModulesExamples/MinDistExample/MinDistExample.cpp
-
-@remark This implementation is custom algorithm, publication forthcoming.
 */
 
 /**
@@ -38,9 +31,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief This class implements the MinDist classifier algorithm.
+
+@example ClassificationModulesExamples/MinDistExample/MinDistExample.cpp
+
+@remark This implementation is custom algorithm, publication forthcoming.
+*/
 class GRT_API MinDist : public Classifier
 {
-    public:
+public:
     /**
     Default Constructor
     
@@ -178,14 +178,14 @@ class GRT_API MinDist : public Classifier
     using MLBase::train_;
     using MLBase::predict_;
     
-    protected:
+protected:
     bool loadLegacyModelFromFile( std::fstream &file );
     
     UINT numClusters;
     Vector< MinDistModel > models;            //A buffer to hold all the models
-    static std::string id;
     
-    private:
+private:
+    static const std::string id;
     static RegisterClassifierModule< MinDist > registerModule;
 };
 

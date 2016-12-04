@@ -221,7 +221,6 @@ public:
     }
 
 protected:
-    //std::vector< T > data;
 };
 
 GRT_END_NAMESPACE

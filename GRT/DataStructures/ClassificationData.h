@@ -1,12 +1,7 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @brief The ClassificationData is the main data structure for recording, labeling, managing, saving, and loading training data for supervised learning problems.
- 
- @example DatastructuresExample/ClassificationDataExample/ClassificationDataExample.cpp
- */
+*/
 
 /**
  GRT MIT License
@@ -40,6 +35,11 @@
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief The ClassificationData is the main data structure for recording, labeling, managing, saving, and loading training data for supervised learning problems.
+ 
+ @example DatastructuresExample/ClassificationDataExample/ClassificationDataExample.cpp
+ */
 class GRT_API ClassificationData : public GRTBase{
 public:
     
@@ -134,9 +134,11 @@ public:
      There should not be any spaces in the className.
      Will return true if the name is set, or false if the class label does not exist.
      
+     @param className: the className for which the label should be updated
+     @param classLabel: the updated class label
      @return returns true if the name is set, or false if the class label does not exist
      */
-    bool setClassNameForCorrespondingClassLabel(std::string className,UINT classLabel);
+    bool setClassNameForCorrespondingClassLabel(const std::string className,const UINT classLabel);
     
     /**
      Sets if the user can add samples to the dataset with the label matching the GRT_DEFAULT_NULL_CLASS_LABEL.
@@ -144,24 +146,26 @@ public:
      If the allowNullGestureClass is set to false, then the user will not be able to add samples that have a class
      label matching the default null class label.
      
+     @param allowNullGestureClass: flag that indicates if the null gesture class should be allowed
      @return returns true if the allowNullGestureClass was set, false otherwise
      */
-    bool setAllowNullGestureClass(bool allowNullGestureClass);
+    bool setAllowNullGestureClass(const bool allowNullGestureClass);
 
     /**
      Adds a new labelled sample to the dataset.  
      The dimensionality of the sample should match the number of dimensions in the ClassificationData.
      The class label should be greater than zero (as zero is used as the default null rejection class label).
 
-     @param UINT classLabel: the class label of the corresponding sample
-     @param const UINT VectorFloat &sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the ClassificationData
+     @param classLabel: the class label of the corresponding sample
+     @param sample: the new sample you want to add to the dataset.  The dimensionality of this sample should match the number of dimensions in the ClassificationData
      @return true if the sample was correctly added to the dataset, false otherwise
     */
-    bool addSample(UINT classLabel,const VectorFloat &sample);
+    bool addSample(const UINT classLabel,const VectorFloat &sample);
     
     /**
      Removes the training sample at the specific index from the dataset.
      
+     @param index: the index of the training sample that should be removed
      @return true if the index is valid and the sample was removed, false otherwise
     */
     bool removeSample( const UINT index );
@@ -174,21 +178,21 @@ public:
     bool removeLastSample();
     
     /**
-     Reserves that the Vector capacity be at least enough to contain N elements.
+     Reserves that the Vector capacity be at least enough to contain M elements.
      
-     If N is greater than the current Vector capacity, the function causes the container to reallocate its storage increasing its capacity to N (or greater).
+     If M is greater than the current Vector capacity, the function causes the container to reallocate its storage increasing its capacity to M (or greater).
      
-     @param const UINT N: the new memory size
+     @param M: the new memory size
      @return true if the memory was reserved successfully, false otherwise
      */
-    bool reserve(const UINT N);
+    bool reserve(const UINT M);
     
     /**
      This function adds the class with the classLabel to the class tracker.
      If the class tracker already contains the classLabel then the function will return false.
      
-     @param const UINT classLabel: the class label you want to add to the classTracker
-     @param const std::string className: the name associated with the new class
+     @param classLabel: the class label you want to add to the classTracker
+     @param className: the name associated with the new class
      @return returns true if the classLabel was added, false otherwise
      */
     bool addClass(const UINT classLabel,const std::string className = "NOT_SET");
@@ -196,7 +200,7 @@ public:
     /**
      Deletes from the dataset all the samples with a specific class label.
      
-     @param const UINT classLabel: the class label of the samples you wish to delete from the dataset
+     @param classLabel: the class label of the samples you wish to delete from the dataset
      @return the number of samples deleted from the dataset
      */
     UINT removeClass(const UINT classLabel);
@@ -207,7 +211,7 @@ public:
      
      Deletes from the dataset all the samples with a specific class label.
      
-     @param const UINT classLabel: the class label of the samples you wish to delete from the dataset
+     @param classLabel: the class label of the samples you wish to delete from the dataset
      @return the number of samples deleted from the dataset
      */
     UINT eraseAllSamplesWithClassLabel(const UINT classLabel);
@@ -215,8 +219,8 @@ public:
     /**
      Relabels all the samples with the class label A with the new class label B.
      
-     @param const UINT oldClassLabel: the class label of the samples you want to relabel
-     @param const UINT newClassLabel: the class label the samples will be relabelled with
+     @param oldClassLabel: the class label of the samples you want to relabel
+     @param newClassLabel: the class label the samples will be relabelled with
      @return returns true if the samples were correctly relablled, false otherwise
      */
     bool relabelAllSamplesWithClassLabel(const UINT oldClassLabel,const UINT newClassLabel);
@@ -243,6 +247,8 @@ public:
     /**
      Scales the dataset to the new target range.
 
+     @param minTarget: the minimum range that the target data should be scaled to
+     @param maxTarget: the maximum range that the target data should be scaled to
      @return true if the data was scaled correctly, false otherwise
     */
     bool scale(const Float minTarget,const Float maxTarget);
@@ -250,6 +256,9 @@ public:
     /**
      Scales the dataset to the new target range, using the Vector of ranges as the min and max source ranges.
 
+     @param ranges: a vector containing the new ranges
+     @param minTarget: the minimum range that the target data should be scaled to
+     @param maxTarget: the maximum range that the target data should be scaled to
      @return true if the data was scaled correctly, false otherwise
     */
     bool scale(const Vector<MinMax> &ranges,const Float minTarget,const Float maxTarget);
@@ -399,15 +408,15 @@ public:
      @param balanceDataset: if true will use stratified sampling to balance the dataset returned, otherwise will use random sampling
      @return returns a bootstrapped ClassificationData
      */
-    ClassificationData getBootstrappedDataset(UINT numSamples=0, bool balanceDataset=false ) const;
+    ClassificationData getBootstrappedDataset(const UINT numSamples=0, const bool balanceDataset=false ) const;
     
 	/**
-     Reformats the ClassificationData as LabelledRegressionData to enable regression algorithms like the MLP to be used as a classifier.
+     Reformats the ClassificationData as RegressionData to enable regression algorithms like the MLP to be used as a classifier.
 	 This sets the number of targets in the regression data equal to the number of classes in the classification data.  The output target ouput of each regression sample will therefore
 	 be all zeros, except for the index matching the class label which will be 1.
 	 For this to work, the labelled classification data cannot have any samples with a class label of 0!
 
-     @return a new LabelledRegressionData instance, containing the reformated classification data
+     @return a new RegressionData instance, containing the reformated classification data
     */
     RegressionData reformatAsRegressionData() const;
     
@@ -476,14 +485,16 @@ public:
     
     /**
      Gets the index of the class label from the class tracker.
-  
+
+     @param classLabel: the class label you want to access the index for
      @return an unsigned int representing the index of the class label in the class tracker
      */
     UINT getClassLabelIndexValue(const UINT classLabel) const;
     
     /**
      Gets the name of the class with a given class label.  If the class label does not exist then the string "CLASS_LABEL_NOT_FOUND" will be returned.
-     
+
+     @param classLabel: the class label you want to access the name for
      @return a string containing the name of the given class label or the string "CLASS_LABEL_NOT_FOUND" if the class label does not exist
      */
     std::string getClassNameForCorrespondingClassLabel(const UINT classLabel) const;
@@ -519,8 +530,8 @@ public:
     /**
      Computes a histogram for a specific class.
 
-     @param const UINT classLabel: the class label of the class you want to compute the histogram data for
-     @param const UINT numBins: the number of bins in the histogram
+     @param classLabel: the class label of the class you want to compute the histogram data for
+     @param numBins: the number of bins in the histogram
      @return a MatrixFloat of histogram data where each row represents a dimension and each column represents a histogram bin
     */
     MatrixFloat getClassHistogramData(const UINT classLabel,const UINT numBins) const;
@@ -585,7 +596,7 @@ public:
     /**
      Gets the indexes for all the samples in the current dataset belonging to the classLabel.
 
-     @param const UINT classLabel: the classLabel of the class you want the indexes for
+     @param classLabel: the classLabel of the class you want the indexes for
      @return a Vector< UINT > containing the indexes for all the samples in the current dataset belonging to the classLabel
     */
     Vector< UINT > getClassDataIndexes(const UINT classLabel) const;
@@ -607,13 +618,13 @@ public:
     MatrixFloat getDataAsMatrixFloat() const;
     
     /**
-     Generates a labeled dataset that can be used for basic training/testing/validation for ClassificationData.
+     Generates a labeled dataset that can be used for basic training/testing/validation for ClassificationData, saving the dataset to the file specified by filename.
      
      Samples in the dataset will be generated based on K randomly select models, with Gaussian noise.  K is set by the numClasses argument.
+
+     The Gaussian clusters are selected at random, therefore the returned dataset may or may not be linearly seperable, depending on the random clusters.
      
      The range of each dimension will be [-range range].  Sigma controls the amount of Gaussian noise added.
-     
-     The dataset will be saved to the file specified by filename.
      
      @param filename: the name of the file the dataset will be saved to
      @param numSamples: the total number of samples in the dataset
@@ -624,6 +635,43 @@ public:
      @return returns true if the dataset was created successfully, false otherwise
      */
     static bool generateGaussDataset( const std::string filename, const UINT numSamples = 10000, const UINT numClasses = 10, const UINT numDimensions = 3, const Float range = 10, const Float sigma = 1 );
+
+    /**
+     Generates a labeled dataset that can be used for basic training/testing/validation for ClassificationData and returns it directly.
+     
+     Samples in the dataset will be generated based on K randomly select models, with Gaussian noise.  K is set by the numClasses argument.
+
+     The Gaussian clusters are selected at random, therefore the returned dataset may or may not be linearly separable, depending on the random clusters.
+     
+     The range of each dimension will be [-range range].  Sigma controls the amount of Gaussian noise added.
+     
+     @param numSamples: the total number of samples in the dataset
+     @param numClasses: the number of classes in the dataset
+     @param numDimensions: the number of dimensions in the dataset
+     @param range: the range the data will be sampled from, range will be [-range range] for each dimension
+     @param sigma: the amount of Gaussian noise
+     @return returns the new dataset
+     */
+    static ClassificationData generateGaussDataset( const UINT numSamples = 10000, const UINT numClasses = 10, const UINT numDimensions = 3, const Float range = 10, const Float sigma = 1 );
+
+    /**
+     Generates a labeled dataset that can be used for basic training/testing/validation for ClassificationData and returns it directly.
+     
+     Samples in the dataset will be generated based on K randomly select models, with Gaussian noise.  K is set by the numClasses argument.
+     
+     The range of each dimension will be [-range range].  Sigma controls the amount of Gaussian noise added.
+
+     The Gaussian clusters are encouraged to be linearly separable by setting the centroids of each class on a regularly spaced grid.  If there
+     are too many classes or the sigma noise of each class is too high then the resulting data may NOT be linearly separable.
+     
+     @param numSamples: the total number of samples in the dataset
+     @param numClasses: the number of classes in the dataset
+     @param numDimensions: the number of dimensions in the dataset
+     @param range: the range the data will be sampled from, range will be [-range range] for each dimension
+     @param sigma: the amount of Gaussian noise
+     @return returns the new dataset
+     */
+    static ClassificationData generateGaussLinearDataset( const UINT numSamples = 10000, const UINT numClasses = 10, const UINT numDimensions = 3, const Float range = 10, const Float sigma = 1 );
 
 private:
     

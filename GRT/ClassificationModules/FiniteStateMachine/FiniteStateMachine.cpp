@@ -23,14 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string FiniteStateMachine::id = "FiniteStateMachine";
+//Define the string that will be used to identify the object
+const std::string FiniteStateMachine::id = "FiniteStateMachine";
 std::string FiniteStateMachine::getId() { return FiniteStateMachine::id; }
 
 //Register the FiniteStateMachine module with the Classifier base class
 RegisterClassifierModule< FiniteStateMachine > FiniteStateMachine::registerModule( getId() );
 
-FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClustersPerState,const Float stateTransitionSmoothingCoeff,const Float measurementNoise) : Classifier( getId() )
+FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClustersPerState,const Float stateTransitionSmoothingCoeff,const Float measurementNoise) : Classifier( FiniteStateMachine::getId() )
 {
     this->numParticles = numParticles;
     this->numClustersPerState = numClustersPerState;
@@ -44,7 +44,7 @@ FiniteStateMachine::FiniteStateMachine(const UINT numParticles,const UINT numClu
     maxNumEpochs = 1000;
 }
 
-FiniteStateMachine::FiniteStateMachine(const FiniteStateMachine &rhs) : Classifier( getId() )
+FiniteStateMachine::FiniteStateMachine(const FiniteStateMachine &rhs) : Classifier( FiniteStateMachine::getId() )
 {
     classifierMode = STANDARD_CLASSIFIER_MODE;
     *this = rhs;

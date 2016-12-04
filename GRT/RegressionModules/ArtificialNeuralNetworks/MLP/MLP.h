@@ -2,12 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief This class implements a Multilayer Perceptron Artificial Neural Network.
-
-@example RegressionModulesExamples/MLPRegressionExample/MLPRegressionExample.cpp
-
-@remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
 */
 
 /**
@@ -38,6 +32,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This class implements a Multilayer Perceptron Artificial Neural Network.
+
+ @example RegressionModulesExamples/MLPRegressionExample/MLPRegressionExample.cpp
+
+ @remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
+*/
 class GRT_API MLP : public Regressifier{
 public:
     enum TrainingAlgorithm{ONLINE_GRADIENT_DESCENT=0}; ///<The various training algorithms supported by the MLP algorithm
@@ -176,8 +177,10 @@ public:
     @param outputLayerActivationFunction: the activation function to use for the input layer
     @return returns true if the MLP was initialized, false otherwise
     */
-    bool init(const UINT numInputNeurons, const UINT numHiddenNeurons, const UINT numOutputNeurons, const Neuron::Type inputLayerActivationFunction,
-    const Neuron::Type hiddenLayerActivationFunction, const Neuron::Type outputLayerActivationFunction);
+    bool init(const UINT numInputNeurons, const UINT numHiddenNeurons, const UINT numOutputNeurons, 
+              const Neuron::Type inputLayerActivationFunction,
+              const Neuron::Type hiddenLayerActivationFunction, 
+              const Neuron::Type outputLayerActivationFunction);
     
     /**
     Prints the current MLP weights and coefficents to std out.
@@ -481,6 +484,13 @@ public:
     @return returns true if the value was updated successfully, false otherwise
     */
     bool setNullRejectionCoeff(const Float nullRejectionCoeff);
+
+    /**
+    Gets a string that represents the MLP class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -524,11 +534,11 @@ protected:
     Performs the feedforward step for back propagation, using the input data
     
     @param data: the input Vector to use for the feedforward
-    @param inputNeuronsOuput: the results of the input layer
+    @param inputNeuronsOutput: the results of the input layer
     @param hiddenNeuronsOutput: the results of the hidden layer
     @param outputNeuronsOutput: the results of the output layer
     */
-    void feedforward(const VectorFloat &data,VectorFloat &inputNeuronsOuput,VectorFloat &hiddenNeuronsOutput,VectorFloat &outputNeuronsOutput);
+    void feedforward(const VectorFloat &data,VectorFloat &inputNeuronsOutput,VectorFloat &hiddenNeuronsOutput,VectorFloat &outputNeuronsOutput);
     
     UINT numInputNeurons;
     UINT numHiddenNeurons;
@@ -542,7 +552,6 @@ protected:
     Float gamma;
     Float trainingError;
     bool initialized;
-    Random random;
     
     Vector< Neuron > inputLayer;
     Vector< Neuron > hiddenLayer;
@@ -558,14 +567,16 @@ protected:
     Float maxLikelihood;
     VectorFloat classLikelihoods;
     
-    static RegisterRegressifierModule< MLP > registerModule;
-    
     //Temp Training Stuff
-    VectorFloat inputNeuronsOuput;
+    VectorFloat inputNeuronsOutput;
     VectorFloat hiddenNeuronsOutput;
     VectorFloat outputNeuronsOutput;
     VectorFloat deltaO;
     VectorFloat deltaH;
+
+private:
+    static RegisterRegressifierModule< MLP > registerModule;
+    static const std::string id;
      
 };
 

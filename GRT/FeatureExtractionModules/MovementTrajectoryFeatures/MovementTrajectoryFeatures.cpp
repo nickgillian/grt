@@ -23,28 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the ZeroCrossingCounter module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< MovementTrajectoryFeatures > MovementTrajectoryFeatures::registerModule("MovementTrajectoryFeatures");
+//Define the string that will be used to identify the object
+std::string MovementTrajectoryFeatures::id = "MovementTrajectoryFeatures";
+std::string MovementTrajectoryFeatures::getId() { return MovementTrajectoryFeatures::id; }
 
-MovementTrajectoryFeatures::MovementTrajectoryFeatures(UINT trajectoryLength,UINT numCentroids,UINT featureMode,UINT numHistogramBins,UINT numDimensions,bool useTrajStartAndEndValues,bool useWeightedMagnitudeValues){
-    
-    classType = "MovementTrajectoryFeatures";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG MovementTrajectoryFeatures]");
-    errorLog.setProceedingText("[ERROR MovementTrajectoryFeatures]");
-    warningLog.setProceedingText("[WARNING ZeroCrossingCounter]");
-    
+//Register the ZeroCrossingCounter module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< MovementTrajectoryFeatures > MovementTrajectoryFeatures::registerModule( MovementTrajectoryFeatures::getId() );
+
+MovementTrajectoryFeatures::MovementTrajectoryFeatures(const UINT trajectoryLength,const UINT numCentroids,const UINT featureMode,const UINT numHistogramBins,const UINT numDimensions,const bool useTrajStartAndEndValues,const bool useWeightedMagnitudeValues) : FeatureExtraction( MovementTrajectoryFeatures::getId() )
+{
     init(trajectoryLength,numCentroids,featureMode,numHistogramBins,numDimensions,useTrajStartAndEndValues,useWeightedMagnitudeValues);
 }
 
-MovementTrajectoryFeatures::MovementTrajectoryFeatures(const MovementTrajectoryFeatures &rhs){
-    
-    classType = "MovementTrajectoryFeatures";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG MovementTrajectoryFeatures]");
-    errorLog.setProceedingText("[ERROR MovementTrajectoryFeatures]");
-    warningLog.setProceedingText("[WARNING ZeroCrossingCounter]");
-    
+MovementTrajectoryFeatures::MovementTrajectoryFeatures(const MovementTrajectoryFeatures &rhs) : FeatureExtraction( MovementTrajectoryFeatures::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -74,15 +66,15 @@ bool MovementTrajectoryFeatures::deepCopyFrom(const FeatureExtraction *featureEx
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(MovementTrajectoryFeatures*)featureExtraction;
+        *this = *dynamic_cast<const MovementTrajectoryFeatures*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -212,7 +204,7 @@ bool MovementTrajectoryFeatures::load( std::fstream &file ){
     return init(trajectoryLength,numCentroids,featureMode,numHistogramBins,numInputDimensions,useTrajStartAndEndValues,useWeightedMagnitudeValues);
 }
 
-bool MovementTrajectoryFeatures::init(UINT trajectoryLength,UINT numCentroids,UINT featureMode,UINT numHistogramBins,UINT numDimensions,bool useTrajStartAndEndValues,bool useWeightedMagnitudeValues){
+bool MovementTrajectoryFeatures::init(const UINT trajectoryLength,const UINT numCentroids,const UINT featureMode,const UINT numHistogramBins,const UINT numDimensions,const bool useTrajStartAndEndValues,const bool useWeightedMagnitudeValues){
     
     initialized = false;
     
@@ -293,7 +285,7 @@ bool MovementTrajectoryFeatures::init(UINT trajectoryLength,UINT numCentroids,UI
     return true;
 }
 
-VectorFloat MovementTrajectoryFeatures::update(Float x){
+VectorFloat MovementTrajectoryFeatures::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -443,21 +435,21 @@ VectorFloat MovementTrajectoryFeatures::update(const VectorFloat &x){
     return featureVector;
 }
 
-CircularBuffer< VectorFloat > MovementTrajectoryFeatures::getTrajectoryData(){
+CircularBuffer< VectorFloat > MovementTrajectoryFeatures::getTrajectoryData() const{
     if( initialized ){
         return trajectoryDataBuffer;
     }
     return CircularBuffer< VectorFloat >();
 }
 
-MatrixFloat MovementTrajectoryFeatures::getCentroids(){
+MatrixFloat MovementTrajectoryFeatures::getCentroids() const{
     if( initialized ){
         return centroids;
     }
     return MatrixFloat();
 }
 
-UINT MovementTrajectoryFeatures::getFeatureMode(){
+UINT MovementTrajectoryFeatures::getFeatureMode() const{
     if( initialized ){
         return featureMode;
     }

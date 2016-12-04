@@ -51,7 +51,7 @@ public:
     /**
     Default Constructor.
     */
-    MovementTrajectoryFeatures(UINT trajectoryLength=100,UINT numCentroids=10,UINT featureMode=CENTROID_VALUE,UINT numHistogramBins=10,UINT numDimensions = 1,bool useTrajStartAndEndValues = false,bool useWeightedMagnitudeValues = true);
+    MovementTrajectoryFeatures(const UINT trajectoryLength=100,const UINT numCentroids=10,const UINT featureMode=CENTROID_VALUE,const UINT numHistogramBins=10,const UINT numDimensions = 1,const bool useTrajStartAndEndValues = false,const bool useWeightedMagnitudeValues = true);
     
     /**
     Copy constructor, copies the MovementTrajectoryFeatures from the rhs instance to this instance.
@@ -123,7 +123,7 @@ public:
     /**
     Initializes the MovementTrajectoryFeatures
     */
-    bool init(UINT trajectoryLength,UINT numCentroids,UINT featureMode,UINT numHistogramBins,UINT numDimensions,bool useTrajStartAndEndValues,bool useWeightedMagnitudeValues);
+    bool init(const UINT trajectoryLength,const UINT numCentroids,const UINT featureMode,const UINT numHistogramBins,const UINT numDimensions,const bool useTrajStartAndEndValues,const bool useWeightedMagnitudeValues);
     
     /**
     Computes the features from the input, this should only be called if the dimensionality of this instance was set to 1.
@@ -131,7 +131,7 @@ public:
     @param x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
     @return a vector containing the features, an empty vector will be returned if the features were not computed
     */
-    VectorFloat update(Float x);
+    VectorFloat update(const Float x);
     
     /**
     Computes the features from the input, the dimensionality of x should match that of this instance.
@@ -147,7 +147,7 @@ public:
     
     @return returns a curcular buffer containing the data buffer values, an empty circular buffer will be returned if the feature extraction module has not been initialized
     */
-    CircularBuffer< VectorFloat > getTrajectoryData();
+    CircularBuffer< VectorFloat > getTrajectoryData() const;
     
     /**
     Gets a matrix containing the centroids of the trajectory data. Each row represents the centroids from a subsection of the trajectory data, each column
@@ -155,14 +155,14 @@ public:
     
     @return returns a MatrixDouble containing the centroids of the trajectory data
     */
-    MatrixDouble getCentroids();
+    MatrixDouble getCentroids() const;
     
     /**
     Gets an unsigned int representing the current feature mode. This will be one of the FeatureModes enums.
     
     @return returns the current feature mode
     */
-    UINT getFeatureMode();
+    UINT getFeatureMode() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -171,6 +171,13 @@ public:
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the MovementTrajectoryFeatures class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     
@@ -183,7 +190,9 @@ protected:
     CircularBuffer< VectorFloat > trajectoryDataBuffer;
     MatrixDouble centroids;
     
+private:
     static RegisterFeatureExtractionModule< MovementTrajectoryFeatures > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

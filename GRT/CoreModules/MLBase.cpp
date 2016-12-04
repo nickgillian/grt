@@ -23,10 +23,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-MLBase::MLBase(void){
+MLBase::MLBase( const std::string &id, const BaseType type ) : GRTBase( id ){
+    baseType = type;
     trained = false;
     useScaling = false;
-    baseType = BASE_TYPE_NOT_SET;
     inputType = DATA_TYPE_UNKNOWN;
     outputType = DATA_TYPE_UNKNOWN;
     numInputDimensions = 0;
@@ -42,6 +42,20 @@ MLBase::MLBase(void){
     rmsTrainingError = 0;
     rmsValidationError = 0;
     totalSquaredTrainingError = 0;
+    infoLog.setKey("[" + id + "]");
+    debugLog.setKey("[DEBUG " + id + "]");
+    errorLog.setKey("[ERROR " + id + "]");
+    warningLog.setKey("[WARNING " + id + "]");
+    trainingLog.setKey("[TRAINING " + id + "]");
+    testingLog.setKey("[TESTING " + id + "]");
+
+    if( id == "" ){
+        trainingLog.setKey("[TRAINING " + id + "]");
+        testingLog.setKey("[TESTING " + id + "]");
+    }else{
+        trainingLog.setKey("[TRAINING]");
+        testingLog.setKey("[TESTING]");
+    }
 }
 
 MLBase::~MLBase(void){
@@ -84,6 +98,8 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     this->trainingResults = mlBase->trainingResults;
     this->trainingResultsObserverManager = mlBase->trainingResultsObserverManager;
     this->testResultsObserverManager = mlBase->testResultsObserverManager;
+    this->trainingLog = mlBase->trainingLog;
+    this->testingLog = mlBase->testingLog;
     
     return true;
 }
@@ -95,6 +111,10 @@ bool MLBase::train_(ClassificationData &trainingData){ return false; }
 bool MLBase::train(RegressionData trainingData){ return train_( trainingData ); }
 
 bool MLBase::train_(RegressionData &trainingData){ return false; }
+
+bool MLBase::train(RegressionData trainingData,RegressionData validationData){ return train_( trainingData, validationData ); }
+
+bool MLBase::train_(RegressionData &trainingData,RegressionData &validationData){ return false; }
 
 bool MLBase::train(TimeSeriesClassificationData trainingData){ return train_( trainingData ); }
 
@@ -143,14 +163,13 @@ bool MLBase::clear(){
 
 bool MLBase::print() const { std::cout << getModelAsString(); return true; }
 
-bool MLBase::save(const std::string filename) const {
-    
-    if( !trained ) return false;
+bool MLBase::save(const std::string &filename) const {
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::out);
     
-    if( !save( file ) ){
+    if( !save( file ) )
+    {
         return false;
     }
     
@@ -163,11 +182,11 @@ bool MLBase::save(std::fstream &file) const {
     return false; //The base class returns false, as this should be overwritten by the inheriting class
 }
 
-bool MLBase::saveModelToFile(std::string filename) const { return save( filename ); }
+bool MLBase::saveModelToFile(const std::string &filename) const { return save( filename ); }
 
 bool MLBase::saveModelToFile(std::fstream &file) const { return save( file ); }
 
-bool MLBase::load(const std::string filename){
+bool MLBase::load(const std::string &filename){
     
     std::fstream file;
     file.open(filename.c_str(), std::ios::in);
@@ -186,7 +205,7 @@ bool MLBase::load(std::fstream &file) {
     return false; //The base class returns false, as this should be overwritten by the inheriting class
 }
 
-bool MLBase::loadModelFromFile(std::string filename){ return load( filename ); }
+bool MLBase::loadModelFromFile(const std::string &filename){ return load( filename ); }
 
 bool MLBase::loadModelFromFile(std::fstream &file){ return load( file ); }
 
@@ -200,15 +219,11 @@ std::string MLBase::getModelAsString() const{
     return "";
 }
 
-DataType MLBase::getInputType() const {
-    return inputType;
-}
+DataType MLBase::getInputType() const { return inputType; }
 
-DataType MLBase::getOutputType() const {
-    return outputType;
-}
+DataType MLBase::getOutputType() const { return outputType; }
 
-UINT MLBase::getBaseType() const{ return baseType; }
+MLBase::BaseType MLBase::getType() const{ return baseType; }
 
 UINT MLBase::getNumInputFeatures() const{ return getNumInputDimensions(); }
 
@@ -281,6 +296,16 @@ bool MLBase::getIsBaseTypeClusterer() const{ return baseType==CLUSTERER; }
 
 bool MLBase::enableScaling(bool useScaling){ this->useScaling = useScaling; return true; }
 
+bool MLBase::getUseValidationSet() const { return useValidationSet; }
+
+bool MLBase::getTrainingLoggingEnabled() const {
+    return trainingLog.getInstanceLoggingEnabled();
+}
+
+bool MLBase::getTestingLoggingEnabled() const {
+    return testingLog.getInstanceLoggingEnabled();
+}
+
 bool MLBase::setMaxNumEpochs(const UINT maxNumEpochs){
     if( maxNumEpochs == 0 ){
         warningLog << "setMaxNumEpochs(const UINT maxNumEpochs) - The maxNumEpochs must be greater than 0!" << std::endl;
@@ -335,8 +360,11 @@ bool MLBase::setRandomiseTrainingOrder(const bool randomiseTrainingOrder){
 }
 
 bool MLBase::setTrainingLoggingEnabled(const bool loggingEnabled){
-    this->trainingLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return this->trainingLog.setInstanceLoggingEnabled( loggingEnabled );
+}
+
+bool MLBase::setTestingLoggingEnabled(const bool loggingEnabled){
+    return this->testingLog.setInstanceLoggingEnabled( loggingEnabled );
 }
 
 bool MLBase::registerTrainingResultsObserver( Observer< TrainingResult > &observer ){

@@ -1,22 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements the K-Nearest Neighbor classification algorithm (http://en.wikipedia.org/wiki/K-nearest_neighbor_algorithm).
-KNN is a simple but powerful classifier, based on finding the closest K training examples in the feature space for the new input vector.
-The KNN algorithm is amongst the simplest of all machine learning algorithms: an object is classified by a majority vote of its neighbors,
-with the object being assigned to the class most common amongst its k nearest neighbors (k is a positive integer, typically small).
-If k = 1, then the object is simply assigned to the class of its nearest neighbor.
-
-This implementation of the algorithm will return the class label of the class that gains the majoriy vote of its neighbours.  If the average
-distance of the closest K neighbors with the class label of the majority vote is greater than that of that classes rejection threshold, then
-the predicted class label will be set to 0, indicating that the majority class was rejected.  This feature can be enabled or disabled by setting
-the enableNullRejection paramter to false.
-
-@example ClassificationModulesExamples/KNNExample/KNNExample.cpp
-
-@remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
 */
 
 /**
@@ -48,9 +32,27 @@ GRT_BEGIN_NAMESPACE
 
 #define BIG_DISTANCE 99e+99
 
+/**
+@brief This class implements the K-Nearest Neighbor classification algorithm (http://en.wikipedia.org/wiki/K-nearest_neighbor_algorithm).
+KNN is a simple but powerful classifier, based on finding the closest K training examples in the feature space for the new input vector.
+The KNN algorithm is amongst the simplest of all machine learning algorithms: an object is classified by a majority vote of its neighbors,
+with the object being assigned to the class most common amongst its k nearest neighbors (k is a positive integer, typically small).
+If k = 1, then the object is simply assigned to the class of its nearest neighbor.
+
+This implementation of the algorithm will return the class label of the class that gains the majoriy vote of its neighbours.  If the average
+distance of the closest K neighbors with the class label of the majority vote is greater than that of that classes rejection threshold, then
+the predicted class label will be set to 0, indicating that the majority class was rejected.  This feature can be enabled or disabled by setting
+the enableNullRejection paramter to false.
+
+@example ClassificationModulesExamples/KNNExample/KNNExample.cpp
+
+@remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
+*/
 class GRT_API KNN : public Classifier
 {
 public:
+    enum DistanceMethods{EUCLIDEAN_DISTANCE=0,COSINE_DISTANCE,MANHATTAN_DISTANCE};
+    
     /**
     Default Constructor
     
@@ -244,12 +246,9 @@ protected:
     VectorFloat trainingMu;                    ///> Holds the average max-class distance of the training data for each of classes
     VectorFloat trainingSigma;                 ///> Holds the stddev of the max-class distance of the training data for each of classes
     
+private:
     static RegisterClassifierModule< KNN > registerModule;
-    static std::string id;
-
-public:
-    enum DistanceMethods{EUCLIDEAN_DISTANCE=0,COSINE_DISTANCE,MANHATTAN_DISTANCE};
-    
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

@@ -55,10 +55,8 @@ public:
     bool success;
 	MatrixFloat el;
     
-    DebugLog debugLog;
     ErrorLog errorLog;
     WarningLog warningLog;
-
 };
 
 GRT_END_NAMESPACE

@@ -26,10 +26,14 @@ GRT_BEGIN_NAMESPACE
 //Register the RegressionTreeNode with the Node base class
 RegisterNode< RegressionTreeNode > RegressionTreeNode::registerModule("RegressionTreeNode");
 
-//Register the RegressionTree module with the Regressifier base class
-RegisterRegressifierModule< RegressionTree >  RegressionTree::registerModule("RegressionTree");
+//Define the string that will be used to identify the object
+const std::string RegressionTree::id = "RegressionTree";
+std::string RegressionTree::getId() { return RegressionTree::id; }
 
-RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const bool useScaling,const Float minRMSErrorPerNode)
+//Register the RegressionTree module with the Regressifier base class
+RegisterRegressifierModule< RegressionTree >  RegressionTree::registerModule( RegressionTree::getId() );
+
+RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const Tree::TrainingMode trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Regressifier( RegressionTree::getId() )
 {
     tree = NULL;
     this->numSplittingSteps = numSplittingSteps;
@@ -39,23 +43,11 @@ RegressionTree::RegressionTree(const UINT numSplittingSteps,const UINT minNumSam
     this->trainingMode = trainingMode;
     this->useScaling = useScaling;
     this->minRMSErrorPerNode = minRMSErrorPerNode;
-    Regressifier::classType = "RegressionTree";
-    regressifierType = Regressifier::classType;
-    Regressifier::debugLog.setProceedingText("[DEBUG RegressionTree]");
-    Regressifier::errorLog.setProceedingText("[ERROR RegressionTree]");
-    Regressifier::trainingLog.setProceedingText("[TRAINING RegressionTree]");
-    Regressifier::warningLog.setProceedingText("[WARNING RegressionTree]");
-    
 }
 
-RegressionTree::RegressionTree(const RegressionTree &rhs){
+RegressionTree::RegressionTree(const RegressionTree &rhs) : Regressifier( RegressionTree::getId() )
+{
     tree = NULL;
-    Regressifier::classType = "RegressionTree";
-    regressifierType = Regressifier::classType;
-    Regressifier::debugLog.setProceedingText("[DEBUG RegressionTree]");
-    Regressifier::errorLog.setProceedingText("[ERROR RegressionTree]");
-    Regressifier::trainingLog.setProceedingText("[TRAINING RegressionTree]");
-    Regressifier::warningLog.setProceedingText("[WARNING RegressionTree]");
     *this = rhs;
 }
 
@@ -91,9 +83,9 @@ bool RegressionTree::deepCopyFrom(const Regressifier *regressifier){
     
     if( regressifier == NULL ) return false;
     
-    if( this->getRegressifierType() == regressifier->getRegressifierType() ){
+    if( this->getId() == regressifier->getId() ){
         
-        RegressionTree *ptr = (RegressionTree*)regressifier;
+        const RegressionTree *ptr = dynamic_cast<const RegressionTree*>(regressifier);
         
         //Clear this tree
         this->clear();
@@ -307,7 +299,9 @@ bool RegressionTree::load( std::fstream &file ){
         Regressifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    UINT tempTrainingMode;
+    file >> tempTrainingMode;
+    trainingMode = static_cast< Tree::TrainingMode >( tempTrainingMode );
     
     file >> word;
     if(word != "TreeBuilt:"){
@@ -358,6 +352,76 @@ const RegressionTreeNode* RegressionTree::getTree() const{
 
 Float RegressionTree::getMinRMSErrorPerNode() const{
     return minRMSErrorPerNode;
+}
+
+Tree::TrainingMode RegressionTree::getTrainingMode() const{
+    return trainingMode;
+}
+
+UINT RegressionTree::getNumSplittingSteps()const{
+    return numSplittingSteps;
+}
+
+UINT RegressionTree::getMinNumSamplesPerNode()const{
+    return minNumSamplesPerNode;
+}
+
+UINT RegressionTree::getMaxDepth()const{
+    return maxDepth;
+}
+
+UINT RegressionTree::getPredictedNodeID()const{
+    
+    if( tree == NULL ){
+        return 0;
+    }
+    
+    return tree->getPredictedNodeID();
+}
+
+bool RegressionTree::getRemoveFeaturesAtEachSpilt() const{
+    return removeFeaturesAtEachSpilt;
+}
+
+bool RegressionTree::setTrainingMode(const Tree::TrainingMode trainingMode){ 
+    if( trainingMode >= Tree::BEST_ITERATIVE_SPILT && trainingMode < Tree::NUM_TRAINING_MODES ){
+        this->trainingMode = trainingMode;
+        return true;
+    }
+    warningLog << "Unknown trainingMode: " << trainingMode << std::endl;
+    return false;
+}
+
+bool RegressionTree::setNumSplittingSteps(const UINT numSplittingSteps){
+    if( numSplittingSteps > 0 ){
+        this->numSplittingSteps = numSplittingSteps;
+        return true;
+    }
+    warningLog << "setNumSplittingSteps(const UINT numSplittingSteps) - The number of splitting steps must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool RegressionTree::setMinNumSamplesPerNode(const UINT minNumSamplesPerNode){
+    if( minNumSamplesPerNode > 0 ){
+        this->minNumSamplesPerNode = minNumSamplesPerNode;
+        return true;
+    }
+    warningLog << "setMinNumSamplesPerNode(const UINT minNumSamplesPerNode) - The minimum number of samples per node must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool RegressionTree::setMaxDepth(const UINT maxDepth){
+    if( maxDepth > 0 ){
+        this->maxDepth = maxDepth;
+        return true;
+    }
+    warningLog << "setMaxDepth(const UINT maxDepth) - The maximum depth must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool RegressionTree::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
+    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+    return true;
 }
 
 bool RegressionTree::setMinRMSErrorPerNode(const Float minRMSErrorPerNode){
@@ -419,7 +483,7 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
         return NULL;
     }
     
-    Regressifier::trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " Threshold: " << threshold << " MinError: " << minError << std::endl;
+    trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " Threshold: " << threshold << " MinError: " << minError << std::endl;
     
     //If the minError is below the minRMSError then create a leaf node and return
     if( minError <= minRMSErrorPerNode ){
@@ -429,7 +493,7 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
         //Set the node
         node->set( trainingData.getNumSamples(), featureIndex, threshold, regressionData );
         
-        Regressifier::trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << std::endl;
+        trainingLog << "Reached leaf node. Depth: " << depth << " NumSamples: " << M << std::endl;
         
         return node;
     }
@@ -467,10 +531,10 @@ RegressionTreeNode* RegressionTree::buildTree(const RegressionData &trainingData
 bool RegressionTree::computeBestSpilt( const RegressionData &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     switch( trainingMode ){
-        case BEST_ITERATIVE_SPILT:
+        case Tree::BEST_ITERATIVE_SPILT:
         return computeBestSpiltBestIterativeSpilt( trainingData, features, featureIndex, threshold, minError );
         break;
-        case BEST_RANDOM_SPLIT:
+        case Tree::BEST_RANDOM_SPLIT:
         //return computeBestSpiltBestRandomSpilt( trainingData, features, featureIndex, threshold, minError );
         break;
         default:

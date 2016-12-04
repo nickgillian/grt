@@ -23,10 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the HighPassFilter module with the PreProcessing base class
-RegisterPreProcessingModule< HighPassFilter > HighPassFilter::registerModule("HighPassFilter");
+//Define the string that will be used to identify the object
+const std::string HighPassFilter::id = "HighPassFilter";
+std::string HighPassFilter::getId() { return HighPassFilter::id; }
 
-HighPassFilter::HighPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta) : PreProcessing( "HighPassFilter" )
+//Register the HighPassFilter module with the PreProcessing base class
+RegisterPreProcessingModule< HighPassFilter > HighPassFilter::registerModule( HighPassFilter::getId() );
+
+HighPassFilter::HighPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta) : PreProcessing( HighPassFilter::getId() )
 {
     init(filterFactor,gain,numDimensions);
     
@@ -35,7 +39,7 @@ HighPassFilter::HighPassFilter(Float filterFactor,Float gain,UINT numDimensions,
     }
 }
 
-HighPassFilter::HighPassFilter(const HighPassFilter &rhs) : PreProcessing( "HighPassFilter" )
+HighPassFilter::HighPassFilter(const HighPassFilter &rhs) : PreProcessing( HighPassFilter::getId() )
 {
     *this = rhs;
 }
@@ -59,7 +63,7 @@ bool HighPassFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const HighPassFilter *ptr = dynamic_cast<const HighPassFilter*>(preProcessing);
         
@@ -241,7 +245,7 @@ VectorFloat HighPassFilter::filter(const VectorFloat &x){
         xx[n] = x[n];
         
         //Store the current output in processed data so it can be accessed by the base class
-        processedData[n] = processedData[n];
+        processedData[n] = yy[n];
     }
     return processedData;
 }
@@ -262,7 +266,7 @@ bool HighPassFilter::setGain(const Float gain){
 }
 
 bool HighPassFilter::setFilterFactor(const Float filterFactor){
-    if( filterFactor > 0 ){
+    if( filterFactor > 0.0 && filterFactor <= 1.0 ){
         this->filterFactor = filterFactor;
         return true;
     }

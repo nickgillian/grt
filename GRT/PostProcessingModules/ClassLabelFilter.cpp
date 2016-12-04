@@ -23,29 +23,25 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the ClassLabelFilter module with the PostProcessing base class
-RegisterPostProcessingModule< ClassLabelFilter > ClassLabelFilter::registerModule("ClassLabelFilter");
+//Define the string that will be used to identify the object
+const std::string ClassLabelFilter::id = "ClassLabelFilter";
+std::string ClassLabelFilter::getId() { return ClassLabelFilter::id; }
 
-ClassLabelFilter::ClassLabelFilter(UINT minimumCount,UINT bufferSize){
-    classType = "ClassLabelFilter";
-    postProcessingType = classType;
+//Register the ClassLabelFilter module with the PostProcessing base class
+RegisterPostProcessingModule< ClassLabelFilter > ClassLabelFilter::registerModule( ClassLabelFilter::getId() );
+
+ClassLabelFilter::ClassLabelFilter(const UINT minimumCount,const UINT bufferSize) : PostProcessing( ClassLabelFilter::getId() )
+{
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
-    debugLog.setProceedingText("[DEBUG ClassLabelFilter]");
-    errorLog.setProceedingText("[ERROR ClassLabelFilter]");
-    warningLog.setProceedingText("[WARNING ClassLabelFilter]");
     init(minimumCount,bufferSize);
 }
 
-ClassLabelFilter::ClassLabelFilter(const ClassLabelFilter &rhs){
+ClassLabelFilter::ClassLabelFilter(const ClassLabelFilter &rhs) : PostProcessing( ClassLabelFilter::getId() )
+{
     
-    classType = "ClassLabelFilter";
-    postProcessingType = classType;
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
-    debugLog.setProceedingText("[DEBUG ClassLabelFilter]");
-    errorLog.setProceedingText("[ERROR ClassLabelFilter]");
-    warningLog.setProceedingText("[WARNING ClassLabelFilter]");
     
     //Copy the ClassLabelFilter values
     this->filteredClassLabel = rhs.filteredClassLabel;
@@ -81,9 +77,9 @@ bool ClassLabelFilter::deepCopyFrom(const PostProcessing *postProcessing){
     
     if( postProcessing == NULL ) return false;
     
-    if( this->getPostProcessingType() == postProcessing->getPostProcessingType() ){
+    if( this->getId() == postProcessing->getId() ){
         
-        ClassLabelFilter *ptr = (ClassLabelFilter*)postProcessing;
+        const ClassLabelFilter *ptr = dynamic_cast<const ClassLabelFilter*>(postProcessing);
         
         //Clone the ClassLabelFilter values
         this->filteredClassLabel = ptr->filteredClassLabel;
@@ -126,7 +122,7 @@ bool ClassLabelFilter::reset(){
     return true;
 }
 
-bool ClassLabelFilter::init(UINT minimumCount,UINT bufferSize){
+bool ClassLabelFilter::init(const UINT minimumCount,const UINT bufferSize){
     
     initialized = false;
     
@@ -153,7 +149,7 @@ bool ClassLabelFilter::init(UINT minimumCount,UINT bufferSize){
     return true;
 }
 
-UINT ClassLabelFilter::filter(UINT predictedClassLabel){
+UINT ClassLabelFilter::filter(const UINT predictedClassLabel){
     
     if( !initialized ){
         errorLog << "filter(UINT predictedClassLabel) - The filter has not been initialized!" << std::endl;
@@ -273,7 +269,7 @@ bool ClassLabelFilter::load( std::fstream &file ){
     return init(minimumCount,bufferSize);
 }
 
-bool ClassLabelFilter::setMinimumCount(UINT minimumCount){
+bool ClassLabelFilter::setMinimumCount(const UINT minimumCount){
     this->minimumCount = minimumCount;
     if( initialized ){
         return reset();
@@ -281,7 +277,7 @@ bool ClassLabelFilter::setMinimumCount(UINT minimumCount){
     return true;
 }
 
-bool ClassLabelFilter::setBufferSize(UINT bufferSize){
+bool ClassLabelFilter::setBufferSize(const UINT bufferSize){
     this->bufferSize = bufferSize;
     if( initialized ){
         return reset();

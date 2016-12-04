@@ -97,6 +97,10 @@ public:
     
     using MLBase::save;
     using MLBase::load;
+    using MLBase::train;
+    using MLBase::train_;
+    using MLBase::predict_;
+    using MLBase::predict;
     
 protected:
     UINT numStates;             //The number of states for this model

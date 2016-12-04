@@ -22,21 +22,56 @@
 #include "Gate.h"
 
 GRT_BEGIN_NAMESPACE
+
+//Define the string that will be used to identify the object
+const std::string Gate::id = "Gate";
+std::string Gate::getId() { return Gate::id; }
 	
 //Register the Gate module with the Context base class
-RegisterContextModule< Gate > Gate::registerModule("GATE");
+RegisterContextModule< Gate > Gate::registerModule( Gate::getId() );
     
-Gate::Gate(bool gateOpen){
-    contextType = "GATE";
+Gate::Gate(const bool gateOpen) : Context( Gate::getId() )
+{
     this->gateOpen = gateOpen;
     initialized = true;
-    debugLog.setProceedingText("[DEBUG Gate]");
-    errorLog.setProceedingText("[ERROR Gate]");
-    warningLog.setProceedingText("[WARNING Gate]");
+}
+
+Gate::Gate(const Gate &rhs) : Context( Gate::getId() )
+{
+    *this = rhs;
 }
 
 Gate::~Gate(){
     
+}
+
+Gate& Gate::operator=(const Gate &rhs)
+{
+    if( this != &rhs )
+    {
+        this->gateOpen = rhs.gateOpen;
+
+        //Clone the context base variables
+        copyBaseVariables( dynamic_cast<const Context*>( &rhs ) );
+    }
+    return *this;
+}
+
+bool Gate::deepCopyFrom(const Context *context){
+    
+    if( context == NULL ) return false;
+    
+    if( this->getId() == context->getId() ){
+        
+        const Gate *ptr = dynamic_cast<const Gate*>(context);
+        
+        //Clone the Gate values
+        this->gateOpen = ptr->gateOpen;
+        
+        //Clone the base variables
+        return copyBaseVariables( context );
+    }
+    return false;
 }
 
 bool Gate::process(VectorDouble inputVector){

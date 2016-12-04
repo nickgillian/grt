@@ -4,7 +4,8 @@
 
 GRT_BEGIN_NAMESPACE
 
-BernoulliRBM::BernoulliRBM(const UINT numHiddenUnits,const UINT maxNumEpochs,const Float learningRate,const Float learningRateUpdate,const Float momentum,const bool useScaling,const bool randomiseTrainingOrder){
+BernoulliRBM::BernoulliRBM(const UINT numHiddenUnits,const UINT maxNumEpochs,const Float learningRate,const Float learningRateUpdate,const Float momentum,const bool useScaling,const bool randomiseTrainingOrder) : MLBase("BernoulliRBM")
+{
     
     this->numHiddenUnits = numHiddenUnits;
     this->maxNumEpochs = maxNumEpochs;
@@ -18,12 +19,6 @@ BernoulliRBM::BernoulliRBM(const UINT numHiddenUnits,const UINT maxNumEpochs,con
     batchStepSize = 1;
     minNumEpochs = 1;
     minChange = 1.0e-5;
-    
-    classType = "BernoulliRBM";
-    debugLog.setProceedingText("[DEBUG BernoulliRBM]");
-    errorLog.setProceedingText("[ERROR BernoulliRBM]");
-    trainingLog.setProceedingText("[TRAINING BernoulliRBM]");
-    warningLog.setProceedingText("[WARNING BernoulliRBM]");
 }
 
 BernoulliRBM::~BernoulliRBM(){

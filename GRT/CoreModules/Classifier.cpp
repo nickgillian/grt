@@ -25,22 +25,30 @@ GRT_BEGIN_NAMESPACE
     
 Classifier::StringClassifierMap* Classifier::stringClassifierMap = NULL;
 UINT Classifier::numClassifierInstances = 0;
+
+Classifier* Classifier::createNewInstance() const { return create(); } ///<Legacy function
+Classifier* Classifier::createInstanceFromString(const std::string &id) { return create(id); } ///<Legacy function
     
-Classifier* Classifier::createInstanceFromString(std::string const &classifierType){
+Classifier* Classifier::create(const std::string &id){
+
+    //This function maps the input string and returns a pointer to a new instance 
     
-    StringClassifierMap::iterator iter = getMap()->find( classifierType );
+    StringClassifierMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
+        //If the iterator points to the end of the map, then no match was found so return NULL
         return NULL;
     }
+
     return iter->second();
 }
-Classifier* Classifier::createNewInstance() const{
-    return createInstanceFromString( MLBase::getClassType() );
+
+Classifier* Classifier::create() const{
+    return create( MLBase::getId() );
 }
     
 Classifier* Classifier::deepCopy() const{
     
-    Classifier *newInstance = createInstanceFromString( MLBase::getClassType() );
+    Classifier *newInstance = create( MLBase::getId() );
     
     if( newInstance == NULL ) return NULL;
     
@@ -61,30 +69,26 @@ Vector< std::string > Classifier::getRegisteredClassifiers(){
 	StringClassifierMap::iterator iter = getMap()->begin();
 	while( iter != getMap()->end() ){
 		registeredClassifiers.push_back( iter->first );
-		iter++;
+		++iter; //++iter is faster than iter++ as it does not require a copy/move operator
 	}
 	return registeredClassifiers;
 }
     
-Classifier::Classifier( const std::string &classifierType ){
-    baseType = MLBase::CLASSIFIER;
-    classType = classifierType;
+Classifier::Classifier( const std::string &id ) : MLBase( id, MLBase::CLASSIFIER )
+{
     classifierMode = STANDARD_CLASSIFIER_MODE;
     supportsNullRejection = false;
     useNullRejection = false;
     numInputDimensions = 0;
-    numOutputDimensions = 1;
+    numOutputDimensions = 0;
     numClasses = 0;
     predictedClassLabel = 0;
     maxLikelihood = 0;
     bestDistance = 0;
     phase = 0;
+    trainingSetAccuracy = 0;
     nullRejectionCoeff = 5;
     numClassifierInstances++;
-    debugLog.setProceedingText("[DEBUG" + classifierType + "]");
-    errorLog.setProceedingText("[ERROR" + classifierType + "]");
-    trainingLog.setProceedingText("[TRAINING" + classifierType + "]");
-    warningLog.setProceedingText("[WARNING" + classifierType + "]");
 }
     
 Classifier::~Classifier(void){
@@ -110,10 +114,12 @@ bool Classifier::copyBaseVariables(const Classifier *classifier){
     this->useNullRejection = classifier->useNullRejection;
     this->numClasses = classifier->numClasses;
     this->predictedClassLabel = classifier->predictedClassLabel;
+    this->classifierMode = classifier->classifierMode;
     this->nullRejectionCoeff = classifier->nullRejectionCoeff;
     this->maxLikelihood = classifier->maxLikelihood;
     this->bestDistance = classifier->bestDistance;
     this->phase = classifier->phase;
+    this->trainingSetAccuracy = classifier->trainingSetAccuracy;
     this->classLabels = classifier->classLabels;
     this->classLikelihoods = classifier->classLikelihoods;
     this->classDistances = classifier->classDistances;
@@ -152,6 +158,7 @@ bool Classifier::clear(){
     maxLikelihood = 0;
     bestDistance = 0;
     phase = 0;
+    trainingSetAccuracy = 0;
     classLikelihoods.clear();
     classDistances.clear();
     nullRejectionThresholds.clear();
@@ -161,8 +168,12 @@ bool Classifier::clear(){
     return true;
 }
 
+bool Classifier::computeAccuracy( const ClassificationData &data, Float &accuracy ){ 
+    return Metrics::computeAccuracy( *this, data, accuracy );
+}
+
 std::string Classifier::getClassifierType() const{
-    return MLBase::getClassType(); 
+    return MLBase::getId(); 
 }
     
 bool Classifier::getSupportsNullRejection() const{
@@ -184,6 +195,10 @@ Float Classifier::getMaximumLikelihood() const{
   
 Float Classifier::getPhase() const{
     return phase;
+}
+
+Float Classifier::getTrainingSetAccuracy() const{
+    return trainingSetAccuracy;
 }
     
 Float Classifier::getBestDistance() const{ 

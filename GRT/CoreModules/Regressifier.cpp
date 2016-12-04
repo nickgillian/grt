@@ -25,23 +25,28 @@ GRT_BEGIN_NAMESPACE
     
 Regressifier::StringRegressifierMap* Regressifier::stringRegressifierMap = NULL;
 UINT Regressifier::numRegressifierInstances = 0;
+
     
-Regressifier* Regressifier::createInstanceFromString( const std::string &regressifierType ){
+Regressifier* Regressifier::createNewInstance() const{ return create(); } //Legacy
+Regressifier* Regressifier::createInstanceFromString( const std::string &id ){ return create(id); } //Legacy
+std::string Regressifier::getRegressifierType() const{ return MLBase::getId(); } //Legacy
     
-    StringRegressifierMap::iterator iter = getMap()->find( regressifierType );
+Regressifier* Regressifier::create( const std::string &id ){
+    
+    StringRegressifierMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
         return NULL;
     }
     return iter->second();
 }
     
-Regressifier* Regressifier::createNewInstance() const{
-    return createInstanceFromString( regressifierType );
+Regressifier* Regressifier::create() const{
+    return create( MLBase::getId() );
 }
 
 Regressifier* Regressifier::deepCopy() const{
     
-    Regressifier *newInstance = createInstanceFromString( regressifierType );
+    Regressifier *newInstance = create( classId );
     
     if( newInstance == NULL ) return NULL;
     
@@ -52,9 +57,8 @@ Regressifier* Regressifier::deepCopy() const{
     return newInstance;
 }
     
-Regressifier::Regressifier(void){
-    baseType = MLBase::REGRESSIFIER;
-    regressifierType = "NOT_SET";
+Regressifier::Regressifier( const std::string &id ) : MLBase( id, MLBase::REGRESSIFIER )
+{
     numOutputDimensions = 0;
     numRegressifierInstances++;
 }
@@ -64,6 +68,17 @@ Regressifier::~Regressifier(void){
         delete stringRegressifierMap;
         stringRegressifierMap = NULL;
     }
+}
+
+Vector< std::string > Regressifier::getRegisteredRegressifiers(){
+    Vector< std::string > registeredRegressifiers;
+    
+    StringRegressifierMap::iterator iter = getMap()->begin();
+    while( iter != getMap()->end() ){
+        registeredRegressifiers.push_back( iter->first );
+        ++iter; //++iter is faster than iter++ as it does not require a copy/move operator
+    }
+    return registeredRegressifiers;
 }
     
 bool Regressifier::copyBaseVariables(const Regressifier *regressifier){
@@ -104,10 +119,6 @@ bool Regressifier::clear(){
     targetVectorRanges.clear();
     
     return true;
-}
-
-std::string Regressifier::getRegressifierType() const{ 
-    return regressifierType; 
 }
     
 VectorFloat Regressifier::getRegressionData() const{ 

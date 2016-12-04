@@ -23,8 +23,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
     
-GRTBase::GRTBase(void):classType(""),debugLog("[DEBUG]"),errorLog("[ERROR]"),trainingLog("[TRAINING]"),testingLog("[TESTING]"),warningLog("[WARNING]"){
-
+GRTBase::GRTBase(const std::string &id):classId(id){
+    if( classId == "" ){
+        infoLog.setKey("[" + classId + "]");
+        debugLog.setKey("[DEBUG " + classId + "]");
+        errorLog.setKey("[ERROR " + classId + "]");
+        warningLog.setKey("[WARNING " + classId + "]");
+    }else{
+        infoLog.setKey("[" + classId + "]");
+        debugLog.setKey("[DEBUG]");
+        errorLog.setKey("[ERROR]");
+        warningLog.setKey("[WARNING]");
+    }
 }
     
 GRTBase::~GRTBase(void){
@@ -37,12 +47,10 @@ bool GRTBase::copyGRTBaseVariables(const GRTBase *base){
         return false;
     }
 
-    this->classType = base->classType;
+    this->classId = base->classId;
     this->debugLog = base->debugLog;
     this->errorLog = base->errorLog;
     this->infoLog = base->infoLog;
-    this->trainingLog = base->trainingLog;
-    this->testingLog = base->testingLog;
     this->warningLog = base->warningLog;
     
     return true;
@@ -71,7 +79,11 @@ std::string GRTBase::getGRTRevison(){
 }
     
 std::string GRTBase::getClassType() const{
-    return classType;
+    return getId();
+}
+
+std::string GRTBase::getId() const{
+    return classId;
 }
     
 GRTBase* GRTBase::getGRTBasePointer(){
@@ -83,20 +95,19 @@ const GRTBase* GRTBase::getGRTBasePointer() const{
 }
 
 bool GRTBase::setInfoLoggingEnabled(const bool loggingEnabled){
-    infoLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return infoLog.setInstanceLoggingEnabled( loggingEnabled );
 }
     
 bool GRTBase::setWarningLoggingEnabled(const bool loggingEnabled){
-    warningLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return warningLog.setInstanceLoggingEnabled( loggingEnabled );
 }
     
 bool GRTBase::setErrorLoggingEnabled(const bool loggingEnabled){
-    errorLog.setEnableInstanceLogging( loggingEnabled );
-    return true;
+    return errorLog.setInstanceLoggingEnabled( loggingEnabled );
+}
+
+bool GRTBase::setDebugLoggingEnabled(const bool loggingEnabled){
+    return debugLog.setInstanceLoggingEnabled( loggingEnabled );
 }
 
 GRT_END_NAMESPACE
-
-

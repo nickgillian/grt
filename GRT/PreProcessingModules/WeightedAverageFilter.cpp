@@ -23,15 +23,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the WeightedAverageFilter module with the PreProcessing base class
-RegisterPreProcessingModule< WeightedAverageFilter > WeightedAverageFilter::registerModule("WeightedAverageFilter");
+//Define the string that will be used to identify the object
+const std::string WeightedAverageFilter::id = "WeightedAverageFilter";
+std::string WeightedAverageFilter::getId() { return WeightedAverageFilter::id; }
 
-WeightedAverageFilter::WeightedAverageFilter(const UINT filterSize,const UINT numDimensions) : PreProcessing( "WeightedAverageFilter" )
+//Register the WeightedAverageFilter module with the PreProcessing base class
+RegisterPreProcessingModule< WeightedAverageFilter > WeightedAverageFilter::registerModule( WeightedAverageFilter::getId() );
+
+WeightedAverageFilter::WeightedAverageFilter(const UINT filterSize,const UINT numDimensions) : PreProcessing( WeightedAverageFilter::getId() )
 {
     init(filterSize,numDimensions);
 }
 
-WeightedAverageFilter::WeightedAverageFilter(const WeightedAverageFilter &rhs) : PreProcessing( "WeightedAverageFilter" )
+WeightedAverageFilter::WeightedAverageFilter(const WeightedAverageFilter &rhs) : PreProcessing( WeightedAverageFilter::getId() )
 {   
     //Zero this instance
     this->filterSize = 0;
@@ -69,7 +73,7 @@ bool WeightedAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         //Call the equals operator
         *this = *dynamic_cast<const WeightedAverageFilter*>(preProcessing);

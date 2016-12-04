@@ -23,15 +23,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the MedianFilter module with the PreProcessing base class
-RegisterPreProcessingModule< MedianFilter > MedianFilter::registerModule("MedianFilter");
+//Define the string that will be used to identify the object
+const std::string MedianFilter::id = "MedianFilter";
+std::string MedianFilter::getId() { return MedianFilter::id; }
 
-MedianFilter::MedianFilter(UINT filterSize,UINT numDimensions) : PreProcessing( "MedianFilter" )
+//Register the MedianFilter module with the PreProcessing base class
+RegisterPreProcessingModule< MedianFilter > MedianFilter::registerModule( MedianFilter::getId() );
+
+MedianFilter::MedianFilter(UINT filterSize,UINT numDimensions) : PreProcessing( MedianFilter::getId() )
 {
     init(filterSize,numDimensions);
 }
 
-MedianFilter::MedianFilter(const MedianFilter &rhs) : PreProcessing( "MedianFilter" )
+MedianFilter::MedianFilter(const MedianFilter &rhs) : PreProcessing( MedianFilter::getId() )
 {
     //Zero this instance
     this->filterSize = 0;
@@ -68,7 +72,7 @@ bool MedianFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         //Call the equals operator
         *this = *dynamic_cast<const MedianFilter*>(preProcessing);

@@ -31,9 +31,9 @@ RegressionData::RegressionData(const UINT numInputDimensions,const UINT numTarge
     kFoldValue = 0;
     crossValidationSetup = false;
     useExternalRanges = false;
-    debugLog.setProceedingText("[DEBUG LRD]");
-    errorLog.setProceedingText("[ERROR LRD]");
-    warningLog.setProceedingText("[WARNING LRD]");
+    debugLog.setKey("[DEBUG RegressionData]");
+    errorLog.setKey("[ERROR RegressionData]");
+    warningLog.setKey("[WARNING RegressionData]");
 }
 
 RegressionData::RegressionData(const RegressionData &rhs){

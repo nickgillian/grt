@@ -54,8 +54,9 @@ class GRT_API GRTBase
 public:
     /**
      Default GRTBase Constructor
+     @param id: a string representing the class ID of the inheriting type
      */
-	GRTBase(void);
+	GRTBase(const std::string &id="");
     
     /**
      Default GRTBase Destructor
@@ -71,12 +72,20 @@ public:
     bool copyGRTBaseVariables(const GRTBase *GRTBase);
     
     /**
+     @deprecated use getId() instead
      This function returns the name of the current class as a std::string.  For example, if you asked AdaBoost for the class type then this function would
      return "AdaBoost".
      
      return returns a std::string representing the class type
      */
-    std::string getClassType() const;
+    GRT_DEPRECATED_MSG( "getClassType is deprecated, use getId() instead!", std::string getClassType() const );
+
+    /**
+    Gets the id of the class that is inheriting from this base class, e.g., if the KNN Classifier class inherits from Classifier, which inherits from MLBase, which inherits from GRTBase, then the classId will be the id of the KNN class
+    
+    @return returns a string representing the id of the inheriting class
+    */
+    std::string getId() const;
     
     /**
 	 This function returns the last warning message as a std::string. If no warnings have occured, the std::string will be empty.
@@ -122,6 +131,14 @@ public:
      @return returns true if the parameter was updated, false otherwise
      */
     bool setErrorLoggingEnabled(const bool loggingEnabled);
+
+    /**
+     Sets if debug logging is enabled/disabled for this specific instance.
+     If you want to enable/disable error logging globally, then you should use the DebugLog::enableLogging( bool ) function.
+     
+     @return returns true if the parameter was updated, false otherwise
+     */
+    bool setDebugLoggingEnabled(const bool loggingEnabled);
     
     /**
      This functions the GRT version number and revision as a std::string. If you do not want the revision number then set the returnRevision
@@ -153,17 +170,35 @@ public:
      */
     const GRTBase* getGRTBasePointer() const;
 
-protected:
+    /**
+    Scales the input value x (which should be in the range [minSource maxSource]) to a value in the new target range of [minTarget maxTarget].
+    
+    @param x: the value that should be scaled
+    @param minSource: the minimum range that x originates from
+    @param maxSource: the maximum range that x originates from
+    @param minTarget: the minimum range that x should be scaled to
+    @param maxTarget: the maximum range that x should be scaled to
+    @param constrain: sets if the scaled value should be constrained to the target range
+    @return returns a new value that has been scaled based on the input parameters
+    */
+    Float inline scale(const Float &x,const Float &minSource,const Float &maxSource,const Float &minTarget,const Float &maxTarget,const bool constrain=false){
+        if( constrain ){
+            if( x <= minSource ) return minTarget;
+            if( x >= maxSource ) return maxTarget;
+        }
+        if( minSource == maxSource ) return minTarget;
+        return (((x-minSource)*(maxTarget-minTarget))/(maxSource-minSource))+minTarget;
+    }
+
     inline Float SQR(const Float &x) const{ return x*x; }
 
-    std::string classType;
+protected:
+
+    std::string classId;  ///<Stores the name of the class (e.g., MinDist)
     DebugLog debugLog;
     ErrorLog errorLog;
     InfoLog infoLog;
-    TrainingLog trainingLog;
-    TestingLog testingLog;
-    WarningLog warningLog;
-    
+    WarningLog warningLog;  
 };
 
 GRT_END_NAMESPACE

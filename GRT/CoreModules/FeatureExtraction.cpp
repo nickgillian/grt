@@ -25,22 +25,26 @@ GRT_BEGIN_NAMESPACE
     
 FeatureExtraction::StringFeatureExtractionMap* FeatureExtraction::stringFeatureExtractionMap = NULL;
 UINT FeatureExtraction::numFeatureExtractionInstances = 0;
+
+std::string FeatureExtraction::getFeatureExtractionType() const { return MLBase::getId(); } //Legacy
+FeatureExtraction* FeatureExtraction::createInstanceFromString( const std::string &id ){ return create(id); }
+FeatureExtraction* FeatureExtraction::createNewInstance() const{ return create(); }
     
-FeatureExtraction* FeatureExtraction::createInstanceFromString( const std::string &featureExtractionType){
+FeatureExtraction* FeatureExtraction::create( const std::string &id ){
     
-    StringFeatureExtractionMap::iterator iter = getMap()->find( featureExtractionType );
+    StringFeatureExtractionMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
         return NULL;
     }
     return iter->second();
 }
     
-FeatureExtraction* FeatureExtraction::createNewInstance() const{
-    return createInstanceFromString(featureExtractionType);
+FeatureExtraction* FeatureExtraction::create() const{
+    return create( MLBase::getId() );
 }
     
-FeatureExtraction::FeatureExtraction(){
-    featureExtractionType = "NOT_SET"; 
+FeatureExtraction::FeatureExtraction( const std::string id ) : MLBase( id, MLBase::FEATURE_EXTRACTION )
+{
     initialized = false; 
     featureDataReady = false;
     numInputDimensions = 0;
@@ -48,9 +52,6 @@ FeatureExtraction::FeatureExtraction(){
     inputType = DATA_TYPE_VECTOR;
     outputType = DATA_TYPE_VECTOR;
     numFeatureExtractionInstances++;
-    infoLog.setProceedingText("[FeatureExtraction]");
-    warningLog.setProceedingText("[WARNING FeatureExtraction]");
-    errorLog.setProceedingText("[ERROR FeatureExtraction]");
 }
     
 FeatureExtraction::~FeatureExtraction(){
@@ -78,9 +79,6 @@ bool FeatureExtraction::copyBaseVariables(const FeatureExtraction *featureExtrac
     this->numOutputDimensions = featureExtractionModule->numOutputDimensions;
     this->featureVector = featureExtractionModule->featureVector;
     this->featureMatrix = featureExtractionModule->featureMatrix;
-    this->debugLog = featureExtractionModule->debugLog;
-    this->errorLog = featureExtractionModule->errorLog;
-    this->warningLog = featureExtractionModule->warningLog;
 
     return true;
 }
@@ -160,10 +158,6 @@ bool FeatureExtraction::loadFeatureExtractionSettingsFromFile( std::fstream &fil
     }
     
     return true;
-}
-    
-std::string FeatureExtraction::getFeatureExtractionType() const{ 
-    return featureExtractionType; 
 }
 
 UINT FeatureExtraction::getNumInputDimensions() const{ 

@@ -28,9 +28,8 @@ GRT_BEGIN_NAMESPACE
 
 LUDecomposition::LUDecomposition(const MatrixFloat &a) : sing(false){
     
-    debugLog.setProceedingText("[DEBUG LUDecomposition]");
-    errorLog.setProceedingText("[ERROR LUDecomposition]");
-    warningLog.setProceedingText("[WARNING LUDecomposition]");
+    errorLog.setKey("[ERROR LUDecomposition]");
+    warningLog.setKey("[WARNING LUDecomposition]");
 
 	N = a.getNumRows();
 	lu = a;

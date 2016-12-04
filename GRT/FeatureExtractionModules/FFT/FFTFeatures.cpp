@@ -22,35 +22,26 @@
 #include "FFTFeatures.h"
 
 GRT_BEGIN_NAMESPACE
+
+//Define the string that will be used to identify the object
+std::string FFTFeatures::id = "FFTFeatures";
+std::string FFTFeatures::getId() { return FFTFeatures::id; }
     
 //Register the FFTFeatures module with the FeatureExtraction base class
 RegisterFeatureExtractionModule< FFTFeatures > FFTFeatures::registerModule("FFTFeatures");
     
 bool sortIndexDoubleDecendingValue(IndexedDouble i,IndexedDouble j) { return (i.value<j.value); }
     
-FFTFeatures::FFTFeatures(UINT fftWindowSize,UINT numChannelsInFFTSignal,bool computeMaxFreqFeature,bool computeMaxFreqSpectrumRatio,bool computeCentroidFeature,bool computeTopNFreqFeatures,UINT N){ 
-  
-    classType = "FFTFeatures";
-    featureExtractionType = classType;
-    
-    debugLog.setProceedingText("[DEBUG FFTFeatures]");
-    errorLog.setProceedingText("[ERROR FFTFeatures]");
-    warningLog.setProceedingText("[WARNING FFTFeatures]");
+FFTFeatures::FFTFeatures(const UINT fftWindowSize,const UINT numChannelsInFFTSignal,const bool computeMaxFreqFeature,const bool computeMaxFreqSpectrumRatio,const bool computeCentroidFeature, const bool computeTopNFreqFeatures,const UINT N) : FeatureExtraction( FFTFeatures::getId() )
+{ 
     initialized = false; 
     featureDataReady = false;
     
     init(fftWindowSize,numChannelsInFFTSignal,computeMaxFreqFeature,computeMaxFreqSpectrumRatio,computeCentroidFeature,computeTopNFreqFeatures,N);
 }
     
-FFTFeatures::FFTFeatures(const FFTFeatures &rhs){
-    
-    classType = "FFTFeatures";
-    featureExtractionType = classType;
-    
-    debugLog.setProceedingText("[DEBUG FFTFeatures]");
-    errorLog.setProceedingText("[ERROR FFTFeatures]");
-    warningLog.setProceedingText("[WARNING FFTFeatures]");
-    
+FFTFeatures::FFTFeatures(const FFTFeatures &rhs) : FeatureExtraction( FFTFeatures::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -82,7 +73,7 @@ bool FFTFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
         
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
         *this = *(FFTFeatures*)featureExtraction;
@@ -90,44 +81,15 @@ bool FFTFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
-    
-bool FFTFeatures::saveModelToFile( std::string filename ) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
 
-bool FFTFeatures::loadModelFromFile( std::string filename ){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
-}
-
-bool FFTFeatures::saveModelToFile( std::fstream &file ) const{
+bool FFTFeatures::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -152,10 +114,10 @@ bool FFTFeatures::saveModelToFile( std::fstream &file ) const{
     return true;
 }
     
-bool FFTFeatures::loadModelFromFile( std::fstream &file ){
+bool FFTFeatures::load( std::fstream &file ){
     
     if( !file.is_open() ){
-        errorLog << "loadModelFromFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -165,7 +127,7 @@ bool FFTFeatures::loadModelFromFile( std::fstream &file ){
     file >> word;
     
     if( word != "GRT_FFT_FEATURES_FILE_V1.0" ){
-        errorLog << "loadModelFromFile(fstream &file) - Invalid file format!" << std::endl;
+        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
         return false;     
     }
     
@@ -177,7 +139,7 @@ bool FFTFeatures::loadModelFromFile( std::fstream &file ){
     //Load the FFTWindowSize
     file >> word;
     if( word != "FFTWindowSize:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read FFTWindowSize header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read FFTWindowSize header!" << std::endl;
         return false;     
     }
     file >> fftWindowSize;
@@ -185,42 +147,42 @@ bool FFTFeatures::loadModelFromFile( std::fstream &file ){
     //Load the NumOutputDimensions
     file >> word;
     if( word != "NumChannelsInFFTSignal:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read NumChannelsInFFTSignal header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read NumChannelsInFFTSignal header!" << std::endl;
         return false;     
     }
     file >> numChannelsInFFTSignal;
     
     file >> word;
     if( word != "ComputeMaxFreqFeature:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeMaxFreqFeature header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read ComputeMaxFreqFeature header!" << std::endl;
         return false;     
     }
     file >> computeMaxFreqFeature;
     
     file >> word;
     if( word != "ComputeMaxFreqSpectrumRatio:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeMaxFreqSpectrumRatio header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read ComputeMaxFreqSpectrumRatio header!" << std::endl;
         return false;     
     }
     file >> computeMaxFreqSpectrumRatio;
     
     file >> word;
     if( word != "ComputeCentroidFeature:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeCentroidFeature header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read ComputeCentroidFeature header!" << std::endl;
         return false;     
     }
     file >> computeCentroidFeature;
     
     file >> word;
     if( word != "ComputeTopNFreqFeatures:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read ComputeTopNFreqFeatures header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read ComputeTopNFreqFeatures header!" << std::endl;
         return false;     
     }
     file >> computeTopNFreqFeatures;
     
     file >> word;
     if( word != "N:" ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to read N header!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to read N header!" << std::endl;
         return false;     
     }
     file >> N;
@@ -229,7 +191,7 @@ bool FFTFeatures::loadModelFromFile( std::fstream &file ){
     return init(fftWindowSize,numChannelsInFFTSignal,computeMaxFreqFeature,computeMaxFreqSpectrumRatio,computeCentroidFeature,computeTopNFreqFeatures,N);
 }
 
-bool FFTFeatures::init(UINT fftWindowSize,UINT numChannelsInFFTSignal,bool computeMaxFreqFeature,bool computeMaxFreqSpectrumRatio,bool computeCentroidFeature,bool computeTopNFreqFeatures,UINT N){
+bool FFTFeatures::init(const UINT fftWindowSize,const UINT numChannelsInFFTSignal,const bool computeMaxFreqFeature,const bool computeMaxFreqSpectrumRatio,const bool computeCentroidFeature,const bool computeTopNFreqFeatures,const UINT N){
     
     initialized = false;
     featureDataReady = false;

@@ -1,11 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class acts as the main interface for using a Hidden Markov Model.
-
-@remark This implementation is based on Rabiner, Lawrence. "A tutorial on hidden Markov models and selected applications in speech recognition." Proceedings of the IEEE 77.2 (1989): 257-286.
 */
 
 /**
@@ -38,6 +33,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief This class acts as the main interface for using a Hidden Markov Model.
+
+@remark This implementation is based on Rabiner, Lawrence. "A tutorial on hidden Markov models and selected applications in speech recognition." Proceedings of the IEEE 77.2 (1989): 257-286.
+*/
 class GRT_API HMM : public Classifier
 {
 public:
@@ -370,8 +370,9 @@ protected:
     bool autoEstimateSigma;
     Vector< ContinuousHiddenMarkovModel > continuousModels;
     
+private:
     static RegisterClassifierModule< HMM > registerModule;
-     static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

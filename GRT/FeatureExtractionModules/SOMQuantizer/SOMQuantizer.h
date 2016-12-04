@@ -232,13 +232,22 @@ public:
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the SOMQuantizer class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT numClusters;
     SelfOrganizingMap som;
     VectorFloat quantizationDistances;
     
+private:
     static RegisterFeatureExtractionModule< SOMQuantizer > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

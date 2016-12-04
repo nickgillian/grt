@@ -23,30 +23,24 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the ClassLabelChangeFilter module with the PostProcessing base class
-RegisterPostProcessingModule< ClassLabelChangeFilter > ClassLabelChangeFilter::registerModule("ClassLabelChangeFilter");
+//Define the string that will be used to identify the object
+const std::string ClassLabelChangeFilter::id = "ClassLabelChangeFilter";
+std::string ClassLabelChangeFilter::getId() { return ClassLabelChangeFilter::id; }
 
-ClassLabelChangeFilter::ClassLabelChangeFilter(){
-    
-    classType = "ClassLabelChangeFilter";
-    postProcessingType = classType;
+//Register the ClassLabelChangeFilter module with the PostProcessing base class
+RegisterPostProcessingModule< ClassLabelChangeFilter > ClassLabelChangeFilter::registerModule( ClassLabelChangeFilter::getId() );
+
+ClassLabelChangeFilter::ClassLabelChangeFilter() : PostProcessing( ClassLabelChangeFilter::getId() )
+{
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
-    debugLog.setProceedingText("[DEBUG ClassLabelChangeFilter]");
-    errorLog.setProceedingText("[ERROR ClassLabelChangeFilter]");
-    warningLog.setProceedingText("[WARNING ClassLabelChangeFilter]");
     init();
 }
 
-ClassLabelChangeFilter::ClassLabelChangeFilter(const ClassLabelChangeFilter &rhs){
-    
-    classType = "ClassLabelChangeFilter";
-    postProcessingType = classType;
+ClassLabelChangeFilter::ClassLabelChangeFilter(const ClassLabelChangeFilter &rhs) : PostProcessing( ClassLabelChangeFilter::getId() )
+{
     postProcessingInputMode = INPUT_MODE_PREDICTED_CLASS_LABEL;
     postProcessingOutputMode = OUTPUT_MODE_PREDICTED_CLASS_LABEL;
-    debugLog.setProceedingText("[DEBUG ClassLabelChangeFilter]");
-    errorLog.setProceedingText("[ERROR ClassLabelChangeFilter]");
-    warningLog.setProceedingText("[WARNING ClassLabelChangeFilter]");
     
     //Copy the ClassLabelChangeFilter values
     this->filteredClassLabel = rhs.filteredClassLabel;
@@ -77,9 +71,9 @@ bool ClassLabelChangeFilter::deepCopyFrom(const PostProcessing *postProcessing){
     
     if( postProcessing == NULL ) return false;
     
-    if( this->getPostProcessingType() == postProcessing->getPostProcessingType() ){
+    if( this->getId() == postProcessing->getId() ){
         
-        ClassLabelChangeFilter *ptr = (ClassLabelChangeFilter*)postProcessing;
+        const ClassLabelChangeFilter *ptr = dynamic_cast<const ClassLabelChangeFilter*>(postProcessing);
         
         //Clone the ClassLabelChangeFilter values
         this->filteredClassLabel = ptr->filteredClassLabel;
@@ -128,7 +122,7 @@ bool ClassLabelChangeFilter::init(){
     return true;
 }
 
-UINT ClassLabelChangeFilter::filter(UINT predictedClassLabel){
+UINT ClassLabelChangeFilter::filter(const UINT predictedClassLabel){
     
     labelChanged = false;
     
@@ -191,7 +185,7 @@ bool ClassLabelChangeFilter::load( std::fstream &file ){
     return init();
 }
 
-bool ClassLabelChangeFilter::getChange(){
+bool ClassLabelChangeFilter::getChange() const {
     return labelChanged;
 }
 

@@ -41,7 +41,7 @@ public:
     @param bufferSize: sets the size of the timeseries buffer. Default value = 5
     @param numDimensions: sets the number of dimensions that will be input to the feature extraction. Default value = 1
     */
-    TimeseriesBuffer(UINT bufferSize = 5,UINT numDimensions = 1);
+    TimeseriesBuffer(const UINT bufferSize = 5,const UINT numDimensions = 1);
     
     /**
     Copy constructor, copies the TimeseriesBuffer from the rhs instance to this instance.
@@ -119,7 +119,7 @@ public:
     @param numDimensions: sets the number of dimensions that will be input to the feature extraction
     @return true if the TimeseriesBuffer was initiliazed, false otherwise
     */
-    bool init(UINT bufferSize,UINT numDimensions);
+    bool init(const UINT bufferSize,const UINT numDimensions);
     
     /**
     Updates the timeseries buffer with the new data x, this should only be called if the dimensionality of this instance was set to 1.
@@ -127,7 +127,7 @@ public:
     @param x: the value to add to the buffer, this should only be called if the dimensionality of the filter was set to 1
     @return a vector containing the timeseries buffer, an empty vector will be returned if the buffer is not initialized
     */
-    VectorFloat update(Float x);
+    VectorFloat update(const Float x);
     
     /**
     Updates the timeseries buffer with the new data x, the dimensionality of x should match that of this instance.
@@ -144,14 +144,14 @@ public:
     @param bufferSize: sets the size of the timeseries buffer
     @return true if the bufferSize value was updated, false otherwise
     */
-    bool setBufferSize(UINT bufferSize);
+    bool setBufferSize(const UINT bufferSize);
     
     /**
     Gets the buffer size.
     
     @return returns an unsigned int representing the buffer size, returns zero if the feature extraction module has not been initialized
     */
-    UINT getBufferSize();
+    UINT getBufferSize() const;
     
     /**
     Gets the current values in the timeseries buffer.
@@ -159,7 +159,7 @@ public:
     
     @return returns a vector containing the timeseries values, an empty vector will be returned if the module has not been initialized
     */
-    Vector< VectorFloat > getDataBuffer();
+    Vector< VectorFloat > getDataBuffer() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -168,12 +168,21 @@ public:
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the TimeseriesBuffer class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT bufferSize;
     CircularBuffer< VectorFloat > dataBuffer;              ///< A buffer used to store the timeseries data
     
+private:
     static RegisterFeatureExtractionModule< TimeseriesBuffer > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

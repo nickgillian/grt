@@ -37,10 +37,6 @@ FastFourierTransform::FastFourierTransform(){
 	windowFunction = RECTANGULAR_WINDOW;
 	averagePower = 0;
     
-	infoLog.setProceedingText("[FastFourierTransform]");
-	warningLog.setProceedingText("[WARNING FastFourierTransform]");
-	errorLog.setProceedingText("[ERROR FastFourierTransform]");
-    
 	initFFT();
 }
     
@@ -249,7 +245,7 @@ bool FastFourierTransform::windowData( VectorFloat &data ){
     return false;
 }
     
-VectorFloat FastFourierTransform::getMagnitudeData(){
+VectorFloat FastFourierTransform::getMagnitudeData() const {
     
     if( !initialized ) return VectorFloat();
     
@@ -263,7 +259,7 @@ VectorFloat FastFourierTransform::getMagnitudeData(){
     return magnitudeData;
 }
 
-VectorFloat FastFourierTransform::getPhaseData(){
+VectorFloat FastFourierTransform::getPhaseData() const {
     if( !initialized ) return VectorFloat();
 
 	const unsigned int N = windowSize/2;    
@@ -276,7 +272,7 @@ VectorFloat FastFourierTransform::getPhaseData(){
     return phaseData;
 }
 
-VectorFloat FastFourierTransform::getPowerData(){
+VectorFloat FastFourierTransform::getPowerData() const {
     if( !initialized ) return VectorFloat();
     
     VectorFloat powerData(windowSize/2);
@@ -288,7 +284,7 @@ VectorFloat FastFourierTransform::getPowerData(){
     return powerData;
 }
     
-Float FastFourierTransform::getAveragePower(){
+Float FastFourierTransform::getAveragePower() const {
     return averagePower;
 }
     

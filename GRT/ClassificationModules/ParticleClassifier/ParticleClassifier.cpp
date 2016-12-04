@@ -23,14 +23,14 @@
 
 GRT_BEGIN_NAMESPACE
     
-//Define the string that will be used to indentify the object
-std::string ParticleClassifier::id = "ParticleClassifier";
+//Define the string that will be used to identify the object
+const std::string ParticleClassifier::id = "ParticleClassifier";
 std::string ParticleClassifier::getId() { return ParticleClassifier::id; }
 
 //Register the ParticleClassifier module with the Classifier base class
-RegisterClassifierModule< ParticleClassifier > ParticleClassifier::registerModule( getId() );
+RegisterClassifierModule< ParticleClassifier > ParticleClassifier::registerModule( ParticleClassifier::getId() );
 
-ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const Float sensorNoise,const Float transitionSigma,const Float phaseSigma,const Float velocitySigma ) : Classifier( getId() )
+ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const Float sensorNoise,const Float transitionSigma,const Float phaseSigma,const Float velocitySigma ) : Classifier( ParticleClassifier::getId() )
 {
     this->numParticles = numParticles;
     this->sensorNoise = sensorNoise;
@@ -42,7 +42,7 @@ ParticleClassifier::ParticleClassifier( const unsigned int numParticles,const Fl
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
 }
 
-ParticleClassifier::ParticleClassifier(const ParticleClassifier &rhs) : Classifier( getId() )
+ParticleClassifier::ParticleClassifier(const ParticleClassifier &rhs) : Classifier( ParticleClassifier::getId() )
 {
     *this = rhs;
 }
@@ -71,8 +71,8 @@ ParticleClassifier& ParticleClassifier::operator=(const ParticleClassifier &rhs)
 bool ParticleClassifier::deepCopyFrom(const Classifier *classifier){
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
-        ParticleClassifier *ptr = (ParticleClassifier*)classifier;
+    if( this->getId() == classifier->getId() ){
+        const ParticleClassifier *ptr = dynamic_cast<const ParticleClassifier*>(classifier);
         
         this->numParticles = ptr->numParticles;
         this->sensorNoise = ptr->sensorNoise;

@@ -23,15 +23,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the RMSFiltermodule with the PreProcessing base class
-RegisterPreProcessingModule< RMSFilter> RMSFilter::registerModule("RMSFilter");
+//Define the string that will be used to identify the object
+const std::string RMSFilter::id = "RMSFilter";
+std::string RMSFilter::getId() { return RMSFilter::id; }
 
-RMSFilter::RMSFilter(UINT filterSize,UINT numDimensions) : PreProcessing( "RMSFilter" )
+//Register the RMSFiltermodule with the PreProcessing base class
+RegisterPreProcessingModule< RMSFilter> RMSFilter::registerModule( RMSFilter::getId() );
+
+RMSFilter::RMSFilter(const UINT filterSize,const UINT numDimensions) : PreProcessing( RMSFilter::getId() )
 {
     init(filterSize,numDimensions);
 }
 
-RMSFilter::RMSFilter(const RMSFilter&rhs) : PreProcessing( "RMSFilter" )
+RMSFilter::RMSFilter(const RMSFilter&rhs) : PreProcessing( RMSFilter::getId() )
 { 
     //Zero this instance
     this->filterSize = 0;
@@ -68,7 +72,7 @@ bool RMSFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         //Call the equals operator
         *this = *dynamic_cast<const RMSFilter*>(preProcessing);

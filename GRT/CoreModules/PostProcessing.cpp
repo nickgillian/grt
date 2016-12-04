@@ -25,18 +25,25 @@ GRT_BEGIN_NAMESPACE
     
 PostProcessing::StringPostProcessingMap* PostProcessing::stringPostProcessingMap = NULL;
 UINT PostProcessing::numPostProcessingInstances = 0;
+
+PostProcessing* PostProcessing::createNewInstance() const { return create(); } ///<Legacy function
+PostProcessing* PostProcessing::createInstanceFromString(const std::string &id) { return create(id); } ///<Legacy function
     
-PostProcessing* PostProcessing::createInstanceFromString(std::string const &postProcessingType){
+PostProcessing* PostProcessing::create(const std::string &id){
     
-    StringPostProcessingMap::iterator iter = getMap()->find( postProcessingType );
+    StringPostProcessingMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
         return NULL;
     }
     return iter->second();
 }
+
+PostProcessing* PostProcessing::create() const{
+    return create( getId() );
+}
     
-PostProcessing::PostProcessing(void){
-    postProcessingType = "NOT_SET";
+PostProcessing::PostProcessing( const std::string &id ) : MLBase( id, MLBase::POST_PROCESSING )
+{
     postProcessingInputMode = INPUT_MODE_NOT_SET;
     postProcessingOutputMode = OUTPUT_MODE_NOT_SET;
     initialized = false; 
@@ -165,10 +172,6 @@ bool PostProcessing::loadPostProcessingSettingsFromFile(std::fstream &file){
     }
     
     return true;
-}
-    
-PostProcessing* PostProcessing::createNewInstance() const{
-    return createInstanceFromString(postProcessingType);
 }
 
 std::string PostProcessing::getPostProcessingType() const{ 

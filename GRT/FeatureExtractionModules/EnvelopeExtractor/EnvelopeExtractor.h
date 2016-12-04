@@ -125,12 +125,21 @@ public:
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
+
+    /**
+    Gets a string that represents the EnvelopeExtractor class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT bufferSize;
     CircularBuffer< VectorFloat > buffer;
     
+private:
     static RegisterFeatureExtractionModule< EnvelopeExtractor > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

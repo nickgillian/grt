@@ -23,15 +23,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string SwipeDetector::id = "SwipeDetector";
+//Define the string that will be used to identify the object
+const std::string SwipeDetector::id = "SwipeDetector";
 std::string SwipeDetector::getId() { return SwipeDetector::id; }
 
 //Register the SwipeDetector module with the Classifier base class
-RegisterClassifierModule< SwipeDetector > SwipeDetector::registerModule( getId() );
+RegisterClassifierModule< SwipeDetector > SwipeDetector::registerModule( SwipeDetector::getId() );
 
 SwipeDetector::SwipeDetector(const unsigned int swipeIndex, const unsigned int swipeThreshold,
-                                   const unsigned int hysteresisThreshold, const unsigned int swipeDirection,bool useScaling) : Classifier( getId() )
+                                   const unsigned int hysteresisThreshold, const unsigned int swipeDirection,bool useScaling) : Classifier( SwipeDetector::getId() )
 {
     this->swipeIndex = swipeIndex;
     this->swipeThreshold = swipeThreshold;
@@ -51,7 +51,7 @@ SwipeDetector::SwipeDetector(const unsigned int swipeIndex, const unsigned int s
     reset();
 }
     
-SwipeDetector::SwipeDetector(const SwipeDetector &rhs) : Classifier( getId() )
+SwipeDetector::SwipeDetector(const SwipeDetector &rhs) : Classifier( SwipeDetector::getId() )
 {
     supportsNullRejection = false;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -99,9 +99,9 @@ bool SwipeDetector::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         
-        SwipeDetector *ptr = (SwipeDetector*)classifier;
+        const SwipeDetector *ptr = dynamic_cast<const SwipeDetector*>(classifier);
         
         this->firstSample = ptr->firstSample;
         this->swipeDetected = ptr->swipeDetected;

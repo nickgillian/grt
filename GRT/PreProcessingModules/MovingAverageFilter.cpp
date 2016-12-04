@@ -23,15 +23,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the MovingAverageFilter module with the PreProcessing base class
-RegisterPreProcessingModule< MovingAverageFilter > MovingAverageFilter::registerModule("MovingAverageFilter");
+//Define the string that will be used to identify the object
+const std::string MovingAverageFilter::id = "MovingAverageFilter";
+std::string MovingAverageFilter::getId() { return MovingAverageFilter::id; }
 
-MovingAverageFilter::MovingAverageFilter(UINT filterSize,UINT numDimensions) : PreProcessing( "MovingAverageFilter" )
+//Register the MovingAverageFilter module with the PreProcessing base class
+RegisterPreProcessingModule< MovingAverageFilter > MovingAverageFilter::registerModule( MovingAverageFilter::getId() );
+
+MovingAverageFilter::MovingAverageFilter(UINT filterSize,UINT numDimensions) : PreProcessing( MovingAverageFilter::getId() )
 {
     init(filterSize,numDimensions);
 }
 
-MovingAverageFilter::MovingAverageFilter(const MovingAverageFilter &rhs) : PreProcessing( "MovingAverageFilter" )
+MovingAverageFilter::MovingAverageFilter(const MovingAverageFilter &rhs) : PreProcessing( MovingAverageFilter::getId() )
 {
     //Zero this instance
     this->filterSize = 0;
@@ -68,7 +72,7 @@ bool MovingAverageFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         //Call the equals operator
         *this = *dynamic_cast<const MovingAverageFilter*>(preProcessing);

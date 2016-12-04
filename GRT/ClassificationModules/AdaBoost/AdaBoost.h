@@ -1,25 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class contains the AdaBoost classifier. AdaBoost (Adaptive Boosting) is a powerful classifier that works well on both basic and more complex
-recognition problems.
-
-AdaBoost works by creating a highly accurate classifier by combining many relatively weak and inaccurate
-classifiers. AdaBoost therefore acts as a meta algorithm, which allows you to use it as a wrapper for other classifiers.
-In the GRT, these classifiers are called Weak Classifiers such as a GRT::DecisionStump (which is just one node of a DecisionTree).
-AdaBoost is adaptive in the sense that subsequent classifiers added at each round of boosting are tweaked in favor of those
-instances misclassified by previous classifiers. The default number of boosting rounds for AdaBoost is 20, however
-this can easily be set using the GRT::AdaBoost::setNumBoostingIterations(UINT numBoostingIterations) function or
-via the AdaBoost constructor.
-
-@remark This implementation is based on Schapire, Robert E., and Yoav Freund. Boosting: Foundations and Algorithms. MIT Press, 2012.
-
-@note   There are two classification modes, GRT::AdaBoost::PredictionMethods (MAX_POSITIVE_VALE and MAX_VALUE), which can give
-different classification results so you should experiment with each mode to achieve the best results for your classification task.
-
-@example ClassificationModulesExamples/AdaBoostExample/AdaBoostExample.cpp
 */
 
 /**
@@ -52,11 +33,30 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//typedef DecisionStump AdaBoostWeakClassifier;
+/**
+@brief This class contains the AdaBoost classifier. AdaBoost (Adaptive Boosting) is a powerful classifier that works well on both basic and more complex
+recognition problems.
 
+AdaBoost works by creating a highly accurate classifier by combining many relatively weak and inaccurate
+classifiers. AdaBoost therefore acts as a meta algorithm, which allows you to use it as a wrapper for other classifiers.
+In the GRT, these classifiers are called Weak Classifiers such as a GRT::DecisionStump (which is just one node of a DecisionTree).
+AdaBoost is adaptive in the sense that subsequent classifiers added at each round of boosting are tweaked in favor of those
+instances misclassified by previous classifiers. The default number of boosting rounds for AdaBoost is 20, however
+this can easily be set using the GRT::AdaBoost::setNumBoostingIterations(UINT numBoostingIterations) function or
+via the AdaBoost constructor.
+
+@remark This implementation is based on Schapire, Robert E., and Yoav Freund. Boosting: Foundations and Algorithms. MIT Press, 2012.
+
+@note  There are two classification modes, GRT::AdaBoost::PredictionMethods (MAX_POSITIVE_VALE and MAX_VALUE), which can give
+different classification results so you should experiment with each mode to achieve the best results for your classification task.
+
+@example ClassificationModulesExamples/AdaBoostExample/AdaBoostExample.cpp
+*/
 class GRT_API AdaBoost : public Classifier
 {
-    public:
+public:
+    enum PredictionMethods{MAX_POSITIVE_VALUE=0,MAX_VALUE}; ///<These are the two prediction methods that the GRT::AdaBoost classifier can use.
+
     /**
     Default Constructor
     
@@ -238,14 +238,9 @@ protected:
     Vector< WeakClassifier* > weakClassifiers;
     Vector< AdaBoostClassModel > models;
     
+private:
     static RegisterClassifierModule< AdaBoost > registerModule;
-    static std::string id;
-    
-public:
-    /**
-    These are the two prediction methods that the GRT::AdaBoost classifier can use.
-    */
-    enum PredictionMethods{MAX_POSITIVE_VALUE=0,MAX_VALUE};
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

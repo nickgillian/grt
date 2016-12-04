@@ -51,7 +51,7 @@ class GRT_API TimeDomainFeatures : public FeatureExtraction{
 public:
     /**
     */
-    TimeDomainFeatures(UINT bufferLength=100,UINT numFrames=10,UINT numDimensions = 1,bool offsetInput = false,bool useMean = true,bool useStdDev = true,bool useEuclideanNorm = true,bool useRMS = true);
+    TimeDomainFeatures(const UINT bufferLength=100,const UINT numFrames=10,const UINT numDimensions = 1,const bool offsetInput = false,const bool useMean = true,const bool useStdDev = true,const bool useEuclideanNorm = true,const bool useRMS = true);
     
     /**
     Copy constructor, copies the TimeDomainFeatures from the rhs instance to this instance.
@@ -123,7 +123,7 @@ public:
     /**
     Initializes the MovementTrajectoryFeatures
     */
-    bool init(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS);
+    bool init(const UINT bufferLength,const UINT numFrames,const UINT numDimensions,const bool offsetInput,const bool useMean,const bool useStdDev,const bool useEuclideanNorm,const bool useRMS);
     
     /**
     Computes the features from the input, this should only be called if the dimensionality of this instance was set to 1.
@@ -131,7 +131,7 @@ public:
     @param x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
     @return a vector containing the features, an empty vector will be returned if the features were not computed
     */
-    VectorFloat update(Float x);
+    VectorFloat update(const Float x);
     
     /**
     Computes the features from the input, the dimensionality of x should match that of this instance.
@@ -140,13 +140,6 @@ public:
     @return a vector containing the features, an empty vector will be returned if the features were not computed
     */
     VectorFloat update(const VectorFloat &x);
-    
-    /**
-    Get the circular buffer.
-    
-    @return a copy of the circular buffer
-    */
-    CircularBuffer< VectorFloat > getBufferData();
     
     /**
     Gets a reference to the circular buffer.
@@ -162,6 +155,13 @@ public:
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the TimeDomainFeatures class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT bufferLength;
@@ -173,7 +173,9 @@ protected:
     bool useRMS;
     CircularBuffer< VectorFloat > dataBuffer;
     
+private:
     static RegisterFeatureExtractionModule< TimeDomainFeatures > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

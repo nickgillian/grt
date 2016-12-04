@@ -23,28 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the TimeseriesBuffer module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< TimeseriesBuffer > TimeseriesBuffer::registerModule("TimeseriesBuffer");
+//Define the string that will be used to identify the object
+std::string TimeseriesBuffer::id = "TimeseriesBuffer";
+std::string TimeseriesBuffer::getId() { return TimeseriesBuffer::id; }
 
-TimeseriesBuffer::TimeseriesBuffer(UINT bufferSize,UINT numDimensions){
-    
-    classType = "TimeseriesBuffer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG TimeseriesBuffer]");
-    errorLog.setProceedingText("[ERROR TimeseriesBuffer]");
-    warningLog.setProceedingText("[WARNING TimeseriesBuffer]");
-    
+//Register the TimeseriesBuffer module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< TimeseriesBuffer > TimeseriesBuffer::registerModule( TimeseriesBuffer::getId() );
+
+TimeseriesBuffer::TimeseriesBuffer(const UINT bufferSize,const UINT numDimensions) : FeatureExtraction( TimeseriesBuffer::getId() )
+{
     init(bufferSize,numDimensions);
 }
 
-TimeseriesBuffer::TimeseriesBuffer(const TimeseriesBuffer &rhs){
-    
-    classType = "TimeseriesBuffer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG TimeseriesBuffer]");
-    errorLog.setProceedingText("[ERROR TimeseriesBuffer]");
-    warningLog.setProceedingText("[WARNING TimeseriesBuffer]");
-    
+TimeseriesBuffer::TimeseriesBuffer(const TimeseriesBuffer &rhs) : FeatureExtraction( TimeseriesBuffer::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -67,15 +59,15 @@ bool TimeseriesBuffer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(TimeseriesBuffer*)featureExtraction;
+        *this = *dynamic_cast<const TimeseriesBuffer*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -159,7 +151,7 @@ bool TimeseriesBuffer::load( std::fstream &file ){
     return init(bufferSize,numInputDimensions);
 }
 
-bool TimeseriesBuffer::init(UINT bufferSize,UINT numDimensions){
+bool TimeseriesBuffer::init(const UINT bufferSize,const UINT numDimensions){
     
     initialized = false;
     featureDataReady = false;
@@ -188,7 +180,7 @@ bool TimeseriesBuffer::init(UINT bufferSize,UINT numDimensions){
 }
 
 
-VectorFloat TimeseriesBuffer::update(Float x){
+VectorFloat TimeseriesBuffer::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -233,12 +225,12 @@ bool TimeseriesBuffer::setBufferSize(UINT bufferSize){
     return false;
 }
 
-UINT TimeseriesBuffer::getBufferSize(){
+UINT TimeseriesBuffer::getBufferSize() const {
     if( initialized ) return bufferSize;
     return 0;
 }
 
-Vector< VectorFloat > TimeseriesBuffer::getDataBuffer(){
+Vector< VectorFloat > TimeseriesBuffer::getDataBuffer() const {
     if( initialized ) return dataBuffer.getData();
     return Vector< VectorFloat >();
 }

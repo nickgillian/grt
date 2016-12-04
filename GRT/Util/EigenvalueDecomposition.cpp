@@ -21,7 +21,7 @@
 GRT_BEGIN_NAMESPACE
    
 EigenvalueDecomposition::EigenvalueDecomposition(){
-    warningLog.setProceedingText("[WARNING EigenvalueDecomposition]");
+    warningLog.setKey("[WARNING EigenvalueDecomposition]");
 }
 
 EigenvalueDecomposition::~EigenvalueDecomposition(){

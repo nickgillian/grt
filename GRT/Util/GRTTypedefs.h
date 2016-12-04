@@ -34,13 +34,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cmath>
 
 #ifdef __GRT_WINDOWS_BUILD__
-
 #define NOMINMAX
-
 #include <windows.h>
-
 #endif
-
 
 #define GRT_BEGIN_NAMESPACE namespace GRT {
 #define GRT_END_NAMESPACE }
@@ -58,6 +54,10 @@ typedef long double LongFloat; ///<This typedef is used to set long floating-poi
     
 #ifndef TWO_PI
 #define TWO_PI 6.28318530718
+#endif
+
+#ifndef ONE_OVER_TWO_PI
+#define ONE_OVER_TWO_PI (1.0/TWO_PI)
 #endif
     
 #ifndef SQRT_TWO_PI

@@ -25,22 +25,26 @@ GRT_BEGIN_NAMESPACE
     
 Clusterer::StringClustererMap* Clusterer::stringClustererMap = NULL;
 UINT Clusterer::numClustererInstances = 0;
+
+Clusterer* Clusterer::createNewInstance() const { return create(); } ///<Legacy function
+Clusterer* Clusterer::createInstanceFromString(const std::string &id) { return create(id); } ///<Legacy function
     
-Clusterer* Clusterer::createInstanceFromString( std::string const &clustererType ){
+Clusterer* Clusterer::create( std::string const &id ){
     
-    StringClustererMap::iterator iter = getMap()->find( clustererType );
+    StringClustererMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
         return NULL;
     }
     return iter->second();
 }
-Clusterer* Clusterer::createNewInstance() const{
-    return createInstanceFromString( clustererType );
+
+Clusterer* Clusterer::create() const{
+    return create( MLBase::getId() );
 }
     
 Clusterer* Clusterer::deepCopy() const{
     
-    Clusterer *newInstance = createInstanceFromString( clustererType );
+    Clusterer *newInstance = create( MLBase::getId() );
     
     if( newInstance == NULL ) return NULL;
     
@@ -63,9 +67,8 @@ Vector< std::string > Clusterer::getRegisteredClusterers(){
 	return registeredClusterers;
 }
     
-Clusterer::Clusterer(void){
-    baseType = MLBase::CLUSTERER;
-    clustererType = "NOT_SET";
+Clusterer::Clusterer( const std::string &id ) : MLBase( id, MLBase::CLUSTERER )
+{
     numClusters = 10;
     predictedClusterLabel = 0;
     maxLikelihood = 0;
@@ -96,7 +99,6 @@ bool Clusterer::copyBaseVariables(const Clusterer *clusterer){
     }
     
     //Copy the clusterer base variables
-    this->clustererType = clusterer->clustererType;
     this->numClusters = clusterer->numClusters;
     this->predictedClusterLabel = clusterer->predictedClusterLabel;
     this->predictedClusterLabel = clusterer->predictedClusterLabel;
@@ -226,6 +228,8 @@ bool Clusterer::loadClustererSettingsFromFile( std::fstream &file ){
     
     return true;
 }
+
+std::string Clusterer::getClustererType() const { return MLBase::getId(); } //Legacy
     
 bool Clusterer::getConverged() const{
     if( !trained ) return false;
@@ -256,8 +260,6 @@ VectorFloat Clusterer::getClusterDistances() const{
 Vector< UINT > Clusterer::getClusterLabels() const{
     return clusterLabels;
 }
-
-std::string Clusterer::getClustererType() const{ return clustererType; }
     
 const Clusterer& Clusterer::getBaseClusterer() const{
     return *this;

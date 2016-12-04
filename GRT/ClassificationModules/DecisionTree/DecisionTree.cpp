@@ -23,16 +23,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string DecisionTree::id = "DecisionTree";
+//Define the string that will be used to identify the object
+const std::string DecisionTree::id = "DecisionTree";
 std::string DecisionTree::getId() { return DecisionTree::id; }
 
 //Register the DecisionTree module with the Classifier base class
 RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule( DecisionTree::getId() );
 
-DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const UINT trainingMode,const UINT numSplittingSteps,const bool useScaling) : Classifier( DecisionTree::getId() )
+DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const Tree::TrainingMode trainingMode,const UINT numSplittingSteps,const bool useScaling) : Classifier( DecisionTree::getId() )
 {
-
     this->tree = NULL;
     this->decisionTreeNode = NULL;
     this->minNumSamplesPerNode = minNumSamplesPerNode;
@@ -102,7 +101,7 @@ bool DecisionTree::deepCopyFrom(const Classifier *classifier){
     
     if( this->getClassifierType() == classifier->getClassifierType() ){
         
-        DecisionTree *ptr = (DecisionTree*)classifier;
+        const DecisionTree *ptr = dynamic_cast<const DecisionTree*>( classifier );
         
         //Clear this tree
         this->clear();
@@ -138,20 +137,20 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     clear();
     
     if( decisionTreeNode == NULL ){
-        Classifier::errorLog << "train_(ClassificationData &trainingData) - The decision tree node has not been set! You must set this first before training a model." << std::endl;
+        errorLog << "train_(ClassificationData &trainingData) - The decision tree node has not been set! You must set this first before training a model." << std::endl;
         return false;
     }
     
-    const unsigned int M = trainingData.getNumSamples();
     const unsigned int N = trainingData.getNumDimensions();
     const unsigned int K = trainingData.getNumClasses();
     
-    if( M == 0 ){
-        Classifier::errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
+    if( trainingData.getNumSamples() == 0 ){
+        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
     
     numInputDimensions = N;
+    numOutputDimensions = K;
     numClasses = K;
     classLabels = trainingData.getClassLabels();
     ranges = trainingData.getRanges();
@@ -164,6 +163,8 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         validationSetPrecision.resize( useNullRejection ? K+1 : K, 0 );
         validationSetRecall.resize( useNullRejection ? K+1 : K, 0 );
     }
+
+    const unsigned int M = trainingData.getNumSamples();
     
     //Scale the training data if needed
     if( useScaling ){
@@ -184,7 +185,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     }
 
     numTrainingIterationsToConverge = 1;
-    Classifier::trainingLog << "numTrainingIterationsToConverge " << numTrainingIterationsToConverge << " useValidationSet: " << useValidationSet << std::endl;
+    trainingLog << "numTrainingIterationsToConverge " << numTrainingIterationsToConverge << " useValidationSet: " << useValidationSet << std::endl;
 
     if( useValidationSet ){
 
@@ -226,7 +227,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         }
 
         //Use the best tree
-        Classifier::trainingLog << "Best tree index: " << bestTreeIndex+1 << " validation set accuracy: " << bestValidationSetAccuracy << std::endl;
+        trainingLog << "Best tree index: " << bestTreeIndex+1 << " validation set accuracy: " << bestValidationSetAccuracy << std::endl;
         
         if( bestTree != tree ){
             //Delete the tree if it exists
@@ -240,14 +241,67 @@ bool DecisionTree::train_(ClassificationData &trainingData){
             tree = bestTree;
         }
 
-        //If we get this far, then the model was trained successfully
-        return true;
     }else{
         //If we get here, then we are going to train the tree once
-        return trainTree( trainingData, trainingDataCopy, validationData, features );
+        if( !trainTree( trainingData, trainingDataCopy, validationData, features ) ){
+            return false;
+        }
     }
 
-    return false;
+    //If we get this far, then a model has been trained
+
+    //Setup the data for prediction
+    predictedClassLabel = 0;
+    maxLikelihood = 0;
+    classLikelihoods.resize(numClasses);
+    classDistances.resize(numClasses);
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially
+    bool scalingState = useScaling;
+    useScaling = false;
+    for(UINT i=0; i<M; i++){
+        if( !predict_( trainingData[i].getSample() ) ){
+            trained = false;
+            errorLog << "Failed to run prediction for training sample: " << i << "! Failed to fully train model!" << std::endl;
+            return false;
+        }
+
+        if( predictedClassLabel == trainingData[i].getClassLabel() ){
+            trainingSetAccuracy++;
+        }
+    }
+
+    if( useValidationSet ){
+        for(UINT i=0; i<validationData.getNumSamples(); i++){
+            if( !predict_( validationData[i].getSample() ) ){
+                trained = false;
+                errorLog << "Failed to run prediction for validation sample: " << i << "! Failed to fully train model!" << std::endl;
+                return false;
+            }
+
+            if( predictedClassLabel == validationData[i].getClassLabel() ){
+                validationSetAccuracy++;
+            }
+        }
+    }
+
+    trainingSetAccuracy = trainingSetAccuracy / M * 100.0;
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        validationSetAccuracy = validationSetAccuracy / validationData.getNumSamples() * 100.0;
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+
+    return true;
 }
 
 bool DecisionTree::trainTree( ClassificationData trainingData, const ClassificationData &trainingDataCopy, const ClassificationData &validationData, Vector< UINT > features ){
@@ -567,6 +621,8 @@ bool DecisionTree::save( std::fstream &file ) const{
 bool DecisionTree::load( std::fstream &file ){
     
     clear();
+
+    UINT tempTrainingMode = 0;
     
     if( decisionTreeNode != NULL ){
         delete decisionTreeNode;
@@ -658,7 +714,8 @@ bool DecisionTree::load( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    file >> tempTrainingMode;
+    trainingMode = static_cast<Tree::TrainingMode>(tempTrainingMode);
     
     file >> word;
     if(word != "NumSplittingSteps:"){
@@ -948,9 +1005,80 @@ Float DecisionTree::getNodeDistance( const VectorFloat &x, const VectorFloat &y 
     return distance;
 }
 
+Tree::TrainingMode DecisionTree::getTrainingMode() const{
+    return trainingMode;
+}
+
+UINT DecisionTree::getNumSplittingSteps()const{
+    return numSplittingSteps;
+}
+
+UINT DecisionTree::getMinNumSamplesPerNode()const{
+    return minNumSamplesPerNode;
+}
+
+UINT DecisionTree::getMaxDepth()const{
+    return maxDepth;
+}
+
+UINT DecisionTree::getPredictedNodeID()const{
+    
+    if( tree == NULL ){
+        return 0;
+    }
+    
+    return tree->getPredictedNodeID();
+}
+
+bool DecisionTree::getRemoveFeaturesAtEachSpilt() const{
+    return removeFeaturesAtEachSpilt;
+}
+
+bool DecisionTree::setTrainingMode(const Tree::TrainingMode trainingMode){ 
+    if( trainingMode >= Tree::BEST_ITERATIVE_SPILT && trainingMode < Tree::NUM_TRAINING_MODES ){
+        this->trainingMode = trainingMode;
+        return true;
+    }
+    warningLog << "Unknown trainingMode: " << trainingMode << std::endl;
+    return false;
+}
+
+bool DecisionTree::setNumSplittingSteps(const UINT numSplittingSteps){
+    if( numSplittingSteps > 0 ){
+        this->numSplittingSteps = numSplittingSteps;
+        return true;
+    }
+    warningLog << "setNumSplittingSteps(const UINT numSplittingSteps) - The number of splitting steps must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool DecisionTree::setMinNumSamplesPerNode(const UINT minNumSamplesPerNode){
+    if( minNumSamplesPerNode > 0 ){
+        this->minNumSamplesPerNode = minNumSamplesPerNode;
+        return true;
+    }
+    warningLog << "setMinNumSamplesPerNode(const UINT minNumSamplesPerNode) - The minimum number of samples per node must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool DecisionTree::setMaxDepth(const UINT maxDepth){
+    if( maxDepth > 0 ){
+        this->maxDepth = maxDepth;
+        return true;
+    }
+    warningLog << "setMaxDepth(const UINT maxDepth) - The maximum depth must be greater than zero!" << std::endl;
+    return false;
+}
+
+bool DecisionTree::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
+    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+    return true;
+}
+
 bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
     
     std::string word;
+    UINT tempTrainingMode = 0;
     
     file >> word;
     if(word != "NumFeatures:"){
@@ -1029,7 +1157,8 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    file >> tempTrainingMode;
+    trainingMode = static_cast<Tree::TrainingMode>(tempTrainingMode);
     
     file >> word;
     if(word != "TreeBuilt:"){
@@ -1068,6 +1197,7 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
 bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
     
     std::string word;
+    UINT tempTrainingMode = 0;
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
@@ -1108,7 +1238,8 @@ bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    file >> tempTrainingMode;
+    trainingMode = static_cast<Tree::TrainingMode>(tempTrainingMode);
     
     file >> word;
     if(word != "TreeBuilt:"){
@@ -1125,7 +1256,7 @@ bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
         }
         
         //Create a new DTree
-        tree = new DecisionTreeNode;
+        tree = dynamic_cast<Node*>( new DecisionTreeNode );
         
         if( tree == NULL ){
             clear();
@@ -1156,6 +1287,7 @@ bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
 bool DecisionTree::loadLegacyModelFromFile_v3( std::fstream &file ){
     
     std::string word;
+    UINT tempTrainingMode = 0;
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
@@ -1196,7 +1328,8 @@ bool DecisionTree::loadLegacyModelFromFile_v3( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
         return false;
     }
-    file >> trainingMode;
+    file >> tempTrainingMode;
+    trainingMode = static_cast<Tree::TrainingMode>(tempTrainingMode);
     
     file >> word;
     if(word != "TreeBuilt:"){

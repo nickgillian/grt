@@ -40,8 +40,9 @@ class GRT_API Clusterer : public MLBase
 public:
     /**
      Default Clusterer Constructor
+     @param id: the id for the Clusterer (e.g., KMeans)
      */
-	Clusterer(void);
+	Clusterer( const std::string &id = "" );
     
     /**
      Default Clusterer Destructor
@@ -167,12 +168,7 @@ public:
      */
     Vector< UINT > getClusterLabels() const;
 
-    /**
-     Returns the classifeir type as a string.
-     
-     @return returns the Clusterer type as a string
-     */
-    std::string getClustererType() const;
+    GRT_DEPRECATED_MSG( "getClustererType() is deprecated, use getId() or getBaseId() instead", std::string getClustererType() const );
     
     /**
      Sets the number of clusters that will be used the next time a model is trained.
@@ -192,17 +188,20 @@ public:
     /**
      Creates a new Clusterer instance based on the input string (which should contain the name of a valid Clusterer such as KMeans).
      
-     @param string const &ClustererType: the name of the Clusterer
-     @return Clusterer*: a pointer to the new instance of the Clusterer
+     @param id: the id of the Clusterer
+     @return a pointer to the new instance of the Clusterer
      */
-    static Clusterer* createInstanceFromString( std::string const &ClustererType );
+    static Clusterer* create( std::string const &id );
     
     /**
      Creates a new Clusterer instance based on the current clustererType string value.
      
      @return Clusterer*: a pointer to the new instance of the Clusterer
     */
-    Clusterer* createNewInstance() const;
+    Clusterer* create() const;
+
+    GRT_DEPRECATED_MSG( "createNewInstance is deprecated, use create instead.", Clusterer* createNewInstance() const );
+    GRT_DEPRECATED_MSG( "createInstanceFromString is deprecated, use create instead.", static Clusterer* createInstanceFromString( const std::string &id ) );
     
     /**
      This creates a new Clusterer instance and deep copies the variables and models from this instance into the deep copy.
@@ -245,7 +244,6 @@ protected:
      */
     bool loadClustererSettingsFromFile( std::fstream &file );
 
-    std::string clustererType;
     UINT numClusters;                   ///< Number of clusters in the model
     UINT predictedClusterLabel;         ///< Stores the predicted cluster label from the most recent predict( )
     Float maxLikelihood;
@@ -267,14 +265,17 @@ private:
     
 };
     
-//These two functions/classes are used to register any new Classification Module with the Clusterer base class
-template< typename T >  Clusterer* getNewClassificationModuleInstance() { return new T; }
+template< typename T >  Clusterer* createNewClustererModuleInstance() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
+/**
+ @brief This class provides an interface for classes to register themselves with the clusterer base class, this enables Cluterer algorithms to
+ be automatically be created from just a string, e.g.: Clusterer *kmeans = create( "KMeans" );
+*/
 template< typename T >
 class RegisterClustererModule : Clusterer { 
 public:
-    RegisterClustererModule( const std::string &newClassificationModuleName ) { 
-        getMap()->insert( std::pair< std::string, Clusterer*(*)() >(newClassificationModuleName, &getNewClassificationModuleInstance< T > ) );
+    RegisterClustererModule( const std::string &newModuleId ) { 
+        getMap()->insert( std::pair< std::string, Clusterer*(*)() >(newModuleId, &createNewClustererModuleInstance< T > ) );
     }
 };
 

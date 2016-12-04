@@ -28,8 +28,8 @@ GRT_BEGIN_NAMESPACE
     
 class TestingLogMessage{
 public:
-    TestingLogMessage(std::string proceedingText = "",std::string message = ""){
-        this->proceedingText = proceedingText;
+    TestingLogMessage(std::string key = "",std::string message = ""){
+        this->key = key;
         this->message = message;
     }
     ~TestingLogMessage(){
@@ -37,48 +37,71 @@ public:
     }
     
     std::string getProceedingText() const {
-        return proceedingText;
+        return key;
     }
     
     std::string getMessage() const {
         return message;
     }
     
-    std::string proceedingText;
+    std::string key;
     std::string message;
 };
 
 class GRT_API TestingLog : public Log{
 public:
-    TestingLog(std::string proceedingText =""){ setProceedingText(proceedingText); Log::loggingEnabledPtr = &testingLoggingEnabled; }
+    TestingLog( const std::string &key = "" ) : Log( key )
+    {
+        Log::loggingEnabledPtr = &testingLoggingEnabled; 
+    }
+
+    TestingLog(const TestingLog &rhs)
+    {
+        *this = rhs;
+    }
 
     virtual ~TestingLog(){}
 
     TestingLog& operator=(const TestingLog &rhs){
         if( this != &rhs ){
-            this->proceedingText = rhs.proceedingText;
-            this->writeProceedingText = rhs.writeProceedingText;
-            this->lastMessage = rhs.lastMessage;
+            //Copy the base class
+            Log *thisBase = this;
+            const Log *rhsBase = &rhs;
+            *thisBase = *rhsBase;
+
+            //Perform any custom copies
             this->loggingEnabledPtr = &testingLoggingEnabled;
-            this->writeProceedingTextPtr = &writeProceedingText;
-            this->lastMessagePtr = &lastMessage;
         }
         return *this;
     }
-    
-    //Getters
-    virtual bool loggingEnabled() const{ return testingLoggingEnabled; }
-    
-    //Setters
-    static bool enableLogging(bool loggingEnabled);
+
+    /**
+     @brief returns true if logging is enabled for this class, this supersedes the specific instance logging
+     @return returns true if logging is enabled for this class, false otherwise
+    */
+    static bool getLoggingEnabled() { 
+        return testingLoggingEnabled; 
+    }
+
+    /**
+     @brief sets if logging is enabled for this class, this supersedes the specific instance logging
+     @return returns true if the parameter was updated successfully, false otherwise
+    */
+    static bool setLoggingEnabled(const bool enabled) { 
+        testingLoggingEnabled = enabled; 
+        return true; 
+    }
     
     static bool registerObserver(Observer< TestingLogMessage > &observer);
 
     static bool removeObserver(Observer< TestingLogMessage > &observer);
+
+    GRT_DEPRECATED_MSG("enableLogging is deprecated, use setLoggingEnabled instead", static bool enableLogging(bool loggingEnabled) );
+    GRT_DEPRECATED_MSG("loggingEnabled is deprecated, use getLoggingEnabled instead", bool loggingEnabled() const );
     
 protected:
     virtual void triggerCallback( const std::string &message ) const{
-        observerManager.notifyObservers( TestingLogMessage(proceedingText,message) );
+        observerManager.notifyObservers( TestingLogMessage(key,message) );
         return;
     }
     

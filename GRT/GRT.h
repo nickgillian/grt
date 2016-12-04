@@ -1,7 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
  
  GRT MIT License
  Copyright (c) <2012> <Nicholas Gillian, Media Lab, MIT>
@@ -60,6 +59,7 @@
 #include "Util/PeakDetection.h"
 #include "Util/ThresholdCrossingDetector.h"
 #include "Util/CommandLineParser.h"
+#include "Util/Metrics.h"
 
 //Include the data structures
 #include "DataStructures/Vector.h"
@@ -126,7 +126,6 @@
 #include "ClassificationModules/GMM/GMM.h"
 #include "ClassificationModules/HMM/HMM.h"
 #include "ClassificationModules/KNN/KNN.h"
-#include "ClassificationModules/LDA/LDA.h"
 #include "ClassificationModules/MinDist/MinDist.h"
 #include "ClassificationModules/ParticleClassifier/ParticleClassifier.h"
 #include "ClassificationModules/RandomForests/RandomForests.h"

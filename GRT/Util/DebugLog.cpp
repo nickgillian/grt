@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GRT_DLL_EXPORTS
 #include "DebugLog.h"
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE
 
 bool DebugLog::debugLoggingEnabled = true;
 ObserverManager< DebugLogMessage > DebugLog::observerManager;
@@ -41,4 +41,6 @@ bool DebugLog::removeObserver(Observer< DebugLogMessage > &observer)
     return observerManager.removeObserver(observer);
 }
 
-} //End of namespace GRT
+bool DebugLog::loggingEnabled() const { return debugLoggingEnabled; } //Legacy
+
+GRT_END_NAMESPACE

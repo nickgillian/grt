@@ -1,17 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements the Gaussian Mixture Model Classifier algorithm. The Gaussian Mixture Model
-Classifier (GMM) is basic but useful classification algorithm that can be used to classify an N-dimensional signal.
-
-@remark This implementation is based on Duda, Richard O., and Peter E. Hart. Pattern classification and scene analysis. Vol. 3. New York: Wiley, 1973.
-
-@example ClassificationModulesExamples/GMMExample/GMMExample.cpp
-
-@note The GMM algorithm can fail to train on some occasions, if this happens just try and run the training algorithm
-again and it should eventially converge.
 */
 
 /**
@@ -46,6 +35,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief This class implements the Gaussian Mixture Model Classifier algorithm. The Gaussian Mixture Model
+Classifier (GMM) is basic but useful classification algorithm that can be used to classify an N-dimensional signal.
+
+@remark This implementation is based on Duda, Richard O., and Peter E. Hart. Pattern classification and scene analysis. Vol. 3. New York: Wiley, 1973.
+
+@example ClassificationModulesExamples/GMMExample/GMMExample.cpp
+
+@note The GMM algorithm can fail to train on some occasions, if this happens just try and run the training algorithm again and it should eventially converge.
+*/
 class GRT_API GMM : public Classifier
 {
 public:
@@ -158,24 +157,17 @@ public:
     @param K: the number of mixture models
     @return returns true if the number of mixture models was successfully updated, false otherwise
     */
-    bool setNumMixtureModels(UINT K);
+    bool setNumMixtureModels(const UINT K);
     
     /**
-    This function sets the minChange parameter which controls when the GMM train function should stop. MinChange must be greater than zero.
-    
-    @param minChange: the new minChange value
-    @return returns true if the number of minChange was successfully updated, false otherwise
-    */
-    bool setMinChange(Float minChange);
-    
-    /**
+    @deprecated use setMaxNumEpochs(const UINT maxNumEpochs) instead
     This function sets the maxIter parameter which controls when the maximum number of iterations parameter that controls when the GMM train
     function should stop. MaxIter must be greater than zero.
     
     @param maxIter: the new maxIter value
     @return returns true if the number of maxIter was successfully updated, false otherwise
     */
-    bool setMaxIter(UINT maxIter);
+    GRT_DEPRECATED_MSG( "Use the base class function, setMaxNumEpochs(const UINT maxNumEpochs) instead", bool setMaxIter(UINT maxIter) );
     
     /**
     Gets a string that represents the GMM class.
@@ -195,16 +187,11 @@ protected:
     bool loadLegacyModelFromFile( std::fstream &file );
     
     UINT numMixtureModels;
-    UINT maxIter;
-    Float minChange;
     Vector< MixtureModel > models;
     
-    DebugLog debugLog;
-    ErrorLog errorLog;
-    WarningLog warningLog;
-    
+private:
     static RegisterClassifierModule< GMM > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

@@ -23,14 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string RandomForests::id = "RandomForests";
+//Define the string that will be used to identify the object
+const std::string RandomForests::id = "RandomForests";
 std::string RandomForests::getId() { return RandomForests::id; }
 
 //Register the RandomForests module with the Classifier base class
-RegisterClassifierModule< RandomForests >  RandomForests::registerModule( getId() );
+RegisterClassifierModule< RandomForests >  RandomForests::registerModule( RandomForests::getId() );
 
-RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight) : Classifier( getId() )
+RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight) : Classifier( RandomForests::getId() )
 {
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->forestSize = forestSize;
@@ -48,7 +48,7 @@ RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT
     validationSetSize = 20;
 }
 
-RandomForests::RandomForests(const RandomForests &rhs) : Classifier( getId() )
+RandomForests::RandomForests(const RandomForests &rhs) : Classifier( RandomForests::getId() )
 {
     this->decisionTreeNode = NULL;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -104,9 +104,9 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         
-        RandomForests *ptr = (RandomForests*)classifier;
+        const RandomForests *ptr = dynamic_cast<const RandomForests*>(classifier);
         
         //Clear this tree
         this->clear();
@@ -164,6 +164,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
     }
     
     numInputDimensions = N;
+    numOutputDimensions = K;
     numClasses = K;
     classLabels = trainingData.getClassLabels();
     ranges = trainingData.getRanges();
@@ -240,6 +241,26 @@ bool RandomForests::train_(ClassificationData &trainingData){
         //Deep copy the tree into the forest
         forest.push_back( tree.deepCopyTree() );
     }
+
+    //Flag that the models have been trained
+    trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
     
     if( useValidationSet ){
         validationSetAccuracy /= forestSize;
@@ -748,7 +769,7 @@ bool RandomForests::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEach
 }
 
 bool RandomForests::setTrainingMode(const Tree::TrainingMode trainingMode){
-    if( trainingMode == DecisionTree::BEST_ITERATIVE_SPILT || trainingMode == DecisionTree::BEST_RANDOM_SPLIT ){
+    if( trainingMode == Tree::BEST_ITERATIVE_SPILT || trainingMode == Tree::BEST_RANDOM_SPLIT ){
         this->trainingMode = trainingMode;
         return true;
     }

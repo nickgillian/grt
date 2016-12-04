@@ -23,28 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the ZeroCrossingCounter module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< ZeroCrossingCounter > ZeroCrossingCounter::registerModule("ZeroCrossingCounter");
+//Define the string that will be used to identify the object
+std::string ZeroCrossingCounter::id = "ZeroCrossingCounter";
+std::string ZeroCrossingCounter::getId() { return ZeroCrossingCounter::id; }
 
-ZeroCrossingCounter::ZeroCrossingCounter(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode){
-    
-    classType = "ZeroCrossingCounter";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG ZeroCrossingCounter]");
-    errorLog.setProceedingText("[ERROR ZeroCrossingCounter]");
-    warningLog.setProceedingText("[WARNING ZeroCrossingCounter]");
-    
+//Register the ZeroCrossingCounter module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< ZeroCrossingCounter > ZeroCrossingCounter::registerModule( ZeroCrossingCounter::getId() );
+
+ZeroCrossingCounter::ZeroCrossingCounter(const UINT searchWindowSize,const Float deadZoneThreshold,const UINT numDimensions,const UINT featureMode) : FeatureExtraction( ZeroCrossingCounter::getId() )
+{
     init(searchWindowSize,deadZoneThreshold,numDimensions,featureMode);
 }
 
-ZeroCrossingCounter::ZeroCrossingCounter(const ZeroCrossingCounter &rhs){
-    
-    classType = "ZeroCrossingCounter";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG ZeroCrossingCounter]");
-    errorLog.setProceedingText("[ERROR ZeroCrossingCounter]");
-    warningLog.setProceedingText("[WARNING ZeroCrossingCounter]");
-    
+ZeroCrossingCounter::ZeroCrossingCounter(const ZeroCrossingCounter &rhs) : FeatureExtraction( ZeroCrossingCounter::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -71,13 +63,13 @@ bool ZeroCrossingCounter::deepCopyFrom(const FeatureExtraction *featureExtractio
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(ZeroCrossingCounter*)featureExtraction;
+        *this = *dynamic_cast<const ZeroCrossingCounter*>(featureExtraction);
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -89,8 +81,8 @@ bool ZeroCrossingCounter::computeFeatures(const VectorFloat &inputVector){
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -177,7 +169,7 @@ bool ZeroCrossingCounter::load( std::fstream &file ){
     return init(searchWindowSize,deadZoneThreshold,numInputDimensions,featureMode);
 }
 
-bool ZeroCrossingCounter::init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode){
+bool ZeroCrossingCounter::init(const UINT searchWindowSize,const Float deadZoneThreshold,const UINT numDimensions,const UINT featureMode){
     
     initialized = false;
     featureDataReady = false;
@@ -220,7 +212,7 @@ bool ZeroCrossingCounter::init(UINT searchWindowSize,Float deadZoneThreshold,UIN
 }
 
 
-VectorFloat ZeroCrossingCounter::update(Float x){
+VectorFloat ZeroCrossingCounter::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -275,17 +267,17 @@ VectorFloat ZeroCrossingCounter::update(const VectorFloat &x){
     return featureVector;
 }
 
-bool ZeroCrossingCounter::setSearchWindowSize(UINT searchWindowSize){
+bool ZeroCrossingCounter::setSearchWindowSize(const UINT searchWindowSize){
     if( searchWindowSize > 0 ){
         this->searchWindowSize = searchWindowSize;
         if( initialized ) return reset();
         return true;
     }
-    errorLog << "setSearchWindowSize(UINT searchWindowSize) - The searchWindowSize must be larger than zero!" << std::endl;
+    errorLog << "setSearchWindowSize(const UINT searchWindowSize) - The searchWindowSize must be larger than zero!" << std::endl;
     return false;
 }
 
-bool ZeroCrossingCounter::setFeatureMode(UINT featureMode){
+bool ZeroCrossingCounter::setFeatureMode(const UINT featureMode){
     if( featureMode == INDEPENDANT_FEATURE_MODE || featureMode == COMBINED_FEATURE_MODE ){
         this->featureMode = featureMode;
         if( initialized ) return reset();
@@ -295,13 +287,13 @@ bool ZeroCrossingCounter::setFeatureMode(UINT featureMode){
     return false;
 }
 
-bool ZeroCrossingCounter::setDeadZoneThreshold(Float deadZoneThreshold){
+bool ZeroCrossingCounter::setDeadZoneThreshold(const Float deadZoneThreshold){
     if( deadZoneThreshold > 0 ){
         this->deadZoneThreshold = deadZoneThreshold;
         if( initialized ) return reset();
         return true;
     }
-    errorLog << "setDeadZoneThreshold(Float deadZoneThreshold) - The deadZoneThreshold must be larger than zero!" << std::endl;
+    errorLog << "setDeadZoneThreshold(const Float deadZoneThreshold) - The deadZoneThreshold must be larger than zero!" << std::endl;
     return false;
 }
 

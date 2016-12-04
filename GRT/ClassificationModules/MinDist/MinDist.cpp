@@ -23,14 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string MinDist::id = "MinDist";
+//Define the string that will be used to identify the object
+const std::string MinDist::id = "MinDist";
 std::string MinDist::getId() { return MinDist::id; }
 
 //Register the MinDist module with the Classifier base class
-RegisterClassifierModule< MinDist > MinDist::registerModule( getId() );
+RegisterClassifierModule< MinDist > MinDist::registerModule( MinDist::getId() );
 
-MinDist::MinDist(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numClusters) : Classifier( getId() )
+MinDist::MinDist(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT numClusters) : Classifier( MinDist::getId() )
 {
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
@@ -40,7 +40,7 @@ MinDist::MinDist(bool useScaling,bool useNullRejection,Float nullRejectionCoeff,
     classifierMode = STANDARD_CLASSIFIER_MODE;
 }
 
-MinDist::MinDist(const MinDist &rhs) : Classifier( getId() )
+MinDist::MinDist(const MinDist &rhs) : Classifier( MinDist::getId() )
 {
     classifierMode = STANDARD_CLASSIFIER_MODE;
     *this = rhs;
@@ -66,9 +66,9 @@ bool MinDist::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         //Invoke the equals operator
-        MinDist *ptr = (MinDist*)classifier;
+        const MinDist *ptr = dynamic_cast<const MinDist*>(classifier);
         
         this->numClusters = ptr->numClusters;
         this->models = ptr->models;
@@ -90,32 +90,41 @@ bool MinDist::train_(ClassificationData &trainingData){
     const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
-        errorLog << "train_(trainingData &labelledTrainingData) - Training data has zero samples!" << std::endl;
+        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
     
     if( M <= numClusters ){
-        errorLog << "train_(trainingData &labelledTrainingData) - There are not enough training samples for the number of clusters. Either reduce the number of clusters or increase the number of training samples!" << std::endl;
-            return false;
+        errorLog << "train_(ClassificationData &trainingData) - There are not enough training samples for the number of clusters. Either reduce the number of clusters or increase the number of training samples!" << std::endl;
+        return false;
     }
     
     numInputDimensions = N;
+    numOutputDimensions = K;
     numClasses = K;
     models.resize(K);
     classLabels.resize(K);
     nullRejectionThresholds.resize(K);
     ranges = trainingData.getRanges();
+    ClassificationData validationData;
     
     //Scale the training data if needed
     if( useScaling ){
         //Scale the training data between 0 and 1
         trainingData.scale(0, 1);
     }
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
+    }
     
     //Train each of the models
     for(UINT k=0; k<numClasses; k++){
         
         trainingLog << "Training model for class: " << trainingData.getClassTracker()[k].classLabel << std::endl;
+
+        //Pass the logging state onto the kmeans algorithm
+        models[k].setTrainingLoggingEnabled( this->getTrainingLoggingEnabled() );
             
         //Get the class label for the kth class
         UINT classLabel = trainingData.getClassTracker()[k].classLabel;
@@ -137,7 +146,7 @@ bool MinDist::train_(ClassificationData &trainingData){
         //Train the model for this class
         models[k].setGamma( nullRejectionCoeff );
         if( !models[k].train(classLabel,data,numClusters,minChange,maxNumEpochs) ){
-            errorLog << "train_(ClassificationData &labelledTrainingData) - Failed to train model for class: " << classLabel;
+            errorLog << "train_(ClassificationData &trainingData) - Failed to train model for class: " << classLabel;
             errorLog << ". This is might be because this class does not have enough training samples! You should reduce the number of clusters or increase the number of training samples for this class." << std::endl;
             models.clear();
             return false;
@@ -145,11 +154,43 @@ bool MinDist::train_(ClassificationData &trainingData){
             
         //Set the null rejection threshold
         nullRejectionThresholds[k] = models[k].getRejectionThreshold();
-        
+    }
+
+    //Flag that the models have been trained
+    trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
     }
     
-    trained = true;
-    return true;
+    if( useValidationSet ){
+        if( !computeAccuracy( validationData, validationSetAccuracy ) ){
+            trained = false;
+            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            return false;
+        }
+        
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+
+    return trained;
 }
 
 

@@ -201,6 +201,8 @@ public:
 class GRT_API SelfOrganizingMap : public Clusterer{
         
 public:
+    enum NetworkTypology{RANDOM_NETWORK=0};
+    
 	/**
      Default Constructor.
      */
@@ -347,6 +349,13 @@ public:
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
+
+    /**
+    Gets a string that represents the SelfOrganizingMap class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT networkTypology;
@@ -358,11 +367,7 @@ protected:
     
 private:
     static RegisterClustererModule< SelfOrganizingMap > registerModule;
-    
-public:
-    
-    enum NetworkTypology{RANDOM_NETWORK=0};
-		
+    static const std::string id;	
 };
     
 GRT_END_NAMESPACE

@@ -1,17 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements the bootstrap aggregator classifier.  Bootstrap aggregating (bagging) is a machine
-learning ensemble meta-algorithm designed to improve the stability and accuracy of other machine learning
-algorithms.  Bagging also reduces variance and helps to avoid overfitting. Although it is usually applied
-to decision tree methods, the BAG class can be used with any type of GRT classifier. Bagging is a special case of
-the model averaging.
-
-@remark This implementation is based on Breiman, Leo. "Bagging predictors." Machine learning 24, no. 2 (1996): 123-140.
-
-@example ClassificationModulesExamples/BAGExample/BAGExample.cpp
 */
 
 /**
@@ -41,6 +30,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief This class implements the bootstrap aggregator classifier.  Bootstrap aggregating (bagging) is a machine
+learning ensemble meta-algorithm designed to improve the stability and accuracy of other machine learning
+algorithms.  Bagging also reduces variance and helps to avoid overfitting. Although it is usually applied
+to decision tree methods, the BAG class can be used with any type of GRT classifier. Bagging is a special case of
+the model averaging.
+
+@remark This implementation is based on Breiman, Leo. "Bagging predictors." Machine learning 24, no. 2 (1996): 123-140.
+
+@example ClassificationModulesExamples/BAGExample/BAGExample.cpp
+*/
 class GRT_API BAG : public Classifier
 {
 public:
@@ -200,8 +200,9 @@ protected:
     VectorFloat weights;
     Vector< Classifier* > ensemble;
     
+private:
     static RegisterClassifierModule< BAG > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

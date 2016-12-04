@@ -306,6 +306,7 @@ protected:
     Float threshold;
     VectorFloat regressionData;
     
+private:
     static RegisterNode< RegressionTreeNode > registerModule;
 };
 

@@ -25,24 +25,25 @@ GRT_BEGIN_NAMESPACE
     
 PreProcessing::StringPreProcessingMap* PreProcessing::stringPreProcessingMap = NULL;
 UINT PreProcessing::numPreProcessingInstances = 0;
+
+PreProcessing* PreProcessing::createNewInstance() const { return create(); } ///<Legacy function
+PreProcessing* PreProcessing::createInstanceFromString(const std::string &id) { return create(id); } ///<Legacy function
     
-PreProcessing* PreProcessing::createInstanceFromString( const std::string &preProcessingType ){
+PreProcessing* PreProcessing::create( const std::string &id ){
     
-    StringPreProcessingMap::iterator iter = getMap()->find( preProcessingType );
+    StringPreProcessingMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
         return NULL;
     }
     return iter->second();
 }
+
+PreProcessing* PreProcessing::create() const{
+    return create( getId() );
+}
     
-PreProcessing::PreProcessing( const std::string &id ){
-
-    debugLog.setProceedingText("[DEBUG " + id + "]");
-    errorLog.setProceedingText("[ERROR " + id + "]");
-    warningLog.setProceedingText("[WARNING " + id + "]");
-    trainingLog.setProceedingText("[WARNING " + id + "]");
-
-    preProcessingType = id; 
+PreProcessing::PreProcessing( const std::string &id ) : MLBase( id, MLBase::PRE_PROCSSING )
+{
     initialized = false; 
     numInputDimensions = 0;
     numOutputDimensions = 0;
@@ -67,7 +68,6 @@ bool PreProcessing::copyBaseVariables(const PreProcessing *preProcessingModule){
         return false;
     }
     
-    this->preProcessingType = preProcessingModule->preProcessingType;
     this->initialized = preProcessingModule->initialized;
     this->numInputDimensions = preProcessingModule->numInputDimensions;
     this->numOutputDimensions = preProcessingModule->numOutputDimensions;
@@ -82,7 +82,7 @@ bool PreProcessing::copyBaseVariables(const PreProcessing *preProcessingModule){
 bool PreProcessing::reset(){
     
     //Reset the processed data vector
-    if( processedData.size() > 0 )
+    if( processedData.getSize() > 0 )
         fill(processedData.begin(),processedData.end(),0);
     
     return true;
@@ -162,12 +162,8 @@ bool PreProcessing::loadPreProcessingSettingsFromFile(std::fstream &file){
     return true;
 }
     
-PreProcessing* PreProcessing::createNewInstance() const{
-    return createInstanceFromString(preProcessingType);
-}
-    
 std::string PreProcessing::getPreProcessingType() const{ 
-    return preProcessingType; 
+    return getId(); 
 }
     
 UINT PreProcessing::getNumInputDimensions() const{ 

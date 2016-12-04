@@ -45,8 +45,9 @@ class GRT_API Regressifier : public MLBase
 public:
     /**
      Default Regressifier Destructor
+     @param id: a unique string that identifies the Regressifier parent class (e.g., LinearRegression)
      */
-	Regressifier(void);
+	Regressifier( const std::string &id = "" );
     
     /**
      Default Regressifier Destructor
@@ -86,13 +87,6 @@ public:
     virtual bool clear();
     
     /**
-     Gets the regressifier type as a string. This is the name of the regression algorithm, such as "LinearRegression".
-     
-     @return returns the regressifier type as a string
-     */
-    std::string getRegressifierType() const;
-    
-    /**
      Gets a Vector containing the regression data output by the regression algorithm, this will be an M-dimensional Vector, where M is the number of output dimensions in the model.  
      
      @return returns a Vector containing the regression data output by the regression algorithm, an empty Vector will be returned if the model has not been trained
@@ -117,21 +111,6 @@ public:
      Defines a map between a string (which will contain the name of the regressifier, such as LinearRegression) and a function returns a new instance of that regressifier
      */
     typedef std::map< std::string, Regressifier*(*)() > StringRegressifierMap;
-
-    /**
-     Creates a new regressifier instance based on the input string (which should contain the name of a valid regressifier such as LinearRegression).
-     
-     @param regressifierType: the name of the regressifier
-     @return Regressifier*: a pointer to the new instance of the regressifier
-     */
-    static Regressifier* createInstanceFromString( const std::string &regressifierType );
-
-    /**
-     Creates a new regressifier instance based on the current regressifierType string value.
-     
-     @return Regressifier*: a pointer to the new instance of the regressifier
-    */
-    Regressifier* createNewInstance() const;
     
     /**
      This creates a new Regressifier instance and deep copies the variables and models from this instance into the deep copy.
@@ -145,19 +124,35 @@ public:
     /**
      Returns a pointer to this regressifier. This is useful for a derived class so it can get easy access to this base regressifier.
      
-     @return Regressifier&: a reference to this regressifier
+     @return a reference to this regressifier
      */
     const Regressifier& getBaseRegressifier() const;
     
     /**
      Returns a Vector of the names of all regressifiers that have been registered with the base regressifier.
      
-     @return Vector< string >: a Vector containing the names of the regressifiers that have been registered with the base regressifier
+     @return a Vector containing the names of the regressifiers that have been registered with the base regressifier
      */
 	static Vector< std::string > getRegisteredRegressifiers();
-	
-	//Tell the compiler we are explicitly using the following classes from the base class (this stops hidden overloaded virtual function warnings)
-    using MLBase::train;
+
+    /**
+     Creates a new regressifier instance based on the input string (which should contain the name of a valid regressifier such as LinearRegression).
+     
+     @param id: the id of the regressifier
+     @return a pointer to the new instance of the regressifier
+     */
+    static Regressifier* create( const std::string &id );
+
+    /**
+     Creates a new regressifier instance based on the current regressifierType string value.
+     
+     @return Regressifier*: a pointer to the new instance of the regressifier
+    */
+    Regressifier* create() const;
+
+    GRT_DEPRECATED_MSG( "createNewInstance is deprecated, use create() instead.", Regressifier* createNewInstance() const );
+    GRT_DEPRECATED_MSG( "createInstanceFromString(id) is deprecated, use create(id) instead.", static Regressifier* createInstanceFromString( const std::string &id ) );
+    GRT_DEPRECATED_MSG( "getRegressifierType is deprecated, use getId() instead", std::string getRegressifierType() const );
     
 protected:
     /**
@@ -190,14 +185,18 @@ private:
 
 };
     
-//These two functions/classes are used to register any new Regression Module with the Regressifier base class
-template< typename T >  Regressifier *newRegressionModuleInstance() { return new T; }
+template< typename T >  
+Regressifier *createNewRegressionInstance() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
+/**
+ @brief This class provides an interface for classes to register themselves with the regressifier base class, this enables Regression algorithms to
+ be automatically be created from just a string, e.g.: Regressifier *mlp = create( "MLP" );
+*/
 template< typename T > 
 class RegisterRegressifierModule : public Regressifier { 
 public:
     RegisterRegressifierModule( const std::string &newRegresionModuleName ) { 
-        getMap()->insert( std::pair< std::string, Regressifier*(*)() >(newRegresionModuleName, &newRegressionModuleInstance< T > ) );
+        getMap()->insert( std::pair< std::string, Regressifier*(*)() >(newRegresionModuleName, &createNewRegressionInstance< T > ) );
     }
 };
 

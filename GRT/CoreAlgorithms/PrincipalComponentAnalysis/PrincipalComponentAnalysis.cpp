@@ -28,16 +28,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-PrincipalComponentAnalysis::PrincipalComponentAnalysis(){
+PrincipalComponentAnalysis::PrincipalComponentAnalysis() : MLBase("PrincipalComponentAnalysis")
+{
     trained = false;
     normData = false;
     numInputDimensions = 0;
     numPrincipalComponents = 0;
     maxVariance = 0;
-    
-    classType = "PrincipalComponentAnalysis";
-    errorLog.setProceedingText("[ERROR PrincipalComponentAnalysis]");
-    warningLog.setProceedingText("[WARNING PrincipalComponentAnalysis]");
 }
 
 PrincipalComponentAnalysis::~PrincipalComponentAnalysis(){

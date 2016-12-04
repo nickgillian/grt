@@ -1,15 +1,6 @@
 /**
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
-@version 1.0
-
-@brief This class implements a basic Decision Tree classifier.  Decision Trees are conceptually simple
-classifiers that work well on even complex classification tasks.  Decision Trees partition the feature
-space into a set of rectangular regions, classifying a new datum by finding which region it belongs to.
-
-@remark This implementation is based on Ross Quinlan's ID3 Decision Tree algorithm: http://en.wikipedia.org/wiki/ID3_algorithm
-
-@example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
 */
 
 /**
@@ -44,7 +35,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-class GRT_API DecisionTree : public Tree, public Classifier
+/**
+@brief This class implements a basic Decision Tree classifier.  Decision Trees are conceptually simple
+classifiers that work well on even complex classification tasks.  Decision Trees partition the feature
+space into a set of rectangular regions, classifying a new datum by finding which region it belongs to.
+
+@remark This implementation is based on Ross Quinlan's ID3 Decision Tree algorithm: http://en.wikipedia.org/wiki/ID3_algorithm
+
+@example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
+*/
+class GRT_API DecisionTree : public Classifier
 {
 public:
     /**
@@ -58,7 +58,7 @@ public:
     @param numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node. Default value = 100
     @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
     */
-    DecisionTree(const DecisionTreeNode &decisionTreeNode = DecisionTreeClusterNode(),const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const UINT numSplittingSteps=100,const bool useScaling=false );
+    DecisionTree(const DecisionTreeNode &decisionTreeNode = DecisionTreeClusterNode(),const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const Tree::TrainingMode trainingMode = Tree::TrainingMode::BEST_ITERATIVE_SPILT,const UINT numSplittingSteps=100,const bool useScaling=false );
     
     /**
     Defines the copy constructor.
@@ -158,14 +158,7 @@ public:
     @return returns a pointer to a deep copy of the decision tree
     */
     DecisionTreeNode* deepCopyTree() const;
-    
-    /**
-    Gets a pointer to the decision tree. NULL will be returned if the decision tree model has not be trained.
-    
-    @return returns a const pointer to the decision tree
-    */
-    const DecisionTreeNode* getTree() const;
-    
+
     /**
     Gets a pointer to the decision tree node. NULL will be returned if the decision tree node has not been set.
     
@@ -173,6 +166,110 @@ public:
     */
     DecisionTreeNode* deepCopyDecisionTreeNode() const;
     
+    /**
+    Gets a pointer to the decision tree. NULL will be returned if the decision tree model has not be trained.
+    
+    @return returns a const pointer to the decision tree
+    */
+    const DecisionTreeNode* getTree() const;
+
+    /**
+    Gets the current training mode. This will be one of the TrainingModes enums.
+    
+    @return returns the training mode
+    */
+    Tree::TrainingMode getTrainingMode() const;
+    
+    /**
+    Gets the number of steps that will be used to search for the best spliting value for each node.
+    
+    If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
+    If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
+    
+    @return returns the number of steps that will be used to search for the best spliting value for each node
+    */
+    UINT getNumSplittingSteps() const;
+    
+    /**
+    Gets the minimum number of samples that are allowed per node, if the number of samples at a node is below
+    this value then the node will automatically become a leaf node.
+    
+    @return returns the minimum number of samples that are allowed per node
+    */
+    UINT getMinNumSamplesPerNode() const;
+    
+    /**
+    Gets the maximum depth of the tree.
+    
+    @return returns the maximum depth of the tree
+    */
+    UINT getMaxDepth() const;
+    
+    /**
+    This function returns the predictedNodeID, this is ID of the leaf node that was reached during the last prediction call
+    
+    @return returns the predictedNodeID, this will be zero if the tree does not exist or predict has not been called
+    */
+    UINT getPredictedNodeID() const;
+    
+    /**
+    Gets if a feature is removed at each spilt so it can not be used again.
+    
+    @return returns true if a feature is removed at each spilt so it can not be used again, false otherwise
+    */
+    bool getRemoveFeaturesAtEachSpilt() const;
+    
+    /**
+     Sets the training mode, this should be one of the TrainingModes enums.
+     
+     @param trainingMode: the new trainingMode, this should be one of the TrainingModes enums
+     @return returns true if the trainingMode was set successfully, false otherwise
+     */
+    bool setTrainingMode(const Tree::TrainingMode trainingMode);
+    
+    /**
+    Sets the number of steps that will be used to search for the best spliting value for each node.
+    
+    If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
+    If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
+    
+    A higher value will increase the chances of building a better model, but will take longer to train the model.
+    Value must be larger than zero.
+    
+    @param numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
+    @return returns true if the parameter was set, false otherwise
+    */
+    bool setNumSplittingSteps(const UINT numSplittingSteps);
+    
+    /**
+    Sets the minimum number of samples that are allowed per node, if the number of samples at a node is below this value then the node will automatically
+    become a leaf node.
+    Value must be larger than zero.
+    
+    @param minNumSamplesPerNode: the minimum number of samples that are allowed per node
+    @return returns true if the parameter was set, false otherwise
+    */
+    bool setMinNumSamplesPerNode(const UINT minNumSamplesPerNode);
+    
+    /**
+    Sets the maximum depth of the tree, any node that reaches this depth will automatically become a leaf node.
+    Value must be larger than zero.
+    
+    @param maxDepth: the maximum depth of the tree
+    @return returns true if the parameter was set, false otherwise
+    */
+    bool setMaxDepth(const UINT maxDepth);
+    
+    /**
+    Sets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be
+    removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
+    be used, regardless of how many times it has been used again.
+    
+    @param removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
+    @return returns true if the parameter was set, false otherwise
+    */
+    bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
+
     /**
     Sets the decision tree node, this will be used as the starting node the next time the DecisionTree model is trained.
     
@@ -208,8 +305,17 @@ protected:
     std::map< UINT, VectorFloat > nodeClusters;
     VectorFloat classClusterMean;
     VectorFloat classClusterStdDev;
+
+    Node *tree; 
+    UINT minNumSamplesPerNode;
+    UINT maxDepth;
+    UINT numSplittingSteps;
+    bool removeFeaturesAtEachSpilt;
+    Tree::TrainingMode trainingMode;
+
+private:
     static RegisterClassifierModule< DecisionTree > registerModule;
-    static std::string id;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

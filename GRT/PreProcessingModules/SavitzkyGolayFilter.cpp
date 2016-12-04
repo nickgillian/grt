@@ -23,15 +23,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the SavitzkyGolayFilter module with the PreProcessing base class
-RegisterPreProcessingModule< SavitzkyGolayFilter > SavitzkyGolayFilter::registerModule("SavitzkyGolayFilter");
+//Define the string that will be used to identify the object
+const std::string SavitzkyGolayFilter::id = "SavitzkyGolayFilter";
+std::string SavitzkyGolayFilter::getId() { return SavitzkyGolayFilter::id; }
 
-SavitzkyGolayFilter::SavitzkyGolayFilter(const UINT numLeftHandPoints,const UINT numRightHandPoints,const UINT derivativeOrder,const UINT smoothingPolynomialOrder,const UINT numDimensions) : PreProcessing( "SavitzkyGolayFilter" )
+//Register the SavitzkyGolayFilter module with the PreProcessing base class
+RegisterPreProcessingModule< SavitzkyGolayFilter > SavitzkyGolayFilter::registerModule( SavitzkyGolayFilter::getId() );
+
+SavitzkyGolayFilter::SavitzkyGolayFilter(const UINT numLeftHandPoints,const UINT numRightHandPoints,const UINT derivativeOrder,const UINT smoothingPolynomialOrder,const UINT numDimensions) : PreProcessing( SavitzkyGolayFilter::getId() )
 {
     init(numLeftHandPoints,numRightHandPoints,derivativeOrder,smoothingPolynomialOrder,numDimensions);
 }
 
-SavitzkyGolayFilter::SavitzkyGolayFilter(const SavitzkyGolayFilter &rhs) : PreProcessing( "SavitzkyGolayFilter" )
+SavitzkyGolayFilter::SavitzkyGolayFilter(const SavitzkyGolayFilter &rhs) : PreProcessing( SavitzkyGolayFilter::getId() )
 {
     
     this->numPoints = rhs.numPoints;
@@ -69,7 +73,7 @@ bool SavitzkyGolayFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const SavitzkyGolayFilter *ptr = dynamic_cast<const SavitzkyGolayFilter*>(preProcessing);
         

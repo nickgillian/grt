@@ -37,9 +37,7 @@ class GRT_API AdaBoostClassModel{
     public:
     AdaBoostClassModel(){
         classLabel = 0;
-        debugLog.setProceedingText("[DEBUG AdaBoostClassModel]");
-        errorLog.setProceedingText("[ERROR AdaBoostClassModel]");
-        warningLog.setProceedingText("[WARNING AdaBoostClassModel]");
+        errorLog.setKey("[ERROR AdaBoostClassModel]");
     }
     ~AdaBoostClassModel(){
         clear();
@@ -92,7 +90,7 @@ class GRT_API AdaBoostClassModel{
         if( !weakClassifierPtr->deepCopyFrom( weakClassifier ) ){
             delete weakClassifierPtr;
             weakClassifierPtr = NULL;
-            warningLog << "addClassifierToCommitee(...) Failed to add weak classifier to commitee!" << std::endl;
+            errorLog << "addClassifierToCommitee(...) Failed to add weak classifier to commitee!" << std::endl;
             return false;
         }
         weights.push_back( weight );
@@ -283,13 +281,10 @@ class GRT_API AdaBoostClassModel{
         return true;
     }
     
-    protected:
+protected:
     UINT classLabel;
     VectorFloat weights;
     Vector< WeakClassifier* > weakClassifiers;
-    
-    DebugLog debugLog;
-    WarningLog warningLog;
     ErrorLog errorLog;
     
 };

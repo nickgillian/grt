@@ -43,7 +43,7 @@ public:
     /**
      Default constructor.
     */
-    CommandLineParser():infoLog("[CommandLineParser]"),errorLog("[ERROR CommandLineParser]"),warningLog("[WARNING CommandLineParser]"){}
+    CommandLineParser():infoLog("[CommandLineParser]"),warningLog("[WARNING CommandLineParser]"),errorLog("[ERROR CommandLineParser]"){}
 
     /**
      Default destructor.
@@ -217,8 +217,7 @@ public:
      @return returns true if the parameter was updated, false otherwise
     */
     bool setInfoLoggingEnabled(const bool loggingEnabled){
-        infoLog.setEnableInstanceLogging( loggingEnabled );
-        return true;
+        return infoLog.setInstanceLoggingEnabled( loggingEnabled );
     }
 
     /**
@@ -228,8 +227,7 @@ public:
      @return returns true if the parameter was updated, false otherwise
      */
     bool setWarningLoggingEnabled(const bool loggingEnabled){
-        warningLog.setEnableInstanceLogging( loggingEnabled );
-        return true;
+        return warningLog.setInstanceLoggingEnabled( loggingEnabled );
     }
 
     /**
@@ -239,8 +237,7 @@ public:
      @return returns true if the parameter was updated, false otherwise
     */
     bool setErrorLoggingEnabled(const bool loggingEnabled){
-        errorLog.setEnableInstanceLogging( loggingEnabled );
-        return true;
+        return errorLog.setInstanceLoggingEnabled( loggingEnabled );
     }
 
 protected:

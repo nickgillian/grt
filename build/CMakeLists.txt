@@ -1,18 +1,24 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.7)
 
 project(GRT C CXX)
 
 # GRT library
 set(GRT_LIB_NAME grt)
 
-#set the main options, you can control these dynamically via the command line by passing in the option -D OPTION_NAME=ON
+#set the main options, you can control these dynamically via the command line by passing in the option -DOPTION_NAME=ON
 #e.g., cmake .. -DBUILD_TESTS=ON
 option(BUILD_TESTS “build-unit-tests” ON)
 option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
-option(ENABLE_CXX11_SUPPORT "enable-c++11-support" ON)
 option(EXCLUDE_FROM_INSTALL "exclude-from-install" OFF)
+
+#setup the default build flags
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
+
+#Define that we are now using C++11 by default
+add_definitions(-DGRT_CXX11_ENABLED)
 
 #Setup if the library should be built as static or shared, default is SHARED, turning shared off will make a static build
 if(BUILD_SHARED_LIB MATCHES ON)
@@ -25,11 +31,6 @@ else() #setup for static build
     set(BUILD_SHARED_LIB OFF) #Make sure the shared lib is off
 endif()
 
-#If C++11 is enabled, then define the relevant flag
-if( ENABLE_CXX11_SUPPORT MATCHES ON)
-    add_definitions(-DGRT_CXX11_ENABLED)
-endif()
-
 #If static lib is enabled, then define the relevant flag
 if( BUILD_STATIC_LIB MATCHES ON )
 	add_definitions(-DGRT_STATIC_LIB)
@@ -39,50 +40,42 @@ endif()
 if(MSVC)
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for Windows")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
 endif()
 
 #Add any custom OSX definitions
 if(APPLE)
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for OSX")
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
-
-    #Add C++11 and multithreading support
-    if( ENABLE_CXX11_SUPPORT MATCHES ON )
-       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
-    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 else()
 	
 #Add any custom Linux definitions
 if(UNIX) 
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for UNIX/Linux")
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
-
-    #Add C++11 and multithreading support
-    if( ENABLE_CXX11_SUPPORT MATCHES ON )
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
-    endif()
-
 endif()
 
 if(MINGW)
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for Windows/MinGW")
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
-
-    #Add C++11 and multithreading support
-    if( ENABLE_CXX11_SUPPORT MATCHES ON )
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
-    endif()
 endif()
 
 endif() #end of else(APPLE)
+
+#Add the common cxx flags to the debug and release flags
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
+
+#Print the flags for sanity checks
+message(STATUS "CXX Flags: " ${CMAKE_CXX_FLAGS})
+message(STATUS "CXX Flags Debug Build: " ${CMAKE_CXX_FLAGS_DEBUG})
+message(STATUS "CXX Flags Release Build: " ${CMAKE_CXX_FLAGS_RELEASE})
+message(STATUS "Build Type: " ${CMAKE_BUILD_TYPE})
 
 #Set the main directory locations
 set(GRT_SRC_DIR ${PROJECT_SOURCE_DIR}/../GRT)
@@ -95,51 +88,23 @@ set(GRT_EXAMPLES_DIR ${PROJECT_SOURCE_DIR}/../examples)
 set(GRT_EXAMPLES_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/examples)
 set(GRT_TOOLS_DIR ${PROJECT_SOURCE_DIR}/../tools)
 
-#Add all the project files
-file(GLOB_RECURSE GRT_CLASSIFICATION_MODULES
-    "${GRT_SRC_DIR}/ClassificationModules/*.cpp"
-)
+#Find all the C++ project files for the main GRT library
+file(GLOB_RECURSE GRT_CLASSIFICATION_MODULES "${GRT_SRC_DIR}/ClassificationModules/*.cpp")
+file(GLOB_RECURSE GRT_CLUSTERING_MODULES "${GRT_SRC_DIR}/ClusteringModules/*.cpp")
+file(GLOB GRT_CONTEXT_MODULES "${GRT_SRC_DIR}/ContextModules/*.cpp")
+file(GLOB GRT_DATA_STRUCTURES "${GRT_SRC_DIR}/DataStructures/*.cpp")
+file(GLOB_RECURSE GRT_FEATURE_EXTRACTION_MODULES "${GRT_SRC_DIR}/FeatureExtractionModules/*.cpp")
+file(GLOB_RECURSE GRT_CORE_ALGORITHMS "${GRT_SRC_DIR}/CoreAlgorithms/*.cpp")
+file(GLOB GRT_PIPELINE "${GRT_SRC_DIR}/CoreModules/*.cpp")
+file(GLOB GRT_POST_PROCESSING_MODULES "${GRT_SRC_DIR}/PostProcessingModules/*.cpp")
+file(GLOB GRT_PRE_PROCESSING_MODULES "${GRT_SRC_DIR}/PreProcessingModules/*.cpp")
+file(GLOB_RECURSE GRT_REGRESSION_MODULES "${GRT_SRC_DIR}/RegressionModules/*.cpp")
+file(GLOB GRT_UTIL "${GRT_SRC_DIR}/Util/*.cpp")
 
-file(GLOB_RECURSE GRT_CLUSTERING_MODULES
-    "${GRT_SRC_DIR}/ClusteringModules/*.cpp"
-)
+#Find all the header files
+file(GLOB_RECURSE GRT_HEADERS "${GRT_SRC_DIR}/*.h")
 
-file(GLOB GRT_CONTEXT_MODULES
-    "${GRT_SRC_DIR}/ContextModules/*.cpp"
-)
-
-file(GLOB GRT_DATA_STRUCTURES
-    "${GRT_SRC_DIR}/DataStructures/*.cpp"
-)
-
-file(GLOB_RECURSE GRT_FEATURE_EXTRACTION_MODULES
-    "${GRT_SRC_DIR}/FeatureExtractionModules/*.cpp"
-)
-
-file(GLOB_RECURSE GRT_CORE_ALGORITHMS
-    "${GRT_SRC_DIR}/CoreAlgorithms/*.cpp"
-)
-
-file(GLOB GRT_PIPELINE
-    "${GRT_SRC_DIR}/CoreModules/*.cpp"
-)
-
-file(GLOB GRT_POST_PROCESSING_MODULES
-    "${GRT_SRC_DIR}/PostProcessingModules/*.cpp"
-)
-
-file(GLOB GRT_PRE_PROCESSING_MODULES
-    "${GRT_SRC_DIR}/PreProcessingModules/*.cpp"
-)
-
-file(GLOB_RECURSE GRT_REGRESSION_MODULES
-    "${GRT_SRC_DIR}/RegressionModules/*.cpp"
-)
-
-file(GLOB GRT_UTIL
-    "${GRT_SRC_DIR}/Util/*.cpp"
-)
-
+#Set the source for the main library, using the groups defined above
 set(GRT_SRC
     ${GRT_UTIL}
     ${GRT_DATA_STRUCTURES}
@@ -155,20 +120,16 @@ set(GRT_SRC
     ${GRT_REGRESSION_MODULES}
 )
 
-file(GLOB_RECURSE GRT_HEADERS
-    "${GRT_SRC_DIR}/*.h"
-)
+include_directories( "${GRT_SRC_DIR}" )
 
-include_directories(
-    "${GRT_SRC_DIR}"
-)
-
+#Add the main GRT library so it gets built
 add_library(${GRT_LIB_NAME} 
             ${LIB_BUILD_TYPE}
             ${GRT_SRC}
             ${GRT_HEADERS}
 )
 
+#Add the options for what should be installed (when the user runs: sudo make install)
 if(NOT EXCLUDE_FROM_INSTALL)
 	install(
 		TARGETS ${GRT_LIB_NAME}

@@ -25,25 +25,25 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
    
 VectorFloat::VectorFloat(){
-    warningLog.setProceedingText("[WARNING VectorFloat]");
-    errorLog.setProceedingText("[ERROR VectorFloat]");
+    warningLog.setKey("[WARNING VectorFloat]");
+    errorLog.setKey("[ERROR VectorFloat]");
 }
     
 VectorFloat::VectorFloat(const size_type size){
-    warningLog.setProceedingText("[WARNING VectorFloat]");
-    errorLog.setProceedingText("[ERROR VectorFloat]");
+    warningLog.setKey("[WARNING VectorFloat]");
+    errorLog.setKey("[ERROR VectorFloat]");
     resize( size );
 }
 
 VectorFloat::VectorFloat( const size_type size, const Float &value ){
-    warningLog.setProceedingText("[WARNING VectorFloat]");
-    errorLog.setProceedingText("[ERROR VectorFloat]");
+    warningLog.setKey("[WARNING VectorFloat]");
+    errorLog.setKey("[ERROR VectorFloat]");
     resize( size, value );
 }
     
 VectorFloat::VectorFloat(const VectorFloat &rhs):Vector(rhs){
-    warningLog.setProceedingText("[WARNING VectorFloat]");
-    errorLog.setProceedingText("[ERROR VectorFloat]");
+    warningLog.setKey("[WARNING VectorFloat]");
+    errorLog.setKey("[ERROR VectorFloat]");
 }
 
 VectorFloat::~VectorFloat(){

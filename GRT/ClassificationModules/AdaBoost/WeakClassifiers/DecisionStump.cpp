@@ -41,9 +41,9 @@ DecisionStump::DecisionStump(const UINT numRandomSplits){
     decisionValue = 0;
     direction = 0;
     weakClassifierType = "DecisionStump";
-    trainingLog.setProceedingText("[TRAINING DecisionStump]");
-    warningLog.setProceedingText("[WARNING DecisionStump]");
-    errorLog.setProceedingText("[ERROR DecisionStump]");
+    trainingLog.setKey("[TRAINING DecisionStump]");
+    warningLog.setKey("[WARNING DecisionStump]");
+    errorLog.setKey("[ERROR DecisionStump]");
 }
     
 DecisionStump::~DecisionStump(){

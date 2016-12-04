@@ -23,10 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the LowPassFilter module with the PreProcessing base class
-RegisterPreProcessingModule< LowPassFilter > LowPassFilter::registerModule("LowPassFilter");
+//Define the string that will be used to identify the object
+const std::string LowPassFilter::id = "LowPassFilter";
+std::string LowPassFilter::getId() { return LowPassFilter::id; }
 
-LowPassFilter::LowPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta) : PreProcessing( "LowPassFilter" )
+//Register the LowPassFilter module with the PreProcessing base class
+RegisterPreProcessingModule< LowPassFilter > LowPassFilter::registerModule( LowPassFilter::getId() );
+
+LowPassFilter::LowPassFilter(Float filterFactor,Float gain,UINT numDimensions,Float cutoffFrequency,Float delta) : PreProcessing( LowPassFilter::getId() )
 {
     init(filterFactor,gain,numDimensions);
     
@@ -35,7 +39,7 @@ LowPassFilter::LowPassFilter(Float filterFactor,Float gain,UINT numDimensions,Fl
     }
 }
 
-LowPassFilter::LowPassFilter(const LowPassFilter &rhs) : PreProcessing( "LowPassFilter" )
+LowPassFilter::LowPassFilter(const LowPassFilter &rhs) : PreProcessing( LowPassFilter::getId() )
 {
     *this = rhs;
 }
@@ -58,7 +62,7 @@ bool LowPassFilter::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         //Call the equals operator
         *this = *dynamic_cast<const LowPassFilter*>(preProcessing);
@@ -91,7 +95,14 @@ bool LowPassFilter::process(const VectorFloat &inputVector){
 }
 
 bool LowPassFilter::reset(){
-    if( initialized ) return init(filterFactor,gain,numInputDimensions);
+    if( initialized )
+    {
+        yy.clear();
+        yy.resize(numInputDimensions,0);
+        processedData.clear();
+        processedData.resize(numInputDimensions,0);
+        return true;
+    }
     return false;
 }
 
@@ -232,6 +243,12 @@ VectorFloat LowPassFilter::filter(const VectorFloat &x){
     return processedData;
 }
 
+Float LowPassFilter::getFilterFactor() const { if( initialized ){ return filterFactor; } return 0; }
+    
+Float LowPassFilter::getGain() const { if( initialized ){ return gain; } return 0; }
+    
+VectorFloat LowPassFilter::getFilteredValues() const { if( initialized ){ return yy; } return VectorFloat(); }
+
 bool LowPassFilter::setGain(const Float gain){
     if( gain > 0 ){
         this->gain = gain;
@@ -243,7 +260,7 @@ bool LowPassFilter::setGain(const Float gain){
 }
 
 bool LowPassFilter::setFilterFactor(const Float filterFactor){
-    if( filterFactor > 0 ){
+    if( filterFactor >= 0 && filterFactor <= 1.0 ){
         this->filterFactor = filterFactor;
         reset();
         return true;
@@ -254,11 +271,12 @@ bool LowPassFilter::setFilterFactor(const Float filterFactor){
 
 bool LowPassFilter::setCutoffFrequency(const Float cutoffFrequency,const Float delta){
     if( cutoffFrequency > 0 && delta > 0 ){
-        Float RC = (1.0/TWO_PI) /cutoffFrequency;
+        Float RC = ONE_OVER_TWO_PI / cutoffFrequency;
         filterFactor = delta / (RC+delta);
         reset();
         return true;
     }
+    errorLog << "setCutoffFrequency(const Float cutoffFrequency,const Float delta) - cutoffFrequency and delta must be greater than 0!" << std::endl;
     return false;
 }
 

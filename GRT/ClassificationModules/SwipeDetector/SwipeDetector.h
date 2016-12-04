@@ -1,11 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @brief This class implements a basic swipe detection classification algorithm.
- 
- @remark This implementation is custom algorithm.
  */
 
 /**
@@ -37,9 +32,16 @@
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This class implements a basic swipe detection classification algorithm.
+ 
+ @remark This implementation is custom algorithm.
+*/
 class GRT_API SwipeDetector : public Classifier
 {
 public:
+    enum SwipeDirections{POSITIVE_SWIPE=0,NEGATIVE_SWIPE};
+    
     /**
      Default Constructor
      
@@ -259,12 +261,10 @@ protected:
     VectorFloat lastX;
     GRT::ThresholdCrossingDetector thresholdDetector;
     GRT::MedianFilter contextFilter;
-    static std::string id;
-    
+
+private:
+    static const std::string id;
     static RegisterClassifierModule< SwipeDetector > registerModule;
-    
-public:
-    enum SwipeDirections{POSITIVE_SWIPE=0,NEGATIVE_SWIPE};
 };
 
 GRT_END_NAMESPACE

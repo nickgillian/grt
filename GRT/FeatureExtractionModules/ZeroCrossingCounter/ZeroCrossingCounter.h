@@ -61,7 +61,7 @@ public:
     @param numDimensions: the dimensionality of the input data to filter.  Default numDimensions = 1
     @param featureMode: sets how the features are added to the feature vector, shoule be either INDEPENDANT_FEATURE_MODE or COMBINED_FEATURE_MODE.  Default is featureMode = INDEPENDANT_FEATURE_MODE
     */
-    ZeroCrossingCounter(UINT searchWindowSize = 20,Float deadZoneThreshold = 0.01,UINT numDimensions = 1,UINT featureMode = INDEPENDANT_FEATURE_MODE);
+    ZeroCrossingCounter(const UINT searchWindowSize = 20,const Float deadZoneThreshold = 0.01,const UINT numDimensions = 1,const UINT featureMode = INDEPENDANT_FEATURE_MODE);
     
     /**
     Copy constructor, copies the ZeroCrossingCounter from the rhs instance to this instance.
@@ -141,7 +141,7 @@ public:
     @param featureMode: sets how the features are added to the feature vector, shoule be either INDEPENDANT_FEATURE_MODE or COMBINED_FEATURE_MODE
     @return true if the filter was initiliazed, false otherwise
     */
-    bool init(UINT searchWindowSize,Float deadZoneThreshold,UINT numDimensions,UINT featureMode);
+    bool init(const UINT searchWindowSize,const Float deadZoneThreshold,const UINT numDimensions,const UINT featureMode);
     
     /**
     Computes the ZeroCrossingCounter features from the input, this should only be called if the dimensionality of this instance was set to 1.
@@ -149,7 +149,7 @@ public:
     @param x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
     @return a vector containing the ZeroCrossingCounter features, an empty vector will be returned if the features were not computed
     */
-    VectorFloat update(Float x);
+    VectorFloat update(const Float x);
     
     /**
     Computes the ZeroCrossingCounter features from the input, the dimensionality of x should match that of this instance.
@@ -166,7 +166,7 @@ public:
     @param searchWindowSize: sets how much data should be held in memory and searched each time the update function is called
     @return true if the searchWindowSize value was updated, false otherwise
     */
-    bool setSearchWindowSize(UINT searchWindowSize);
+    bool setSearchWindowSize(const UINT searchWindowSize);
     
     /**
     Sets the featureMode, this should be either INDEPENDANT_FEATURE_MODE (0) or COMBINED_FEATURE_MODE (1).
@@ -175,7 +175,7 @@ public:
     @param featureMode: sets the featureMode, options are either INDEPENDANT_FEATURE_MODE (0) or COMBINED_FEATURE_MODE (1)
     @return true if the featureMode value was updated, false otherwise
     */
-    bool setFeatureMode(UINT featureMode);
+    bool setFeatureMode(const UINT featureMode);
     
     /**
     Sets the deadZoneThreshold.  The deadZoneThreshold must be larger than zero.
@@ -184,14 +184,14 @@ public:
     @param deadZoneThreshold: sets the dead zone threshold value
     @return true if the deadZoneThreshold value was updated, false otherwise
     */
-    bool setDeadZoneThreshold(Float deadZoneThreshold);
+    bool setDeadZoneThreshold(const Float deadZoneThreshold);
     
     /**
     Gets the search window size.
     
     @return returns an unsigned int representing the search window size, returns zero if the feature extraction module has not been initialized
     */
-    UINT getSearchWindowSize(){ if( initialized ){ return searchWindowSize; } return 0; }
+    UINT getSearchWindowSize() const { if( initialized ){ return searchWindowSize; } return 0; }
     
     /**
     Gets the number of feature values computed for each input dimensions.
@@ -199,21 +199,21 @@ public:
     
     @return returns an unsigned int representing the total number of zero crossing features per input dimension
     */
-    UINT getNumFeatures(){ return TOTAL_NUM_ZERO_CROSSING_FEATURES; }
+    UINT getNumFeatures() const { return TOTAL_NUM_ZERO_CROSSING_FEATURES; }
     
     /**
     Gets the current featureMode, this will be either INDEPENDANT_FEATURE_MODE (0) or COMBINED_FEATURE_MODE (1).
     
     @return returns an unsigned int representing the current feature mode
     */
-    UINT getFeatureMode(){ return featureMode; }
+    UINT getFeatureMode() const { return featureMode; }
     
     /**
     Gets the deadZoneThreshold value.
     
     @return returns a Float representing the deadZoneThreshold, returns zero if the feature extraction module has not been initialized
     */
-    Float getDeadZoneThreshold(){ if( initialized ){ return deadZoneThreshold; } return 0; }
+    Float getDeadZoneThreshold() const { if( initialized ){ return deadZoneThreshold; } return 0; }
     
     /**
     Gets the current values in the data buffer.
@@ -221,7 +221,7 @@ public:
     
     @return returns a curcular buffer containing the data buffer values, an empty circular buffer will be returned if the ZeroCrossingCounter has not been initialized
     */
-    CircularBuffer< VectorFloat > getDataBuffer(){ if( initialized ){ return dataBuffer; } return CircularBuffer< VectorFloat >(); }
+    CircularBuffer< VectorFloat > getDataBuffer() const { if( initialized ){ return dataBuffer; } return CircularBuffer< VectorFloat >(); }
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -230,6 +230,13 @@ public:
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the ZeroCrossingCounter class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT searchWindowSize;                                  ///< The size of the search window, i.e. the amount of previous data stored and searched
@@ -239,7 +246,9 @@ protected:
     DeadZone deadZone;                                      ///< Used to remove small amounts of noise from the data
     CircularBuffer< VectorFloat > dataBuffer;              ///< A buffer used to store the previous derivative data
     
+private:
     static RegisterFeatureExtractionModule< ZeroCrossingCounter > registerModule;
+    static std::string id;
 
 };
 

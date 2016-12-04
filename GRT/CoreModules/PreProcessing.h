@@ -89,11 +89,6 @@ public:
     virtual bool clear();
 	
     /**
-     @return returns the pre processing type as a string, e.g. LowPassFilter
-     */
-	std::string getPreProcessingType() const;
-    
-    /**
      Returns the size of the input vector expected by the pre processing module.
      
      @return returns the size of the input vector expected by the pre processing module
@@ -127,15 +122,19 @@ public:
     /**
      This static function will dynamically create a new PreProcessing instance from a string.
      
-     @param preProcessingType: the name of the PreProcessing class you want to dynamically create
+     @param id: the name of the PreProcessing class you want to dynamically create
      @return a pointer to the new PreProcessing instance that was created
      */
-    static PreProcessing* createInstanceFromString(std::string const &preProcessingType);
+    static PreProcessing* create(const std::string &id);
     
     /**
      This static function will dynamically create a new PreProcessing instance based on the type of this instance
     */
-    PreProcessing* createNewInstance() const;
+    PreProcessing* create() const;
+
+    GRT_DEPRECATED_MSG( "createNewInstance is deprecated, use create() instead.", PreProcessing* createNewInstance() const );
+    GRT_DEPRECATED_MSG( "createInstanceFromString(id) is deprecated, use create(id) instead.", static PreProcessing* createInstanceFromString( const std::string &id ) );
+    GRT_DEPRECATED_MSG( "getPreProcessingType is deprecated, use getId() instead", std::string getPreProcessingType() const );
     
 protected:
     /**
@@ -174,14 +173,18 @@ private:
     static UINT numPreProcessingInstances;
 };
 
-//These two functions/classes are used to register any new PreProcessing Module with the PreProcessing base class
-template< typename T >  PreProcessing *newPreProcessingModuleInstance() { return new T; }
+template< typename T >  
+PreProcessing *createNewPreProcessingModule() { return new T; } ///<Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
+/**
+ @brief This class provides an interface for classes to register themselves with the preprocessing base class, this enables PreProcessing algorithms to
+ be automatically be created from just a string, e.g.: PreProcessing *lpf = create( "LowPassFilter" );
+*/
 template< typename T > 
 class RegisterPreProcessingModule : PreProcessing { 
 public:
-    RegisterPreProcessingModule( const std::string &newPreProcessingModuleName ) { 
-        getMap()->insert( std::pair< std::string, PreProcessing*(*)() >(newPreProcessingModuleName, &newPreProcessingModuleInstance< T > ) );
+    RegisterPreProcessingModule( const std::string &newModuleId ) { 
+        getMap()->insert( std::pair< std::string, PreProcessing*(*)() >(newModuleId, &createNewPreProcessingModule< T > ) );
     }
 };
 

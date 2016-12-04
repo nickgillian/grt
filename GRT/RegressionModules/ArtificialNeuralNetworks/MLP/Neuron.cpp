@@ -71,7 +71,7 @@ bool Neuron::init(const UINT numInputs,const Type activationFunction,const Float
     
     //Set the random seed
     Random random;
-    random.setSeed( (unsigned long long)time(NULL) );
+    //random.setSeed( (unsigned long long)time(NULL) );
     
     //Randomise the weights between [-0.1 0.1]
     //Note, it's better to set the random values using small weights rather than [-1.0 1.0]

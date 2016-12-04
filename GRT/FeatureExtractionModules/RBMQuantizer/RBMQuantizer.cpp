@@ -23,27 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register your module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< RBMQuantizer > RBMQuantizer::registerModule("RBMQuantizer");
+//Define the string that will be used to identify the object
+std::string RBMQuantizer::id = "RBMQuantizer";
+std::string RBMQuantizer::getId() { return RBMQuantizer::id; }
 
-RBMQuantizer::RBMQuantizer(const UINT numClusters){
-    
+//Register your module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< RBMQuantizer > RBMQuantizer::registerModule( RBMQuantizer::getId() );
+
+RBMQuantizer::RBMQuantizer(const UINT numClusters) : FeatureExtraction( RBMQuantizer::getId() )
+{
     this->numClusters = numClusters;
-    classType = "RBMQuantizer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG RBMQuantizer]");
-    errorLog.setProceedingText("[ERROR RBMQuantizer]");
-    warningLog.setProceedingText("[WARNING RBMQuantizer]");
 }
 
-RBMQuantizer::RBMQuantizer(const RBMQuantizer &rhs){
-    
-    classType = "RBMQuantizer";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG RBMQuantizer]");
-    errorLog.setProceedingText("[ERROR RBMQuantizer]");
-    warningLog.setProceedingText("[WARNING RBMQuantizer]");
-    
+RBMQuantizer::RBMQuantizer(const RBMQuantizer &rhs) : FeatureExtraction( RBMQuantizer::getId() )
+{    
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -67,15 +60,15 @@ bool RBMQuantizer::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //invoke the equals operator
-        *this = *(RBMQuantizer*)featureExtraction;
+        *this = *dynamic_cast<const RBMQuantizer*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

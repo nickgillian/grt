@@ -25,14 +25,14 @@ using namespace LIBSVM;
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string SVM::id = "SVM";
+//Define the string that will be used to identify the object
+const std::string SVM::id = "SVM";
 std::string SVM::getId() { return SVM::id; }
 
 //Register the SVM module with the Classifier base class
-RegisterClassifierModule< SVM > SVM::registerModule( getId() );
+RegisterClassifierModule< SVM > SVM::registerModule( SVM::getId() );
 
-SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue) : Classifier( getId() )
+SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejection,bool useAutoGamma,Float gamma,UINT degree,Float coef0,Float nu,Float C,bool useCrossValidation,UINT kFoldValue) : Classifier( SVM::getId() )
 {
     
     //Setup the default SVM parameters
@@ -71,7 +71,7 @@ SVM::SVM(KernelType kernelType,SVMType svmType,bool useScaling,bool useNullRejec
     init(kernelType,svmType,useScaling,useNullRejection,useAutoGamma,gamma,degree,coef0,nu,C,useCrossValidation,kFoldValue);
 }
 
-SVM::SVM(const SVM &rhs) : Classifier( getId() )
+SVM::SVM(const SVM &rhs) : Classifier( SVM::getId() )
 {
     model = NULL;
     param.weight_label = NULL;
@@ -114,8 +114,8 @@ bool SVM::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
-        SVM *ptr = (SVM*)classifier;
+    if( this->getId() == classifier->getId() ){
+        const SVM *ptr = dynamic_cast<const SVM*>(classifier);
         
         this->clear();
         
@@ -146,7 +146,20 @@ bool SVM::train_(ClassificationData &trainingData){
         errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
+
+    ranges = trainingData.getRanges();
+    ClassificationData validationData;
     
+    //Scale the training data if needed
+    if( useScaling ){
+        //Scale the training data between 0 and 1
+        trainingData.scale(SVM_MIN_SCALE_RANGE, SVM_MAX_SCALE_RANGE);
+    }
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
+    }
+
     //Convert the labelled classification data into the LIBSVM data format
     if( !convertClassificationDataToLIBSVMFormat(trainingData) ){
         errorLog << "train_(ClassificationData &trainingData) - Failed To Convert Classification Data To LIBSVM Format!" << std::endl;
@@ -162,8 +175,41 @@ bool SVM::train_(ClassificationData &trainingData){
         errorLog << "train_(ClassificationData &trainingData) - Failed To Train SVM Model!" << std::endl;
         return false;
     }
+
+    //Flag that the models have been trained
+    trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
     
-    return true;
+    if( useValidationSet ){
+        if( !computeAccuracy( validationData, validationSetAccuracy ) ){
+            trained = false;
+            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            return false;
+        }
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+    
+    return trained;
 }
 
 bool SVM::predict_(VectorFloat &inputVector){
@@ -305,13 +351,6 @@ bool SVM::trainSVM(){
     
     //Verify the problem and the parameters
     if( !validateProblemAndParameters() ) return false;
-    
-    //Scale the training data if needed
-    if( useScaling ){
-        for(int i=0; i<prob.l; i++)
-        for(UINT j=0; j<numInputDimensions; j++)
-        prob.x[i][j].value = grt_scale(prob.x[i][j].value,ranges[j].minValue,ranges[j].maxValue,SVM_MIN_SCALE_RANGE,SVM_MAX_SCALE_RANGE);
-    }
     
     if( useCrossValidation ){
         int i;
@@ -466,9 +505,7 @@ bool SVM::convertClassificationDataToLIBSVMFormat(ClassificationData &trainingDa
     
     const UINT numTrainingExamples = trainingData.getNumSamples();
     numInputDimensions = trainingData.getNumDimensions();
-    
-    //Compute the ranges encase the data should be scaled
-    ranges = trainingData.getRanges();
+    numOutputDimensions = trainingData.getNumClasses();
     
     //Init the memory
     prob.l = numTrainingExamples;
@@ -1050,67 +1087,7 @@ Float SVM::getC() const{
 
 Float SVM::getCrossValidationResult() const{ return crossValidationResult; }
 
-struct LIBSVM::svm_model* SVM::getLIBSVMModel() const { return model; }
-
-SVMModel SVM::getModel() const {
-    SVMModel m;
-    if( !model ){
-        m.numClasses = 0;
-        return m;
-    }
-
-    m.numInputDimensions = numInputDimensions;
-    m.numClasses = model->nr_class;
-    m.totalSV = model->l;
-    const unsigned int halfNumClasses = numClasses*(numClasses-1)/2;
-
-    m.classLabels.resize( m.numClasses );
-    m.numSVPerClass.resize( m.numClasses );
-    m.sv.resize( m.numClasses );
-    m.svCoeff.resize( m.numClasses );
-    m.rho.resize( halfNumClasses );
-
-    //Get the indexs for each class
-    Vector<int> start( m.numClasses );
-    start[0] = 0;
-    for(unsigned int k=1; k<m.numClasses; k++){
-        start[k] = start[k-1] + model->nSV[k-1];
-    }
-
-    for(unsigned int k=0; k<m.numClasses; k++){
-        m.classLabels[k] = (unsigned int)model->label[k];
-        m.numSVPerClass[k] = model->nSV[k];
-        m.svCoeff[k].resize( m.numSVPerClass[k] );
-        m.sv[k].resize( m.numSVPerClass[k], numInputDimensions );
-        m.sv[k].setAll( 0.0 );
-    }
-
-    //Copy the RHO
-    for(unsigned int i=0; i<halfNumClasses; i++) m.rho[i] = model->rho[i];
-
-    //Copy the class SV coeff
-    for(unsigned int k=0; k<m.numClasses; k++){
-        for(unsigned int i=0; i<m.numSVPerClass[k]; i++){
-            m.svCoeff[k][i] = 0.0;
-        }
-    }
-
-    //Copy the support vectors for each class
-    unsigned int svIndex = 0;
-    for(unsigned int k=0; k<m.numClasses; k++){
-        for(unsigned int i=0; i<m.numSVPerClass[k]; i++){
-            unsigned int idx = start[k]+i;
-            const svm_node *px = model->SV[svIndex++];
-            while( px->index != -1 )
-            {
-                m.sv[k][i][px->index] = px->value;
-                ++px;      
-            }
-        }
-    }
-
-    return m;
-}
+const struct LIBSVM::svm_model* SVM::getLIBSVMModel() const { return model; }
 
 bool SVM::setSVMType(const SVMType svmType){
     if( validateSVMType(svmType) ){

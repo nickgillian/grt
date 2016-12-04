@@ -25,18 +25,21 @@ GRT_BEGIN_NAMESPACE
     
 Context::StringContextMap* Context::stringContextMap = NULL;
 UINT Context::numContextInstances = 0;
+
+Context* Context::createNewInstance() const { return Context::create(); } ///<Legacy function
+Context* Context::createInstanceFromString(const std::string &id) { return Context::create(id); } ///<Legacy function
     
-Context* Context::createInstanceFromString( const std::string &contextType ){
+Context* Context::create( std::string const &id ){
     
-    StringContextMap::iterator iter = getMap()->find( contextType );
+    StringContextMap::iterator iter = getMap()->find( id );
     if( iter == getMap()->end() ){
         return NULL;
     }
     return iter->second();
 }
-    
-Context* Context::createNewInstance() const{
-    return createInstanceFromString( contextType );
+
+Context* Context::create() const{
+    return create( MLBase::getId() );
 }
     
 bool Context::init(){

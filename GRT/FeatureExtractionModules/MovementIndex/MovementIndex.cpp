@@ -23,27 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the MovementIndex module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< MovementIndex > MovementIndex::registerModule("MovementIndex");
+//Define the string that will be used to identify the object
+std::string MovementIndex::id = "MovementIndex";
+std::string MovementIndex::getId() { return MovementIndex::id; }
 
-MovementIndex::MovementIndex(UINT bufferLength,UINT numDimensions){
-    
-    classType = "MovementIndex";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG MovementIndex]");
-    errorLog.setProceedingText("[ERROR MovementIndex]");
-    warningLog.setProceedingText("[WARNING MovementIndex]");
+//Register the MovementIndex module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< MovementIndex > MovementIndex::registerModule( MovementIndex::getId() );
+
+MovementIndex::MovementIndex(const UINT bufferLength,const UINT numDimensions) : FeatureExtraction( MovementIndex::getId() )
+{
     init(bufferLength,numDimensions);
 }
 
-MovementIndex::MovementIndex(const MovementIndex &rhs){
-    
-    classType = "MovementIndex";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG MovementIndex]");
-    errorLog.setProceedingText("[ERROR MovementIndex]");
-    warningLog.setProceedingText("[WARNING MovementIndex]");
-    
+MovementIndex::MovementIndex(const MovementIndex &rhs) : FeatureExtraction( MovementIndex::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -67,15 +60,15 @@ bool MovementIndex::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(MovementIndex*)featureExtraction;
+        *this = *dynamic_cast<const MovementIndex*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -160,7 +153,7 @@ bool MovementIndex::load( std::fstream &file ){
     return init(bufferLength,numInputDimensions);
 }
 
-bool MovementIndex::init(UINT bufferLength,UINT numDimensions){
+bool MovementIndex::init(const UINT bufferLength,const UINT numDimensions){
     
     initialized = false;
     
@@ -192,7 +185,7 @@ bool MovementIndex::init(UINT bufferLength,UINT numDimensions){
 }
 
 
-VectorFloat MovementIndex::update(Float x){
+VectorFloat MovementIndex::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -244,7 +237,7 @@ VectorFloat MovementIndex::update(const VectorFloat &x){
     return featureVector;
 }
 
-CircularBuffer< VectorFloat > MovementIndex::getData(){
+CircularBuffer< VectorFloat > MovementIndex::getData() const{
     if( initialized ){
         return dataBuffer;
     }

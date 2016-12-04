@@ -27,18 +27,16 @@
 GRT_BEGIN_NAMESPACE
 
 Cholesky::Cholesky(){
-	debugLog.setProceedingText("[DEBUG LUdcmp]");
-    errorLog.setProceedingText("[ERROR LUdcmp]");
-    warningLog.setProceedingText("[WARNING LUdcmp]");
+    errorLog.setKey("[ERROR LUdcmp]");
+    warningLog.setKey("[WARNING LUdcmp]");
     success = false;
 	N = 0;
 }
 
 Cholesky::Cholesky(MatrixFloat &a) : N(a.getNumRows()), el(a) {
     
-    debugLog.setProceedingText("[DEBUG LUdcmp]");
-    errorLog.setProceedingText("[ERROR LUdcmp]");
-    warningLog.setProceedingText("[WARNING LUdcmp]");
+    errorLog.setKey("[ERROR LUdcmp]");
+    warningLog.setKey("[WARNING LUdcmp]");
     success = false;
     
 	int i,j,k; //k has to an int (rather than a UINT)

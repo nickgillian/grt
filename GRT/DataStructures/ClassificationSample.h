@@ -1,9 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
- 
- @brief This class stores the class label and raw data for a single labelled classification sample.
  */
 
 /**
@@ -33,6 +30,9 @@
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This class stores the class label and raw data for a single labelled classification sample.
+ */
 class GRT_API ClassificationSample{
 public:
 	ClassificationSample();
@@ -54,21 +54,20 @@ public:
 		return sample[n];
 	}
 
-    	inline const double& operator[] (const UINT &n) const{
-        	return sample[n];
-    	}
+	inline const double& operator[] (const UINT &n) const{
+    	return sample[n];
+	}
 
 	bool clear();
 
-    	//Getters
-    	UINT getNumDimensions() const{ return numDimensions; }
-    	UINT getClassLabel() const{ return classLabel; }
-    	VectorFloat getSample() const{ return sample; }
+	UINT getNumDimensions() const{ return numDimensions; }
+	UINT getClassLabel() const{ return classLabel; }
+	const VectorFloat& getSample() const{ return sample; }
+	VectorFloat& getSample() { return sample; }
     
-    	//Setters
 	bool set(UINT classLabel,const VectorFloat &sample);
-    	bool setClassLabel(const UINT classLabel);
-    	bool setSample(const VectorFloat &sample);
+	bool setClassLabel(const UINT classLabel);
+	bool setSample(const VectorFloat &sample);
 
 protected:
 	UINT numDimensions;

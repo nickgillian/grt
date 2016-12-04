@@ -40,8 +40,9 @@ class GRT_API FeatureExtraction : public MLBase
 public:
     /**
      Default FeatureExtraction Constructor
+     @param id: the id of the class inheriting from the FeatureExtraction base class
      */
-	FeatureExtraction();
+	FeatureExtraction( const std::string id = "" );
     
     /**
      Default FeatureExtraction Destructor
@@ -98,31 +99,6 @@ public:
     virtual bool clear();
     
     /**
-     This saves the feature extraction settings to a file.
-     This function should be overwritten by the derived class.
-     
-     @param file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise (the base class always returns false)
-     */
-    virtual bool saveModelToFile( std::fstream &file ) const{ return false; }
-    
-    /**
-     This loads the feature extraction settings from a file.
-     This function should be overwritten by the derived class.
-     
-     @param file: a reference to the file to load the settings from
-     @return returns true if the settings were loaded successfully, false otherwise (the base class always returns false)
-     */
-    virtual bool loadModelFromFile( std::fstream &file ){ return false; }
-	
-    /**
-     Returns the feature extraction type as a string.
-     
-     @return returns the feature extraction type as a string
-     */
-    std::string getFeatureExtractionType() const;
-    
-    /**
      Returns the size of the input vector expected by the feature extraction module.
      
      @return returns the size of the input vector expected by the feature extraction module
@@ -172,20 +148,24 @@ public:
     /*
      Creates a new feature extraction instance based on the input string (which should contain the name of a valid feature extraction such as FFT).
     
-    @param featureExtractionType: the name of the feature extraction module
-    @return FeatureExtraction*: a pointer to the new instance of the feature extraction
+    @param id: the name of the feature extraction module
+    @return a pointer to the new instance of the feature extraction
     */
-    static FeatureExtraction* createInstanceFromString( const std::string &featureExtractionType );
+    static FeatureExtraction* create( const std::string &id );
     
     /**
      Creates a new feature extraction instance based on the current featureExtractionType string value.
      
-     @return FeatureExtraction*: a pointer to the new instance of the feature extraction
+     @return a pointer to the new instance of the feature extraction
      */
-    FeatureExtraction* createNewInstance() const;
+    FeatureExtraction* create() const;
     
-    using MLBase::saveModelToFile;
-    using MLBase::loadModelFromFile;
+    using MLBase::save;
+    using MLBase::load;
+
+    GRT_DEPRECATED_MSG( "createNewInstance is deprecated, use create() instead.", FeatureExtraction* createNewInstance() const );
+    GRT_DEPRECATED_MSG( "createInstanceFromString(id) is deprecated, use create(id) instead.", static FeatureExtraction* createInstanceFromString( const std::string &id ) );
+    GRT_DEPRECATED_MSG( "getFeatureExtractionType is deprecated, use getId() instead", std::string getFeatureExtractionType() const );
     
 protected:
     /**
@@ -226,14 +206,13 @@ private:
     
 };
     
-//These two functions/classes are used to register any new FeatureExtraction Module with the FeatureExtraction base class
-template< typename T >  FeatureExtraction *newFeatureExtractionModuleInstance() { return new T; }
+template< typename T >  FeatureExtraction *createNewFeatureExtractionModule() { return new T; } ///< Returns a pointer to a new instance of the template class, the caller is responsible for deleting the pointer
 
 template< typename T > 
 class RegisterFeatureExtractionModule : FeatureExtraction { 
 public:
-    RegisterFeatureExtractionModule( const std::string &newFeatureExtractionModuleName ) { 
-        getMap()->insert( std::pair< std::string, FeatureExtraction*(*)()>(newFeatureExtractionModuleName, &newFeatureExtractionModuleInstance< T > ) );
+    RegisterFeatureExtractionModule( const std::string &newModuleId ) { 
+        getMap()->insert( std::pair< std::string, FeatureExtraction*(*)()>(newModuleId, &createNewFeatureExtractionModule< T > ) );
     }
 };
 

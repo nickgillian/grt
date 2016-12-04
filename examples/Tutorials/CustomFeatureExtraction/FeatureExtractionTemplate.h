@@ -39,7 +39,7 @@
 //Include the main GRT header to get access to the FeatureExtraction base class
 #include <GRT/GRT.h>
 
-namespace GRT{
+GRT_BEGIN_NAMESPACE //This macro places all the following code inside the GRT namespace
     
 class FeatureExtractionTemplate : public FeatureExtraction{
 public:
@@ -115,15 +115,24 @@ public:
      */
     virtual bool load( std::fstream &file );
 
-    using FeatureExtraction::save;
-    using FeatureExtraction::load;
+    //Tell the compiler we are using the following functions from the base class to stop hidden virtual function warnings
+    using MLBase::save;
+    using MLBase::load;
+
+    /**
+    Gets a string that represents the custom class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
 
     //You should add any custom public methods here...
 
 protected:
     //Add any custom class variables here that are required for your custom feature extraction module
     
+    static const std::string id;
     static RegisterFeatureExtractionModule< FeatureExtractionTemplate > registerModule; //This is used to register your custom feature extraction module with the FeatureExtraction base class
 };
 
-}//End of namespace GRT
+GRT_END_NAMESPACE //This macro places all the code above inside the GRT namespace

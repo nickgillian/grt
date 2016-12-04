@@ -2,7 +2,25 @@
 
 This file contains some notes about significant changes to the GRT.
 
+# Version 0.2.4
+
+## 4th December 2016
+- **Better unit tests:** improved unit tests for MLP neural nets and several GRT classifiers
+- **Added Metrics class:** the Metrics class will act as the main backend for computing the various ML metrics needed for all GRT classification and regression modules
+- **Added Training and Validation metrics:** all GRT classifiers now automatically compute training accuracy and validation accuracy (if a validation set is used) when training the classification model. These metrics can be accessed via: classifier.getTrainingSetAccuracy(); classifier.getValidationSetAccuracy();
+- **Improved GMM and GaussianMixtureModels algorithm:** improved both the GMM and GaussianMixtureModels algorithms by adding a restart option, this allows the learning algorithm to reattempt to train a model if the previous attempt fails to converge
+- **Added classifier unit test helper function:** added a base class for computing common unit tests for GRT classification modules
+- **Updated GRT GUI:** updated GRT GUI to support latest neuron API
+
 # Version 0.2.3
+
+## 24th October 2016
+- **C++11:** moved to using C++11 as default
+
+## 22nd October 2016
+- **backend updates:** set all classification, regression, cluster, preprocessing, and postprocessing modules to use new ID and base class functionality
+- **unit tests:** working to improve and extend all GRT unit tests
+- **removed LDA:** removing old algorithm as it has never been fully implemented, will add back again when it is complete
 
 ## 29th September 2016
 - **added RMSFilter class:** new filter class for root mean squared low pass filtering of data, in PreProcessing

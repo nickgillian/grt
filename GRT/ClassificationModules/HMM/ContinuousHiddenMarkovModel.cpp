@@ -25,7 +25,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 //Init the model with a set number of states and symbols
-ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFactor,const UINT delta,const bool autoEstimateSigma,const Float sigma){
+ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFactor,const UINT delta,const bool autoEstimateSigma,const Float sigma) : MLBase( "ContinuousHiddenMarkovModel" )
+{
     
     clear();
     this->downsampleFactor = downsampleFactor;
@@ -35,15 +36,10 @@ ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const UINT downsampleFa
     modelType = HMMModelTypes::HMM_LEFTRIGHT;
     cThreshold = 0;
     useScaling = false;
-    
-    debugLog.setProceedingText("[DEBUG ContinuousHiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR ContinuousHiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING ContinuousHiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING ContinuousHiddenMarkovModel]");
 }
 
-ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const ContinuousHiddenMarkovModel &rhs){
-    
+ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const ContinuousHiddenMarkovModel &rhs) :  MLBase( "ContinuousHiddenMarkovModel" )
+{
     this->downsampleFactor = rhs.downsampleFactor;
     this->numStates = rhs.numStates;
     this->classLabel = rhs.classLabel;
@@ -63,14 +59,6 @@ ContinuousHiddenMarkovModel::ContinuousHiddenMarkovModel(const ContinuousHiddenM
     this->delta = rhs.delta;
     this->loglikelihood = rhs.loglikelihood;
     this->cThreshold = rhs.cThreshold;
-    
-    const MLBase *basePointer = &rhs;
-    this->copyMLBaseVariables( basePointer );
-    
-    debugLog.setProceedingText("[DEBUG ContinuousHiddenMarkovModel]");
-    errorLog.setProceedingText("[ERROR ContinuousHiddenMarkovModel]");
-    warningLog.setProceedingText("[WARNING ContinuousHiddenMarkovModel]");
-    trainingLog.setProceedingText("[TRAINING ContinuousHiddenMarkovModel]");
 }
 
 //Default destructor

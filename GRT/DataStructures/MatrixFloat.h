@@ -43,24 +43,31 @@ public:
     /**
      Constructor, sets the size of the matrix to [rows cols]
      
-     @param const UINT rows: sets the number of rows in the matrix, must be a value greater than zero
-     @param const UINT cols: sets the number of columns in the matrix, must be a value greater than zero
+     @param rows: sets the number of rows in the matrix, must be a value greater than zero
+     @param cols: sets the number of columns in the matrix, must be a value greater than zero
      */
     MatrixFloat(const unsigned int rows,const unsigned int cols);
     
     /**
      Copy Constructor, copies the values from the rhs MatrixFloat to this MatrixFloat instance
      
-     @param const MatrixFloat &rhs: the MatrixFloat from which the values will be copied
+     @param rhs: the MatrixFloat from which the values will be copied
      */
     MatrixFloat(const MatrixFloat &rhs);
     
     /**
      Copy Constructor, copies the values from the rhs Matrix to this MatrixFloat instance
      
-     @param const Matrix< Float > &rhs: the Matrix from which the values will be copied
+     @param rhs: the Matrix from which the values will be copied
      */
     MatrixFloat(const Matrix< Float > &rhs);
+
+    /**
+     Copy Constructor, copies the values from the rhs vector to this MatrixFloat instance
+     
+     @param rhs: a vector of vectors the values will be copied
+     */
+    MatrixFloat(const Vector< VectorFloat > &rhs);
     
     /**
      Destructor, cleans up any memory

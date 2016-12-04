@@ -153,9 +153,9 @@ protected:
     Float phaseSigma;
     Float velocitySigma;
     ParticleClassifierParticleFilter particleFilter;
-    static std::string id;
     
 private:
+    static const std::string id;
     static RegisterClassifierModule< ParticleClassifier > registerModule;
     
 };

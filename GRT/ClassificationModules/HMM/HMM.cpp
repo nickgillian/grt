@@ -23,14 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string HMM::id = "HMM";
+//Define the string that will be used to identify the object
+const std::string HMM::id = "HMM";
 std::string HMM::getId() { return HMM::id; }
 
 //Register the HMM with the classifier base type
-RegisterClassifierModule< HMM > HMM::registerModule( getId() );
+RegisterClassifierModule< HMM > HMM::registerModule( HMM::getId() );
 
-HMM::HMM(const UINT hmmType,const UINT modelType,const UINT delta,const bool useScaling,const bool useNullRejection) : Classifier( getId() )
+HMM::HMM(const UINT hmmType,const UINT modelType,const UINT delta,const bool useScaling,const bool useNullRejection) : Classifier( HMM::getId() )
 {
     this->hmmType = hmmType;
     this->modelType = modelType;
@@ -54,7 +54,7 @@ HMM::HMM(const UINT hmmType,const UINT modelType,const UINT delta,const bool use
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
 }
 
-HMM::HMM(const HMM &rhs) : Classifier( getId() )
+HMM::HMM(const HMM &rhs) : Classifier( HMM::getId() )
 {
     classifierMode = TIMESERIES_CLASSIFIER_MODE;
     *this = rhs;
@@ -88,10 +88,10 @@ bool HMM::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         
         //Cast the classifier pointer to an HMM pointer
-        HMM *ptr = (HMM*)classifier;
+        const HMM *ptr = dynamic_cast<const HMM*>(classifier);
         
         //Copy the HMM variables
         this->hmmType = ptr->hmmType;

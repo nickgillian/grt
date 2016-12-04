@@ -1,19 +1,6 @@
 /**
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
- @version 1.0
-
- @brief This class implements the Multidimensional Regression meta algorithm. Multidimensional Regressionacts as a meta-algorithm for regression that allows several one-dimensional regression algorithms (such as Linear Regression), to be combined together to allow an M-dimensional signal to be mapped to an N-dimensional signal. This works by training N seperate regression algorithms (one for each dimension), each with an M-dimensional input.
-
- In addition to enabling one-dimensional regression algorithms (such as Linear Regression) to be used for
- mapping N-dimensional output signals, Multidimensional Regression can also be useful for multi-dimensional
- regression algorithms (such as Multi Layer Perceptrons), as it enables you to train N seperate MLP algorithms
- (one for each output signal), which might provide better mapping results than trying to train one MLP algorithm
- that can successfully map all N-dimensions at once.
- 
- @example RegressionModulesExamples/MultidimensionalRegressionExample/MultidimensionalRegressionExample.cpp
- 
- @remark This implementation is a wrapper for other GRT regression algorithms.
  */
 
 /**
@@ -44,6 +31,19 @@
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This class implements the Multidimensional Regression meta algorithm. Multidimensional Regressionacts as a meta-algorithm for regression that allows several one-dimensional regression algorithms (such as Linear Regression), to be combined together to allow an M-dimensional signal to be mapped to an N-dimensional signal. This works by training N seperate regression algorithms (one for each dimension), each with an M-dimensional input.
+
+ In addition to enabling one-dimensional regression algorithms (such as Linear Regression) to be used for
+ mapping N-dimensional output signals, Multidimensional Regression can also be useful for multi-dimensional
+ regression algorithms (such as Multi Layer Perceptrons), as it enables you to train N seperate MLP algorithms
+ (one for each output signal), which might provide better mapping results than trying to train one MLP algorithm
+ that can successfully map all N-dimensions at once.
+ 
+ @example RegressionModulesExamples/MultidimensionalRegressionExample/MultidimensionalRegressionExample.cpp
+ 
+ @remark This implementation is a wrapper for other GRT regression algorithms.
+*/
 class GRT_API MultidimensionalRegression : public Regressifier
 {
 public:
@@ -53,6 +53,13 @@ public:
      @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      */
 	MultidimensionalRegression(const Regressifier &regressifier = LinearRegression(),bool useScaling=false);
+
+    /**
+    Copy Constructor
+    
+    @param rhs: copies the settings and model (if trained) from the rhs instance to this instance
+    */
+    MultidimensionalRegression(const MultidimensionalRegression &rhs);
     
     /**
      Default Destructor
@@ -137,6 +144,13 @@ public:
      @return returns true if the regresion module was set successfully, false otherwise
      */
     bool setRegressionModule( const Regressifier &regressifier );
+
+    /**
+    Gets a string that represents the MDRegression class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
@@ -150,7 +164,10 @@ protected:
 	
     Regressifier *regressifier;
 	Vector< Regressifier* > regressionModules;
+
+private:
     static RegisterRegressifierModule< MultidimensionalRegression > registerModule;
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

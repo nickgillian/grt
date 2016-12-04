@@ -2,9 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
-
- @brief This file contains the Random class, a useful wrapper for generating cross platform random functions. 
- This includes functions for uniform distributions (both integer and Float) and Gaussian distributions.
  */
 
 /*
@@ -34,9 +31,18 @@
 #include <cstring>
 #include "../Util/GRTVersionInfo.h"
 #include "Timer.h"
+#include "../DataStructures/Vector.h"
+#include "../DataStructures/VectorFloat.h"
+#include "IndexedDouble.h"
+#include <random>
+#define GRT_USE_CXX11_RANDOM_ALGO 0
 
 GRT_BEGIN_NAMESPACE
 
+/**
+ @brief This file contains the Random class, a useful wrapper for generating cross platform random functions. 
+ This includes functions for uniform distributions (both integer and Float) and Gaussian distributions.
+*/
 class Random{
 public:
 	/**
@@ -45,49 +51,33 @@ public:
 	
 	@param seed: sets the current seed, If no seed is supplied then the seed will be set using the current system time
 	*/
-    Random(unsigned long long seed = 0):v(4101842887655102017LL), w(1), storedval(0.0){
-        if( seed == 0 ){
-            Timer t;
-            seed = (unsigned long long)t.getSystemTime();
-        }
-        setSeed( seed );
-    }
+#if GRT_USE_CXX11_RANDOM_ALGO
+    Random( );
+#else
+    Random(unsigned long long seed = 0);
+#endif
 
     /**
 	Default destructor.
 	*/
-    ~Random(){
-    }
+    ~Random();
     
     /**
 	Sets the current seed used to compute the random distrubutions.
 	
 	@param seed: sets the current seed, If no seed is supplied then the seed will be set using the current system time
-	@return returns void
+	@return returns true if the seed was set successfully, false otherwise
 	*/
-    void setSeed(unsigned long long seed = 0){
-        if( seed == 0 ){
-            Timer t;
-            seed = (unsigned long long)t.getSystemTime();
-        }
-        v = 4101842887655102017LL;
-        w = 1;
-        storedval = 0;
-        u = seed ^ v; int64();
-        v = u; int64();
-        w = v; int64();
-    }
+    bool setSeed(const unsigned long long seed = 0);
     
     /**
 	Gets a random integer in the range [minRange maxRange-1], using a uniform distribution
 	
-	@param int minRange: the minimum value in the range (inclusive)
-	@param int maxRange: the maximum value in the range (not inclusive)
+	@param minRange: the minimum value in the range (inclusive)
+	@param maxRange: the maximum value in the range (not inclusive)
 	@return returns an integer in the range [minRange maxRange-1]
 	*/
-    inline int getRandomNumberInt(int minRange,int maxRange){
-        return int( floor(getRandomNumberUniform(minRange,maxRange)) );
-    }
+    int getRandomNumberInt(int minRange,int maxRange);
     
     /**
      Gets a random integer from the Vector values. The probability of choosing a specific integer from the
@@ -98,23 +88,11 @@ public:
      be randomly returned 70% of the time, the 2 value returned 20% of the time and the 3 value returned
      10% of the time.
      
-     @param const Vector< int > &values: a Vector containing the N possible values the function can return
-     @param const Vector< Float > &weights: the corresponding weights for the values Vector (must be the same size as the values Vector)
+     @param values: a Vector containing the N possible values the function can return
+     @param weights: the corresponding weights for the values Vector (must be the same size as the values Vector)
      @return returns a random integer from the values Vector, with a probability relative to the values weight
      */
-    int getRandomNumberWeighted(const Vector< int > &values,const VectorFloat &weights){
-        
-        if( values.size() != weights.size() ) return 0;
-        
-        unsigned int N = (unsigned int)values.size();
-        Vector< IndexedDouble > weightedValues( N );
-        for(unsigned int i=0; i<N; i++){
-            weightedValues[i].index = values[i];
-            weightedValues[i].value = weights[i];
-        }
-        
-        return getRandomNumberWeighted( weightedValues );
-    }
+    int getRandomNumberWeighted(const Vector< int > &values,const VectorFloat &weights);
     
     /**
      Gets a random integer from the input Vector. The probability of choosing a specific integer is given by the 
@@ -123,37 +101,10 @@ public:
      For example, if the input values are: [{1 0.7},{2 0.2}, {3 0.1}], then the 1 value would be randomly returned 
      70% of the time, the 2 value returned 20% of the time and the 3 value returned 10% of the time.
      
-     @param Vector< IndexedDouble > weightedValues: a Vector of IndexedDouble values, the (int) indexs represent the value that will be returned while the (Float) values represent the weight of choosing that specific index 
+     @param weightedValues: a Vector of IndexedDouble values, the (int) indexs represent the value that will be returned while the (Float) values represent the weight of choosing that specific index 
      @return returns a random integer from the values Vector, with a probability relative to the values weight
      */
-    int getRandomNumberWeighted(Vector< IndexedDouble > weightedValues){
-        
-        unsigned int N = (unsigned int)weightedValues.size();
-        
-        if( N == 0 ) return 0;
-        if( N == 1 ) return weightedValues[0].index;
-        
-        //Sort the weighted values by value in ascending order (so the least likely value is first, the second most likely is second, etc...
-        sort(weightedValues.begin(),weightedValues.end(),IndexedDouble::sortIndexedDoubleByValueAscending);
-        
-        //Create the accumulated sum lookup table
-        Vector< Float > x(N);
-        x[0] = weightedValues[0].value;
-        for(unsigned int i=1; i<N; i++){
-            x[i] = x[i-1] + weightedValues[i].value;
-        }
-        
-        //Generate a random value between min and the max weighted Float values
-        Float randValue = getRandomNumberUniform(0,x[N-1]);
-        
-        //Find which bin the rand value falls into, return the index of that bin
-        for(unsigned int i=0; i<N; i++){
-            if( randValue <= x[i] ){
-                return weightedValues[ i ].index;
-            }
-        }
-        return 0;
-    }
+    int getRandomNumberWeighted(Vector< IndexedDouble > weightedValues);
     
     /**
      This function is similar to the getRandomNumberWeighted(Vector< IndexedDouble > weightedValues), with the exception that the user needs
@@ -170,23 +121,7 @@ public:
      @param x: a Vector containing the accumulated lookup table
      @return returns a random integer from the values Vector, with a probability relative to the values weight
      */
-    int getRandomNumberWeighted(Vector< IndexedDouble > &weightedValues, VectorFloat &x){
-        
-        unsigned int N = (unsigned int)weightedValues.size();
-        
-        if( weightedValues.size() != x.size() ) return 0;
-        
-        //Generate a random value between min and the max weighted Float values
-        Float randValue = getRandomNumberUniform(0,x[N-1]);
-        
-        //Find which bin the rand value falls into, return the index of that bin
-        for(unsigned int i=0; i<N; i++){
-            if( randValue <= x[i] ){
-                return weightedValues[ i ].index;
-            }
-        }
-        return 0;
-    }
+    int getRandomNumberWeighted(Vector< IndexedDouble > &weightedValues, VectorFloat &x);
     
     /**
 	Gets a random Float in the range [minRange maxRange], using a uniform distribution
@@ -195,9 +130,7 @@ public:
 	@param maxRange: the maximum value in the range (inclusive)
 	@return returns a Float in the range [minRange maxRange]
 	*/
-    inline Float getRandomNumberUniform(Float minRange=0.0,Float maxRange=1.0){
-        return (doub()*(maxRange-minRange))+minRange;
-    }
+    Float getRandomNumberUniform(Float minRange=0.0,Float maxRange=1.0);
     
     /**
 	Gets a random Float, using a Gaussian distribution with mu 0 and sigma 1.0
@@ -206,24 +139,7 @@ public:
 	@param sigma: the sigma parameter for the Gaussian distribution
 	@return returns a Float from the Gaussian distribution controlled by mu and sigma
 	*/
-    Float getRandomNumberGauss(Float mu=0.0,Float sigma=1.0){
-        Float v1,v2,rsq,fac;
-        
-        if (storedval == 0.){
-            do {
-                v1=2.0*doub()-1.0;
-                v2=2.0*doub()-1.0;
-                rsq=v1*v1+v2*v2;
-            } while (rsq >= 1.0 || rsq == 0.0);
-            fac=sqrt(-2.0*log(rsq)/rsq);
-            storedval = v1*fac;
-            return mu + sigma*v2*fac;
-        } else {
-            fac = storedval;
-            storedval = 0.;
-            return mu + sigma*fac;
-        }
-    }
+    Float getRandomNumberGauss(Float mu=0.0,Float sigma=1.0);
     
     /**
 	Gets an N-dimensional Vector of random Floats drawn from the uniform distribution set by the minRange and maxRange.
@@ -233,13 +149,7 @@ public:
 	@param maxRange: the maximum value in the range (inclusive)
 	@return returns a Vector of Floats drawn from the uniform distribution set by the minRange and maxRange
 	*/
-    VectorFloat getRandomVectorUniform(UINT numDimensions,Float minRange=0.0,Float maxRange=1.0){
-        VectorFloat randomValues(numDimensions);
-        for(UINT i=0; i<numDimensions; i++){
-            randomValues[i] = getRandomNumberUniform(minRange,maxRange);
-        }
-        return randomValues;
-    }
+    VectorFloat getRandomVectorUniform(UINT numDimensions,Float minRange=0.0,Float maxRange=1.0);
     
     /**
 	Gets an N-dimensional Vector of random Floats drawn from the Gaussian distribution controlled by mu and sigma.
@@ -249,13 +159,7 @@ public:
 	@param sigma: the sigma parameter for the Gaussian distribution
 	@return returns a Vector of Floats drawn from the Gaussian distribution controlled by mu and sigma
 	*/
-    VectorFloat getRandomVectorGauss(UINT numDimensions,Float mu=0.0,Float sigma=1.0){
-        VectorFloat randomValues(numDimensions);
-        for(UINT i=0; i<numDimensions; i++){
-            randomValues[i] = getRandomNumberGauss(mu,sigma);
-        }
-        return randomValues;
-    }
+    VectorFloat getRandomVectorGauss(UINT numDimensions,Float mu=0.0,Float sigma=1.0);
     
     /**
      Gets an N-dimensional Vector of random unsigned ints drawn from the range controlled by the start and end range parameters.
@@ -265,33 +169,15 @@ public:
      @param subsetSize: controls the size of the Vector returned by the function (e.g. 50
      @return returns a Vector of unsigned ints selected from the
      */
-    Vector< unsigned int > getRandomSubset( const unsigned int startRange, const unsigned int endRange, const unsigned int subsetSize ){
-        
-        unsigned int i = 0;
-        const unsigned int rangeSize = endRange - startRange;
-        
-        grt_assert( rangeSize > 0 );
-        grt_assert( endRange > startRange );
-        grt_assert( subsetSize <= rangeSize );
-        
-        Vector< unsigned int > indexs( rangeSize );
-        Vector< unsigned int > subset ( subsetSize );
-        
-        //Fill up the range buffer and the randomly suffle it
-        for(i=startRange; i<endRange; i++){
-            indexs[i] = i;
-        }
-        std::random_shuffle(indexs.begin(), indexs.end());
-        
-        //Select the first X values from the randomly shuffled range buffer as the subset
-        for(i=0; i<subsetSize; i++){
-            subset[i] = indexs[i];
-        }
-        
-        return subset;
-    }
+    Vector< unsigned int > getRandomSubset( const unsigned int startRange, const unsigned int endRange, const unsigned int subsetSize );
     
 private:
+
+#if GRT_USE_CXX11_RANDOM_ALGO
+    std::default_random_engine generator;
+    std::uniform_real_distribution< Float > uniformRealDistribution;
+    std::normal_distribution< Float > normalDistribution;
+#else
     inline unsigned long long int64() {
         u = u * 2862933555777941757LL + 7046029254386353087LL;
         v ^= v >> 17; v ^= v << 31; v ^= v >> 8;
@@ -306,6 +192,7 @@ private:
     unsigned long long v;
     unsigned long long w;
     Float storedval;               //This is for the Gauss Box-Muller 
+#endif
 };
 
 GRT_END_NAMESPACE

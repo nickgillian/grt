@@ -46,7 +46,7 @@ public:
     @param bufferLength: the size of the buffer that will hold the last N samples used to compute the movement index
     @param numDimensions: sets the number of dimensions
     */
-    MovementIndex(UINT bufferLength=100,UINT numDimensions = 1);
+    MovementIndex(const UINT bufferLength=100,const UINT numDimensions = 1);
     
     /**
     Copy constructor, copies the MovementIndex from the rhs instance to this instance.
@@ -122,7 +122,7 @@ public:
     @param numDimensions: sets the number of dimensions
     @return returns true if the module was initialized
     */
-    bool init(UINT bufferLength,UINT numDimensions);
+    bool init(const UINT bufferLength,const UINT numDimensions);
     
     /**
     Computes the features from the input, this should only be called if the dimensionality of this instance was set to 1.
@@ -130,7 +130,7 @@ public:
     @param x: the value to compute features from, this should only be called if the dimensionality of the filter was set to 1
     @return a vector containing the features, an empty vector will be returned if the features were not computed
     */
-    VectorFloat update(Float x);
+    VectorFloat update(const Float x);
     
     /**
     Computes the features from the input, the dimensionality of x should match that of this instance.
@@ -146,7 +146,7 @@ public:
     
     @return returns a curcular buffer containing the data buffer values, an empty circular buffer will be returned if the feature extraction module has not been initialized
     */
-    CircularBuffer< VectorFloat > getData();
+    CircularBuffer< VectorFloat > getData() const;
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -155,12 +155,21 @@ public:
     using MLBase::train_;
     using MLBase::predict;
     using MLBase::predict_;
+
+    /**
+    Gets a string that represents the MovementIndex class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
     UINT bufferLength;
     CircularBuffer< VectorFloat > dataBuffer;
     
+private:
     static RegisterFeatureExtractionModule< MovementIndex > registerModule;
+    static std::string id;
 };
 
 GRT_END_NAMESPACE

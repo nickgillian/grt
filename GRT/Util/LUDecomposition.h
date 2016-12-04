@@ -41,7 +41,7 @@ public:
 	bool getIsSingular();
 	MatrixFloat getLU();
 	
-private:
+protected:
 	unsigned int N;
 	Float d;
 	bool sing;
@@ -49,7 +49,6 @@ private:
 	MatrixFloat aref;
 	MatrixFloat lu;
     
-    DebugLog debugLog;
     ErrorLog errorLog;
     WarningLog warningLog;
 };

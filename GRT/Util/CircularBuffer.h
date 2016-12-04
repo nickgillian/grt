@@ -2,13 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
-
- @brief The CircularBuffer class provides a data structure for creating a dynamic circular buffer (also known as a 
- cyclic buffer or a ring buffer).  The main advantage of a circular buffer is that it does not need to have
- its elements shuffled around each time a new element is added.  The circular buffer therefore works well
- for FIFO (first in first out) buffers.
- 
- @example UtilExamples/CircularBufferExample/CircularBufferExample.cpp
  */
 
 /*
@@ -39,7 +32,15 @@
 #include "ErrorLog.h"
 
 GRT_BEGIN_NAMESPACE
-    
+
+/**
+ @brief The CircularBuffer class provides a data structure for creating a dynamic circular buffer (also known as a 
+ cyclic buffer or a ring buffer).  The main advantage of a circular buffer is that it does not need to have
+ its elements shuffled around each time a new element is added.  The circular buffer therefore works well
+ for FIFO (first in first out) buffers.
+ 
+ @example UtilExamples/CircularBufferExample/CircularBufferExample.cpp
+ */
 template <class T>
 class CircularBuffer{
     public:
@@ -48,7 +49,7 @@ class CircularBuffer{
      Default Constructor
      */
     CircularBuffer(){
-        errorLog.setProceedingText("[ERROR: CircularBuffer]");
+        errorLog.setKey("[ERROR CircularBuffer]");
         bufferSize = 0;
         numValuesInBuffer = 0;
         readPtr = 0;
@@ -62,7 +63,7 @@ class CircularBuffer{
      @param const CircularBuffer &rhs: ths instance the data and settings will be copied from
      */
     CircularBuffer(const CircularBuffer &rhs){
-        errorLog.setProceedingText("[ERROR: CircularBuffer]");
+        errorLog.setKey("[ERROR CircularBuffer]");
         this->bufferSize = 0;
         this->numValuesInBuffer = 0;
         this->readPtr = 0;
@@ -88,7 +89,7 @@ class CircularBuffer{
      @param unsigned int bufferSize: sets the size of the buffer
      */
     CircularBuffer(unsigned int bufferSize){
-        errorLog.setProceedingText("[ERROR: CircularBuffer]");
+        errorLog.setKey("[ERROR CircularBuffer]");
         bufferInit = false;
         resize(bufferSize);
     }

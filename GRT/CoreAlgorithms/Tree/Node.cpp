@@ -40,16 +40,12 @@ Node* Node::createNewInstance() const{
     return createInstanceFromString( nodeType );
 }
 
-Node::Node(){
+Node::Node() : MLBase("Node")
+{
     nodeType = "";
     parent = NULL;
     leftChild = NULL;
     rightChild = NULL;
-    debugLog.setProceedingText("[DEBUG Node]");
-    errorLog.setProceedingText("[ERROR Node]");
-    trainingLog.setProceedingText("[TRAINING Node]");
-    testingLog.setProceedingText("[TESTING Node]");
-    warningLog.setProceedingText("[WARNING Node]");
     clear();
 }
 

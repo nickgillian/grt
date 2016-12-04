@@ -23,14 +23,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string Softmax::id = "Softmax";
+//Define the string that will be used to identify the object
+const std::string Softmax::id = "Softmax";
 std::string Softmax::getId() { return Softmax::id; }
 
 //Register the Softmax module with the Classifier base class
-RegisterClassifierModule< Softmax >  Softmax::registerModule( getId() );
+RegisterClassifierModule< Softmax >  Softmax::registerModule( Softmax::getId() );
 
-Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minChange,const UINT maxNumEpochs,const UINT batchSize) : Classifier( getId() )
+Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minChange,const UINT maxNumEpochs,const UINT batchSize) : Classifier( Softmax::getId() )
 {
     this->useScaling = useScaling;
     this->learningRate = learningRate;
@@ -40,7 +40,7 @@ Softmax::Softmax(const bool useScaling,const Float learningRate,const Float minC
     classifierMode = STANDARD_CLASSIFIER_MODE;
 }
 
-Softmax::Softmax(const Softmax &rhs) : Classifier( getId() )
+Softmax::Softmax(const Softmax &rhs) : Classifier( Softmax::getId() )
 {
     classifierMode = STANDARD_CLASSIFIER_MODE;
     *this = rhs;
@@ -65,8 +65,8 @@ bool Softmax::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
-        Softmax *ptr = (Softmax*)classifier;
+    if( this->getId() == classifier->getId() ){
+        const Softmax *ptr = dynamic_cast<const Softmax*>(classifier);
         
         this->batchSize = ptr->batchSize;
         this->models = ptr->models;
@@ -92,15 +92,21 @@ bool Softmax::train_(ClassificationData &trainingData){
     }
     
     numInputDimensions = N;
+    numOutputDimensions = K;
     numClasses = K;
     models.resize(K);
     classLabels.resize(K);
     ranges = trainingData.getRanges();
+    ClassificationData validationData;
     
     //Scale the training data if needed
     if( useScaling ){
         //Scale the training data between 0 and 1
         trainingData.scale(0, 1);
+    }
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
     }
     
     //Train a regression model for each class in the training data
@@ -115,9 +121,40 @@ bool Softmax::train_(ClassificationData &trainingData){
                 return false;
         }
     }
-    
-    //Flag that the algorithm has been trained
+
+    //Flag that the models have been trained
     trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
+    
+    if( useValidationSet ){
+        if( !computeAccuracy( validationData, validationSetAccuracy ) ){
+            trained = false;
+            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            return false;
+        }
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+
     return trained;
 }
 

@@ -180,6 +180,13 @@ public:
     using MLBase::predict;
     using MLBase::predict_;
 
+    /**
+    Gets a string that represents the KMeans class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
 protected:
     UINT estep(const MatrixFloat &data);
     void mstep(const MatrixFloat &data);
@@ -196,6 +203,7 @@ protected:
     
 private:
     static RegisterClustererModule< KMeans > registerModule;
+    static const std::string id;
 };
     
 GRT_END_NAMESPACE

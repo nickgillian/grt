@@ -143,7 +143,7 @@ class GRT_API BernoulliRBM : public MLBase{
     using MLBase::train_; ///<Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::predict_; ///<Tell the compiler we are using the base class predict method to stop hidden virtual function warnings
     
-    protected:
+protected:
     bool loadLegacyModelFromFile( std::fstream &file );
     
     inline Float sigmoidRandom(const Float &x){

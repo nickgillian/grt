@@ -2,22 +2,6 @@
 @file
 @author  Nicholas Gillian <ngillian@media.mit.edu>
 @version 1.0
-
-@brief This class runs the Principal Component Analysis (PCA) algorithm, a dimensionality reduction algorithm that
-projects an [M N] matrix (where M==samples and N==dimensions) onto a new K dimensional subspace, where K is
-normally much less than N.
-
-This projection or transformation is defined in such a way that the first principal component has the largest
-possible variance (that is, accounts for as much of the variability in the data as possible), and each succeeding
-component has the highest variance possible under the constraint that it be orthogonal to (i.e., uncorrelated with)
-the preceding components. Principal components are guaranteed to be independent only if the data set is jointly
-normally distributed. PCA is sensitive to the relative scaling of the original variables.
-
-The PCA algorithm will automatically mean subtract the input data, and also normalize the data if required.  To use
-this algorithm, the user should first run the computeFeatureVector(...) function to build the PCA feature vector and
-then run the project(...) function to project new data onto the new principal subspace.
-
-@remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
 */
 
 /**
@@ -48,6 +32,23 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+/**
+@brief This class runs the Principal Component Analysis (PCA) algorithm, a dimensionality reduction algorithm that
+projects an [M N] matrix (where M==samples and N==dimensions) onto a new K dimensional subspace, where K is
+normally much less than N.
+
+This projection or transformation is defined in such a way that the first principal component has the largest
+possible variance (that is, accounts for as much of the variability in the data as possible), and each succeeding
+component has the highest variance possible under the constraint that it be orthogonal to (i.e., uncorrelated with)
+the preceding components. Principal components are guaranteed to be independent only if the data set is jointly
+normally distributed. PCA is sensitive to the relative scaling of the original variables.
+
+The PCA algorithm will automatically mean subtract the input data, and also normalize the data if required.  To use
+this algorithm, the user should first run the computeFeatureVector(...) function to build the PCA feature vector and
+then run the project(...) function to project new data onto the new principal subspace.
+
+@remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
+*/
 class GRT_API PrincipalComponentAnalysis : public MLBase{
 public:
     /**
@@ -127,12 +128,6 @@ public:
     virtual bool load( std::fstream &file );
     
     /**
-    Returns true if the module was trained.
-    @return returns true if the module has been trained, false otherwise
-    */
-    bool getTrained() const { return trained; }
-    
-    /**
     Returns true if z-normalization is being applied to new data.
     @return returns true if the normData is true, false otherwise
     */
@@ -200,6 +195,7 @@ public:
     //Tell the compiler we are using the base class train method to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
+    using MLBase::print;
     
 protected:
     bool computeFeatureVector_(const MatrixFloat &data,UINT analysisMode);

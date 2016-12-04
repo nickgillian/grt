@@ -23,28 +23,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the TimeDomainFeatures module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< TimeDomainFeatures > TimeDomainFeatures::registerModule("TimeDomainFeatures");
+//Define the string that will be used to identify the object
+std::string TimeDomainFeatures::id = "TimeDomainFeatures";
+std::string TimeDomainFeatures::getId() { return TimeDomainFeatures::id; }
 
-TimeDomainFeatures::TimeDomainFeatures(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS){
-    
-    classType = "TimeDomainFeatures";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG TimeDomainFeatures]");
-    errorLog.setProceedingText("[ERROR TimeDomainFeatures]");
-    warningLog.setProceedingText("[WARNING TimeDomainFeatures]");
-    
+//Register the TimeDomainFeatures module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< TimeDomainFeatures > TimeDomainFeatures::registerModule( TimeDomainFeatures::getId() );
+
+TimeDomainFeatures::TimeDomainFeatures(const UINT bufferLength,const UINT numFrames,const UINT numDimensions,const bool offsetInput,const bool useMean,const bool useStdDev,const bool useEuclideanNorm,const bool useRMS) : FeatureExtraction( TimeDomainFeatures::getId() )
+{
     init(bufferLength,numFrames,numDimensions,offsetInput,useMean,useStdDev,useEuclideanNorm,useRMS);
 }
 
-TimeDomainFeatures::TimeDomainFeatures(const TimeDomainFeatures &rhs){
-    
-    classType = "TimeDomainFeatures";
-    featureExtractionType = classType;
-    debugLog.setProceedingText("[DEBUG TimeDomainFeatures]");
-    errorLog.setProceedingText("[ERROR TimeDomainFeatures]");
-    warningLog.setProceedingText("[WARNING TimeDomainFeatures]");
-    
+TimeDomainFeatures::TimeDomainFeatures(const TimeDomainFeatures &rhs) : FeatureExtraction( TimeDomainFeatures::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -74,15 +66,15 @@ bool TimeDomainFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Invoke the equals operator to copy the data from the rhs instance to this instance
-        *this = *(TimeDomainFeatures*)featureExtraction;
+        *this = *dynamic_cast<const TimeDomainFeatures*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -94,8 +86,8 @@ bool TimeDomainFeatures::computeFeatures(const VectorFloat &inputVector){
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.size() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << "computeFeatures(const VectorFloat &inputVector) - The size of the inputVector (" << inputVector.getSize() << ") does not match that of the filter (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -221,7 +213,7 @@ bool TimeDomainFeatures::load( std::fstream &file ){
     return init(bufferLength,numFrames,numInputDimensions,offsetInput,useMean,useStdDev,useEuclideanNorm,useRMS);
 }
 
-bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimensions,bool offsetInput,bool useMean,bool useStdDev,bool useEuclideanNorm,bool useRMS){
+bool TimeDomainFeatures::init(const UINT bufferLength, const UINT numFrames,const UINT numDimensions,const bool offsetInput,const bool useMean,const bool useStdDev,const bool useEuclideanNorm,const bool useRMS){
     
     initialized = false;
     
@@ -276,7 +268,7 @@ bool TimeDomainFeatures::init(UINT bufferLength,UINT numFrames,UINT numDimension
 }
 
 
-VectorFloat TimeDomainFeatures::update(Float x){
+VectorFloat TimeDomainFeatures::update(const Float x){
     return update(VectorFloat(1,x));
 }
 
@@ -407,13 +399,6 @@ VectorFloat TimeDomainFeatures::update(const VectorFloat &x){
     }
     
     return featureVector;
-}
-
-CircularBuffer< VectorFloat > TimeDomainFeatures::getBufferData(){
-    if( initialized ){
-        return dataBuffer;
-    }
-    return CircularBuffer< VectorFloat >();
 }
 
 const CircularBuffer< VectorFloat > &TimeDomainFeatures::getBufferData() const {

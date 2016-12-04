@@ -23,18 +23,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register your module with the FeatureExtraction base class
-RegisterFeatureExtractionModule< KMeansFeatures > KMeansFeatures::registerModule("KMeansFeatures");
+//Define the string that will be used to identify the object
+std::string KMeansFeatures::id = "KMeansFeatures";
+std::string KMeansFeatures::getId() { return KMeansFeatures::id; }
 
-KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Float alpha,const bool useScaling){
-    
-    classType = "KMeansFeatures";
-    featureExtractionType = classType;
-    
-    debugLog.setProceedingText("[DEBUG KMeansFeatures]");
-    errorLog.setProceedingText("[ERROR KMeansFeatures]");
-    warningLog.setProceedingText("[WARNING KMeansFeatures]");
-    
+//Register your module with the FeatureExtraction base class
+RegisterFeatureExtractionModule< KMeansFeatures > KMeansFeatures::registerModule( KMeansFeatures::getId() );
+
+KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Float alpha,const bool useScaling) : FeatureExtraction( KMeansFeatures::getId() )
+{
     this->numClustersPerLayer = numClustersPerLayer;
     this->alpha = alpha;
     this->useScaling = useScaling;
@@ -44,15 +41,8 @@ KMeansFeatures::KMeansFeatures(const Vector< UINT > numClustersPerLayer,const Fl
     }
 }
 
-KMeansFeatures::KMeansFeatures(const KMeansFeatures &rhs){
-    
-    classType = "KMeansFeatures";
-    featureExtractionType = classType;
-    
-    debugLog.setProceedingText("[DEBUG KMeansFeatures]");
-    errorLog.setProceedingText("[ERROR KMeansFeatures]");
-    warningLog.setProceedingText("[WARNING KMeansFeatures]");
-    
+KMeansFeatures::KMeansFeatures(const KMeansFeatures &rhs) : FeatureExtraction( KMeansFeatures::getId() )
+{
     //Invoke the equals operator to copy the data from the rhs instance to this instance
     *this = rhs;
 }
@@ -76,16 +66,16 @@ bool KMeansFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
     
     if( featureExtraction == NULL ) return false;
     
-    if( this->getFeatureExtractionType() == featureExtraction->getFeatureExtractionType() ){
+    if( this->getId() == featureExtraction->getId() ){
         
         //Cast the feature extraction pointer to a pointer to your custom feature extraction module
         //Then invoke the equals operator
-        *this = *(KMeansFeatures*)featureExtraction;
+        *this = *dynamic_cast<const KMeansFeatures*>(featureExtraction);
         
         return true;
     }
     
-    errorLog << "clone(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }

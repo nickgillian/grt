@@ -23,10 +23,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
+//Base log functions
+bool Log::baseLoggingEnabled = true; ///<Global logging for base class
+void Log::setProceedingText(std::string proceedingText){ setKey( proceedingText ); } //Legacy
+std::string Log::getProceedingText() const{ return key; } //Legacy
+bool Log::setEnableInstanceLogging(const bool loggingEnabled){ return setInstanceLoggingEnabled( loggingEnabled ); } //Legacy
+
 #ifdef GRT_CXX11_ENABLED
 std::mutex Log::logMutex;
 #endif
 
+//Info log functions
 bool InfoLog::infoLoggingEnabled = true;
 ObserverManager< InfoLogMessage > InfoLog::observerManager;
     
@@ -44,5 +51,7 @@ bool InfoLog::removeObserver(Observer< InfoLogMessage > &observer)
 {
     return observerManager.removeObserver(observer);
 }
+
+bool InfoLog::loggingEnabled() const { return infoLoggingEnabled; } //Legacy
 
 GRT_END_NAMESPACE

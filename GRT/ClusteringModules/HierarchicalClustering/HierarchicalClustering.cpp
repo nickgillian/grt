@@ -22,27 +22,21 @@
 #include "HierarchicalClustering.h"
 
 GRT_BEGIN_NAMESPACE
+
+//Define the string that will be used to identify the object
+const std::string HierarchicalClustering::id = "HierarchicalClustering";
+std::string HierarchicalClustering::getId() { return HierarchicalClustering::id; }
     
 //Register the HierarchicalClustering class with the Clusterer base class
-RegisterClustererModule< HierarchicalClustering > HierarchicalClustering::registerModule("HierarchicalClustering");
+RegisterClustererModule< HierarchicalClustering > HierarchicalClustering::registerModule( HierarchicalClustering::getId() );
 
-HierarchicalClustering::HierarchicalClustering(){
+HierarchicalClustering::HierarchicalClustering() : Clusterer( HierarchicalClustering::getId() )
+{
     M = N = 0;
-    classType = "HierarchicalClustering";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG HierarchicalClustering]");
-    errorLog.setProceedingText("[ERROR HierarchicalClustering]");
-    trainingLog.setProceedingText("[TRAINING HierarchicalClustering]");
-    warningLog.setProceedingText("[WARNING HierarchicalClustering]");
 }
     
-HierarchicalClustering::HierarchicalClustering(const HierarchicalClustering &rhs){
-    classType = "HierarchicalClustering";
-    clustererType = classType;
-    debugLog.setProceedingText("[DEBUG HierarchicalClustering]");
-    errorLog.setProceedingText("[ERROR HierarchicalClustering]");
-    trainingLog.setProceedingText("[TRAINING HierarchicalClustering]");
-    warningLog.setProceedingText("[WARNING HierarchicalClustering]");
+HierarchicalClustering::HierarchicalClustering(const HierarchicalClustering &rhs) : Clusterer( HierarchicalClustering::getId() )
+{
     *this = rhs;
 }
 
@@ -70,9 +64,9 @@ bool HierarchicalClustering::deepCopyFrom(const Clusterer *clusterer){
     
     if( clusterer == NULL ) return false;
     
-    if( this->getClustererType() == clusterer->getClustererType() ){
+    if( this->getId() == clusterer->getId() ){
         //Clone the HierarchicalClustering values
-        HierarchicalClustering *ptr = (HierarchicalClustering*)clusterer;
+        const HierarchicalClustering *ptr = dynamic_cast<const HierarchicalClustering*>(clusterer);
         
         this->M = ptr->M;
         this->N = ptr->N;

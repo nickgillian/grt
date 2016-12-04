@@ -23,9 +23,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define GRT_VERSION_MAJOR 0
 #define GRT_VERSION_MINOR 2
-#define GRT_VERSION_PATCH 3
-#define GRT_VERSION "0.2.3"
-#define GRT_REVISION "18-Sep-2016"
+#define GRT_VERSION_PATCH 4
+#define GRT_VERSION "0.2.4"
+#define GRT_REVISION "4-Dec-2016"
 
 //Workout which platform we are using
 #if defined( __WIN32__ ) || defined( _WIN32 ) || defined(WIN32)

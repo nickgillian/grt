@@ -30,11 +30,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRT_NODE_HEADER
 #define GRT_NODE_HEADER
 
-#include "../../CoreModules/GRTBase.h"
+#include "../../CoreModules/MLBase.h"
 
 GRT_BEGIN_NAMESPACE
 
-class GRT_API Node : public GRTBase{
+class GRT_API Node : public MLBase{
 public:
     /**
     Default Constructor. Sets all the pointers to NULL.
@@ -228,6 +228,9 @@ public:
     @return Classifier*: a pointer to the new instance of the classifier
     */
     Node* createNewInstance() const;
+
+    using MLBase::save;
+    using MLBase::load;
     
 protected:
     
@@ -263,10 +266,9 @@ protected:
         return stringNodeMap;
     }
     
-    private:
+private:
     static StringNodeMap *stringNodeMap;
-    static UINT numNodeInstances;
-    
+    static UINT numNodeInstances;  
 };
 
 //These two functions/classes are used to register any new Node with the Node base class

@@ -23,20 +23,22 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the MultidimensionalRegression module with the Classifier base class
-RegisterRegressifierModule< MultidimensionalRegression >  MultidimensionalRegression::registerModule("MultidimensionalRegression");
+//Define the string that will be used to identify the object
+const std::string MultidimensionalRegression::id = "MultidimensionalRegression";
+std::string MultidimensionalRegression::getId() { return MultidimensionalRegression::id; }
 
-MultidimensionalRegression::MultidimensionalRegression(const Regressifier &regressifier,bool useScaling):regressifier(NULL)
+//Register the MultidimensionalRegression module with the Classifier base class
+RegisterRegressifierModule< MultidimensionalRegression >  MultidimensionalRegression::registerModule( MultidimensionalRegression::getId() );
+
+MultidimensionalRegression::MultidimensionalRegression(const Regressifier &regressifier,bool useScaling) : Regressifier( MultidimensionalRegression::getId() ), regressifier(NULL)
 {
     this->useScaling = useScaling;
-    classType = "MultidimensionalRegression";
-    regressifierType = classType;
-    debugLog.setProceedingText("[DEBUG MultidimensionalRegression]");
-    errorLog.setProceedingText("[ERROR MultidimensionalRegression]");
-    trainingLog.setProceedingText("[TRAINING MultidimensionalRegression]");
-    warningLog.setProceedingText("[WARNING MultidimensionalRegression]");
-    
     setRegressionModule( regressifier );
+}
+
+MultidimensionalRegression::MultidimensionalRegression(const MultidimensionalRegression &rhs) : Regressifier( MultidimensionalRegression::getId() ), regressifier(NULL)
+{
+    *this = rhs;
 }
 
 MultidimensionalRegression::~MultidimensionalRegression(void)
@@ -69,7 +71,7 @@ bool MultidimensionalRegression::deepCopyFrom(const Regressifier *regressifier){
     
     if( regressifier == NULL ) return false;
     
-    if( this->getRegressifierType() == regressifier->getRegressifierType() ){
+    if( this->getId() == regressifier->getId() ){
         
         const MultidimensionalRegression *ptr = dynamic_cast<const MultidimensionalRegression*>(regressifier);
         
@@ -226,7 +228,7 @@ bool MultidimensionalRegression::save( std::fstream &file ) const {
     }
     
     //Save the regression
-    file << "Regressifier: " << regressifier->getRegressifierType() << std::endl;
+    file << "Regressifier: " << regressifier->getId() << std::endl;
     
     if( !regressifier->save( file ) ){
         errorLog << "save(fstream &file) - Failed to save regressifier!" << std::endl;
@@ -290,7 +292,7 @@ bool MultidimensionalRegression::load( std::fstream &file ){
     }
     
     //Create the regressifer
-    regressifier = createInstanceFromString( regressifierType );
+    regressifier = create( regressifierType );
     
     if( regressifier == NULL ){
         errorLog << "load(fstream &file) - Failed to create regression instance from string!" << std::endl;
@@ -307,7 +309,7 @@ bool MultidimensionalRegression::load( std::fstream &file ){
         regressionModules.resize(numOutputDimensions, NULL);
         
         for(UINT i=0; i<regressionModules.getSize(); i++){
-            regressionModules[i] = createInstanceFromString( regressifierType );
+            regressionModules[i] = create( regressifierType );
             if( !regressionModules[i]->load( file ) ){
                 errorLog << "load(fstream &file) - Failed to load regression module " << i << std::endl;
                 return false;
@@ -463,7 +465,7 @@ bool MultidimensionalRegression::loadLegacyModelFromFile( std::fstream &file ){
     }
     
     //Create the regressifer
-    regressifier = createInstanceFromString( regressifierType );
+    regressifier = create( regressifierType );
     
     if( regressifier == NULL ){
         errorLog << "load(fstream &file) - Failed to create regression instance from string!" << std::endl;
@@ -480,7 +482,7 @@ bool MultidimensionalRegression::loadLegacyModelFromFile( std::fstream &file ){
         regressionModules.resize(numOutputDimensions, NULL);
         
         for(UINT i=0; i<regressionModules.getSize(); i++){
-            regressionModules[i] = createInstanceFromString( regressifierType );
+            regressionModules[i] = create( regressifierType );
             if( !regressionModules[i]->load( file ) ){
                 errorLog << "load(fstream &file) - Failed to load regression module " << i << std::endl;
                 return false;

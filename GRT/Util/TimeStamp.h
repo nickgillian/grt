@@ -38,8 +38,8 @@ public:
         this->second = second;
         this->millisecond = millisecond;
         
-        errorLog.setProceedingText("[ERROR TimeStamp]");
-        warningLog.setProceedingText("[WARNING TimeStamp]");
+        errorLog.setKey("[ERROR TimeStamp]");
+        warningLog.setKey("[WARNING TimeStamp]");
     }
     
     TimeStamp(const TimeStamp &rhs){
@@ -56,8 +56,8 @@ public:
         this->millisecond = 0;
         setTimeStampFromString( timeStampAsString );
         
-        errorLog.setProceedingText("[ERROR TimeStamp]");
-        warningLog.setProceedingText("[WARNING TimeStamp]");
+        errorLog.setKey("[ERROR TimeStamp]");
+        warningLog.setKey("[WARNING TimeStamp]");
     }
     
     ~TimeStamp(){

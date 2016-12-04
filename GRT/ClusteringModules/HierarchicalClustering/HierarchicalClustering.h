@@ -233,6 +233,13 @@ public:
     using MLBase::saveModelToFile;
     using MLBase::loadModelFromFile;
 
+    /**
+    Gets a string that represents the HierarchicalClustering class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
+
 protected:
 	inline Float SQR(const Float &a) {return a*a;};
     Float squaredEuclideanDistance(const Float *a,const Float *b);
@@ -246,6 +253,7 @@ protected:
 
 private:
     static RegisterClustererModule< HierarchicalClustering > registerModule;
+    static const std::string id;
 		
 };
     

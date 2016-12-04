@@ -126,21 +126,28 @@ public:
     @param predictedClassLabel: the predictedClassLabel which should be filtered
     return returns the filtered class label
     */
-    UINT filter(UINT predictedClassLabel);
+    UINT filter(const UINT predictedClassLabel);
     
     /**
     Get the most recently filtered class label value.
     
     @return returns the filtered class label
     */
-    UINT getFilteredClassLabel(){ return filteredClassLabel; }
+    UINT getFilteredClassLabel() const { return filteredClassLabel; }
     
     /**
     Get if the class label just changed.
     
     @return returns true if the class label just changed, false otherwise
     */
-    bool getChange();
+    bool getChange() const;
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -150,6 +157,8 @@ protected:
     UINT filteredClassLabel;
     bool labelChanged;
     
+private:
+    static const std::string id;  
     static RegisterPostProcessingModule< ClassLabelChangeFilter > registerModule;
 };
 

@@ -23,8 +23,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Define the string that will be used to indentify the object
-std::string ANBC::id = "ANBC";
+//Define the string that will be used to identify the object
+const std::string ANBC::id = "ANBC";
 std::string ANBC::getId() { return ANBC::id; }
 
 //Register the ANBC module with the Classifier base class
@@ -67,9 +67,10 @@ bool ANBC::deepCopyFrom(const Classifier *classifier){
     
     if( classifier == NULL ) return false;
     
-    if( this->getClassifierType() == classifier->getClassifierType() ){
+    if( this->getId() == classifier->getId() ){
         
-        ANBC *ptr = (ANBC*)classifier;
+        const ANBC *ptr = dynamic_cast<const ANBC*>(classifier);
+
         //Clone the ANBC values
         this->weightsDataSet = ptr->weightsDataSet;
         this->weightsData = ptr->weightsData;
@@ -86,11 +87,10 @@ bool ANBC::train_(ClassificationData &trainingData){
     //Clear any previous model
     clear();
     
-    const unsigned int M = trainingData.getNumSamples();
     const unsigned int N = trainingData.getNumDimensions();
     const unsigned int K = trainingData.getNumClasses();
     
-    if( M == 0 ){
+    if( trainingData.getNumSamples() == 0 ){
         errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
@@ -103,16 +103,25 @@ bool ANBC::train_(ClassificationData &trainingData){
     }
     
     numInputDimensions = N;
+    numOutputDimensions = K;
     numClasses = K;
     models.resize(K);
     classLabels.resize(K);
     ranges = trainingData.getRanges();
+    ClassificationData validationData;
     
     //Scale the training data if needed
     if( useScaling ){
         //Scale the training data between 0 and 1
         trainingData.scale(0, 1);
     }
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
+    }
+
+    const UINT M = trainingData.getNumSamples();
+    trainingLog << "Training Naive Bayes model, num training examples: " << M << ", num validation examples: " << validationData.getNumSamples() << ", num classes: " << numClasses << std::endl;
     
     //Train each of the models
     for(UINT k=0; k<numClasses; k++){
@@ -185,8 +194,40 @@ bool ANBC::train_(ClassificationData &trainingData){
         nullRejectionThresholds[k] = models[k].threshold;
     }
     
-    //Flag that the models have been trained
+    //Flag that the model has been trained
     trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
+    
+    if( useValidationSet ){
+        if( !computeAccuracy( validationData, validationSetAccuracy ) ){
+            trained = false;
+            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            return false;
+        }
+        
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+
     return trained;
 }
 
@@ -203,7 +244,7 @@ bool ANBC::predict_(VectorFloat &inputVector){
     if( !trained ) return false;
     
     if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
+        errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
         return false;
     }
     
@@ -217,7 +258,7 @@ bool ANBC::predict_(VectorFloat &inputVector){
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
     Float classLikelihoodsSum = 0;
-    Float minDist = -99e+99;
+    Float minDist = 0;
     for(UINT k=0; k<numClasses; k++){
         classDistances[k] = models[k].predict( inputVector );
         
@@ -232,7 +273,7 @@ bool ANBC::predict_(VectorFloat &inputVector){
             classLikelihoodsSum += classLikelihoods[k];
             
             //The loglikelihood values are negative so we want the values closest to 0
-            if( classDistances[k] > minDist ){
+            if( classDistances[k] > minDist || k==0 ){
                 minDist = classDistances[k];
                 predictedClassLabel = k;
             }

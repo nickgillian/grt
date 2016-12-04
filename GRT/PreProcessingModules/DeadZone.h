@@ -168,6 +168,13 @@ public:
     @return returns true if the upperLimit value was set, false otherwise
     */
     bool setUpperLimit(Float upperLimit);
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
@@ -177,6 +184,8 @@ protected:
     Float lowerLimit;               ///< The lower limit of the dead-zone region
     Float upperLimit;               ///< The upper limit of the dead-zone region
     
+private:
+    static const std::string id;   
     static RegisterPreProcessingModule< DeadZone > registerModule;
     
 };

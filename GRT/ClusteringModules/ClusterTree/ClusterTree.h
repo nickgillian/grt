@@ -37,7 +37,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class GRT_API ClusterTree : public Tree, public Clusterer
+class GRT_API ClusterTree : public Clusterer
 {
 public:
     /**
@@ -51,7 +51,7 @@ public:
      @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      @param  minRMSErrorPerNode: sets the minimum RMS error that allowed per node, if the RMS error is below that, the node will become a leafNode. Default value = 0.01
      */
-    ClusterTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const UINT trainingMode = BEST_ITERATIVE_SPILT,const bool useScaling=false,const Float minRMSErrorPerNode = 0.01);
+    ClusterTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const Tree::TrainingMode trainingMode = Tree::BEST_ITERATIVE_SPILT,const bool useScaling=false,const Float minRMSErrorPerNode = 0.01);
     
     /**
      Defines the copy constructor.
@@ -164,7 +164,104 @@ public:
      @return returns the minimum RMS error per node
      */
     Float getMinRMSErrorPerNode() const;
+
+    /**
+    Gets the current training mode. This will be one of the TrainingModes enums.
     
+    @return returns the training mode
+    */
+    Tree::TrainingMode getTrainingMode() const;
+    
+    /**
+    Gets the number of steps that will be used to search for the best spliting value for each node.
+    
+    If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
+    If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
+    
+    @return returns the number of steps that will be used to search for the best spliting value for each node
+    */
+    UINT getNumSplittingSteps() const;
+    
+    /**
+    Gets the minimum number of samples that are allowed per node, if the number of samples at a node is below
+    this value then the node will automatically become a leaf node.
+    
+    @return returns the minimum number of samples that are allowed per node
+    */
+    UINT getMinNumSamplesPerNode() const;
+    
+    /**
+    Gets the maximum depth of the tree.
+    
+    @return returns the maximum depth of the tree
+    */
+    UINT getMaxDepth() const;
+    
+    /**
+    This function returns the predictedNodeID, this is ID of the leaf node that was reached during the last prediction call
+    
+    @return returns the predictedNodeID, this will be zero if the tree does not exist or predict has not been called
+    */
+    UINT getPredictedNodeID() const;
+    
+    /**
+    Gets if a feature is removed at each spilt so it can not be used again.
+    
+    @return returns true if a feature is removed at each spilt so it can not be used again, false otherwise
+    */
+    bool getRemoveFeaturesAtEachSpilt() const;
+    
+    /**
+     Sets the training mode, this should be one of the TrainingModes enums.
+     
+     @param trainingMode: the new trainingMode, this should be one of the TrainingModes enums
+     @return returns true if the trainingMode was set successfully, false otherwise
+     */
+    bool setTrainingMode(const Tree::TrainingMode trainingMode);
+    
+    /**
+    Sets the number of steps that will be used to search for the best spliting value for each node.
+    
+    If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
+    If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
+    
+    A higher value will increase the chances of building a better model, but will take longer to train the model.
+    Value must be larger than zero.
+    
+    @param numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node.
+    @return returns true if the parameter was set, false otherwise
+    */
+    bool setNumSplittingSteps(const UINT numSplittingSteps);
+    
+    /**
+    Sets the minimum number of samples that are allowed per node, if the number of samples at a node is below this value then the node will automatically
+    become a leaf node.
+    Value must be larger than zero.
+    
+    @param minNumSamplesPerNode: the minimum number of samples that are allowed per node
+    @return returns true if the parameter was set, false otherwise
+    */
+    bool setMinNumSamplesPerNode(const UINT minNumSamplesPerNode);
+    
+    /**
+    Sets the maximum depth of the tree, any node that reaches this depth will automatically become a leaf node.
+    Value must be larger than zero.
+    
+    @param maxDepth: the maximum depth of the tree
+    @return returns true if the parameter was set, false otherwise
+    */
+    bool setMaxDepth(const UINT maxDepth);
+    
+    /**
+    Sets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be
+    removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
+    be used, regardless of how many times it has been used again.
+    
+    @param removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
+    @return returns true if the parameter was set, false otherwise
+    */
+    bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
+
     /**
      Sets the minimum RMS error that needs to be exceeded for the tree to continue growing at a specific node.
      
@@ -177,8 +274,21 @@ public:
     using MLBase::loadModelFromFile;
     using MLBase::train;
     using MLBase::predict;
+
+    /**
+    Gets a string that represents the ClusterTree class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
     
 protected:
+    Node *tree; 
+    UINT minNumSamplesPerNode;
+    UINT maxDepth;
+    UINT numSplittingSteps;
+    bool removeFeaturesAtEachSpilt;
+    Tree::TrainingMode trainingMode;
     Float minRMSErrorPerNode;
     
     ClusterTreeNode* buildTree( const MatrixFloat &trainingData, ClusterTreeNode *parent, Vector< UINT > features, UINT &clusterLabel, UINT nodeID );
@@ -186,8 +296,9 @@ protected:
     bool computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
     bool computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
 
+private:
     static RegisterClustererModule< ClusterTree > registerModule;
-    
+    static const std::string id;
 };
 
 GRT_END_NAMESPACE

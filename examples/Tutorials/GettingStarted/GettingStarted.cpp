@@ -50,7 +50,7 @@ int main (int argc, const char * argv[])
     
     //Create a new Gesture Recognition Pipeline using an Adaptive Naive Bayes Classifier
     GestureRecognitionPipeline pipeline;
-    pipeline.setClassifier( ANBC() );
+    pipeline << ANBC();
     
     //Train the pipeline using the training data
     cout << "Training model..." << endl;

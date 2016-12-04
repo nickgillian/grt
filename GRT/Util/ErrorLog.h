@@ -28,8 +28,8 @@ GRT_BEGIN_NAMESPACE
 
 class GRT_API ErrorLogMessage{
 public:
-    ErrorLogMessage(std::string proceedingText = "",std::string message = ""){
-        this->proceedingText = proceedingText;
+    ErrorLogMessage(std::string key = "",std::string message = ""){
+        this->key = key;
         this->message = message;
     }
     ~ErrorLogMessage(){
@@ -37,50 +37,70 @@ public:
     }
     
     std::string getProceedingText() const {
-        return proceedingText;
+        return key;
     }
     
     std::string getMessage() const {
         return message;
     }
     
-    std::string proceedingText;
+    std::string key;
     std::string message;
 };
     
 class GRT_API ErrorLog : public Log {
 public:
-    ErrorLog(std::string proceedingText = ""){
-        setProceedingText(proceedingText);
-        Log::loggingEnabledPtr = &errorLoggingEnabled;
+    ErrorLog(const std::string &key = "" ) : Log( key )
+    {
+        loggingEnabledPtr = &errorLoggingEnabled;
     }
+
+    ErrorLog(const ErrorLog &rhs)
+    {
+        *this = rhs;
+    }
+    
     virtual ~ErrorLog(){}
 
     ErrorLog& operator=(const ErrorLog &rhs){
         if( this != &rhs ){
-            this->proceedingText = rhs.proceedingText;
-            this->writeProceedingText = rhs.writeProceedingText;
-            this->lastMessage = rhs.lastMessage;
+            //Copy the base class
+            Log *thisBase = this;
+            const Log *rhsBase = &rhs;
+            *thisBase = *rhsBase;
+
+            //Perform any custom copies
             this->loggingEnabledPtr = &errorLoggingEnabled;
-            this->writeProceedingTextPtr = &writeProceedingText;
-            this->lastMessagePtr = &lastMessage;
         }
         return *this;
     }
-    
-    //Getters
-    virtual bool getLoggingEnabled() const{ return errorLoggingEnabled; }
-    
-    //Setters
-    static bool enableLogging(bool loggingEnabled);
+
+    /**
+     @brief returns true if logging is enabled for this class, this supersedes the specific instance logging
+     @return returns true if logging is enabled for this class, false otherwise
+    */
+    static bool getLoggingEnabled() { 
+        return errorLoggingEnabled; 
+    }
+
+    /**
+     @brief sets if logging is enabled for this class, this supersedes the specific instance logging
+     @return returns true if the parameter was updated successfully, false otherwise
+    */
+    static bool setLoggingEnabled(const bool enabled) { 
+        errorLoggingEnabled = enabled; 
+        return true; 
+    }
     
     static bool registerObserver(Observer< ErrorLogMessage > &observer);
 
     static bool removeObserver(Observer< ErrorLogMessage > &observer);
+
+    GRT_DEPRECATED_MSG("enableLogging is deprecated, use setLoggingEnabled instead", static bool enableLogging(bool loggingEnabled) );
     
 protected:
     virtual void triggerCallback( const std::string &message ) const{
-        observerManager.notifyObservers( ErrorLogMessage(proceedingText,message) );
+        observerManager.notifyObservers( ErrorLogMessage(key,message) );
         return;
     }
     

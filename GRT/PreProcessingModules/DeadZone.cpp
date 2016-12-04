@@ -23,15 +23,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-//Register the DeadZone module with the PreProcessing base class
-RegisterPreProcessingModule< DeadZone > DeadZone::registerModule("DeadZone");
+//Define the string that will be used to identify the object
+const std::string DeadZone::id = "DeadZone";
+std::string DeadZone::getId() { return DeadZone::id; }
 
-DeadZone::DeadZone( const Float lowerLimit, const Float upperLimit, const UINT numDimensions) : PreProcessing( "DeadZone" )
+//Register the DeadZone module with the PreProcessing base class
+RegisterPreProcessingModule< DeadZone > DeadZone::registerModule( DeadZone::getId() );
+
+DeadZone::DeadZone( const Float lowerLimit, const Float upperLimit, const UINT numDimensions) : PreProcessing( DeadZone::getId() )
 {
     init(lowerLimit,upperLimit,numDimensions);
 }
 
-DeadZone::DeadZone(const DeadZone &rhs) : PreProcessing( "DeadZone" )
+DeadZone::DeadZone(const DeadZone &rhs) : PreProcessing( DeadZone::getId() )
 {
     this->lowerLimit = rhs.lowerLimit;
     this->upperLimit = rhs.upperLimit;
@@ -55,7 +59,7 @@ bool DeadZone::deepCopyFrom(const PreProcessing *preProcessing){
     
     if( preProcessing == NULL ) return false;
     
-    if( this->getPreProcessingType() == preProcessing->getPreProcessingType() ){
+    if( this->getId() == preProcessing->getId() ){
         
         const DeadZone *ptr = dynamic_cast<const DeadZone*>(preProcessing);
         //Clone the DeadZone values
@@ -66,7 +70,7 @@ bool DeadZone::deepCopyFrom(const PreProcessing *preProcessing){
         return copyBaseVariables( preProcessing );
     }
     
-    errorLog << "clone(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
+    errorLog << "deepCopyFrom(const PreProcessing *preProcessing) -  PreProcessing Types Do Not Match!" << std::endl;
     
     return false;
 }

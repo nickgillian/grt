@@ -548,8 +548,9 @@ public:
 
     /**
      Cleans up any dynamic memory and sets the number of rows and columns in the matrix to zero
+     @return returns true if the data was cleared successfully
     */
-	void clear(){
+	bool clear(){
 		if( dataPtr != NULL ){
 			delete[] dataPtr;
 			dataPtr = NULL;
@@ -562,6 +563,7 @@ public:
 		cols = 0;
         size = 0;
 		capacity = 0;
+        return true;
 	}
 
     /**

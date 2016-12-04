@@ -32,26 +32,27 @@
 GRT_BEGIN_NAMESPACE
     
 /**
-  @brief This class implements a Finite Impulse Response (FIR) Filter.
+  @brief This class implements a Finite Impulse Response (FIR) Filter. It can support a low pass filter, high pass filter, or band pass filter
 */
 class GRT_API FIRFilter : public PreProcessing{
 public:
-    enum FilterTypes{LPF=0, HPF, BPF};
+    enum FilterType
+    {
+        LPF=0,  ///<Low pass filter
+        HPF,    ///<High pass filter
+        BPF     ///<Band pass filter
+    };
 
     /**
      Constructor, sets the filter factor, gain and dimensionality of the low pass filter.
      If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.
      If the cutoffFrequency and delta values are kept at their default values of -1 then the values will be ignored and the filter factor will be used instead.
-     Otherwise the fiterFactor will control the low pass filter, with a smaller filterFactor (i.e. 0.1) resulting in a more aggresive smoothing
+     Otherwise the fiterFactor will control the low pass filter, with a larger filterFactor (i.e. 0.99) resulting in a more aggresive smoothing
      of the input signal.  The filterFactor should be in the range [0.0 1.0].
 	 
-     @param filterFactor: controls the low pass filter, a smaller value will result in a more aggresive smoothing of the input signal. Default value filterFactor = 0.1
-     @param gain: multiples the filtered values by a constant ampltidue. Default value = 1.0
-     @param numDimensions: the dimensionality of the input data to filter.  Default numDimensions = 1
-     @param cutoffFrequency: sets the cutoffFrequency of the filter (in Hz). If the cutoffFrequency and delta values are set then the filter will be initialized with these values rather than the filterFactor.  Default value cutoffFrequency = -1.0
-     @param delta: the sampling rate of your sensor, delta should be set as 1.0/SR, where SR is the sampling rate of your sensor.  Default value delta = -1.0
+     @param filterType: sets the filter type, this should be one of the FilterTypes enums. Default is low pass filter, LPF
      */
-    FIRFilter(const UINT filterType = LPF,const UINT numTaps = 50,const Float sampleRate = 100,const Float cutoffFrequency = 10,const Float gain = 1,const UINT numDimensions = 1);
+    FIRFilter(const FilterType filterType = LPF,const UINT numTaps = 50,const Float sampleRate = 100,const Float cutoffFrequency = 10,const Float gain = 1,const UINT numDimensions = 1);
     
     /**
      Copy Constructor, copies the FIRFilter from the rhs instance to this instance
@@ -154,9 +155,9 @@ public:
     /**
      Gets the filter type, this should be one of the FilterTypes enums.
      
-	 @return an UINT representing the filter type
+	 @return an enum representing the filter type
      */
-    UINT getFilterType() const;
+    FilterType getFilterType() const;
     
     /**
      Gets the number of taps in the filter.
@@ -217,17 +218,17 @@ public:
     /**
      Sets the filter type, this should be one of the FilterTypes enums.  This will deinitalize the filter, you should rebuild the filter after changing this value.
      
-     @param const UINT filterType: the new filterType
+     @param filterType: the new filterType
 	 @return true if the filterType value was set, false otherwise
      */
-    bool setFilterType(const UINT filterType);
+    bool setFilterType(const FilterType filterType);
     
     /**
      Sets the number of taps in the filter, this controls the filter size and accuracy.  
      More taps will give you a more responsive filter, less taps will give you a faster filter.
      This will deinitalize the filter, you should rebuild the filter after changing this value.
      
-     @param const UINT numTaps: the number of taps in your filter
+     @param numTaps: the number of taps in your filter
 	 @return true if the numTaps value was set, false otherwise
      */
     bool setNumTaps(const UINT numTaps);
@@ -235,7 +236,7 @@ public:
     /**
      Sets the sample rate of your signal.  This will deinitalize the filter, you should rebuild the filter after changing this value.
      
-     @param const Float sampleRate: the new sampleRate value
+     @param sampleRate: the new sampleRate value
 	 @return true if the sampleRate value was set, false otherwise
      */
     bool setSampleRate(const Float sampleRate);
@@ -244,7 +245,7 @@ public:
      Sets the cutoff frequency of the filter.  This should be used with either a low-pass or high-pass filter.  The cutoffFrequency should be in Hz.
      This will deinitalize the filter, you should rebuild the filter after changing this value.
      
-     @param const Float cutoffFrequency: the cutoff frequency of the filter in Hz
+     @param cutoffFrequency: the cutoff frequency of the filter in Hz
 	 @return true if the cutoffFrequency value was set, false otherwise
      */
     bool setCutoffFrequency(const Float cutoffFrequency);
@@ -253,8 +254,8 @@ public:
      Sets the lower and upper cutoff frequency for a band-pass filter.  The cutoffFrequencies should be in Hz.
      This will deinitalize the filter, you should rebuild the filter after changing this value.
      
-     @param const Float cutoffFrequencyLower: the lower cutoff frequency of the band-pass filter in Hz
-     @param const Float cutoffFrequencyUpper: the upper cutoff frequency of the band-pass filter in Hz
+     @param cutoffFrequencyLower: the lower cutoff frequency of the band-pass filter in Hz
+     @param cutoffFrequencyUpper: the upper cutoff frequency of the band-pass filter in Hz
 	 @return true if the parameters were set, false otherwise
      */
     bool setCutoffFrequency(const Float cutoffFrequencyLower,const Float cutoffFrequencyUpper);
@@ -262,17 +263,24 @@ public:
     /**
      Sets the gain of the low pass filter.
      
-     @param Float gain: the new gain value, this multiples the filtered values by a constant ampltidue
+     @param gain: the new gain value, this multiples the filtered values by a constant ampltidue
 	 @return true if the gain value was set, false otherwise
      */
     bool setGain(const Float gain);
+
+    /**
+    Gets a string that represents the ID of this class.
+    
+    @return returns a string containing the ID of this class
+    */
+    static std::string getId();
 
     //Tell the compiler we are using the following functions from the MLBase class to stop hidden virtual function warnings
     using MLBase::save;
     using MLBase::load;
 
 protected:
-    UINT filterType;
+    FilterType filterType;
     UINT numTaps;
     Float sampleRate;
     Float cutoffFrequency;
@@ -282,6 +290,8 @@ protected:
     CircularBuffer< VectorFloat > y;
     VectorFloat z;
     
+private:
+    static const std::string id;   
     static RegisterPreProcessingModule< FIRFilter > registerModule;
 };
 
