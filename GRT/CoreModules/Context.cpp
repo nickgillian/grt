@@ -39,7 +39,7 @@ Context* Context::create( std::string const &id ){
 }
 
 Context* Context::create() const{
-    return create( MLBase::getClassType() );
+    return create( MLBase::getId() );
 }
     
 bool Context::init(){

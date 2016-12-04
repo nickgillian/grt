@@ -39,12 +39,12 @@ Clusterer* Clusterer::create( std::string const &id ){
 }
 
 Clusterer* Clusterer::create() const{
-    return create( MLBase::getClassType() );
+    return create( MLBase::getId() );
 }
     
 Clusterer* Clusterer::deepCopy() const{
     
-    Clusterer *newInstance = create( MLBase::getClassType() );
+    Clusterer *newInstance = create( MLBase::getId() );
     
     if( newInstance == NULL ) return NULL;
     
