@@ -30,14 +30,14 @@ std::string GMM::getId() { return GMM::id; }
 //Register the GMM module with the Classifier base class
 RegisterClassifierModule< GMM > GMM::registerModule( GMM::getId() );
 
-GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT maxIter,Float minChange) : Classifier( GMM::getId() )
+GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullRejectionCoeff,UINT maxNumEpochs,Float minChange) : Classifier( GMM::getId() )
 {
     classifierMode = STANDARD_CLASSIFIER_MODE;
     this->numMixtureModels = numMixtureModels;
     this->useScaling = useScaling;
     this->useNullRejection = useNullRejection;
     this->nullRejectionCoeff = nullRejectionCoeff;
-    this->maxIter = maxIter;
+    this->maxNumEpochs = maxNumEpochs;
     this->minChange = minChange;
 }
 
@@ -53,13 +53,7 @@ GMM& GMM::operator=(const GMM &rhs){
     if( this != &rhs ){
         
         this->numMixtureModels = rhs.numMixtureModels;
-        this->maxIter = rhs.maxIter;
-        this->minChange = rhs.minChange;
         this->models = rhs.models;
-        
-        this->debugLog = rhs.debugLog;
-        this->errorLog = rhs.errorLog;
-        this->warningLog = rhs.warningLog;
         
         //Classifier variables
         copyBaseVariables( (Classifier*)&rhs );
@@ -76,13 +70,7 @@ bool GMM::deepCopyFrom(const Classifier *classifier){
         GMM *ptr = (GMM*)classifier;
         //Clone the GMM values
         this->numMixtureModels = ptr->numMixtureModels;
-        this->maxIter = ptr->maxIter;
-        this->minChange = ptr->minChange;
         this->models = ptr->models;
-        
-        this->debugLog = ptr->debugLog;
-        this->errorLog = ptr->errorLog;
-        this->warningLog = ptr->warningLog;
         
         //Clone the classifier variables
         return copyBaseVariables( classifier );
@@ -176,9 +164,20 @@ bool GMM::train_(ClassificationData &trainingData){
     
     //Get the ranges of the training data if the training data is going to be scaled
     ranges = trainingData.getRanges();
-    if( !trainingData.scale(GMM_MIN_SCALE_VALUE, GMM_MAX_SCALE_VALUE) ){
-        errorLog << "train_(ClassificationData &trainingData) - Failed to scale training data!" << std::endl;
-        return false;
+
+    ClassificationData validationData;
+    
+    //Scale the training data if needed
+    if( useScaling ){
+        //Scale the training data between 0 and 1
+        if( !trainingData.scale(GMM_MIN_SCALE_VALUE, GMM_MAX_SCALE_VALUE) ){
+            errorLog << "train_(ClassificationData &trainingData) - Failed to scale training data!" << std::endl;
+            return false;
+        }
+    }
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
     }
     
     //Fit a Mixture Model to each class (independently)
@@ -190,11 +189,12 @@ bool GMM::train_(ClassificationData &trainingData){
         GaussianMixtureModels gaussianMixtureModel;
         gaussianMixtureModel.setNumClusters( numMixtureModels );
         gaussianMixtureModel.setMinChange( minChange );
-        gaussianMixtureModel.setMaxNumEpochs( maxIter );
+        gaussianMixtureModel.setMaxNumEpochs( maxNumEpochs );
+        gaussianMixtureModel.setNumRestarts( 5 ); //The learning algorithm can retry building a model up to 5 times
         
         if( !gaussianMixtureModel.train( classData.getDataAsMatrixFloat() ) ){
             errorLog << "train_(ClassificationData &trainingData) - Failed to train Mixture Model for class " << classLabel << std::endl;
-                return false;
+            return false;
         }
         
         //Setup the model container
@@ -261,10 +261,41 @@ bool GMM::train_(ClassificationData &trainingData){
         nullRejectionThresholds[k] = models[k].getNullRejectionThreshold();
     }
     
-    //Flag that the models have been trained
+    //Flag that the model has been trained
     trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
     
-    return true;
+    if( useValidationSet ){
+        if( !computeAccuracy( validationData, validationSetAccuracy ) ){
+            trained = false;
+            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            return false;
+        }
+        
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+    
+    return trained;
 }
 
 Float GMM::computeMixtureLikelihood(const VectorFloat &x,const UINT k){
@@ -560,26 +591,16 @@ Vector< MixtureModel > GMM::getModels(){
     return Vector< MixtureModel >();
 }
 
-bool GMM::setNumMixtureModels(UINT K){
+bool GMM::setNumMixtureModels(const UINT K){
     if( K > 0 ){
         numMixtureModels = K;
         return true;
     }
     return false;
 }
-bool GMM::setMinChange(Float minChange){
-    if( minChange > 0 ){
-        this->minChange = minChange;
-        return true;
-    }
-    return false;
-}
-bool GMM::setMaxIter(UINT maxIter){
-    if( maxIter > 0 ){
-        this->maxIter = maxIter;
-        return true;
-    }
-    return false;
+
+bool GMM::setMaxIter(UINT maxNumEpochs){
+    return setMaxNumEpochs( maxNumEpochs );
 }
 
 bool GMM::loadLegacyModelFromFile( std::fstream &file ){
@@ -612,7 +633,7 @@ bool GMM::loadLegacyModelFromFile( std::fstream &file ){
         errorLog << "load(fstream &file) - Could not find MaxIter" << std::endl;
         return false;
     }
-    file >> maxIter;
+    file >> maxNumEpochs;
     
     file >> word;
     if(word != "MinChange:"){
