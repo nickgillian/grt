@@ -1556,5 +1556,44 @@ ClassificationData ClassificationData::generateGaussDataset( const UINT numSampl
     return data;
 }
 
+ClassificationData ClassificationData::generateGaussLinearDataset( const UINT numSamples, const UINT numClasses, const UINT numDimensions, const Float range, const Float sigma){
+
+    Random random;
+    
+    //Generate a simple model that will be used to generate the main dataset
+    //Enforce the gaussian clusters to be linearly separable by setting each model centroid on a regular spaced grid
+    MatrixFloat model(numClasses,numDimensions);
+    for(UINT k=0; k<numClasses; k++){
+        for(UINT j=0; j<numDimensions; j++){
+            model[k][j] = Util::scale(k,0,numClasses-1,-range,range,true);
+        }
+    }
+    
+    //Use the model above to generate the main dataset
+    ClassificationData data;
+    data.setNumDimensions( numDimensions );
+    data.reserve( numSamples );
+    
+    for(UINT i=0; i<numSamples; i++){
+        
+        //Randomly select which class this sample belongs to
+        UINT k = random.getRandomNumberInt( 0, numClasses );
+        
+        //Generate a sample using the model (+ some Gaussian noise)
+        VectorFloat sample( numDimensions );
+        for(UINT j=0; j<numDimensions; j++){
+            sample[j] = model[k][j] + random.getRandomNumberGauss(0,sigma);
+        }
+        
+        //By default in the GRT, the class label should not be 0, so add 1
+        UINT classLabel = k + 1;
+        
+        //Add the labeled sample to the dataset
+        data.addSample( classLabel, sample );
+    }
+
+    return data;
+}
+
 GRT_END_NAMESPACE
 
