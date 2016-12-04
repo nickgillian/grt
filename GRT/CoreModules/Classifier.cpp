@@ -173,7 +173,7 @@ bool Classifier::computeAccuracy( const ClassificationData &data, Float &accurac
 }
 
 std::string Classifier::getClassifierType() const{
-    return MLBase::getClassType(); 
+    return MLBase::getId(); 
 }
     
 bool Classifier::getSupportsNullRejection() const{
