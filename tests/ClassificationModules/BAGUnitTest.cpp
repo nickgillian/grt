@@ -49,8 +49,8 @@ TEST(CLASSIFIER, TestBasicTrainPredictFunctions ) {
   CLASSIFIER classifier;
 
   //Disable the training logging
-  EXPECT_TRUE( classifier.setTrainingLoggingEnabled( true ) );
-  //EXPECT_TRUE( !classifier.getTrainingLoggingEnabled() );
+  EXPECT_TRUE( classifier.setTrainingLoggingEnabled( false ) );
+  EXPECT_TRUE( !classifier.getTrainingLoggingEnabled() );
 
   //Check the module is not trained
   EXPECT_TRUE( !classifier.getTrained() );

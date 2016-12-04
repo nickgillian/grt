@@ -47,8 +47,8 @@ TEST(CLASSIFIER, TestBasicTrainPredictFunctions ) {
   CLASSIFIER classifier;
 
   //Disable the training logging
-  EXPECT_TRUE( classifier.setTrainingLoggingEnabled( true ) );
-  //EXPECT_TRUE( !classifier.getTrainingLoggingEnabled() );
+  EXPECT_TRUE( classifier.setTrainingLoggingEnabled( false ) );
+  EXPECT_TRUE( !classifier.getTrainingLoggingEnabled() );
 
   //Check the module is not trained
   EXPECT_TRUE( !classifier.getTrained() );
@@ -105,8 +105,8 @@ TEST(CLASSIFIER, TrainGaussDataset) {
   CLASSIFIER classifier;
 
   //Disable the training logging
-  EXPECT_TRUE( classifier.setTrainingLoggingEnabled( true ) );
-  //EXPECT_TRUE( !classifier.getTrainingLoggingEnabled() );
+  EXPECT_TRUE( classifier.setTrainingLoggingEnabled( false ) );
+  EXPECT_TRUE( !classifier.getTrainingLoggingEnabled() );
 
   //Check the module is not trained
   EXPECT_TRUE( !classifier.getTrained() );
@@ -132,7 +132,6 @@ TEST(CLASSIFIER, TrainGaussDataset) {
   EXPECT_TRUE( classifier.getNumInputDimensions() == numDimensions );
   EXPECT_TRUE( classifier.getNumOutputDimensions() == numClasses );
   EXPECT_TRUE( classifier.getNumClasses() == numClasses );
-  std::cout << "Error: " << classifier.getTrainingSetAccuracy() << std::endl;
   EXPECT_TRUE( classifier.getTrainingSetAccuracy() >= 75.0 ); //On this basic dataset we expect to get at least 75% accuracy
   EXPECT_TRUE( classifier.getValidationSetAccuracy() == 0.0 ); //Validation is off, so the validation accuracy should be zero
 

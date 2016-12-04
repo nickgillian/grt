@@ -28,7 +28,7 @@ GaussianMixtureModels::GaussianMixtureModels(const GaussianMixtureModels &rhs) :
     if( this != &rhs ){
         
         this->numTrainingSamples = rhs.numTrainingSamples;
-        this->numRestarts = numRestarts;
+        this->numRestarts = rhs.numRestarts;
         this->loglike = rhs.loglike;
         this->mu = rhs.mu;
         this->resp = rhs.resp;
@@ -51,7 +51,7 @@ GaussianMixtureModels& GaussianMixtureModels::operator=(const GaussianMixtureMod
     if( this != &rhs ){
         
         this->numTrainingSamples = rhs.numTrainingSamples;
-        this->numRestarts = numRestarts;
+        this->numRestarts = rhs.numRestarts;
         this->loglike = rhs.loglike;
         this->mu = rhs.mu;
         this->resp = rhs.resp;
