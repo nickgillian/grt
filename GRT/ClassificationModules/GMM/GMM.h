@@ -157,24 +157,17 @@ public:
     @param K: the number of mixture models
     @return returns true if the number of mixture models was successfully updated, false otherwise
     */
-    bool setNumMixtureModels(UINT K);
+    bool setNumMixtureModels(const UINT K);
     
     /**
-    This function sets the minChange parameter which controls when the GMM train function should stop. MinChange must be greater than zero.
-    
-    @param minChange: the new minChange value
-    @return returns true if the number of minChange was successfully updated, false otherwise
-    */
-    bool setMinChange(Float minChange);
-    
-    /**
+    @deprecated use setMaxNumEpochs(const UINT maxNumEpochs) instead
     This function sets the maxIter parameter which controls when the maximum number of iterations parameter that controls when the GMM train
     function should stop. MaxIter must be greater than zero.
     
     @param maxIter: the new maxIter value
     @return returns true if the number of maxIter was successfully updated, false otherwise
     */
-    bool setMaxIter(UINT maxIter);
+    GRT_DEPRECATED_MSG( "Use the base class function, setMaxNumEpochs(const UINT maxNumEpochs) instead", bool setMaxIter(UINT maxIter) );
     
     /**
     Gets a string that represents the GMM class.
@@ -194,13 +187,7 @@ protected:
     bool loadLegacyModelFromFile( std::fstream &file );
     
     UINT numMixtureModels;
-    UINT maxIter;
-    Float minChange;
     Vector< MixtureModel > models;
-    
-    DebugLog debugLog;
-    ErrorLog errorLog;
-    WarningLog warningLog;
     
 private:
     static RegisterClassifierModule< GMM > registerModule;
