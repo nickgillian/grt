@@ -146,7 +146,20 @@ bool SVM::train_(ClassificationData &trainingData){
         errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
+
+    ranges = trainingData.getRanges();
+    ClassificationData validationData;
     
+    //Scale the training data if needed
+    if( useScaling ){
+        //Scale the training data between 0 and 1
+        trainingData.scale(SVM_MIN_SCALE_RANGE, SVM_MAX_SCALE_RANGE);
+    }
+
+    if( useValidationSet ){
+        validationData = trainingData.split( 100-validationSetSize );
+    }
+
     //Convert the labelled classification data into the LIBSVM data format
     if( !convertClassificationDataToLIBSVMFormat(trainingData) ){
         errorLog << "train_(ClassificationData &trainingData) - Failed To Convert Classification Data To LIBSVM Format!" << std::endl;
@@ -162,8 +175,41 @@ bool SVM::train_(ClassificationData &trainingData){
         errorLog << "train_(ClassificationData &trainingData) - Failed To Train SVM Model!" << std::endl;
         return false;
     }
+
+    //Flag that the models have been trained
+    trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+    validationSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
     
-    return true;
+    if( useValidationSet ){
+        if( !computeAccuracy( validationData, validationSetAccuracy ) ){
+            trained = false;
+            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            return false;
+        }
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    if( useValidationSet ){
+        trainingLog << "Validation set accuracy: " << validationSetAccuracy << std::endl;
+    }
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
+    
+    return trained;
 }
 
 bool SVM::predict_(VectorFloat &inputVector){
@@ -305,13 +351,6 @@ bool SVM::trainSVM(){
     
     //Verify the problem and the parameters
     if( !validateProblemAndParameters() ) return false;
-    
-    //Scale the training data if needed
-    if( useScaling ){
-        for(int i=0; i<prob.l; i++)
-        for(UINT j=0; j<numInputDimensions; j++)
-        prob.x[i][j].value = grt_scale(prob.x[i][j].value,ranges[j].minValue,ranges[j].maxValue,SVM_MIN_SCALE_RANGE,SVM_MAX_SCALE_RANGE);
-    }
     
     if( useCrossValidation ){
         int i;
@@ -467,9 +506,6 @@ bool SVM::convertClassificationDataToLIBSVMFormat(ClassificationData &trainingDa
     const UINT numTrainingExamples = trainingData.getNumSamples();
     numInputDimensions = trainingData.getNumDimensions();
     numOutputDimensions = trainingData.getNumClasses();
-    
-    //Compute the ranges encase the data should be scaled
-    ranges = trainingData.getRanges();
     
     //Init the memory
     prob.l = numTrainingExamples;
