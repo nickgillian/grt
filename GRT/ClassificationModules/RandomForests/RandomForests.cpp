@@ -241,6 +241,26 @@ bool RandomForests::train_(ClassificationData &trainingData){
         //Deep copy the tree into the forest
         forest.push_back( tree.deepCopyTree() );
     }
+
+    //Flag that the models have been trained
+    trained = true;
+
+    //Compute the final training stats
+    trainingSetAccuracy = 0;
+
+    //If scaling was on, then the data will already be scaled, so turn it off temporially so we can test the model accuracy
+    bool scalingState = useScaling;
+    useScaling = false;
+    if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
+        trained = false;
+        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        return false;
+    }
+
+    trainingLog << "Training set accuracy: " << trainingSetAccuracy << std::endl;
+
+    //Reset the scaling state for future prediction
+    useScaling = scalingState;
     
     if( useValidationSet ){
         validationSetAccuracy /= forestSize;
