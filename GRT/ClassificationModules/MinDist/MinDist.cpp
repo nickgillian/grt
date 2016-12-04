@@ -90,13 +90,13 @@ bool MinDist::train_(ClassificationData &trainingData){
     const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
-        errorLog << "train_(trainingData &labelledTrainingData) - Training data has zero samples!" << std::endl;
+        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
         return false;
     }
     
     if( M <= numClusters ){
-        errorLog << "train_(trainingData &labelledTrainingData) - There are not enough training samples for the number of clusters. Either reduce the number of clusters or increase the number of training samples!" << std::endl;
-            return false;
+        errorLog << "train_(ClassificationData &trainingData) - There are not enough training samples for the number of clusters. Either reduce the number of clusters or increase the number of training samples!" << std::endl;
+        return false;
     }
     
     numInputDimensions = N;
@@ -122,6 +122,9 @@ bool MinDist::train_(ClassificationData &trainingData){
     for(UINT k=0; k<numClasses; k++){
         
         trainingLog << "Training model for class: " << trainingData.getClassTracker()[k].classLabel << std::endl;
+
+        //Pass the logging state onto the kmeans algorithm
+        models[k].setTrainingLoggingEnabled( this->getTrainingLoggingEnabled() );
             
         //Get the class label for the kth class
         UINT classLabel = trainingData.getClassTracker()[k].classLabel;
@@ -143,7 +146,7 @@ bool MinDist::train_(ClassificationData &trainingData){
         //Train the model for this class
         models[k].setGamma( nullRejectionCoeff );
         if( !models[k].train(classLabel,data,numClusters,minChange,maxNumEpochs) ){
-            errorLog << "train_(ClassificationData &labelledTrainingData) - Failed to train model for class: " << classLabel;
+            errorLog << "train_(ClassificationData &trainingData) - Failed to train model for class: " << classLabel;
             errorLog << ". This is might be because this class does not have enough training samples! You should reduce the number of clusters or increase the number of training samples for this class." << std::endl;
             models.clear();
             return false;
@@ -151,7 +154,6 @@ bool MinDist::train_(ClassificationData &trainingData){
             
         //Set the null rejection threshold
         nullRejectionThresholds[k] = models[k].getRejectionThreshold();
-        
     }
 
     //Flag that the models have been trained
