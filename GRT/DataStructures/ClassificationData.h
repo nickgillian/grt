@@ -621,6 +621,8 @@ public:
      Generates a labeled dataset that can be used for basic training/testing/validation for ClassificationData, saving the dataset to the file specified by filename.
      
      Samples in the dataset will be generated based on K randomly select models, with Gaussian noise.  K is set by the numClasses argument.
+
+     The Gaussian clusters are selected at random, therefore the returned dataset may or may not be linearly seperable, depending on the random clusters.
      
      The range of each dimension will be [-range range].  Sigma controls the amount of Gaussian noise added.
      
@@ -638,6 +640,8 @@ public:
      Generates a labeled dataset that can be used for basic training/testing/validation for ClassificationData and returns it directly.
      
      Samples in the dataset will be generated based on K randomly select models, with Gaussian noise.  K is set by the numClasses argument.
+
+     The Gaussian clusters are selected at random, therefore the returned dataset may or may not be linearly separable, depending on the random clusters.
      
      The range of each dimension will be [-range range].  Sigma controls the amount of Gaussian noise added.
      
@@ -649,6 +653,25 @@ public:
      @return returns the new dataset
      */
     static ClassificationData generateGaussDataset( const UINT numSamples = 10000, const UINT numClasses = 10, const UINT numDimensions = 3, const Float range = 10, const Float sigma = 1 );
+
+    /**
+     Generates a labeled dataset that can be used for basic training/testing/validation for ClassificationData and returns it directly.
+     
+     Samples in the dataset will be generated based on K randomly select models, with Gaussian noise.  K is set by the numClasses argument.
+     
+     The range of each dimension will be [-range range].  Sigma controls the amount of Gaussian noise added.
+
+     The Gaussian clusters are encouraged to be linearly separable by setting the centroids of each class on a regularly spaced grid.  If there
+     are too many classes or the sigma noise of each class is too high then the resulting data may NOT be linearly separable.
+     
+     @param numSamples: the total number of samples in the dataset
+     @param numClasses: the number of classes in the dataset
+     @param numDimensions: the number of dimensions in the dataset
+     @param range: the range the data will be sampled from, range will be [-range range] for each dimension
+     @param sigma: the amount of Gaussian noise
+     @return returns the new dataset
+     */
+    static ClassificationData generateGaussLinearDataset( const UINT numSamples = 10000, const UINT numClasses = 10, const UINT numDimensions = 3, const Float range = 10, const Float sigma = 1 );
 
 private:
     
