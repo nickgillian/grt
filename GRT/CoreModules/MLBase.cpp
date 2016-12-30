@@ -33,6 +33,7 @@ MLBase::MLBase( const std::string &id, const BaseType type ) : GRTBase( id ){
     numOutputDimensions = 0;
     minNumEpochs = 0;
     maxNumEpochs = 100;
+    batchSize = 1;
     validationSetSize = 20;
     validationSetAccuracy = 0;
     minChange = 1.0e-5;
@@ -83,6 +84,7 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     this->numOutputDimensions = mlBase->numOutputDimensions;
     this->minNumEpochs = mlBase->minNumEpochs;
     this->maxNumEpochs = mlBase->maxNumEpochs;
+    this->batchSize = mlBase->batchSize;
     this->validationSetSize = mlBase->validationSetSize;
     this->validationSetAccuracy = mlBase->validationSetAccuracy;
     this->validationSetPrecision = mlBase->validationSetPrecision;
@@ -246,6 +248,10 @@ UINT MLBase::getMaxNumEpochs() const{
     return maxNumEpochs;
 }
 
+UINT MLBase::getBatchSize() const{
+    return batchSize;
+}
+
 UINT MLBase::getValidationSetSize() const{
     return validationSetSize;
 }
@@ -317,6 +323,11 @@ bool MLBase::setMaxNumEpochs(const UINT maxNumEpochs){
 
 bool MLBase::setMinNumEpochs(const UINT minNumEpochs){
     this->minNumEpochs = minNumEpochs;
+    return true;
+}
+
+bool MLBase::setBatchSize(const UINT batchSize){
+    this->batchSize = batchSize;
     return true;
 }
 

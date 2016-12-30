@@ -154,6 +154,7 @@ bool train( CommandLineParser &parser ){
     regression.setRandomiseTrainingOrder( true );
     regression.setUseValidationSet( true );
     regression.setValidationSetSize( 20 );
+    regression.setBatchSize( batchSize );
 
     //Create a new pipeline that will hold the regression algorithm
     GestureRecognitionPipeline pipeline;

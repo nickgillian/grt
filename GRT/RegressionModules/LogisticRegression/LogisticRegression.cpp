@@ -33,6 +33,7 @@ RegisterRegressifierModule< LogisticRegression >  LogisticRegression::registerMo
 LogisticRegression::LogisticRegression(const bool useScaling) : Regressifier( LogisticRegression::getId() )
 {
     this->useScaling = useScaling;
+    batchSize = 50;
     minChange = 1.0e-5;
     maxNumEpochs = 500;
     learningRate = 0.01;
@@ -122,21 +123,28 @@ bool LogisticRegression::train_(RegressionData &trainingData){
     
     //Reset the weights
     Random rand;
-    w0 = rand.getRandomNumberUniform(-0.1,0.1);
+    w0 = rand.getUniform(-0.1,0.1);
     w.resize(N);
     for(UINT j=0; j<N; j++){
-        w[j] = rand.getRandomNumberUniform(-0.1,0.1);
+        w[j] = rand.getUniform(-0.1,0.1);
     }
     
     Float error = 0;
     Float lastError = 0;
     Float delta = 0;
+    Float batchError = 0;
     UINT epoch = 0;
+    UINT batchStartIndex = 0;
+    UINT batchEndIndex = 0;
+    UINT numSamplesInBatch = 0;
+    const UINT numValidationSamples = validationData.getNumSamples();
     bool keepTraining = true;
-    Random random;
     Vector< UINT > randomTrainingOrder(M);
     TrainingResult result;
     trainingResults.reserve(M);
+    MatrixFloat batchInputData(batchSize,N);
+    VectorFloat meanInputData(N);
+    VectorFloat batchTargetData(batchSize);
     
     //In most cases, the training data is grouped into classes (100 samples for class 1, followed by 100 samples for class 2, etc.)
     //This can cause a problem for stochastic gradient descent algorithm. To avoid this issue, we randomly shuffle the order of the
@@ -153,31 +161,61 @@ bool LogisticRegression::train_(RegressionData &trainingData){
         
         //Run one epoch of training using stochastic gradient descent
         for(UINT m=0; m<M; m++){
-            
-            //Select the random sample
-            UINT i = randomTrainingOrder[m];
-            
-            //Compute the error, given the current weights
-            VectorFloat x = trainingData[i].getInputVector();
-            VectorFloat y = trainingData[i].getTargetVector();
-            Float h = w0;
-            for(UINT j=0; j<N; j++){
-                h += x[j] * w[j];
+
+            //Update the batch counters
+            batchStartIndex = batchEndIndex;
+            batchEndIndex = batchStartIndex + batchSize;
+            if( batchEndIndex > M ) batchEndIndex = M;
+            numSamplesInBatch = batchEndIndex-batchStartIndex;
+
+            //Reset the mean buffer
+            meanInputData.fill(0.0);
+
+            //Copy the batch data to the temporary storage
+            for(UINT n=0; n<numSamplesInBatch; n++){
+                //Select the random sample
+                UINT i = randomTrainingOrder[batchStartIndex+n];
+
+                const VectorFloat &x = trainingData[i].getInputVector();
+                const VectorFloat &y = trainingData[i].getTargetVector();
+
+                for(UINT j=0; j<N; j++){
+                    batchInputData[n][j] = x[j];
+                    meanInputData[j] += x[j];
+                }
+
+                batchTargetData[n] = y[0];
             }
-            error = y[0] - sigmoid( h );
-            rmsTrainingError += SQR(error);
-            
-            //Update the weights
+
+            //Compute the average input for this batch
             for(UINT j=0; j<N; j++){
-                w[j] += learningRate * error * x[j];
+                meanInputData[j] /= static_cast<Float>(numSamplesInBatch);
             }
-            w0 += learningRate * error;
+            
+            //Compute the error, given the current weights using the batch data
+            Float h = 0;
+            batchError = 0;
+            for(UINT n=0; n<numSamplesInBatch; n++){
+                h = w0;
+                for(UINT j=0; j<N; j++){
+                    h += batchInputData[n][j] * w[j];
+                }
+                error = batchTargetData[n] - sigmoid( h );
+                batchError += error;
+                rmsTrainingError += SQR(error);
+            }
+            
+            //Update the weights based on the average error across the batch
+            for(UINT j=0; j<N; j++){
+                w[j] += learningRate * batchError * meanInputData[j];
+            }
+            w0 += learningRate * batchError;
         }
         
         //Compute the error on the validation set if needed
         Float rmsValidationError = 0;
         if( useValidationSet ){
-          for(UINT i=0; i<validationData.getNumSamples(); i++){
+          for(UINT i=0; i<numValidationSamples; i++){
             //Compute the error, given the current weights
             const VectorFloat &x = validationData[i].getInputVector();
             const VectorFloat &y = validationData[i].getTargetVector();

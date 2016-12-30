@@ -724,9 +724,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
         init(numInputNeurons,numHiddenNeurons,numOutputNeurons,inputLayerActivationFunction,hiddenLayerActivationFunction,outputLayerActivationFunction);
         
         if( randomiseTrainingOrder ){
-            for(UINT i=0; i<M; i++){
-                SWAP(indexList[ i ], indexList[ random.getRandomNumberInt(0, M) ]);
-            }
+            std::random_shuffle(indexList.begin(), indexList.end());
         }
         
         while( keepTraining ){

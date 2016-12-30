@@ -427,6 +427,13 @@ public:
     @return returns the maximum number of epochs
     */
     UINT getMaxNumEpochs() const;
+
+    /**
+    Gets the batch size. This value controls the number of samples that can be used by the training algorithm.
+    
+    @return returns the batch size
+    */
+    UINT getBatchSize() const;
     
     /**
     Gets the size (as a percentage) of the validation set (if one should be used). If this value returned 20 this would mean that
@@ -598,6 +605,14 @@ public:
     @return returns true if the value was updated successfully, false otherwise
     */
     bool setMaxNumEpochs(const UINT maxNumEpochs);
+
+    /**
+    Sets the batch size used during the training phase.
+    
+    @param batchSize: the batch size
+    @return returns true if the value was updated successfully, false otherwise
+    */
+    bool setBatchSize(const UINT batchSize);
     
     /**
     Sets the minimum number of epochs (a complete iteration of all training samples) that can elapse with no change between two training epochs.
@@ -781,6 +796,7 @@ protected:
     UINT numTrainingIterationsToConverge;
     UINT minNumEpochs;
     UINT maxNumEpochs;
+    UINT batchSize;
     UINT validationSetSize;
     Float learningRate;
     Float minChange;
