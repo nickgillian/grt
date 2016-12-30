@@ -31,7 +31,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 /**
-@brief This class implements the Logistic Regression algorithm.  Logistic Regression is a simple but effective regression algorithm that can map an N-dimensional signal to a 1-dimensional signal.
+@brief This class implements the Logistic Regression algorithm.  Logistic Regression is a simple but effective regression algorithm that can map an N-dimensional signal to a 1-dimensional signal.  If you want to use LogisticRegression for classification tasks, then you should use the GRT SoftMax algorithm.
 @example RegressionModulesExamples/LogisticRegressionExample/LogisticRegressionExample.cpp
 @remark This implementation is based on Bishop, Christopher M. Pattern recognition and machine learning. Vol. 1. New York: springer, 2006.
 */

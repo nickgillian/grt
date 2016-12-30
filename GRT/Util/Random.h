@@ -149,6 +149,15 @@ public:
 	@return returns a Float from the Gaussian distribution controlled by mu and sigma
 	*/
     Float getRandomNumberGauss(Float mu=0.0,Float sigma=1.0);
+
+    /**
+    Gets a random Float, using a Gaussian distribution with mu 0 and sigma 1.0
+    
+    @param mu: the mu parameter for the Gaussian distribution
+    @param sigma: the sigma parameter for the Gaussian distribution
+    @return returns a Float from the Gaussian distribution controlled by mu and sigma
+    */
+    Float getGauss(const Float &mu=0.0,const Float &sigma=1.0);
     
     /**
 	Gets an N-dimensional Vector of random Floats drawn from the uniform distribution set by the minRange and maxRange.

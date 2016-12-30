@@ -140,6 +140,10 @@ Float Random::getUniform(const Float &minRange,const Float &maxRange){
 }
 
 Float Random::getRandomNumberGauss(Float mu,Float sigma){
+    return getGauss( mu, sigma );
+}
+
+Float Random::getGauss(const Float &mu,const Float &sigma){
 #if GRT_USE_CXX11_RANDOM_ALGO
     return mu + (normalDistribution( generator )*sigma);
 #else
