@@ -133,6 +133,15 @@ public:
     Float getRandomNumberUniform(Float minRange=0.0,Float maxRange=1.0);
     
     /**
+	Gets a random Float in the range [minRange maxRange], using a uniform distribution
+	
+	@param minRange: the minimum value in the range (inclusive)
+	@param maxRange: the maximum value in the range (inclusive)
+	@return returns a Float in the range [minRange maxRange]
+	*/
+    Float getUniform(const Float &minRange=0.0,const Float &maxRange=1.0);
+    
+    /**
 	Gets a random Float, using a Gaussian distribution with mu 0 and sigma 1.0
 	
 	@param mu: the mu parameter for the Gaussian distribution

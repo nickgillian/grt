@@ -39,8 +39,8 @@ MLP::MLP() : Regressifier( MLP::getId() )
     inputLayerActivationFunction = Neuron::LINEAR;
     hiddenLayerActivationFunction = Neuron::TANH;
     outputLayerActivationFunction = Neuron::LINEAR;
-    minNumEpochs = 10;
-    numRandomTrainingIterations = 10;
+    minNumEpochs = 1;
+    numRandomTrainingIterations = 1;
     validationSetSize = 20; //20% of the training data will be set aside for the validation set
     trainingMode = ONLINE_GRADIENT_DESCENT;
     momentum = 0.5;
@@ -265,7 +265,7 @@ bool MLP::init(const UINT numInputNeurons,
     
     //Init the neuron memory for each of the layers
     for(UINT i=0; i<numInputNeurons; i++){
-        inputLayer[i].init(1,inputLayerActivationFunction); //The input size for each input neuron will always be 1
+        inputLayer[i].init(1,inputLayerActivationFunction,random); //The input size for each input neuron will always be 1
         inputLayer[i].weights[0] = 1.0; //The weights for the input layer should always be 1
         inputLayer[i].bias = 0.0; //The bias for the input layer should always be 0
         inputLayer[i].gamma = gamma;
@@ -273,13 +273,13 @@ bool MLP::init(const UINT numInputNeurons,
     
     for(UINT i=0; i<numHiddenNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of input neurons
-        hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction,-0.1,0.1);
+        hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction,random,-1.0/sqrt(numInputNeurons),1.0/sqrt(numInputNeurons));
         hiddenLayer[i].gamma = gamma;
     }
     
     for(UINT i=0; i<numOutputNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of hidden neurons
-        outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction,-0.1,0.1);
+        outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction,random,-1.0/sqrt(numHiddenNeurons),1.0/sqrt(numHiddenNeurons));
         outputLayer[i].gamma = gamma;
     }
     
@@ -733,6 +733,8 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
             
             //Perform one training epoch
             totalSquaredTrainingError = 0;
+            rmsTrainingError = 0;
+            rmsValidationError = 0;
             
             for(UINT i=0; i<M; i++){
 
@@ -759,11 +761,12 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
                 errorLog << "train(RegressionData trainingData) - NaN found in weights at epoch " << epoch << std::endl;
                 return false;
             }
+                
+            //Compute the rms error on the training set
+            rmsTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
             
             //Compute the error over all the training/validation examples
             if( useValidationSet ){
-                trainingSetTotalSquaredError = totalSquaredTrainingError;
-                totalSquaredTrainingError = 0;
                 
                 //Iterate over the validation samples
                 for(UINT n=0; n<numValidationSamples; n++){
@@ -772,34 +775,34 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
                     
                     VectorFloat y = feedforward(trainingExample);
                     
-                    //Update the total squared error
+                    //Update the error
+                    Float error = 0;
                     for(UINT j=0; j<T; j++){
-                        totalSquaredTrainingError += SQR( targetVector[j]-y[j] );
+                        error += SQR( targetVector[j]-y[j] );
                     }
-                    
+                    rmsValidationError += sqrt( error );
                 }
                 
-                rmsTrainingError = sqrt( totalSquaredTrainingError / Float(numValidationSamples) );
-                
-            }else{//We are not using a validation set
-                rmsTrainingError = sqrt( totalSquaredTrainingError / Float(M) );
+                rmsValidationError = sqrt( rmsValidationError / Float(numValidationSamples) );
             }
             
             //Store the errors
             VectorFloat temp(2);
-            temp[0] = trainingSetTotalSquaredError;
-            temp[1] = rmsTrainingError;
+            temp[0] = rmsTrainingError;
+            temp[1] = rmsValidationError;
             tempTrainingErrorLog.push_back( temp );
             
             error = rmsTrainingError;
             
             //Store the training results
-            result.setRegressionResult(iter,totalSquaredTrainingError,rmsTrainingError,this);
+            result.setRegressionResult(iter,rmsTrainingError,rmsValidationError,this);
             trainingResults.push_back( result );
             
             delta = fabs( error - lastError );
             
-            trainingLog << "Random Training Iteration: " << iter+1 << " Epoch: " << epoch << " Error: " << error << " Delta: " << delta << std::endl;
+            trainingLog << "Random Training Iteration: " << iter+1 << " Epoch: " << epoch << " Rms Training Error: " << rmsTrainingError;
+            if( useValidationSet ) trainingLog << " Rms Validation Error: " << rmsValidationError;
+            trainingLog << " Delta: " << delta << std::endl;
             
             //Check to see if we should stop training
             if( ++epoch >= maxNumEpochs ){
@@ -829,7 +832,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
         
     }//End of For( numRandomTrainingIterations )
     
-    trainingLog << "Best RMSError: " << bestRMSError << " in Random Training Iteration: " << bestIter+1 << std::endl;
+    trainingLog << "Best Rms Error: " << bestRMSError << " in Random Training Iteration: " << bestIter+1 << std::endl;
     
     //Check to make sure the best network has not got any NaNs in it
     if( checkForNAN() ){
@@ -858,9 +861,10 @@ Float MLP::back_prop(const VectorFloat &trainingExample,const VectorFloat &targe
     //Compute the error of the output layer: the derivative of the output neuron, times the error of the output
     for(k=0; k<numOutputNeurons; k++){
         error = targetVector[k]-outputNeuronsOutput[k];
-        sqrError += 0.5 * SQR( error );
+        sqrError += SQR( error );
         deltaO[k] = outputLayer[k].getDerivative( outputNeuronsOutput[k] ) * error;
     }
+    sqrError = sqrt( sqrError );
     
     //Compute the error of the hidden layer: the derivative of the hidden neuron, times the total error of the hidden output 
     for(j=0; j<numHiddenNeurons; j++){

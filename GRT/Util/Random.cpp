@@ -97,7 +97,7 @@ int Random::getRandomNumberWeighted(Vector< IndexedDouble > weightedValues){
     }
     
     //Generate a random value between min and the max weighted Float values
-    Float randValue = getRandomNumberUniform(0,x[N-1]);
+    Float randValue = getUniform(0.0,x[N-1]);
     
     //Find which bin the rand value falls into, return the index of that bin
     for(unsigned int i=0; i<N; i++){
@@ -115,7 +115,7 @@ int Random::getRandomNumberWeighted(Vector< IndexedDouble > &weightedValues, Vec
     if( weightedValues.size() != x.size() ) return 0;
     
     //Generate a random value between min and the max weighted Float values
-    Float randValue = getRandomNumberUniform(0,x[N-1]);
+    Float randValue = getUniform(0.0,x[N-1]);
     
     //Find which bin the rand value falls into, return the index of that bin
     for(unsigned int i=0; i<N; i++){
@@ -127,6 +127,10 @@ int Random::getRandomNumberWeighted(Vector< IndexedDouble > &weightedValues, Vec
 }
 
 Float Random::getRandomNumberUniform(Float minRange,Float maxRange){
+  return getUniform(minRange,maxRange);
+}
+
+Float Random::getUniform(const Float &minRange,const Float &maxRange){
 #if GRT_USE_CXX11_RANDOM_ALGO
     Float r = uniformRealDistribution( generator );
 #else
