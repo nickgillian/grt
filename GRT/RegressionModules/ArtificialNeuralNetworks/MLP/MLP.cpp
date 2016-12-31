@@ -171,7 +171,7 @@ bool MLP::predict_(VectorFloat &inputVector){
     if( classificationModeActive ){
         
         //Estimate the class likelihoods
-        const UINT K = (UINT)regressionData.size();
+        const UINT K = (UINT)regressionData.getSize();
         classLikelihoods = regressionData;
         
         //Make sure all the values are greater than zero, we do this by finding the min value and adding this onto all the values
@@ -934,7 +934,7 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
     //Scale the input vector if required
     if( useScaling ){
         for(i=0; i<numInputNeurons; i++){
-            trainingExample[i] = scale(trainingExample[i],inputVectorRanges[i].minValue,inputVectorRanges[i].maxValue,setOutputTargets.minValue,setOutputTargets.maxValue);
+            trainingExample[i] = scale(trainingExample[i],inputVectorRanges[i].minValue,inputVectorRanges[i].maxValue,outputTargets.minValue,outputTargets.maxValue);
         }
     }
     
@@ -958,7 +958,7 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
     //Scale the output vector if required
     if( useScaling ){
         for(k=0; k<numOutputNeurons; k++){
-            outputNeuronsOutput[k] = scale(outputNeuronsOutput[k],setOutputTargets.minValue,setOutputTargets.maxValue,targetVectorRanges[k].minValue,targetVectorRanges[k].maxValue);
+            outputNeuronsOutput[k] = scale(outputNeuronsOutput[k],outputTargets.minValue,outputTargets.maxValue,targetVectorRanges[k].minValue,targetVectorRanges[k].maxValue);
         }
     }
     
