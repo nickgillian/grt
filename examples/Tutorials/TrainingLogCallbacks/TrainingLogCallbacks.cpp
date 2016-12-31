@@ -19,13 +19,26 @@
  */
 
  /*
- This example demonstrates how to hook into the GRT training callbacks.
+ This example demonstrates how to hook into the GRT training log callbacks. A good dataset to use this with can be found in grt/data/basic_linear_dataset.grt
+ For example, run this from the temporary build directory via: /TrainingLogCallbacks ../../data/basic_linear_dataset.grt 
  */
 
 //You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
 using namespace std;
+
+class CallbackListener : public Observer< TrainingLogMessage >{
+public:
+    CallbackListener(){
+        //Register the callback with the training log listener
+        GRT::TrainingLog::registerObserver( *this );
+    }
+private:
+    virtual void notify(const TrainingLogMessage &log){
+        std::cout << "Custom Listener: " << log.getMessage() << std::endl;
+    }
+};
 
 int main (int argc, const char * argv[])
 {
@@ -43,17 +56,14 @@ int main (int argc, const char * argv[])
         cout << "ERROR: Failed to load training data from file\n";
         return EXIT_FAILURE;
     }
-    
-    cout << "Data Loaded\n";
-    
-    //Partition the training data into a training dataset and a test dataset. 80 means that 80%
-    //of the data will be used for the training data and 20% will be returned as the test dataset
-    RegressionData testData = trainingData.split( 80 );
 
-    //Add a naive bayes classifier to the pipeline
+    //Create an instance of the callback listener
+    CallbackListener callback;
+
+    //Create a logistic regression instance
     LogisticRegression regression;
     
-    //Train the pipeline using the training data
+    //Train a model using the training data
     if( !regression.train( trainingData ) ){
         cout << "ERROR: Failed to train a model!\n";
         return EXIT_FAILURE;

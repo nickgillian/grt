@@ -33,10 +33,11 @@ RegisterRegressifierModule< LogisticRegression >  LogisticRegression::registerMo
 LogisticRegression::LogisticRegression(const bool useScaling) : Regressifier( LogisticRegression::getId() )
 {
     this->useScaling = useScaling;
-    batchSize = 50;
+    batchSize = 10;
     minChange = 1.0e-5;
+    minNumEpochs = 1;
     maxNumEpochs = 500;
-    learningRate = 0.01;
+    learningRate = 0.1;
 }
 
 LogisticRegression::LogisticRegression(const LogisticRegression &rhs) : Regressifier( LogisticRegression::getId() )
@@ -54,7 +55,7 @@ LogisticRegression& LogisticRegression::operator=(const LogisticRegression &rhs)
         this->w = rhs.w;
         
         //Copy the base variables
-        copyBaseVariables( (Regressifier*)&rhs );
+        copyBaseVariables( dynamic_cast<const Regressifier*>(&rhs) );
     }
     return *this;
 }
@@ -128,11 +129,18 @@ bool LogisticRegression::train_(RegressionData &trainingData){
     for(UINT j=0; j<N; j++){
         w[j] = rand.getUniform(-0.1,0.1);
     }
+
+    //If the batch size is zero, then it should be set to the size of the training dataset (aka 1 batch == 1 epoch)
+    if( batchSize == 0 || batchSize > M ){
+        batchSize = M;
+    }
     
     Float error = 0;
     Float lastError = 0;
     Float delta = 0;
     Float batchError = 0;
+    Float h = 0;
+    UINT iter = 0;
     UINT epoch = 0;
     UINT batchStartIndex = 0;
     UINT batchEndIndex = 0;
@@ -156,14 +164,16 @@ bool LogisticRegression::train_(RegressionData &trainingData){
     
     //Run the main stochastic gradient descent training algorithm
     while( keepTraining ){
-
-      rmsTrainingError = 0.0;
         
-        //Run one epoch of training using stochastic gradient descent
-        for(UINT m=0; m<M; m++){
+        //Run one epoch of training using stochastic gradient descent (with mini-batches)
+        batchStartIndex = 0;
+        batchEndIndex = 0;
+        while( batchStartIndex < M && keepTraining ){
+
+            rmsTrainingError = 0.0;
+            rmsValidationError = 0.0;
 
             //Update the batch counters
-            batchStartIndex = batchEndIndex;
             batchEndIndex = batchStartIndex + batchSize;
             if( batchEndIndex > M ) batchEndIndex = M;
             numSamplesInBatch = batchEndIndex-batchStartIndex;
@@ -173,11 +183,8 @@ bool LogisticRegression::train_(RegressionData &trainingData){
 
             //Copy the batch data to the temporary storage
             for(UINT n=0; n<numSamplesInBatch; n++){
-                //Select the random sample
-                UINT i = randomTrainingOrder[batchStartIndex+n];
-
-                const VectorFloat &x = trainingData[i].getInputVector();
-                const VectorFloat &y = trainingData[i].getTargetVector();
+                const VectorFloat &x = trainingData[randomTrainingOrder[batchStartIndex+n]].getInputVector();
+                const VectorFloat &y = trainingData[randomTrainingOrder[batchStartIndex+n]].getTargetVector();
 
                 for(UINT j=0; j<N; j++){
                     batchInputData[n][j] = x[j];
@@ -192,8 +199,7 @@ bool LogisticRegression::train_(RegressionData &trainingData){
                 meanInputData[j] /= static_cast<Float>(numSamplesInBatch);
             }
             
-            //Compute the error, given the current weights using the batch data
-            Float h = 0;
+            //Compute the error for each sample in the batch, given the current weights
             batchError = 0;
             for(UINT n=0; n<numSamplesInBatch; n++){
                 h = w0;
@@ -204,58 +210,67 @@ bool LogisticRegression::train_(RegressionData &trainingData){
                 batchError += error;
                 rmsTrainingError += SQR(error);
             }
+            //The batch error is the average error across the batch
+            batchError /= static_cast<Float>(numSamplesInBatch);
             
             //Update the weights based on the average error across the batch
             for(UINT j=0; j<N; j++){
                 w[j] += learningRate * batchError * meanInputData[j];
             }
             w0 += learningRate * batchError;
-        }
-        
-        //Compute the error on the validation set if needed
-        Float rmsValidationError = 0;
-        if( useValidationSet ){
-          for(UINT i=0; i<numValidationSamples; i++){
-            //Compute the error, given the current weights
-            const VectorFloat &x = validationData[i].getInputVector();
-            const VectorFloat &y = validationData[i].getTargetVector();
-            Float h = w0;
-            for(UINT j=0; j<N; j++){
-                h += x[j] * w[j];
+
+            //Compute the error on the validation set if needed
+            if( useValidationSet ){
+              for(UINT i=0; i<numValidationSamples; i++){
+                //Compute the error, given the current weights
+                const VectorFloat &x = validationData[i].getInputVector();
+                const VectorFloat &y = validationData[i].getTargetVector();
+                h = w0;
+                for(UINT j=0; j<N; j++){
+                    h += x[j] * w[j];
+                }
+                error = y[0] - sigmoid( h );
+                rmsValidationError += SQR(error);
+              }
+              rmsValidationError = sqrt( rmsValidationError / static_cast<Float>(numValidationSamples) );
             }
-            error = y[0] - sigmoid( h );
-            rmsValidationError += SQR(error);
-          }
-          rmsValidationError = sqrt( rmsValidationError / Float(validationData.getNumSamples()) );
+
+            //Compute the error
+            rmsTrainingError = sqrt( rmsTrainingError / static_cast<Float>(numSamplesInBatch) );
+            delta = iter > 0 ? fabs( rmsTrainingError-lastError ) : rmsTrainingError;
+            lastError = rmsTrainingError;
+
+            //Check to see if we should stop
+            if( delta <= minChange && epoch >= minNumEpochs ){
+                keepTraining = false;
+            }
+            
+            if( grt_isinf( rmsTrainingError ) || grt_isnan( rmsTrainingError ) ){
+                errorLog << __GRT_LOG__ << " Training failed! RMS error is NAN. If scaling is not enabled then you should try to scale your data and see if this solves the issue." << std::endl;
+                return false;
+            }
+
+            //Update the counters and batch index
+            iter++;
+            batchStartIndex = batchEndIndex;
+            
+            //Store the training results
+            result.setRegressionResult(epoch,rmsTrainingError,rmsValidationError,this);
+            trainingResults.push_back( result );
+            
+            //Notify any observers of the new result
+            trainingResultsObserverManager.notifyObservers( result );
+
+            trainingLog << "Epoch: " << epoch << " | Iter: " << iter << " | RMS Training Error: " << rmsTrainingError << " | Delta: " << delta;
+            if( useValidationSet ){
+                trainingLog << " | RMS Validation Error: " << rmsValidationError;
+            }
+            trainingLog << std::endl;
         }
 
-        //Compute the error
-        rmsTrainingError = sqrt( rmsTrainingError / Float(M) );
-        delta = epoch > 0 ? fabs( rmsTrainingError-lastError ) : rmsTrainingError;
-        lastError = rmsTrainingError;
-
-        //Check to see if we should stop
-        if( delta <= minChange ){
-            keepTraining = false;
-        }
-        
         if( ++epoch >= maxNumEpochs ){
             keepTraining = false;
         }
-        
-        if( grt_isinf( rmsTrainingError ) || grt_isnan( rmsTrainingError ) ){
-            errorLog << "train_(RegressionData &trainingData) - Training failed! RMS error is NAN. If scaling is not enabled then you should try to scale your data and see if this solves the issue." << std::endl;
-            return false;
-        }
-        
-        //Store the training results
-        result.setRegressionResult(epoch,rmsTrainingError,rmsValidationError,this);
-        trainingResults.push_back( result );
-        
-        //Notify any observers of the new result
-        trainingResultsObserverManager.notifyObservers( result );
-        
-        trainingLog << "Epoch: " << epoch << " RMS Training Error: " << rmsTrainingError << " Delta: " << delta << " RMS Validation Error: " << rmsValidationError << std::endl;
     }
     
     //Flag that the algorithm has been trained
