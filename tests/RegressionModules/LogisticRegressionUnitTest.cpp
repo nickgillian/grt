@@ -7,7 +7,16 @@ using namespace GRT;
 // Tests the learning algorithm on a basic regression task
 TEST(LogisticRegression, BasicRegressionTest) {
 
-  LogisticRegression regression(true);
+  const bool scaleData = true;
+  const Float learningRate = 0.01;
+  const Float minChange = 1.0e-5;
+  const UINT batchSize = 1;
+  const UINT maxNumEpochs = 1000;
+
+  LogisticRegression regression(scaleData,learningRate,minChange,batchSize,maxNumEpochs);
+
+  EXPECT_TRUE( regression.getLearningRate() == learningRate );
+  EXPECT_TRUE( regression.getBatchSize() == batchSize );
 
   const std::string modelFilename = regression.getId() + "_model.grt";
 
@@ -19,9 +28,9 @@ TEST(LogisticRegression, BasicRegressionTest) {
   EXPECT_TRUE( !regression.getTrained() );
 
   //Generate a basic dataset
-  const UINT numSamples = 1000;
+  const UINT numSamples = 10 * 1000;
   const UINT numDimensions = 10;
-  const Float errorTolerance = 0.1;
+  const Float errorTolerance = 0.25;
 
   //Generate a basic training dataset
   RegressionData trainingData;
@@ -32,11 +41,11 @@ TEST(LogisticRegression, BasicRegressionTest) {
     VectorFloat targetVector(1);
     for(UINT i=0; i<numSamples; i++){
     
-      Float randomClass = random.getUniform(0.0,1.0);
+      Float randomTarget = random.getUniform(0.0,1.0) > 0.5 ? 1.0 : 0.0;
       for(UINT j=0; j<numDimensions; j++){
-        inputVector[j] = random.getGauss( randomClass, 0.2 );
+        inputVector[j] = random.getGauss( randomTarget, 0.25 );
       }
-      targetVector[0] = randomClass >= 0.5 ? 1.0 : 0.0;
+      targetVector[0] = randomTarget;
 
       EXPECT_TRUE( trainingData.addSample( inputVector, targetVector ) );
     }
@@ -54,6 +63,7 @@ TEST(LogisticRegression, BasicRegressionTest) {
   EXPECT_TRUE( regression.getTrained() );
   EXPECT_TRUE( regression.getNumInputDimensions() == numDimensions );
   EXPECT_TRUE( regression.getNumOutputDimensions() == 1 );
+  std::cout << "error: " << regression.getRMSTrainingError() << std::endl;
   EXPECT_TRUE( regression.getRMSTrainingError() <= errorTolerance ); //This should equal zero, as we only get accuracy for classifiers
   EXPECT_TRUE( regression.getRMSValidationError() == 0.0 ); //Validation is off, so the validation accuracy should be zero
 

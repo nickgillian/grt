@@ -41,9 +41,14 @@ public:
     /**
     Default Constructor
     
-    @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = true
+    @param useScaling: sets if the training and real-time data should be scaled between [0 1]
+    @param learningRate: sets the rate at which the model's weights are updated during training
+    @param minChange: sets the minimum change needed during updates before training is stopped
+    @param batchSize: sets the number of training samples that will be used in one batch to update the weights
+    @param maxNumEpochs: sets the maximum number of epochs allowed during training (one epoch is one full iteration over the training data)
+    @param minNumEpochs: sets the minimum number of epochs that must be completed before the training algorithm can stop
     */
-    LogisticRegression(const bool useScaling=true);
+    LogisticRegression(const bool useScaling=true,const Float learningRate=0.01,const Float minChange=1.0e-5,const UINT batchSize=1,const UINT maxNumEpochs=500,const UINT minNumEpochs=1);
 
     /**
     Copy Constructor

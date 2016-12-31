@@ -30,14 +30,14 @@ std::string LogisticRegression::getId() { return LogisticRegression::id; }
 //Register the LogisticRegression module with the Classifier base class
 RegisterRegressifierModule< LogisticRegression >  LogisticRegression::registerModule( LogisticRegression::getId() );
 
-LogisticRegression::LogisticRegression(const bool useScaling) : Regressifier( LogisticRegression::getId() )
+LogisticRegression::LogisticRegression(const bool useScaling,const Float learningRate,const Float minChange,const UINT batchSize,const UINT maxNumEpochs,const UINT minNumEpochs) : Regressifier( LogisticRegression::getId() )
 {
     this->useScaling = useScaling;
-    batchSize = 10;
-    minChange = 1.0e-5;
-    minNumEpochs = 1;
-    maxNumEpochs = 500;
-    learningRate = 0.1;
+    this->learningRate = learningRate;
+    this->minChange = minChange;
+    this->batchSize = batchSize;
+    this->minNumEpochs = minNumEpochs;
+    this->maxNumEpochs = maxNumEpochs;
 }
 
 LogisticRegression::LogisticRegression(const LogisticRegression &rhs) : Regressifier( LogisticRegression::getId() )
@@ -124,10 +124,10 @@ bool LogisticRegression::train_(RegressionData &trainingData){
     
     //Reset the weights
     Random rand;
-    w0 = rand.getUniform(-0.1,0.1);
+    w0 = 0; //rand.getUniform(-0.1,0.1);
     w.resize(N);
     for(UINT j=0; j<N; j++){
-        w[j] = rand.getUniform(-0.1,0.1);
+        w[j] = 0; //rand.getUniform(-0.1,0.1);
     }
 
     //If the batch size is zero, then it should be set to the size of the training dataset (aka 1 batch == 1 epoch)
