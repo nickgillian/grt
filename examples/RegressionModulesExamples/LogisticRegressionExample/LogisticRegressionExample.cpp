@@ -92,9 +92,21 @@ int main (int argc, const char * argv[])
     
     //Create a new gesture recognition pipeline
     GestureRecognitionPipeline pipeline;
-    
-    //Add a LogisticRegression instance to the pipeline
-    pipeline.setRegressifier( LogisticRegression() );
+
+    //Create a new logistic regression module and add it to the pipeline
+    {
+        const bool scaleData = true;
+        const Float learningRate = 0.2;
+        const Float minChange = 1.0e-8;
+        const UINT batchSize = 20;
+        const UINT maxNumEpochs = 1000;
+
+        //Create a new logistic regression module
+        LogisticRegression regression(scaleData,learningRate,minChange,batchSize,maxNumEpochs);
+        
+        //Add the LogisticRegression instance to the pipeline
+        pipeline << regression;
+    }
     
     //Train the LogisticRegression model
     cout << "Training LogisticRegression model...\n";

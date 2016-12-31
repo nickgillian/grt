@@ -63,7 +63,6 @@ TEST(LogisticRegression, BasicRegressionTest) {
   EXPECT_TRUE( regression.getTrained() );
   EXPECT_TRUE( regression.getNumInputDimensions() == numDimensions );
   EXPECT_TRUE( regression.getNumOutputDimensions() == 1 );
-  std::cout << "error: " << regression.getRMSTrainingError() << std::endl;
   EXPECT_TRUE( regression.getRMSTrainingError() <= errorTolerance ); //This should equal zero, as we only get accuracy for classifiers
   EXPECT_TRUE( regression.getRMSValidationError() == 0.0 ); //Validation is off, so the validation accuracy should be zero
 
