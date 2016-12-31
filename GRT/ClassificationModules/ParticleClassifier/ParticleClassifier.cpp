@@ -112,6 +112,7 @@ bool ParticleClassifier::train_(TimeSeriesClassificationData &trainingData){
     }
     
     trained = true;
+    converged = true;
   
     return trained;
 }
@@ -119,12 +120,12 @@ bool ParticleClassifier::train_(TimeSeriesClassificationData &trainingData){
 bool ParticleClassifier::predict_( VectorDouble &inputVector ){
 
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - The model has not been trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " The model has not been trained!" << std::endl;
         return false;
     }
     
-    if( numInputDimensions != inputVector.size() ){
-        errorLog << "predict_(VectorDouble &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.size() << std::endl;
+    if( numInputDimensions != inputVector.getSize() ){
+        errorLog << __GRT_LOG__ << " The number of features in the model " << numInputDimensions << " does not match that of the input vector " << inputVector.getSize() << std::endl;
         return false;
     }
     

@@ -90,12 +90,12 @@ bool MinDist::train_(ClassificationData &trainingData){
     const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
-        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
+        errorLog << __GRT_LOG__ << " Training data has zero samples!" << std::endl;
         return false;
     }
     
     if( M <= numClusters ){
-        errorLog << "train_(ClassificationData &trainingData) - There are not enough training samples for the number of clusters. Either reduce the number of clusters or increase the number of training samples!" << std::endl;
+        errorLog << __GRT_LOG__ << " There are not enough training samples for the number of clusters. Either reduce the number of clusters or increase the number of training samples!" << std::endl;
         return false;
     }
     
@@ -146,7 +146,7 @@ bool MinDist::train_(ClassificationData &trainingData){
         //Train the model for this class
         models[k].setGamma( nullRejectionCoeff );
         if( !models[k].train(classLabel,data,numClusters,minChange,maxNumEpochs) ){
-            errorLog << "train_(ClassificationData &trainingData) - Failed to train model for class: " << classLabel;
+            errorLog << __GRT_LOG__ << " Failed to train model for class: " << classLabel;
             errorLog << ". This is might be because this class does not have enough training samples! You should reduce the number of clusters or increase the number of training samples for this class." << std::endl;
             models.clear();
             return false;
@@ -158,6 +158,7 @@ bool MinDist::train_(ClassificationData &trainingData){
 
     //Flag that the models have been trained
     trained = true;
+    converged = true;
 
     //Compute the final training stats
     trainingSetAccuracy = 0;
@@ -168,14 +169,16 @@ bool MinDist::train_(ClassificationData &trainingData){
     useScaling = false;
     if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
         trained = false;
-        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        converged = false;
+        errorLog << __GRT_LOG__ << " Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
         return false;
     }
     
     if( useValidationSet ){
         if( !computeAccuracy( validationData, validationSetAccuracy ) ){
             trained = false;
-            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            converged = false;
+            errorLog << __GRT_LOG__ << " Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
             return false;
         }
         
@@ -192,7 +195,6 @@ bool MinDist::train_(ClassificationData &trainingData){
 
     return trained;
 }
-
 
 bool MinDist::predict_(VectorFloat &inputVector){
     
