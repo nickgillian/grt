@@ -24,9 +24,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-const Float MLP_NEURON_MIN_TARGET = -1.0;
-const Float MLP_NEURON_MAX_TARGET = 1.0;
-
 //Define the string that will be used to identify the object
 const std::string MLP::id = "MLP";
 std::string MLP::getId() { return MLP::id; }
@@ -88,6 +85,7 @@ MLP& MLP::operator=(const MLP &rhs){
         this->inputVectorRanges = rhs.inputVectorRanges;
         this->targetVectorRanges = rhs.targetVectorRanges;
         this->trainingErrorLog = rhs.trainingErrorLog;
+        this->outputTargets = rhs.outputTargets;
         
         this->classificationModeActive = rhs.classificationModeActive;
         this->useNullRejection = rhs.useNullRejection;
@@ -162,8 +160,8 @@ bool MLP::predict_(VectorFloat &inputVector){
         return false;
     }
     
-    if( inputVector.size() != numInputNeurons ){
-        errorLog << __GRT_LOG__ << " The sie of the input Vector (" << int(inputVector.size()) << ") does not match that of the number of input dimensions (" << numInputNeurons << ") " << std::endl;
+    if( inputVector.getSize() != numInputNeurons ){
+        errorLog << __GRT_LOG__ << " The size of the input Vector (" << inputVector.getSize() << ") does not match that of the number of input dimensions (" << numInputNeurons << ") " << std::endl;
         return false;
     }
     
@@ -270,16 +268,19 @@ bool MLP::init(const UINT numInputNeurons,
         inputLayer[i].bias = 0.0; //The bias for the input layer should always be 0
         inputLayer[i].gamma = gamma;
     }
+
+    const Float hiddenLayerScaleFactor = 1.0/sqrt(numInputNeurons);
+    const Float outputLayerScaleFactor = 1.0/sqrt(numHiddenNeurons);
     
     for(UINT i=0; i<numHiddenNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of input neurons
-        hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction,random,-1.0/sqrt(numInputNeurons),1.0/sqrt(numInputNeurons));
+        hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction,random,-hiddenLayerScaleFactor,hiddenLayerScaleFactor);
         hiddenLayer[i].gamma = gamma;
     }
     
     for(UINT i=0; i<numOutputNeurons; i++){
         //The number of inputs to a neuron in the output layer will always match the number of hidden neurons
-        outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction,random,-1.0/sqrt(numHiddenNeurons),1.0/sqrt(numHiddenNeurons));
+        outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction,random,-outputLayerScaleFactor,outputLayerScaleFactor);
         outputLayer[i].gamma = gamma;
     }
     
@@ -344,6 +345,9 @@ bool MLP::trainModel(RegressionData &trainingData){
     //Set the Regressifier input and output dimensions
     numInputDimensions = numInputNeurons;
     numOutputDimensions = numOutputNeurons;
+
+    //Set the target values that the output layer neurons should be scaled to
+    setOutputTargets();
     
     //Scale the training and validation data, if needed
     if( useScaling ){
@@ -354,10 +358,10 @@ bool MLP::trainModel(RegressionData &trainingData){
         targetVectorRanges = trainingData.getTargetRanges();
         
         //Now scale the training data and the validation data if required
-        trainingData.scale(inputVectorRanges,targetVectorRanges,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
+        trainingData.scale(inputVectorRanges,targetVectorRanges,outputTargets.minValue,outputTargets.maxValue);
         
         if( useValidationSet ){
-            validationData.scale(inputVectorRanges,targetVectorRanges,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
+            validationData.scale(inputVectorRanges,targetVectorRanges,outputTargets.minValue,outputTargets.maxValue);
         }
     }
     //If scaling is enabled then the training and validation data will be scaled - so turn it off so the we do not need to scale the data again
@@ -376,11 +380,11 @@ bool MLP::trainModel(RegressionData &trainingData){
     //Call the main training function
     switch( trainingMode ){
         case ONLINE_GRADIENT_DESCENT:
-        if( classificationModeActive ){
-            trained = trainOnlineGradientDescentClassification( trainingData, validationData );
-        }else{
-            trained = trainOnlineGradientDescentRegression( trainingData, validationData );
-        }
+            if( classificationModeActive ){
+                trained = trainOnlineGradientDescentClassification( trainingData, validationData );
+            }else{
+                trained = trainOnlineGradientDescentRegression( trainingData, validationData );
+            }
         break;
         default:
         useScaling = tempScalingState;
@@ -930,7 +934,7 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
     //Scale the input vector if required
     if( useScaling ){
         for(i=0; i<numInputNeurons; i++){
-            trainingExample[i] = scale(trainingExample[i],inputVectorRanges[i].minValue,inputVectorRanges[i].maxValue,MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET);
+            trainingExample[i] = scale(trainingExample[i],inputVectorRanges[i].minValue,inputVectorRanges[i].maxValue,setOutputTargets.minValue,setOutputTargets.maxValue);
         }
     }
     
@@ -954,7 +958,7 @@ VectorFloat MLP::feedforward(VectorFloat trainingExample){
     //Scale the output vector if required
     if( useScaling ){
         for(k=0; k<numOutputNeurons; k++){
-            outputNeuronsOutput[k] = scale(outputNeuronsOutput[k],MLP_NEURON_MIN_TARGET,MLP_NEURON_MAX_TARGET,targetVectorRanges[k].minValue,targetVectorRanges[k].maxValue);
+            outputNeuronsOutput[k] = scale(outputNeuronsOutput[k],setOutputTargets.minValue,setOutputTargets.maxValue,targetVectorRanges[k].minValue,targetVectorRanges[k].maxValue);
         }
     }
     
@@ -1064,7 +1068,7 @@ bool MLP::checkForNAN() const{
     return false;
 }
 
-bool inline MLP::isNAN(const Float v) const{
+bool inline MLP::isNAN(const Float &v) const{
     if( v != v ) return true;
     return false;
 }
@@ -1481,6 +1485,8 @@ bool MLP::load( std::fstream &file ){
         }
         
     }
+
+    setOutputTargets();
     
     return true;
 }
@@ -2135,6 +2141,26 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
     initialized = true;
     trained = true;
     
+    return true;
+}
+
+bool MLP::setOutputTargets(){
+
+    switch( outputLayerActivationFunction ){
+        case Neuron::SIGMOID:
+            outputTargets.minValue = 0.0;
+            outputTargets.maxValue = 1.0;
+        break;
+        case Neuron::TANH:
+            outputTargets.minValue = -1.0;
+            outputTargets.maxValue = 1.0;
+        break;
+        default:
+            outputTargets.minValue = 0;
+            outputTargets.maxValue = 1.0;
+        break;
+    }
+
     return true;
 }
 

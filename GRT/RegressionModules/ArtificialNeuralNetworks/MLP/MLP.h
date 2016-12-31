@@ -501,7 +501,9 @@ public:
     using MLBase::predict_;
     
 protected:
-    bool inline isNAN(const Float v) const;
+    bool inline isNAN(const Float &v) const;
+
+    bool setOutputTargets();
     
     bool trainModel(RegressionData &trainingData);
     
@@ -551,6 +553,7 @@ protected:
     Float momentum;
     Float gamma;
     Float trainingError;
+    MinMax outputTargets;
     bool initialized;
     
     Vector< Neuron > inputLayer;
