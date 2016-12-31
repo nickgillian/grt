@@ -145,7 +145,7 @@ bool ANBC::train_(ClassificationData &trainingData){
             }
             
             if( !weightsFound ){
-                errorLog << "train_(ClassificationData &trainingData) - Failed to find the weights for class " << classLabel << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to find the weights for class " << classLabel << std::endl;
                     return false;
             }
         }else{
@@ -167,17 +167,17 @@ bool ANBC::train_(ClassificationData &trainingData){
         //Train the model for this class
         models[k].gamma = nullRejectionCoeff;
         if( !models[k].train( classLabel, data, weights ) ){
-            errorLog << "train_(ClassificationData &trainingData) - Failed to train model for class: " << classLabel << std::endl;
+            errorLog <<  __GRT_LOG__ << " Failed to train model for class: " << classLabel << std::endl;
                 
             //Try and work out why the training failed
             if( models[k].N == 0 ){
-                errorLog << "train_(ClassificationData &trainingData) - N == 0!" << std::endl;
+                errorLog << __GRT_LOG__ << " N == 0!" << std::endl;
                 models.clear();
                 return false;
             }
             for(UINT j=0; j<numInputDimensions; j++){
                 if( models[k].sigma[j] == 0 ){
-                    errorLog << "train_(ClassificationData &trainingData) - The standard deviation of column " << j+1 << " is zero! Check the training data" << std::endl;
+                    errorLog << __GRT_LOG__ << " The standard deviation of column " << j+1 << " is zero! Check the training data" << std::endl;
                     models.clear();
                     return false;
                 }
@@ -196,6 +196,7 @@ bool ANBC::train_(ClassificationData &trainingData){
     
     //Flag that the model has been trained
     trained = true;
+    converged = true;
 
     //Compute the final training stats
     trainingSetAccuracy = 0;
@@ -206,14 +207,14 @@ bool ANBC::train_(ClassificationData &trainingData){
     useScaling = false;
     if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
         trained = false;
-        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
         return false;
     }
     
     if( useValidationSet ){
         if( !computeAccuracy( validationData, validationSetAccuracy ) ){
             trained = false;
-            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
             return false;
         }
         

@@ -164,7 +164,7 @@ bool FiniteStateMachine::train_( TimeSeriesClassificationData &trainingData ){
     //Train the particle filter
     if( !train_( timeseries ) ){
         clear();
-        errorLog << "train_(TimeSeriesClassificationData &trainingData) - Failed to train particle filter!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to train particle filter!" << std::endl;
         return false;
     }
     
@@ -234,7 +234,7 @@ bool FiniteStateMachine::train_( TimeSeriesClassificationDataStream &data ){
         
         //Make sure there are enough training samples to support the numClustersPerState
         if( classData.getNumRows() < numClustersPerState ){
-            errorLog << "train_(TimeSeriesClassificationDataStream &trainingData) - There are not enough samples in state " << classLabels[k] << "! You should reduce the numClustersPerState to: " << classData.getNumRows() << std::endl;
+            errorLog << __GRT_LOG__ << " There are not enough samples in state " << classLabels[k] << "! You should reduce the numClustersPerState to: " << classData.getNumRows() << std::endl;
             clear();
             return false;
         }
@@ -247,7 +247,7 @@ bool FiniteStateMachine::train_( TimeSeriesClassificationDataStream &data ){
         kmeans.setMaxNumEpochs( maxNumEpochs );
         
         if( !kmeans.train_( classData ) ){
-            errorLog << "train_(TimeSeriesClassificationDataStream &trainingData) - Failed to train kmeans cluster for class k: " << classLabels[k] << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to train kmeans cluster for class k: " << classLabels[k] << std::endl;
                 clear();
             return false;
         }
@@ -258,6 +258,7 @@ bool FiniteStateMachine::train_( TimeSeriesClassificationDataStream &data ){
     
     //Flag the model is trained
     trained = true;
+    converged = true;
     
     //Init the particles
     initParticles();
@@ -273,15 +274,15 @@ bool FiniteStateMachine::train_( TimeSeriesClassificationDataStream &data ){
 bool FiniteStateMachine::predict_(VectorFloat &inputVector){
     
     if( !trained ){
-        errorLog << "predict_(VectorFloat &inputVector) - Model Not Trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " Model Not Trained!" << std::endl;
         return false;
     }
     
     predictedClassLabel = 0;
     maxLikelihood = -10000;
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << __GRT_LOG__ << "  The size of the input vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
         return false;
     }
     
@@ -291,8 +292,8 @@ bool FiniteStateMachine::predict_(VectorFloat &inputVector){
         }
     }
     
-    if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
-    if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
+    if( classLikelihoods.getSize() != numClasses ) classLikelihoods.resize(numClasses,0);
+    if( classDistances.getSize() != numClasses ) classDistances.resize(numClasses,0);
     
     std::fill(classLikelihoods.begin(),classLikelihoods.end(),0);
     std::fill(classDistances.begin(),classDistances.end(),0);
@@ -385,7 +386,7 @@ bool FiniteStateMachine::save( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
+        errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
         return false;
     }
     
@@ -394,7 +395,7 @@ bool FiniteStateMachine::save( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog << "save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
@@ -423,7 +424,7 @@ bool FiniteStateMachine::save( std::fstream &file ) const{
         
         if( !useScaling ){
             file << "Ranges: " << std::endl;
-            for(UINT i=0; i<ranges.size(); i++){
+            for(UINT i=0; i<ranges.getSize(); i++){
                 file << ranges[i].minValue << "\t" << ranges[i].maxValue << std::endl;
             }
         }
@@ -439,7 +440,7 @@ bool FiniteStateMachine::load( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "load(string filename) - Could not open file to load model" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -448,20 +449,20 @@ bool FiniteStateMachine::load( std::fstream &file ){
     //Find the file type header
     file >> word;
     if( word != "GRT_FSM_MODEL_FILE_V1.0" ){
-        errorLog << "load(string filename) - Could not find Model File Header" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << __GRT_LOG__ << "  Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     //Find the NumParticles header
     file >> word;
     if( word != "NumParticles:" ){
-        errorLog << "load(string filename) - Could not find NumParticles Header" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not find NumParticles Header" << std::endl;
         return false;
     }
     file >> numParticles;
@@ -469,7 +470,7 @@ bool FiniteStateMachine::load( std::fstream &file ){
     //Find the NumClustersPerState header
     file >> word;
     if( word != "NumClustersPerState:" ){
-        errorLog << "load(string filename) - Could not find NumClustersPerState Header" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not find NumClustersPerState Header" << std::endl;
         return false;
     }
     file >> numClustersPerState;
@@ -477,7 +478,7 @@ bool FiniteStateMachine::load( std::fstream &file ){
     //Find the StateTransitionSmoothingCoeff header
     file >> word;
     if( word != "StateTransitionSmoothingCoeff:" ){
-        errorLog << "load(string filename) - Could not find stateTransitionSmoothingCoeff Header" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not find stateTransitionSmoothingCoeff Header" << std::endl;
         return false;
     }
     file >> stateTransitionSmoothingCoeff;
@@ -487,7 +488,7 @@ bool FiniteStateMachine::load( std::fstream &file ){
         //Find the StateTransitions header
         file >> word;
         if( word != "StateTransitions:" ){
-            errorLog << "load(string filename) - Could not find StateTransitions Header" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not find StateTransitions Header" << std::endl;
             return false;
         }
         stateTransitions.resize(numClasses, numClasses);
@@ -501,7 +502,7 @@ bool FiniteStateMachine::load( std::fstream &file ){
         //Find the StateEmissions header
         file >> word;
         if( word != "StateEmissions:" ){
-            errorLog << "load(string filename) - Could not find StateEmissions Header" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not find StateEmissions Header" << std::endl;
             return false;
         }
         stateEmissions.resize( numClasses );
@@ -519,7 +520,7 @@ bool FiniteStateMachine::load( std::fstream &file ){
             //Load if the Ranges
             file >> word;
             if( word != "Ranges:" ){
-                errorLog << "load(string filename) - Failed to read Ranges header!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to read Ranges header!" << std::endl;
                 clear();
                 return false;
             }
@@ -540,7 +541,7 @@ bool FiniteStateMachine::load( std::fstream &file ){
 bool FiniteStateMachine::recomputePT(){
     
     if( !trained ){
-        warningLog << "recomputePT() - Failed to init particles, the model has not been trained!" << std::endl;
+        warningLog << __GRT_LOG__ << " Failed to init particles, the model has not been trained!" << std::endl;
         return false;
     }
     
@@ -563,7 +564,7 @@ bool FiniteStateMachine::recomputePT(){
 bool FiniteStateMachine::recomputePE(){
     
     if( !trained ){
-        warningLog << "recomputePE() - Failed to init particles, the model has not been trained!" << std::endl;
+        warningLog << __GRT_LOG__ << " Failed to init particles, the model has not been trained!" << std::endl;
         return false;
     }
     
@@ -590,7 +591,7 @@ bool FiniteStateMachine::recomputePE(){
 bool FiniteStateMachine::initParticles(){
     
     if( !trained ){
-        warningLog << "initParticles() - Failed to init particles, the model has not been trained!" << std::endl;
+        warningLog << __GRT_LOG__ << " Failed to init particles, the model has not been trained!" << std::endl;
         return false;
     }
     

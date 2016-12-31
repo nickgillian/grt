@@ -98,7 +98,7 @@ bool BAG::train_(ClassificationData &trainingData){
     const unsigned int K = trainingData.getNumClasses();
     
     if( M == 0 ){
-        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
+        errorLog << __GRT_LOG__ << " Training data has zero samples!" << std::endl;
         return false;
     }
     
@@ -122,13 +122,13 @@ bool BAG::train_(ClassificationData &trainingData){
     UINT ensembleSize = ensemble.getSize();
     
     if( ensembleSize == 0 ){
-        errorLog << "train_(ClassificationData &trainingData) - The ensemble size is zero! You need to add some classifiers to the ensemble first." << std::endl;
+        errorLog << __GRT_LOG__ << " The ensemble size is zero! You need to add some classifiers to the ensemble first." << std::endl;
         return false;
     }
     
     for(UINT i=0; i<ensembleSize; i++){
         if( ensemble[i] == NULL ){
-            errorLog << "train_(ClassificationData &trainingData) - The classifier at ensemble index " << i << " has not been set!" << std::endl;
+            errorLog << __GRT_LOG__ << " The classifier at ensemble index " << i << " has not been set!" << std::endl;
             return false;
         }
     }
@@ -144,7 +144,7 @@ bool BAG::train_(ClassificationData &trainingData){
         
         //Train the classifier with the bootstrapped dataset
         if( !ensemble[i]->train_( boostedDataset ) ){
-            errorLog << "train_(ClassificationData &trainingData) - The classifier at ensemble index " << i << " failed training!" << std::endl;
+            errorLog << __GRT_LOG__ << " The classifier at ensemble index " << i << " failed training!" << std::endl;
             return false;
         }
     }
@@ -154,6 +154,7 @@ bool BAG::train_(ClassificationData &trainingData){
     
     //Flag that the model has been trained
     trained = true;
+    converged = true;
 
     //Compute the final training stats
     trainingSetAccuracy = 0;
@@ -164,14 +165,14 @@ bool BAG::train_(ClassificationData &trainingData){
     useScaling = false;
     if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
         trained = false;
-        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
         return false;
     }
     
     if( useValidationSet ){
         if( !computeAccuracy( validationData, validationSetAccuracy ) ){
             trained = false;
-            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
             return false;
         }
         
@@ -192,7 +193,7 @@ bool BAG::train_(ClassificationData &trainingData){
 bool BAG::predict_(VectorFloat &inputVector){
     
     if( !trained ){
-        errorLog << "predict_(VectorFloat &inputVector) - Model Not Trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " Model Not Trained!" << std::endl;
         return false;
     }
     
@@ -202,7 +203,7 @@ bool BAG::predict_(VectorFloat &inputVector){
     if( !trained ) return false;
     
     if( inputVector.getSize() != numInputDimensions ){
-        errorLog << "predict_(VectorFloat &inputVector) - The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
+        errorLog << __GRT_LOG__ << " The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
         return false;
     }
     
@@ -227,7 +228,7 @@ bool BAG::predict_(VectorFloat &inputVector){
     for(UINT i=0; i<ensembleSize; i++){
         
         if( !ensemble[i]->predict(inputVector) ){
-            errorLog << "predict_(VectorFloat &inputVector) - The " << i << " classifier in the ensemble failed prediction!" << std::endl;
+            errorLog << __GRT_LOG__ << " The " << i << " classifier in the ensemble failed prediction!" << std::endl;
             return false;
         }
         
@@ -286,7 +287,7 @@ bool BAG::save( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
+        errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
         return false;
     }
     
@@ -297,7 +298,7 @@ bool BAG::save( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
@@ -325,7 +326,7 @@ bool BAG::save( std::fstream &file ) const{
             file << "Ensemble:" << std::endl;
             for(UINT i=0; i<getEnsembleSize(); i++){
                 if( !ensemble[i]->save( file ) ){
-                    errorLog <<"save(fstream &file) - Failed to save classifier " << i << " to file!" << std::endl;
+                    errorLog << __GRT_LOG__ << " Failed to save classifier " << i << " to file!" << std::endl;
                     return false;
                 }
             }
@@ -345,7 +346,7 @@ bool BAG::load( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "load(string filename) - Could not open file to load model" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -359,13 +360,13 @@ bool BAG::load( std::fstream &file ){
     
     //Find the file type header
     if(word != "GRT_BAG_MODEL_FILE_V2.0"){
-        errorLog << "load(string filename) - Could not find Model File Header" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to load base settings from file!" << std::endl;
         clear();
         return false;
     }
@@ -375,7 +376,7 @@ bool BAG::load( std::fstream &file ){
         //Load the ensemble size
         file >> word;
         if(word != "EnsembleSize:"){
-            errorLog << "load(string filename) - Could not find the EnsembleSize!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not find the EnsembleSize!" << std::endl;
             clear();
             return false;
         }
@@ -386,7 +387,7 @@ bool BAG::load( std::fstream &file ){
         
         file >> word;
         if(word != "Weights:"){
-            errorLog << "load(string filename) - Could not find the Weights!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not find the Weights!" << std::endl;
             clear();
             return false;
         }
@@ -399,7 +400,7 @@ bool BAG::load( std::fstream &file ){
         
         file >> word;
         if(word != "ClassifierTypes:"){
-            errorLog << "load(string filename) - Could not find the ClassifierTypes!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not find the ClassifierTypes!" << std::endl;
             clear();
             return false;
         }
@@ -410,7 +411,7 @@ bool BAG::load( std::fstream &file ){
         //Load the ensemble
         file >> word;
         if(word != "Ensemble:"){
-            errorLog << "load(string filename) - Could not find the Ensemble! Found: " << word << std::endl;
+            errorLog << __GRT_LOG__ << " Could not find the Ensemble! Found: " << word << std::endl;
             clear();
             return false;
         }
@@ -419,14 +420,14 @@ bool BAG::load( std::fstream &file ){
             ensemble[i] = create( classifierTypes[i] );
             
             if( ensemble[i] == NULL ){
-                errorLog << "load(string filename) - Could not create a new classifier instance from the classifierType: " << classifierTypes[i] << std::endl;
+                errorLog << __GRT_LOG__ << " Could not create a new classifier instance from the classifierType: " << classifierTypes[i] << std::endl;
                 clear();
                 clearEnsemble();
                 return false;
             }
             
             if( !ensemble[i]->load( file ) ){
-                errorLog << "load(string filename) - Failed to load ensemble classifier: " << i << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to load ensemble classifier: " << i << std::endl;
                 clear();
                 clearEnsemble();
                 return false;
@@ -495,7 +496,7 @@ bool BAG::clearEnsemble(){
 
 bool BAG::setWeights(const VectorFloat &weights){
     
-    if( this->weights.size() != weights.size() ){
+    if( this->weights.getSize() != weights.getSize() ){
         return false;
     }
     this->weights = weights;

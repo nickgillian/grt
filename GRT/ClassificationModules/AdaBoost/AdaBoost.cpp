@@ -196,7 +196,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
                 
                 //Train the current classifier
                 if( !weakLearner->train(classData,weights) ){
-                    errorLog << "Failed to train weakLearner!" << std::endl;
+                    errorLog << __GRT_LOG__ << " Failed to train weakLearner!" << std::endl;
                     return false;
                 }
                 
@@ -287,6 +287,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
     
     //Flag that the model has been fully trained
     trained = true;
+    converged = true;
     
     //Setup the data for prediction
     predictedClassLabel = 0;
@@ -304,7 +305,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
     for(UINT i=0; i<M; i++){
         if( !predict_( trainingData[i].getSample() ) ){
             trained = false;
-            errorLog << "Failed to run prediction for training sample: " << i << "! Failed to fully train model!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to run prediction for training sample: " << i << "! Failed to fully train model!" << std::endl;
             return false;
         }
 
@@ -317,7 +318,7 @@ bool AdaBoost::train_(ClassificationData &trainingData){
         for(UINT i=0; i<validationData.getNumSamples(); i++){
             if( !predict_( validationData[i].getSample() ) ){
                 trained = false;
-                errorLog << "Failed to run prediction for validation sample: " << i << "! Failed to fully train model!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to run prediction for validation sample: " << i << "! Failed to fully train model!" << std::endl;
                 return false;
             }
 
@@ -348,12 +349,12 @@ bool AdaBoost::predict_(VectorFloat &inputVector){
     maxLikelihood = -10000;
     
     if( !trained ){
-        errorLog << "predict_(VectorFloat &inputVector) - AdaBoost Model Not Trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " AdaBoost Model Not Trained!" << std::endl;
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << __GRT_LOG__ << " The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
         return false;
     }
     
@@ -363,8 +364,8 @@ bool AdaBoost::predict_(VectorFloat &inputVector){
         }
     }
     
-    if( classLikelihoods.size() != numClasses ) classLikelihoods.resize(numClasses,0);
-    if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
+    if( classLikelihoods.getSize() != numClasses ) classLikelihoods.resize(numClasses,0);
+    if( classDistances.getSize() != numClasses ) classDistances.resize(numClasses,0);
     
     UINT bestClassIndex = 0;
     UINT numPositivePredictions = 0;
@@ -403,7 +404,7 @@ bool AdaBoost::predict_(VectorFloat &inputVector){
             
             break;
             default:
-            errorLog << "predict_(VectorFloat &inputVector) - Unknown prediction method!" << std::endl;
+            errorLog << __GRT_LOG__ << " Unknown prediction method!" << std::endl;
             break;
         }
     }
@@ -463,7 +464,7 @@ bool AdaBoost::save( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog << __GRT_LOG__ << "  Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
@@ -475,7 +476,7 @@ bool AdaBoost::save( std::fstream &file ) const{
         file << "Models: " << std::endl;
         for(UINT i=0; i<models.size(); i++){
             if( !models[i].save( file ) ){
-                errorLog <<"save(fstream &file) - Failed to write model " << i << " to file!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to write model " << i << " to file!" << std::endl;
                 file.close();
                 return false;
             }
@@ -491,7 +492,7 @@ bool AdaBoost::load( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "load(string filename) - Could not open file to load model!" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not open file to load model!" << std::endl;
         return false;
     }
     
@@ -504,20 +505,20 @@ bool AdaBoost::load( std::fstream &file ){
     }
     
     if( word != "GRT_ADABOOST_MODEL_FILE_V2.0" ){
-        errorLog <<"load(fstream &file) - Failed to read file header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read file header!" << std::endl;
         errorLog << word << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if( word != "PredictionMethod:" ){
-        errorLog <<"load(fstream &file) - Failed to read PredictionMethod header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read PredictionMethod header!" << std::endl;
         return false;
     }
     file >> predictionMethod;
@@ -525,15 +526,15 @@ bool AdaBoost::load( std::fstream &file ){
     if( trained ){
         file >> word;
         if( word != "Models:" ){
-            errorLog <<"load(fstream &file) - Failed to read Models header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to read Models header!" << std::endl;
             return false;
         }
         
         //Load the models
         models.resize( numClasses );
-        for(UINT i=0; i<models.size(); i++){
+        for(UINT i=0; i<models.getSize(); i++){
             if( !models[i].load( file ) ){
-                errorLog << "load(fstream &file) - Failed to load model " << i << " from file!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to load model " << i << " from file!" << std::endl;
                 file.close();
                 return false;
             }
@@ -632,28 +633,28 @@ bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
     
     file >> word;
     if( word != "NumFeatures:" ){
-        errorLog <<"load(fstream &file) - Failed to read NumFeatures header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read NumFeatures header!" << std::endl;
         return false;
     }
     file >> numInputDimensions;
     
     file >> word;
     if( word != "NumClasses:" ){
-        errorLog <<"load(fstream &file) - Failed to read NumClasses header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read NumClasses header!" << std::endl;
         return false;
     }
     file >> numClasses;
     
     file >> word;
     if( word != "UseScaling:" ){
-        errorLog <<"load(fstream &file) - Failed to read UseScaling header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read UseScaling header!" << std::endl;
         return false;
     }
     file >> useScaling;
     
     file >> word;
     if( word != "UseNullRejection:" ){
-        errorLog <<"load(fstream &file) - Failed to read UseNullRejection header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read UseNullRejection header!" << std::endl;
         return false;
     }
     file >> useNullRejection;
@@ -661,7 +662,7 @@ bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
     if( useScaling ){
         file >> word;
         if( word != "Ranges:" ){
-            errorLog <<"load(fstream &file) - Failed to read Ranges header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to read Ranges header!" << std::endl;
             return false;
         }
         ranges.resize( numInputDimensions );
@@ -674,14 +675,14 @@ bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
     
     file >> word;
     if( word != "Trained:" ){
-        errorLog <<"load(fstream &file) - Failed to read Trained header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read Trained header!" << std::endl;
         return false;
     }
     file >> trained;
     
     file >> word;
     if( word != "PredictionMethod:" ){
-        errorLog <<"load(fstream &file) - Failed to read PredictionMethod header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read PredictionMethod header!" << std::endl;
         return false;
     }
     file >> predictionMethod;
@@ -689,16 +690,16 @@ bool AdaBoost::loadLegacyModelFromFile( std::fstream &file ){
     if( trained ){
         file >> word;
         if( word != "Models:" ){
-            errorLog <<"load(fstream &file) - Failed to read Models header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to read Models header!" << std::endl;
             return false;
         }
         
         //Load the models
         models.resize( numClasses );
         classLabels.resize( numClasses );
-        for(UINT i=0; i<models.size(); i++){
+        for(UINT i=0; i<models.getSize(); i++){
             if( !models[i].load( file ) ){
-                errorLog << "load(fstream &file) - Failed to load model " << i << " from file!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to load model " << i << " from file!" << std::endl;
                 file.close();
                 return false;
             }

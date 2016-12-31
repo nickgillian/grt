@@ -165,7 +165,7 @@ bool DTW::train_(TimeSeriesClassificationData &data){
     }
     
     if( data.getNumSamples() == 0 ){
-        errorLog << "train_(TimeSeriesClassificationData &trainingData) - Can't train model as there are no samples in training data!" << std::endl;
+        errorLog << __GRT_LOG__ << " Can't train model as there are no samples in training data!" << std::endl;
         return false;
     }
     
@@ -204,12 +204,12 @@ bool DTW::train_(TimeSeriesClassificationData &data){
         
         //Check to make sure we actually have some training examples
         if( numExamples < 1 ){
-            errorLog << "train_(TimeSeriesClassificationData &labelledTrainingData) - Can not train model: Num of Example is < 1! Class: " << classLabel << ". Turn off null rejection if you want to use DTW with only 1 training sample per class." << std::endl;
+            errorLog << __GRT_LOG__ << " Can not train model: Num of Example is < 1! Class: " << classLabel << ". Turn off null rejection if you want to use DTW with only 1 training sample per class." << std::endl;
             return false;
         }
         
         if( numExamples == 1 && useNullRejection ){
-            errorLog << "train_(TimeSeriesClassificationData &labelledTrainingData) - Can not train model as there is only 1 example in class: " << classLabel << ". Turn off null rejection if you want to use DTW with only 1 training sample per class." << std::endl;
+            errorLog << __GRT_LOG__ << " Can not train model as there is only 1 example in class: " << classLabel << ". Turn off null rejection if you want to use DTW with only 1 training sample per class." << std::endl;
             return false;
         }
         
@@ -219,7 +219,7 @@ bool DTW::train_(TimeSeriesClassificationData &data){
         }else{
             //Search for the best training example for this class
             if( !train_NDDTW(classData,templatesBuffer[k],bestIndex) ){
-                errorLog << "train_(LabelledTimeSeriesClassificationData &labelledTrainingData) - Failed to train template for class with label: " << classLabel << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to train template for class with label: " << classLabel << std::endl;
                     return false;
             }
         }
@@ -237,7 +237,7 @@ bool DTW::train_(TimeSeriesClassificationData &data){
                 smoothData(classData[ bestIndex ].getData(),smoothingFactor,templatesBuffer[k].timeSeries);
             break;
             default:
-                errorLog << "Can not train model: Unknown training method "  << std::endl;
+                errorLog << __GRT_LOG__ << " Can not train model: Unknown training method "  << std::endl;
                 return false;
             break;
         }
@@ -252,6 +252,7 @@ bool DTW::train_(TimeSeriesClassificationData &data){
     
     //Flag that the models have been trained
     trained = true;
+    converged = true;
     averageTemplateLength = averageTemplateLength/numTemplates;
     
     //Recompute the null rejection thresholds
@@ -266,7 +267,7 @@ bool DTW::train_(TimeSeriesClassificationData &data){
     maxLikelihood = DEFAULT_NULL_LIKELIHOOD_VALUE;
     
     //Training complete
-    return true;
+    return trained;
 }
 
 bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dtwTemplate,UINT &bestIndex){
@@ -337,7 +338,7 @@ bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dt
         }
         dtwTemplate.trainingSigma = sqrt( dtwTemplate.trainingSigma / Float(numExamples-2) );
     }else{
-        warningLog << "_train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dtwTemplate,UINT &bestIndex - There are not enough examples to compute the trainingMu and trainingSigma for the template for class " << dtwTemplate.classLabel << std::endl;
+        warningLog << __GRT_LOG__ << " There are not enough examples to compute the trainingMu and trainingSigma for the template for class " << dtwTemplate.classLabel << std::endl;
             dtwTemplate.trainingMu = 0.0;
         dtwTemplate.trainingSigma = 0.0;
     }
@@ -355,7 +356,7 @@ bool DTW::train_NDDTW(TimeSeriesClassificationData &trainingData,DTWTemplate &dt
 bool DTW::predict_(MatrixFloat &inputTimeSeries){
     
     if( !trained ){
-        errorLog << "predict_(MatrixFloat &inputTimeSeries) - The DTW templates have not been trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " The DTW templates have not been trained!" << std::endl;
         return false;
     }
     
@@ -370,7 +371,7 @@ bool DTW::predict_(MatrixFloat &inputTimeSeries){
     }
     
     if( numInputDimensions != inputTimeSeries.getNumCols() ){
-        errorLog << "predict_(MatrixFloat &inputTimeSeries) - The number of features in the model (" << numInputDimensions << ") do not match that of the input time series (" << inputTimeSeries.getNumCols() << ")" << std::endl;
+        errorLog << __GRT_LOG__ << " The number of features in the model (" << numInputDimensions << ") do not match that of the input time series (" << inputTimeSeries.getNumCols() << ")" << std::endl;
         return false;
     }
     
@@ -462,7 +463,7 @@ bool DTW::predict_(MatrixFloat &inputTimeSeries){
             else predictedClassLabel = GRT_DEFAULT_NULL_CLASS_LABEL;
                 break;
             default:
-            errorLog << "predict_(MatrixFloat &timeSeries) - Unknown RejectionMode!" << std::endl;
+            errorLog << __GRT_LOG__ << " Unknown RejectionMode!" << std::endl;
             return false;
             break;
         }
@@ -475,7 +476,7 @@ bool DTW::predict_(MatrixFloat &inputTimeSeries){
 bool DTW::predict_( VectorFloat &inputVector ){
     
     if( !trained ){
-        errorLog << "predict_(VectorFloat &inputVector) - The model has not been trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " The model has not been trained!" << std::endl;
         return false;
     }
     predictedClassLabel = 0;
@@ -483,8 +484,8 @@ bool DTW::predict_( VectorFloat &inputVector ){
     std::fill(classLikelihoods.begin(),classLikelihoods.end(),DEFAULT_NULL_LIKELIHOOD_VALUE);
     std::fill(classDistances.begin(),classDistances.end(),0);
     
-    if( numInputDimensions != inputVector.size() ){
-        errorLog << "predict_(VectorFloat &inputVector) - The number of features in the model " << numInputDimensions << " does not match that of the input Vector " << inputVector.size() << std::endl;
+    if( numInputDimensions != inputVector.getSize() ){
+        errorLog << __GRT_LOG__ << " The number of features in the model " << numInputDimensions << " does not match that of the input Vector " << inputVector.size() << std::endl;
         return false;
     }
     
@@ -613,7 +614,7 @@ Float DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,Mat
         }
         break;
         default:
-        errorLog<<"ERROR: Unknown distance method: "<<distanceMethod<< std::endl;
+        errorLog<< __GRT_LOG__ << " Unknown distance method: "<<distanceMethod<< std::endl;
         return -1;
         break;
     }
@@ -622,7 +623,7 @@ Float DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,Mat
     Float distance = sqrt( d(M-1,N-1,distanceMatrix,M,N) );
     
     if( grt_isinf(distance) || grt_isnan(distance) ){
-        warningLog << "DTW computeDistance(...) - Distance Matrix Values are INF!" << std::endl;
+        warningLog << __GRT_LOG__ << " Distance Matrix Values are INF!" << std::endl;
         return INFINITY;
     }
     
@@ -667,7 +668,7 @@ Float DTW::computeDistance(MatrixFloat &timeSeriesA,MatrixFloat &timeSeriesB,Mat
                         j--;
                     break;
                     default:
-                        warningLog << "DTW computeDistance(...) - Could not compute a warping path for the input matrix! Dist: " << distanceMatrix[i-1][j] << " i: " << i << " j: " << j << std::endl;
+                        warningLog << __GRT_LOG__ << " Could not compute a warping path for the input matrix! Dist: " << distanceMatrix[i-1][j] << " i: " << i << " j: " << j << std::endl;
                         return INFINITY;
                     break;
                 }
@@ -943,7 +944,7 @@ void DTW::smoothData(MatrixFloat &data,UINT smoothFactor,MatrixFloat &resultsDat
 bool DTW::save( std::fstream &file ) const{
     
     if(!file.is_open()){
-        errorLog << "save( string fileName ) - Could not open file to save data" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not open file to save data" << std::endl;
         return false;
     }
     
@@ -951,7 +952,7 @@ bool DTW::save( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
@@ -1009,7 +1010,7 @@ bool DTW::load( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to open file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to open file!" << std::endl;
         return false;
     }
     
@@ -1022,20 +1023,20 @@ bool DTW::load( std::fstream &file ){
     
     //Check to make sure this is a file with the DTW File Format
     if(word != "GRT_DTW_Model_File_V2.0"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Unknown file header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Unknown file header!" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     //Check and load the Distance Method
     file >> word;
     if(word != "DistanceMethod:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find DistanceMethod!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find DistanceMethod!" << std::endl;
         return false;
     }
     file >> distanceMethod;
@@ -1043,7 +1044,7 @@ bool DTW::load( std::fstream &file ){
     //Check and load if Smoothing is used
     file >> word;
     if(word != "UseSmoothing:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseSmoothing!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseSmoothing!" << std::endl;
         return false;
     }
     file >> useSmoothing;
@@ -1051,7 +1052,7 @@ bool DTW::load( std::fstream &file ){
     //Check and load what the smoothing factor is
     file >> word;
     if(word != "SmoothingFactor:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find SmoothingFactor!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find SmoothingFactor!" << std::endl;
         return false;
     }
     file >> smoothingFactor;
@@ -1059,7 +1060,7 @@ bool DTW::load( std::fstream &file ){
     //Check and load if ZNormalization is used
     file >> word;
     if(word != "UseZNormalisation:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseZNormalisation!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseZNormalisation!" << std::endl;
         return false;
     }
     file >> useZNormalisation;
@@ -1067,7 +1068,7 @@ bool DTW::load( std::fstream &file ){
     //Check and load if OffsetUsingFirstSample is used
     file >> word;
     if(word != "OffsetUsingFirstSample:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OffsetUsingFirstSample!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find OffsetUsingFirstSample!" << std::endl;
         return false;
     }
     file >> offsetUsingFirstSample;
@@ -1075,7 +1076,7 @@ bool DTW::load( std::fstream &file ){
     //Check and load if ConstrainWarpingPath is used
     file >> word;
     if(word != "ConstrainWarpingPath:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ConstrainWarpingPath!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find ConstrainWarpingPath!" << std::endl;
         return false;
     }
     file >> constrainWarpingPath;
@@ -1083,7 +1084,7 @@ bool DTW::load( std::fstream &file ){
     //Check and load if ZNormalization is used
     file >> word;
     if(word != "Radius:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Radius!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Radius!" << std::endl;
         return false;
     }
     file >> radius;
@@ -1091,7 +1092,7 @@ bool DTW::load( std::fstream &file ){
     //Check and load if Scaling is used
     file >> word;
     if(word != "RejectionMode:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find RejectionMode!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find RejectionMode!" << std::endl;
         return false;
     }
     file >> rejectionMode;
@@ -1101,7 +1102,7 @@ bool DTW::load( std::fstream &file ){
         //Check and load the Number of Templates
         file >> word;
         if(word != "NumberOfTemplates:"){
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfTemplates!" << std::endl;
+            errorLog <<  __GRT_LOG__ << " Failed to find NumberOfTemplates!" << std::endl;
             return false;
         }
         file >> numTemplates;
@@ -1109,7 +1110,7 @@ bool DTW::load( std::fstream &file ){
         //Check and load the overall average template length
         file >> word;
         if(word != "OverallAverageTemplateLength:"){
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OverallAverageTemplateLength!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find OverallAverageTemplateLength!" << std::endl;
             return false;
         }
         file >> averageTemplateLength;
@@ -1125,7 +1126,7 @@ bool DTW::load( std::fstream &file ){
             file >> word;
             if( word != "***************TEMPLATE***************" ){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template header!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to find template header!" << std::endl;
                 return false;
             }
             
@@ -1133,7 +1134,7 @@ bool DTW::load( std::fstream &file ){
             file >> word;
             if(word != "Template:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Template Number!" << std::endl;
+                errorLog << __GRT_LOG__ << " ailed to find Template Number!" << std::endl;
                 return false;
             }
             
@@ -1141,7 +1142,7 @@ bool DTW::load( std::fstream &file ){
             file >> ts;
             if(ts!=i+1){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Invalid Template Number: " << ts << std::endl;
+                errorLog << __GRT_LOG__ << " Invalid Template Number: " << ts << std::endl;
                 return false;
             }
             
@@ -1149,7 +1150,7 @@ bool DTW::load( std::fstream &file ){
             file >> word;
             if(word != "ClassLabel:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ClassLabel!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to find ClassLabel!" << std::endl;
                 return false;
             }
             file >> templatesBuffer[i].classLabel;
@@ -1159,7 +1160,7 @@ bool DTW::load( std::fstream &file ){
             file >> word;
             if(word != "TimeSeriesLength:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TimeSeriesLength!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to find TimeSeriesLength!" << std::endl;
                 return false;
             }
             file >> timeSeriesLength;
@@ -1171,7 +1172,7 @@ bool DTW::load( std::fstream &file ){
             file >> word;
             if(word != "TemplateThreshold:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TemplateThreshold!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to find TemplateThreshold!" << std::endl;
                 return false;
             }
             file >> nullRejectionThresholds[i];
@@ -1180,7 +1181,7 @@ bool DTW::load( std::fstream &file ){
             file >> word;
             if(word != "TrainingMu:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingMu!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to find TrainingMu!" << std::endl;
                 return false;
             }
             file >> templatesBuffer[i].trainingMu;
@@ -1189,7 +1190,7 @@ bool DTW::load( std::fstream &file ){
             file >> word;
             if(word != "TrainingSigma:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingSigma!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to find TrainingSigma!" << std::endl;
                 return false;
             }
             file >> templatesBuffer[i].trainingSigma;
@@ -1198,7 +1199,7 @@ bool DTW::load( std::fstream &file ){
             file >> word;
             if(word != "AverageTemplateLength:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find AverageTemplateLength!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to find AverageTemplateLength!" << std::endl;
                 return false;
             }
             file >> templatesBuffer[i].averageTemplateLength;
@@ -1207,7 +1208,7 @@ bool DTW::load( std::fstream &file ){
             file >> word;
             if(word != "TimeSeries:"){
                 clear();
-                errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template timeseries!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to find template timeseries!" << std::endl;
                 return false;
             }
             for(UINT k=0; k<timeSeriesLength; k++)
@@ -1264,11 +1265,11 @@ bool DTW::enableZNormalization(bool useZNormalisation,bool constrainZNorm){
 bool DTW::enableTrimTrainingData(bool trimTrainingData,Float trimThreshold,Float maximumTrimPercentage){
     
     if( trimThreshold < 0 || trimThreshold > 1 ){
-        warningLog << "Failed to set trimTrainingData.  The trimThreshold must be in the range of [0 1]" << std::endl;
+        warningLog << __GRT_LOG__ << " Failed to set trimTrainingData.  The trimThreshold must be in the range of [0 1]" << std::endl;
         return false;
     }
     if( maximumTrimPercentage < 0 || maximumTrimPercentage > 100 ){
-        warningLog << "Failed to set trimTrainingData.  The maximumTrimPercentage must be a valid percentage in the range of [0 100]" << std::endl;
+        warningLog << __GRT_LOG__ << " Failed to set trimTrainingData.  The maximumTrimPercentage must be a valid percentage in the range of [0 100]" << std::endl;
         return false;
     }
     
@@ -1296,7 +1297,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load the Number of Dimensions
     file >> word;
     if(word != "NumberOfDimensions:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfDimensions!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find NumberOfDimensions!" << std::endl;
         return false;
     }
     file >> numInputDimensions;
@@ -1304,7 +1305,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load the Number of Classes
     file >> word;
     if(word != "NumberOfClasses:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfClasses!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find NumberOfClasses!" << std::endl;
         return false;
     }
     file >> numClasses;
@@ -1312,7 +1313,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load the Number of Templates
     file >> word;
     if(word != "NumberOfTemplates:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NumberOfTemplates!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find NumberOfTemplates!" << std::endl;
         return false;
     }
     file >> numTemplates;
@@ -1320,7 +1321,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load the Distance Method
     file >> word;
     if(word != "DistanceMethod:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find DistanceMethod!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find DistanceMethod!" << std::endl;
         return false;
     }
     file >> distanceMethod;
@@ -1328,7 +1329,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load if UseNullRejection is used
     file >> word;
     if(word != "UseNullRejection:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseNullRejection!" << std::endl;
+        errorLog <<  __GRT_LOG__ << " Failed to find UseNullRejection!" << std::endl;
         return false;
     }
     file >> useNullRejection;
@@ -1336,7 +1337,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load if Smoothing is used
     file >> word;
     if(word != "UseSmoothing:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseSmoothing!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseSmoothing!" << std::endl;
         return false;
     }
     file >> useSmoothing;
@@ -1344,7 +1345,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load what the smoothing factor is
     file >> word;
     if(word != "SmoothingFactor:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find SmoothingFactor!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find SmoothingFactor!" << std::endl;
         return false;
     }
     file >> smoothingFactor;
@@ -1352,7 +1353,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load if Scaling is used
     file >> word;
     if(word != "UseScaling:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseScaling!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseScaling!" << std::endl;
         return false;
     }
     file >> useScaling;
@@ -1360,7 +1361,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load if ZNormalization is used
     file >> word;
     if(word != "UseZNormalisation:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find UseZNormalisation!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseZNormalisation!" << std::endl;
         return false;
     }
     file >> useZNormalisation;
@@ -1368,7 +1369,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load if OffsetUsingFirstSample is used
     file >> word;
     if(word != "OffsetUsingFirstSample:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OffsetUsingFirstSample!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find OffsetUsingFirstSample!" << std::endl;
         return false;
     }
     file >> offsetUsingFirstSample;
@@ -1376,7 +1377,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load if ConstrainWarpingPath is used
     file >> word;
     if(word != "ConstrainWarpingPath:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ConstrainWarpingPath!" << std::endl;
+        errorLog << __GRT_LOG__ << "  Failed to find ConstrainWarpingPath!" << std::endl;
         return false;
     }
     file >> constrainWarpingPath;
@@ -1384,7 +1385,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load if ZNormalization is used
     file >> word;
     if(word != "Radius:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Radius!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Radius!" << std::endl;
         return false;
     }
     file >> radius;
@@ -1392,7 +1393,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load if Scaling is used
     file >> word;
     if(word != "RejectionMode:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find RejectionMode!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find RejectionMode!" << std::endl;
         return false;
     }
     file >> rejectionMode;
@@ -1400,7 +1401,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load gamma
     file >> word;
     if(word != "NullRejectionCoeff:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find NullRejectionCoeff!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find NullRejectionCoeff!" << std::endl;
         return false;
     }
     file >> nullRejectionCoeff;
@@ -1408,7 +1409,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
     //Check and load the overall average template length
     file >> word;
     if(word != "OverallAverageTemplateLength:"){
-        errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find OverallAverageTemplateLength!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find OverallAverageTemplateLength!" << std::endl;
         return false;
     }
     file >> averageTemplateLength;
@@ -1431,7 +1432,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
         if(ts!=i+1){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find Invalid Template Number!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find Invalid Template Number!" << std::endl;
             return false;
         }
         
@@ -1440,7 +1441,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
         if(word != "ClassLabel:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find ClassLabel!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find ClassLabel!" << std::endl;
             return false;
         }
         file >> templatesBuffer[i].classLabel;
@@ -1451,7 +1452,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
         if(word != "TimeSeriesLength:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TimeSeriesLength!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find TimeSeriesLength!" << std::endl;
             return false;
         }
         file >> timeSeriesLength;
@@ -1464,7 +1465,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
         if(word != "TemplateThreshold:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TemplateThreshold!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find TemplateThreshold!" << std::endl;
             return false;
         }
         file >> nullRejectionThresholds[i];
@@ -1474,7 +1475,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
         if(word != "TrainingMu:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingMu!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find TrainingMu!" << std::endl;
             return false;
         }
         file >> templatesBuffer[i].trainingMu;
@@ -1484,7 +1485,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
         if(word != "TrainingSigma:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find TrainingSigma!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find TrainingSigma!" << std::endl;
             return false;
         }
         file >> templatesBuffer[i].trainingSigma;
@@ -1494,7 +1495,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
         if(word != "AverageTemplateLength:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find AverageTemplateLength!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find AverageTemplateLength!" << std::endl;
             return false;
         }
         file >> templatesBuffer[i].averageTemplateLength;
@@ -1504,7 +1505,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
         if(word != "TimeSeries:"){
             numTemplates=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template timeseries!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find template timeseries!" << std::endl;
             return false;
         }
         for(UINT k=0; k<timeSeriesLength; k++)
@@ -1518,7 +1519,7 @@ bool DTW::loadLegacyModelFromFile( std::fstream &file ){
             numClasses = 0;
             numInputDimensions=0;
             trained = false;
-            errorLog << "loadDTWModelFromFile( string fileName ) - Failed to find template footer!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find template footer!" << std::endl;
             return false;
         }
     }

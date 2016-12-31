@@ -47,8 +47,8 @@ class GRT_API ContinuousHiddenMarkovModel : public MLBase {
     
     ContinuousHiddenMarkovModel& operator=(const ContinuousHiddenMarkovModel &rhs);
     
-    virtual bool predict_(VectorFloat &x);
-    virtual bool predict_(MatrixFloat &obs);
+    virtual bool predict_(VectorFloat &x) override;
+    virtual bool predict_(MatrixFloat &obs) override;
     
     virtual bool train_(TimeSeriesClassificationSample &trainingData);
     
@@ -59,7 +59,7 @@ class GRT_API ContinuousHiddenMarkovModel : public MLBase {
     
     @return returns true if the derived class was reset succesfully, false otherwise (the base class always returns true)
     */
-    virtual bool reset();
+    virtual bool reset() override;
     
     /**
     This is the main clear interface for all the GRT machine learning algorithms.
@@ -67,7 +67,7 @@ class GRT_API ContinuousHiddenMarkovModel : public MLBase {
     
     @return returns true if the derived class was cleared succesfully, false otherwise
     */
-    virtual bool clear();
+    virtual bool clear() override;
     
     /**
     This saves the trained model to a file.
@@ -75,7 +75,7 @@ class GRT_API ContinuousHiddenMarkovModel : public MLBase {
     @param file: a reference to the file the model will be saved to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool save( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const override;
     
     /**
     This loads a trained model from a file.
@@ -83,9 +83,9 @@ class GRT_API ContinuousHiddenMarkovModel : public MLBase {
     @param file: a reference to the file the model will be loaded from
     @return returns true if the model was loaded successfully, false otherwise
     */
-    virtual bool load( std::fstream &file );
+    virtual bool load( std::fstream &file ) override;
     
-    virtual bool print() const;
+    virtual bool print() const override;
     
     UINT getNumStates() const { return numStates; }
     
