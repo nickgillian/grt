@@ -136,9 +136,6 @@ bool EnvelopeExtractor::load( std::fstream &file ){
     }
     
     std::string word;
-    UINT numLayers = 0;
-    UINT numRows = 0;
-    UINT numCols = 0;
     
     //First, you should read and validate the header
     file >> word;

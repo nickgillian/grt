@@ -204,10 +204,11 @@ bool DecisionTreeClusterNode::computeBestSplitBestRandomSplit( const UINT &numSp
 bool DecisionTreeClusterNode::computeSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
 
     const UINT M = trainingData.getNumSamples();
-    const UINT N = (UINT)features.size();
-    const UINT K = (UINT)classLabels.size();
+    const UINT N = features.getSize();
+    const UINT K = classLabels.getSize();
 
     if( N == 0 ) return false;
+    if( K == 0 ) return false;
 
     minError = grt_numeric_limits< Float >::max();
     Random random;

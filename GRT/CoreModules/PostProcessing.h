@@ -72,50 +72,6 @@ public:
     virtual bool process(const VectorFloat &inputVector){ return false; }
     
     /**
-     This function is called by the GestureRecognitionPipeline's reset function and will reset the PostProcessing module.
-     This function should be overwritten by the derived class.
-     
-     @return returns true if the module was reset, false otherwise (the base class always returns true)
-     */
-    virtual bool reset(){ return true; }
-    
-    /**
-     This saves the post processing settings to a file.
-     This function should be overwritten by the derived class.
-     
-     @param filename: the filename to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool saveModelToFile(std::string filename) const;
-    
-    /**
-     This saves the post processing settings to a file.
-     This function should be overwritten by the derived class.
-     
-     @param file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise
-     */
-    virtual bool loadModelFromFile(std::string filename);
-    
-    /**
-     This saves the post processing settings to a file.
-     This function should be overwritten by the derived class.
-     
-     @param file: a reference to the file to save the settings to
-     @return returns true if the settings were saved successfully, false otherwise (the base class always returns false)
-     */
-    virtual bool saveModelToFile(std::fstream &file) const{ return false; }
-    
-    /**
-     This loads the post processing settings from a file.
-     This function should be overwritten by the derived class.
-     
-     @param file: a reference to the file to load the settings from
-     @return returns true if the settings were loaded successfully, false otherwise (the base class always returns false)
-     */
-    virtual bool loadModelFromFile(std::fstream &file){ return false; }
-    
-    /**
      @return returns the post processing input mode, this will be one of the PostprocessingInputModes enums
      */
 	UINT getPostProcessingInputMode() const;
@@ -124,20 +80,6 @@ public:
      @return returns the post processing output mode, this will be one of the PostprocessingOutputModes enums
      */
 	UINT getPostProcessingOutputMode() const;
-    
-    /**
-     Returns the size of the input vector expected by the post processing module.
-     
-     @return returns the size of the input vector expected by the post processing module
-     */
-    UINT getNumInputDimensions() const;
-    
-    /**
-     Returns the size of the vector that will be computed by the post processing module.
-     
-     @return returns the size of the vector that will be computed by the post processing module
-     */
-    UINT getNumOutputDimensions() const;
     
     /**
      Returns true if the post processing module has been initialized correctly.

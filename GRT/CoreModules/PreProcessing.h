@@ -78,7 +78,7 @@ public:
      
      @return returns true if the derived class was reset succesfully, false otherwise (the base class always returns true)
      */
-    virtual bool reset();
+    virtual bool reset() override;
     
     /**
      This is the main clear interface for all the GRT preprocessing modules. This should be overwritten by the derived class.
@@ -86,21 +86,7 @@ public:
      
      @return returns true if the derived class was cleared succesfully, false otherwise
      */
-    virtual bool clear();
-	
-    /**
-     Returns the size of the input vector expected by the pre processing module.
-     
-     @return returns the size of the input vector expected by the pre processing module
-     */
-    UINT getNumInputDimensions() const;
-    
-    /**
-     Returns the size of the vector that will be computed by the pre processing module.
-     
-     @return returns the size of the vector that will be computed by the pre processing module
-     */
-    UINT getNumOutputDimensions() const;
+    virtual bool clear() override;
     
     /**
      Returns true if the pre processing module has been initialized correctly.

@@ -77,14 +77,14 @@ public:
      
      @return returns true if the regressifier was reset, false otherwise
      */
-    virtual bool reset();
+    virtual bool reset() override;
     
     /**
      This function clears the regressifier module, removing any trained model and setting all the base variables to their default values.
      
      @return returns true if the module was cleared succesfully, false otherwise
      */
-    virtual bool clear();
+    virtual bool clear() override;
     
     /**
      Gets a Vector containing the regression data output by the regression algorithm, this will be an M-dimensional Vector, where M is the number of output dimensions in the model.  

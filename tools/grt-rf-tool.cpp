@@ -121,11 +121,8 @@ int main(int argc, char * argv[])
 
 bool train( CommandLineParser &parser ){
 
-    infoLog << "Training Random Forest model..." << endl;
-
     string trainDatasetFilename = "";
     string modelFilename = "";
-    unsigned int numThreads = 0;
     unsigned int forestSize = 0;
     unsigned int maxDepth = 0;
     unsigned int minNodeSize = 0;

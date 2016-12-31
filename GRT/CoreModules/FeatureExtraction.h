@@ -84,33 +84,11 @@ public:
     virtual bool computeFeatures(const MatrixFloat &inputMatrix){ return false; }
     
     /**
-     This function is called by the GestureRecognitionPipeline's reset function.
-     This function should be overwritten by the derived class.
-     
-     @return returns true if the module was reset, false otherwise (the base class always returns true)
-     */
-    virtual bool reset(){ return true; }
-    
-    /**
      This function clears any previous setup.
      
      @return returns true if the module was cleared, false otherwise
      */
-    virtual bool clear();
-    
-    /**
-     Returns the size of the input vector expected by the feature extraction module.
-     
-     @return returns the size of the input vector expected by the feature extraction module
-     */
-    UINT getNumInputDimensions() const;
-    
-    /**
-     Returns the size of the feature vector that will be computed by the feature extraction module.
-     
-     @return returns the size of the feature vector that will be computed by the feature extraction module
-     */
-    UINT getNumOutputDimensions() const;
+    virtual bool clear() override;
     
     /**
      Returns true if the feature extraction module has been initialized correctly.

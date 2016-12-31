@@ -231,16 +231,10 @@ bool Clusterer::loadClustererSettingsFromFile( std::fstream &file ){
 
 std::string Clusterer::getClustererType() const { return MLBase::getId(); } //Legacy
     
-bool Clusterer::getConverged() const{
-    if( !trained ) return false;
-    return converged;
-}
-    
 UINT Clusterer::getNumClusters() const { return numClusters; }
     
 UINT Clusterer::getPredictedClusterLabel() const { return predictedClusterLabel; }
     
-
 Float Clusterer::getMaximumLikelihood() const{
     return maxLikelihood;
 }

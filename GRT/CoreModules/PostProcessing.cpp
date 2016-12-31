@@ -99,35 +99,6 @@ bool PostProcessing::init(){
     
     return true;
 }
-    
-bool PostProcessing::saveModelToFile(std::string filename) const{
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::out);
-    
-    if( !saveModelToFile( file ) ){
-        return false;
-    }
-    
-    file.close();
-    
-    return true;
-}
-
-bool PostProcessing::loadModelFromFile(std::string filename){
-    
-    std::fstream file;
-    file.open(filename.c_str(), std::ios::in);
-    
-    if( !loadModelFromFile( file ) ){
-        return false;
-    }
-    
-    //Close the file
-    file.close();
-    
-    return true;
-}
 
 bool PostProcessing::savePostProcessingSettingsToFile(std::fstream &file) const{
     
@@ -184,14 +155,6 @@ UINT PostProcessing::getPostProcessingInputMode() const{
     
 UINT PostProcessing::getPostProcessingOutputMode() const{ 
     return postProcessingOutputMode; 
-}
-    
-UINT PostProcessing::getNumInputDimensions() const{ 
-    return numInputDimensions; 
-}
-    
-UINT PostProcessing::getNumOutputDimensions() const{ 
-    return numOutputDimensions; 
 }
     
 bool PostProcessing::getInitialized() const{ 

@@ -75,7 +75,7 @@ bool KMeansFeatures::deepCopyFrom(const FeatureExtraction *featureExtraction){
         return true;
     }
     
-    errorLog << "deepCopyFrom(FeatureExtraction *featureExtraction) -  FeatureExtraction Types Do Not Match!" << std::endl;
+    errorLog << __GRT_LOG__ << " FeatureExtraction Types Do Not Match!" << std::endl;
     
     return false;
 }
@@ -98,7 +98,7 @@ bool KMeansFeatures::computeFeatures(const VectorFloat &inputVector){
     const UINT numLayers = getNumLayers();
     for(UINT layer=0; layer<numLayers; layer++){
         if( !projectDataThroughLayer(data, featureVector, layer) ){
-            errorLog << "computeFeatures(const VectorFloat &inputVector) - Failed to project data through layer: " << layer << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to project data through layer: " << layer << std::endl;
             return false;
         }
         
@@ -118,7 +118,7 @@ bool KMeansFeatures::reset(){
 bool KMeansFeatures::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "save(fstream &file) - The file is not open!" << std::endl;
+        errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
         return false;
     }
     
@@ -127,7 +127,7 @@ bool KMeansFeatures::save( std::fstream &file ) const{
     
     //Second, you should save the base feature extraction settings to the file
     if( !saveFeatureExtractionSettingsToFile( file ) ){
-        errorLog << "save(fstream &file) - Failed to save base feature extraction settings to file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to save base feature extraction settings to file!" << std::endl;
         return false;
     }
     
@@ -170,7 +170,7 @@ bool KMeansFeatures::load( std::fstream &file ){
     clear();
     
     if( !file.is_open() ){
-        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
+        errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
         return false;
     }
     
@@ -182,20 +182,20 @@ bool KMeansFeatures::load( std::fstream &file ){
     //First, you should read and validate the header
     file >> word;
     if( word != "KMEANS_FEATURES_FILE_V1.0" ){
-        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        errorLog << __GRT_LOG__ << " Invalid file format!" << std::endl;
         return false;
     }
     
     //Second, you should load the base feature extraction settings to the file
     if( !loadFeatureExtractionSettingsFromFile( file ) ){
-        errorLog << "load(fstream &file) - Failed to load base feature extraction settings from file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to load base feature extraction settings from file!" << std::endl;
         return false;
     }
     
     //Load the number of layers
     file >> word;
     if( word != "NumLayers:" ){
-        errorLog << "load(fstream &file) - Failed to read NumLayers header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read NumLayers header!" << std::endl;
         return false;
     }
     file >> numLayers;
@@ -204,7 +204,7 @@ bool KMeansFeatures::load( std::fstream &file ){
     //Load the number clusters per layer
     file >> word;
     if( word != "NumClustersPerLayer:" ){
-        errorLog << "load(fstream &file) - Failed to read NumClustersPerLayer header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read NumClustersPerLayer header!" << std::endl;
         return false;
     }
     for(UINT i=0; i<numClustersPerLayer.getSize(); i++){
@@ -214,7 +214,7 @@ bool KMeansFeatures::load( std::fstream &file ){
     //Load the alpha parameter
     file >> word;
     if( word != "Alpha:" ){
-        errorLog << "load(fstream &file) - Failed to read Alpha header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to read Alpha header!" << std::endl;
         return false;
     }
     file >> alpha;
@@ -225,11 +225,11 @@ bool KMeansFeatures::load( std::fstream &file ){
         //Load the Ranges
         file >> word;
         if( word != "Ranges:" ){
-            errorLog << "load(fstream &file) - Failed to read Ranges header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to read Ranges header!" << std::endl;
             return false;
         }
         ranges.resize(numInputDimensions);
-        for(UINT i=0; i<ranges.size(); i++){
+        for(UINT i=0; i<ranges.getSize(); i++){
             file >> ranges[i].minValue;
             file >> ranges[i].maxValue;
         }
@@ -237,17 +237,17 @@ bool KMeansFeatures::load( std::fstream &file ){
         //Load the Clusters
         file >> word;
         if( word != "Clusters:" ){
-            errorLog << "load(fstream &file) - Failed to read Clusters header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to read Clusters header!" << std::endl;
             return false;
         }
         clusters.resize( numLayers );
         
-        for(UINT k=0; k<clusters.size(); k++){
+        for(UINT k=0; k<clusters.getSize(); k++){
             
             //Load the NumRows
             file >> word;
             if( word != "NumRows:" ){
-                errorLog << "load(fstream &file) - Failed to read NumRows header!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to read NumRows header!" << std::endl;
                 return false;
             }
             file >> numRows;
@@ -255,7 +255,7 @@ bool KMeansFeatures::load( std::fstream &file ){
             //Load the NumCols
             file >> word;
             if( word != "NumCols:" ){
-                errorLog << "load(fstream &file) - Failed to read NumCols header!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to read NumCols header!" << std::endl;
                 return false;
             }
             file >> numCols;
@@ -272,11 +272,11 @@ bool KMeansFeatures::load( std::fstream &file ){
     return true;
 }
 
-bool KMeansFeatures::init( const Vector< UINT > numClustersPerLayer ){
+bool KMeansFeatures::init( const Vector< UINT > &numClustersPerLayer ){
     
     clear();
     
-    if( numClustersPerLayer.size() == 0 ) return false;
+    if( numClustersPerLayer.getSize() == 0 ) return false;
     
     this->numClustersPerLayer = numClustersPerLayer;
     numInputDimensions = 0; //This will be 0 until the KMeansFeatures has been trained
@@ -395,7 +395,7 @@ bool KMeansFeatures::train_(MatrixFloat &trainingData){
 bool KMeansFeatures::projectDataThroughLayer( const VectorFloat &input, VectorFloat &output, const UINT layer ){
     
     if( layer >= clusters.getSize() ){
-        errorLog << "projectDataThroughLayer(...) - Layer out of bounds! It should be less than: " << clusters.getSize() << std::endl;
+        errorLog << __GRT_LOG__ << " Layer out of bounds! It should be less than: " << clusters.getSize() << std::endl;
         return false;
     }
     
@@ -403,7 +403,7 @@ bool KMeansFeatures::projectDataThroughLayer( const VectorFloat &input, VectorFl
     const UINT N = clusters[ layer ].getNumCols();
     
     if( input.getSize() != N ){
-        errorLog << "projectDataThroughLayer(...) - The size of the input Vector (" << input.getSize() << ") does not match the size: " << N << std::endl;
+        errorLog << __GRT_LOG__ << " The size of the input Vector (" << input.getSize() << ") does not match the size: " << N << std::endl;
         return false;
     }
     
@@ -438,7 +438,7 @@ UINT KMeansFeatures::getNumLayers() const{
 
 UINT KMeansFeatures::getLayerSize(const UINT layerIndex) const{
     if( layerIndex >= numClustersPerLayer.getSize() ){
-        warningLog << "LayerIndex is out of bounds. It must be less than the number of layers: " << numClustersPerLayer.getSize() << std::endl;
+        warningLog << __GRT_LOG__ << " LayerIndex is out of bounds. It must be less than the number of layers: " << numClustersPerLayer.getSize() << std::endl;
         return 0;
     }
     return numClustersPerLayer[layerIndex];

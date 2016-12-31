@@ -166,14 +166,6 @@ std::string PreProcessing::getPreProcessingType() const{
     return getId(); 
 }
     
-UINT PreProcessing::getNumInputDimensions() const{ 
-    return numInputDimensions; 
-}
-    
-UINT PreProcessing::getNumOutputDimensions() const{ 
-    return numOutputDimensions; 
-}
-    
 bool PreProcessing::getInitialized() const{ 
     return initialized; 
 }

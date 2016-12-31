@@ -26,6 +26,7 @@ GRT_BEGIN_NAMESPACE
 MLBase::MLBase( const std::string &id, const BaseType type ) : GRTBase( id ){
     baseType = type;
     trained = false;
+    converged = false;
     useScaling = false;
     inputType = DATA_TYPE_UNKNOWN;
     outputType = DATA_TYPE_UNKNOWN;
@@ -44,12 +45,6 @@ MLBase::MLBase( const std::string &id, const BaseType type ) : GRTBase( id ){
     rmsTrainingError = 0;
     rmsValidationError = 0;
     totalSquaredTrainingError = 0;
-    infoLog.setKey("[" + id + "]");
-    debugLog.setKey("[DEBUG " + id + "]");
-    errorLog.setKey("[ERROR " + id + "]");
-    warningLog.setKey("[WARNING " + id + "]");
-    trainingLog.setKey("[TRAINING " + id + "]");
-    testingLog.setKey("[TESTING " + id + "]");
 
     if( id == "" ){
         trainingLog.setKey("[TRAINING " + id + "]");
@@ -77,6 +72,7 @@ bool MLBase::copyMLBaseVariables(const MLBase *mlBase){
     }
     
     this->trained = mlBase->trained;
+    this->converged = mlBase->converged;
     this->useScaling = mlBase->useScaling;
     this->baseType = mlBase->baseType;
     this->inputType = mlBase->inputType;
@@ -152,6 +148,7 @@ bool MLBase::reset(){ return true; }
 
 bool MLBase::clear(){
     trained = false;
+    converged = false;
     numInputDimensions = 0;
     numOutputDimensions = 0;
     numTrainingIterationsToConverge = 0;
@@ -297,6 +294,8 @@ VectorFloat MLBase::getValidationSetRecall() const {
 bool MLBase::getTrained() const{ return trained; }
 
 bool MLBase::getModelTrained() const{ return getTrained(); }
+
+bool MLBase::getConverged() const { return converged; }
 
 bool MLBase::getScalingEnabled() const{ return useScaling; }
 

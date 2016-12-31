@@ -76,7 +76,7 @@ public:
      @param featureExtraction: a pointer to another instance of this class, the values of that instance will be cloned to this instance
      @return returns true if the deep copy was successful, false otherwise
      */
-    virtual bool deepCopyFrom(const FeatureExtraction *featureExtraction);
+    virtual bool deepCopyFrom(const FeatureExtraction *featureExtraction) override;
     
     /**
      Sets the FeatureExtraction computeFeatures function, overwriting the base FeatureExtraction function.
@@ -86,7 +86,7 @@ public:
      @param inputVector: the inputVector that should be processed.  Must have the same dimensionality as the FeatureExtraction module
      @return returns true if the data was processed, false otherwise
      */
-    virtual bool computeFeatures(const VectorFloat &inputVector);
+    virtual bool computeFeatures(const VectorFloat &inputVector) override;
     
     /**
      Sets the FeatureExtraction reset function, overwriting the base FeatureExtraction function.
@@ -95,7 +95,7 @@ public:
      
      @return true if the instance was reset, false otherwise
      */
-    virtual bool reset();
+    virtual bool reset() override;
     
     /**
      This saves the feature extraction settings to a file.
@@ -105,7 +105,7 @@ public:
      @param file: a reference to the file to save the settings to
      @return returns true if the settings were saved successfully, false otherwise
      */
-    virtual bool save( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const override;
     
     /**
      This loads the feature extraction settings from a file.
@@ -114,7 +114,7 @@ public:
      @param file: a reference to the file to load the settings from
      @return returns true if the settings were loaded successfully, false otherwise
      */
-    virtual bool load( std::fstream &file );
+    virtual bool load( std::fstream &file ) override;
 
     /**
      Trains the quantization model using the training dataset.
@@ -122,7 +122,7 @@ public:
      @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
-    virtual bool train_(ClassificationData &trainingData);
+    virtual bool train_(ClassificationData &trainingData) override;
 
     /**
      Trains the quantization model using the training dataset.
@@ -130,7 +130,7 @@ public:
      @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
-    virtual bool train_(TimeSeriesClassificationData &trainingData);
+    virtual bool train_(TimeSeriesClassificationData &trainingData) override;
 
     /**
      Trains the quantization model using the training dataset.
@@ -138,7 +138,7 @@ public:
      @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
-    virtual bool train_(ClassificationDataStream &trainingData);
+    virtual bool train_(ClassificationDataStream &trainingData) override;
 
     /**
      Trains the quantization model using the training dataset.
@@ -146,7 +146,7 @@ public:
      @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
-    virtual bool train_(UnlabelledData &trainingData);
+    virtual bool train_(UnlabelledData &trainingData) override;
 
     /**
      Trains the quantization model using the training dataset.
@@ -154,11 +154,9 @@ public:
      @param trainingData: the training dataset that will be used to train the quantizer
      @return returns true if the quantizer was trained successfully, false otherwise
      */
-    virtual bool train_(MatrixFloat &trainingData);
+    virtual bool train_(MatrixFloat &trainingData) override;
     
-    bool computeFeatures(const VectorFloat &inputVector,VectorFloat &outputVector);
-    
-    bool init( const Vector< UINT > numClustersPerLayer );
+    bool init( const Vector< UINT > &numClustersPerLayer );
     
     bool projectDataThroughLayer( const VectorFloat &input, VectorFloat &output, const UINT layer );
     

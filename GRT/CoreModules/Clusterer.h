@@ -72,7 +72,7 @@ public:
      @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
-    virtual bool train_(MatrixFloat &trainingData);
+    virtual bool train_(MatrixFloat &trainingData) override;
     
     /**
      Override the main ClassificationData train function to pass MatrixFloat data to the Clusterer train function.
@@ -80,7 +80,7 @@ public:
      @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
-    virtual bool train_(ClassificationData &trainingData);
+    virtual bool train_(ClassificationData &trainingData) override;
     
     /**
      Override the main UnlabelledData train function to pass MatrixFloat data to the Clusterer train function.
@@ -88,7 +88,7 @@ public:
      @param trainingData: a reference to the training data that will be used to train the ML model
      @return returns true if the model was successfully trained, false otherwise
      */
-    virtual bool train_(UnlabelledData &trainingData);
+    virtual bool train_(UnlabelledData &trainingData) override;
     
     /**
      This resets the Clusterer.
@@ -96,22 +96,14 @@ public:
      
      @return returns true if the Clusterer was reset, false otherwise
      */
-    virtual bool reset();
+    virtual bool reset() override;
     
     /**
      This function clears the Clusterer module, removing any trained model and setting all the base variables to their default values.
      
      @return returns true if the derived class was cleared succesfully, false otherwise
      */
-    virtual bool clear();
-    
-    /**
-     Returns true if the training algorithm converged during the most recent training process.
-     This function will return false if the model has not been trained.
-     
-     @return returns true if the training algorithm converged succesfully, false otherwise
-     */
-    bool getConverged() const;
+    virtual bool clear() override;
     
     /**
      Returns the number of clusters in the model.

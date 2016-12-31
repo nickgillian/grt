@@ -160,14 +160,6 @@ bool FeatureExtraction::loadFeatureExtractionSettingsFromFile( std::fstream &fil
     return true;
 }
 
-UINT FeatureExtraction::getNumInputDimensions() const{ 
-    return numInputDimensions; 
-}
-
-UINT FeatureExtraction::getNumOutputDimensions() const{ 
-    return numOutputDimensions; 
-}
-
 bool FeatureExtraction::getInitialized() const{ 
     return initialized; 
 }

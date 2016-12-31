@@ -82,14 +82,12 @@ public:
 
     virtual bool process(VectorFloat inputVector){ return false; }
 
-    virtual bool reset(){ return false; }
+    virtual bool reset() override { return false; }
     
     virtual bool updateContext(bool value){ return false; }
     
     //Getters
 	std::string getContextType() const { return contextType; }
-	UINT getNumInputDimensions() const { return numInputDimensions; }
-	UINT getNumOutputDimensions() const { return numOutputDimensions; }
 	bool getInitialized() const { return initialized; }
 	bool getOK() const { return okToContinue; }
 	VectorFloat getProcessedData() const { return data; }

@@ -99,7 +99,6 @@ bool DecisionStump::train(ClassificationData &trainingData, VectorFloat &weights
     Float minError = grt_numeric_limits< Float >::max();
     Float minRange = 0;
     Float maxRange = 0;
-    Float step = 0;
     Float threshold = 0;
     Float bestThreshold = 0;
     Random random;

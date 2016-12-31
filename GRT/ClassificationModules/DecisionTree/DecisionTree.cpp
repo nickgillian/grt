@@ -309,8 +309,6 @@ bool DecisionTree::trainTree( ClassificationData trainingData, const Classificat
     //Note, this function is only called internally by the decision tree, users should call train_ instead.
 
     const unsigned int M = trainingData.getNumSamples();
-    const unsigned int N = trainingData.getNumDimensions();
-    const unsigned int K = trainingData.getNumClasses();
 
     //Build the tree
     UINT nodeID = 0;

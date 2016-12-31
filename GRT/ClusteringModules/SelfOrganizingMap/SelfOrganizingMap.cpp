@@ -167,7 +167,6 @@ bool SelfOrganizingMap::train_( MatrixFloat &data ){
     Float delta = 0;
     Float minChange = 0;
     Float weightUpdate = 0;
-    Float weightUpdateSum = 0;
     Float alpha = 1.0;
     Float neuronDiff = 0;
     Float neuronWeightFunction = 0;

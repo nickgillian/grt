@@ -704,7 +704,6 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     trainingError = 0;
     Float error = 0;
     Float lastError = 0;
-    Float trainingSetTotalSquaredError = 0;
     Float bestError = grt_numeric_limits< Float >::max();
     Float bestTSError = grt_numeric_limits< Float >::max();
     Float bestRMSError = grt_numeric_limits< Float >::max();

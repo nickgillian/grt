@@ -28,8 +28,6 @@
 #include "GRT.h"
 using namespace GRT;
 
-#ifdef GRT_CXX11_ENABLED
-
 InfoLog infoLog;
 
 void task( const unsigned int numSteps, double &bestValue ){
@@ -51,6 +49,8 @@ int main (int argc, const char * argv[])
 
 	//Get the number of threads, this defaults to the number of threads on your machine
 	const unsigned int numThreads = pool.getThreadPoolSize();
+
+	infoLog << "num threads: " << numThreads << std::endl;
 
 	//Set the number of tasks that we want to pass to the thread pool
 	const unsigned int numTasks = 100;
@@ -79,12 +79,4 @@ int main (int argc, const char * argv[])
 	
     return EXIT_SUCCESS;
 }
-
-#else
-int main (int argc, const char * argv[])
-{
-	std::cout << "Error, this example can only be run if the GRT is built with C++11 support!" << std::endl;
-    return EXIT_FAILURE;
-}
-#endif // GRT_CXX11_ENABLED
 

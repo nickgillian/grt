@@ -126,7 +126,7 @@ public:
     @param postProcessing: a pointer to another instance of a ClassLabelTimeoutFilter, the values of that instance will be cloned to this instance
     @return true if the deep copy was successful, false otherwise
     */
-    virtual bool deepCopyFrom(const PostProcessing *postProcessing);
+    virtual bool deepCopyFrom(const PostProcessing *postProcessing) override;
     
     /**
     Sets the PostProcessing process function, overwriting the base PostProcessing function.
@@ -136,7 +136,7 @@ public:
     @param inputVector: the inputVector that should be processed.  This should be a 1-dimensional vector containing a predicted class label
     @return true if the data was processed, false otherwise
     */
-    virtual bool process(const VectorDouble &inputVector);
+    virtual bool process(const VectorDouble &inputVector) override;
     
     /**
     Sets the PostProcessing reset function, overwriting the base PostProcessing function.
@@ -145,7 +145,7 @@ public:
     
     @return true if the ClassLabelTimeoutFilter was reset, false otherwise
     */
-    virtual bool reset();
+    virtual bool reset() override;
     
     /**
     This saves the post processing settings to a file.
@@ -154,7 +154,7 @@ public:
     @param filename: the name of the file to save the settings to
     @return returns true if the settings were saved successfully, false otherwise
     */
-    virtual bool save( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const override;
     
     /**
     This loads the post processing settings from a file.
@@ -163,7 +163,7 @@ public:
     @param filename: the name of the file to load the settings from
     @return returns true if the settings were loaded successfully, false otherwise
     */
-    virtual bool load( std::fstream &file );
+    virtual bool load( std::fstream &file ) override;
     
     /**
     This function initializes the ClassLabelTimeoutFilter.

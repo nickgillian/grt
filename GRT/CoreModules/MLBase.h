@@ -548,11 +548,20 @@ public:
     bool getTrained() const;
     
     /**
+    @deprecated getTrained() function instead
     This function is now depreciated. You should use the getTrained() function instead.
     
     @return returns true if the model for the derived class has been succesfully trained, false otherwise
     */
-    bool getModelTrained() const;
+    GRT_DEPRECATED_MSG( "getModelTrained() is deprecated, use getTrained() instead", bool getModelTrained() const );
+    
+    /**
+     Returns true if the training algorithm converged during the most recent training process.
+     This function will return false if the model has not been trained.
+     
+     @return returns true if the training algorithm converged succesfully, false otherwise
+     */
+    bool getConverged() const;
     
     /**
     Gets if the scaling has been enabled.
@@ -803,6 +812,7 @@ protected:
     
     bool trained;
     bool useScaling;
+    bool converged;
     DataType inputType;
     DataType outputType;
     BaseType baseType;
