@@ -37,7 +37,7 @@ MLP::MLP() : Regressifier( MLP::getId() )
     hiddenLayerActivationFunction = Neuron::TANH;
     outputLayerActivationFunction = Neuron::LINEAR;
     minNumEpochs = 1;
-    numRandomTrainingIterations = 1;
+    numRestarts = 1;
     validationSetSize = 20; //20% of the training data will be set aside for the validation set
     trainingMode = ONLINE_GRADIENT_DESCENT;
     momentum = 0.5;
@@ -73,7 +73,6 @@ MLP& MLP::operator=(const MLP &rhs){
         this->inputLayerActivationFunction = rhs.inputLayerActivationFunction;
         this->hiddenLayerActivationFunction = rhs.hiddenLayerActivationFunction;
         this->outputLayerActivationFunction = rhs.outputLayerActivationFunction;
-        this->numRandomTrainingIterations = rhs.numRandomTrainingIterations;
         this->trainingMode = rhs.trainingMode;
         this->momentum = rhs.momentum;
         this->trainingError = rhs.trainingError;
@@ -439,7 +438,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
     //Reset the indexList, this is used to randomize the order of the training examples, if needed
     for(UINT i=0; i<M; i++) indexList[i] = i;
     
-    for(UINT iter=0; iter<numRandomTrainingIterations; iter++){
+    for(UINT iter=0; iter<numRestarts; iter++){
         
         epoch = 0;
         keepTraining = true;
@@ -617,7 +616,7 @@ bool MLP::trainOnlineGradientDescentClassification(const RegressionData &trainin
             trainingErrorLog = tempTrainingErrorLog;
         }
         
-    }//End of For( numRandomTrainingIterations )
+    }//End of For( numRestarts )
     
     trainingLog << "Best Accuracy: " << bestAccuracy << " in Random Training Iteration: " << bestIter+1 << std::endl;
     
@@ -718,7 +717,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
     //Reset the indexList, this is used to randomize the order of the training examples, if needed
     for(UINT i=0; i<M; i++) indexList[i] = i;
     
-    for(UINT iter=0; iter<numRandomTrainingIterations; iter++){
+    for(UINT iter=0; iter<numRestarts; iter++){
         
         epoch = 0;
         keepTraining = true;
@@ -832,7 +831,7 @@ bool MLP::trainOnlineGradientDescentRegression(const RegressionData &trainingDat
             trainingErrorLog = tempTrainingErrorLog;
         }
         
-    }//End of For( numRandomTrainingIterations )
+    }//End of For( numRestarts )
     
     trainingLog << "Best Rms Error: " << bestRMSError << " in Random Training Iteration: " << bestIter+1 << std::endl;
     
@@ -1094,7 +1093,7 @@ bool MLP::save( std::fstream &file ) const{
     file << "InputLayerActivationFunction: " <<activationFunctionToString(inputLayerActivationFunction)<< std::endl;
     file << "HiddenLayerActivationFunction: " <<activationFunctionToString(hiddenLayerActivationFunction)<< std::endl;
     file << "OutputLayerActivationFunction: " <<activationFunctionToString(outputLayerActivationFunction)<< std::endl;
-    file << "NumRandomTrainingIterations: " << numRandomTrainingIterations << std::endl;
+    file << "NumRandomTrainingIterations: " << numRestarts << std::endl;
     file << "Momentum: " << momentum << std::endl;
     file << "Gamma: " << gamma << std::endl;
     file << "ClassificationMode: " << classificationModeActive << std::endl;
@@ -1240,7 +1239,7 @@ bool MLP::load( std::fstream &file ){
         errorLog << __GRT_LOG__ << " Failed to find NumRandomTrainingIterations!" << std::endl;
         return false;
     }
-    file >> numRandomTrainingIterations;
+    file >> numRestarts;
     
     file >> word;
     if(word != "Momentum:"){
@@ -1522,7 +1521,7 @@ Neuron::Type MLP::getOutputLayerActivationFunction() const{
 }
 
 UINT MLP::getNumRandomTrainingIterations() const{
-    return numRandomTrainingIterations;
+    return numRestarts;
 }
 
 Float MLP::getTrainingRate() const{
@@ -1724,11 +1723,7 @@ bool MLP::setGamma(const Float gamma){
 }
 
 bool MLP::setNumRandomTrainingIterations(const UINT numRandomTrainingIterations){
-    if( numRandomTrainingIterations > 0 ){
-        this->numRandomTrainingIterations = numRandomTrainingIterations;
-        return true;
-    }
-    return false;
+    return setNumRestarts(numRandomTrainingIterations);
 }
 
 bool MLP::setNullRejection(const bool useNullRejection){
@@ -1822,7 +1817,7 @@ bool MLP::loadLegacyModelFromFile( std::fstream &file ){
         errorLog << __GRT_LOG__ << " Failed to find NumRandomTrainingIterations!" << std::endl;
         return false;
     }
-    file >> numRandomTrainingIterations;
+    file >> numRestarts;
     
     file >> word;
     if(word != "ValidationSetSize:"){

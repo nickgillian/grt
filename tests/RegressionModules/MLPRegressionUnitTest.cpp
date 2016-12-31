@@ -53,7 +53,7 @@ bool train_mlp_xor(const bool enableScaling) {
   EXPECT_TRUE( mlp.setMinChange( 1.0e-10 ) ); //This sets the minimum change allowed in training error between any two epochs
   EXPECT_TRUE( mlp.setLearningRate( 0.01 ) ); //This sets the rate at which the learning algorithm updates the weights of the neural network
   EXPECT_TRUE( mlp.setMomentum( 0.2 ) ); //This sets the amount of smoothing between weight updates
-  EXPECT_TRUE( mlp.setNumRandomTrainingIterations( 1 ) ); //This sets the number of times the MLP will be trained, we manually do the re-try training below as needed
+  EXPECT_TRUE( mlp.setNumRestarts( 1 ) ); //This sets the number of times the MLP will be trained, we manually do the re-try training below as needed
   EXPECT_TRUE( mlp.setUseValidationSet( false ) ); //Don't use a validation set for this case (as we only have 4 samples)
   EXPECT_TRUE( mlp.setRandomiseTrainingOrder( false ) ); //We don't need to randomize the training data for this XOR case
   EXPECT_TRUE( mlp.enableScaling( enableScaling ) ); //Turn training on/off

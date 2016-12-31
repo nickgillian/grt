@@ -455,6 +455,7 @@ public:
     bool setGamma(const Float gamma);
     
     /**
+    @deprecated use setNumRestarts() instead
     Sets number of times the MLP model should be trained to find the best model.  This value must be greater than zero.
     
     Setting this value to a high number (i.e. 100) will most likely give you a better model, however it will take much longer to train
@@ -464,7 +465,7 @@ public:
     @param numRandomTrainingIterations: the number of times you want to randomly train the MLP model to search for the best results
     @return returns true if the value was updated successfully, false otherwise
     */
-    bool setNumRandomTrainingIterations(const UINT numRandomTrainingIterations);
+    GRT_DEPRECATED_MSG( "setNumRandomTrainingIterations() is deprecated, use setNumRestarts() instead",bool setNumRandomTrainingIterations(const UINT numRandomTrainingIterations));
     
     /**
     Sets if null rejection should be used for the real-time prediction.  This is only used if the MLP is in classificationMode.
@@ -548,7 +549,6 @@ protected:
     Neuron::Type inputLayerActivationFunction;
     Neuron::Type hiddenLayerActivationFunction;
     Neuron::Type outputLayerActivationFunction;
-    UINT numRandomTrainingIterations;
     UINT trainingMode;
     Float momentum;
     Float gamma;

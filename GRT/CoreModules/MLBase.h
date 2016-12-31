@@ -434,6 +434,12 @@ public:
     @return returns the batch size
     */
     UINT getBatchSize() const;
+
+    /**
+    Gets the number of times a learning algorithm can restart during training.
+    @return returns the number of times a learning algorithm can restart during training
+    */
+    UINT getNumRestarts() const;
     
     /**
     Gets the size (as a percentage) of the validation set (if one should be used). If this value returned 20 this would mean that
@@ -621,6 +627,15 @@ public:
     @return returns true if the value was updated successfully, false otherwise
     */
     bool setMinNumEpochs(const UINT minNumEpochs);
+
+    /**
+    Sets the number of times a learning algorithm can restart during training. This is used to restart the training for algorithms that can get stuck if they 
+    start with bad random values.
+    
+    @param numRestarts: number of times a learning algorithm can restart during training
+    @return returns true if the value was updated successfully, false otherwise
+    */
+    bool setNumRestarts(const UINT numRestarts);
     
     /**
     Sets the minimum change that must be achieved between two training epochs for the training to continue.
@@ -798,6 +813,7 @@ protected:
     UINT maxNumEpochs;
     UINT batchSize;
     UINT validationSetSize;
+    UINT numRestarts;
     Float learningRate;
     Float minChange;
     Float rmsTrainingError;

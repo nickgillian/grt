@@ -39,6 +39,7 @@ GMM::GMM(UINT numMixtureModels,bool useScaling,bool useNullRejection,Float nullR
     this->nullRejectionCoeff = nullRejectionCoeff;
     this->maxNumEpochs = maxNumEpochs;
     this->minChange = minChange;
+    numRestarts = 10; //The learning algorithm can attempt to train a model N times
 }
 
 GMM::GMM(const GMM &rhs) : Classifier( GMM::getId() )
@@ -190,7 +191,7 @@ bool GMM::train_(ClassificationData &trainingData){
         gaussianMixtureModel.setNumClusters( numMixtureModels );
         gaussianMixtureModel.setMinChange( minChange );
         gaussianMixtureModel.setMaxNumEpochs( maxNumEpochs );
-        gaussianMixtureModel.setNumRestarts( 10 ); //The learning algorithm can retry building a model up to N times
+        gaussianMixtureModel.setNumRestarts( numRestarts ); //The learning algorithm can retry building a model up to N times
         
         if( !gaussianMixtureModel.train( classData.getDataAsMatrixFloat() ) ){
             errorLog << "train_(ClassificationData &trainingData) - Failed to train Mixture Model for class " << classLabel << std::endl;

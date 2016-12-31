@@ -150,7 +150,7 @@ bool train( CommandLineParser &parser ){
     regression.setUseValidationSet( true );
     regression.setValidationSetSize( 20 );
     regression.setRandomiseTrainingOrder( true );
-    regression.setNumRandomTrainingIterations( 1 );
+    regression.setNumRestarts( 1 );
     regression.enableScaling( enableScaling );
     regression.init( N, numHiddenNeurons, T, Neuron::LINEAR, Neuron::TANH, Neuron::TANH );
 
