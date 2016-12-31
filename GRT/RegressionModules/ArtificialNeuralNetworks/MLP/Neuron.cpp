@@ -78,6 +78,7 @@ bool Neuron::init(const UINT numInputs,const Type activationFunction,Random &ran
 
     //Randomise the bias
     bias = random.getUniform(minBiasRange,maxBiasRange);
+    previousBiasUpdate = 0;
     
     return true;
 }

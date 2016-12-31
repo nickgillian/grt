@@ -203,6 +203,11 @@ typedef unsigned long ULONG;
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 /**
+  @brief returns the filename (stripped of the system path), function, and line from where this macro is called
+*/
+#define __GRT_LOG__ (std::string(__FILENAME__) + std::string(" ") + std::string(__FUNCTION__) + std::string(":") + grt_to_str(__LINE__))
+  
+/**
   @brief converts x to a string for printing
 */
 #define grt_to_str(x) (#x)
