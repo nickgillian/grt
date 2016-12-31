@@ -19,27 +19,30 @@
  */
 
  /*
- This example demonstrates some basic IO functionality with the GRT, such as saving and loading CSV (comma seperated data) data.
+ This example demonstrates some basic IO functionality with the GRT, such as saving and loading CSV (comma seperated data) files.
  */
 
 //You might need to set the specific path of the GRT header relative to your project
 #include <GRT/GRT.h>
 using namespace GRT;
 
-void runMatrixExample();
-void runClassificationDataExample();
+bool runMatrixExample();
+bool runClassificationDataExample();
+bool runRegressionDataExample();
 
 int main (int argc, const char * argv[])
 {
 
-    runMatrixExample();
+    if( !runMatrixExample() ) return EXIT_FAILURE;
     
-    runClassificationDataExample();
+    if( !runClassificationDataExample() ) return EXIT_FAILURE;
+
+    if( !runRegressionDataExample() ) return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
 }
 
-void runMatrixExample(){
+bool runMatrixExample(){
 
     //This example demonstrates how to save and load data from a matrix
 
@@ -50,7 +53,7 @@ void runMatrixExample(){
     Random random;
     for(unsigned int i=0; i<x.getNumRows(); i++){
         for(unsigned int j=0; j<x.getNumCols(); j++){
-            x[i][j] = random.getRandomNumberUniform( 0.0, 1.0 );
+            x[i][j] = random.getUniform( 0.0, 1.0 );
         }
     }
 
@@ -84,9 +87,11 @@ void runMatrixExample(){
     }
 
     std::cout << "data OK\n";
+
+    return true;
 }
 
-void runClassificationDataExample(){
+bool runClassificationDataExample(){
 
     //This example demonstrates how to save and load supervised classification data
 
@@ -177,7 +182,51 @@ void runClassificationDataExample(){
 
     std::cout << "csv formatted classification data OK\n";
 
-
+    return true;
 }
 
 
+bool runRegressionDataExample(){
+
+    //This example demonstrates how to save and load supervised regression data
+
+    //Create a dummy regression data structure
+    RegressionData data;
+
+    const unsigned int numDimensions = 3;
+    const unsigned int numExamples = 1000;
+    VectorFloat inputVector( numDimensions );
+    VectorFloat targetVector( 1 );
+    Random random;
+
+    //Set the size of the regression data structure, this will make adding new samples faster
+    data.setInputAndTargetDimensions( numDimensions, 1 );
+    data.reserve( numExamples );
+
+    //Add some random data to the classification data structure
+    for(unsigned int i=0; i<numExamples; i++){
+        Float target = random.getUniform( -1.0, 1.0 );
+        for(unsigned int j=0; j<numDimensions; j++){
+            inputVector[j] = random.getGauss( target, 0.1 );
+        }
+
+        targetVector[0] = target;
+
+        //Add the sample to the data structure
+        data.addSample( inputVector, targetVector );
+    }
+
+    //Save the regression data to a custom GRT format (this is faster to save/load)
+    //The is a basic ASCII file, with a custom header followed by the raw data
+    data.save( "regression_data.grt" );
+
+    //The data can also be saved to a CSV file
+    //Each row in the CSV file corresponds to a sample in the dataset
+    //The first N columns in the CSV file corresponds to each of the dimensions in the input vector
+    //The following K columns correspond to each of the dimensions in the target data
+    //There will therefore be M rows and N+K columns, where M is the number of examples
+    //Columns will be seperated by the comma delimiter (',')
+    data.save( "regression_data.csv" );
+
+    return true;
+}
