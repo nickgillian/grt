@@ -23,6 +23,7 @@ TEST(Classifier, Create) {
 
   //The classifier ID should match KNN
   EXPECT_TRUE( knn->getId() == KNN::getId() );
+  EXPECT_TRUE( knn->getClassifierType() == KNN::getId() );
 }
 
 // Tests the Reset function
