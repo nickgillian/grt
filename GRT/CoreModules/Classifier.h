@@ -169,7 +169,7 @@ public:
     @param classLabel: the query classLabel
     @return returns index of the query classLabel in the classLabels Vector
     */
-    UINT getClassLabelIndexValue(UINT classLabel) const;
+    UINT getClassLabelIndexValue(const UINT classLabel) const;
     
     /**
     Gets the predicted class label from the last prediction.
