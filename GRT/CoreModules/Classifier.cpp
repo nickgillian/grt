@@ -210,7 +210,7 @@ UINT Classifier::getNumClasses() const{
     return numClasses; 
 }
     
-UINT Classifier::getClassLabelIndexValue(UINT classLabel) const{
+UINT Classifier::getClassLabelIndexValue(const UINT classLabel) const{
     for(UINT i=0; i<classLabels.size(); i++){
         if( classLabel == classLabels[i] )
             return i;
@@ -246,12 +246,12 @@ Vector<MinMax> Classifier::getRanges() const{
     return ranges;
 }
 
-bool Classifier::enableNullRejection(bool useNullRejection){ 
+bool Classifier::enableNullRejection(const bool useNullRejection){ 
     this->useNullRejection = useNullRejection; 
     return true;
 }
 
-bool Classifier::setNullRejectionCoeff(Float nullRejectionCoeff){ 
+bool Classifier::setNullRejectionCoeff(const Float nullRejectionCoeff){ 
     if( nullRejectionCoeff > 0 ){ 
         this->nullRejectionCoeff = nullRejectionCoeff; 
         return true; 
@@ -259,8 +259,8 @@ bool Classifier::setNullRejectionCoeff(Float nullRejectionCoeff){
     return false; 
 }
 
-bool Classifier::setNullRejectionThresholds(VectorFloat newRejectionThresholds){
-	if( newRejectionThresholds.size() == getNumClasses() ){
+bool Classifier::setNullRejectionThresholds(const VectorFloat &newRejectionThresholds){
+	if( newRejectionThresholds.getSize() == getNumClasses() ){
 		nullRejectionThresholds = newRejectionThresholds;
 		return true;
 	}

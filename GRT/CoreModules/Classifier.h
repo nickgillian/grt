@@ -224,16 +224,18 @@ public:
     algorithm) the models rejectionThreshold. If a prediction is rejected then the default null class label of 0 will be returned.
     If set to false then the classifier will simply return the most likely predicted class.
     
+    @param useNullRejection: the new null rejection state
     @return returns true if nullRejection was updated successfully, false otherwise
     */
-    bool enableNullRejection(bool useNullRejection);
+    bool enableNullRejection(const bool useNullRejection);
     
     /**
     Sets the nullRejectionCoeff, this is a multipler controlling the null rejection threshold for each class.
     
+    @param nullRejectionCoeff: the new null rejection value
     @return returns true if nullRejectionCoeff was updated successfully, false otherwise
     */
-    virtual bool setNullRejectionCoeff(Float nullRejectionCoeff);
+    virtual bool setNullRejectionCoeff(const Float nullRejectionCoeff);
     
     /**
     Manually sets the nullRejectionThresholds, these are the thresholds used for null rejection for each class.
@@ -243,7 +245,7 @@ public:
     @param newRejectionThresholds: the new rejection thresholds
     @return returns true if nullRejectionThresholds were updated successfully, false otherwise
     */
-    virtual bool setNullRejectionThresholds(VectorFloat newRejectionThresholds);
+    virtual bool setNullRejectionThresholds(const VectorFloat &newRejectionThresholds);
     
     /**
     Recomputes the null rejection thresholds for each model.

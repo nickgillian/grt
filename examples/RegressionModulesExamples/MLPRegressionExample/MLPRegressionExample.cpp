@@ -114,7 +114,7 @@ int main (int argc, const char * argv[])
     mlp.setMinChange( 1.0e-10 ); //This sets the minimum change allowed in training error between any two epochs
     mlp.setLearningRate( 0.1 ); //This sets the rate at which the learning algorithm updates the weights of the neural network
     mlp.setMomentum( 0.5 );
-    mlp.setNumRandomTrainingIterations( 1 ); //This sets the number of times the MLP will be trained, each training iteration starts with new random values
+    mlp.setNumRestarts( 1 ); //This sets the number of times the MLP will be trained, each training iteration starts with new random values
     mlp.setUseValidationSet( false ); //This sets aside a small portiion of the training data to be used as a validation set to mitigate overfitting
     mlp.setValidationSetSize( 20 ); //Use 20% of the training data for validation during the training phase
     mlp.setRandomiseTrainingOrder( false ); //Randomize the order of the training data so that the training algorithm does not bias the training
