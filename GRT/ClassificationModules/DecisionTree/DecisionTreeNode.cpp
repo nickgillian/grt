@@ -19,7 +19,7 @@ DecisionTreeNode::~DecisionTreeNode(){
     clear();
 }
 
-bool DecisionTreeNode::predict(const VectorFloat &x,VectorFloat &classLikelihoods){
+bool DecisionTreeNode::predict_(VectorFloat &x,VectorFloat &classLikelihoods){
     
     predictedNodeID = 0;
     
@@ -32,22 +32,22 @@ bool DecisionTreeNode::predict(const VectorFloat &x,VectorFloat &classLikelihood
     if( leftChild == NULL && rightChild == NULL )
         return false;
     
-    if( predict( x ) ){
+    if( predict_( x ) ){
         if( rightChild ){
-            if( rightChild->predict( x, classLikelihoods ) ){
+            if( rightChild->predict_( x, classLikelihoods ) ){
                 predictedNodeID = rightChild->getPredictedNodeID();
                 return true;
             }
-            warningLog << "predict(const VectorFloat &x,VectorFloat &classLikelihoods) - Right child failed prediction!" << std::endl;
+            warningLog << __GRT_LOG__ << " Right child failed prediction!" << std::endl;
             return false;
         }
     }else{
         if( leftChild ){
-            if( leftChild->predict( x, classLikelihoods ) ){
+            if( leftChild->predict_( x, classLikelihoods ) ){
                 predictedNodeID = leftChild->getPredictedNodeID();
                 return true;
             }
-            warningLog << "predict(const VectorFloat &x,VectorFloat &classLikelihoods) - Left child failed prediction!" << std::endl;
+            warningLog << __GRT_LOG__ << " Left child failed prediction!" << std::endl;
             return false;
         }
     }
@@ -55,17 +55,17 @@ bool DecisionTreeNode::predict(const VectorFloat &x,VectorFloat &classLikelihood
     return false;
 }
 
-bool DecisionTreeNode::computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+bool DecisionTreeNode::computeBestSplit( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
     
     switch( trainingMode ){
         case Tree::BEST_ITERATIVE_SPILT:
-            return computeBestSpiltBestIterativeSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError );
+            return computeBestSplitBestIterativeSplit( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError );
             break;
         case Tree::BEST_RANDOM_SPLIT:
-            return computeBestSpiltBestRandomSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError );
+            return computeBestSplitBestRandomSplit( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError );
             break;
         default:
-            errorLog << "computeBestSpilt(...) - Uknown trainingMode!" << std::endl;
+            errorLog << __GRT_LOG__ << " Uknown trainingMode!" << std::endl;
             return false;
             break;
     }

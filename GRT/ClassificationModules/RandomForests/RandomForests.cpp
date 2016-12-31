@@ -30,7 +30,7 @@ std::string RandomForests::getId() { return RandomForests::id; }
 //Register the RandomForests module with the Classifier base class
 RegisterClassifierModule< RandomForests >  RandomForests::registerModule( RandomForests::getId() );
 
-RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSpilt,const bool useScaling,const Float bootstrappedDatasetWeight) : Classifier( RandomForests::getId() )
+RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSplit,const bool useScaling,const Float bootstrappedDatasetWeight) : Classifier( RandomForests::getId() )
 {
     this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->forestSize = forestSize;
@@ -38,7 +38,7 @@ RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT
     this->minNumSamplesPerNode = minNumSamplesPerNode;
     this->maxDepth = maxDepth;
     this->trainingMode = trainingMode;
-    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+    this->removeFeaturesAtEachSplit = removeFeaturesAtEachSplit;
     this->useScaling = useScaling;
     this->bootstrappedDatasetWeight = bootstrappedDatasetWeight;
     classifierMode = STANDARD_CLASSIFIER_MODE;
@@ -91,7 +91,7 @@ RandomForests& RandomForests::operator=(const RandomForests &rhs){
             this->numRandomSplits = rhs.numRandomSplits;
             this->minNumSamplesPerNode = rhs.minNumSamplesPerNode;
             this->maxDepth = rhs.maxDepth;
-            this->removeFeaturesAtEachSpilt = rhs.removeFeaturesAtEachSpilt;
+            this->removeFeaturesAtEachSplit = rhs.removeFeaturesAtEachSplit;
             this->bootstrappedDatasetWeight = rhs.bootstrappedDatasetWeight;
             this->trainingMode = rhs.trainingMode;
             
@@ -132,7 +132,7 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
             this->numRandomSplits = ptr->numRandomSplits;
             this->minNumSamplesPerNode = ptr->minNumSamplesPerNode;
             this->maxDepth = ptr->maxDepth;
-            this->removeFeaturesAtEachSpilt = ptr->removeFeaturesAtEachSpilt;
+            this->removeFeaturesAtEachSplit = ptr->removeFeaturesAtEachSplit;
             this->bootstrappedDatasetWeight = ptr->bootstrappedDatasetWeight;
             this->trainingMode = ptr->trainingMode;
             
@@ -206,7 +206,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
         tree.setMinNumSamplesPerNode( minNumSamplesPerNode );
         tree.setMaxDepth( maxDepth );
         tree.enableNullRejection( useNullRejection );
-        tree.setRemoveFeaturesAtEachSpilt( removeFeaturesAtEachSpilt );
+        tree.setRemoveFeaturesAtEachSplit( removeFeaturesAtEachSplit );
         
         trainingLog << "Training decision tree " << i+1 << "/" << forestSize << "..." << std::endl;
         
@@ -288,12 +288,12 @@ bool RandomForests::predict_(VectorDouble &inputVector){
     maxLikelihood = 0;
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - Model Not Trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " Model Not Trained!" << std::endl;
         return false;
     }
     
     if( inputVector.getSize() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &inputVector) - The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
+        errorLog << __GRT_LOG__ << " The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
         return false;
     }
     
@@ -311,8 +311,8 @@ bool RandomForests::predict_(VectorDouble &inputVector){
     //Run the prediction for each tree in the forest
     VectorDouble y;
     for(UINT i=0; i<forestSize; i++){
-        if( !forest[i]->predict(inputVector, y) ){
-            errorLog << "predict_(VectorDouble &inputVector) - Tree " << i << " failed prediction!" << std::endl;
+        if( !forest[i]->predict_(inputVector, y) ){
+            errorLog << __GRT_LOG__ << " Tree " << i << " failed prediction!" << std::endl;
             return false;
         }
         
@@ -365,7 +365,7 @@ bool RandomForests::print() const{
     std::cout << "NumSplittingSteps: " << numRandomSplits << std::endl;
     std::cout << "MinNumSamplesPerNode: " << minNumSamplesPerNode << std::endl;
     std::cout << "MaxDepth: " << maxDepth << std::endl;
-    std::cout << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << std::endl;
+    std::cout << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSplit << std::endl;
     std::cout << "TrainingMode: " << trainingMode << std::endl;
     std::cout << "ForestBuilt: " << (trained ? 1 : 0) << std::endl;
     
@@ -384,7 +384,7 @@ bool RandomForests::save( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
+        errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
         return false;
     }
     
@@ -393,14 +393,14 @@ bool RandomForests::save( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
     if( decisionTreeNode != NULL ){
         file << "DecisionTreeNodeType: " << decisionTreeNode->getNodeType() << std::endl;
         if( !decisionTreeNode->save( file ) ){
-            Classifier::errorLog <<"save(fstream &file) - Failed to save decisionTreeNode settings to file!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Failed to save decisionTreeNode settings to file!" << std::endl;
             return false;
         }
     }else{
@@ -411,7 +411,7 @@ bool RandomForests::save( std::fstream &file ) const{
     file << "NumSplittingSteps: " << numRandomSplits << std::endl;
     file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << std::endl;
     file << "MaxDepth: " << maxDepth << std::endl;
-    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << std::endl;
+    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSplit << std::endl;
     file << "TrainingMode: " << trainingMode << std::endl;
     file << "ForestBuilt: " << (trained ? 1 : 0) << std::endl;
     
@@ -436,7 +436,7 @@ bool RandomForests::load( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "load(string filename) - Could not open file to load model" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -515,7 +515,7 @@ bool RandomForests::load( std::fstream &file ){
         errorLog << "load(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
-    file >> removeFeaturesAtEachSpilt;
+    file >> removeFeaturesAtEachSplit;
     
     file >> word;
     if(word != "TrainingMode:"){
@@ -644,8 +644,8 @@ UINT RandomForests::getTrainingMode() const {
     return trainingMode;
 }
 
-bool RandomForests::getRemoveFeaturesAtEachSpilt() const {
-    return removeFeaturesAtEachSpilt;
+bool RandomForests::getRemoveFeaturesAtEachSplit() const {
+    return removeFeaturesAtEachSplit;
 }
 
 Float RandomForests::getBootstrappedDatasetWeight() const {
@@ -763,8 +763,8 @@ bool RandomForests::setMaxDepth(const UINT maxDepth){
     return false;
 }
 
-bool RandomForests::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
-    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+bool RandomForests::setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit){
+    this->removeFeaturesAtEachSplit = removeFeaturesAtEachSplit;
     return true;
 }
 

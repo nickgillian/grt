@@ -37,7 +37,6 @@ bool Metrics::computeAccuracy( GRT::Classifier &model, const GRT::Classification
 
     const UINT M = data.getNumSamples();
 
-    UINT predictedClassLabel = 0;
     for(UINT i=0; i<M; i++){
         if( !model.predict( data[i].getSample() ) ){
             accuracy = 0;

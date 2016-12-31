@@ -46,12 +46,12 @@ public:
      @param numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node. Default value = 100
      @param minNumSamplesPerNode: sets the minimum number of samples that are allowed per node, if the number of samples is below that, the node will become a leafNode.  Default value = 5
      @param maxDepth: sets the maximum depth of the tree. Default value = 10
-     @param removeFeaturesAtEachSpilt: sets if a feature is removed at each spilt so it can not be used again. Default value = false
+     @param removeFeaturesAtEachSplit: sets if a feature is removed at each spilt so it can not be used again. Default value = false
      @param trainingMode: sets the training mode, this should be one of the TrainingMode enums. Default value = BEST_ITERATIVE_SPILT
      @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      @param  minRMSErrorPerNode: sets the minimum RMS error that allowed per node, if the RMS error is below that, the node will become a leafNode. Default value = 0.01
      */
-    ClusterTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const Tree::TrainingMode trainingMode = Tree::BEST_ITERATIVE_SPILT,const bool useScaling=false,const Float minRMSErrorPerNode = 0.01);
+    ClusterTree(const UINT numSplittingSteps=100,const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSplit = false,const Tree::TrainingMode trainingMode = Tree::BEST_ITERATIVE_SPILT,const bool useScaling=false,const Float minRMSErrorPerNode = 0.01);
     
     /**
      Defines the copy constructor.
@@ -80,7 +80,7 @@ public:
      @param cluster: a pointer to the Clusterer Base Class, this should be pointing to another ClusterTree instance
      @return returns true if the clone was successfull, false otherwise
     */
-    virtual bool deepCopyFrom(const Clusterer *cluster);
+    virtual bool deepCopyFrom(const Clusterer *cluster) override;
     
     /**
      This trains the ClusterTree model, using the labelled regression data.
@@ -89,7 +89,7 @@ public:
      @param trainingData: a reference to the training data
      @return returns true if the model was trained, false otherwise
     */
-    virtual bool train_(MatrixFloat &trainingData);
+    virtual bool train_(MatrixFloat &trainingData) override;
     
     /**
      This predicts the class of the inputVector.
@@ -98,7 +98,7 @@ public:
      @param VectorFloat inputVector: the input Vector to predict
      @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorFloat &inputVector);
+    virtual bool predict_(VectorFloat &inputVector) override;
     
     /**
      This overrides the clear function in the Regressifier base class.
@@ -106,14 +106,14 @@ public:
      
      @return returns true if the module was cleared succesfully, false otherwise
      */
-    virtual bool clear();
+    virtual bool clear() override;
     
     /**
      Prints the tree to std::cout.
      
      @return returns true if the model was printed
      */
-    virtual bool print() const;
+    virtual bool print() const override;
     
     /**
      This saves the trained model to a file.
@@ -122,7 +122,7 @@ public:
      @param file: a reference to the file the model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool saveModelToFile( std::fstream &file ) const override;
     
     /**
      This loads a trained model from a file.
@@ -131,7 +131,7 @@ public:
      @param file: a reference to the file the model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file );
+    virtual bool loadModelFromFile( std::fstream &file ) override;
 
     /**
      Deep copies the tree, returning a pointer to the new clusterer tree.
@@ -205,11 +205,11 @@ public:
     UINT getPredictedNodeID() const;
     
     /**
-    Gets if a feature is removed at each spilt so it can not be used again.
+    Gets if a feature is removed at each split so it can not be used again.
     
     @return returns true if a feature is removed at each spilt so it can not be used again, false otherwise
     */
-    bool getRemoveFeaturesAtEachSpilt() const;
+    bool getRemoveFeaturesAtEachSplit() const;
     
     /**
      Sets the training mode, this should be one of the TrainingModes enums.
@@ -253,14 +253,14 @@ public:
     bool setMaxDepth(const UINT maxDepth);
     
     /**
-    Sets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be
+    Sets if a feature is removed at each split so it can not be used again.  If true then the best feature selected at each node will be
     removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
     be used, regardless of how many times it has been used again.
     
-    @param removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
+    @param removeFeaturesAtEachSplit: if true, then each feature is removed at each spilt so it can not be used again
     @return returns true if the parameter was set, false otherwise
     */
-    bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
+    bool setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit);
 
     /**
      Sets the minimum RMS error that needs to be exceeded for the tree to continue growing at a specific node.
@@ -287,14 +287,14 @@ protected:
     UINT minNumSamplesPerNode;
     UINT maxDepth;
     UINT numSplittingSteps;
-    bool removeFeaturesAtEachSpilt;
+    bool removeFeaturesAtEachSplit;
     Tree::TrainingMode trainingMode;
     Float minRMSErrorPerNode;
     
     ClusterTreeNode* buildTree( const MatrixFloat &trainingData, ClusterTreeNode *parent, Vector< UINT > features, UINT &clusterLabel, UINT nodeID );
-    bool computeBestSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
-    bool computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
-    bool computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
+    bool computeBestSplit( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
+    bool computeBestSplitBestIterativeSplit( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
+    bool computeBestSplitBestRandomSplit( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError );
 
 private:
     static RegisterClustererModule< ClusterTree > registerModule;

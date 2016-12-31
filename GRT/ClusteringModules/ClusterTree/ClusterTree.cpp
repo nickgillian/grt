@@ -33,14 +33,14 @@ RegisterNode< ClusterTreeNode > ClusterTreeNode::registerModule("ClusterTreeNode
 //Register the ClusterTree module with the Clusterer base class
 RegisterClustererModule< ClusterTree >  ClusterTree::registerModule( ClusterTree::getId() );
 
-ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const Tree::TrainingMode trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Clusterer( ClusterTree::getId() )
+ClusterTree::ClusterTree(const UINT numSplittingSteps,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSplit,const Tree::TrainingMode trainingMode,const bool useScaling,const Float minRMSErrorPerNode) : Clusterer( ClusterTree::getId() )
 {
     tree = NULL;
     predictedClusterLabel = 0;
     this->numSplittingSteps = numSplittingSteps;
     this->minNumSamplesPerNode = minNumSamplesPerNode;
     this->maxDepth = maxDepth;
-    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+    this->removeFeaturesAtEachSplit = removeFeaturesAtEachSplit;
     this->trainingMode = trainingMode;
     this->minRMSErrorPerNode = minRMSErrorPerNode;
 }
@@ -70,7 +70,7 @@ ClusterTree& ClusterTree::operator=(const ClusterTree &rhs){
         this->numSplittingSteps = rhs.numSplittingSteps;
         this->minNumSamplesPerNode = rhs.minNumSamplesPerNode;
         this->maxDepth = rhs.maxDepth;
-        this->removeFeaturesAtEachSpilt = rhs.removeFeaturesAtEachSpilt;
+        this->removeFeaturesAtEachSplit = rhs.removeFeaturesAtEachSplit;
         this->trainingMode = rhs.trainingMode;
         this->minRMSErrorPerNode = rhs.minRMSErrorPerNode;
         this->predictedClusterLabel = rhs.predictedClusterLabel;
@@ -100,7 +100,7 @@ bool ClusterTree::deepCopyFrom(const Clusterer *clusterer){
         this->numSplittingSteps = ptr->numSplittingSteps;
         this->minNumSamplesPerNode = ptr->minNumSamplesPerNode;
         this->maxDepth = ptr->maxDepth;
-        this->removeFeaturesAtEachSpilt = ptr->removeFeaturesAtEachSpilt;
+        this->removeFeaturesAtEachSplit = ptr->removeFeaturesAtEachSplit;
         this->trainingMode = ptr->trainingMode;
         this->minRMSErrorPerNode = ptr->minRMSErrorPerNode;
         this->predictedClusterLabel = ptr->predictedClusterLabel;
@@ -169,17 +169,17 @@ bool ClusterTree::train_(MatrixFloat &trainingData){
 bool ClusterTree::predict_(VectorFloat &inputVector){
     
     if( !trained ){
-        Clusterer::errorLog << "predict_(VectorFloat &inputVector) - Model Not Trained!" << std::endl;
+        Clusterer::errorLog << __GRT_LOG__ << " Model Not Trained!" << std::endl;
         return false;
     }
     
     if( tree == NULL ){
-        Clusterer::errorLog << "predict_(VectorFloat &inputVector) - DecisionTree pointer is null!" << std::endl;
+        Clusterer::errorLog << __GRT_LOG__ << " DecisionTree pointer is null!" << std::endl;
         return false;
     }
     
-	if( inputVector.size() != numInputDimensions ){
-        Clusterer::errorLog << "predict_(VectorFloat &inputVector) - The size of the input Vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
+	if( inputVector.getSize() != numInputDimensions ){
+        Clusterer::errorLog << __GRT_LOG__ << " The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
 		return false;
 	}
     
@@ -190,8 +190,8 @@ bool ClusterTree::predict_(VectorFloat &inputVector){
     }
     
     VectorFloat clusterLabel(1);
-    if( !tree->predict( inputVector, clusterLabel ) ){
-        Clusterer::errorLog << "predict_(VectorFloat &inputVector) - Failed to predict!" << std::endl;
+    if( !tree->predict_( inputVector, clusterLabel ) ){
+        Clusterer::errorLog << __GRT_LOG__ << " Failed to predict!" << std::endl;
         return false;
     }
     predictedClusterLabel = (UINT)clusterLabel[0];
@@ -239,7 +239,7 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
 	file << "NumSplittingSteps: " << numSplittingSteps << std::endl;
 	file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << std::endl;
     file << "MaxDepth: " << maxDepth << std::endl;
-	file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << std::endl;
+	file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSplit << std::endl;
 	file << "TrainingMode: " << trainingMode << std::endl;
 	file << "MinRMSErrorPerNode: " << minRMSErrorPerNode << std::endl;
 	file << "TreeBuilt: " << (tree != NULL ? 1 : 0) << std::endl;
@@ -306,7 +306,7 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
     	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
     	return false;
 	}
-	file >> removeFeaturesAtEachSpilt;
+	file >> removeFeaturesAtEachSplit;
 
 	file >> word;
 	if(word != "TrainingMode:"){
@@ -412,8 +412,8 @@ UINT ClusterTree::getPredictedNodeID()const{
     return tree->getPredictedNodeID();
 }
 
-bool ClusterTree::getRemoveFeaturesAtEachSpilt() const{
-    return removeFeaturesAtEachSpilt;
+bool ClusterTree::getRemoveFeaturesAtEachSplit() const{
+    return removeFeaturesAtEachSplit;
 }
 
 bool ClusterTree::setTrainingMode(const Tree::TrainingMode trainingMode){ 
@@ -452,8 +452,8 @@ bool ClusterTree::setMaxDepth(const UINT maxDepth){
     return false;
 }
 
-bool ClusterTree::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
-    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+bool ClusterTree::setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit){
+    this->removeFeaturesAtEachSplit = removeFeaturesAtEachSplit;
     return true;
 }
 
@@ -508,7 +508,7 @@ ClusterTreeNode* ClusterTree::buildTree(const MatrixFloat &trainingData,ClusterT
     UINT featureIndex = 0;
     Float threshold = 0;
     Float minError = 0;
-    if( !computeBestSpilt( trainingData, features, featureIndex, threshold, minError ) ){
+    if( !computeBestSplit( trainingData, features, featureIndex, threshold, minError ) ){
         delete node;
         return NULL;
     }
@@ -535,7 +535,7 @@ ClusterTreeNode* ClusterTree::buildTree(const MatrixFloat &trainingData,ClusterT
     node->set( M, featureIndex, threshold, 0 );
     
     //Remove the selected feature so we will not use it again
-    if( removeFeaturesAtEachSpilt ){
+    if( removeFeaturesAtEachSplit ){
         for(UINT i=0; i<features.getSize(); i++){
             if( features[i] == featureIndex ){
                 features.erase( features.begin()+i );
@@ -561,14 +561,14 @@ ClusterTreeNode* ClusterTree::buildTree(const MatrixFloat &trainingData,ClusterT
     return node;
 }
     
-bool ClusterTree::computeBestSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
+bool ClusterTree::computeBestSplit( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     switch( trainingMode ){
         case Tree::BEST_ITERATIVE_SPILT:
-            return computeBestSpiltBestIterativeSpilt( trainingData, features, featureIndex, threshold, minError );
+            return computeBestSplitBestIterativeSplit( trainingData, features, featureIndex, threshold, minError );
             break;
         case Tree::BEST_RANDOM_SPLIT:
-            return computeBestSpiltBestRandomSpilt( trainingData, features, featureIndex, threshold, minError );
+            return computeBestSplitBestRandomSplit( trainingData, features, featureIndex, threshold, minError );
             break;
         default:
             Clusterer::errorLog << "Uknown trainingMode!" << std::endl;
@@ -579,7 +579,7 @@ bool ClusterTree::computeBestSpilt( const MatrixFloat &trainingData, const Vecto
     return true;
 }
     
-bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
+bool ClusterTree::computeBestSplitBestIterativeSplit( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     const UINT M = trainingData.getNumRows();
     const UINT N = (UINT)features.size();
@@ -659,7 +659,7 @@ bool ClusterTree::computeBestSpiltBestIterativeSpilt( const MatrixFloat &trainin
     return true;
 }
     
-bool ClusterTree::computeBestSpiltBestRandomSpilt( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
+bool ClusterTree::computeBestSplitBestRandomSplit( const MatrixFloat &trainingData, const Vector< UINT > &features, UINT &featureIndex, Float &threshold, Float &minError ){
     
     const UINT M = trainingData.getNumRows();
     const UINT N = (UINT)features.size();

@@ -19,7 +19,7 @@ DecisionTreeClusterNode::~DecisionTreeClusterNode(){
     clear();
 }
 
-bool DecisionTreeClusterNode::predict(const VectorFloat &x) {
+bool DecisionTreeClusterNode::predict_(VectorFloat &x) {
 
     if( x[ featureIndex ] >= threshold ) return true;
 
@@ -55,8 +55,8 @@ bool DecisionTreeClusterNode::computeFeatureWeights( VectorFloat &weights ) cons
         return true;
     }
     
-    if( featureIndex >= ((UINT)weights.size()) ){ //Feature index is out of bounds
-        warningLog << "computeFeatureWeights( VectorFloat &weights ) - Feature index is greater than weights Vector size!" << std::endl;
+    if( featureIndex >= weights.getSize() ){ //Feature index is out of bounds
+        warningLog << __GRT_LOG__ << " Feature index is greater than weights Vector size!" << std::endl;
         return false;
     }else{
         weights[ featureIndex ]++;
@@ -79,14 +79,14 @@ bool DecisionTreeClusterNode::computeLeafNodeWeights( MatrixFloat &weights ) con
     }
 
     if( featureIndex >= weights.getNumCols() ){ //Feature index is out of bounds
-        warningLog << "computeFeatureWeights( VectorFloat &weights ) - Feature index is greater than weights Vector size!" << std::endl;
+        warningLog << __GRT_LOG__ << " Feature index is greater than weights Vector size!" << std::endl;
         return false;
     }
 
     if( leftChild ){ //Recursively compute the weights for the left child until we reach the node above a leaf node
         if( leftChild->getIsLeafNode() ){
             if( classProbabilities.getSize() != weights.getNumRows() ){
-                warningLog << "computeFeatureWeights( VectorFloat &weights ) - The number of rows in the weights matrix does not match the class probabilities Vector size!" << std::endl;
+                warningLog << __GRT_LOG__ << " The number of rows in the weights matrix does not match the class probabilities Vector size!" << std::endl;
                 return false;
             }
             for(UINT i=0; i<classProbabilities.getSize(); i++){
@@ -98,7 +98,7 @@ bool DecisionTreeClusterNode::computeLeafNodeWeights( MatrixFloat &weights ) con
     if( rightChild ){ //Recursively compute the weights for the right child until we reach the node above a leaf node
         if( rightChild->getIsLeafNode() ){
             if( classProbabilities.getSize() != weights.getNumRows() ){
-                warningLog << "computeFeatureWeights( VectorFloat &weights ) - The number of rows in the weights matrix does not match the class probabilities Vector size!" << std::endl;
+                warningLog << __GRT_LOG__ << " The number of rows in the weights matrix does not match the class probabilities Vector size!" << std::endl;
                 return false;
             }
             for(UINT i=0; i<classProbabilities.getSize(); i++){
@@ -193,17 +193,15 @@ bool DecisionTreeClusterNode::set(const UINT nodeSize,const UINT featureIndex,co
     return true;
 }
 
-bool DecisionTreeClusterNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
-
-    return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
+bool DecisionTreeClusterNode::computeBestSplitBestIterativeSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+    return computeSplit( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeClusterNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
-
-    return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
+bool DecisionTreeClusterNode::computeBestSplitBestRandomSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+    return computeSplit( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeClusterNode::computeBestSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+bool DecisionTreeClusterNode::computeSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
 
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();
@@ -280,7 +278,7 @@ bool DecisionTreeClusterNode::computeError( const ClassificationData &trainingDa
     kmeans.setTrainingLoggingEnabled( false );
 
     if( !kmeans.train_( data ) ){
-        errorLog << "computeSplitError() - Failed to train KMeans model for feature: " << featureIndex << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to train KMeans model for feature: " << featureIndex << std::endl;
         return false;
     }
 
@@ -324,13 +322,13 @@ bool DecisionTreeClusterNode::saveParametersToFile( std::fstream &file ) const{
 
     if( !file.is_open() )
     {
-        errorLog << "saveParametersToFile(fstream &file) - File is not open!" << std::endl;
+        errorLog << __GRT_LOG__ << " File is not open!" << std::endl;
         return false;
     }
 
     //Save the DecisionTreeNode parameters
     if( !DecisionTreeNode::saveParametersToFile( file ) ){
-        errorLog << "saveParametersToFile(fstream &file) - Failed to save DecisionTreeNode parameters to file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to save DecisionTreeNode parameters to file!" << std::endl;
         return false;
     }
 
@@ -345,13 +343,13 @@ bool DecisionTreeClusterNode::loadParametersFromFile( std::fstream &file ){
 
     if(!file.is_open())
     {
-        errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << std::endl;
+        errorLog << __GRT_LOG__ << " File is not open!" << std::endl;
         return false;
     }
 
     //Load the DecisionTreeNode parameters
     if( !DecisionTreeNode::loadParametersFromFile( file ) ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to load DecisionTreeNode parameters from file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to load DecisionTreeNode parameters from file!" << std::endl;
         return false;
     }
 
@@ -359,14 +357,14 @@ bool DecisionTreeClusterNode::loadParametersFromFile( std::fstream &file ){
     //Load the custom DecisionTreeThresholdNode Parameters
     file >> word;
     if( word != "FeatureIndex:" ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to find FeatureIndex header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find FeatureIndex header!" << std::endl;
         return false;
     }
     file >> featureIndex;
 
     file >> word;
     if( word != "Threshold:" ){
-        errorLog << "loadParametersFromFile(fstream &file) - Failed to find Threshold header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Threshold header!" << std::endl;
         return false;
     }
     file >> threshold;

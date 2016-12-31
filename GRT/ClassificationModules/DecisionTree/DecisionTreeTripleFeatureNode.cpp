@@ -19,7 +19,7 @@ DecisionTreeTripleFeatureNode::~DecisionTreeTripleFeatureNode(){
     clear();
 }
 
-bool DecisionTreeTripleFeatureNode::predict(const VectorFloat &x) {
+bool DecisionTreeTripleFeatureNode::predict_(VectorFloat &x) {
 
     if( (x[ featureIndexA ] - x[ featureIndexB ]) >= (x[ featureIndexC ] - x[ featureIndexB ]) ) return true;
 
@@ -140,17 +140,15 @@ bool DecisionTreeTripleFeatureNode::set(const UINT nodeSize,const UINT featureIn
     return true;
 }
 
-bool DecisionTreeTripleFeatureNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
-    
-    return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
+bool DecisionTreeTripleFeatureNode::computeBestSplitBestIterativeSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+    return computeSplit( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeTripleFeatureNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
-
-    return computeBestSpilt( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
+bool DecisionTreeTripleFeatureNode::computeBestSplitBestRandomSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+    return computeSplit( numSplittingSteps, trainingData, features, classLabels, featureIndex, minError);
 }
 
-bool DecisionTreeTripleFeatureNode::computeBestSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+bool DecisionTreeTripleFeatureNode::computeSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
 
     const UINT M = trainingData.getNumSamples();
     const UINT N = features.getSize();

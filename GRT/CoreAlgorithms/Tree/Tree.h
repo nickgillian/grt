@@ -62,14 +62,14 @@ public:
     
     @return returns true if the module was cleared succesfully, false otherwise
     */
-    virtual bool clear();
+    virtual bool clear() override;
     
     /**
     Prints the tree to std::cout.
     
     @return returns true if the model was printed
     */
-    virtual bool print() const;
+    virtual bool print() const override;
     
     /**
     This function adds the current model to the formatted stream.
@@ -78,7 +78,7 @@ public:
     @param file: a reference to the stream the model will be added to
     @return returns true if the model was added successfully, false otherwise
     */
-    virtual bool getModel( std::ostream &stream ) const;
+    virtual bool getModel( std::ostream &stream ) const override;
     
     /**
     Deep copies the tree, returning a pointer to the new tree.

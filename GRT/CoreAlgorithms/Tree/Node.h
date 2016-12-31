@@ -53,7 +53,7 @@ public:
     @param x: the input vector that will be used for the prediction
     @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
     */
-    virtual bool predict(const VectorFloat &x);
+    virtual bool predict_(VectorFloat &x) override;
     
     /**
     This function recursively predicts if the probability of the input vector.
@@ -63,7 +63,7 @@ public:
     @param y: a reference to a vector that will store the results
     @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
     */
-    virtual bool predict(const VectorFloat &x,VectorFloat &y);
+    virtual bool predict_(VectorFloat &x,VectorFloat &y);
     
     /**
     This function recursively computes the weights of features used for classification nodes and stores the results in the weights vector.
@@ -89,7 +89,7 @@ public:
     
     @return returns true of the node was cleared correctly, false otherwise
     */
-    virtual bool clear();
+    virtual bool clear() override;
     
     /**
     This functions prints the node data to std::out.
@@ -97,7 +97,7 @@ public:
     
     @return returns true if the data was printed correctly, false otherwise
     */
-    virtual bool print() const;
+    virtual bool print() const override;
     
     /**
     This function adds the current model to the formatted stream.
@@ -106,7 +106,7 @@ public:
     @param file: a reference to the stream the model will be added to
     @return returns true if the model was added successfully, false otherwise
     */
-    virtual bool getModel( std::ostream &stream ) const;
+    virtual bool getModel( std::ostream &stream ) const override;
     
     /**
     This saves the Node to a file.
@@ -114,7 +114,7 @@ public:
     @param file: a reference to the file the Node model will be saved to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool save( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const override;
     
     /**
     This loads the Node from a file.
@@ -122,7 +122,7 @@ public:
     @param file: a reference to the file the Node model will be loaded from
     @return returns true if the model was loaded successfully, false otherwise
     */
-    virtual bool load( std::fstream &file );
+    virtual bool load( std::fstream &file ) override;
     
     /**
     This function returns a deep copy of the Node and all it's children.
@@ -231,6 +231,8 @@ public:
 
     using MLBase::save;
     using MLBase::load;
+    using MLBase::predict;
+    using MLBase::predict_;
     
 protected:
     

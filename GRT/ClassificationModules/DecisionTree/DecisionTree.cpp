@@ -30,13 +30,13 @@ std::string DecisionTree::getId() { return DecisionTree::id; }
 //Register the DecisionTree module with the Classifier base class
 RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule( DecisionTree::getId() );
 
-DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSpilt,const Tree::TrainingMode trainingMode,const UINT numSplittingSteps,const bool useScaling) : Classifier( DecisionTree::getId() )
+DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSplit,const Tree::TrainingMode trainingMode,const UINT numSplittingSteps,const bool useScaling) : Classifier( DecisionTree::getId() )
 {
     this->tree = NULL;
     this->decisionTreeNode = NULL;
     this->minNumSamplesPerNode = minNumSamplesPerNode;
     this->maxDepth = maxDepth;
-    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+    this->removeFeaturesAtEachSplit = removeFeaturesAtEachSplit;
     this->trainingMode = trainingMode;
     this->numSplittingSteps = numSplittingSteps;
     this->useScaling = useScaling;
@@ -84,7 +84,7 @@ DecisionTree& DecisionTree::operator=(const DecisionTree &rhs){
         
         this->minNumSamplesPerNode = rhs.minNumSamplesPerNode;
         this->maxDepth = rhs.maxDepth;
-        this->removeFeaturesAtEachSpilt = rhs.removeFeaturesAtEachSpilt;
+        this->removeFeaturesAtEachSplit = rhs.removeFeaturesAtEachSplit;
         this->trainingMode = rhs.trainingMode;
         this->numSplittingSteps = rhs.numSplittingSteps;
         this->nodeClusters = rhs.nodeClusters;
@@ -120,7 +120,7 @@ bool DecisionTree::deepCopyFrom(const Classifier *classifier){
         
         this->minNumSamplesPerNode = ptr->minNumSamplesPerNode;
         this->maxDepth = ptr->maxDepth;
-        this->removeFeaturesAtEachSpilt = ptr->removeFeaturesAtEachSpilt;
+        this->removeFeaturesAtEachSplit = ptr->removeFeaturesAtEachSplit;
         this->trainingMode = ptr->trainingMode;
         this->numSplittingSteps = ptr->numSplittingSteps;
         this->nodeClusters = ptr->nodeClusters;
@@ -333,16 +333,18 @@ bool DecisionTree::trainTree( ClassificationData trainingData, const Classificat
         VectorFloat classCounter( numClasses, 0 );
         
         //Run over the training dataset and compute the distance between each training sample and the predicted node cluster
+        VectorFloat sample;
         for(UINT i=0; i<M; i++){
             //Run the prediction for this sample
-            if( !tree->predict( trainingDataCopy[i].getSample(), classLikelihoods ) ){
+            sample = trainingDataCopy[i].getSample();
+            if( !tree->predict_( sample, classLikelihoods ) ){
                 Classifier::errorLog << "train_(ClassificationData &trainingData) - Failed to predict training sample while building null rejection model!" << std::endl;
                 return false;
             }
             
             //Store the predicted class index and cluster distance
             predictions[i] = Util::getMaxIndex( classLikelihoods );
-            distances[i] = getNodeDistance(trainingDataCopy[i].getSample(), tree->getPredictedNodeID() );
+            distances[i] = getNodeDistance(sample, tree->getPredictedNodeID() );
             
             classCounter[ predictions[i] ]++;
         }
@@ -451,7 +453,7 @@ bool DecisionTree::predict_(VectorFloat &inputVector){
     if( classDistances.size() != numClasses ) classDistances.resize(numClasses,0);
     
     //Run the decision tree prediction
-    if( !tree->predict( inputVector, classLikelihoods ) ){
+    if( !tree->predict_( inputVector, classLikelihoods ) ){
         Classifier::errorLog << "predict_(VectorFloat &inputVector) - Failed to predict!" << std::endl;
         return false;
     }
@@ -474,7 +476,7 @@ bool DecisionTree::predict_(VectorFloat &inputVector){
         Float leafDistance = getNodeDistance( inputVector, tree->getPredictedNodeID() );
         
         if( grt_isnan(leafDistance) ){
-            Classifier::errorLog << "predict_(VectorFloat &inputVector) - Failed to match leaf node ID to compute node distance!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Failed to match leaf node ID to compute node distance!" << std::endl;
             return false;
         }
         
@@ -518,12 +520,12 @@ bool DecisionTree::clear(){
 bool DecisionTree::recomputeNullRejectionThresholds(){
     
     if( !trained ){
-        Classifier::warningLog << "recomputeNullRejectionThresholds() - Failed to recompute null rejection thresholds, the model has not been trained!" << std::endl;
+        Classifier::warningLog << __GRT_LOG__ << " Failed to recompute null rejection thresholds, the model has not been trained!" << std::endl;
         return false;
     }
     
     if( !useNullRejection ){
-        Classifier::warningLog << "recomputeNullRejectionThresholds() - Failed to recompute null rejection thresholds, null rejection is not enabled!" << std::endl;
+        Classifier::warningLog << __GRT_LOG__ << " Failed to recompute null rejection thresholds, null rejection is not enabled!" << std::endl;
         return false;
     }
     
@@ -541,7 +543,7 @@ bool DecisionTree::save( std::fstream &file ) const{
     
     if(!file.is_open())
     {
-        Classifier::errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
         return false;
     }
     
@@ -550,14 +552,14 @@ bool DecisionTree::save( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        Classifier::errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
     if( decisionTreeNode != NULL ){
         file << "DecisionTreeNodeType: " << decisionTreeNode->getNodeType() << std::endl;
         if( !decisionTreeNode->save( file ) ){
-            Classifier::errorLog <<"save(fstream &file) - Failed to save decisionTreeNode settings to file!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Failed to save decisionTreeNode settings to file!" << std::endl;
             return false;
         }
     }else{
@@ -566,7 +568,7 @@ bool DecisionTree::save( std::fstream &file ) const{
     
     file << "MinNumSamplesPerNode: " << minNumSamplesPerNode << std::endl;
     file << "MaxDepth: " << maxDepth << std::endl;
-    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSpilt << std::endl;
+    file << "RemoveFeaturesAtEachSpilt: " << removeFeaturesAtEachSplit << std::endl;
     file << "TrainingMode: " << trainingMode << std::endl;
     file << "NumSplittingSteps: " << numSplittingSteps << std::endl;
     file << "TreeBuilt: " << (tree != NULL ? 1 : 0) << std::endl;
@@ -574,7 +576,7 @@ bool DecisionTree::save( std::fstream &file ) const{
     if( tree != NULL ){
         file << "Tree:\n";
         if( !tree->save( file ) ){
-            Classifier::errorLog << "save(fstream &file) - Failed to save tree to file!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Failed to save tree to file!" << std::endl;
             return false;
         }
         
@@ -631,7 +633,7 @@ bool DecisionTree::load( std::fstream &file ){
     
     if( !file.is_open() )
     {
-        Classifier::errorLog << "load(std::fstream &file) - Could not open file to load model" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -653,19 +655,19 @@ bool DecisionTree::load( std::fstream &file ){
     
     //Find the file type header
     if( word != "GRT_DECISION_TREE_MODEL_FILE_V4.0" ){
-        Classifier::errorLog << "load(string filename) - Could not find Model File Header" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        Classifier::errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Failed to load base settings from file!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "DecisionTreeNodeType:"){
-        Classifier::errorLog << "load(string filename) - Could not find the DecisionTreeNodeType!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the DecisionTreeNodeType!" << std::endl;
         return false;
     }
     file >> word;
@@ -675,43 +677,43 @@ bool DecisionTree::load( std::fstream &file ){
         decisionTreeNode = dynamic_cast< DecisionTreeNode* >( DecisionTreeNode::createInstanceFromString( word ) );
         
         if( decisionTreeNode == NULL ){
-            Classifier::errorLog << "load(string filename) - Could not create new DecisionTreeNode from type: " << word << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Could not create new DecisionTreeNode from type: " << word << std::endl;
             return false;
         }
         
         if( !decisionTreeNode->load( file ) ){
-            Classifier::errorLog <<"load(fstream &file) - Failed to load decisionTreeNode settings from file!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Failed to load decisionTreeNode settings from file!" << std::endl;
             return false;
         }
     }else{
-        Classifier::errorLog <<"load(fstream &file) - Failed to load decisionTreeNode! DecisionTreeNodeType is NULL!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Failed to load decisionTreeNode! DecisionTreeNodeType is NULL!" << std::endl;
         return false;
     }
     
     file >> word;
     if(word != "MinNumSamplesPerNode:"){
-        Classifier::errorLog << "load(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the MinNumSamplesPerNode!" << std::endl;
         return false;
     }
     file >> minNumSamplesPerNode;
     
     file >> word;
     if(word != "MaxDepth:"){
-        Classifier::errorLog << "load(string filename) - Could not find the MaxDepth!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the MaxDepth!" << std::endl;
         return false;
     }
     file >> maxDepth;
     
     file >> word;
     if(word != "RemoveFeaturesAtEachSpilt:"){
-        Classifier::errorLog << "load(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
-    file >> removeFeaturesAtEachSpilt;
+    file >> removeFeaturesAtEachSplit;
     
     file >> word;
     if(word != "TrainingMode:"){
-        Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the TrainingMode!" << std::endl;
         return false;
     }
     file >> tempTrainingMode;
@@ -719,14 +721,14 @@ bool DecisionTree::load( std::fstream &file ){
     
     file >> word;
     if(word != "NumSplittingSteps:"){
-        Classifier::errorLog << "load(string filename) - Could not find the NumSplittingSteps!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the NumSplittingSteps!" << std::endl;
         return false;
     }
     file >> numSplittingSteps;
     
     file >> word;
     if(word != "TreeBuilt:"){
-        Classifier::errorLog << "load(string filename) - Could not find the TreeBuilt!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the TreeBuilt!" << std::endl;
         return false;
     }
     file >> trained;
@@ -734,7 +736,7 @@ bool DecisionTree::load( std::fstream &file ){
     if( trained ){
         file >> word;
         if(word != "Tree:"){
-            Classifier::errorLog << "load(string filename) - Could not find the Tree!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Could not find the Tree!" << std::endl;
             return false;
         }
         
@@ -743,14 +745,14 @@ bool DecisionTree::load( std::fstream &file ){
         
         if( tree == NULL ){
             clear();
-            Classifier::errorLog << "load(fstream &file) - Failed to create new DecisionTreeNode!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Failed to create new DecisionTreeNode!" << std::endl;
             return false;
         }
         
         tree->setParent( NULL );
         if( !tree->load( file ) ){
             clear();
-            Classifier::errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Failed to load tree from file!" << std::endl;
             return false;
         }
         
@@ -763,7 +765,7 @@ bool DecisionTree::load( std::fstream &file ){
             
             file >> word;
             if(word != "ClassClusterMean:"){
-                Classifier::errorLog << "load(string filename) - Could not find the ClassClusterMean header!" << std::endl;
+                Classifier::errorLog << __GRT_LOG__ << " Could not find the ClassClusterMean header!" << std::endl;
                 return false;
             }
             for(UINT k=0; k<numClasses; k++){
@@ -772,7 +774,7 @@ bool DecisionTree::load( std::fstream &file ){
             
             file >> word;
             if(word != "ClassClusterStdDev:"){
-                Classifier::errorLog << "load(string filename) - Could not find the ClassClusterStdDev header!" << std::endl;
+                Classifier::errorLog << __GRT_LOG__ << " Could not find the ClassClusterStdDev header!" << std::endl;
                 return false;
             }
             for(UINT k=0; k<numClasses; k++){
@@ -781,14 +783,14 @@ bool DecisionTree::load( std::fstream &file ){
             
             file >> word;
             if(word != "NumNodes:"){
-                Classifier::errorLog << "load(string filename) - Could not find the NumNodes header!" << std::endl;
+                Classifier::errorLog << __GRT_LOG__ << " Could not find the NumNodes header!" << std::endl;
                 return false;
             }
             file >> numNodes;
             
             file >> word;
             if(word != "NodeClusters:"){
-                Classifier::errorLog << "load(string filename) - Could not find the NodeClusters header!" << std::endl;
+                Classifier::errorLog << __GRT_LOG__ << " Could not find the NodeClusters header!" << std::endl;
                 return false;
             }
             
@@ -924,7 +926,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     UINT featureIndex = 0;
     Float minError = 0;
     
-    if( !node->computeBestSpilt( trainingMode, numSplittingSteps, trainingData, features, classLabels, featureIndex, minError ) ){
+    if( !node->computeBestSplit( trainingMode, numSplittingSteps, trainingData, features, classLabels, featureIndex, minError ) ){
         delete node;
         return NULL;
     }
@@ -937,8 +939,8 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     Classifier::trainingLog << std::endl;
     
     //Remove the selected feature so we will not use it again
-    if( removeFeaturesAtEachSpilt ){
-        for(size_t i=0; i<features.size(); i++){
+    if( removeFeaturesAtEachSplit ){
+        for(UINT i=0; i<features.getSize(); i++){
             if( features[i] == featureIndex ){
                 features.erase( features.begin()+i );
                 break;
@@ -955,7 +957,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     rhs.reserve( M );
     
     for(UINT i=0; i<M; i++){
-        if( node->predict( trainingData[i].getSample() ) ){
+        if( node->predict_( trainingData[i].getSample() ) ){
             rhs.addSample(trainingData[i].getClassLabel(), trainingData[i].getSample());
         }else lhs.addSample(trainingData[i].getClassLabel(), trainingData[i].getSample());
     }
@@ -1030,8 +1032,8 @@ UINT DecisionTree::getPredictedNodeID()const{
     return tree->getPredictedNodeID();
 }
 
-bool DecisionTree::getRemoveFeaturesAtEachSpilt() const{
-    return removeFeaturesAtEachSpilt;
+bool DecisionTree::getRemoveFeaturesAtEachSplit() const{
+    return removeFeaturesAtEachSplit;
 }
 
 bool DecisionTree::setTrainingMode(const Tree::TrainingMode trainingMode){ 
@@ -1039,7 +1041,7 @@ bool DecisionTree::setTrainingMode(const Tree::TrainingMode trainingMode){
         this->trainingMode = trainingMode;
         return true;
     }
-    warningLog << "Unknown trainingMode: " << trainingMode << std::endl;
+    warningLog << __GRT_LOG__ << " Unknown trainingMode: " << trainingMode << std::endl;
     return false;
 }
 
@@ -1048,7 +1050,7 @@ bool DecisionTree::setNumSplittingSteps(const UINT numSplittingSteps){
         this->numSplittingSteps = numSplittingSteps;
         return true;
     }
-    warningLog << "setNumSplittingSteps(const UINT numSplittingSteps) - The number of splitting steps must be greater than zero!" << std::endl;
+    warningLog << __GRT_LOG__ <<  " The number of splitting steps must be greater than zero!" << std::endl;
     return false;
 }
 
@@ -1057,7 +1059,7 @@ bool DecisionTree::setMinNumSamplesPerNode(const UINT minNumSamplesPerNode){
         this->minNumSamplesPerNode = minNumSamplesPerNode;
         return true;
     }
-    warningLog << "setMinNumSamplesPerNode(const UINT minNumSamplesPerNode) - The minimum number of samples per node must be greater than zero!" << std::endl;
+    warningLog << __GRT_LOG__ << " The minimum number of samples per node must be greater than zero!" << std::endl;
     return false;
 }
 
@@ -1066,12 +1068,12 @@ bool DecisionTree::setMaxDepth(const UINT maxDepth){
         this->maxDepth = maxDepth;
         return true;
     }
-    warningLog << "setMaxDepth(const UINT maxDepth) - The maximum depth must be greater than zero!" << std::endl;
+    warningLog << __GRT_LOG__ << " The maximum depth must be greater than zero!" << std::endl;
     return false;
 }
 
-bool DecisionTree::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
-    this->removeFeaturesAtEachSpilt = removeFeaturesAtEachSpilt;
+bool DecisionTree::setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit){
+    this->removeFeaturesAtEachSplit = removeFeaturesAtEachSplit;
     return true;
 }
 
@@ -1082,28 +1084,28 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
     
     file >> word;
     if(word != "NumFeatures:"){
-        Classifier::errorLog << "load(string filename) - Could not find NumFeatures!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find NumFeatures!" << std::endl;
         return false;
     }
     file >> numInputDimensions;
     
     file >> word;
     if(word != "NumClasses:"){
-        Classifier::errorLog << "load(string filename) - Could not find NumClasses!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find NumClasses!" << std::endl;
         return false;
     }
     file >> numClasses;
     
     file >> word;
     if(word != "UseScaling:"){
-        Classifier::errorLog << "load(string filename) - Could not find UseScaling!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find UseScaling!" << std::endl;
         return false;
     }
     file >> useScaling;
     
     file >> word;
     if(word != "UseNullRejection:"){
-        Classifier::errorLog << "load(string filename) - Could not find UseNullRejection!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find UseNullRejection!" << std::endl;
         return false;
     }
     file >> useNullRejection;
@@ -1115,7 +1117,7 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
         
         file >> word;
         if(word != "Ranges:"){
-            Classifier::errorLog << "load(string filename) - Could not find the Ranges!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Could not find the Ranges!" << std::endl;
             return false;
         }
         for(UINT n=0; n<ranges.size(); n++){
@@ -1126,35 +1128,35 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
     
     file >> word;
     if(word != "NumSplittingSteps:"){
-        Classifier::errorLog << "load(string filename) - Could not find the NumSplittingSteps!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the NumSplittingSteps!" << std::endl;
         return false;
     }
     file >> numSplittingSteps;
     
     file >> word;
     if(word != "MinNumSamplesPerNode:"){
-        Classifier::errorLog << "load(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the MinNumSamplesPerNode!" << std::endl;
         return false;
     }
     file >> minNumSamplesPerNode;
     
     file >> word;
     if(word != "MaxDepth:"){
-        Classifier::errorLog << "load(string filename) - Could not find the MaxDepth!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the MaxDepth!" << std::endl;
         return false;
     }
     file >> maxDepth;
     
     file >> word;
     if(word != "RemoveFeaturesAtEachSpilt:"){
-        Classifier::errorLog << "load(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
-    file >> removeFeaturesAtEachSpilt;
+    file >> removeFeaturesAtEachSplit;
     
     file >> word;
     if(word != "TrainingMode:"){
-        Classifier::errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the TrainingMode!" << std::endl;
         return false;
     }
     file >> tempTrainingMode;
@@ -1162,7 +1164,7 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
     
     file >> word;
     if(word != "TreeBuilt:"){
-        Classifier::errorLog << "load(string filename) - Could not find the TreeBuilt!" << std::endl;
+        Classifier::errorLog << __GRT_LOG__ << " Could not find the TreeBuilt!" << std::endl;
         return false;
     }
     file >> trained;
@@ -1170,7 +1172,7 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
     if( trained ){
         file >> word;
         if(word != "Tree:"){
-            Classifier::errorLog << "load(string filename) - Could not find the Tree!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Could not find the Tree!" << std::endl;
             return false;
         }
         
@@ -1179,14 +1181,14 @@ bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
         
         if( tree == NULL ){
             clear();
-            Classifier::errorLog << "load(fstream &file) - Failed to create new DecisionTreeNode!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Failed to create new DecisionTreeNode!" << std::endl;
             return false;
         }
         
         tree->setParent( NULL );
         if( !tree->load( file ) ){
             clear();
-            Classifier::errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
+            Classifier::errorLog << __GRT_LOG__ << " Failed to load tree from file!" << std::endl;
             return false;
         }
     }
@@ -1231,7 +1233,7 @@ bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
-    file >> removeFeaturesAtEachSpilt;
+    file >> removeFeaturesAtEachSplit;
     
     file >> word;
     if(word != "TrainingMode:"){
@@ -1321,7 +1323,7 @@ bool DecisionTree::loadLegacyModelFromFile_v3( std::fstream &file ){
         Classifier::errorLog << "load(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
         return false;
     }
-    file >> removeFeaturesAtEachSpilt;
+    file >> removeFeaturesAtEachSplit;
     
     file >> word;
     if(word != "TrainingMode:"){

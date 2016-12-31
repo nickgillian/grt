@@ -79,7 +79,7 @@ public:
      @param regressifier: a pointer to the Regressifier Base Class, this should be pointing to another RegressionTree instance
      @return returns true if the clone was successfull, false otherwise
     */
-	virtual bool deepCopyFrom(const Regressifier *regressifier);
+	virtual bool deepCopyFrom(const Regressifier *regressifier) override;
     
     /**
      This trains the RegressionTree model, using the labelled regression data.
@@ -88,7 +88,7 @@ public:
      @param trainingData: a reference to the training data
      @return returns true if the RegressionTree model was trained, false otherwise
     */
-    virtual bool train_(RegressionData &trainingData);
+    virtual bool train_(RegressionData &trainingData) override;
     
     /**
      This predicts the class of the inputVector.
@@ -97,7 +97,7 @@ public:
      @param inputVector: the input Vector to predict
      @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorFloat &inputVector);
+    virtual bool predict_(VectorFloat &inputVector) override;
     
     /**
      This overrides the clear function in the Regressifier base class.
@@ -105,14 +105,14 @@ public:
      
      @return returns true if the module was cleared succesfully, false otherwise
      */
-    virtual bool clear();
+    virtual bool clear() override;
     
     /**
      Prints the tree to std::cout.
      
      @return returns true if the model was printed
      */
-    virtual bool print() const;
+    virtual bool print() const override;
     
     /**
      This saves the trained RegressionTree model to a file.
@@ -121,7 +121,7 @@ public:
      @param file: a reference to the file the RegressionTree model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool save( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const override;
     
     /**
      This loads a trained RegressionTree model from a file.
@@ -130,7 +130,7 @@ public:
      @param file: a reference to the file the RegressionTree model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool load( std::fstream &file );
+    virtual bool load( std::fstream &file ) override;
 
     /**
      Deep copies the regression tree, returning a pointer to the new regression tree.

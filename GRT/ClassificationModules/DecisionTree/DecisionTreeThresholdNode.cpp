@@ -19,7 +19,7 @@ DecisionTreeThresholdNode::~DecisionTreeThresholdNode(){
     clear();
 }
 
-bool DecisionTreeThresholdNode::predict(const VectorFloat &x) {
+bool DecisionTreeThresholdNode::predict_(VectorFloat &x) {
 
     if( x[ featureIndex ] >= threshold ) return true;
     
@@ -127,7 +127,7 @@ bool DecisionTreeThresholdNode::set(const UINT nodeSize,const UINT featureIndex,
     return true;
 }
 
-bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+bool DecisionTreeThresholdNode::computeBestSplitBestIterativeSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = features.getSize();
@@ -207,7 +207,7 @@ bool DecisionTreeThresholdNode::computeBestSpiltBestIterativeSpilt( const UINT &
     return true;
 }
 
-bool DecisionTreeThresholdNode::computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+bool DecisionTreeThresholdNode::computeBestSplitBestRandomSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = (UINT)features.size();

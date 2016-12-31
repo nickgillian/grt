@@ -60,10 +60,10 @@ public:
      NOTE: The threshold and featureIndex should be set first BEFORE this function is called. The threshold and featureIndex can be set by
      training the node through the DecisionTree class.
      
-     @param const VectorFloat &x: the input Vector that will be used for the prediction
+     @param x: the input Vector that will be used for the prediction
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorFloat &x){
+    virtual bool predict_(VectorFloat &x) override{
         if( x[ featureIndex ] >= threshold ) return true;
         return false;
     }
@@ -77,11 +77,11 @@ public:
      NOTE: The threshold, featureIndex and classProbabilities should be set first BEFORE this function is called. The threshold, featureIndex 
      and classProbabilities can be set by training the node through the DecisionTree class.
      
-     @param const VectorFloat &x: the input Vector that will be used for the prediction
-     @param VectorFloat &classLikelihoods: a reference to a Vector that will store the class probabilities
+     @param x: the input Vector that will be used for the prediction
+     @param classLikelihoods: a reference to a Vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorFloat &x,VectorFloat &y){
+    virtual bool predict_(VectorFloat &x,VectorFloat &y) override{
         
         if( isLeafNode ){
             if( y.size() != 1 ) y.resize( 1 );
@@ -92,12 +92,12 @@ public:
         if( leftChild == NULL && rightChild == NULL )
             return false;
         
-        if( predict( x ) ){
+        if( predict_( x ) ){
             if( rightChild )
-                return rightChild->predict( x, y );
+                return rightChild->predict_( x, y );
         }else{
             if( leftChild )
-                return leftChild->predict( x, y );
+                return leftChild->predict_( x, y );
         }
         
         return false;
@@ -109,7 +109,7 @@ public:
      
      @return returns true of the node was cleared correctly, false otherwise
      */
-    virtual bool clear(){
+    virtual bool clear() override{
         
         //Call the base class clear function
         Node::clear();
@@ -128,7 +128,7 @@ public:
      
      @return returns true if the data was printed correctly, false otherwise
      */
-    virtual bool print() const{
+    virtual bool print() const override{
         
         std::string tab = "";
         for(UINT i=0; i<depth; i++) tab += "\t";
@@ -155,7 +155,7 @@ public:
      
      @return returns a pointer to a deep copy of the ClusterTreeNode, or NULL if the deep copy was not successful
      */
-    virtual Node* deepCopyNode() const{
+    virtual Node* deepCopyNode() const override{
         
         ClusterTreeNode *node = new ClusterTreeNode;
         
@@ -252,7 +252,7 @@ protected:
      @param file: a reference to the file the parameters will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveParametersToFile(std::fstream &file) const{
+    virtual bool saveParametersToFile(std::fstream &file) const override{
         
         if(!file.is_open())
         {
@@ -275,7 +275,7 @@ protected:
      @param file: a reference to the file the parameters will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadParametersFromFile(std::fstream &file){
+    virtual bool loadParametersFromFile(std::fstream &file) override{
         
         if(!file.is_open())
         {

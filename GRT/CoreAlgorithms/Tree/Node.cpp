@@ -53,13 +53,13 @@ Node::~Node(){
     clear();
 }
 
-bool Node::predict(const VectorFloat &x){
-    warningLog << "predict(const VectorFloat &x) - Base class not overwritten!" << std::endl;
+bool Node::predict_(VectorFloat &x){
+    warningLog << __GRT_LOG__ << " Base class not overwritten!" << std::endl;
     return false;
 }
 
-bool Node::predict(const VectorFloat &x,VectorFloat &y){
-    warningLog << "predict(const VectorFloat &x) - Base class not overwritten!" << std::endl;
+bool Node::predict_(VectorFloat &x,VectorFloat &y){
+    warningLog << __GRT_LOG__ << " Base class not overwritten!" << std::endl;
     return false;
 }
 

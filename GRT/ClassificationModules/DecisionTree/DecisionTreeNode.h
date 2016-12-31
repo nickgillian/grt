@@ -62,7 +62,7 @@ public:
      @param classLikelihoods: a reference to a Vector that will store the class probabilities
      @return returns true if the input is greater than or equal to the nodes threshold, false otherwise
      */
-    virtual bool predict(const VectorFloat &x,VectorFloat &classLikelihoods);
+    virtual bool predict_(VectorFloat &x,VectorFloat &classLikelihoods) override;
     
     /**
      This function calls the best spliting algorithm based on the current trainingMode.  
@@ -78,7 +78,7 @@ public:
      @param minError: this will store the minimum error found during the search
      @return returns true if the best spliting algorithm found a split, false otherwise
      */
-    virtual bool computeBestSpilt( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError );
+    virtual bool computeBestSplit( const UINT &trainingMode, const UINT &numSplittingSteps,const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError );
 
     /**
      This functions cleans up any dynamic memory assigned by the node.
@@ -86,7 +86,7 @@ public:
      
      @return returns true of the node was cleared correctly, false otherwise
      */
-    virtual bool clear();
+    virtual bool clear() override;
     
     /**
      This function adds the current model to the formatted stream.
@@ -95,7 +95,7 @@ public:
      @param stream: a reference to the stream the model will be added to
      @return returns true if the model was added successfully, false otherwise
      */
-    virtual bool getModel( std::ostream &stream ) const;
+    virtual bool getModel( std::ostream &stream ) const override;
     
     /**
      This function returns a deep copy of the DecisionTreeNode and all it's children.
@@ -103,7 +103,7 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
      */
-    virtual Node* deepCopyNode() const;
+    virtual Node* deepCopyNode() const override;
     
     /**
      This function returns a deep copy of the DecisionTreeNode and all it's children.
@@ -162,18 +162,19 @@ public:
     static UINT getClassLabelIndexValue(UINT classLabel,const Vector< UINT > &classLabels);
     
     using Node::predict;
+    using Node::predict_;
     
 protected:
-    virtual bool computeBestSpiltBestIterativeSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+    virtual bool computeBestSplitBestIterativeSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
         
-        errorLog << "computeBestSpiltBestIterativeSpilt(...) - Base class not overwritten!" << std::endl;
+        errorLog << __GRT_LOG__ << " Base class not overwritten!" << std::endl;
         
         return false;
     }
     
-    virtual bool computeBestSpiltBestRandomSpilt( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
+    virtual bool computeBestSplitBestRandomSplit( const UINT &numSplittingSteps, const ClassificationData &trainingData, const Vector< UINT > &features, const Vector< UINT > &classLabels, UINT &featureIndex, Float &minError ){
         
-        errorLog << "computeBestSpiltBestRandomSpilt(...) - Base class not overwritten!" << std::endl;
+        errorLog << __GRT_LOG__ << " Base class not overwritten!" << std::endl;
         
         return false;
     }
@@ -185,11 +186,11 @@ protected:
      @param file: a reference to the file the parameters will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveParametersToFile( std::fstream &file ) const{
+    virtual bool saveParametersToFile( std::fstream &file ) const override{
         
         if( !file.is_open() )
         {
-            errorLog << "saveParametersToFile(fstream &file) - File is not open!" << std::endl;
+            errorLog << __GRT_LOG__ << " File is not open!" << std::endl;
             return false;
         }
         
@@ -214,11 +215,11 @@ protected:
      @param file: a reference to the file the parameters will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadParametersFromFile( std::fstream &file ){
+    virtual bool loadParametersFromFile( std::fstream &file ) override{
         
         if( !file.is_open() )
         {
-            errorLog << "loadParametersFromFile(fstream &file) - File is not open!" << std::endl;
+            errorLog << __GRT_LOG__ << " File is not open!" << std::endl;
             return false;
         }
         
@@ -230,14 +231,14 @@ protected:
         //Load the custom DecisionTreeNode Parameters
         file >> word;
         if( word != "NodeSize:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NodeSize header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find NodeSize header!" << std::endl;
             return false;
         }
         file >> nodeSize;
         
         file >> word;
         if( word != "NumClasses:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find NumClasses header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find NumClasses header!" << std::endl;
             return false;
         }
         file >> numClasses;
@@ -246,7 +247,7 @@ protected:
         
         file >> word;
         if( word != "ClassProbabilities:" ){
-            errorLog << "loadParametersFromFile(fstream &file) - Failed to find ClassProbabilities header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find ClassProbabilities header!" << std::endl;
             return false;
         }
         if( numClasses > 0 ){

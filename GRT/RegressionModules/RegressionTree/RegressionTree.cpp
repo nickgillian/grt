@@ -178,7 +178,7 @@ bool RegressionTree::predict_(VectorFloat &inputVector){
         }
     }
     
-    if( !tree->predict( inputVector, regressionData ) ){
+    if( !tree->predict_( inputVector, regressionData ) ){
         Regressifier::errorLog << "predict_(VectorFloat &inputVector) - Failed to predict!" << std::endl;
         return false;
     }

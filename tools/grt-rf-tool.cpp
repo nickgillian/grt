@@ -206,7 +206,7 @@ bool train( CommandLineParser &parser ){
     forest.setNumRandomSplits( numSplits );
 
     //Set if selected features should be removed at each node
-    forest.setRemoveFeaturesAtEachSpilt( removeFeatures );
+    forest.setRemoveFeaturesAtEachSplit( removeFeatures );
 
     //Set the bootstrap weight
     forest.setBootstrappedDatasetWeight( bootstrapWeight );

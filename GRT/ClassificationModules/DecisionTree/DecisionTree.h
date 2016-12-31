@@ -53,12 +53,12 @@ public:
     @param decisionTreeNode: sets the type of decision tree node that will be used when training a new decision tree model. Default: DecisionTreeClusterNode
     @param minNumSamplesPerNode: sets the minimum number of samples that are allowed per node, if the number of samples is below that, the node will become a leafNode.  Default value = 5
     @param maxDepth: sets the maximum depth of the tree. Default value = 10
-    @param removeFeaturesAtEachSpilt: sets if a feature is removed at each spilt so it can not be used again. Default value = false
+    @param removeFeaturesAtEachSplit: sets if a feature is removed at each split so it can not be used again. Default value = false
     @param trainingMode: sets the training mode, this should be one of the TrainingMode enums. Default value = BEST_ITERATIVE_SPILT
     @param numSplittingSteps: sets the number of steps that will be used to search for the best spliting value for each node. Default value = 100
     @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
     */
-    DecisionTree(const DecisionTreeNode &decisionTreeNode = DecisionTreeClusterNode(),const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSpilt = false,const Tree::TrainingMode trainingMode = Tree::TrainingMode::BEST_ITERATIVE_SPILT,const UINT numSplittingSteps=100,const bool useScaling=false );
+    DecisionTree(const DecisionTreeNode &decisionTreeNode = DecisionTreeClusterNode(),const UINT minNumSamplesPerNode=5,const UINT maxDepth=10,const bool removeFeaturesAtEachSplit = false,const Tree::TrainingMode trainingMode = Tree::TrainingMode::BEST_ITERATIVE_SPILT,const UINT numSplittingSteps=100,const bool useScaling=false );
     
     /**
     Defines the copy constructor.
@@ -87,7 +87,7 @@ public:
     @param classifier: a pointer to the Classifier Base Class, this should be pointing to another DecisionTree instance
     @return returns true if the clone was successfull, false otherwise
     */
-    virtual bool deepCopyFrom(const Classifier *classifier);
+    virtual bool deepCopyFrom(const Classifier *classifier) override;
     
     /**
     This trains the DecisionTree model, using the labelled classification data.
@@ -96,7 +96,7 @@ public:
     @param trainingData: a reference to the training data
     @return returns true if the DecisionTree model was trained, false otherwise
     */
-    virtual bool train_(ClassificationData &trainingData);
+    virtual bool train_(ClassificationData &trainingData) override;
     
     /**
     This predicts the class of the inputVector.
@@ -105,7 +105,7 @@ public:
     @param inputVector: the input Vector to classify
     @return returns true if the prediction was performed, false otherwise
     */
-    virtual bool predict_(VectorFloat &inputVector);
+    virtual bool predict_(VectorFloat &inputVector) override;
     
     /**
     This overrides the clear function in the Classifier base class.
@@ -113,7 +113,7 @@ public:
     
     @return returns true if the module was cleared succesfully, false otherwise
     */
-    virtual bool clear();
+    virtual bool clear() override;
     
     /**
     This recomputes the null rejection thresholds for each of the classes in the DecisionTree model.
@@ -121,7 +121,7 @@ public:
     
     @return returns true if the null rejection thresholds were updated successfully, false otherwise
     */
-    virtual bool recomputeNullRejectionThresholds();
+    virtual bool recomputeNullRejectionThresholds() override;
     
     /**
     This saves the trained DecisionTree model to a file.
@@ -130,7 +130,7 @@ public:
     @param file: a reference to the file the DecisionTree model will be saved to
     @return returns true if the model was saved successfully, false otherwise
     */
-    virtual bool save( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const override;
     
     /**
     This loads a trained DecisionTree model from a file.
@@ -139,7 +139,7 @@ public:
     @param file: a reference to the file the DecisionTree model will be loaded from
     @return returns true if the model was loaded successfully, false otherwise
     */
-    virtual bool load( std::fstream &file );
+    virtual bool load( std::fstream &file ) override;
     
     /**
     This function adds the current model to the formatted stream.
@@ -148,7 +148,7 @@ public:
     @param file: a reference to the stream the model will be added to
     @return returns true if the model was added successfully, false otherwise
     */
-    virtual bool getModel( std::ostream &stream ) const;
+    virtual bool getModel( std::ostream &stream ) const override;
     
     /**
     Deep copies the decision tree, returning a pointer to the new decision tree.
@@ -213,11 +213,11 @@ public:
     UINT getPredictedNodeID() const;
     
     /**
-    Gets if a feature is removed at each spilt so it can not be used again.
+    Gets if a feature is removed at each split so it can not be used again.
     
     @return returns true if a feature is removed at each spilt so it can not be used again, false otherwise
     */
-    bool getRemoveFeaturesAtEachSpilt() const;
+    bool getRemoveFeaturesAtEachSplit() const;
     
     /**
      Sets the training mode, this should be one of the TrainingModes enums.
@@ -261,14 +261,14 @@ public:
     bool setMaxDepth(const UINT maxDepth);
     
     /**
-    Sets if a feature is removed at each spilt so it can not be used again.  If true then the best feature selected at each node will be
+    Sets if a feature is removed at each split so it can not be used again.  If true then the best feature selected at each node will be
     removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
     be used, regardless of how many times it has been used again.
     
-    @param removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
+    @param removeFeaturesAtEachSplit: if true, then each feature is removed at each spilt so it can not be used again
     @return returns true if the parameter was set, false otherwise
     */
-    bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
+    bool setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit);
 
     /**
     Sets the decision tree node, this will be used as the starting node the next time the DecisionTree model is trained.
@@ -310,7 +310,7 @@ protected:
     UINT minNumSamplesPerNode;
     UINT maxDepth;
     UINT numSplittingSteps;
-    bool removeFeaturesAtEachSpilt;
+    bool removeFeaturesAtEachSplit;
     Tree::TrainingMode trainingMode;
 
 private:

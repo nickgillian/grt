@@ -51,7 +51,7 @@ public:
      @param numRandomSplits: sets the number of random spilts that will be used to search for the best spliting value for each node. Default value = 100
      @param minNumSamplesPerNode: sets the minimum number of samples that are allowed per node, if the number of samples is below that, the node will become a leafNode.  Default value = 5
      @param maxDepth: sets the maximum depth of the tree. Default value = 10
-     @param removeFeaturesAtEachSpilt: sets if features are removed at each stage in the tree
+     @param removeFeaturesAtEachSplit: sets if features are removed at each stage in the tree
      @param useScaling: sets if the training and real-time data should be scaled between [0 1]. Default value = false
      @param bootstrappedDatasetWeight: sets the size of the bootstrapped dataset used to train a tree, the number of bootstrapped samples will be M*bootstrappedDatasetWeight, where M is the number of samples in the original training dataset
      */
@@ -61,7 +61,7 @@ public:
                   const UINT minNumSamplesPerNode=5,
                   const UINT maxDepth=10,
                   const Tree::TrainingMode trainingMode = Tree::BEST_RANDOM_SPLIT,
-                  const bool removeFeaturesAtEachSpilt = true,
+                  const bool removeFeaturesAtEachSplit = true,
                   const bool useScaling=false,
                   const Float bootstrappedDatasetWeight = 0.8);
     
@@ -202,9 +202,9 @@ public:
     removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
     be used, regardless of how many times it has been used again.
     
-    @return returns the removeFeaturesAtEachSpilt parameter
+    @return returns the removeFeaturesAtEachSplit parameter
     */
-    bool getRemoveFeaturesAtEachSpilt() const;
+    bool getRemoveFeaturesAtEachSplit() const;
     
     /**
     Gets bootstrapped dataset weight, this controls the size of the bootstrapped dataset used to train each tree in the forest.
@@ -300,10 +300,10 @@ public:
     removed so it can not be used in any children of that node.  If false, then the feature that provides the best spilt at each node will
     be used, regardless of how many times it has been used again.
     
-    @param removeFeaturesAtEachSpilt: if true, then each feature is removed at each spilt so it can not be used again
+    @param removeFeaturesAtEachSplit: if true, then each feature is removed at each spilt so it can not be used again
     @return returns true if the parameter was set, false otherwise
     */
-    bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt);
+    bool setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit);
     
     /**
      Sets the training mode used to train each DecisionTree in the forest, this should be one of the DecisionTree::TrainingModes enums.
@@ -347,7 +347,7 @@ protected:
     UINT minNumSamplesPerNode;
     UINT maxDepth;
     Tree::TrainingMode trainingMode;
-    bool removeFeaturesAtEachSpilt;
+    bool removeFeaturesAtEachSplit;
     Float bootstrappedDatasetWeight;
     DecisionTreeNode* decisionTreeNode;
     Vector< DecisionTreeNode* > forest;
