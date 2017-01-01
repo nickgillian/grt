@@ -153,7 +153,6 @@ public:
             z += grt_sqr(x[i]-y[i]);
         }
         return sqrt( z );
-        
     }
     
 protected:

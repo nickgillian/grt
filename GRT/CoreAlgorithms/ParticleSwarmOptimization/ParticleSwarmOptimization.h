@@ -156,7 +156,7 @@ public:
         typename Vector< PARTICLE_TYPE >::iterator pIter;
         for(pIter = particles.begin(); pIter != particles.end(); pIter++){
             if( !pIter->propagate( propagationModel ) ){
-                errorLog << "search(...) - Particle propagation failed!" << std::endl;
+                errorLog << __GRT_LOG__ << " Particle propagation failed!" << std::endl;
                 return false;
             }
         }
@@ -183,13 +183,13 @@ public:
             if( delta < minImprovement ){
                 if( ++numIterNoChangeCounter >= maxNumIterNoChange ){
                     keepSearching = false;
-                    infoLog << "search(...) - Reached no change limit, stopping search at iteration: " << iterCounter << " with a change of: " << fabs( currentMaxima - lastMaxima ) << std::endl;
+                    infoLog << __GRT_LOG__ << " Reached no change limit, stopping search at iteration: " << iterCounter << " with a change of: " << fabs( currentMaxima - lastMaxima ) << std::endl;
                 }
             }else numIterNoChangeCounter = 0;
             
             if( ++iterCounter == maxIter ){
                 keepSearching = false;
-                infoLog << "search(...) - Max iteration reached, stopping search at iteration: " << iterCounter << std::endl;
+                infoLog << __GRT_LOG__ << " Max iteration reached, stopping search at iteration: " << iterCounter << std::endl;
             }
         }
         

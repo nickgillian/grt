@@ -163,14 +163,14 @@ public:
         clear();
         
         //Check to make sure each Vector in the initModel has 2 dimensions, these are min and max or mu and sigma depening on the init mode
-        for(unsigned int i=0; i<initModel.size(); i++){
-            if( initModel[i].size() != 2 ){
-                errorLog << "ERROR: The " << i << " dimension of the initModel does not have 2 dimensions!" << std::endl;
+        for(unsigned int i=0; i<initModel.getSize(); i++){
+            if( initModel[i].getSize() != 2 ){
+                errorLog << __GRT_LOG__ << " The " << i << " dimension of the initModel does not have 2 dimensions!" << std::endl;
                 return false;
             }
         }
         
-        stateVectorSize = (unsigned int)initModel.size();
+        stateVectorSize = initModel.getSize();
         this->initModel = initModel;
         this->processNoise = processNoise;
         this->measurementNoise = measurementNoise;
@@ -178,7 +178,7 @@ public:
         initialized = true;
         
         if( !initParticles( numParticles ) ){
-            errorLog << "ERROR: Failed to init particles!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to init particles!" << std::endl;
             clear();
             return false;
         }
@@ -224,12 +224,12 @@ public:
     virtual bool filter(SENSOR_DATA &data){
         
         if( !initialized ){
-            errorLog << "ERROR: The particle filter has not been initialized!" << std::endl;
+            errorLog << __GRT_LOG__ << " The particle filter has not been initialized!" << std::endl;
             return false;
         }
 
         if( !preFilterUpdate( data ) ){
-            errorLog << "ERROR: Failed to complete preFilterUpdate!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to complete preFilterUpdate!" << std::endl;
             return false;
         }
         
@@ -239,7 +239,7 @@ public:
         //The main particle prediction loop
         for( iter = particles.begin(), i = 0; iter != particles.end(); ++iter, i++ ){
             if( !predict( *iter ) ){
-                errorLog << "ERROR: Particle " << i << " failed prediction!" << std::endl;
+                errorLog <<  __GRT_LOG__ << " Particle " << i << " failed prediction!" << std::endl;
                 return false;
             }
         }
@@ -247,7 +247,7 @@ public:
         //The main particle update loop
         for( iter = particles.begin(), i = 0; iter != particles.end(); ++iter, i++ ){
             if( !update( *iter, data ) ){
-                errorLog << "ERROR: Particle " << i << " failed update!" << std::endl;
+                errorLog << __GRT_LOG__ << " Particle " << i << " failed update!" << std::endl;
                 return false;
             }
         }
@@ -255,14 +255,14 @@ public:
         //Normalize the particle weights so they sum to 1
         if( normWeights ){
             if( !normalizeWeights() ){
-                errorLog << "ERROR: Failed to normalize particle weights! " << std::endl;
+                errorLog <<  __GRT_LOG__ << " Failed to normalize particle weights! " << std::endl;
                 return false;
             }
         }
         
         //Compute the final state estimate
         if( !computeEstimate() ){
-            errorLog << "ERROR: Failed to compute the final estimat!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to compute the final estimat!" << std::endl;
             return false;
         }
         
@@ -271,13 +271,13 @@ public:
         
             //Resample the particles
             if( !resample() ){
-                errorLog << "ERROR: Failed to resample particles!" << std::endl;
+                errorLog << __GRT_LOG__ << " Failed to resample particles!" << std::endl;
                 return false;
             }
         }
 
         if( !postFilterUpdate( data ) ){
-            errorLog << "ERROR: Failed to complete postFilterUpdate!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to complete postFilterUpdate!" << std::endl;
             return false;
         }
         
@@ -323,7 +323,7 @@ public:
                         particles[i].x[j] = initModel[j][0] + rand.getRandomNumberGauss(0,initModel[j][1]);
                         break;
                     default:
-                        errorLog << "ERROR: Unknown initMode!" << std::endl;
+                        errorLog << __GRT_LOG__ << " Unknown initMode!" << std::endl;
                         return false;
                         break;
                 }
@@ -560,7 +560,7 @@ protected:
      @return returns true if the particle prediction was updated successfully, false otherwise
      */
     virtual bool predict( PARTICLE &p ){
-        errorLog << "predict( PARTICLE &p ) Prediction function not implemented! This must be implemented by the derived class!" << std::endl;
+        errorLog << __GRT_LOG__ << " Prediction function not implemented! This must be implemented by the derived class!" << std::endl;
         return false;
     }
     
@@ -575,7 +575,7 @@ protected:
      @return returns true if the particle update was updated successfully, false otherwise
      */
     virtual bool update( PARTICLE &p, SENSOR_DATA &data ){
-        errorLog << "update( PARTICLE &p, SENSOR_DATA &data ) Update function not implemented! This must be implemented by the derived class!" << std::endl;
+        errorLog << __GRT_LOG__ << " Update function not implemented! This must be implemented by the derived class!" << std::endl;
         return false;
     }
     
@@ -603,7 +603,7 @@ protected:
         
         if( wNorm == 0 ){
             if( verbose )
-                warningLog << "normalizeWeights() - Weight norm is zero!" << std::endl;
+                warningLog << __GRT_LOG__ << " Weight norm is zero!" << std::endl;
             return true;
         }
         
@@ -718,7 +718,7 @@ protected:
                 estimationLikelihood = grt_isnan(particles[bestIndex].w) ? 0 : particles[bestIndex].w;
                 break;
             default:
-                errorLog << "ERROR: Unknown estimation mode!" << std::endl;
+                errorLog << __GRT_LOG__ << " Unknown estimation mode!" << std::endl;
                 return false;
                 break;
         }
@@ -810,7 +810,7 @@ protected:
                             p.x[j] = initModel[j][0] + rand.getRandomNumberGauss(0,initModel[j][1]);
                             break;
                         default:
-                            errorLog << "ERROR: Unknown initMode!" << std::endl;
+                            errorLog << __GRT_LOG__ << " Unknown initMode!" << std::endl;
                             return false;
                             break;
                     }

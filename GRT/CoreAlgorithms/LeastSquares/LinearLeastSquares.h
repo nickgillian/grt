@@ -51,17 +51,17 @@ public:
     
     bool solve( const VectorFloat &x, const VectorFloat &y ){
         
-        if( x.size() == 0 && y.size() == 0 ){
-            warningLog << "solve( const VectorFloat &x, const VectorFloat &y ) - Failed to compute solution, input vectors are empty!" << endl;
+        if( x.getSize() == 0 && y.getSize() == 0 ){
+            warningLog << __GRT_LOG__ << " Failed to compute solution, input vectors are empty!" << std::endl;
             return false;
         }
         
-        if( x.size() != y.size() ){
-            warningLog << "solve( const VectorFloat &x, const VectorFloat &y ) - Failed to compute solution, input vectors do not have the same size!" << endl;
+        if( x.getSize() != y.getSize() ){
+            warningLog << __GRT_LOG__ << " Failed to compute solution, input vectors do not have the same size!" << std::endl;
             return false;
         }
         
-        const unsigned int N = (unsigned int)x.size();
+        const unsigned int N = x.getSize();
         Float sumx = 0.0;    //Stores the sum of x
         Float sumx2 = 0.0;   //Stores the sum of x^2
         Float sumxy = 0.0;   //Stores the sum of x * y
@@ -84,7 +84,7 @@ public:
         denom = (n * sumx2 - sqr(sumx));
         if (denom == 0) {
             // singular matrix. can't solve the problem.
-            warningLog << "solve( const VectorFloat &x, const VectorFloat &y ) - Failed to compute solution, singular matrix detected!" << endl;
+            warningLog << __GRT_LOG__ << " Failed to compute solution, singular matrix detected!" << std::endl;
             return false;
         }
         
@@ -96,6 +96,10 @@ public:
         
         return true;
     }
+
+    Float getM() const { return m; }
+    Float getB() const { return b; }
+    Float getR() const { return r; }
     
 protected:
 

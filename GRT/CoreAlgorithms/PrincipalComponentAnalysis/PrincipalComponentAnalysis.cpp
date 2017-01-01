@@ -51,7 +51,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixFloat &data,do
 bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixFloat &data,UINT numPrincipalComponents,bool normData){
     trained = false;
     if( numPrincipalComponents > data.getNumCols() ){
-        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT numPrincipalComponents,bool normData) - The number of principal components (";
+        errorLog << __GRT_LOG__ << " The number of principal components (";
         errorLog << numPrincipalComponents << ") is greater than the number of columns in your data (" << data.getNumCols() << ")" << std::endl;
         return false;
     }
@@ -98,7 +98,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,c
         componentWeights.clear();
         sortedEigenvalues.clear();
         eigenvectors.clear();
-        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT analysisMode) - Failed to decompose input matrix!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to decompose input matrix!" << std::endl;
         return false;
     }
     
@@ -160,7 +160,7 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,c
         }
         break;
         default:
-        errorLog << "computeFeatureVector(const MatrixFloat &data,UINT analysisMode) - Unknown analysis mode!" << std::endl;
+        errorLog << __GRT_LOG__ << " Unknown analysis mode!" << std::endl;
         break;
     }
     
@@ -176,12 +176,12 @@ bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,c
 bool PrincipalComponentAnalysis::project(const MatrixFloat &data,MatrixFloat &prjData){
     
     if( !trained ){
-        warningLog << "project(const MatrixFloat &data,MatrixFloat &prjData) - The PrincipalComponentAnalysis module has not been trained!" << std::endl;
+        warningLog << __GRT_LOG__ << " The PrincipalComponentAnalysis module has not been trained!" << std::endl;
         return false;
     }
     
     if( data.getNumCols() != numInputDimensions ){
-        warningLog << "project(const MatrixFloat &data,MatrixFloat &prjData) - The number of columns in the input vector (" << data.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << std::endl;
+        warningLog << __GRT_LOG__ << " The number of columns in the input vector (" << data.getNumCols() << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     
@@ -214,15 +214,15 @@ bool PrincipalComponentAnalysis::project(const MatrixFloat &data,MatrixFloat &pr
 
 bool PrincipalComponentAnalysis::project(const VectorFloat &data,VectorFloat &prjData){
     
-    const unsigned int N = (unsigned int)data.size();
+    const unsigned int N = data.getSize();
     
     if( !trained ){
-        warningLog << "project(const VectorFloat &data,VectorFloat &prjData) - The PrincipalComponentAnalysis module has not been trained!" << std::endl;
+        warningLog << __GRT_LOG__ << " The PrincipalComponentAnalysis module has not been trained!" << std::endl;
         return false;
     }
     
     if( N != numInputDimensions ){
-        warningLog << "project(const VectorFloat &data,VectorFloat &prjData) - The size of the input vector (" << N << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << std::endl;
+        warningLog << __GRT_LOG__ << " The size of the input vector (" << N << ") does not match the number of input dimensions (" << numInputDimensions << ")!" << std::endl;
         return false;
     }
     

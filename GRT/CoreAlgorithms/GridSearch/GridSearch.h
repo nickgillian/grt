@@ -126,7 +126,7 @@ public:
     bool search( ){
         
         if( params.getSize() == 0 ){
-            warningLog << "No parameters to search! Add some parameters!" << std::endl;
+            warningLog << __GRT_LOG__ << " No parameters to search! Add some parameters!" << std::endl;
             return false;
         }
 
@@ -138,7 +138,7 @@ public:
                 bestResult = grt_numeric_limits< Float >::max();
             break;
             default:
-               errorLog << "recursive_search( unsigned int paramIndex ) - Unknown eval type!" << std::endl;
+               errorLog << __GRT_LOG__ << " Unknown eval type!" << std::endl;
                return false;
             break; 
         }
@@ -169,7 +169,7 @@ protected:
         
         const unsigned int numParams = params.getSize();
         if( paramIndex >= numParams ){
-            errorLog << "recursive_search( unsigned int paramIndex ) - Param Index out of bounds!" << std::endl;
+            errorLog << __GRT_LOG__ << " Param Index out of bounds!" << std::endl;
             return false;
         }
 
@@ -204,7 +204,7 @@ protected:
                         }
                     break;
                     default:
-                        errorLog << "recursive_search( unsigned int paramIndex ) - Unknown eval type!" << std::endl;
+                        errorLog << __GRT_LOG__ << " Unknown eval type!" << std::endl;
                         return false;
                     break; 
                 }
@@ -224,7 +224,7 @@ protected:
     bool recursive_reset( unsigned int paramIndex ){
         const unsigned int numParams = params.getSize();
         if( paramIndex >= numParams ){
-            errorLog << "recursive_reset( unsigned int paramIndex ) - Param Index out of bounds!" << std::endl;
+            errorLog << __GRT_LOG__ << " Param Index out of bounds!" << std::endl;
             return false;
         }
 
