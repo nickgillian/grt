@@ -81,18 +81,18 @@ public:
             sumy2 += SQR(y[i]);
         }
         
-        denom = (n * sumx2 - sqr(sumx));
+        denom = (N * sumx2 - SQR(sumx));
         if (denom == 0) {
             // singular matrix. can't solve the problem.
             warningLog << __GRT_LOG__ << " Failed to compute solution, singular matrix detected!" << std::endl;
             return false;
         }
         
-        m = (n * sumxy  -  sumx * sumy) / denom;
-        b = (sumy * sumx2  -  sumx * sumxy) / denom;
+        m = (N*sumxy  -  sumx*sumy) / denom;
+        b = (sumy*sumx2  -  sumx*sumxy) / denom;
         
         //compute correlation coeff
-        r = (sumxy - sumx * sumy / n) / sqrt( (sumx2 - sqr(sumx)/n) * (sumy2 - sqr(sumy)/n) );
+        r = (sumxy - sumx*sumy / N) / sqrt( (sumx2 - SQR(sumx)/N) * (sumy2 - SQR(sumy)/N) );
         
         return true;
     }

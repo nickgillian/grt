@@ -75,6 +75,7 @@
 //Include the Core Alogirthms
 #include "CoreAlgorithms/BernoulliRBM/BernoulliRBM.h"
 #include "CoreAlgorithms/EvolutionaryAlgorithm/EvolutionaryAlgorithm.h"
+#include "CoreAlgorithms/LeastSquares/LinearLeastSquares.h"
 #include "CoreAlgorithms/MovementDetector/MovementDetector.h"
 #include "CoreAlgorithms/ParticleFilter/ParticleFilter.h"
 #include "CoreAlgorithms/ParticleSwarmOptimization/ParticleSwarmOptimization.h"
