@@ -46,6 +46,15 @@ TEST(Typedefs, Sqrt) {
   EXPECT_EQ(grt_sqrt(e), expectedE);
 }
 
+// Tests the to string function
+TEST(Typedefs, ToStr) {
+  Float a = 3.1415;
+  int b = 6;
+
+  EXPECT_TRUE(grt_to_str(a) == "3.1415");
+  EXPECT_TRUE(grt_to_str(b) == "6");
+}
+
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest( &argc, argv );
 	return RUN_ALL_TESTS();

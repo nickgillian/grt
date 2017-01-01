@@ -210,7 +210,7 @@ typedef unsigned long ULONG;
 /**
   @brief converts x to a string for printing
 */
-#define grt_to_str(x) (#x)
+#define grt_print_str(x) (#x)
 
 #if !defined NDEBUG
 /**
@@ -221,7 +221,7 @@ typedef unsigned long ULONG;
 #define grt_assert(x) \
 do { \
 if (0 == (x)) { \
-fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __FUNCTION__, __LINE__, grt_to_str(x) ); \
+fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __FUNCTION__, __LINE__, grt_print_str(x) ); \
 abort(); \
 } \
 } while (0)
@@ -229,7 +229,7 @@ abort(); \
 #define grt_assert(x) \
 do { \
 if (0 == (x)) { \
-fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __func__, __LINE__, grt_to_str(x) ); \
+fprintf(stderr, "Assertion failed: %s, %s(), %d at \'%s\'\n", __FILENAME__, __func__, __LINE__, grt_print_str(x) ); \
 abort(); \
 } \
 } while (0)
