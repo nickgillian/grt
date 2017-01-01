@@ -48,8 +48,28 @@ public:
     virtual ~LinearLeastSquares(){
         
     }
+
+    /**
+    Clears any previous results
+    @return returns true if the model was cleared, false otherwise
+    */
+    virtual bool clear() override {
+        m = 0;
+        b = 0;
+        r = 0;
+        return MLBase::clear();
+    }
     
+    /**
+    This is the main solver function for Linear Least Squares.
+    @param x: a vector containing the x input data
+    @param y: a vector containing the y input data, must have the same size as x
+    @return returns true if the algorithm converged, false otherwise
+    */
     bool solve( const VectorFloat &x, const VectorFloat &y ){
+
+        //Reset any previous results
+        clear();
         
         if( x.getSize() == 0 && y.getSize() == 0 ){
             warningLog << __GRT_LOG__ << " Failed to compute solution, input vectors are empty!" << std::endl;
@@ -92,13 +112,36 @@ public:
         b = (sumy*sumx2  -  sumx*sumxy) / denom;
         
         //compute correlation coeff
-        r = (sumxy - sumx*sumy / N) / sqrt( (sumx2 - SQR(sumx)/N) * (sumy2 - SQR(sumy)/N) );
+        Float norm = 1.0/N;
+        sumxy *= norm;
+        sumx *= norm;
+        sumy *= norm;
+        sumx2 *= norm;
+        sumy2 *= norm;
+        r = (sumxy - sumx*sumy) / sqrt( (sumx2 - SQR(sumx)) * (sumy2 - SQR(sumy)) );
+
+        trained = true;
+        converged = true;
         
         return true;
     }
 
+    /**
+    Get the slope
+    @return returns the slope
+    */
     Float getM() const { return m; }
+
+    /**
+    Get the bias
+    @return returns the bias
+    */
     Float getB() const { return b; }
+
+    /**
+    Get the correlation coefficient, this indicates the goodness of fit between the data and the linear model
+    @return returns the correlation coefficient
+    */
     Float getR() const { return r; }
     
 protected:
