@@ -113,9 +113,9 @@ public:
         
         //compute correlation coeff
         Float norm = 1.0/N;
-        sumxy *= norm;
         sumx *= norm;
         sumy *= norm;
+        sumxy *= norm;
         sumx2 *= norm;
         sumy2 *= norm;
         r = (sumxy - sumx*sumy) / sqrt( (sumx2 - SQR(sumx)) * (sumy2 - SQR(sumy)) );
