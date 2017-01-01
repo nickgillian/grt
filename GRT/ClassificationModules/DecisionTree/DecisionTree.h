@@ -271,6 +271,11 @@ public:
     bool setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit);
 
     /**
+     @deprecated use setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit)
+    */
+    GRT_DEPRECATED_MSG( "setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt) is deprecated, use setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit) instead", bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt) );
+
+    /**
     Sets the decision tree node, this will be used as the starting node the next time the DecisionTree model is trained.
     
     @return returns true if the decision tree node was updated, false otherwise

@@ -1076,6 +1076,10 @@ bool DecisionTree::setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachS
     return true;
 }
 
+bool DecisionTree::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
+    return setRemoveFeaturesAtEachSplit(removeFeaturesAtEachSpilt);
+}
+
 bool DecisionTree::loadLegacyModelFromFile_v1( std::fstream &file ){
     
     std::string word;
