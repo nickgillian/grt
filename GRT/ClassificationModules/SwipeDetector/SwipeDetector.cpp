@@ -155,7 +155,7 @@ bool SwipeDetector::train_(ClassificationData &trainingData){
     const unsigned int N = trainingData.getNumDimensions();
     
     if( M == 0 ){
-        errorLog << "train_(trainingData &labelledTrainingData) - Training data has zero samples!" << std::endl;
+        errorLog << __GRT_LOG__ << " Training data has zero samples!" << std::endl;
         return false;
     }
     
@@ -187,12 +187,12 @@ bool SwipeDetector::predict_(VectorDouble &inputVector){
     swipeDetected = false;
     
     if( !trained ){
-        errorLog << "predict_(VectorDouble &inputVector) - SwipeDetector Model Not Trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " SwipeDetector Model Not Trained!" << std::endl;
         return false;
     }
     
-	if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorDouble &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the num features in the model (" << numInputDimensions << ")" << std::endl;
+	if( inputVector.getSize() != numInputDimensions ){
+        errorLog << __GRT_LOG__ << " The size of the input vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << ")" << std::endl;
 		return false;
 	}
     
@@ -279,7 +279,7 @@ bool SwipeDetector::save( std::fstream &file ) const{
     
     if(!file.is_open())
 	{
-		errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
+		errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
 		return false;
 	}
     
@@ -288,7 +288,7 @@ bool SwipeDetector::save( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to save classifier base settings to file!" << std::endl;
 		return false;
     }
     
@@ -321,7 +321,7 @@ bool SwipeDetector::load( std::fstream &file ){
     
     if(!file.is_open())
     {
-        errorLog << "load(string filename) - Could not open file to load model" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not open file to load model" << std::endl;
         return false;
     }
     
@@ -331,13 +331,13 @@ bool SwipeDetector::load( std::fstream &file ){
 
     //Find the file type header
     if(word != "GRT_SWIPE_DETECTION_MODEL_FILE_V1.0"){
-        errorLog << "load(string filename) - Could not find Model File Header" << std::endl;
+        errorLog << __GRT_LOG__ << " Could not find Model File Header" << std::endl;
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to load base settings from file!" << std::endl;
         return false;
     }
     
@@ -345,56 +345,56 @@ bool SwipeDetector::load( std::fstream &file ){
         
         file >> word;
         if( word != "SwipeIndex:" ){
-            errorLog << "load(string filename) - Could not load the SwipeIndex!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not load the SwipeIndex!" << std::endl;
             return false;
         }
         file >> swipeIndex;
         
         file >> word;
         if( word != "ContextFilterSize:" ){
-            errorLog << "load(string filename) - Could not load the ContextFilterSize!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not load the ContextFilterSize!" << std::endl;
             return false;
         }
         file >> contextFilterSize;
         
         file >> word;
         if( word != "SwipeIntegrationCoeff:" ){
-            errorLog << "load(string filename) - Could not load the SwipeIntegrationCoeff!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not load the SwipeIntegrationCoeff!" << std::endl;
             return false;
         }
         file >> swipeIntegrationCoeff;
         
         file >> word;
         if( word != "MovementIntegrationCoeff:" ){
-            errorLog << "load(string filename) - Could not load the MovementIntegrationCoeff!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not load the MovementIntegrationCoeff!" << std::endl;
             return false;
         }
         file >> movementIntegrationCoeff;
         
         file >> word;
         if( word != "SwipeThreshold:" ){
-            errorLog << "load(string filename) - Could not load the SwipeThreshold!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not load the SwipeThreshold!" << std::endl;
             return false;
         }
         file >> swipeThreshold;
         
         file >> word;
         if( word != "HysteresisThreshold:" ){
-            errorLog << "load(string filename) - Could not load the HysteresisThreshold!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not load the HysteresisThreshold!" << std::endl;
             return false;
         }
         file >> hysteresisThreshold;
         
         file >> word;
         if( word != "SwipeThreshold:" ){
-            errorLog << "load(string filename) - Could not load the SwipeThreshold!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not load the SwipeThreshold!" << std::endl;
             return false;
         }
         file >> swipeThreshold;
         
         file >> word;
         if( word != "MovementThreshold:" ){
-            errorLog << "load(string filename) - Could not load the MovementThreshold!" << std::endl;
+            errorLog << __GRT_LOG__ << " Could not load the MovementThreshold!" << std::endl;
             return false;
         }
         file >> movementThreshold;
@@ -458,7 +458,7 @@ bool SwipeDetector::setSwipeIndex(const unsigned int swipeIndex){
 bool SwipeDetector::setSwipeDirection(const unsigned int swipeDirection){
     
     if( swipeDirection != POSITIVE_SWIPE && swipeDirection != NEGATIVE_SWIPE ){
-        errorLog << "setSwipeDirection(const unsigned int swipeDirection) - Unknown swipeDirection!" << std::endl;
+        errorLog << __GRT_LOG__ << " Unknown swipeDirection!" << std::endl;
         return false;
     }
     

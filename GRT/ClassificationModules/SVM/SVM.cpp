@@ -143,7 +143,7 @@ bool SVM::train_(ClassificationData &trainingData){
     clear();
     
     if( trainingData.getNumSamples() == 0 ){
-        errorLog << "train_(ClassificationData &trainingData) - Training data has zero samples!" << std::endl;
+        errorLog << __GRT_LOG__ << " Training data has zero samples!" << std::endl;
         return false;
     }
 
@@ -162,7 +162,7 @@ bool SVM::train_(ClassificationData &trainingData){
 
     //Convert the labelled classification data into the LIBSVM data format
     if( !convertClassificationDataToLIBSVMFormat(trainingData) ){
-        errorLog << "train_(ClassificationData &trainingData) - Failed To Convert Classification Data To LIBSVM Format!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed To Convert Classification Data To LIBSVM Format!" << std::endl;
         return false;
     }
     
@@ -172,12 +172,13 @@ bool SVM::train_(ClassificationData &trainingData){
     bool trainingResult = trainSVM();
     
     if(! trainingResult ){
-        errorLog << "train_(ClassificationData &trainingData) - Failed To Train SVM Model!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed To Train SVM Model!" << std::endl;
         return false;
     }
 
     //Flag that the models have been trained
     trained = true;
+    converged = true;
 
     //Compute the final training stats
     trainingSetAccuracy = 0;
@@ -188,14 +189,14 @@ bool SVM::train_(ClassificationData &trainingData){
     useScaling = false;
     if( !computeAccuracy( trainingData, trainingSetAccuracy ) ){
         trained = false;
-        errorLog << "Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to compute training set accuracy! Failed to fully train model!" << std::endl;
         return false;
     }
     
     if( useValidationSet ){
         if( !computeAccuracy( validationData, validationSetAccuracy ) ){
             trained = false;
-            errorLog << "Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to compute validation set accuracy! Failed to fully train model!" << std::endl;
             return false;
         }
     }
@@ -215,23 +216,23 @@ bool SVM::train_(ClassificationData &trainingData){
 bool SVM::predict_(VectorFloat &inputVector){
     
     if( !trained ){
-        errorLog << "predict_(VectorFloat &inputVector) - The SVM model has not been trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " The SVM model has not been trained!" << std::endl;
         return false;
     }
     
-    if( inputVector.size() != numInputDimensions ){
-        errorLog << "predict_(VectorFloat &inputVector) - The size of the input vector (" << inputVector.size() << ") does not match the number of features of the model (" << numInputDimensions << ")" << std::endl;
+    if( inputVector.getSize() != numInputDimensions ){
+        errorLog << __GRT_LOG__ << " The size of the input vector (" << inputVector.getSize() << ") does not match the number of features of the model (" << numInputDimensions << ")" << std::endl;
         return false;
     }
     
     if( param.probability == 1 ){
         if( !predictSVM( inputVector, maxLikelihood, classLikelihoods ) ){
-            errorLog << "predict(VectorFloat inputVector) - Prediction Failed!" << std::endl;
+            errorLog << __GRT_LOG__ << " Prediction Failed!" << std::endl;
             return false;
         }
     }else{
         if( !predictSVM( inputVector ) ){
-            errorLog << "predict(VectorFloat inputVector) - Prediction Failed!" << std::endl;
+            errorLog << __GRT_LOG__ << " Prediction Failed!" << std::endl;
             return false;
         }
     }
@@ -246,12 +247,12 @@ bool SVM::init(KernelType kernelType,SVMType svmType,bool useScaling,bool useNul
     
     //Validate the kernerlType
     if( !validateKernelType(kernelType) ){
-        errorLog << "init(...) - Unknown kernelType!\n";
+        errorLog << __GRT_LOG__ << " Unknown kernelType!\n";
         return false;
     }
     
     if( !validateSVMType(svmType) ){
-        errorLog << "init(...) - Unknown kernelType!\n";
+        errorLog << __GRT_LOG__ << " Unknown kernelType!\n";
         return false;
     }
     
@@ -326,7 +327,7 @@ bool SVM::validateProblemAndParameters(){
     const char *errorMsg = svm_check_parameter(&prob,&param);
     
     if( errorMsg ){
-        errorLog << "validateProblemAndParameters() - Parameters do not match problem! error: " << errorMsg << std::endl;
+        errorLog << __GRT_LOG__ << " Parameters do not match problem! error: " << errorMsg << std::endl;
         return false;
     }
     
@@ -345,7 +346,7 @@ bool SVM::trainSVM(){
     
     //Check to make sure the problem has been set
     if( !problemSet ){
-        errorLog << "trainSVM() - Problem not set!" << std::endl;
+        errorLog << __GRT_LOG__ << " Problem not set!" << std::endl;
         return false;
     }
     
@@ -391,7 +392,7 @@ bool SVM::trainSVM(){
     model = svm_train(&prob,&param);
     
     if( model == NULL ){
-        errorLog << "trainSVM() - Failed to train SVM Model!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to train SVM Model!" << std::endl;
         return false;
     }
     
@@ -540,7 +541,7 @@ bool SVM::save( std::fstream &file ) const{
     
     //Write the classifier settings to the file
     if( !Classifier::saveBaseSettingsToFile(file) ){
-        errorLog <<"save(fstream &file) - Failed to save classifier base settings to file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to save classifier base settings to file!" << std::endl;
         return false;
     }
     
@@ -564,7 +565,7 @@ bool SVM::save( std::fstream &file ) const{
         file << "NU_SVR";
         break;
         default:
-        errorLog << "save(fstream &file) - Invalid model type: " << param.svm_type << std::endl;
+        errorLog << __GRT_LOG__ << " Invalid model type: " << param.svm_type << std::endl;
         return false;
         break;
     }
@@ -588,7 +589,7 @@ bool SVM::save( std::fstream &file ) const{
         file << "PRECOMPUTED";
         break;
         default:
-        errorLog << "save(fstream &file) - Invalid kernel type: " << param.kernel_type << std::endl;
+        errorLog << __GRT_LOG__ << " Invalid kernel type: " << param.kernel_type << std::endl;
         return false;
         break;
     }
@@ -668,7 +669,7 @@ bool SVM::load( std::fstream &file ){
     clear();
     
     if( !file.is_open() ){
-        errorLog << "load(fstream &file) - The file is not open!" << std::endl;
+        errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
         return false;
     }
     
@@ -682,14 +683,14 @@ bool SVM::load( std::fstream &file ){
     
     //Check to make sure this is a file with the correct File Format
     if( word != "SVM_MODEL_FILE_V2.0" ){
-        errorLog << "load(fstream &file) - Invalid file format!" << std::endl;
+        errorLog << __GRT_LOG__ << " Invalid file format!" << std::endl;
         clear();
         return false;
     }
     
     //Load the base settings from the file
     if( !Classifier::loadBaseSettingsFromFile(file) ){
-        errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to load base settings from file!" << std::endl;
         return false;
     }
     
@@ -728,7 +729,7 @@ bool SVM::load( std::fstream &file ){
     //Load the model type
     file >> word;
     if(word != "ModelType:"){
-        errorLog << "load(fstream &file) - Failed to find ModelType header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find ModelType header!" << std::endl;
         clear();
         return false;
     }
@@ -748,7 +749,7 @@ bool SVM::load( std::fstream &file ){
                     if( word == "NU_SVR" ){
                         model->param.svm_type = NU_SVR;
                     }else{
-                        errorLog << "load(fstream &file) - Failed to find SVM type!" << std::endl;
+                        errorLog << __GRT_LOG__ << " Failed to find SVM type!" << std::endl;
                         clear();
                         return false;
                     }
@@ -760,7 +761,7 @@ bool SVM::load( std::fstream &file ){
     //Load the model type
     file >> word;
     if(word != "KernelType:"){
-        errorLog << "load(fstream &file) - Failed to find kernel type!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find kernel type!" << std::endl;
         clear();
         return false;
     }
@@ -780,7 +781,7 @@ bool SVM::load( std::fstream &file ){
                     if( word == "PRECOMPUTED" ){
                         model->param.kernel_type = PRECOMPUTED;
                     }else{
-                        errorLog << "load(fstream &file) - Failed to find kernel type!" << std::endl;
+                        errorLog << __GRT_LOG__ << " Failed to find kernel type!" << std::endl;
                         clear();
                         return false;
                     }
@@ -792,7 +793,7 @@ bool SVM::load( std::fstream &file ){
     //Load the degree
     file >> word;
     if(word != "Degree:"){
-        errorLog << "load(fstream &file) - Failed to find Degree header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Degree header!" << std::endl;
         clear();
         return false;
     }
@@ -801,7 +802,7 @@ bool SVM::load( std::fstream &file ){
     //Load the gamma
     file >> word;
     if(word != "Gamma:"){
-        errorLog << "load(fstream &file) - Failed to find Gamma header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Gamma header!" << std::endl;
         clear();
         return false;
     }
@@ -810,7 +811,7 @@ bool SVM::load( std::fstream &file ){
     //Load the Coef0
     file >> word;
     if(word != "Coef0:"){
-        errorLog << "load(fstream &file) - Failed to find Coef0 header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Coef0 header!" << std::endl;
         clear();
         return false;
     }
@@ -819,7 +820,7 @@ bool SVM::load( std::fstream &file ){
     //Load the NumberOfFeatures
     file >> word;
     if(word != "NumberOfFeatures:"){
-        errorLog << "load(fstream &file) - Failed to find NumberOfFeatures header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find NumberOfFeatures header!" << std::endl;
         clear();
         return false;
     }
@@ -828,7 +829,7 @@ bool SVM::load( std::fstream &file ){
     //Load the UseShrinking
     file >> word;
     if(word != "UseShrinking:"){
-        errorLog << "load(fstream &file) - Failed to find UseShrinking header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseShrinking header!" << std::endl;
         clear();
         return false;
     }
@@ -837,7 +838,7 @@ bool SVM::load( std::fstream &file ){
     //Load the UseProbability
     file >> word;
     if(word != "UseProbability:"){
-        errorLog << "load(fstream &file) - Failed to find UseProbability header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseProbability header!" << std::endl;
         clear();
         return false;
     }
@@ -847,7 +848,7 @@ bool SVM::load( std::fstream &file ){
         //Load the NumberOfSupportVectors
         file >> word;
         if(word != "NumberOfSupportVectors:"){
-            errorLog << "load(fstream &file) - Failed to find NumberOfSupportVectors header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find NumberOfSupportVectors header!" << std::endl;
             clear();
             return false;
         }
@@ -861,7 +862,7 @@ bool SVM::load( std::fstream &file ){
         //Load the RHO
         file >> word;
         if(word != "RHO:"){
-            errorLog << "load(fstream &file) - Failed to find RHO header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find RHO header!" << std::endl;
             clear();
             return false;
         }
@@ -915,7 +916,7 @@ bool SVM::load( std::fstream &file ){
         //Load the SupportVectors
         //We don't need to read another line here
         if(word != "SupportVectors:"){
-            errorLog << "load(fstream &file) - Failed to find SupportVectors header!" << std::endl;
+            errorLog << __GRT_LOG__ << " Failed to find SupportVectors header!" << std::endl;
             clear();
             return false;
         }
@@ -1103,7 +1104,7 @@ bool SVM::setKernelType(const KernelType kernelType){
         param.kernel_type = (int)kernelType;
         return true;
     }
-    warningLog << "setKernelType(UINT kernelType) - Failed to set kernel type, unknown kernelType!" << std::endl;
+    warningLog << __GRT_LOG__ << " Failed to set kernel type, unknown kernelType!" << std::endl;
     return false;
 }
 
@@ -1112,7 +1113,7 @@ bool SVM::setGamma(const Float gamma){
         this->param.gamma = gamma;
         return true;
     }
-    warningLog << "setGamma(Float gamma) - Failed to set gamma, useAutoGamma is enabled, setUseAutoGamma to false first!" << std::endl;
+    warningLog << __GRT_LOG__ << " Failed to set gamma, useAutoGamma is enabled, setUseAutoGamma to false first!" << std::endl;
     return false;
 }
 
@@ -1141,7 +1142,7 @@ bool SVM::setKFoldCrossValidationValue(const UINT kFoldValue){
         this->kFoldValue = kFoldValue;
         return true;
     }
-    warningLog << "setKFoldCrossValidationValue(const UINT kFoldValue) - Failed to set kFoldValue, the kFoldValue must be greater than 0!" << std::endl;
+    warningLog << __GRT_LOG__ << " Failed to set kFoldValue, the kFoldValue must be greater than 0!" << std::endl;
     return false;
 }
 
@@ -1415,7 +1416,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the model type
     file >> word;
     if(word != "ModelType:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find ModelType header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find ModelType header!" << std::endl;
         clear();
         return false;
     }
@@ -1435,7 +1436,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
                     if( word == "NU_SVR" ){
                         model->param.svm_type = NU_SVR;
                     }else{
-                        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find SVM type!" << std::endl;
+                        errorLog << __GRT_LOG__ << " Failed to find SVM type!" << std::endl;
                         clear();
                         return false;
                     }
@@ -1447,7 +1448,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the model type
     file >> word;
     if(word != "KernelType:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find kernel type!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find kernel type!" << std::endl;
         clear();
         return false;
     }
@@ -1467,7 +1468,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
                     if( word == "PRECOMPUTED" ){
                         model->param.kernel_type = PRECOMPUTED;
                     }else{
-                        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find kernel type!" << std::endl;
+                        errorLog << __GRT_LOG__ << " Failed to find kernel type!" << std::endl;
                         clear();
                         return false;
                     }
@@ -1479,7 +1480,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the degree
     file >> word;
     if(word != "Degree:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find Degree header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Degree header!" << std::endl;
         clear();
         return false;
     }
@@ -1488,7 +1489,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the gamma
     file >> word;
     if(word != "Gamma:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find Gamma header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Gamma header!" << std::endl;
         clear();
         return false;
     }
@@ -1497,7 +1498,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the Coef0
     file >> word;
     if(word != "Coef0:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find Coef0 header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Coef0 header!" << std::endl;
         clear();
         return false;
     }
@@ -1506,7 +1507,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the NumberOfClasses
     file >> word;
     if(word != "NumberOfClasses:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find NumberOfClasses header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find NumberOfClasses header!" << std::endl;
         clear();
         return false;
     }
@@ -1515,7 +1516,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the NumberOfSupportVectors
     file >> word;
     if(word != "NumberOfSupportVectors:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find NumberOfSupportVectors header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find NumberOfSupportVectors header!" << std::endl;
         clear();
         return false;
     }
@@ -1524,7 +1525,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the NumberOfFeatures
     file >> word;
     if(word != "NumberOfFeatures:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find NumberOfFeatures header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find NumberOfFeatures header!" << std::endl;
         clear();
         return false;
     }
@@ -1533,7 +1534,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the UseShrinking
     file >> word;
     if(word != "UseShrinking:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find UseShrinking header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseShrinking header!" << std::endl;
         clear();
         return false;
     }
@@ -1542,7 +1543,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the UseProbability
     file >> word;
     if(word != "UseProbability:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find UseProbability header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseProbability header!" << std::endl;
         clear();
         return false;
     }
@@ -1551,7 +1552,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the UseScaling
     file >> word;
     if(word != "UseScaling:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find UseScaling header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find UseScaling header!" << std::endl;
         clear();
         return false;
     }
@@ -1560,7 +1561,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the Ranges
     file >> word;
     if(word != "Ranges:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find Ranges header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find Ranges header!" << std::endl;
         clear();
         return false;
     }
@@ -1582,7 +1583,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the RHO
     file >> word;
     if(word != "RHO:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find RHO header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find RHO header!" << std::endl;
         clear();
         return false;
     }
@@ -1636,7 +1637,7 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     //Load the SupportVectors
     //We don't need to read another line here
     if(word != "SupportVectors:"){
-        errorLog << "loadLegacyModelFromFile(fstream &file) - Failed to find SupportVectors header!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to find SupportVectors header!" << std::endl;
         clear();
         return false;
     }

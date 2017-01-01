@@ -120,7 +120,7 @@ bool ClusterTree::train_(MatrixFloat &trainingData){
     const unsigned int N = trainingData.getNumCols();
     
     if( M == 0 ){
-        Clusterer::errorLog << "train_(MatrixFloat &trainingData) - Training data has zero samples!" << std::endl;
+        errorLog << __GRT_LOG__ << " Training data has zero samples!" << std::endl;
         return false;
     }
     
@@ -148,7 +148,7 @@ bool ClusterTree::train_(MatrixFloat &trainingData){
     
     if( tree == NULL ){
         clear();
-        Clusterer::errorLog << "train_(MatrixFloat &trainingData) - Failed to build tree!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to build tree!" << std::endl;
         return false;
     }
     
@@ -169,17 +169,17 @@ bool ClusterTree::train_(MatrixFloat &trainingData){
 bool ClusterTree::predict_(VectorFloat &inputVector){
     
     if( !trained ){
-        Clusterer::errorLog << __GRT_LOG__ << " Model Not Trained!" << std::endl;
+        errorLog << __GRT_LOG__ << " Model Not Trained!" << std::endl;
         return false;
     }
     
     if( tree == NULL ){
-        Clusterer::errorLog << __GRT_LOG__ << " DecisionTree pointer is null!" << std::endl;
+        errorLog << __GRT_LOG__ << " DecisionTree pointer is null!" << std::endl;
         return false;
     }
     
 	if( inputVector.getSize() != numInputDimensions ){
-        Clusterer::errorLog << __GRT_LOG__ << " The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
+        errorLog << __GRT_LOG__ << " The size of the input Vector (" << inputVector.getSize() << ") does not match the num features in the model (" << numInputDimensions << std::endl;
 		return false;
 	}
     
@@ -191,7 +191,7 @@ bool ClusterTree::predict_(VectorFloat &inputVector){
     
     VectorFloat clusterLabel(1);
     if( !tree->predict_( inputVector, clusterLabel ) ){
-        Clusterer::errorLog << __GRT_LOG__ << " Failed to predict!" << std::endl;
+        errorLog << __GRT_LOG__ << " Failed to predict!" << std::endl;
         return false;
     }
     predictedClusterLabel = (UINT)clusterLabel[0];
@@ -223,7 +223,7 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
     
     if( !file.is_open() )
     {
-        Clusterer::errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -232,7 +232,7 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
     
     //Write the clusterer settings to the file
     if( !saveClustererSettingsToFile(file) ){
-        Clusterer::errorLog <<"saveModelToFile(fstream &file) - Failed to save clusterer settings to file!" << std::endl;
+        errorLog <<"saveModelToFile(fstream &file) - Failed to save clusterer settings to file!" << std::endl;
         return false;
     }
     
@@ -247,7 +247,7 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
 	if( tree != NULL ){
     	file << "Tree:\n";
     	if( !tree->save( file ) ){
-        	Clusterer::errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << std::endl;
+        	errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << std::endl;
         	return false;
     	}
 	}
@@ -261,7 +261,7 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
 
 	if(!file.is_open())
 	{
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
     	return false;
 	}
 
@@ -270,47 +270,47 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
 	//Find the file type header
 	file >> word;
 	if(word != "GRT_CLUSTER_TREE_MODEL_FILE_V1.0"){
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
     	return false;
 	}
 
 	//Load the base settings from the file
 	if( !loadClustererSettingsFromFile(file) ){
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
     	return false;
 	}
 
 	file >> word;
 	if(word != "NumSplittingSteps:"){
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << std::endl;
     	return false;
 	}
 	file >> numSplittingSteps;
 
 	file >> word;
 	if(word != "MinNumSamplesPerNode:"){
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
     	return false;
 	}
 	file >> minNumSamplesPerNode;
 
 	file >> word;
 	if(word != "MaxDepth:"){
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << std::endl;
     	return false;
 	}
 	file >> maxDepth;
 
 	file >> word;
 	if(word != "RemoveFeaturesAtEachSpilt:"){
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
     	return false;
 	}
 	file >> removeFeaturesAtEachSplit;
 
 	file >> word;
 	if(word != "TrainingMode:"){
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
     	return false;
 	}
     UINT tempTrainingMode = 0;
@@ -319,14 +319,14 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
 
 	file >> word;
 	if(word != "MinRMSErrorPerNode:"){
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the MinRMSErrorPerNode!" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Could not find the MinRMSErrorPerNode!" << std::endl;
     	return false;
 	}	
 	file >> minRMSErrorPerNode;
 
 	file >> word;
 	if(word != "TreeBuilt:"){
-    	Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << std::endl;
+    	errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << std::endl;
     	return false;
     }
 	file >> trained;
@@ -334,7 +334,7 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
 	if( trained ){
     	file >> word;
     	if(word != "Tree:"){
-        		Clusterer::errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << std::endl;
+        		errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << std::endl;
         		return false;
     	}
 
@@ -343,14 +343,14 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
     
     	if( tree == NULL ){
             clear();
-            Clusterer::errorLog << "loadModelFromFile(fstream &file) - Failed to create new RegressionTreeNode!" << std::endl;
+            errorLog << "loadModelFromFile(fstream &file) - Failed to create new RegressionTreeNode!" << std::endl;
             return false;
     	}
     
     	tree->setParent( NULL );
     	if( !tree->load( file ) ){
             clear();
-            Clusterer::errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
+            errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
     	}
         
@@ -571,7 +571,7 @@ bool ClusterTree::computeBestSplit( const MatrixFloat &trainingData, const Vecto
             return computeBestSplitBestRandomSplit( trainingData, features, featureIndex, threshold, minError );
             break;
         default:
-            Clusterer::errorLog << "Uknown trainingMode!" << std::endl;
+            errorLog << "Uknown trainingMode!" << std::endl;
             return false;
             break;
     }
