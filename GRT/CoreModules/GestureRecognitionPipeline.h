@@ -322,7 +322,8 @@ public:
     virtual bool predict_(MatrixFloat &inputMatrix) override;
 
     /**
-     This function is now depreciated, you should use the predict function instead.
+     @deprecated use predict_(VectorFloat &inputVector)
+     This function is now depreciated, you should use the predict_(VectorFloat &inputVector) function instead.
 
      This function used to be the main interface for all regression using the gesture recognition pipeline.  
      You should only call this function if you  have trained the pipeline.  The input Vector should be the same size as your training data.
@@ -330,7 +331,7 @@ public:
      @param inputVector: the input data that will be passed through the pipeline for regression
      @return bool returns true if the regression was successful, false otherwise
 	*/
-    virtual bool map_(VectorFloat &inputVector) override;
+    GRT_DEPRECATED_MSG( "map_(VectorFloat &inputVector) is deprecated, use predict_(VectorFloat &inputVector) instead", virtual bool map_(VectorFloat &inputVector) override );
     
     /**
      This function is the main interface for resetting the entire gesture recognition pipeline.  This function will call reset on all the modules in 

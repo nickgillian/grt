@@ -770,6 +770,10 @@ bool RandomForests::setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEach
     return true;
 }
 
+bool RandomForests::setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt){
+    return setRemoveFeaturesAtEachSplit(removeFeaturesAtEachSpilt);
+}
+
 bool RandomForests::setTrainingMode(const Tree::TrainingMode trainingMode){
     if( trainingMode == Tree::BEST_ITERATIVE_SPILT || trainingMode == Tree::BEST_RANDOM_SPLIT ){
         this->trainingMode = trainingMode;

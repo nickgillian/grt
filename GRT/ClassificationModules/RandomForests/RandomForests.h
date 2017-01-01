@@ -304,7 +304,12 @@ public:
     @return returns true if the parameter was set, false otherwise
     */
     bool setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit);
-    
+
+    /**
+     @deprecated use setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit)
+    */
+    GRT_DEPRECATED_MSG( "setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt) is deprecated, use setRemoveFeaturesAtEachSplit(const bool removeFeaturesAtEachSplit) instead", bool setRemoveFeaturesAtEachSpilt(const bool removeFeaturesAtEachSpilt) );
+
     /**
      Sets the training mode used to train each DecisionTree in the forest, this should be one of the DecisionTree::TrainingModes enums.
      
