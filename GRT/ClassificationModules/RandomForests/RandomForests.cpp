@@ -198,7 +198,7 @@ bool RandomForests::train_(ClassificationData &trainingData){
         Timer timer;
         timer.start();
         
-        Tree *tree = new DecisionTree;
+        DecisionTree *tree = new DecisionTree;
         tree->setDecisionTreeNode( *decisionTreeNode );
         tree->enableScaling( false ); //We have already scaled the training data so we do not need to scale it again
         tree->setUseValidationSet( useValidationSet );
