@@ -836,11 +836,7 @@ DecisionTreeNode* DecisionTree::deepCopyTree() const{
         return NULL;
     }
 
-    DecisionTreeNode *copy = dynamic_cast< DecisionTreeNode* >( tree->deepCopy() );
-
-    grt_assert( this->tree->validateCopy(copy) );
-    
-    return copy;
+    return dynamic_cast< DecisionTreeNode* >( tree->deepCopy() );
 }
 
 DecisionTreeNode* DecisionTree::deepCopyDecisionTreeNode() const{
