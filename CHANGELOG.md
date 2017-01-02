@@ -8,6 +8,7 @@ This file contains some notes about significant changes to the GRT.
 - **batch learning:** added batch option to LogisticRegression, this helps improve the learning algorithm by updating the weights based on a mini-batch dataset, as opposed to updating the weights on every single example in the training dataset
 - **neural net initialization change:** changed default initialization of MLP neural nets to scale with size of network
 - **new unit tests:** added unit tests for Linear and Logistic Regression
+- **improved LinearLeastSquares:** improved the linear least squares algorithm, adding it to the main GRT header
 
 # Version 0.2.4
 
