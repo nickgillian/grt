@@ -36,7 +36,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 GRT_BEGIN_NAMESPACE
 
 /**
-@brief This class implements a basic Decision Tree classifier.  Decision Trees are conceptually simple
+@brief This class implements the GRT Decision Tree classifier.  Decision Trees are conceptually simple
 classifiers that work well on even complex classification tasks.  Decision Trees partition the feature
 space into a set of rectangular regions, classifying a new datum by finding which region it belongs to.
 

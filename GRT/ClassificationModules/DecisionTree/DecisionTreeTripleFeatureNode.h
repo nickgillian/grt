@@ -2,8 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
- 
- @brief This file implements a DecisionTreeTripleFeatureNode, which is a specific type of node used for a DecisionTree.
  */
 
 /**
@@ -34,6 +32,9 @@
 
 GRT_BEGIN_NAMESPACE
     
+/**
+  @brief This class implements a DecisionTreeTripleFeatureNode, which is a specific type of node used for a DecisionTree.
+*/
 class GRT_API DecisionTreeTripleFeatureNode : public DecisionTreeNode{
 public:
     /**
@@ -89,14 +90,6 @@ public:
      @return returns a pointer to a deep copy of the DecisionTreeTripleFeatureNode, or NULL if the deep copy was not successful
      */
     virtual Node* deepCopy() const override;
-    
-    /**
-     This function returns a deep copy of the DecisionTreeTripleFeatureNode and all it's children.
-     The user is responsible for managing the dynamic data that is returned from this function as a pointer.
-     
-     @return returns a pointer to a deep copy of the DecisionTreeTripleFeatureNode, or NULL if the deep copy was not successful
-     */
-    //DecisionTreeTripleFeatureNode* deepCopy() const;
     
     /**
      This function returns the first featureIndex.

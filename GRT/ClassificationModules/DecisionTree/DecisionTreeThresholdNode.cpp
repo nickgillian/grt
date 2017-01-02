@@ -102,11 +102,7 @@ Node* DecisionTreeThresholdNode::deepCopy() const{
     
     return dynamic_cast< Node* >( node );
 }
-/*
-DecisionTreeThresholdNode* DecisionTreeThresholdNode::deepCopy() const{
-    return dynamic_cast< DecisionTreeThresholdNode* >( deepCopyNode() );
-}
-*/
+
 UINT DecisionTreeThresholdNode::getFeatureIndex() const{
     return featureIndex;
 }

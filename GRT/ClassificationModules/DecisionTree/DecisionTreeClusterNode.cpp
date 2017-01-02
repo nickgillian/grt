@@ -168,11 +168,7 @@ Node* DecisionTreeClusterNode::deepCopy() const{
 
     return dynamic_cast< Node* >( node );
 }
-/*
-DecisionTreeClusterNode* DecisionTreeClusterNode::deepCopy() const{
-    return dynamic_cast< DecisionTreeClusterNode* >( deepCopyNode() );
-}
-*/
+
 UINT DecisionTreeClusterNode::getFeatureIndex() const{
     return featureIndex;
 }

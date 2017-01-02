@@ -8,7 +8,6 @@ GRT_BEGIN_NAMESPACE
 RegisterNode< DecisionTreeTripleFeatureNode > DecisionTreeTripleFeatureNode::registerModule("DecisionTreeTripleFeatureNode");
     
 DecisionTreeTripleFeatureNode::DecisionTreeTripleFeatureNode() : DecisionTreeNode("DecisionTreeTripleFeatureNode") {
-    nodeType = "DecisionTreeTripleFeatureNode";
     clear();
 }
 
@@ -111,11 +110,7 @@ Node* DecisionTreeTripleFeatureNode::deepCopy() const{
     
     return dynamic_cast< Node* >( node );
 }
-/*
-DecisionTreeTripleFeatureNode* DecisionTreeTripleFeatureNode::deepCopy() const{
-    return dynamic_cast< DecisionTreeTripleFeatureNode* >( deepCopyNode() );
-}
-*/
+
 UINT DecisionTreeTripleFeatureNode::getFeatureIndexA() const{
     return featureIndexA;
 }

@@ -2,10 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
- 
- @brief This file implements a DecisionTreeNode, which is a specific base node used for a DecisionTree.
- 
- @example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
  */
 
 /**
@@ -37,6 +33,11 @@
 
 GRT_BEGIN_NAMESPACE
     
+/**
+ @brief This class implements a DecisionTreeNode, which is the main base node used for a DecisionTree.
+ 
+ @example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
+*/
 class GRT_API DecisionTreeNode : public Node{
 public:
     /**
@@ -44,6 +45,9 @@ public:
      */
     DecisionTreeNode( const std::string id = "DecisionTreeNode" );
 
+    /**
+     Disable the copy constructor.
+     */
     DecisionTreeNode(const DecisionTreeNode &rhs) = delete;
     
     /**
@@ -51,16 +55,15 @@ public:
      */
     virtual ~DecisionTreeNode();
 
+    /**
+     Disable the equals operator.
+     */
     DecisionTreeNode& operator=(const DecisionTreeNode &rhs) = delete;
     
     /**
-     This function recursively predicts if the probability of the input Vector.  
-     If this node is a leaf node, then the class likelihoods are equal to the class probabilities at the leaf node.
-     If this node is not a leaf node, then this function will recursively call the predict function on either the left or right children
-     until a leaf node is reached.
+     This function recursively calls predict on the input vector x, when it reaches the leaf node it stores the class probability associated with that leaf node in the output vector y.
      
-     NOTE: The threshold, featureIndex and classProbabilities should be set first BEFORE this function is called. The threshold, featureIndex 
-     and classProbabilities can be set by training the node through the DecisionTree class.
+     NOTE: This function should only be called after the decision tree model has been trained.
      
      @param x: the input Vector that will be used for the prediction
      @param classLikelihoods: a reference to a Vector that will store the class probabilities
@@ -91,13 +94,6 @@ public:
      @return returns true of the node was cleared correctly, false otherwise
      */
     virtual bool clear() override;
-
-    /**
-     This functions will validate that the copy matches this instance.
-
-     @return returns true if the copy matches this instance correctly, false otherwise
-     */
-    virtual bool validateCopy( const DecisionTreeNode *copy );
     
     /**
      This function adds the current model to the formatted stream.
@@ -115,14 +111,6 @@ public:
      @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
      */
     virtual Node* deepCopy() const override;
-    
-    /**
-     This function returns a deep copy of the DecisionTreeNode and all it's children.
-     The user is responsible for managing the dynamic data that is returned from this function as a pointer.
-     
-     @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
-     */
-    //virtual DecisionTreeNode* deepCopy() const;
     
     /**
      This function returns the nodeSize, this is the number of training samples that reached the node during the training phase.

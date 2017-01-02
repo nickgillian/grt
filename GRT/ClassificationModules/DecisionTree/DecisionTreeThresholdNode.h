@@ -2,14 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
- 
- @brief This file implements a DecisionTreeThresholdNode, which is a specific type of node used for a DecisionTree.
- 
- @description The node creates a spilt for each node in a DecisionTree by finding the threshold and feature that minimizes
- the error on the training data at that node.  The threshold is found by iterating over the range of the training data and
- finding the threshold and feature index that results in the minimum error.
- 
- @example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
  */
 
 /**
@@ -39,6 +31,15 @@
 
 GRT_BEGIN_NAMESPACE
     
+/**
+ @brief This class implements a DecisionTreeThresholdNode, which is a specific type of node used for a DecisionTree.
+ 
+ @description The node creates a spilt for each node in a DecisionTree by finding the threshold and feature that minimizes
+ the error on the training data at that node.  The threshold is found by iterating over the range of the training data and
+ finding the threshold and feature index that results in the minimum error.
+ 
+ @example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
+*/
 class GRT_API DecisionTreeThresholdNode : public DecisionTreeNode{
 public:
     /**
@@ -96,14 +97,6 @@ public:
      @return returns a pointer to a deep copy of the DecisionTreeThresholdNode, or NULL if the deep copy was not successful
      */
     virtual Node* deepCopy() const override;
-    
-    /**
-     This function returns a deep copy of the DecisionTreeNode and all it's children.
-     The user is responsible for managing the dynamic data that is returned from this function as a pointer.
-     
-     @return returns a pointer to a deep copy of the DecisionTreeThresholdNode, or NULL if the deep copy was not successful
-     */
-    //DecisionTreeThresholdNode* deepCopy() const;
     
     /**
      This function returns the featureIndex, this is index in the input data that the decision threshold is computed on.

@@ -2,14 +2,6 @@
  @file
  @author  Nicholas Gillian <ngillian@media.mit.edu>
  @version 1.0
- 
- @brief This file implements a DecisionTreeClusterNode, which is a specific type of node used for a DecisionTree.
- 
- @description The node creates a spilt for each node in a DecisionTree by finding the threshold and feature that minimizes 
- the error on the training data at that node.  The threshold is found by using KMeans to find two clusters in the training data
- for each feature, with the threshold being set as the centroid between each cluster.
- 
- @example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
  */
 
 /**
@@ -40,6 +32,15 @@
 
 GRT_BEGIN_NAMESPACE
     
+/**
+@brief This class implements a DecisionTreeClusterNode, which is a specific type of node used for a DecisionTree.
+ 
+@description The node creates a spilt for each node in a DecisionTree by finding the threshold and feature that minimizes 
+ the error on the training data at that node.  The threshold is found using KMeans to find two clusters in the training data
+ for each feature, with the threshold being set as the centroid between each cluster.
+
+ @example ClassificationModulesExamples/DecisionTreeExample/DecisionTreeExample.cpp
+*/
 class GRT_API DecisionTreeClusterNode : public DecisionTreeNode{
 public:
     /**
@@ -112,14 +113,6 @@ public:
      @return returns a pointer to a deep copy of the DecisionTreeClusterNode, or NULL if the deep copy was not successful
      */
     virtual Node* deepCopy() const override;
-    
-    /**
-     This function returns a deep copy of the DecisionTreeNode and all it's children.
-     The user is responsible for managing the dynamic data that is returned from this function as a pointer.
-     
-     @return returns a pointer to a deep copy of the DecisionTreeThresholdNode, or NULL if the deep copy was not successful
-     */
-    //DecisionTreeClusterNode* deepCopy() const;
     
     /**
      This function returns the featureIndex, this is index in the input data that the decision threshold is computed on.
