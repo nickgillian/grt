@@ -188,18 +188,17 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     if( useValidationSet ){
 
         //If we get here, then we are going to train the tree several times and pick the best model
-        GRT::DecisionTreeNode *bestTree = NULL;
+        DecisionTreeNode *bestTree = NULL;
         Float bestValidationSetAccuracy = 0;
         UINT bestTreeIndex = 0;
         for(UINT i=0; i<numTrainingIterationsToConverge; i++){
 
-            Classifier::trainingLog << "Training tree iteration: " << i+1 << "/" << numTrainingIterationsToConverge << std::endl;
+            trainingLog << "Training tree iteration: " << i+1 << "/" << numTrainingIterationsToConverge << std::endl;
 
             if( !trainTree( trainingData, trainingDataCopy, validationData, features ) ){
                 errorLog << __GRT_LOG__ << " Failed to build tree!" << std::endl;
                 //Delete the best tree if it exists
                 if( bestTree != NULL ){
-                    bestTree->clear();
                     delete bestTree;
                     bestTree = NULL;
                 }
@@ -210,16 +209,20 @@ bool DecisionTree::train_(ClassificationData &trainingData){
             if( bestTree == NULL ){
                 //Grab the tree pointer
                 bestTree = tree;
-                tree = NULL;
                 bestValidationSetAccuracy = validationSetAccuracy;
                 bestTreeIndex = i;
             }else{
                 if( validationSetAccuracy > bestValidationSetAccuracy ){
                     //Grab the tree pointer
                     bestTree = tree;
-                    tree = NULL;
                     bestValidationSetAccuracy = validationSetAccuracy;
                     bestTreeIndex = i;
+                }else{
+                    //If we get here then the current tree is not the best so far, so free it
+                    if( tree != NULL ){
+                        delete tree;
+                        tree = NULL;
+                    }
                 }
             }
         }
@@ -230,7 +233,6 @@ bool DecisionTree::train_(ClassificationData &trainingData){
         if( bestTree != tree ){
             //Delete the tree if it exists
             if( tree != NULL ){
-                tree->clear();
                 delete tree;
                 tree = NULL;
             }
@@ -378,7 +380,7 @@ bool DecisionTree::trainTree( ClassificationData trainingData, const Classificat
         VectorFloat testSample;
         VectorFloat validationSetPrecisionCounter( validationSetPrecision.size(), 0.0 );
         VectorFloat validationSetRecallCounter( validationSetRecall.size(), 0.0 );
-        Classifier::trainingLog << "Testing model with validation set..." << std::endl;
+        trainingLog << "Testing model with validation set..." << std::endl;
         for(UINT i=0; i<numTestSamples; i++){
             testLabel = validationData[i].getClassLabel();
             testSample = validationData[i].getSample();
@@ -913,13 +915,13 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
         else if( M < minNumSamplesPerNode ) info = "Reached leaf node, hit min-samples-per-node limit.";
         else if( depth >= maxDepth ) info = "Reached leaf node, max depth reached.";
         
-        Classifier::trainingLog << info << " Depth: " << depth << " NumSamples: " << trainingData.getNumSamples();
+        trainingLog << info << " Depth: " << depth << " NumSamples: " << trainingData.getNumSamples();
         
-        Classifier::trainingLog << " Class Probabilities: ";
+        trainingLog << " Class Probabilities: ";
         for(UINT k=0; k<classProbs.getSize(); k++){
-            Classifier::trainingLog << classProbs[k] << " ";
+            trainingLog << classProbs[k] << " ";
         }
-        Classifier::trainingLog << std::endl;
+        trainingLog << std::endl;
         
         return node;
     }
@@ -933,12 +935,12 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
         return NULL;
     }
     
-    Classifier::trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " MinError: " << minError;
-    Classifier::trainingLog << " Class Probabilities: ";
-    for(size_t k=0; k<classProbs.size(); k++){
-        Classifier::trainingLog << classProbs[k] << " ";
+    trainingLog << "Depth: " << depth << " FeatureIndex: " << featureIndex << " MinError: " << minError;
+    trainingLog << " Class Probabilities: ";
+    for(UINT k=0; k<classProbs.getSize(); k++){
+        trainingLog << classProbs[k] << " ";
     }
-    Classifier::trainingLog << std::endl;
+    trainingLog << std::endl;
     
     //Remove the selected feature so we will not use it again
     if( removeFeaturesAtEachSplit ){
@@ -999,9 +1001,9 @@ Float DecisionTree::getNodeDistance( const VectorFloat &x, const UINT nodeID ){
 Float DecisionTree::getNodeDistance( const VectorFloat &x, const VectorFloat &y ){
     
     Float distance = 0;
-    const size_t N = x.size();
+    const UINT N = x.getSize();
     
-    for(size_t i=0; i<N; i++){
+    for(UINT i=0; i<N; i++){
         distance += MLBase::SQR( x[i] - y[i] );
     }
     
