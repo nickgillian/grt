@@ -7,11 +7,8 @@ GRT_BEGIN_NAMESPACE
 //Register the DecisionTreeTripleFeatureNode module with the Node base class
 RegisterNode< DecisionTreeTripleFeatureNode > DecisionTreeTripleFeatureNode::registerModule("DecisionTreeTripleFeatureNode");
     
-DecisionTreeTripleFeatureNode::DecisionTreeTripleFeatureNode(){
+DecisionTreeTripleFeatureNode::DecisionTreeTripleFeatureNode() : DecisionTreeNode("DecisionTreeTripleFeatureNode") {
     nodeType = "DecisionTreeTripleFeatureNode";
-    parent = NULL;
-    leftChild = NULL;
-    rightChild = NULL;
     clear();
 }
 
@@ -81,7 +78,7 @@ bool DecisionTreeTripleFeatureNode::getModel( std::ostream &stream ) const{
     return true;
 }
 
-Node* DecisionTreeTripleFeatureNode::deepCopyNode() const{
+Node* DecisionTreeTripleFeatureNode::deepCopy() const{
     
     DecisionTreeTripleFeatureNode *node = new DecisionTreeTripleFeatureNode;
     
@@ -102,23 +99,23 @@ Node* DecisionTreeTripleFeatureNode::deepCopyNode() const{
     
     //Recursively deep copy the left child
     if( leftChild ){
-        node->leftChild = leftChild->deepCopyNode();
+        node->leftChild = leftChild->deepCopy();
         node->leftChild->setParent( node );
     }
     
     //Recursively deep copy the right child
     if( rightChild ){
-        node->rightChild = rightChild->deepCopyNode();
+        node->rightChild = rightChild->deepCopy();
         node->rightChild->setParent( node );
     }
     
-    return dynamic_cast< DecisionTreeTripleFeatureNode* >( node );
+    return dynamic_cast< Node* >( node );
 }
-
+/*
 DecisionTreeTripleFeatureNode* DecisionTreeTripleFeatureNode::deepCopy() const{
     return dynamic_cast< DecisionTreeTripleFeatureNode* >( deepCopyNode() );
 }
-
+*/
 UINT DecisionTreeTripleFeatureNode::getFeatureIndexA() const{
     return featureIndexA;
 }

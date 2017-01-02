@@ -33,7 +33,7 @@ RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule( Decision
 DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSplit,const Tree::TrainingMode trainingMode,const UINT numSplittingSteps,const bool useScaling) : Classifier( DecisionTree::getId() )
 {
     this->tree = NULL;
-    this->decisionTreeNode = decisionTreeNode.deepCopy();
+    this->decisionTreeNode = dynamic_cast< DecisionTreeNode* >( decisionTreeNode.deepCopy() );
     this->minNumSamplesPerNode = minNumSamplesPerNode;
     this->maxDepth = maxDepth;
     this->removeFeaturesAtEachSplit = removeFeaturesAtEachSplit;
@@ -834,7 +834,7 @@ DecisionTreeNode* DecisionTree::deepCopyTree() const{
         return NULL;
     }
 
-    DecisionTreeNode *copy = dynamic_cast< DecisionTreeNode* >( tree->deepCopyNode() );
+    DecisionTreeNode *copy = dynamic_cast< DecisionTreeNode* >( tree->deepCopy() );
 
     grt_assert( this->tree->validateCopy(copy) );
     
@@ -847,11 +847,11 @@ DecisionTreeNode* DecisionTree::deepCopyDecisionTreeNode() const{
         return NULL;
     }
     
-    return decisionTreeNode->deepCopy();
+    return dynamic_cast< DecisionTreeNode* >(decisionTreeNode->deepCopy());
 }
 
 const DecisionTreeNode* DecisionTree::getTree() const{
-    return dynamic_cast< DecisionTreeNode* >( tree );
+    return tree;
 }
 
 bool DecisionTree::setDecisionTreeNode( const DecisionTreeNode &node ){
@@ -861,7 +861,7 @@ bool DecisionTree::setDecisionTreeNode( const DecisionTreeNode &node ){
         delete decisionTreeNode;
         decisionTreeNode = NULL;
     }
-    this->decisionTreeNode = node.deepCopy();
+    this->decisionTreeNode = dynamic_cast< DecisionTreeNode* >(node.deepCopy());
     
     return true;
 }

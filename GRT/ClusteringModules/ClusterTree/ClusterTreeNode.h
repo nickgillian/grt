@@ -155,7 +155,7 @@ public:
      
      @return returns a pointer to a deep copy of the ClusterTreeNode, or NULL if the deep copy was not successful
      */
-    virtual Node* deepCopyNode() const override{
+    virtual Node* deepCopy() const override{
         
         ClusterTreeNode *node = new ClusterTreeNode;
         
@@ -173,21 +173,21 @@ public:
         
         //Recursively deep copy the left child
         if( leftChild ){
-            node->leftChild = leftChild->deepCopyNode();
+            node->leftChild = leftChild->deepCopy();
             node->leftChild->setParent( node );
         }
         
         //Recursively deep copy the right child
         if( rightChild ){
-            node->rightChild = rightChild->deepCopyNode();
+            node->rightChild = rightChild->deepCopy();
             node->rightChild->setParent( node );
         }
         
-        return (Node*)node;
+        return dynamic_cast<Node*>(node);
     }
     
     ClusterTreeNode* deepCopyTree() const{
-        ClusterTreeNode *node = (ClusterTreeNode*)deepCopyNode();
+        ClusterTreeNode *node = dynamic_cast<ClusterTreeNode*>(deepCopy());
         return node;
     }
     

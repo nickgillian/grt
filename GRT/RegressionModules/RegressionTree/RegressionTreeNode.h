@@ -159,7 +159,7 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
      */
-    virtual Node* deepCopyNode() const override{
+    virtual Node* deepCopy() const override{
         
         RegressionTreeNode *node = new RegressionTreeNode;
         
@@ -177,13 +177,13 @@ public:
         
         //Recursively deep copy the left child
         if( this->leftChild ){
-            node->leftChild = this->leftChild->deepCopyNode();
+            node->leftChild = this->leftChild->deepCopy();
             node->leftChild->setParent( node );
         }
         
         //Recursively deep copy the right child
         if( this->rightChild ){
-            node->rightChild = this->rightChild->deepCopyNode();
+            node->rightChild = this->rightChild->deepCopy();
             node->rightChild->setParent( node );
         }
         
@@ -191,7 +191,7 @@ public:
     }
     
     RegressionTreeNode* deepCopyTree() const{
-        RegressionTreeNode *node = dynamic_cast< RegressionTreeNode* >( deepCopyNode() );
+        RegressionTreeNode *node = dynamic_cast< RegressionTreeNode* >( deepCopy() );
         return node;
     }
     

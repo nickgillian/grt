@@ -7,11 +7,7 @@ GRT_BEGIN_NAMESPACE
 //Register the DecisionTreeClusterNode module with the Node base class
 RegisterNode< DecisionTreeClusterNode > DecisionTreeClusterNode::registerModule("DecisionTreeClusterNode");
 
-DecisionTreeClusterNode::DecisionTreeClusterNode(){
-    nodeType = "DecisionTreeClusterNode";
-    parent = NULL;
-    leftChild = NULL;
-    rightChild = NULL;
+DecisionTreeClusterNode::DecisionTreeClusterNode() : DecisionTreeNode("DecisionTreeClusterNode") {
     clear();
 }
 
@@ -140,7 +136,7 @@ bool DecisionTreeClusterNode::getModel( std::ostream &stream ) const{
     return true;
 }
 
-Node* DecisionTreeClusterNode::deepCopyNode() const{
+Node* DecisionTreeClusterNode::deepCopy() const{
 
     DecisionTreeClusterNode *node = new DecisionTreeClusterNode;
 
@@ -160,23 +156,23 @@ Node* DecisionTreeClusterNode::deepCopyNode() const{
 
     //Recursively deep copy the left child
     if( leftChild ){
-        node->leftChild = leftChild->deepCopyNode();
+        node->leftChild = leftChild->deepCopy();
         node->leftChild->setParent( node );
     }
 
     //Recursively deep copy the right child
     if( rightChild ){
-        node->rightChild = rightChild->deepCopyNode();
+        node->rightChild = rightChild->deepCopy();
         node->rightChild->setParent( node );
     }
 
-    return dynamic_cast< DecisionTreeClusterNode* >( node );
+    return dynamic_cast< Node* >( node );
 }
-
+/*
 DecisionTreeClusterNode* DecisionTreeClusterNode::deepCopy() const{
     return dynamic_cast< DecisionTreeClusterNode* >( deepCopyNode() );
 }
-
+*/
 UINT DecisionTreeClusterNode::getFeatureIndex() const{
     return featureIndex;
 }

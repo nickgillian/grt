@@ -130,7 +130,7 @@ public:
     
     @return returns a pointer to a deep copy of the Node, or NULL if the deep copy was not successful
     */
-    virtual Node* deepCopyNode() const;
+    virtual Node* deepCopy() const;
     
     /**
     This function returns the node type, this is the type of node defined by the class that inherits from the Node base class.

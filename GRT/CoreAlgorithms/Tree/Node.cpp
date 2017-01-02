@@ -269,7 +269,7 @@ bool Node::load( std::fstream &file ){
     return true;
 }
 
-Node* Node::deepCopyNode() const{
+Node* Node::deepCopy() const{
     
     Node *node = createNewInstance();
     
@@ -283,14 +283,14 @@ Node* Node::deepCopyNode() const{
     node->setIsLeafNode( isLeafNode );
     
     //Recursively deep copy the left child
-    if( getHasLeftChild() ){
-        node->setLeftChild( leftChild->deepCopyNode() );
+    if( this->leftChild ){
+        node->setLeftChild( this->leftChild->deepCopy() );
         node->leftChild->setParent( node );
     }
     
     //Recursively deep copy the right child
-    if( getHasRightChild() ){
-        node->setRightChild( rightChild->deepCopyNode() );
+    if( this->rightChild ){
+        node->setRightChild( rightChild->deepCopy() );
         node->rightChild->setParent( node );
     }
     

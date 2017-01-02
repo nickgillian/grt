@@ -95,7 +95,7 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeThresholdNode, or NULL if the deep copy was not successful
      */
-    virtual Node* deepCopyNode() const override;
+    virtual Node* deepCopy() const override;
     
     /**
      This function returns a deep copy of the DecisionTreeNode and all it's children.
@@ -103,7 +103,7 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeThresholdNode, or NULL if the deep copy was not successful
      */
-    DecisionTreeThresholdNode* deepCopy() const;
+    //DecisionTreeThresholdNode* deepCopy() const;
     
     /**
      This function returns the featureIndex, this is index in the input data that the decision threshold is computed on.

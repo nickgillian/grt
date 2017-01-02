@@ -372,7 +372,7 @@ ClusterTreeNode* ClusterTree::deepCopyTree() const{
         return NULL;
     }
 
-    return (ClusterTreeNode*)tree->deepCopyNode();
+    return dynamic_cast<ClusterTreeNode*>(tree->deepCopy());
 }
 
 const ClusterTreeNode* ClusterTree::getTree() const{

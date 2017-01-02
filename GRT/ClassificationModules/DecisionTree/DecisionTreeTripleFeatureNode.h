@@ -88,7 +88,7 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeTripleFeatureNode, or NULL if the deep copy was not successful
      */
-    virtual Node* deepCopyNode() const override;
+    virtual Node* deepCopy() const override;
     
     /**
      This function returns a deep copy of the DecisionTreeTripleFeatureNode and all it's children.
@@ -96,7 +96,7 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeTripleFeatureNode, or NULL if the deep copy was not successful
      */
-    DecisionTreeTripleFeatureNode* deepCopy() const;
+    //DecisionTreeTripleFeatureNode* deepCopy() const;
     
     /**
      This function returns the first featureIndex.

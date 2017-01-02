@@ -77,7 +77,7 @@ Node* Tree::deepCopyTree() const{
         return NULL;
     }
     
-    return tree->deepCopyNode();
+    return tree->deepCopy();
 }
 
 const Node* Tree::getTree() const{
@@ -118,7 +118,7 @@ bool Tree::setTrainingMode(const TrainingMode trainingMode){
         this->trainingMode = trainingMode;
         return true;
     }
-    warningLog << "Unknown trainingMode: " << trainingMode << std::endl;
+    warningLog << __GRT_LOG__ << " Unknown trainingMode: " << trainingMode << std::endl;
     return false;
 }
 
@@ -127,7 +127,7 @@ bool Tree::setNumSplittingSteps(const UINT numSplittingSteps){
         this->numSplittingSteps = numSplittingSteps;
         return true;
     }
-    warningLog << "setNumSplittingSteps(const UINT numSplittingSteps) - The number of splitting steps must be greater than zero!" << std::endl;
+    warningLog << __GRT_LOG__ << " The number of splitting steps must be greater than zero!" << std::endl;
     return false;
 }
 
@@ -136,7 +136,7 @@ bool Tree::setMinNumSamplesPerNode(const UINT minNumSamplesPerNode){
         this->minNumSamplesPerNode = minNumSamplesPerNode;
         return true;
     }
-    warningLog << "setMinNumSamplesPerNode(const UINT minNumSamplesPerNode) - The minimum number of samples per node must be greater than zero!" << std::endl;
+    warningLog << __GRT_LOG__ << " The minimum number of samples per node must be greater than zero!" << std::endl;
     return false;
 }
 
@@ -145,7 +145,7 @@ bool Tree::setMaxDepth(const UINT maxDepth){
         this->maxDepth = maxDepth;
         return true;
     }
-    warningLog << "setMaxDepth(const UINT maxDepth) - The maximum depth must be greater than zero!" << std::endl;
+    warningLog << __GRT_LOG__ << " The maximum depth must be greater than zero!" << std::endl;
     return false;
 }
 

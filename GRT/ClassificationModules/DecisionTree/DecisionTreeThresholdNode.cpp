@@ -7,11 +7,7 @@ GRT_BEGIN_NAMESPACE
 //Register the DecisionTreeThresholdNode module with the Node base class
 RegisterNode< DecisionTreeThresholdNode > DecisionTreeThresholdNode::registerModule("DecisionTreeThresholdNode");
     
-DecisionTreeThresholdNode::DecisionTreeThresholdNode(){
-    nodeType = "DecisionTreeThresholdNode";
-    parent = NULL;
-    leftChild = NULL;
-    rightChild = NULL;
+DecisionTreeThresholdNode::DecisionTreeThresholdNode() : DecisionTreeNode("DecisionTreeThresholdNode") {
     clear();
 }
 
@@ -74,7 +70,7 @@ bool DecisionTreeThresholdNode::getModel( std::ostream &stream ) const{
     return true;
 }
 
-Node* DecisionTreeThresholdNode::deepCopyNode() const{
+Node* DecisionTreeThresholdNode::deepCopy() const{
     
     DecisionTreeThresholdNode *node = new DecisionTreeThresholdNode;
     
@@ -94,23 +90,23 @@ Node* DecisionTreeThresholdNode::deepCopyNode() const{
     
     //Recursively deep copy the left child
     if( leftChild ){
-        node->leftChild = leftChild->deepCopyNode();
+        node->leftChild = leftChild->deepCopy();
         node->leftChild->setParent( node );
     }
     
     //Recursively deep copy the right child
     if( rightChild ){
-        node->rightChild = rightChild->deepCopyNode();
+        node->rightChild = rightChild->deepCopy();
         node->rightChild->setParent( node );
     }
     
     return dynamic_cast< Node* >( node );
 }
-
+/*
 DecisionTreeThresholdNode* DecisionTreeThresholdNode::deepCopy() const{
     return dynamic_cast< DecisionTreeThresholdNode* >( deepCopyNode() );
 }
-
+*/
 UINT DecisionTreeThresholdNode::getFeatureIndex() const{
     return featureIndex;
 }

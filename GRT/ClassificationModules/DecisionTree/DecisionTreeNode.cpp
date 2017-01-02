@@ -7,7 +7,7 @@ using namespace GRT;
 //Register the DecisionTreeNode with the Node base class
 RegisterNode< DecisionTreeNode > DecisionTreeNode::registerModule("DecisionTreeNode");
     
-DecisionTreeNode::DecisionTreeNode() : Node("DecisionTreeNode"){
+DecisionTreeNode::DecisionTreeNode( const std::string id ) : Node(id){
     clear();
 }
 
@@ -114,7 +114,7 @@ bool DecisionTreeNode::getModel( std::ostream &stream ) const{
     return true;
 }
 
-Node* DecisionTreeNode::deepCopyNode() const{
+Node* DecisionTreeNode::deepCopy() const{
     
     DecisionTreeNode *node = dynamic_cast< DecisionTreeNode* >( DecisionTreeNode::createInstanceFromString( nodeType ) );
     
@@ -132,23 +132,23 @@ Node* DecisionTreeNode::deepCopyNode() const{
     
     //Recursively deep copy the left child
     if( leftChild ){
-        node->leftChild = leftChild->deepCopyNode();
+        node->leftChild = leftChild->deepCopy();
         node->leftChild->setParent( node );
     }
     
     //Recursively deep copy the right child
     if( rightChild ){
-        node->rightChild = rightChild->deepCopyNode();
+        node->rightChild = rightChild->deepCopy();
         node->rightChild->setParent( node );
     }
     
     return dynamic_cast< Node* >(node);
 }
-
+/*
 DecisionTreeNode* DecisionTreeNode::deepCopy() const{
     return dynamic_cast< DecisionTreeNode* >( deepCopyNode() );
 }
-
+*/
 UINT DecisionTreeNode::getNodeSize() const{
     return nodeSize;
 }

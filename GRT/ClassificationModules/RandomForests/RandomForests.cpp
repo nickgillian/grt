@@ -32,7 +32,7 @@ RegisterClassifierModule< RandomForests >  RandomForests::registerModule( Random
 
 RandomForests::RandomForests(const DecisionTreeNode &decisionTreeNode,const UINT forestSize,const UINT numRandomSplits,const UINT minNumSamplesPerNode,const UINT maxDepth,const Tree::TrainingMode trainingMode,const bool removeFeaturesAtEachSplit,const bool useScaling,const Float bootstrappedDatasetWeight) : Classifier( RandomForests::getId() )
 {
-    this->decisionTreeNode = decisionTreeNode.deepCopy();
+    this->decisionTreeNode = dynamic_cast<DecisionTreeNode*>(decisionTreeNode.deepCopy());
     this->forestSize = forestSize;
     this->numRandomSplits = numRandomSplits;
     this->minNumSamplesPerNode = minNumSamplesPerNode;
@@ -85,7 +85,7 @@ RandomForests& RandomForests::operator=(const RandomForests &rhs){
             if( rhs.getTrained() ){
                 //Deep copy the forest
                 for(UINT i=0; i<rhs.forest.size(); i++){
-                    this->forest.push_back( rhs.forest[i]->deepCopy() );
+                    this->forest.push_back( dynamic_cast<DecisionTreeNode*>(rhs.forest[i]->deepCopy()) );
                 }
             }
             
@@ -126,7 +126,7 @@ bool RandomForests::deepCopyFrom(const Classifier *classifier){
                 //Deep copy the forest
                 this->forest.reserve( ptr->forest.getSize() );
                 for(UINT i=0; i<ptr->forest.getSize(); i++){
-                    this->forest.push_back( ptr->forest[i]->deepCopy() );
+                    this->forest.push_back( dynamic_cast<DecisionTreeNode*>(ptr->forest[i]->deepCopy()) );
                 }
             }
             
@@ -625,7 +625,7 @@ bool RandomForests::combineModels( const RandomForests &forest ){
     for(UINT i=0; i<forest.getForestSize(); i++){
         node = forest.getTree(i);
         if( node ){
-            this->forest.push_back( node->deepCopy() );
+            this->forest.push_back( dynamic_cast<DecisionTreeNode*>(node->deepCopy()) );
             forestSize++;
         }
     }
@@ -671,7 +671,7 @@ DecisionTreeNode* RandomForests::deepCopyDecisionTreeNode() const{
         return NULL;
     }
     
-    return decisionTreeNode->deepCopy();
+    return dynamic_cast<DecisionTreeNode*>(decisionTreeNode->deepCopy());
 }
 
 DecisionTreeNode* RandomForests::getTree( const UINT index ) const{
@@ -689,7 +689,7 @@ VectorDouble RandomForests::getFeatureWeights( const bool normWeights ) const{
     
     for(UINT i=0; i<forestSize; i++){
         if( !forest[i]->computeFeatureWeights( weights ) ){
-            warningLog << "getFeatureWeights( const bool normWeights ) - Failed to compute weights for tree: " << i << std::endl;
+            warningLog << __GRT_LOG__ << " Failed to compute weights for tree: " << i << std::endl;
             }
     }
     
@@ -716,7 +716,7 @@ MatrixDouble RandomForests::getLeafNodeFeatureWeights( const bool normWeights ) 
     
     for(UINT i=0; i<forestSize; i++){
         if( !forest[i]->computeLeafNodeWeights( weights ) ){
-            warningLog << "computeLeafNodeWeights( const bool normWeights ) - Failed to compute leaf node weights for tree: " << i << std::endl;
+            warningLog << __GRT_LOG__ << " Failed to compute leaf node weights for tree: " << i << std::endl;
             }
     }
     
@@ -786,7 +786,7 @@ bool RandomForests::setTrainingMode(const Tree::TrainingMode trainingMode){
         this->trainingMode = trainingMode;
         return true;
     }
-    warningLog << "setTrainingMode(const Tree::TrainingMode mode) - Unknown training mode!" << std::endl;
+    warningLog << __GRT_LOG__ << " Unknown training mode!" << std::endl;
     return false;
 }
 
@@ -796,7 +796,7 @@ bool RandomForests::setDecisionTreeNode( const DecisionTreeNode &node ){
         delete decisionTreeNode;
         decisionTreeNode = NULL;
     }
-    this->decisionTreeNode = node.deepCopy();
+    this->decisionTreeNode = dynamic_cast<DecisionTreeNode*>(node.deepCopy());
     
     return true;
 }
@@ -808,7 +808,7 @@ bool RandomForests::setBootstrappedDatasetWeight( const Float bootstrappedDatase
         return true;
     }
     
-    warningLog << "setBootstrappedDatasetWeight(...) - Bad parameter, the weight must be > 0.0 and <= 1.0. Weight: " << bootstrappedDatasetWeight << std::endl;
+    warningLog << __GRT_LOG__ << " Bad parameter, the weight must be > 0.0 and <= 1.0. Weight: " << bootstrappedDatasetWeight << std::endl;
     return false;
 }
 

@@ -42,12 +42,16 @@ public:
     /**
      Default Constructor. Sets all the pointers to NULL.
      */
-    DecisionTreeNode();
+    DecisionTreeNode( const std::string id = "DecisionTreeNode" );
+
+    DecisionTreeNode(const DecisionTreeNode &rhs) = delete;
     
     /**
      Default Destructor. Cleans up any memory.
      */
     virtual ~DecisionTreeNode();
+
+    DecisionTreeNode& operator=(const DecisionTreeNode &rhs) = delete;
     
     /**
      This function recursively predicts if the probability of the input Vector.  
@@ -110,7 +114,7 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
      */
-    virtual Node* deepCopyNode() const override;
+    virtual Node* deepCopy() const override;
     
     /**
      This function returns a deep copy of the DecisionTreeNode and all it's children.
@@ -118,7 +122,7 @@ public:
      
      @return returns a pointer to a deep copy of the DecisionTreeNode, or NULL if the deep copy was not successful
      */
-    DecisionTreeNode* deepCopy() const;
+    //virtual DecisionTreeNode* deepCopy() const;
     
     /**
      This function returns the nodeSize, this is the number of training samples that reached the node during the training phase.

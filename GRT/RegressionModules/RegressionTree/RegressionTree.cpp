@@ -343,7 +343,7 @@ RegressionTreeNode* RegressionTree::deepCopyTree() const{
         return NULL;
     }
     
-    return (RegressionTreeNode*)tree->deepCopyNode();
+    return dynamic_cast<RegressionTreeNode*>(tree->deepCopy());
 }
 
 const RegressionTreeNode* RegressionTree::getTree() const{
