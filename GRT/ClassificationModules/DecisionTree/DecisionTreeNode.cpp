@@ -38,7 +38,9 @@ bool DecisionTreeNode::predict_(VectorFloat &x,VectorFloat &classLikelihoods){
             return false;
         }
         warningLog << __GRT_LOG__ << " Branched right, but no right node!" << std::endl;
-        return false;
+        classLikelihoods = classProbabilities;
+        predictedNodeID = nodeID;
+        return true;
     }else{
         if( leftChild ){
             if( leftChild->predict_( x, classLikelihoods ) ){
@@ -49,7 +51,9 @@ bool DecisionTreeNode::predict_(VectorFloat &x,VectorFloat &classLikelihoods){
             return false;
         }
         warningLog << __GRT_LOG__ << " Branched left, but no left node!" << std::endl;
-        return false;
+        classLikelihoods = classProbabilities;
+        predictedNodeID = nodeID;
+        return true;
     }
     
     return false;
