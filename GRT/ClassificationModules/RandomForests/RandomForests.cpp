@@ -60,6 +60,7 @@ RandomForests::~RandomForests(void)
     clear();
     
     if( decisionTreeNode != NULL ){
+        this->decisionTreeNode->clear();
         delete decisionTreeNode;
         decisionTreeNode = NULL;
     }
@@ -75,6 +76,7 @@ RandomForests& RandomForests::operator=(const RandomForests &rhs){
             
             //Deep copy the main node
             if( this->decisionTreeNode != NULL ){
+                this->decisionTreeNode->clear();
                 delete decisionTreeNode;
                 decisionTreeNode = NULL;
             }
@@ -196,23 +198,26 @@ bool RandomForests::train_(ClassificationData &trainingData){
         Timer timer;
         timer.start();
         
-        DecisionTree tree;
-        tree.setDecisionTreeNode( *decisionTreeNode );
-        tree.enableScaling( false ); //We have already scaled the training data so we do not need to scale it again
-        tree.setUseValidationSet( useValidationSet );
-        tree.setValidationSetSize( validationSetSize );
-        tree.setTrainingMode( trainingMode );
-        tree.setNumSplittingSteps( numRandomSplits );
-        tree.setMinNumSamplesPerNode( minNumSamplesPerNode );
-        tree.setMaxDepth( maxDepth );
-        tree.enableNullRejection( useNullRejection );
-        tree.setRemoveFeaturesAtEachSplit( removeFeaturesAtEachSplit );
+        Tree *tree = new DecisionTree;
+        tree->setDecisionTreeNode( *decisionTreeNode );
+        tree->enableScaling( false ); //We have already scaled the training data so we do not need to scale it again
+        tree->setUseValidationSet( useValidationSet );
+        tree->setValidationSetSize( validationSetSize );
+        tree->setTrainingMode( trainingMode );
+        tree->setNumSplittingSteps( numRandomSplits );
+        tree->setMinNumSamplesPerNode( minNumSamplesPerNode );
+        tree->setMaxDepth( maxDepth );
+        tree->enableNullRejection( useNullRejection );
+        tree->setRemoveFeaturesAtEachSplit( removeFeaturesAtEachSplit );
         
         trainingLog << "Training decision tree " << i+1 << "/" << forestSize << "..." << std::endl;
         
         //Train this tree
-        if( !tree.train_( data ) ){
+        if( !tree->train_( data ) ){
             errorLog << __GRT_LOG__ << " Failed to train tree at forest index: " << i << std::endl;
+            tree->clear();
+            delete tree;
+            tree = NULL;
             clear();
             return false;
         }
@@ -222,9 +227,9 @@ bool RandomForests::train_(ClassificationData &trainingData){
         
         if( useValidationSet ){
             Float forestNorm = 1.0 / forestSize;
-            validationSetAccuracy += tree.getValidationSetAccuracy();
-            VectorFloat precision = tree.getValidationSetPrecision();
-            VectorFloat recall = tree.getValidationSetRecall();
+            validationSetAccuracy += tree->getValidationSetAccuracy();
+            VectorFloat precision = tree->getValidationSetPrecision();
+            VectorFloat recall = tree->getValidationSetRecall();
             
             grt_assert( precision.getSize() == validationSetPrecision.getSize() );
             grt_assert( recall.getSize() == validationSetRecall.getSize() );
@@ -237,9 +242,9 @@ bool RandomForests::train_(ClassificationData &trainingData){
                 validationSetRecall[i] += recall[i] * forestNorm;
             }
         }
-        
-        //Deep copy the tree into the forest
-        forest.push_back( tree.deepCopyTree() );
+
+        //Add the tree pointer to the forest
+        forest.push_back( tree );
     }
 
     //Flag that the models have been trained
@@ -356,6 +361,11 @@ bool RandomForests::clear(){
         }
     }
     forest.clear();
+
+    if( this->decisionTreeNode ){
+        this->decisionTreeNode->clear();
+        //Note, we do not free the decisionTreeNode here, as we need to keep this for the lifecycle of the RF instance
+    }
     
     return true;
 }
