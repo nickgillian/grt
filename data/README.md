@@ -32,8 +32,7 @@ This directory contains a number of datasets that can be used to test and explor
 
 ## Wine
 
-- **Info**: Exact details of the dataset can be found on the UCI website http://archive.ics.uci.edu/ml/datasets/Wine, the dataset has not been modified from the
-version on the website.
+- **Info**: Exact details of the dataset can be found on the UCI website http://archive.ics.uci.edu/ml/datasets/Wine, the dataset has not been modified from the version on the website.
 
 - **Source**: The original version of this dataset can be found on the UCI machine learning repository: http://archive.ics.uci.edu/ml/datasets/Wine
 
@@ -59,6 +58,29 @@ version on the website.
 	12. OD280/OD315 of diluted wines 
 	13. Proline 
 
+## Basic Linear Dataset
+
+- **Info**: This dataset contains a basic linear dataset that can be used to test the GRT regression algorithms.
+
+- **Number of dimensions**: 3
+
+- **Number of targets**: 1
+
+- **Number of samples in dataset**: 1000
+
+- **Filename**: basic_linear_dataset.grt
+
+- **Source**: Recorded using the GRT.
+
+- **Format**: Regression Data, formated as a GRT Regression Data file.
+
+- **Targets**:
+	1. linear trend
+
+- **Features**:
+	1. target + Gaussian noise
+	2. target + Gaussian noise
+	3. target + Gaussian noise
 
 
 
