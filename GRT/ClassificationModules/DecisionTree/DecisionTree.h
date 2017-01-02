@@ -311,7 +311,7 @@ protected:
     VectorFloat classClusterMean;
     VectorFloat classClusterStdDev;
 
-    Node *tree; 
+    DecisionTreeNode *tree; 
     UINT minNumSamplesPerNode;
     UINT maxDepth;
     UINT numSplittingSteps;

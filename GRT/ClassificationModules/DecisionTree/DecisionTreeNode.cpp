@@ -83,6 +83,11 @@ bool DecisionTreeNode::clear(){
     
     return true;
 }
+
+bool DecisionTreeNode::validateCopy( const DecisionTreeNode *copy ){
+    //errorLog << __GRT_LOG__ << " This function should be overloadded by the inheriting class!" << std::endl;
+    return true;
+}
     
 bool DecisionTreeNode::getModel( std::ostream &stream ) const{
     
@@ -137,7 +142,7 @@ Node* DecisionTreeNode::deepCopyNode() const{
         node->rightChild->setParent( node );
     }
     
-    return node;
+    return dynamic_cast< Node* >(node);
 }
 
 DecisionTreeNode* DecisionTreeNode::deepCopy() const{

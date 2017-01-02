@@ -195,7 +195,7 @@ public:
     
 protected:
     
-    UINT trainingMode;
+    TrainingMode trainingMode;
     UINT numSplittingSteps;
     UINT minNumSamplesPerNode;
     UINT maxDepth;

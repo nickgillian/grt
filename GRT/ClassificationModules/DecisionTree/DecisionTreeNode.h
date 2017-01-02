@@ -87,6 +87,13 @@ public:
      @return returns true of the node was cleared correctly, false otherwise
      */
     virtual bool clear() override;
+
+    /**
+     This functions will validate that the copy matches this instance.
+
+     @return returns true if the copy matches this instance correctly, false otherwise
+     */
+    virtual bool validateCopy( const DecisionTreeNode *copy );
     
     /**
      This function adds the current model to the formatted stream.

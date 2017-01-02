@@ -33,7 +33,7 @@ RegisterClassifierModule< DecisionTree >  DecisionTree::registerModule( Decision
 DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT minNumSamplesPerNode,const UINT maxDepth,const bool removeFeaturesAtEachSplit,const Tree::TrainingMode trainingMode,const UINT numSplittingSteps,const bool useScaling) : Classifier( DecisionTree::getId() )
 {
     this->tree = NULL;
-    this->decisionTreeNode = NULL;
+    this->decisionTreeNode = decisionTreeNode.deepCopy();
     this->minNumSamplesPerNode = minNumSamplesPerNode;
     this->maxDepth = maxDepth;
     this->removeFeaturesAtEachSplit = removeFeaturesAtEachSplit;
@@ -43,7 +43,6 @@ DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT m
     this->supportsNullRejection = true;
     this->numTrainingIterationsToConverge = 20; //Retrain the model 20 times and pick the best one
     classifierMode = STANDARD_CLASSIFIER_MODE;
-    this->decisionTreeNode = decisionTreeNode.deepCopy();
 }
 
 DecisionTree::DecisionTree(const DecisionTree &rhs) : Classifier( DecisionTree::getId() )
@@ -189,7 +188,7 @@ bool DecisionTree::train_(ClassificationData &trainingData){
     if( useValidationSet ){
 
         //If we get here, then we are going to train the tree several times and pick the best model
-        GRT::Node *bestTree = NULL;
+        GRT::DecisionTreeNode *bestTree = NULL;
         Float bestValidationSetAccuracy = 0;
         UINT bestTreeIndex = 0;
         for(UINT i=0; i<numTrainingIterationsToConverge; i++){
@@ -834,8 +833,12 @@ DecisionTreeNode* DecisionTree::deepCopyTree() const{
     if( tree == NULL ){
         return NULL;
     }
+
+    DecisionTreeNode *copy = dynamic_cast< DecisionTreeNode* >( tree->deepCopyNode() );
+
+    grt_assert( this->tree->validateCopy(copy) );
     
-    return dynamic_cast< DecisionTreeNode* >( tree->deepCopyNode() );
+    return copy;
 }
 
 DecisionTreeNode* DecisionTree::deepCopyDecisionTreeNode() const{
@@ -854,6 +857,7 @@ const DecisionTreeNode* DecisionTree::getTree() const{
 bool DecisionTree::setDecisionTreeNode( const DecisionTreeNode &node ){
     
     if( decisionTreeNode != NULL ){
+        decisionTreeNode->clear();
         delete decisionTreeNode;
         decisionTreeNode = NULL;
     }
@@ -1260,7 +1264,7 @@ bool DecisionTree::loadLegacyModelFromFile_v2( std::fstream &file ){
         }
         
         //Create a new DTree
-        tree = dynamic_cast<Node*>( new DecisionTreeNode );
+        tree = dynamic_cast<DecisionTreeNode*>( new DecisionTreeNode );
         
         if( tree == NULL ){
             clear();
