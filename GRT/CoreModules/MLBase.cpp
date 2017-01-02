@@ -47,11 +47,11 @@ MLBase::MLBase( const std::string &id, const BaseType type ) : GRTBase( id ){
     totalSquaredTrainingError = 0;
 
     if( id == "" ){
-        trainingLog.setKey("[TRAINING " + id + "]");
-        testingLog.setKey("[TESTING " + id + "]");
-    }else{
         trainingLog.setKey("[TRAINING]");
         testingLog.setKey("[TESTING]");
+    }else{
+        trainingLog.setKey("[TRAINING " + id + "]");
+        testingLog.setKey("[TESTING " + id + "]");
     }
 }
 

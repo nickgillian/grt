@@ -30,7 +30,7 @@ GRTBase::GRTBase(const std::string &id):classId(id){
         errorLog.setKey("[ERROR " + classId + "]");
         warningLog.setKey("[WARNING " + classId + "]");
     }else{
-        infoLog.setKey("[" + classId + "]");
+        infoLog.setKey("[INFO]");
         debugLog.setKey("[DEBUG]");
         errorLog.setKey("[ERROR]");
         warningLog.setKey("[WARNING]");

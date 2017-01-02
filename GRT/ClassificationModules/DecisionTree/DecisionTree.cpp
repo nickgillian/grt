@@ -44,7 +44,6 @@ DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT m
     this->numTrainingIterationsToConverge = 20; //Retrain the model 20 times and pick the best one
     classifierMode = STANDARD_CLASSIFIER_MODE;
     this->decisionTreeNode = decisionTreeNode.deepCopy();
-    
 }
 
 DecisionTree::DecisionTree(const DecisionTree &rhs) : Classifier( DecisionTree::getId() )
