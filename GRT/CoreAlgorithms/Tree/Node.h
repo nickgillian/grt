@@ -39,7 +39,7 @@ public:
     /**
     Default Constructor. Sets all the pointers to NULL.
     */
-    Node();
+    Node( const std::string id = "Node" );
     
     /**
     Default Destructor. Cleans up any memory.

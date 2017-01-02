@@ -40,9 +40,9 @@ Node* Node::createNewInstance() const{
     return createInstanceFromString( nodeType );
 }
 
-Node::Node() : MLBase("Node")
+Node::Node( const std::string id ) : MLBase( id )
 {
-    nodeType = "";
+    nodeType = id;
     parent = NULL;
     leftChild = NULL;
     rightChild = NULL;

@@ -7,11 +7,7 @@ using namespace GRT;
 //Register the DecisionTreeNode with the Node base class
 RegisterNode< DecisionTreeNode > DecisionTreeNode::registerModule("DecisionTreeNode");
     
-DecisionTreeNode::DecisionTreeNode(){
-    nodeType = "DecisionTreeNode";
-    parent = NULL;
-    leftChild = NULL;
-    rightChild = NULL;
+DecisionTreeNode::DecisionTreeNode() : Node("DecisionTreeNode"){
     clear();
 }
 
@@ -41,6 +37,8 @@ bool DecisionTreeNode::predict_(VectorFloat &x,VectorFloat &classLikelihoods){
             warningLog << __GRT_LOG__ << " Right child failed prediction!" << std::endl;
             return false;
         }
+        warningLog << __GRT_LOG__ << " Branched right, but no right node!" << std::endl;
+        return false;
     }else{
         if( leftChild ){
             if( leftChild->predict_( x, classLikelihoods ) ){
@@ -50,6 +48,8 @@ bool DecisionTreeNode::predict_(VectorFloat &x,VectorFloat &classLikelihoods){
             warningLog << __GRT_LOG__ << " Left child failed prediction!" << std::endl;
             return false;
         }
+        warningLog << __GRT_LOG__ << " Branched left, but no left node!" << std::endl;
+        return false;
     }
     
     return false;
@@ -149,7 +149,7 @@ UINT DecisionTreeNode::getNodeSize() const{
 }
 
 UINT DecisionTreeNode::getNumClasses() const{
-    return (UINT)classProbabilities.size();
+    return classProbabilities.getSize();
 }
 
 VectorFloat DecisionTreeNode::getClassProbabilities() const{
