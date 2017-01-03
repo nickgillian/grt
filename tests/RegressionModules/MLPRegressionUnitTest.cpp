@@ -64,7 +64,7 @@ bool train_mlp_xor(const bool enableScaling) {
   //Train a model, for MLP we may need to train it multiple times due to the
   //random nature of the learning algorithm
   const Float passRmsError = 0.25;
-  const UINT maxNumTrys = 50;
+  const UINT maxNumTrys = 100;
   UINT i=0;
   do{
     EXPECT_TRUE( mlp.train( data ) );
