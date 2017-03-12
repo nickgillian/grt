@@ -193,7 +193,7 @@ bool GestureRecognitionPipeline::train_(ClassificationData &trainingData){
         
         //Perform any preprocessing
         if( getIsPreProcessingSet() ){
-            for(UINT moduleIndex=0; moduleIndex<preProcessingModules.size(); moduleIndex++){
+            for(UINT moduleIndex=0; moduleIndex<preProcessingModules.getSize(); moduleIndex++){
                 if( !preProcessingModules[moduleIndex]->process( trainingSample ) ){
                     errorLog << __GRT_LOG__ << " Failed to PreProcess Training Data. PreProcessingModuleIndex: ";
                     errorLog << moduleIndex;
@@ -206,7 +206,7 @@ bool GestureRecognitionPipeline::train_(ClassificationData &trainingData){
         
         //Compute any features
         if( getIsFeatureExtractionSet() ){
-            for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.size(); moduleIndex++){
+            for(UINT moduleIndex=0; moduleIndex<featureExtractionModules.getSize(); moduleIndex++){
                 if( !featureExtractionModules[moduleIndex]->computeFeatures( trainingSample ) ){
                     errorLog << __GRT_LOG__ << " Failed to Compute Features from Training Data. FeatureExtractionModuleIndex ";
                     errorLog << moduleIndex;

@@ -215,6 +215,7 @@ if( BUILD_EXAMPLES )
 
             #If there are source files for the example, then setup the example application
         if( sources )
+            message(STATUS "Adding example: " ${_example_name})
             #Add the example as a new executable application
 	        add_executable(${_example_name}
 	            ${sources}

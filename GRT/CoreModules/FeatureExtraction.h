@@ -41,8 +41,9 @@ public:
     /**
      Default FeatureExtraction Constructor
      @param id: the id of the class inheriting from the FeatureExtraction base class
+     @param isTrainable: flags if the module is trainable
      */
-	FeatureExtraction( const std::string id = "" );
+	FeatureExtraction(const std::string id = "", const bool isTrainable = false);
     
     /**
      Default FeatureExtraction Destructor
@@ -64,6 +65,24 @@ public:
      @return returns true if the copy was successfull, false otherwise
      */
     bool copyBaseVariables(const FeatureExtraction *featureExtractionModule);
+
+    /**
+     This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
+     This function should be overwritten by the derived class.
+     
+     @param inputVector: the inputVector that should be processed
+     @return returns true if the data was processed, false otherwise (the base class always returns false)
+     */
+    virtual bool predict(const VectorFloat &inputVector){ return computeFeatures(inputVector); }
+
+    /**
+     This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
+     This function should be overwritten by the derived class.
+     
+     @param inputMatrix: the inputMatrix that should be processed
+     @return returns true if the data was processed, false otherwise (the base class always returns false)
+     */
+    virtual bool predict(const MatrixFloat &inputMatrix){ return computeFeatures(inputMatrix); }
 
     /**
      This function is called by the GestureRecognitionPipeline when any new input data needs to be processed (during the prediction phase for example).
@@ -95,14 +114,21 @@ public:
      
      @return returns true if the feature extraction module has been initialized succesfully, false otherwise
      */
-    bool getInitialized() const;
+    virtual bool getInitialized() const;
     
     /**
      Returns true if the feature extraction module has just processed the last input vector and a new output feature vector is ready.
      
      @return returns true if the feature extraction module has just processed the last input vector and a new output feature vector is ready, false otherwise
      */
-    bool getFeatureDataReady() const;
+    virtual bool getFeatureDataReady() const;
+
+    /**
+     Returns true if the feature extraction module can be trained.  If true, then the module needs to be trained before it can be used.
+     
+     @return returns true if the feature extraction module can be trained, false otherwise
+     */
+    virtual bool getIsTrainable() const;
     
     /**
      Returns the current feature vector.
@@ -129,7 +155,7 @@ public:
     @param id: the name of the feature extraction module
     @return a pointer to the new instance of the feature extraction
     */
-    static FeatureExtraction* create( const std::string &id );
+    static FeatureExtraction* create(const std::string &id);
     
     /**
      Creates a new feature extraction instance based on the current featureExtractionType string value.
@@ -141,9 +167,9 @@ public:
     using MLBase::save;
     using MLBase::load;
 
-    GRT_DEPRECATED_MSG( "createNewInstance is deprecated, use create() instead.", FeatureExtraction* createNewInstance() const );
-    GRT_DEPRECATED_MSG( "createInstanceFromString(id) is deprecated, use create(id) instead.", static FeatureExtraction* createInstanceFromString( const std::string &id ) );
-    GRT_DEPRECATED_MSG( "getFeatureExtractionType is deprecated, use getId() instead", std::string getFeatureExtractionType() const );
+    GRT_DEPRECATED_MSG("createNewInstance is deprecated, use create() instead.", FeatureExtraction* createNewInstance() const);
+    GRT_DEPRECATED_MSG("createInstanceFromString(id) is deprecated, use create(id) instead.", static FeatureExtraction* createInstanceFromString(const std::string &id));
+    GRT_DEPRECATED_MSG("getFeatureExtractionType is deprecated, use getId() instead", std::string getFeatureExtractionType() const);
     
 protected:
     /**
@@ -158,18 +184,19 @@ protected:
      
      @return returns true if the base settings were saved, false otherwise
      */
-    bool saveFeatureExtractionSettingsToFile( std::fstream &file ) const;
+    bool saveFeatureExtractionSettingsToFile(std::fstream &file) const;
     
     /**
      Loads the core base settings from a file.
      
      @return returns true if the base settings were loaded, false otherwise
      */
-    bool loadFeatureExtractionSettingsFromFile( std::fstream &file );
+    bool loadFeatureExtractionSettingsFromFile(std::fstream &file);
 
     std::string featureExtractionType;
-    bool initialized;
-    bool featureDataReady;
+    bool initialized;  // Flag to indicate
+    bool featureDataReady;  // Flag to indicate the feature data has been computed and can be consumed by the next stages in the pipeline
+    bool isTrainable;  // Flag for modules that can be trained, if true then the module needs to be trained before it can be used
     VectorFloat featureVector;
     MatrixFloat featureMatrix;
     
@@ -189,7 +216,7 @@ template< typename T >  FeatureExtraction *createNewFeatureExtractionModule() { 
 template< typename T > 
 class RegisterFeatureExtractionModule : FeatureExtraction { 
 public:
-    RegisterFeatureExtractionModule( const std::string &newModuleId ) { 
+    RegisterFeatureExtractionModule(const std::string &newModuleId) { 
         getMap()->insert( std::pair< std::string, FeatureExtraction*(*)()>(newModuleId, &createNewFeatureExtractionModule< T > ) );
     }
 };

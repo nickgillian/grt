@@ -28,149 +28,150 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-PrincipalComponentAnalysis::PrincipalComponentAnalysis() : MLBase("PrincipalComponentAnalysis")
-{
-    trained = false;
-    normData = false;
-    numInputDimensions = 0;
-    numPrincipalComponents = 0;
-    maxVariance = 0;
+PrincipalComponentAnalysis::PrincipalComponentAnalysis() : MLBase("PrincipalComponentAnalysis") {
+  trained = false;
+  normData = false;
+  numInputDimensions = 0;
+  numPrincipalComponents = 0;
+  maxVariance = 0;
 }
 
-PrincipalComponentAnalysis::~PrincipalComponentAnalysis(){
-    
+PrincipalComponentAnalysis::~PrincipalComponentAnalysis() {}
+
+bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixFloat &data, const double maxVariance, const bool normData) {
+  trained = false;
+  this->maxVariance = maxVariance;
+  this->normData = normData;
+  return computeFeatureVector_(data,MAX_VARIANCE);
 }
 
-bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixFloat &data,double maxVariance,bool normData){
-    trained = false;
-    this->maxVariance = maxVariance;
-    this->normData = normData;
-    return computeFeatureVector_(data,MAX_VARIANCE);
+bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixFloat &data, const UINT numPrincipalComponents, const bool normData) {
+  trained = false;
+  if (numPrincipalComponents > data.getNumCols()) {
+    errorLog << __GRT_LOG__ << " The number of principal components (";
+    errorLog << numPrincipalComponents << ") is greater than the number of columns in your data (" << data.getNumCols() << ")" << std::endl;
+    return false;
+  }
+  this->numPrincipalComponents = numPrincipalComponents;
+  this->normData = normData;
+  return computeFeatureVector_(data, MAX_NUM_PCS);
 }
 
-bool PrincipalComponentAnalysis::computeFeatureVector(const MatrixFloat &data,UINT numPrincipalComponents,bool normData){
-    trained = false;
-    if( numPrincipalComponents > data.getNumCols() ){
-        errorLog << __GRT_LOG__ << " The number of principal components (";
-        errorLog << numPrincipalComponents << ") is greater than the number of columns in your data (" << data.getNumCols() << ")" << std::endl;
-        return false;
-    }
-    this->numPrincipalComponents = numPrincipalComponents;
-    this->normData = normData;
-    return computeFeatureVector_(data,MAX_NUM_PCS);
-}
-
-bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data,const UINT analysisMode){
+bool PrincipalComponentAnalysis::computeFeatureVector_(const MatrixFloat &data, const UINT analysisMode) {
     
-    trained = false;
-    const UINT M = data.getNumRows();
-    const UINT N = data.getNumCols();
-    this->numInputDimensions = N;
-    
-    MatrixFloat msData( M, N );
-    
-    //Compute the mean and standard deviation of the input data
-    mean = data.getMean();
-    stdDev = data.getStdDev();
-    
-    if( normData ){
-        //Normalize the data
-        for(UINT i=0; i<M; i++)
-        for(UINT j=0; j<N; j++)
+  trained = false;
+  const UINT M = data.getNumRows();
+  const UINT N = data.getNumCols();
+  this->numInputDimensions = N;
+  
+  MatrixFloat msData(M, N);  // Temporary matrix for mean subtracted data
+  
+  //Compute the mean and standard deviation of the input data
+  mean = data.getMean();
+  stdDev = data.getStdDev();
+  
+  if (normData) {
+    // Normalize the data
+    for (UINT i=0; i<M; i++) {
+      for(UINT j=0; j<N; j++) {
         msData[i][j] = (data[i][j]-mean[j]) / stdDev[j];
-        
-    }else{
-        //Mean Subtract Data
-        for(UINT i=0; i<M; i++)
-        for(UINT j=0; j<N; j++)
+      }
+    }
+  }else{
+    //Mean Subtract Data
+    for(UINT i=0; i<M; i++) {
+      for(UINT j=0; j<N; j++) {
         msData[i][j] = data[i][j] - mean[j];
+      }
     }
-    
-    //Get the covariance matrix
-    MatrixFloat cov = msData.getCovarianceMatrix();
-    
-    //Use Eigen Value Decomposition to find eigenvectors of the covariance matrix
-    EigenvalueDecomposition eig;
-    
-    if( !eig.decompose( cov ) ){
-        mean.clear();
-        stdDev.clear();
-        componentWeights.clear();
-        sortedEigenvalues.clear();
-        eigenvectors.clear();
-        errorLog << __GRT_LOG__ << " Failed to decompose input matrix!" << std::endl;
-        return false;
-    }
-    
-    //Get the eigenvectors and eigenvalues
-    eigenvectors = eig.getEigenvectors();
-    eigenvalues = eig.getRealEigenvalues();
-    
-    //Any eigenvalues less than 0 are not worth anything so set to 0
-    for(UINT i=0; i<eigenvalues.size(); i++){
-        if( eigenvalues[i] < 0 )
-        eigenvalues[i] = 0;
-    }
-    
-    //Sort the eigenvalues and compute the component weights
-    Float sum = 0;
-    UINT componentIndex = 0;
+  }
+  
+  // Get the covariance matrix
+  const MatrixFloat cov = msData.getCovarianceMatrix();
+  
+  // Use Eigen Value Decomposition to find eigenvectors of the covariance matrix
+  EigenvalueDecomposition eig;
+  
+  if (!eig.decompose(cov)) {
+    mean.clear();
+    stdDev.clear();
+    componentWeights.clear();
     sortedEigenvalues.clear();
-    componentWeights.resize(N,0);
-    
-    while( true ){
-        Float maxValue = 0;
-        UINT index = 0;
-        for(UINT i=0; i<eigenvalues.size(); i++){
-            if( eigenvalues[i] > maxValue ){
-                maxValue = eigenvalues[i];
-                index = i;
-            }
-        }
-        if( maxValue == 0 || componentIndex >= eigenvalues.size() ){
-            break;
-        }
-        sortedEigenvalues.push_back( IndexedDouble(index,maxValue) );
-        componentWeights[ componentIndex++ ] = eigenvalues[ index ];
-        sum += eigenvalues[ index ];
-        eigenvalues[ index ] = 0; //Set the maxValue to zero so it won't be used again
+    eigenvectors.clear();
+    errorLog << __GRT_LOG__ << " Failed to decompose input matrix!" << std::endl;
+    return false;
+  }
+  
+  //Get the eigenvectors and eigenvalues
+  eigenvectors = eig.getEigenvectors();
+  eigenvalues = eig.getRealEigenvalues();
+  
+  //Any eigenvalues less than 0 are not worth anything so set to 0
+  for (UINT i=0; i<eigenvalues.getSize(); i++) {
+    if( eigenvalues[i] < 0 )
+      eigenvalues[i] = 0;
+  }
+  
+  //Sort the eigenvalues and compute the component weights
+  Float sum = 0;
+  UINT componentIndex = 0;
+  sortedEigenvalues.clear();
+  componentWeights.resize(N,0);
+  
+  while (true) {
+    Float maxValue = 0;
+    UINT index = 0;
+    for (UINT i=0; i<eigenvalues.getSize(); i++) {
+      if (eigenvalues[i] > maxValue) {
+        maxValue = eigenvalues[i];
+        index = i;
+      }
     }
-    
-    Float cumulativeVariance = 0;
-    switch( analysisMode ){
-        case MAX_VARIANCE:
-        //Normalize the component weights and workout how many components we need to use to reach the maxVariance
-        numPrincipalComponents = 0;
-        for(UINT k=0; k<N; k++){
-            componentWeights[k] /= sum;
-            cumulativeVariance += componentWeights[k];
-            if( cumulativeVariance >= maxVariance && numPrincipalComponents==0 ){
-                numPrincipalComponents = k+1;
-            }
-        }
-        break;
-        case MAX_NUM_PCS:
-        //Normalize the component weights and compute the maxVariance
-        maxVariance = 0;
-        for(UINT k=0; k<N; k++){
-            componentWeights[k] /= sum;
-            if( k < numPrincipalComponents ){
-                maxVariance += componentWeights[k];
-            }
-        }
-        break;
-        default:
-        errorLog << __GRT_LOG__ << " Unknown analysis mode!" << std::endl;
-        break;
+    if (maxValue == 0 || componentIndex >= eigenvalues.getSize()) {
+      break;
     }
-    
-    //Get the raw eigenvalues (encase the user asks for these later)
-    eigenvalues = eig.getRealEigenvalues();
-    
-    //Flag that the features have been computed
-    trained = true;
-    
-    return true;
+    sortedEigenvalues.push_back(IndexedDouble(index,maxValue));
+    componentWeights[componentIndex++] = eigenvalues[index];
+    sum += eigenvalues[index];
+    eigenvalues[index] = 0; //Set the maxValue to zero so it won't be used again
+  }
+  
+  Float cumulativeVariance = 0;
+  switch (analysisMode) {
+    case MAX_VARIANCE:
+      //Normalize the component weights and workout how many components we need to use to reach the maxVariance
+      numPrincipalComponents = 0;
+      for (UINT k=0; k<N; k++) {
+        componentWeights[k] /= sum;
+        cumulativeVariance += componentWeights[k];
+        if (cumulativeVariance >= maxVariance && numPrincipalComponents==0) {
+          numPrincipalComponents = k+1;
+        }
+    }
+    break;
+    case MAX_NUM_PCS:
+      //Normalize the component weights and compute the maxVariance
+      maxVariance = 0;
+      for (UINT k=0; k<N; k++) {
+        componentWeights[k] /= sum;
+        if (k < numPrincipalComponents) {
+          maxVariance += componentWeights[k];
+        }
+    }
+    break;
+    default:
+      errorLog << __GRT_LOG__ << " Unknown analysis mode!" << std::endl;
+      return false;
+    break;
+  }
+  
+  //Get the raw eigenvalues (encase the user asks for these later)
+  eigenvalues = eig.getRealEigenvalues();
+  
+  //Flag that the features have been computed
+  trained = true;
+  
+  return true;
 }
 
 bool PrincipalComponentAnalysis::project(const MatrixFloat &data,MatrixFloat &prjData){

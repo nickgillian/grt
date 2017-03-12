@@ -1,71 +1,97 @@
 /*
- This example demonstrates how to use the PrincipalComponentAnalysis module.
+ This example demonstrates how to use the PCA Feature Extraction module.
+
+ The PCA Feature Extraction module provides an interface for the GRT PrincipalComponentAnalysis algorithm, 
+ enabling the PrincipalComponentAnalysis algorithm to be used within a Gesture Recognition Pipeline.
 
  This example shows how to:
- - Create a new matrix and fill it with data.
- - Create a new PrincipalComponentAnalysis instance.
- - Run the PCA algorithm on the test data to create the PCA features.
- - Project the data onto the new principal subspace
- - Print out some useful info about the PCA features.
+ - Load an existing classification data from a file
+ - Create a new PCA feature extraction instance.
+ - Train the PCA model.
+ - Project the data through the trained feature extraction model.
+ - Print out the results.
+
+ Run this example with one argument, pointing to the input classification data file you want to load. 
+ For example, running this from the grt build directory: ./PCAExample ../../data/IrisData.grt
  */
 
 #include "GRT.h"
 using namespace GRT;
-using namespace std;
 
-int main (int argc, const char * argv[])
-{
-    //Create some input data for the PCA algorithm - this data comes from the Matlab PCA example
-    MatrixFloat data(13,4);
+int main (int argc, const char * argv[]) {
 
-    data[0][0] = 7; data[0][1] = 26; data[0][2] = 6; data[0][3] = 60;
-    data[1][0] = 1; data[1][1] = 29; data[1][2] = 15; data[1][3] = 52;
-    data[2][0] = 11; data[2][1] = 56; data[2][2] = 8; data[2][3] = 20;
-    data[3][0] = 11; data[3][1] = 31; data[3][2] = 8; data[3][3] = 47;
-    data[4][0] = 7; data[4][1] = 52; data[4][2] = 6; data[4][3] = 33;
-    data[5][0] = 11; data[5][1] = 55; data[5][2] = 9; data[5][3] = 22;
-    data[6][0] = 3; data[6][1] = 71; data[6][2] = 17; data[6][3] = 6;
-    data[7][0] = 1; data[7][1] = 31; data[7][2] = 22; data[7][3] = 44;
-    data[8][0] = 2; data[8][1] = 54; data[8][2] = 18; data[8][3] = 22;
-    data[9][0] = 21; data[9][1] = 47; data[9][2] = 4; data[9][3] = 26;
-    data[10][0] = 1; data[10][1] = 40; data[10][2] = 23; data[10][3] = 34;
-    data[11][0] = 11; data[11][1] = 66; data[11][2] = 9; data[11][3] = 12;
-    data[12][0] = 10; data[12][1] = 68; data[12][2] = 8; data[12][3] = 12;
+  InfoLog info("[PCA Example]");
 
-    //Print the input data
-    data.print("Input Data:");
+  // Parse the filename from the input
+  if (argc != 2) {
+    info << "Failed to parse filename from input, run this example with the path to the file you want to parse." << std::endl;
+    return EXIT_FAILURE;
+  }
+  const std::string filename = argv[1];
 
-    //Create a new principal component analysis instance
-    PrincipalComponentAnalysis pca;
+  ClassificationData data;
 
-    //Run pca on the input data, setting the maximum variance value to 95% of the variance
-    if( !pca.computeFeatureVector( data, 0.95 ) ){
-         cout << "ERROR: Failed to compute feature vector!\n";
-         return EXIT_FAILURE;
-     }
+  info << "Loading data..." << std::endl;
+  if (!data.load(filename)) {
+    info << "Failed to load data from file: " << filename << std::endl;
+    return EXIT_FAILURE;
+  }
 
-    //Get the number of principal components
-    UINT numPrincipalComponents = pca.getNumPrincipalComponents();
-    cout << "Number of Principal Components: " << numPrincipalComponents << endl;
+  const UINT numSamples = data.getNumSamples();
+  const UINT numInputDimensions = data.getNumDimensions();
+  const UINT numOutputDimensions = 2;  // This is the number of principal components
 
-    //Project the original data onto the principal subspace
-    MatrixFloat prjData;
-    if( !pca.project( data, prjData ) ){
-        cout << "ERROR: Failed to project data!\n";
-        return EXIT_FAILURE;
-     }
+  info << "Data loaded. Num Samples: " << numSamples;
+  info << " Num Input Dimensions: " << numInputDimensions;
+  info << " Num Output Dimensions: " << numOutputDimensions << std::endl;
 
-    //Print out the pca info
-    //Print our
-    pca.print("PCA Info:");
+  // Create an instance of the PCA feature extraction module
+  PCA pca(numInputDimensions, numOutputDimensions);
 
-    //Print the projected data
-    cout << "ProjectedData:\n";
-    for(UINT i=0; i<prjData.getNumRows(); i++){
-        for(UINT j=0; j<prjData.getNumCols(); j++){
-                cout << prjData[i][j] << "\t";
-        }cout << endl;
+  // Train the PCA model
+  info << "Training PCA model..." << std::endl;
+  if (!pca.train(data)) {
+    info << "Failed to train PCA model!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  info << "Model trained." << std::endl;
+
+  // Get the internal PrincipalComponentAnalysis instance and plot the trained mean vector
+  PrincipalComponentAnalysis *pcomp = pca.getPCA();
+  VectorFloat meanVector = pcomp->getMeanVector();
+  info << "pca mean vector: ";
+  for (UINT j=0; j<meanVector.getSize(); j++) {
+    info << meanVector[j] << " ";
+  }
+  info << std::endl;
+
+  // Project the data through the feature extraction module
+  for (UINT i=0; i<numSamples; i++) {
+
+    info << "label: " << data[i].getClassLabel();
+
+    // Print the input data
+    const VectorFloat input = data[i].getSample();
+    info << " input: ";
+    for (UINT j=0; j<input.getSize(); j++) {
+      info << input[j] << " ";
     }
 
-    return EXIT_SUCCESS;
+    // Project the input through the feature extraction module
+    if (!pca.predict(input)) {
+      info << "Failed to predict sample: " << i << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    // Print the output feature data
+    const VectorFloat &features = pca.getFeatureVector();
+    info << " output: ";
+    for (UINT j=0; j<features.getSize(); j++) {
+      info << features[j] << " ";
+    }
+    info << std::endl;
+  }
+
+  return EXIT_SUCCESS;
 }
