@@ -112,6 +112,7 @@
 #include "FeatureExtractionModules/RBMQuantizer/RBMQuantizer.h"
 #include "FeatureExtractionModules/SOMQuantizer/SOMQuantizer.h"
 #include "FeatureExtractionModules/TimeseriesBuffer/TimeseriesBuffer.h"
+ #include "FeatureExtractionModules/PCA/PCA.h"
 
 //Include the PostProcessing Modules
 #include "PostProcessingModules/ClassLabelFilter.h"

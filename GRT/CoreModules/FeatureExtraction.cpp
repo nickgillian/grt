@@ -27,154 +27,157 @@ FeatureExtraction::StringFeatureExtractionMap* FeatureExtraction::stringFeatureE
 UINT FeatureExtraction::numFeatureExtractionInstances = 0;
 
 std::string FeatureExtraction::getFeatureExtractionType() const { return MLBase::getId(); } //Legacy
-FeatureExtraction* FeatureExtraction::createInstanceFromString( const std::string &id ){ return create(id); }
+FeatureExtraction* FeatureExtraction::createInstanceFromString(const std::string &id){ return create(id); }
 FeatureExtraction* FeatureExtraction::createNewInstance() const{ return create(); }
     
-FeatureExtraction* FeatureExtraction::create( const std::string &id ){
-    
-    StringFeatureExtractionMap::iterator iter = getMap()->find( id );
-    if( iter == getMap()->end() ){
-        return NULL;
-    }
-    return iter->second();
+FeatureExtraction* FeatureExtraction::create(const std::string &id){
+  StringFeatureExtractionMap::iterator iter = getMap()->find(id);
+  if (iter == getMap()->end()) {
+    return NULL;
+  }
+  return iter->second();
 }
     
 FeatureExtraction* FeatureExtraction::create() const{
-    return create( MLBase::getId() );
+  return create( MLBase::getId() );
 }
     
-FeatureExtraction::FeatureExtraction( const std::string id ) : MLBase( id, MLBase::FEATURE_EXTRACTION )
-{
-    initialized = false; 
-    featureDataReady = false;
-    numInputDimensions = 0;
-    numOutputDimensions = 0;
-    inputType = DATA_TYPE_VECTOR;
-    outputType = DATA_TYPE_VECTOR;
-    numFeatureExtractionInstances++;
+FeatureExtraction::FeatureExtraction(const std::string id, const bool isTrainable) : MLBase(id, MLBase::FEATURE_EXTRACTION) {
+  this->initialized = false; 
+  this->featureDataReady = false;
+  this->isTrainable = isTrainable;
+  this->numInputDimensions = 0;
+  this->numOutputDimensions = 0;
+  this->inputType = DATA_TYPE_VECTOR;
+  this->outputType = DATA_TYPE_VECTOR;
+  this->numFeatureExtractionInstances++;
 }
     
-FeatureExtraction::~FeatureExtraction(){
-    if( --numFeatureExtractionInstances == 0 ){
-        delete stringFeatureExtractionMap;
-        stringFeatureExtractionMap = NULL;
-    }
+FeatureExtraction::~FeatureExtraction() {
+  if (--numFeatureExtractionInstances == 0) {
+    delete stringFeatureExtractionMap;
+    stringFeatureExtractionMap = NULL;
+  }
 }
 
 bool FeatureExtraction::copyBaseVariables(const FeatureExtraction *featureExtractionModule){
     
-    if( featureExtractionModule == NULL ){
-        errorLog << "copyBaseVariables(const FeatureExtraction *featureExtractionModule) - featureExtractionModule pointer is NULL!" << std::endl;
-        return false;
-    }
-    
-    if( !this->copyMLBaseVariables( featureExtractionModule ) ){
-        return false;
-    }
-    
-    this->featureExtractionType = featureExtractionModule->featureExtractionType;
-    this->initialized = featureExtractionModule->initialized;
-    this->featureDataReady = featureExtractionModule->featureDataReady;
-    this->numInputDimensions = featureExtractionModule->numInputDimensions;
-    this->numOutputDimensions = featureExtractionModule->numOutputDimensions;
-    this->featureVector = featureExtractionModule->featureVector;
-    this->featureMatrix = featureExtractionModule->featureMatrix;
+  if (featureExtractionModule == NULL) {
+    errorLog << __GRT_LOG__ << " FeatureExtractionModule pointer is NULL!" << std::endl;
+    return false;
+  }
+  
+  if (!this->copyMLBaseVariables(featureExtractionModule)) {
+    return false;
+  }
+  
+  this->featureExtractionType = featureExtractionModule->featureExtractionType;
+  this->initialized = featureExtractionModule->initialized;
+  this->featureDataReady = featureExtractionModule->featureDataReady;
+  this->isTrainable = featureExtractionModule->isTrainable;
+  this->numInputDimensions = featureExtractionModule->numInputDimensions;
+  this->numOutputDimensions = featureExtractionModule->numOutputDimensions;
+  this->featureVector = featureExtractionModule->featureVector;
+  this->featureMatrix = featureExtractionModule->featureMatrix;
 
-    return true;
+  return true;
 }
     
-bool FeatureExtraction::init(){
+bool FeatureExtraction::init() {
     
-    if( numOutputDimensions == 0 ){
-        errorLog << "init() - Failed to init module, the number of output dimensions is zero!" << std::endl;
-        initialized = false;
-        return false;
-    }
-    
-    //Flag that the feature data has not been computed yet
-    featureDataReady = false;
-    
-    //Resize the feature vector
-    featureVector.resize(numOutputDimensions,0);
-    
-    //Flag the module has been initialized
-    initialized = true;
-    
-    return true;
+  if (numOutputDimensions == 0) {
+    errorLog << __GRT_LOG__ << " Failed to init module, the number of output dimensions is zero!" << std::endl;
+    initialized = false;
+    return false;
+  }
+  
+  //Flag that the feature data has not been computed yet
+  featureDataReady = false;
+  
+  //Resize the feature vector
+  featureVector.resize(numOutputDimensions, 0);
+  
+  //Flag the module has been initialized
+  initialized = true;
+  
+  return true;
 }
     
 bool FeatureExtraction::clear(){
     
-    //Clear the base class
-    MLBase::clear();
-    
-    initialized = false;
-    featureDataReady = false;
-    featureVector.clear();
-    
-    return true;
+  //Clear the base class
+  MLBase::clear();
+  
+  initialized = false;
+  featureDataReady = false;
+  featureVector.clear();
+  
+  return true;
 }
     
-bool FeatureExtraction::saveFeatureExtractionSettingsToFile( std::fstream &file ) const{
+bool FeatureExtraction::saveFeatureExtractionSettingsToFile(std::fstream &file) const {
     
-    if( !file.is_open() ){
-        errorLog << "saveFeatureExtractionSettingsToFile(fstream &file) - The file is not open!" << std::endl;
-        return false;
-    }
-    
-    if( !MLBase::saveBaseSettingsToFile( file ) ) return false;
-    
-    file << "Initialized: " << initialized << std::endl;
-    
-    return true;
+  if (!file.is_open()) {
+    errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
+    return false;
+  }
+  
+  if (!MLBase::saveBaseSettingsToFile(file)) return false;
+  
+  file << "Initialized: " << initialized << std::endl;
+  
+  return true;
 }
 
-bool FeatureExtraction::loadFeatureExtractionSettingsFromFile( std::fstream &file ){
+bool FeatureExtraction::loadFeatureExtractionSettingsFromFile(std::fstream &file) {
     
-    if( !file.is_open() ){
-        errorLog << "loadFeatureExtractionSettingsFromFile(fstream &file) - The file is not open!" << std::endl;
-        return false;
-    }
-    
-    //Try and load the base settings from the file
-    if( !MLBase::loadBaseSettingsFromFile( file ) ){
-        return false;
-    }
-    
-    std::string word;
-    
-    //Load if the filter has been initialized
-    file >> word;
-    if( word != "Initialized:" ){
-        errorLog << "loadPreProcessingSettingsFromFile(fstream &file) - Failed to read Initialized header!" << std::endl;
-        clear();
-        return false;
-    }
-    file >> initialized;
-    
-    //If the module has been initalized then call the init function to setup the feature data vector
-    if( initialized ){
-        return init();
-    }
-    
-    return true;
+  if (!file.is_open()) {
+    errorLog << __GRT_LOG__ << " The file is not open!" << std::endl;
+    return false;
+  }
+
+  // Try and load the base settings from the file
+  if (!MLBase::loadBaseSettingsFromFile(file)) {
+    return false;
+  }
+
+  std::string word;
+
+  // Load if the filter has been initialized
+  file >> word;
+  if (word != "Initialized:") {
+    errorLog << __GRT_LOG__ << " Failed to read Initialized header!" << std::endl;
+    clear();
+    return false;
+  }
+  file >> initialized;
+
+  // If the module has been initalized then call the init function to setup the feature data vector
+  if (initialized) {
+    return init();
+  }
+
+  return true;
 }
 
 bool FeatureExtraction::getInitialized() const{ 
-    return initialized; 
+  return initialized; 
 }
     
 bool FeatureExtraction::getFeatureDataReady() const{
-    return featureDataReady;
+  return featureDataReady;
+}
+
+bool FeatureExtraction::getIsTrainable() const {
+  return isTrainable;
 }
 
 const VectorFloat& FeatureExtraction::getFeatureVector() const{ 
-    return featureVector; 
+  return featureVector; 
 }
 
 const MatrixFloat& FeatureExtraction::getFeatureMatrix() const {
-    return featureMatrix;
+  return featureMatrix;
 }
 
 GRT_END_NAMESPACE
-
