@@ -23,7 +23,7 @@ Key things to know about the GRT:
   * **train( ... )**: uses the input data (...) to train a new model that can then be used for real-time prediction
   * **save( ... )**: saves a model or dataset to a file.  The file format can be a custom GRT file (.grt) or a CSV file (.csv)
   * **load( ... )**: loads a pre-trained model or dataset from a file. The file format can be a custom GRT file (.grt) or a CSV file (.csv)
-  * **reset()**: resets a module, for example resetting a filter module would clear the values in it's history buffer and sets them to zero
+  * **reset()**: resets a module, for example resetting a filter module would clear the values in its history buffer and sets them to zero
   * **clear()**: clears a module, removing all pre-trained models, weights, etc.. For example, clearing a filter module would delete the filter coefficients, history buffer, etc.
 * Functions with an underscore, such as **train_( ... )**, pass the input arguments as references and are therefore more efficient to use with very large datasets
 
@@ -38,7 +38,7 @@ Key things to know about the GRT:
 
 ##Core Algorithms
 The GRT supports a wide number of supervised and unsupervised machine learning algorithms for classification, regression, and clustering, including:
-* **Classification:** [Adaboost](https://github.com/nickgillian/grt/wiki/adaboost), [Decision Tree](https://github.com/nickgillian/grt/wiki/decision_tree), [Dynamic Time Warping](https://github.com/nickgillian/grt/wiki/dtw), [Gaussian Mixture Models](https://github.com/nickgillian/grt/wiki/gmm), [Hidden Markov Models](https://github.com/nickgillian/grt/wiki/hmm_discrete), [k-nearest neighbor](https://github.com/nickgillian/grt/wiki/knn), [Naive Bayes](https://github.com/nickgillian/grt/wiki/anbc), [Random Forests](https://github.com/nickgillian/grt/wiki/random_forests), [Support Vector Machine](https://github.com/nickgillian/grt/wiki/svm), [Softmax](https://github.com/nickgillian/grt/wiki/softmax), and [more...](https://github.com/nickgillian/grt/wiki/reference#classifiers)
+* **Classification:** [Adaboost](https://github.com/nickgillian/grt/wiki/adaboost), [Decision Tree](https://github.com/nickgillian/grt/wiki/decision_tree), [Dynamic Time Warping](https://github.com/nickgillian/grt/wiki/dtw), [Gaussian Mixture Models](https://github.com/nickgillian/grt/wiki/gmm), [Hidden Markov Models](http://www.nickgillian.com/wiki/pmwiki.php/GRT/HMM), [k-nearest neighbor](https://github.com/nickgillian/grt/wiki/knn), [Naive Bayes](https://github.com/nickgillian/grt/wiki/anbc), [Random Forests](https://github.com/nickgillian/grt/wiki/random_forests), [Support Vector Machine](https://github.com/nickgillian/grt/wiki/svm), [Softmax](https://github.com/nickgillian/grt/wiki/softmax), and [more...](https://github.com/nickgillian/grt/wiki/reference#classifiers)
 
 * **Regression:** [Linear Regression](https://github.com/nickgillian/grt/wiki/linear_regression), [Logistic Regression](https://github.com/nickgillian/grt/wiki/logistic_regression), [Neural Networks (Multilayer Perceptron)](https://github.com/nickgillian/grt/wiki/mlp)
 
