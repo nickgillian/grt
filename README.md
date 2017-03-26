@@ -27,7 +27,7 @@ Key things to know about the GRT:
   * **clear()**: clears a module, removing all pre-trained models, weights, etc.. For example, clearing a filter module would delete the filter coefficients, history buffer, etc.
 * Functions with an underscore, such as **train_( ... )**, pass the input arguments as references and are therefore more efficient to use with very large datasets
 
-##Core Resources
+## Core Resources
 * GRT Website: [http://www.nickgillian.com/grt](http://www.nickgillian.com/grt)
 * GRT Wiki: [https://github.com/nickgillian/grt/wiki](https://github.com/nickgillian/grt/wiki)
 * GRT Forum: [http://www.nickgillian.com/forum](http://www.nickgillian.com/forum)
@@ -36,7 +36,7 @@ Key things to know about the GRT:
 * GRT GUI Download: [http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download](http://www.nickgillian.com/wiki/pmwiki.php/GRT/Download)
 * GRT Journal of Machine Learning Research paper: [grt.pdf](http://jmlr.csail.mit.edu/papers/volume15/gillian14a/gillian14a.pdf)
 
-##Core Algorithms
+## Core Algorithms
 The GRT supports a wide number of supervised and unsupervised machine learning algorithms for classification, regression, and clustering, including:
 * **Classification:** [Adaboost](https://github.com/nickgillian/grt/wiki/adaboost), [Decision Tree](https://github.com/nickgillian/grt/wiki/decision_tree), [Dynamic Time Warping](https://github.com/nickgillian/grt/wiki/dtw), [Gaussian Mixture Models](https://github.com/nickgillian/grt/wiki/gmm), [Hidden Markov Models](http://www.nickgillian.com/wiki/pmwiki.php/GRT/HMM), [k-nearest neighbor](https://github.com/nickgillian/grt/wiki/knn), [Naive Bayes](https://github.com/nickgillian/grt/wiki/anbc), [Random Forests](https://github.com/nickgillian/grt/wiki/random_forests), [Support Vector Machine](https://github.com/nickgillian/grt/wiki/svm), [Softmax](https://github.com/nickgillian/grt/wiki/softmax), and [more...](https://github.com/nickgillian/grt/wiki/reference#classifiers)
 
@@ -48,7 +48,7 @@ In addition to the machine learning algorithms above, the toolkit also includes 
 
 See the [wiki](https://github.com/nickgillian/grt/wiki) for more details.
 
-##GRT Extensions
+## GRT Extensions
 There are now several extensions and third party applications that use the GRT as the backend machine learning system, these include:
 
 * [ofGrt](https://github.com/nickgillian/ofxGrt): an extension of the GRT for [openFrameworks](http://openframeworks.cc)
@@ -56,7 +56,7 @@ There are now several extensions and third party applications that use the GRT a
 * [ESP](https://github.com/damellis/ESP), by [David A. Mellis](https://github.com/damellis) and [Ben Zhang](https://www.benzhang.name): An interactive application that aims to help novices make sophisticated use of sensors in interactive projects through the application of machine learning.  The system is built using [openFrameworks](http://openframeworks.cc) and has several interesting examples built for [Arduino sensor modules](https://create.arduino.cc/projecthub/mellis/gesture-recognition-using-accelerometer-and-esp-71faa1) and more generic input data streams (e.g., network data).
 * [Android Port](http://hollyhook.de/wp/grt-for-android): you can find a specific Android port of the GRT [here](http://hollyhook.de/wp/grt-for-android).
 
-##GRT Architecture
+## GRT Architecture
 To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set 
 of core **modules** and a central **gesture recognition pipeline**.
 
@@ -76,7 +76,7 @@ The toolkit's source code is structured as following:
 * **RegressionModules:** Contains all the GRT regression modules, such as MLP Neural Networks, Linear Regression, and Logistic Regression.
 * **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random and Matrix.
 
-##Getting Started Example
+## Getting Started Example
 This example demonstrates a few key components of the GRT, such as:
 * how to load a dataset from a file (e.g., a CSV file)
 * how to split a dataset into a training and test dataset
@@ -209,7 +209,7 @@ int main (int argc, const char * argv[])
     return EXIT_SUCCESS;
 }
 ```
-##Tutorials and Examples
+## Tutorials and Examples
 
 You can find a large number of tutorials and examples in the examples folder.  You can also find a
 wide range of examples and references on the main GRT wiki:
@@ -223,15 +223,17 @@ then be directly run from this example directory.  To run any of the examples, o
 
 where *ExampleName* is the name of the example application you want to run.
 
-##Forum
+## Forum
 
-You can find the main GRT forum at: [http://www.nickgillian.com/forum/](http://www.nickgillian.com/forum/)
+Note, at the momemnt the forum server is currently broken, we are working to resolve this.  In the meantime, use github issues and pullrequests.
 
-##Bugs
+You can find the link for the old forum at: [http://www.nickgillian.com/forum/](http://www.nickgillian.com/forum/)
+
+## Bugs
 
 Please submit bugs to the [github bug tracker](https://github.com/nickgillian/grt/issues).
 
-##Contributions
+## Contributions
 
 All contributions are welcome, there are several ways in which users can contribute to the toolkit:
 
@@ -242,7 +244,7 @@ All contributions are welcome, there are several ways in which users can contrib
 
 Please submit [pull requests](https://help.github.com/articles/about-pull-requests/) for any contribution.
 
-##GRT Floating Point Precision
+## GRT Floating Point Precision
 The GRT defaults to double precision floating point values.  The precision of the toolkit is defined by the following **Float** typedef:
 
 ```C++
@@ -251,7 +253,7 @@ typedef double Float; ///<This typedef is used to set floating-point precision t
 
 This can easily be changed to single precision accuracy if needed by modifing the main GRT **Float** typedef value, defined in GRT/Util/GRTTypedefs.h header.
 
-##VectorFloat and MatrixFloat Data Structures
+## VectorFloat and MatrixFloat Data Structures
 The GRT uses two main data structures throughout the toolkit: *Vector* and *Matrix*.  These are templates and can therefore generalize to any C++ class.  The main things to know about these data types are:
 
 - **Vector:** this inherits from the [STL vector class](http://www.cplusplus.com/reference/vector/vector/)
@@ -298,17 +300,17 @@ for(UINT i=0; i<matrix.getNumRows(); i++){
 }
 ```
 
-##Building the GRT
+## Building the GRT
 
 You can find a CMakeLists file in the build folder that you can use to autogenerate a makefile for your machine.
 
 Read the readme file in the build folder to see how to build the GRT as a static library for Linux, OS X, or Windows.
 
-##Installing and using the GRT in your C++ projects
+## Installing and using the GRT in your C++ projects
 
 See the build directory for details on how to build, install, and use the GRT in your C++ projects.
 
-##License
+## License
 
 The Gesture Recognition Toolkit is available under a MIT license.
 
