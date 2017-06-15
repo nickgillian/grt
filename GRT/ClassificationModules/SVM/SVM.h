@@ -46,8 +46,8 @@ the KNN, GMM or ANBC algorithms) might not be able to solve.
 */
 class GRT_API SVM : public Classifier{
 public:
-    enum SVMType{ C_SVC = 0, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };
-    enum KernelType{ LINEAR_KERNEL = 0, POLY_KERNEL, RBF_KERNEL, SIGMOID_KERNEL, PRECOMPUTED_KERNEL };
+    enum SVMType{ C_SVC = 0, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR, NUM_SVM_TYPES };
+    enum KernelType{ LINEAR_KERNEL = 0, POLY_KERNEL, RBF_KERNEL, SIGMOID_KERNEL, PRECOMPUTED_KERNEL, NUM_KERNEL_TYPES };
 
     /**
      Default constructor.

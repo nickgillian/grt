@@ -7,30 +7,29 @@ using namespace GRT;
 // Tests the default c'tor.
 TEST(Vector, DefaultConstructor) {
   Vector< int > vec;
-
   EXPECT_EQ(0, vec.getSize());
 }
 
 // Tests the resize c'tor.
 TEST(Vector, ResizeConstructor) {
 	const UINT size = 100;
-	Vector< int > vec( size );
+	Vector< int > vec(size);
 	EXPECT_EQ(size, vec.getSize());
 }
 
 // Tests the copy c'tor.
 TEST(Vector, CopyConstructor) {
 	const UINT size = 100;
-	Vector< int > vec1( size );
+	Vector< int > vec1(size);
 	EXPECT_EQ(size, vec1.getSize());
-	Vector< int > vec2( vec1 );
+	Vector< int > vec2(vec1);
 	EXPECT_EQ(vec1.getSize(), vec2.getSize());
 }
 
 // Tests the equals operator.
 TEST(Vector, EqualsConstructor) {
 	const UINT size = 100;
-	Vector< int > vec1( size );
+	Vector< int > vec1(size);
 	EXPECT_EQ(size, vec1.getSize());
 	Vector< int > vec2;
 	vec2 = vec1;
