@@ -262,24 +262,25 @@ bool MLP::init(const UINT numInputNeurons,
     
     //Init the neuron memory for each of the layers
     for(UINT i=0; i<numInputNeurons; i++){
-        inputLayer[i].init(1,inputLayerActivationFunction,random); //The input size for each input neuron will always be 1
+        inputLayer[i].init(1, inputLayerActivationFunction, random); //The input size for each input neuron will always be 1
         inputLayer[i].weights[0] = 1.0; //The weights for the input layer should always be 1
         inputLayer[i].bias = 0.0; //The bias for the input layer should always be 0
         inputLayer[i].gamma = gamma;
     }
 
-    const Float hiddenLayerScaleFactor = 1.0/sqrt(numInputNeurons);
-    const Float outputLayerScaleFactor = 1.0/sqrt(numHiddenNeurons);
+    //Use normalized initialization (Glorot and Bengio, 2010) to init the hidden and output layers
+    const Float numIOHidden = numInputNeurons + numHiddenNeurons;
+    const Float numIOOuput = numHiddenNeurons + numOutputNeurons;
+    const Float hiddenLayerScaleFactor = sqrt(6.0/numIOHidden);
+    const Float outputLayerScaleFactor = sqrt(6.0/numIOOuput);
     
     for(UINT i=0; i<numHiddenNeurons; i++){
-        //The number of inputs to a neuron in the output layer will always match the number of input neurons
-        hiddenLayer[i].init(numInputNeurons,hiddenLayerActivationFunction,random,-hiddenLayerScaleFactor,hiddenLayerScaleFactor);
+        hiddenLayer[i].init(numInputNeurons, hiddenLayerActivationFunction, random, -hiddenLayerScaleFactor, hiddenLayerScaleFactor);
         hiddenLayer[i].gamma = gamma;
     }
     
     for(UINT i=0; i<numOutputNeurons; i++){
-        //The number of inputs to a neuron in the output layer will always match the number of hidden neurons
-        outputLayer[i].init(numHiddenNeurons,outputLayerActivationFunction,random,-outputLayerScaleFactor,outputLayerScaleFactor);
+        outputLayer[i].init(numHiddenNeurons, outputLayerActivationFunction, random, -outputLayerScaleFactor, outputLayerScaleFactor);
         outputLayer[i].gamma = gamma;
     }
     
