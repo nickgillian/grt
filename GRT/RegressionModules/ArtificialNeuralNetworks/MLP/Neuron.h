@@ -47,7 +47,7 @@ public:
 
     Neuron& operator=(const Neuron &rhs);
     
-    bool init(const UINT numInputs,const Type actvationFunction,Random &random,const Float minWeightRange = -0.1, const Float maxWeightRange = 0.1,const Float minBiasRange = -0.1,const Float maxBiasRange = 0.1);
+    bool init(const UINT numInputs, const Type actvationFunction, Random &random, const Float minWeightRange = -0.1, const Float maxWeightRange = 0.1, const Float minBiasRange = -0.1, const Float maxBiasRange = 0.1);
     void clear();
     Float fire(const VectorFloat &x);
     Float getDerivative(const Float &y);
