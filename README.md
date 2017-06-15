@@ -103,110 +103,111 @@ You can find several example CSV files and other datasets in the main GRT data d
 using namespace GRT;
 using namespace std;
 
-int main (int argc, const char * argv[])
-{
-    //Parse the training data filename from the command line
-    if( argc != 2 ){
-        cout << "Error: failed to parse data filename from command line. You should run this example with one argument pointing to a data file\n";
-        return EXIT_FAILURE;
+int main (int argc, const char * argv[]) {
+  //Parse the training data filename from the command line
+  if (argc != 2) {
+    cout << "Error: failed to parse data filename from command line. ";
+    cout << "You should run this example with one argument pointing to a data file\n";
+    return EXIT_FAILURE;
+  }
+  const string filename = argv[1];
+
+  //Load some training data from a file
+  ClassificationData trainingData;
+
+  cout << "Loading dataset..." << endl;
+  if (!trainingData.load(filename)) {
+    cout << "ERROR: Failed to load training data from file\n";
+    return EXIT_FAILURE;
+  }
+
+  cout << "Data Loaded" << endl;
+
+  //Print out some stats about the training data
+  trainingData.printStats();
+
+  //Partition the training data into a training dataset and a test dataset. 80 means that 80%
+  //of the data will be used for the training data and 20% will be returned as the test dataset
+  cout << "Splitting data into training/test split..." << endl;
+  ClassificationData testData = trainingData.split(80);
+
+  //Create a new Gesture Recognition Pipeline
+  GestureRecognitionPipeline pipeline;
+
+  //Add a KNN classifier to the pipeline with a K value of 10
+  pipeline << KNN(10);
+
+  //Train the pipeline using the training data
+  cout << "Training model..." << endl;
+  if (!pipeline.train(trainingData)) {
+    cout << "ERROR: Failed to train the pipeline!\n";
+    return EXIT_FAILURE;
+  }
+
+  //Save the pipeline to a file
+  if (!pipeline.save("HelloWorldPipeline.grt")) {
+    cout << "ERROR: Failed to save the pipeline!\n";
+    return EXIT_FAILURE;
+  }
+
+  //Load the pipeline from a file
+  if (!pipeline.load("HelloWorldPipeline.grt")) {
+    cout << "ERROR: Failed to load the pipeline!\n";
+    return EXIT_FAILURE;
+  }
+
+  //Test the pipeline using the test data
+  cout << "Testing model..." << endl;
+  if (!pipeline.test(testData)) {
+    cout << "ERROR: Failed to test the pipeline!\n";
+    return EXIT_FAILURE;
+  }
+
+  //Print some stats about the testing
+  cout << "Pipeline Test Accuracy: " << pipeline.getTestAccuracy() << endl;
+
+  //Manually project the test dataset through the pipeline
+  Float testAccuracy = 0.0;
+  for (UINT i=0; i<testData.getNumSamples(); i++) {
+    pipeline.predict(testData[i].getSample());
+
+    if (testData[i].getClassLabel() == pipeline.getPredictedClassLabel()) {
+      testAccuracy++;
     }
-    const string filename = argv[1];
-
-    //Load some training data from a file
-    ClassificationData trainingData;
-
-    cout << "Loading dataset..." << endl;
-    if( !trainingData.load( filename ) ){
-	   cout << "ERROR: Failed to load training data from file\n";
-	   return EXIT_FAILURE;
-    }
-
-    cout << "Data Loaded" << endl;
-
-    //Print out some stats about the training data
-    trainingData.printStats();
-
-    //Partition the training data into a training dataset and a test dataset. 80 means that 80%
-    //of the data will be used for the training data and 20% will be returned as the test dataset
-    cout << "Splitting data into training/test split..." << endl;
-    ClassificationData testData = trainingData.split( 80 );
-
-    //Create a new Gesture Recognition Pipeline
-    GestureRecognitionPipeline pipeline;
-
-    //Add a Naive Bayes classifier to the pipeline
-    pipeline << ANBC();
-
-    //Train the pipeline using the training data
-    cout << "Training model..." << endl;
-    if( !pipeline.train( trainingData ) ){
-        cout << "ERROR: Failed to train the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-
-    //Save the pipeline to a file
-    if( !pipeline.save( "HelloWorldPipeline.grt" ) ){
-        cout << "ERROR: Failed to save the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-
-    //Load the pipeline from a file
-    if( !pipeline.load( "HelloWorldPipeline.grt" ) ){
-        cout << "ERROR: Failed to load the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-
-    //Test the pipeline using the test data
-    cout << "Testing model..." << endl;
-    if( !pipeline.test( testData ) ){
-        cout << "ERROR: Failed to test the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-
-    //Print some stats about the testing
-    cout << "Pipeline Test Accuracy: " << pipeline.getTestAccuracy() << endl;
-
-    //Manually project the test dataset through the pipeline
-    for(UINT i=0; i<testData.getNumSamples(); i++){
-        pipeline.predict( testData[i].getSample() );
-
-        if( testData[i].getClassLabel() == pipeline.getPredictedClassLabel() ){
-            testAccuracy++;
-        }
-    }
-    cout << "Manual test accuracy: " << testAccuracy / testData.getNumSamples() * 100.0 << endl;
+  }
+  cout << "Manual test accuracy: " << testAccuracy / testData.getNumSamples() * 100.0 << endl;
    
-    //Get the vector of class labels from the pipeline
-    Vector< UINT > classLabels = pipeline.getClassLabels();
+  //Get the vector of class labels from the pipeline
+  Vector< UINT > classLabels = pipeline.getClassLabels();
 
-    //Print out the precision
-    cout << "Precision: ";
-    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        cout << "\t" << pipeline.getTestPrecision( classLabels[k] );
+  //Print out the precision
+  cout << "Precision: ";
+  for (UINT k=0; k<pipeline.getNumClassesInModel(); k++) {
+    cout << "\t" << pipeline.getTestPrecision(classLabels[k]);
+  }cout << endl;
+
+  //Print out the recall
+  cout << "Recall: ";
+  for (UINT k=0; k<pipeline.getNumClassesInModel(); k++) {
+    cout << "\t" << pipeline.getTestRecall(classLabels[k]);
+  }cout << endl;
+
+  //Print out the f-measure
+  cout << "FMeasure: ";
+  for (UINT k=0; k<pipeline.getNumClassesInModel(); k++) {
+    cout << "\t" << pipeline.getTestFMeasure(classLabels[k]);
+  }cout << endl;
+
+  //Print out the confusion matrix
+  MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
+  cout << "ConfusionMatrix: \n";
+  for (UINT i=0; i<confusionMatrix.getNumRows(); i++) {
+    for (UINT j=0; j<confusionMatrix.getNumCols(); j++) {
+      cout << confusionMatrix[i][j] << "\t";
     }cout << endl;
+  }
 
-    //Print out the recall
-    cout << "Recall: ";
-    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-         cout << "\t" << pipeline.getTestRecall( classLabels[k] );
-    }cout << endl;
-
-    //Print out the f-measure
-    cout << "FMeasure: ";
-    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        cout << "\t" << pipeline.getTestFMeasure( classLabels[k] );
-    }cout << endl;
-
-    //Print out the confusion matrix
-    MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
-    cout << "ConfusionMatrix: \n";
-    for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
-        for(UINT j=0; j<confusionMatrix.getNumCols(); j++){
-            cout << confusionMatrix[i][j] << "\t";
-        }cout << endl;
-    }
-
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
 ```
 ## Tutorials and Examples
