@@ -16,7 +16,7 @@ Key things to know about the GRT:
 * The input to the GRT can be any *N*-dimensional floating-point vector - this means you can use the GRT with Cameras, Kinect, Leap Motion, accelerometers, or any other custom sensor you might have built
 * The toolkit defines a generic [Float](#grt-floating-point-precision) type, this defaults to double precision float, but can easily be changed to single precision via the main GRT Typedefs header
 * The precision of the GRT [VectorFloat](#vectorfloat-and-matrixfloat-data-structures) and [MatrixFloat](#vectorfloat-and-matrixfloat-data-structures) classes is automatically updated based on the main Float precision
-* The toolkit reserves the class label value of zero as a special **null gesture** class label for automatic gesture spotting, so if you want to use gesture spotting avoid labelling any of your gestures with the class label of zero
+* The toolkit reserves the class label value of zero as a special **null gesture** class label for automatic gesture spotting, so if you want to use gesture spotting avoid labeling any of your gestures with the class label of zero
 * Training data and models are saved as custom **.grt** files.  These consist of a simple header followed by the main dataset.  In addition to the grt files, you can also import/export data via CSV files by using the *.csv* file extension when saving/loading files
 * Almost all the GRT classes support the following functions: 
   * **predict( ... )**: uses the input data (...) and a pre-trained model to perform a prediction, such as classification or regression
@@ -49,7 +49,7 @@ In addition to the machine learning algorithms above, the toolkit also includes 
 See the [wiki](https://github.com/nickgillian/grt/wiki) for more details.
 
 ## GRT Extensions
-There are now several extensions and third party applications that use the GRT as the backend machine learning system, these include:
+There are now several extensions and third-party applications that use the GRT as the backend machine learning system, these include:
 
 * [ofGrt](https://github.com/nickgillian/ofxGrt): an extension of the GRT for [openFrameworks](http://openframeworks.cc)
 * [ml-lib](https://github.com/cmuartfab/ml-lib), by [Ali Momeni](http://alimomeni.net/) and [Jamie Bullock](http://jamiebullock.com): ml-lib is a library of machine learning externals for Max and Pure Data, designed to work on a variety of platforms including OS X, Windows, Linux, on Intel and ARM architectures.
@@ -57,33 +57,32 @@ There are now several extensions and third party applications that use the GRT a
 * [Android Port](http://hollyhook.de/wp/grt-for-android): you can find a specific Android port of the GRT [here](http://hollyhook.de/wp/grt-for-android).
 
 ## GRT Architecture
-To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set 
-of core **modules** and a central **gesture recognition pipeline**.
+To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set of core **modules** and a central **gesture recognition pipeline**.
 
-The input to both the modules and pipeline consists of an **N-dimensional floating-point vector**, making the toolkit flexible to the type of input signal. 
-The algorithms in each module can be used as standalone classes; alternatively a pipeline can be used to chain modules together to create a more sophisticated gesture-recognition system. The GRT includes modules for preprocessing, feature extraction, clustering, classification, regression and post processing.
+The input to both the modules and pipeline consists of a **N-dimensional floating-point vector**, making the toolkit flexible to the type of input signal. 
+The algorithms in each module can be used as standalone classes; alternatively, a pipeline can be used to chain modules together to create a more sophisticated gesture-recognition system. The GRT includes modules for preprocessing, feature extraction, clustering, classification, regression and post processing.
 
-The toolkit's source code is structured as following:
+The toolkit's source code is structured as follows:
 * **ClassificationModules:** Contains all the GRT classification algorithms, such as AdaBoost, Naive Bayes, K-Nearest Neighbor, Support Vector Machines, and more.
-* **ClusteringModules:** Contains all the GRT clustering algorithms, including K-Means, Gaussian Mixture Models and Self-Organizing Maps.
+* **ClusteringModules:** Contains all the GRT clustering algorithms, including K-Means, Gaussian Mixture Models, and Self-Organizing Maps.
 * **ContextModules:** Contains all the GRT context modules, these are modules that can be connected to a gesture recognition pipeline to input additional context to a real-time classification system.
-* **CoreAlgorithms:** Contains a number of algorithms that are used across the GRT, such as Particle Filters, Principal Component Analysis and Restricted Boltzmann Machines.
+* **CoreAlgorithms:** Contains a number of algorithms that are used across the GRT, such as Particle Filters, Principal Component Analysis, and Restricted Boltzmann Machines.
 * **CoreModules:** Contains all the GRT base classes, such as MLBase, Classifier, FeatureExtraction, etc..
 * **DataStructures:** Contains all the GRT classes for recording, saving and loading datasets.
-* **FeatureExtractionModules:** Contains all the GRT feature extraction modules.  These include FFT, Quantizers and TimeDomainFeatures.
-* **PostProcessingModules:** Contains all the GRT post processing modules, including ClassLabelFilter and ClassLabelTimeoutFilter.
-* **PreProcessingModules:** Contains all the GRT pre processing modules, including LowPassFilter, HighPassFilter, DeadZone, and many more.
+* **FeatureExtractionModules:** Contains all the GRT feature extraction modules.  These include FFT, Quantizers, and TimeDomainFeatures.
+* **PostProcessingModules:** Contains all the GRT post-processing modules, including ClassLabelFilter and ClassLabelTimeoutFilter.
+* **PreProcessingModules:** Contains all the GRT pre-processing modules, including LowPassFilter, HighPassFilter, DeadZone, and much more.
 * **RegressionModules:** Contains all the GRT regression modules, such as MLP Neural Networks, Linear Regression, and Logistic Regression.
-* **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random and Matrix.
+* **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random, and Matrix.
 
 ## Getting Started Example
 This example demonstrates a few key components of the GRT, such as:
 * how to load a dataset from a file (e.g., a CSV file)
 * how to split a dataset into a training and test dataset
-* how to setup a new Gesture Recognition Pipeline and add a classification algorithm to the pipeline
+* how to set up a new Gesture Recognition Pipeline and add a classification algorithm to the pipeline
 * how to use a training dataset to train a new classification model
 * how to save/load a trained pipeline to/from a file
-* how to use a automatically test dataset to test the accuracy of a classification model
+* how to use an automatically test dataset to test the accuracy of a classification model
 * how to use a manually test dataset to test the accuracy of a classification model
 * how to print detailed test results, such as precision, recall, and the confusion matrix
 
@@ -95,7 +94,7 @@ You should run this example with one argument, pointing to the file you want to 
  ./example my_data.csv
 ```
 
-You can find several example CSV files and other datasets in the main GRT data directory.
+You can find several examples CSV files and other datasets in the main GRT data directory.
 
 ```C++
 //Include the main GRT header
@@ -226,7 +225,7 @@ where *ExampleName* is the name of the example application you want to run.
 
 ## Forum
 
-Note, at the momemnt the forum server is currently broken, we are working to resolve this.  In the meantime, use github issues and pullrequests.
+Note, at the moment the forum server is currently broken, we are working to resolve this.  In the meantime, use GitHub issues and pull requests.
 
 You can find the link for the old forum at: [http://www.nickgillian.com/forum/](http://www.nickgillian.com/forum/)
 
@@ -252,10 +251,10 @@ The GRT defaults to double precision floating point values.  The precision of th
 typedef double Float; ///<This typedef is used to set floating-point precision throughout the GRT
 ```
 
-This can easily be changed to single precision accuracy if needed by modifing the main GRT **Float** typedef value, defined in GRT/Util/GRTTypedefs.h header.
+This can easily be changed to single precision accuracy if needed by modifying the main GRT **Float** typedef value, defined in GRT/Util/GRTTypedefs.h header.
 
 ## VectorFloat and MatrixFloat Data Structures
-The GRT uses two main data structures throughout the toolkit: *Vector* and *Matrix*.  These are templates and can therefore generalize to any C++ class.  The main things to know about these data types are:
+The GRT uses two main data structures throughout the toolkit: *Vector* and *Matrix*.  These are templates and can, therefore, generalize to any C++ class.  The main things to know about these data types are:
 
 - **Vector:** this inherits from the [STL vector class](http://www.cplusplus.com/reference/vector/vector/)
 ```C++
@@ -303,7 +302,7 @@ for(UINT i=0; i<matrix.getNumRows(); i++){
 
 ## Building the GRT
 
-You can find a CMakeLists file in the build folder that you can use to autogenerate a makefile for your machine.
+You can find a CMakeLists file in the build folder that you can use to auto generate a makefile for your machine.
 
 Read the readme file in the build folder to see how to build the GRT as a static library for Linux, OS X, or Windows.
 
@@ -313,7 +312,7 @@ See the build directory for details on how to build, install, and use the GRT in
 
 ## License
 
-The Gesture Recognition Toolkit is available under a MIT license.
+The Gesture Recognition Toolkit is available under an MIT license.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
