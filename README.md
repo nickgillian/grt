@@ -16,7 +16,7 @@ Key things to know about the GRT:
 * The input to the GRT can be any *N*-dimensional floating-point vector - this means you can use the GRT with Cameras, Kinect, Leap Motion, accelerometers, or any other custom sensor you might have built
 * The toolkit defines a generic [Float](#grt-floating-point-precision) type, this defaults to double precision float, but can easily be changed to single precision via the main GRT Typedefs header
 * The precision of the GRT [VectorFloat](#vectorfloat-and-matrixfloat-data-structures) and [MatrixFloat](#vectorfloat-and-matrixfloat-data-structures) classes is automatically updated based on the main Float precision
-* The toolkit reserves the class label value of zero as a special **null gesture** class label for automatic gesture spotting, so if you want to use gesture spotting avoid labelling any of your gestures with the class label of zero
+* The toolkit reserves the class label value of zero as a special **null gesture** class label for automatic gesture spotting, so if you want to use gesture spotting avoid labeling any of your gestures with the class label of zero
 * Training data and models are saved as custom **.grt** files.  These consist of a simple header followed by the main dataset.  In addition to the grt files, you can also import/export data via CSV files by using the *.csv* file extension when saving/loading files
 * Almost all the GRT classes support the following functions: 
   * **predict( ... )**: uses the input data (...) and a pre-trained model to perform a prediction, such as classification or regression
@@ -49,7 +49,7 @@ In addition to the machine learning algorithms above, the toolkit also includes 
 See the [wiki](https://github.com/nickgillian/grt/wiki) for more details.
 
 ## GRT Extensions
-There are now several extensions and third party applications that use the GRT as the backend machine learning system, these include:
+There are now several extensions and third-party applications that use the GRT as the backend machine learning system, these include:
 
 * [ofGrt](https://github.com/nickgillian/ofxGrt): an extension of the GRT for [openFrameworks](http://openframeworks.cc)
 * [ml-lib](https://github.com/cmuartfab/ml-lib), by [Ali Momeni](http://alimomeni.net/) and [Jamie Bullock](http://jamiebullock.com): ml-lib is a library of machine learning externals for Max and Pure Data, designed to work on a variety of platforms including OS X, Windows, Linux, on Intel and ARM architectures.
@@ -57,33 +57,32 @@ There are now several extensions and third party applications that use the GRT a
 * [Android Port](http://hollyhook.de/wp/grt-for-android): you can find a specific Android port of the GRT [here](http://hollyhook.de/wp/grt-for-android).
 
 ## GRT Architecture
-To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set 
-of core **modules** and a central **gesture recognition pipeline**.
+To support flexibility while maintaining consistency, the GRT uses an object-oriented modular architecture. This architecture is built around a set of core **modules** and a central **gesture recognition pipeline**.
 
-The input to both the modules and pipeline consists of an **N-dimensional floating-point vector**, making the toolkit flexible to the type of input signal. 
-The algorithms in each module can be used as standalone classes; alternatively a pipeline can be used to chain modules together to create a more sophisticated gesture-recognition system. The GRT includes modules for preprocessing, feature extraction, clustering, classification, regression and post processing.
+The input to both the modules and pipeline consists of a **N-dimensional floating-point vector**, making the toolkit flexible to the type of input signal. 
+The algorithms in each module can be used as standalone classes; alternatively, a pipeline can be used to chain modules together to create a more sophisticated gesture-recognition system. The GRT includes modules for preprocessing, feature extraction, clustering, classification, regression and post processing.
 
-The toolkit's source code is structured as following:
+The toolkit's source code is structured as follows:
 * **ClassificationModules:** Contains all the GRT classification algorithms, such as AdaBoost, Naive Bayes, K-Nearest Neighbor, Support Vector Machines, and more.
-* **ClusteringModules:** Contains all the GRT clustering algorithms, including K-Means, Gaussian Mixture Models and Self-Organizing Maps.
+* **ClusteringModules:** Contains all the GRT clustering algorithms, including K-Means, Gaussian Mixture Models, and Self-Organizing Maps.
 * **ContextModules:** Contains all the GRT context modules, these are modules that can be connected to a gesture recognition pipeline to input additional context to a real-time classification system.
-* **CoreAlgorithms:** Contains a number of algorithms that are used across the GRT, such as Particle Filters, Principal Component Analysis and Restricted Boltzmann Machines.
+* **CoreAlgorithms:** Contains a number of algorithms that are used across the GRT, such as Particle Filters, Principal Component Analysis, and Restricted Boltzmann Machines.
 * **CoreModules:** Contains all the GRT base classes, such as MLBase, Classifier, FeatureExtraction, etc..
 * **DataStructures:** Contains all the GRT classes for recording, saving and loading datasets.
-* **FeatureExtractionModules:** Contains all the GRT feature extraction modules.  These include FFT, Quantizers and TimeDomainFeatures.
-* **PostProcessingModules:** Contains all the GRT post processing modules, including ClassLabelFilter and ClassLabelTimeoutFilter.
-* **PreProcessingModules:** Contains all the GRT pre processing modules, including LowPassFilter, HighPassFilter, DeadZone, and many more.
+* **FeatureExtractionModules:** Contains all the GRT feature extraction modules.  These include FFT, Quantizers, and TimeDomainFeatures.
+* **PostProcessingModules:** Contains all the GRT post-processing modules, including ClassLabelFilter and ClassLabelTimeoutFilter.
+* **PreProcessingModules:** Contains all the GRT pre-processing modules, including LowPassFilter, HighPassFilter, DeadZone, and much more.
 * **RegressionModules:** Contains all the GRT regression modules, such as MLP Neural Networks, Linear Regression, and Logistic Regression.
-* **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random and Matrix.
+* **Util:** Contains a wide range of supporting classes, such as Logging, Util, TimeStamp, Random, and Matrix.
 
 ## Getting Started Example
 This example demonstrates a few key components of the GRT, such as:
 * how to load a dataset from a file (e.g., a CSV file)
 * how to split a dataset into a training and test dataset
-* how to setup a new Gesture Recognition Pipeline and add a classification algorithm to the pipeline
+* how to set up a new Gesture Recognition Pipeline and add a classification algorithm to the pipeline
 * how to use a training dataset to train a new classification model
 * how to save/load a trained pipeline to/from a file
-* how to use a automatically test dataset to test the accuracy of a classification model
+* how to use an automatically test dataset to test the accuracy of a classification model
 * how to use a manually test dataset to test the accuracy of a classification model
 * how to print detailed test results, such as precision, recall, and the confusion matrix
 
@@ -95,7 +94,7 @@ You should run this example with one argument, pointing to the file you want to 
  ./example my_data.csv
 ```
 
-You can find several example CSV files and other datasets in the main GRT data directory.
+You can find several examples CSV files and other datasets in the main GRT data directory.
 
 ```C++
 //Include the main GRT header
@@ -103,110 +102,111 @@ You can find several example CSV files and other datasets in the main GRT data d
 using namespace GRT;
 using namespace std;
 
-int main (int argc, const char * argv[])
-{
-    //Parse the training data filename from the command line
-    if( argc != 2 ){
-        cout << "Error: failed to parse data filename from command line. You should run this example with one argument pointing to a data file\n";
-        return EXIT_FAILURE;
+int main (int argc, const char * argv[]) {
+  //Parse the training data filename from the command line
+  if (argc != 2) {
+    cout << "Error: failed to parse data filename from command line. ";
+    cout << "You should run this example with one argument pointing to a data file\n";
+    return EXIT_FAILURE;
+  }
+  const string filename = argv[1];
+
+  //Load some training data from a file
+  ClassificationData trainingData;
+
+  cout << "Loading dataset..." << endl;
+  if (!trainingData.load(filename)) {
+    cout << "ERROR: Failed to load training data from file\n";
+    return EXIT_FAILURE;
+  }
+
+  cout << "Data Loaded" << endl;
+
+  //Print out some stats about the training data
+  trainingData.printStats();
+
+  //Partition the training data into a training dataset and a test dataset. 80 means that 80%
+  //of the data will be used for the training data and 20% will be returned as the test dataset
+  cout << "Splitting data into training/test split..." << endl;
+  ClassificationData testData = trainingData.split(80);
+
+  //Create a new Gesture Recognition Pipeline
+  GestureRecognitionPipeline pipeline;
+
+  //Add a KNN classifier to the pipeline with a K value of 10
+  pipeline << KNN(10);
+
+  //Train the pipeline using the training data
+  cout << "Training model..." << endl;
+  if (!pipeline.train(trainingData)) {
+    cout << "ERROR: Failed to train the pipeline!\n";
+    return EXIT_FAILURE;
+  }
+
+  //Save the pipeline to a file
+  if (!pipeline.save("HelloWorldPipeline.grt")) {
+    cout << "ERROR: Failed to save the pipeline!\n";
+    return EXIT_FAILURE;
+  }
+
+  //Load the pipeline from a file
+  if (!pipeline.load("HelloWorldPipeline.grt")) {
+    cout << "ERROR: Failed to load the pipeline!\n";
+    return EXIT_FAILURE;
+  }
+
+  //Test the pipeline using the test data
+  cout << "Testing model..." << endl;
+  if (!pipeline.test(testData)) {
+    cout << "ERROR: Failed to test the pipeline!\n";
+    return EXIT_FAILURE;
+  }
+
+  //Print some stats about the testing
+  cout << "Pipeline Test Accuracy: " << pipeline.getTestAccuracy() << endl;
+
+  //Manually project the test dataset through the pipeline
+  Float testAccuracy = 0.0;
+  for (UINT i=0; i<testData.getNumSamples(); i++) {
+    pipeline.predict(testData[i].getSample());
+
+    if (testData[i].getClassLabel() == pipeline.getPredictedClassLabel()) {
+      testAccuracy++;
     }
-    const string filename = argv[1];
-
-    //Load some training data from a file
-    ClassificationData trainingData;
-
-    cout << "Loading dataset..." << endl;
-    if( !trainingData.load( filename ) ){
-	   cout << "ERROR: Failed to load training data from file\n";
-	   return EXIT_FAILURE;
-    }
-
-    cout << "Data Loaded" << endl;
-
-    //Print out some stats about the training data
-    trainingData.printStats();
-
-    //Partition the training data into a training dataset and a test dataset. 80 means that 80%
-    //of the data will be used for the training data and 20% will be returned as the test dataset
-    cout << "Splitting data into training/test split..." << endl;
-    ClassificationData testData = trainingData.split( 80 );
-
-    //Create a new Gesture Recognition Pipeline
-    GestureRecognitionPipeline pipeline;
-
-    //Add a Naive Bayes classifier to the pipeline
-    pipeline << ANBC();
-
-    //Train the pipeline using the training data
-    cout << "Training model..." << endl;
-    if( !pipeline.train( trainingData ) ){
-        cout << "ERROR: Failed to train the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-
-    //Save the pipeline to a file
-    if( !pipeline.save( "HelloWorldPipeline.grt" ) ){
-        cout << "ERROR: Failed to save the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-
-    //Load the pipeline from a file
-    if( !pipeline.load( "HelloWorldPipeline.grt" ) ){
-        cout << "ERROR: Failed to load the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-
-    //Test the pipeline using the test data
-    cout << "Testing model..." << endl;
-    if( !pipeline.test( testData ) ){
-        cout << "ERROR: Failed to test the pipeline!\n";
-        return EXIT_FAILURE;
-    }
-
-    //Print some stats about the testing
-    cout << "Pipeline Test Accuracy: " << pipeline.getTestAccuracy() << endl;
-
-    //Manually project the test dataset through the pipeline
-    for(UINT i=0; i<testData.getNumSamples(); i++){
-        pipeline.predict( testData[i].getSample() );
-
-        if( testData[i].getClassLabel() == pipeline.getPredictedClassLabel() ){
-            testAccuracy++;
-        }
-    }
-    cout << "Manual test accuracy: " << testAccuracy / testData.getNumSamples() * 100.0 << endl;
+  }
+  cout << "Manual test accuracy: " << testAccuracy / testData.getNumSamples() * 100.0 << endl;
    
-    //Get the vector of class labels from the pipeline
-    Vector< UINT > classLabels = pipeline.getClassLabels();
+  //Get the vector of class labels from the pipeline
+  Vector< UINT > classLabels = pipeline.getClassLabels();
 
-    //Print out the precision
-    cout << "Precision: ";
-    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        cout << "\t" << pipeline.getTestPrecision( classLabels[k] );
+  //Print out the precision
+  cout << "Precision: ";
+  for (UINT k=0; k<pipeline.getNumClassesInModel(); k++) {
+    cout << "\t" << pipeline.getTestPrecision(classLabels[k]);
+  }cout << endl;
+
+  //Print out the recall
+  cout << "Recall: ";
+  for (UINT k=0; k<pipeline.getNumClassesInModel(); k++) {
+    cout << "\t" << pipeline.getTestRecall(classLabels[k]);
+  }cout << endl;
+
+  //Print out the f-measure
+  cout << "FMeasure: ";
+  for (UINT k=0; k<pipeline.getNumClassesInModel(); k++) {
+    cout << "\t" << pipeline.getTestFMeasure(classLabels[k]);
+  }cout << endl;
+
+  //Print out the confusion matrix
+  MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
+  cout << "ConfusionMatrix: \n";
+  for (UINT i=0; i<confusionMatrix.getNumRows(); i++) {
+    for (UINT j=0; j<confusionMatrix.getNumCols(); j++) {
+      cout << confusionMatrix[i][j] << "\t";
     }cout << endl;
+  }
 
-    //Print out the recall
-    cout << "Recall: ";
-    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-         cout << "\t" << pipeline.getTestRecall( classLabels[k] );
-    }cout << endl;
-
-    //Print out the f-measure
-    cout << "FMeasure: ";
-    for(UINT k=0; k<pipeline.getNumClassesInModel(); k++){
-        cout << "\t" << pipeline.getTestFMeasure( classLabels[k] );
-    }cout << endl;
-
-    //Print out the confusion matrix
-    MatrixFloat confusionMatrix = pipeline.getTestConfusionMatrix();
-    cout << "ConfusionMatrix: \n";
-    for(UINT i=0; i<confusionMatrix.getNumRows(); i++){
-        for(UINT j=0; j<confusionMatrix.getNumCols(); j++){
-            cout << confusionMatrix[i][j] << "\t";
-        }cout << endl;
-    }
-
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
 ```
 ## Tutorials and Examples
@@ -225,7 +225,7 @@ where *ExampleName* is the name of the example application you want to run.
 
 ## Forum
 
-Note, at the momemnt the forum server is currently broken, we are working to resolve this.  In the meantime, use github issues and pullrequests.
+Note, at the moment the forum server is currently broken, we are working to resolve this.  In the meantime, use GitHub issues and pull requests.
 
 You can find the link for the old forum at: [http://www.nickgillian.com/forum/](http://www.nickgillian.com/forum/)
 
@@ -251,10 +251,10 @@ The GRT defaults to double precision floating point values.  The precision of th
 typedef double Float; ///<This typedef is used to set floating-point precision throughout the GRT
 ```
 
-This can easily be changed to single precision accuracy if needed by modifing the main GRT **Float** typedef value, defined in GRT/Util/GRTTypedefs.h header.
+This can easily be changed to single precision accuracy if needed by modifying the main GRT **Float** typedef value, defined in GRT/Util/GRTTypedefs.h header.
 
 ## VectorFloat and MatrixFloat Data Structures
-The GRT uses two main data structures throughout the toolkit: *Vector* and *Matrix*.  These are templates and can therefore generalize to any C++ class.  The main things to know about these data types are:
+The GRT uses two main data structures throughout the toolkit: *Vector* and *Matrix*.  These are templates and can, therefore, generalize to any C++ class.  The main things to know about these data types are:
 
 - **Vector:** this inherits from the [STL vector class](http://www.cplusplus.com/reference/vector/vector/)
 ```C++
@@ -302,7 +302,7 @@ for(UINT i=0; i<matrix.getNumRows(); i++){
 
 ## Building the GRT
 
-You can find a CMakeLists file in the build folder that you can use to autogenerate a makefile for your machine.
+You can find a CMakeLists file in the build folder that you can use to auto generate a makefile for your machine.
 
 Read the readme file in the build folder to see how to build the GRT as a static library for Linux, OS X, or Windows.
 
@@ -312,7 +312,7 @@ See the build directory for details on how to build, install, and use the GRT in
 
 ## License
 
-The Gesture Recognition Toolkit is available under a MIT license.
+The Gesture Recognition Toolkit is available under an MIT license.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
