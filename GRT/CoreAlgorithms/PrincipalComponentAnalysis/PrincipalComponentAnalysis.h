@@ -74,7 +74,7 @@ public:
     @return returns true if the principal components of the input matrix could be computed, false otherwise
     value
     */
-    bool computeFeatureVector(const MatrixFloat &data,Float maxVariance=0.95,bool normData=false);
+    bool computeFeatureVector(const MatrixFloat &data,const Float maxVariance=0.95,const bool normData=false);
     
     /**
     Runs the principal component analysis algorithm on the input data and builds the resulting feature vector
@@ -87,7 +87,7 @@ public:
     @return returns true if the principal components of the input matrix could be computed, false otherwise
     value
     */
-    bool computeFeatureVector(const MatrixFloat &data,UINT numPrincipalComponents,bool normData=false);
+    bool computeFeatureVector(const MatrixFloat &data,const UINT numPrincipalComponents,const bool normData=false);
     
     /**
     Projects the input data matrix onto the principal subspace. The new projected data will be stored in the prjData
