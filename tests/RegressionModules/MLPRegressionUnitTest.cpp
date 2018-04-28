@@ -56,7 +56,7 @@ bool train_mlp_xor(const bool enableScaling) {
   EXPECT_TRUE( mlp.setNumRestarts( 1 ) ); //This sets the number of times the MLP will be trained, we manually do the re-try training below as needed
   EXPECT_TRUE( mlp.setUseValidationSet( false ) ); //Don't use a validation set for this case (as we only have 4 samples)
   EXPECT_TRUE( mlp.setRandomiseTrainingOrder( false ) ); //We don't need to randomize the training data for this XOR case
-  EXPECT_TRUE( mlp.enableScaling( enableScaling ) ); //Turn training on/off
+  EXPECT_TRUE( mlp.enableScaling( enableScaling ) ); //Turn scaling on/off
 
   //Check the module is not trained
   EXPECT_TRUE( !mlp.getTrained() );
