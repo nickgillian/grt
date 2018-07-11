@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env .python
 #
 # Copyright 2009 Neal Norwitz All Rights Reserved.
 # Portions Copyright 2009 Google Inc. All Rights Reserved.

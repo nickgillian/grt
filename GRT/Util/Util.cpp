@@ -282,7 +282,7 @@ Float Util::getMin(const VectorFloat &x){
     return min;
 }
     
-unsigned int getMinIndex(const VectorFloat &x){
+unsigned int Util::getMinIndex(const VectorFloat &x){
     unsigned int minIndex = 0;
     Float min = std::numeric_limits< Float >::max();
     unsigned int N = (unsigned int)x.size();
