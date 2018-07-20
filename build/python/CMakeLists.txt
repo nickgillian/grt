@@ -17,7 +17,11 @@ message(STATUS "Found python: ${PYTHON_INCLUDE_DIRS} ${PYTHON_LIBRARIES}")
 set(PYTHONINTERP_FOUND YES)
 set(PYTHON_EXECUTABLE /usr/local/bin/python3)
 find_package(Numpy REQUIRED)
+if (NOT IS_DIRECTORY ${NUMPY_INCLUDE_DIR})
+    message(FATAL_ERROR "Cannot find Numpy")
+endif()
 include_directories(${NUMPY_INCLUDE_DIR})
+
 
 include_directories(${GRT_SRC_DIR})
 
@@ -29,11 +33,8 @@ swig_add_library(GRT LANGUAGE python SOURCES GRT.i)
 
 swig_link_libraries(GRT ${PYTHON_LIBRARIES} ${GRT_LIB_NAME} )
 
-add_custom_command(
-        TARGET ${SWIG_MODULE_GRT_REAL_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_CURRENT_SOURCE_DIR}/hello_world_example.py" # source
-        "hello_world_example.py" # destination
-        COMMENT "Copying hello_world_example.py"
-)
+# Copy python examples files
+file(GLOB PYTHON_EXAMPLES
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.py"
+        )
+file(COPY ${PYTHON_EXAMPLES} DESTINATION ".")
