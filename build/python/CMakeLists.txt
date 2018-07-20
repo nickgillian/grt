@@ -1,4 +1,11 @@
-set(SWIG_EXECUTABLE /usr/local/Cellar/swig/3.0.12/bin/swig)
+
+if (APPLE) # Assume homebrew
+    file(GLOB SWIG_EXECUTABLE /usr/local/Cellar/swig/*/bin/swig)
+    if (NOT EXISTS ${SWIG_EXECUTABLE})
+        message(FATAL_ERROR "Cannot find homebrew SWIG v3 in /usr/local/Cellar/swig/")
+    endif()
+    message(STATUS "Found swig executable: ${SWIG_EXECUTABLE}")
+endif()
 find_package(SWIG 3 REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 

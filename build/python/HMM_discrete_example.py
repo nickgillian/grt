@@ -57,7 +57,7 @@ def main():
     for i in range(trainingData.getNumSamples()):
 
         classLabel = trainingData.get(i).getClassLabel()
-        quantizedSample = GRT.MatrixDouble()
+        quantizedSample = GRT.MatrixFloat()
     
         for j in range(trainingData.get(i).getLength()):
             quantizer.quantize( trainingData.get(i).getData().getRow(j) )
