@@ -61,7 +61,7 @@ def main():
     
         for j in range(trainingData.get(i).getLength()):
             quantizer.quantize( trainingData.get(i).getData().getRow(j) )
-        
+            print(quantizer.getFeatureVector())
             quantizedSample.push_back( quantizer.getFeatureVector() )
     
         if not quantizedTrainingData.addSample(classLabel, quantizedSample):
