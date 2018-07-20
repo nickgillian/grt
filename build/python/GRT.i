@@ -166,6 +166,7 @@ using std::string;
 %include "../GRT/ClassificationModules/Softmax/Softmax.h"
 %include "../GRT/ClassificationModules/SVM/SVM.h"
 %include "../GRT/ClassificationModules/SwipeDetector/SwipeDetector.h"
+
 %include "../GRT/CoreModules/Clusterer.h"
 %include "../GRT/ClusteringModules/ClusterTree/ClusterTreeNode.h"
 %include "../GRT/ClusteringModules/ClusterTree/ClusterTree.h"
@@ -173,3 +174,6 @@ using std::string;
 %include "../GRT/ClusteringModules/HierarchicalClustering/HierarchicalClustering.h"
 %include "../GRT/ClusteringModules/KMeans/KMeans.h"
 %include "../GRT/ClusteringModules/SelfOrganizingMap/SelfOrganizingMap.h"
+
+%include "../GRT/CoreModules/FeatureExtraction.h"
+%include "../GRT/FeatureExtractionModules/KMeansQuantizer/KMeansQuantizer.h"
