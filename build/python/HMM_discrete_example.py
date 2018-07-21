@@ -1,6 +1,7 @@
 import GRT
 import sys
 import argparse
+import numpy as np
 
 
 def main():
@@ -57,12 +58,12 @@ def main():
     for i in range(trainingData.getNumSamples()):
 
         classLabel = trainingData.get(i).getClassLabel()
-        quantizedSample = GRT.MatrixFloat()
+        quantizedSample = np.zeros((0, 1), dtype=np.float32)
+        sample = trainingData.get(i).getData()
     
         for j in range(trainingData.get(i).getLength()):
-            quantizer.quantize( trainingData.get(i).getData().getRow(j) )
-            print(quantizer.getFeatureVector())
-            quantizedSample.push_back( quantizer.getFeatureVector() )
+            quantizer.quantize( sample[j] )
+            quantizedSample = np.vstack([quantizedSample, quantizer.getFeatureVector()])
     
         if not quantizedTrainingData.addSample(classLabel, quantizedSample):
             print("ERROR: Failed to quantize training data!")
@@ -86,12 +87,11 @@ def main():
 
     # Set the training parameters
     hmm.setMinChange( 1.0e-5 )
-    hmm.setMaxNumEpochs( 100 )
+    hmm.setMaxNumEpochs( 40 )
     hmm.setNumRandomTrainingIterations( 20 )
 
-
     # Train the classifier
-    if not hmm.train( trainingData ):
+    if not hmm.train( quantizedTrainingData ):
         print("Failed to train classifier!")
         sys.exit(1)
 
@@ -105,15 +105,32 @@ def main():
         print("Failed to load the classifier model!")
         sys.exit(1)
 
+    # Quantize the test data
+    quantizedTestData = GRT.TimeSeriesClassificationData( 1 )
+
+    for i in range(testData.getNumSamples()):
+
+        classLabel = testData.get(i).getClassLabel()
+        quantizedSample = np.zeros((0, 1), dtype=np.float32)
+        sample = testData.get(i).getData()
+
+        for j in range(testData.get(i).getLength()):
+            quantizer.quantize( sample[j] )
+            quantizedSample = np.vstack([quantizedSample, quantizer.getFeatureVector()])
+
+        if not quantizedTestData.addSample(classLabel, quantizedSample):
+            print("ERROR: Failed to quantize training data!")
+            sys.exit(1)
+
     # Use the test dataset to test the decision tree model
     accuracy = 0.0
-    for i in range(testData.getNumSamples()):
+    for i in range(quantizedTestData.getNumSamples()):
         # Get the i'th test sample
-        classLabel = testData.get(i).getClassLabel()
-        timeseries = testData.get(i).getData()
+        classLabel = quantizedTestData.get(i).getClassLabel()
 
+        print(quantizedTestData.get(i).getData().shape)
         # Perform a prediction using the classifier
-        if not hmm.predict( timeseries ):
+        if not hmm.predict( quantizedTestData.get(i).getData() ):
             print("Failed to perform prediction for test sample: %d" % i)
             sys.exit(1)
 

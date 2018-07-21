@@ -11,8 +11,8 @@ env:
  - CONFIG=Debug
 before_install:
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update         ; fi
- - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install swig   ; fi
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install swig numpy ; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test ; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test ; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -cs)-backports main restricted universe multiverse" ; fi

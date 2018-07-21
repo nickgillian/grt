@@ -13,6 +13,7 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include "numpy/npy_common.h"
 #include "numpy/ndarrayobject.h"
+#include "numpy/ndarraytypes.h"
 #include "numpy/arrayobject.h"
 
 #include <stdio.h>
@@ -80,13 +81,114 @@ using std::string;
 }
 
 %include "../GRT/DataStructures/VectorFloat.h"
+// From GRT::VectorFloat to numpy.array
+%typemap(out) GRT::Vector<Float>,
+              GRT::VectorFloat,
+              const GRT::Vector<Float>,
+              const GRT::VectorFloat%{
+  {
+    npy_intp dims[1]{(npy_intp)($1.size())};
+    $result = PyArray_SimpleNew(1, dims, NPY_FLOAT);
+    PyArrayObject* arr_ptr = reinterpret_cast<PyArrayObject*>($result);
+    for (size_t i = 0; i < $1.size(); ++i) {
+      float* d_ptr = static_cast<float*>(PyArray_GETPTR1(arr_ptr, i));
+      *d_ptr = $1[i];
+    }
+  }
+%}
+
+%typemap(out) GRT::VectorFloat&,
+              GRT::VectorFloat*,
+              const GRT::VectorFloat&,
+              const GRT::VectorFloat* %{
+  {
+    npy_intp dims[1]{(npy_intp)($1->size())};
+    $result = PyArray_SimpleNew(1, dims, NPY_FLOAT);
+    PyArrayObject* arr_ptr = reinterpret_cast<PyArrayObject*>($result);
+    for (size_t i = 0; i < $1->size(); ++i) {
+      float* d_ptr = static_cast<float*>(PyArray_GETPTR1(arr_ptr, i));
+      *d_ptr = $1->operator[](i);
+    }
+  }
+%}
+
+
+
+%typemap(in) GRT::Vector<Float>,
+             const GRT::Vector<Float>,
+             GRT::VectorFloat,
+             const GRT::VectorFloat %{
+  {
+    PyArrayObject* arrayobj = reinterpret_cast<PyArrayObject*>($input);
+    npy_intp size = PyArray_SIZE(arrayobj); //get size of the 1d array
+
+    $1 = VectorFloat();
+
+    for (npy_intp i = 0; i < size; i++) {
+      void* itemptr = PyArray_GETPTR1(arrayobj, i);
+      PyObject *s = PyArray_GETITEM(arrayobj, reinterpret_cast<char *>(itemptr));
+      if (!PyFloat_Check(s)) {
+        PyErr_SetString(PyExc_ValueError, "List items must be floats");
+        return NULL;
+      }
+      $1.push_back((float)PyFloat_AsDouble(s)); //put the value into the array
+    }
+  }
+%}
+
+
+%typemap(in)
+    GRT::Vector<Float>&,
+    const GRT::Vector<Float>&,
+    GRT::VectorFloat&,
+    const GRT::VectorFloat&,
+    GRT::VectorFloat const& %{
+  {
+    PyArrayObject* arrayobj = reinterpret_cast<PyArrayObject*>($input);
+    npy_intp size = PyArray_SIZE(arrayobj); //get size of the 1d array
+
+    $1 = new VectorFloat();
+
+    for (npy_intp i = 0; i < size; i++) {
+      void* itemptr = PyArray_GETPTR1(arrayobj, i);
+      PyObject *s = PyArray_GETITEM(arrayobj, reinterpret_cast<char *>(itemptr));
+      if (!PyFloat_Check(s)) {
+        PyErr_SetString(PyExc_ValueError, "List items must be floats");
+        return NULL;
+      }
+      $1->push_back((float)PyFloat_AsDouble(s)); //put the value into the array
+    }
+  }
+%}
+
+%typemap(freearg) GRT::VectorFloat&, const GRT::VectorFloat&, GRT::VectorFloat const& {
+  if ($1 != 0) {
+    delete($1);
+  }
+}
+
+%typecheck(SWIG_TYPECHECK_POINTER)
+    GRT::Vector<Float>,
+    GRT::VectorFloat,
+    const GRT::VectorFloat,
+    GRT::VectorFloat&,
+    const GRT::VectorFloat&,
+    GRT::VectorFloat const&
+{
+  PyArrayObject* arrayobj = reinterpret_cast<PyArrayObject*>($input);
+  $1 = PyArray_ISFLOAT(arrayobj) && (PyArray_NDIM(arrayobj) == 1);
+}
+
 
 %include "../GRT/DataStructures/Matrix.h"
 %template(MatrixTFloat) GRT::Matrix<Float>;
 %include "../GRT/DataStructures/MatrixFloat.h"
 
 // From GRT::MatrixFloat to numpy.array
-%typemap(out) GRT::MatrixFloat %{
+%typemap(out) GRT::Matrix<Float>,
+              const GRT::Matrix<Float>,
+              GRT::MatrixFloat,
+              const GRT::MatrixFloat %{
   {
     npy_intp dims[2]{$1.getNumRows(), $1.getNumCols()};
     $result = PyArray_SimpleNew(2, dims, NPY_FLOAT);
@@ -100,18 +202,103 @@ using std::string;
   }
 %}
 
-// From GRT::VectorFloat to numpy.array
-%typemap(out) GRT::VectorFloat %{
+%typemap(out) GRT::Matrix<Float>&,
+              const GRT::Matrix<Float>&,
+              GRT::MatrixFloat&,
+              const GRT::MatrixFloat&,
+              GRT::MatrixFloat*,
+              const GRT::MatrixFloat* %{
   {
-    npy_intp dims[1]{(npy_intp)($1.size())};
-    $result = PyArray_SimpleNew(1, dims, NPY_FLOAT);
+    npy_intp dims[2]{$1->getNumRows(), $1->getNumCols()};
+    $result = PyArray_SimpleNew(2, dims, NPY_FLOAT);
     PyArrayObject* arr_ptr = reinterpret_cast<PyArrayObject*>($result);
-    for (size_t i = 0; i < $1.size(); ++i) {
-      float* d_ptr = static_cast<float*>(PyArray_GETPTR1(arr_ptr, i));
-      *d_ptr = $1[i];
+    for (size_t i = 0; i < $1->getNumRows(); ++i) {
+      for (size_t j = 0; j < $1->getNumCols(); ++j) {
+        float* d_ptr = static_cast<float*>(PyArray_GETPTR2(arr_ptr, i, j));
+        *d_ptr = $1->operator[](i)[j];
+      }
     }
   }
 %}
+
+%typemap(in)
+    GRT::Matrix<Float>&,
+    const GRT::Matrix<Float>&,
+    GRT::MatrixFloat&,
+    const GRT::MatrixFloat&,
+    GRT::MatrixFloat const&,
+    GRT::MatrixFloat*,
+    const GRT::MatrixFloat* %{
+  {
+    PyArrayObject* arrayobj = reinterpret_cast<PyArrayObject*>($input);
+    npy_intp nrows = PyArray_DIM(arrayobj, 0);
+    npy_intp ncols = PyArray_DIM(arrayobj, 1);
+
+    $1 = new MatrixFloat(nrows, ncols);
+
+    for (npy_intp i = 0; i < nrows; i++) {
+      for (npy_intp j = 0; j < ncols; j++) {
+        void* itemptr = PyArray_GETPTR2(arrayobj, i, j);
+        PyObject *s = PyArray_GETITEM(arrayobj, reinterpret_cast<char *>(itemptr));
+        if (!PyFloat_Check(s)) {
+          PyErr_SetString(PyExc_ValueError, "Array items must be floats");
+          return NULL;
+        }
+        $1->operator[](i)[j] = (float)PyFloat_AsDouble(s); //put the value into the array
+      }
+    }
+  }
+%}
+
+%typemap(in)
+    GRT::Matrix<Float>,
+    const GRT::Matrix<Float>,
+    GRT::MatrixFloat,
+    const GRT::MatrixFloat,
+    GRT::MatrixFloat const %{
+  {
+    PyArrayObject* arrayobj = reinterpret_cast<PyArrayObject*>($input);
+    npy_intp nrows = PyArray_DIM(arrayobj, 0);
+    npy_intp ncols = PyArray_DIM(arrayobj, 1);
+
+    $1 = MatrixFloat(nrows, ncols);
+
+    for (npy_intp i = 0; i < nrows; i++) {
+      for (npy_intp j = 0; j < ncols; j++) {
+        void* itemptr = PyArray_GETPTR2(arrayobj, i, j);
+        PyObject *s = PyArray_GETITEM(arrayobj, reinterpret_cast<char *>(itemptr));
+        if (!PyFloat_Check(s)) {
+          PyErr_SetString(PyExc_ValueError, "Array items must be floats");
+          return NULL;
+        }
+        $1[i][j] = (float)PyFloat_AsDouble(s); //put the value into the array
+      }
+    }
+  }
+%}
+
+%typemap(freearg) GRT::Matrix<Float>&,
+                  const GRT::Matrix<Float>&,
+                  GRT::MatrixFloat&,
+                  const GRT::MatrixFloat&,
+                  GRT::MatrixFloat const& {
+  if ($1 != 0) {
+    delete($1);
+  }
+}
+
+%typecheck(SWIG_TYPECHECK_POINTER)
+    GRT::Matrix<Float>,
+    GRT::MatrixFloat,
+    const GRT::MatrixFloat,
+    GRT::MatrixFloat&,
+    const GRT::MatrixFloat&,
+    GRT::MatrixFloat const&
+{
+  PyArrayObject* arrayobj = reinterpret_cast<PyArrayObject*>($input);
+  $1 = PyArray_ISFLOAT(arrayobj) && (PyArray_NDIM(arrayobj) == 2);
+}
+
 
 %include "../GRT/DataStructures/ClassificationData.h"
 %extend GRT::ClassificationData {
@@ -142,12 +329,16 @@ using std::string;
 %include "../GRT/ClassificationModules/ANBC/ANBC_Model.h"
 %include "../GRT/ClassificationModules/ANBC/ANBC.h"
 %include "../GRT/ClassificationModules/BAG/BAG.h"
+%include "../GRT/CoreAlgorithms/Tree/Node.h"
+%include "../GRT/CoreAlgorithms/Tree/Tree.h"
 %include "../GRT/ClassificationModules/DecisionTree/DecisionTreeNode.h"
 %include "../GRT/ClassificationModules/DecisionTree/DecisionTreeThresholdNode.h"
 %include "../GRT/ClassificationModules/DecisionTree/DecisionTreeTripleFeatureNode.h"
 %include "../GRT/ClassificationModules/DecisionTree/DecisionTreeClusterNode.h"
 %include "../GRT/ClassificationModules/DecisionTree/DecisionTree.h"
 %include "../GRT/ClassificationModules/DTW/DTW.h"
+%include "../GRT/CoreAlgorithms/ParticleFilter/Particle.h"
+%include "../GRT/CoreAlgorithms/ParticleFilter/ParticleFilter.h"
 %include "../GRT/ClassificationModules/FiniteStateMachine/FSMParticle.h"
 %include "../GRT/ClassificationModules/FiniteStateMachine/FiniteStateMachine.h"
 %include "../GRT/ClassificationModules/GMM/MixtureModel.h"
