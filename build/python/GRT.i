@@ -299,6 +299,26 @@ using std::string;
   $1 = PyArray_ISFLOAT(arrayobj) && (PyArray_NDIM(arrayobj) == 2);
 }
 
+%typemap(out) GRT::Matrix< GRT::VectorFloat >,
+              const GRT::Matrix< GRT::VectorFloat >
+%{
+  {
+    npy_intp dims[3]{$1.getNumRows(),
+                     $1.getNumCols(),
+                     static_cast<npy_intp>($1.operator[](0)[0].size())};
+    $result = PyArray_SimpleNew(3, dims, NPY_FLOAT);
+    PyArrayObject* arr_ptr = reinterpret_cast<PyArrayObject*>($result);
+    for (size_t i = 0; i < $1.getNumRows(); ++i) {
+      for (size_t j = 0; j < $1.getNumCols(); ++j) {
+        for (size_t k = 0; k < $1.operator[](i)[j].size(); ++k) {
+          float* d_ptr = static_cast<float*>(PyArray_GETPTR3(arr_ptr, i, j, k));
+          *d_ptr = $1.operator[](i)[j][k];
+        }
+      }
+    }
+  }
+%}
+
 
 %include "../GRT/DataStructures/ClassificationData.h"
 %extend GRT::ClassificationData {
