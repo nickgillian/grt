@@ -342,6 +342,10 @@ using std::string;
 
 %include "../GRT/CoreModules/MLBase.h"
 %include "../GRT/CoreModules/Classifier.h"
+%include "../GRT/CoreModules/PostProcessing.h"
+%include "../GRT/CoreModules/Clusterer.h"
+%include "../GRT/CoreModules/FeatureExtraction.h"
+
 %include "../GRT/CoreModules/GestureRecognitionPipeline.h"
 %include "../GRT/ClassificationModules/KNN/KNN.h"
 %include "../GRT/ClassificationModules/AdaBoost/WeakClassifiers/WeakClassifier.h"
@@ -380,7 +384,6 @@ using std::string;
 %include "../GRT/ClassificationModules/SVM/SVM.h"
 %include "../GRT/ClassificationModules/SwipeDetector/SwipeDetector.h"
 
-%include "../GRT/CoreModules/Clusterer.h"
 %include "../GRT/ClusteringModules/ClusterTree/ClusterTreeNode.h"
 %include "../GRT/ClusteringModules/ClusterTree/ClusterTree.h"
 %include "../GRT/ClusteringModules/GaussianMixtureModels/GaussianMixtureModels.h"
@@ -388,7 +391,6 @@ using std::string;
 %include "../GRT/ClusteringModules/KMeans/KMeans.h"
 %include "../GRT/ClusteringModules/SelfOrganizingMap/SelfOrganizingMap.h"
 
-%include "../GRT/CoreModules/FeatureExtraction.h"
 %include "../GRT/FeatureExtractionModules/KMeansQuantizer/KMeansQuantizer.h"
 %include "../GRT/FeatureExtractionModules/FFT/FastFourierTransform.h"
 %include "../GRT/FeatureExtractionModules/FFT/FFT.h"
@@ -408,7 +410,6 @@ using std::string;
 %include "../GRT/FeatureExtractionModules/TimeDomainFeatures/TimeDomainFeatures.h"
 %include "../GRT/FeatureExtractionModules/TimeseriesBuffer/TimeseriesBuffer.h"
 
-%include "../GRT/CoreModules/PostProcessing.h"
 %include "../GRT/PostProcessingModules/ClassLabelChangeFilter.h"
 %include "../GRT/PostProcessingModules/ClassLabelFilter.h"
 %include "../GRT/PostProcessingModules/ClassLabelTimeoutFilter.h"
