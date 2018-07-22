@@ -83,7 +83,7 @@ protected:
     VectorFloat phase;
     VectorFloat power;
     Float averagePower;
-    const static int MAX_FAST_BITS = 16;
+    const int MAX_FAST_BITS = 16;
     Vector< Vector< int > > bitTable;
 };
     

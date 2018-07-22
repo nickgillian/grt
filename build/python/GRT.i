@@ -59,26 +59,26 @@ using std::string;
 %}
 
 // python list into vec_of_ints: from Python to C++
-%typemap(in) GRT::Vector< UINT >
+%typemap(in) GRT::Vector< UINT >,
+             const GRT::Vector< UINT >
 {
-    int i;
-    if (!PyList_Check($input))
-    {
-      PyErr_SetString(PyExc_ValueError, "Expecting a list");
-      return NULL;
-    }
     Py_ssize_t size = PyList_Size($input); //get size of the list
-    for (i = 0; i < size; i++)
-    {
+    for (int i = 0; i < size; i++) {
       PyObject *s = PyList_GetItem($input,i);
-      if (!PyInt_Check(s))
-        {
-         PyErr_SetString(PyExc_ValueError, "List items must be integers");
-         return NULL;
-        }
-      $1.push_back((int)PyInt_AS_LONG(s)); //put the value into the array
+      if (!PyInt_Check(s)) {
+        PyErr_SetString(PyExc_ValueError, "List items must be integers");
+        return NULL;
+      }
+      $1.push_back((int)PyLong_AsLong(s)); //put the value into the array
     }
 }
+
+// Make sure vector arg is a python list
+%typecheck(SWIG_TYPECHECK_POINTER) GRT::Vector< UINT >,
+                                   const GRT::Vector< UINT >
+%{
+    $1 = PyList_Check($input);
+%}
 
 %include "../GRT/DataStructures/VectorFloat.h"
 // From GRT::VectorFloat to numpy.array
@@ -176,7 +176,7 @@ using std::string;
     GRT::VectorFloat const&
 {
   PyArrayObject* arrayobj = reinterpret_cast<PyArrayObject*>($input);
-  $1 = PyArray_ISFLOAT(arrayobj) && (PyArray_NDIM(arrayobj) == 1);
+  $1 = PyArray_Check(arrayobj) && PyArray_ISFLOAT(arrayobj) && (PyArray_NDIM(arrayobj) == 1);
 }
 
 
@@ -296,7 +296,7 @@ using std::string;
     GRT::MatrixFloat const&
 {
   PyArrayObject* arrayobj = reinterpret_cast<PyArrayObject*>($input);
-  $1 = PyArray_ISFLOAT(arrayobj) && (PyArray_NDIM(arrayobj) == 2);
+  $1 = PyArray_Check(arrayobj) && PyArray_ISFLOAT(arrayobj) && (PyArray_NDIM(arrayobj) == 2);
 }
 
 %typemap(out) GRT::Matrix< GRT::VectorFloat >,
@@ -337,6 +337,8 @@ using std::string;
 }
 
 %include "../GRT/DataStructures/TimeSeriesClassificationSample.h"
+%include "../GRT/DataStructures/ClassificationDataStream.h"
+%include "../GRT/DataStructures/UnlabelledData.h"
 
 %include "../GRT/CoreModules/MLBase.h"
 %include "../GRT/CoreModules/Classifier.h"
@@ -388,3 +390,27 @@ using std::string;
 
 %include "../GRT/CoreModules/FeatureExtraction.h"
 %include "../GRT/FeatureExtractionModules/KMeansQuantizer/KMeansQuantizer.h"
+%include "../GRT/FeatureExtractionModules/FFT/FastFourierTransform.h"
+%include "../GRT/FeatureExtractionModules/FFT/FFT.h"
+
+%template(STDVectorOfFastFourierTransform) std::vector<GRT::FastFourierTransform>;
+%template(GRTVectorOfFastFourierTransform) GRT::Vector<GRT::FastFourierTransform>;
+
+%include "../GRT/FeatureExtractionModules/FFT/FFTFeatures.h"
+%include "../GRT/FeatureExtractionModules/EnvelopeExtractor/EnvelopeExtractor.h"
+%include "../GRT/FeatureExtractionModules/KMeansFeatures/KMeansFeatures.h"
+%include "../GRT/FeatureExtractionModules/MovementIndex/MovementIndex.h"
+%include "../GRT/FeatureExtractionModules/MovementTrajectoryFeatures/MovementTrajectoryFeatures.h"
+%include "../GRT/FeatureExtractionModules/ZeroCrossingCounter/ZeroCrossingCounter.h"
+%include "../GRT/FeatureExtractionModules/PCA/PCA.h"
+%include "../GRT/FeatureExtractionModules/RBMQuantizer/RBMQuantizer.h"
+%include "../GRT/FeatureExtractionModules/SOMQuantizer/SOMQuantizer.h"
+%include "../GRT/FeatureExtractionModules/TimeDomainFeatures/TimeDomainFeatures.h"
+%include "../GRT/FeatureExtractionModules/TimeseriesBuffer/TimeseriesBuffer.h"
+
+%include "../GRT/CoreModules/PostProcessing.h"
+%include "../GRT/PostProcessingModules/ClassLabelChangeFilter.h"
+%include "../GRT/PostProcessingModules/ClassLabelFilter.h"
+%include "../GRT/PostProcessingModules/ClassLabelTimeoutFilter.h"
+
+%include "../GRT/CoreModules/PreProcessing.h"
