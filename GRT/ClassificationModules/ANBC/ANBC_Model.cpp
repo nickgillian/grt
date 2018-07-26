@@ -118,11 +118,11 @@ Float ANBC_Model::predictUnnormed( const VectorFloat &x ){
 	return prediction;
 }
 
-inline Float ANBC_Model::gauss(const Float x,const Float mu,const Float sigma){
+Float ANBC_Model::gauss(const Float x,const Float mu,const Float sigma){
 	return ( 1.0/(sigma*sqrt(TWO_PI)) ) * exp( - ( ((x-mu)*(x-mu))/(2*(sigma*sigma)) ) );
 }
 
-inline Float ANBC_Model::unnormedGauss(const Float x,const Float mu,const Float sigma){
+Float ANBC_Model::unnormedGauss(const Float x,const Float mu,const Float sigma){
 	return exp( - ( ((x-mu)*(x-mu))/(2*(sigma*sigma)) ) );
 }
 

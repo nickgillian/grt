@@ -44,8 +44,8 @@ public:
 	bool train( const UINT classLabel, const MatrixDouble &trainingData, const VectorFloat &weightsVector );
 	Float predict( const VectorFloat &x );
 	Float predictUnnormed( const VectorFloat &x );
-	inline Float gauss(const Float x,const Float mu,const Float sigma);
-	inline Float unnormedGauss(const Float x,const Float mu,const Float sigma);
+	Float gauss(const Float x,const Float mu,const Float sigma);
+	Float unnormedGauss(const Float x,const Float mu,const Float sigma);
 	void recomputeThresholdValue(const Float gamma);
 	
 public:

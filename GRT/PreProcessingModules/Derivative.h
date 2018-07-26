@@ -176,12 +176,15 @@ public:
     @param delta: the estimated sampling time between sensor samples, must be greater than zero
     @return returns true if delta was set, false otherwise
     */
-    bool setDelta(const Float delta);
+    inline bool setDelta(const Float delta) {
+        this->delta = delta;
+        return true;
+    }
     
     /**
     Sets if the input data will be filtered using a moving average filter before the derivative is computed.
     Updating this parameter will re-initialize this instance.
-    
+
     @param filterData: sets if the data should be filtered before computing the derivative
     @return returns true if the filterData parameter was set, false otherwise
     */
