@@ -50,8 +50,9 @@ using std::string;
 %include "../GRT/DataStructures/Vector.h"
 %template(VectorTUINT) GRT::Vector<UINT>;
 %template(VectorTFloat) GRT::Vector<Float>;
+%template(VectorTVectorFloat) GRT::Vector<GRT::VectorFloat>;
 
-%typemap(out) GRT::Vector<UINT> %{
+%typemap(out) GRT::Vector<UINT>, const GRT::Vector<UINT> %{
   $result = PyList_New($1.size());
   for (int i = 0; i < $1.size(); ++i) {
     PyList_SetItem($result, i, PyInt_FromLong($1[i]));
@@ -179,6 +180,19 @@ using std::string;
   $1 = PyArray_Check(arrayobj) && PyArray_ISFLOAT(arrayobj) && (PyArray_NDIM(arrayobj) == 1);
 }
 
+%typemap(out) GRT::Vector<GRT::VectorFloat>, const GRT::Vector<GRT::VectorFloat> %{
+  $result = PyList_New($1.size());
+  for (int i = 0; i < $1.size(); ++i) {
+    npy_intp dims[1]{(npy_intp)($1[i].size())};
+    PyObject* new_arr = PyArray_SimpleNew(1, dims, NPY_FLOAT);
+    PyArrayObject* arr_ptr = reinterpret_cast<PyArrayObject*>(new_arr);
+    for (size_t j = 0; j < $1[i].size(); ++j) {
+      float* d_ptr = static_cast<float*>(PyArray_GETPTR1(arr_ptr, j));
+      *d_ptr = $1[i][j];
+    }
+    PyList_SetItem($result, i, new_arr);
+  }
+%}
 
 %include "../GRT/DataStructures/Matrix.h"
 %template(MatrixTFloat) GRT::Matrix<Float>;
@@ -346,6 +360,7 @@ using std::string;
 %include "../GRT/CoreModules/Clusterer.h"
 %include "../GRT/CoreModules/FeatureExtraction.h"
 %include "../GRT/CoreModules/PreProcessing.h"
+%include "../GRT/CoreModules/Regressifier.h"
 
 %include "../GRT/CoreModules/GestureRecognitionPipeline.h"
 %include "../GRT/ClassificationModules/KNN/KNN.h"
@@ -427,3 +442,19 @@ using std::string;
 %include "../GRT/PreProcessingModules/RMSFilter.h"
 %include "../GRT/PreProcessingModules/SavitzkyGolayFilter.h"
 %include "../GRT/PreProcessingModules/WeightedAverageFilter.h"
+
+%include "../GRT/DataStructures/RegressionSample.h"
+%include "../GRT/DataStructures/RegressionData.h"
+%extend GRT::RegressionData {
+    GRT::RegressionSample& get(const int &i){
+        return $self->operator[](i);
+    }
+}
+
+%include "../GRT/RegressionModules/ArtificialNeuralNetworks/MLP/Neuron.h"
+%include "../GRT/RegressionModules/ArtificialNeuralNetworks/MLP/MLP.h"
+%include "../GRT/RegressionModules/LinearRegression/LinearRegression.h"
+%include "../GRT/RegressionModules/LogisticRegression/LogisticRegression.h"
+%include "../GRT/RegressionModules/MultidimensionalRegression/MultidimensionalRegression.h"
+%include "../GRT/RegressionModules/RegressionTree/RegressionTreeNode.h"
+%include "../GRT/RegressionModules/RegressionTree/RegressionTree.h"
