@@ -714,7 +714,7 @@ double DTW::d(int m,int n,MatrixDouble &distanceMatrix,const int M,const int N){
 
     //If this cell contains a negative value then it has already been searched
     //The cost is therefore the absolute value of the negative value so return it
-    if( distanceMatrix[m][n] < 0 ){
+    if( std::signbit(distanceMatrix[m][n]) ){
         dist = fabs( distanceMatrix[m][n] );
         return dist;
     }
