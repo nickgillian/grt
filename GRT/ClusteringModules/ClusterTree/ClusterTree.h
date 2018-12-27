@@ -122,7 +122,7 @@ public:
      @param file: a reference to the file the model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const override;
+    virtual bool save( std::fstream &file ) const override;
     
     /**
      This loads a trained model from a file.
@@ -131,7 +131,7 @@ public:
      @param file: a reference to the file the model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file ) override;
+    virtual bool load( std::fstream &file ) override;
 
     /**
      Deep copies the tree, returning a pointer to the new clusterer tree.

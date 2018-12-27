@@ -310,7 +310,7 @@ bool GaussianMixtureModels::predict_(VectorFloat &x){
     return true;
 }
     
-bool GaussianMixtureModels::saveModelToFile( std::fstream &file ) const{
+bool GaussianMixtureModels::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
         errorLog << "saveModelToFile(string filename) - Failed to open file!" << std::endl;
@@ -363,7 +363,7 @@ bool GaussianMixtureModels::saveModelToFile( std::fstream &file ) const{
     
 }
 
-bool GaussianMixtureModels::loadModelFromFile( std::fstream &file ){
+bool GaussianMixtureModels::load( std::fstream &file ){
     
     //Clear any previous model
     clear();
