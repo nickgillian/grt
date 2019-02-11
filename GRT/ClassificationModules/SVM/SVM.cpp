@@ -1392,8 +1392,6 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     model->probB = NULL;
     model->label = NULL;
     model->nSV = NULL;
-    model->label = NULL;
-    model->nSV = NULL;
     model->free_sv = 0; //This will be set to 1 if everything is loaded OK
     
     //Init the memory for the parameters
