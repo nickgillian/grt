@@ -399,9 +399,16 @@ bool SVM::trainSVM(){
     if( model != NULL ){
         trained = true;
         numClasses = getNumClasses();
-        classLabels.resize( getNumClasses() );
-        for(UINT k=0; k<getNumClasses(); k++){
-            classLabels[k] = model->label[k];
+        classLabels.resize( numClasses );
+        
+        if (param.svm_type != ONE_CLASS){
+            for(UINT k=0; k<numClasses; k++){
+                classLabels[k] = model->label[k];
+            }
+        }
+        else
+        {
+            grt_assert(model->label == NULL);
         }
         classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
         classDistances.resize(numClasses,DEFAULT_NULL_DISTANCE_VALUE);
@@ -1093,6 +1100,9 @@ const struct LIBSVM::svm_model* SVM::getLIBSVMModel() const { return model; }
 bool SVM::setSVMType(const SVMType svmType){
     if( validateSVMType(svmType) ){
         param.svm_type = (int)svmType;
+        if (param.svm_type == ONE_CLASS){
+            param.probability = false;
+        }
         return true;
     }
     return false;
