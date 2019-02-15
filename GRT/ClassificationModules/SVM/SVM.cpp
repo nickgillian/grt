@@ -1093,6 +1093,10 @@ Float SVM::getC() const{
     return param.gamma;
 }
 
+UINT SVM::getKFoldCrossValidationValue() const{
+    return kFoldValue;
+}
+
 Float SVM::getCrossValidationResult() const{ return crossValidationResult; }
 
 const struct LIBSVM::svm_model* SVM::getLIBSVMModel() const { return model; }
