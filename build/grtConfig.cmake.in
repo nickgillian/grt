@@ -1,0 +1,32 @@
+# GRT MIT License
+# Copyright (c) <2019> <Adam Rankin, Robarts Research Institute>
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+# and associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all copies or substantial
+# portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+# LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# This file can be passed to a CMake FIND_PACKAGE call with the following syntax:
+#
+# FIND_PACKAGE(grt <REQUIRED|QUIET> <NO_MODULE>)
+#   If NO_MODULE is included, set the variable grt_DIR:PATH=@CMAKE_BINARY_DIR@
+# 
+# Or you can use the following variables to configure your CMake project:
+#  grt_LIBRARIES - list of CMake targets produced by this build
+#-----------------------------------------------------------------------------
+
+# Set the targets file
+INCLUDE("@CMAKE_BINARY_DIR@/@GRT_LIB_NAME@Targets.cmake")
+
+# Tell the user project where to find our headers and libraries
+SET(grt_LIBRARIES grt)

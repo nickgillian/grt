@@ -2,43 +2,46 @@ cmake_minimum_required(VERSION 2.8.7)
 
 project(GRT C CXX)
 
-# GRT library
+#GRT library
 set(GRT_LIB_NAME grt)
 
-#set the main options, you can control these dynamically via the command line by passing in the option -DOPTION_NAME=ON
+#Set the main options, you can control these dynamically via the command line by passing in the option -DOPTION_NAME=ON
 #e.g., cmake .. -DBUILD_TESTS=ON
 option(BUILD_TESTS “build-unit-tests” ON)
 option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
-option(BUILD_SHARED_LIB "build-shared-lib" ON)
+option(BUILD_SHARED_LIBS "build-shared-lib" ON)
 option(EXCLUDE_FROM_INSTALL "exclude-from-install" OFF)
 
-#setup the default build flags
+#Setup the default build flags
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
 
 #Define that we are now using C++11 by default
 add_definitions(-DGRT_CXX11_ENABLED)
+#Set CMake option for C++11
+set(CMAKE_CXX_STANDARD 11)
 
-#Setup if the library should be built as static or shared, default is SHARED, turning shared off will make a static build
-if(BUILD_SHARED_LIB MATCHES ON)
-	set(LIB_BUILD_TYPE SHARED)
-	set(LIB_BUILD_TYPE_INFO "shared")
-	set(BUILD_STATIC_LIB OFF) #Make sure the static lib is off
-else() #setup for static build
+if(BUILD_SHARED_LIBS)
+    #Setup for shared build
+    set(LIB_BUILD_TYPE SHARED)
+    set(LIB_BUILD_TYPE_INFO "shared")
+    set(BUILD_STATIC_LIB OFF FORCE)
+else()
+    #Setup for static build
     set(LIB_BUILD_TYPE STATIC)
     set(LIB_BUILD_TYPE_INFO "static")
-    set(BUILD_SHARED_LIB OFF) #Make sure the shared lib is off
+    set(BUILD_SHARED_LIBS OFF FORCE)
 endif()
 
 #If static lib is enabled, then define the relevant flag
-if( BUILD_STATIC_LIB MATCHES ON )
-	add_definitions(-DGRT_STATIC_LIB)
+if(BUILD_STATIC_LIB)
+    add_definitions(-DGRT_STATIC_LIB)
 endif()
 
-#Add any custom OS definitions
+#Add any custom MSVC definitions
 if(MSVC)
-    message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library for Windows")
+    message(STATUS "Building " ${LIB_BUILD_TYPE_INFO} " library using Visual Studio")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
@@ -49,31 +52,29 @@ if(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 else()
-	
-#Add any custom Linux definitions
-if(UNIX) 
-    message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for UNIX/Linux")
-    configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-endif()
-
-if(MINGW)
-    message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for Windows/MinGW")
-    configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-endif()
-
+    #Add any custom Linux definitions
+    if(UNIX) # APPLE also triggers the Unix flag
+        message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for UNIX/Linux")
+        configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+    endif()
+    
+    #Add any custom MingW definitions
+    if(MINGW)
+        message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library using MinGW")
+        configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+    endif()
 endif() #end of else(APPLE)
 
-if (ANDROID)
+if(ANDROID)
     message(STATUS "Building " ${LIB_BUILD_TYPE_INFO}  " library for Android")
     configure_file(grt.pc.in ${CMAKE_CURRENT_BINARY_DIR}/grt.pc @ONLY)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++11 -fPIE -pie")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 endif()
-
 
 #Add the common cxx flags to the debug and release flags
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -128,33 +129,32 @@ set(GRT_SRC
     ${GRT_REGRESSION_MODULES}
 )
 
-include_directories( "${GRT_SRC_DIR}" )
-
 #Add the main GRT library so it gets built
-add_library(${GRT_LIB_NAME} 
+add_library(${GRT_LIB_NAME}
             ${LIB_BUILD_TYPE}
             ${GRT_SRC}
             ${GRT_HEADERS}
 )
+target_include_directories(${GRT_LIB_NAME} PUBLIC ${GRT_SRC_DIR})
 
 #Add the options for what should be installed (when the user runs: sudo make install)
 if(NOT EXCLUDE_FROM_INSTALL)
-	install(
-		TARGETS ${GRT_LIB_NAME}
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-	)
+    install(
+        TARGETS ${GRT_LIB_NAME}
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+    )
 
-	install(
-		DIRECTORY "${GRT_SRC_DIR}/"
-		DESTINATION include/GRT
-		FILES_MATCHING PATTERN *.h
-	)
+    install(
+        DIRECTORY "${GRT_SRC_DIR}/"
+        DESTINATION include/GRT
+        FILES_MATCHING PATTERN *.h
+    )
 endif()
 
 # GRT Unit Tests
-if( BUILD_TESTS )
+if(BUILD_TESTS)
     ENABLE_TESTING()
 
     #Add a command that will automatically build the unit testing tools for us
@@ -196,10 +196,10 @@ if( BUILD_TESTS )
         add_executable(${unit_test_name} ${unit_test})
 
         #Include the main GRT include directory
-        include_directories( "${GRT_SRC_DIR}" )
+        target_include_directories(${unit_test_name} PRIVATE "${GRT_SRC_DIR}" )
 
         #Include the gtest parent directory
-        include_directories( "${GRT_THIRD_PARTY_DIR}/gtest/googletest/include" )
+        target_include_directories(${unit_test_name} PRIVATE "${GRT_THIRD_PARTY_DIR}/gtest/googletest/include" )
 
         #Link against the main GRT library 
         target_link_libraries(${unit_test_name} ${GRT_LIB_NAME} gtest)
@@ -212,95 +212,95 @@ if( BUILD_TESTS )
 endif()
 
 # GRT examples
-if( BUILD_EXAMPLES )
-	function(grt_add_example _example_name _example_sub_directory)
-	    
+if(BUILD_EXAMPLES)
+    function(grt_add_example _example_name _example_sub_directory)
+
         #Search for any source files in the example directory
         file(GLOB sources
-	        "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.cpp"
-	        "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.h"
-	    )
+            "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.cpp"
+            "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/*.h"
+        )
 
             #If there are source files for the example, then setup the example application
-        if( sources )
+        if(sources)
             message(STATUS "Adding example: " ${_example_name})
             #Add the example as a new executable application
-	        add_executable(${_example_name}
-	            ${sources}
-	        )
+            add_executable(${_example_name}
+                ${sources}
+            )
 
             #Include the main GRT include directory
-            include_directories( "${GRT_EXAMPLES_DIR}/.." )
+            target_include_directories(${_example_name} PRIVATE "${GRT_EXAMPLES_DIR}/..")
 
             #Link against the main GRT library 
             target_link_libraries(${_example_name}
-	            ${GRT_LIB_NAME}
-	        )
+                ${GRT_LIB_NAME}
+            )
 
             #Copy the example application to the main examples directory after a successful build
             add_custom_command(TARGET ${_example_name}
-				                POST_BUILD
-                                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${_example_name}> ${GRT_EXAMPLES_OUTPUT_DIR}/${_example_name}
-				                COMMENT "Copying ${_example_name} to examples directory"
+                               POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${_example_name}> ${GRT_EXAMPLES_OUTPUT_DIR}/${_example_name}
+                               COMMENT "Copying ${_example_name} to examples directory"
             )
 
             #Guess the training data name that we want to copy
             string(REPLACE
-                "Example"           # match string
-                "TrainingData"      # replace string
-                TRAINING_DATA       # output
-                ${_example_name}    # input
+                   "Example"           # match string
+                   "TrainingData"      # replace string
+                   TRAINING_DATA       # output
+                   ${_example_name}    # input
             )
 
             #If a data file exists for this example, copy it to the main examples directory after a successful build
             if(EXISTS "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt")
                 add_custom_command(
                     TARGET ${_example_name}
-  					POST_BUILD
+                    POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy 
-					"${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt" #copy target
-                    "${GRT_EXAMPLES_OUTPUT_DIR}/${TRAINING_DATA}.grt"					 #copy destination
-					COMMENT "Copying ${TRAINING_DATA}.grt to examples directory"
+                    "${GRT_EXAMPLES_DIR}/${_example_sub_directory}/${_example_name}/${TRAINING_DATA}.grt" #copy target
+                    "${GRT_EXAMPLES_OUTPUT_DIR}/${TRAINING_DATA}.grt"                     #copy destination
+                    COMMENT "Copying ${TRAINING_DATA}.grt to examples directory"
                 )
             endif()
-	    endif()
-	endfunction()
+        endif()
+    endfunction()
 
-	macro(grt_get_sub_directory_list _result _source_directory)
-	    file(GLOB children
-	        RELATIVE "${_source_directory}"
-	        "${_source_directory}/*"
-	    )
+    macro(grt_get_sub_directory_list _result _source_directory)
+        file(GLOB children
+            RELATIVE "${_source_directory}"
+            "${_source_directory}/*"
+        )
 
-	    set(${_result} "")
+        set(${_result} "")
 
-	    foreach(child ${children})
-	        if(IS_DIRECTORY "${_source_directory}/${child}")
-	            list(APPEND ${_result} ${child})
-	        endif()
-	    endforeach()
-	endmacro()
+        foreach(child ${children})
+            if(IS_DIRECTORY "${_source_directory}/${child}")
+                list(APPEND ${_result} ${child})
+            endif()
+        endforeach()
+    endmacro()
 
-	grt_get_sub_directory_list(GRT_EXAMPLES_SUB_DIRECTORIES
-	    "${GRT_EXAMPLES_DIR}"
-	)
+    grt_get_sub_directory_list(GRT_EXAMPLES_SUB_DIRECTORIES
+        "${GRT_EXAMPLES_DIR}"
+    )
 
-	foreach(GRT_EXAMPLES_SUB_DIRECTORY ${GRT_EXAMPLES_SUB_DIRECTORIES})
-	    grt_get_sub_directory_list(GRT_EXAMPLES
-	        "${GRT_EXAMPLES_DIR}/${GRT_EXAMPLES_SUB_DIRECTORY}"
-	    )
+    foreach(GRT_EXAMPLES_SUB_DIRECTORY ${GRT_EXAMPLES_SUB_DIRECTORIES})
+        grt_get_sub_directory_list(GRT_EXAMPLES
+            "${GRT_EXAMPLES_DIR}/${GRT_EXAMPLES_SUB_DIRECTORY}"
+        )
 
-	    foreach(GRT_EXAMPLE ${GRT_EXAMPLES})
-	        grt_add_example(
-	            ${GRT_EXAMPLE}
-	            ${GRT_EXAMPLES_SUB_DIRECTORY}
-	        )
-	    endforeach()
-	endforeach()
+        foreach(GRT_EXAMPLE ${GRT_EXAMPLES})
+            grt_add_example(
+                ${GRT_EXAMPLE}
+                ${GRT_EXAMPLES_SUB_DIRECTORY}
+            )
+        endforeach()
+    endforeach()
 endif() #BUILD_EXAMPLES
 
 #GRT Tool
-if( BUILD_TOOLS )
+if(BUILD_TOOLS)
     #Get a list of the tools
     file(GLOB GRT_TOOLS "${GRT_TOOLS_DIR}/*.cpp")
 
@@ -311,10 +311,10 @@ if( BUILD_TOOLS )
         #Add the application tools
         add_executable (${EXE} ${GRT_TOOL})
 
-        include_directories( "${GRT_EXAMPLES_DIR}/.." )
+        target_include_directories(${EXE} PRIVATE "${GRT_EXAMPLES_DIR}/.." )
 
         #Link the tools against the GRT library
-        target_link_libraries(${EXE} ${GRT_LIB_NAME})
+        target_link_libraries(${EXE} PRIVATE ${GRT_LIB_NAME})
 
         if(NOT EXCLUDE_FROM_INSTALL)
             install(
@@ -335,3 +335,10 @@ if(UNIX AND NOT EXCLUDE_FROM_INSTALL)
     )
 endif()
 
+# Generate downstream build-tree CMake infrastructure
+export(TARGETS
+  ${GRT_LIB_NAME}
+  FILE "${CMAKE_BINARY_DIR}/${GRT_LIB_NAME}Targets.cmake"
+  )
+CONFIGURE_FILE(${GRT_LIB_NAME}Config.cmake.in
+  "${CMAKE_BINARY_DIR}/${GRT_LIB_NAME}Config.cmake" @ONLY)
