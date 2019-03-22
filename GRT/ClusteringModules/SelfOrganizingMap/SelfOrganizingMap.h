@@ -43,7 +43,7 @@ public:
         initialized = false;
     }
     
-    ~GaussNeuron(){
+    virtual ~GaussNeuron(){
         
     }
     

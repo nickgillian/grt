@@ -33,7 +33,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class TestInstanceResult{
+class GRT_API TestInstanceResult{
 public:
     /**
      Default Constructor.

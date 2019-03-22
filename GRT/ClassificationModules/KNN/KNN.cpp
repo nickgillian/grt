@@ -754,7 +754,7 @@ bool KNN::enableBestKValueSearch(bool searchForBestKValue){
     return true;
 }
 
-bool KNN::setNullRejectionCoeff(Float nullRejectionCoeff){
+bool KNN::setNullRejectionCoeff(const Float nullRejectionCoeff){
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;
         recomputeNullRejectionThresholds();

@@ -204,7 +204,7 @@ public:
     
     @return returns true if the nullRejectionCoeff parameter was updated successfully, false otherwise
     */
-    bool setNullRejectionCoeff(Float nullRejectionCoeff);
+    virtual bool setNullRejectionCoeff(const Float nullRejectionCoeff);
     
     /**
     Sets the current distance method being used to compute the neighest neighbours.

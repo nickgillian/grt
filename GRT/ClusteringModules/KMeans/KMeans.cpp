@@ -405,7 +405,7 @@ Float KMeans::calculateTheta(const MatrixFloat &data){
 
 }
 
-bool KMeans::saveModelToFile( std::fstream &file ) const{
+bool KMeans::save( std::fstream &file ) const{
 
     if( !file.is_open() ){
         errorLog << "saveModelToFile(fstream &file) - Failed to save model, file is not open!" << std::endl;
@@ -433,7 +433,7 @@ bool KMeans::saveModelToFile( std::fstream &file ) const{
 
 }
 
-bool KMeans::loadModelFromFile( std::fstream &file ){
+bool KMeans::load( std::fstream &file ){
 
     //Clear any previous model
     clear();

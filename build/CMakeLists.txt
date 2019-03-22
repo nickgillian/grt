@@ -26,12 +26,12 @@ if(BUILD_SHARED_LIBS)
     #Setup for shared build
     set(LIB_BUILD_TYPE SHARED)
     set(LIB_BUILD_TYPE_INFO "shared")
-    set(BUILD_STATIC_LIB OFF FORCE)
+    set(BUILD_STATIC_LIB OFF)
 else()
     #Setup for static build
     set(LIB_BUILD_TYPE STATIC)
     set(LIB_BUILD_TYPE_INFO "static")
-    set(BUILD_SHARED_LIBS OFF FORCE)
+    set(BUILD_SHARED_LIBS OFF)
 endif()
 
 #If static lib is enabled, then define the relevant flag

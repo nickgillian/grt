@@ -14,7 +14,7 @@
 
 GRT_BEGIN_NAMESPACE
 
-class TestResult{
+class GRT_API TestResult{
 public:
     /**
      Default Constructor.

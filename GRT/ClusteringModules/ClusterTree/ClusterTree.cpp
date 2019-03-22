@@ -219,11 +219,11 @@ bool ClusterTree::print() const{
     return false;
 }
     
-bool ClusterTree::saveModelToFile( std::fstream &file ) const{
+bool ClusterTree::save( std::fstream &file ) const{
     
     if( !file.is_open() )
     {
-        errorLog <<"saveModelToFile(fstream &file) - The file is not open!" << std::endl;
+        errorLog <<"save(fstream &file) - The file is not open!" << std::endl;
         return false;
     }
     
@@ -232,7 +232,7 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
     
     //Write the clusterer settings to the file
     if( !saveClustererSettingsToFile(file) ){
-        errorLog <<"saveModelToFile(fstream &file) - Failed to save clusterer settings to file!" << std::endl;
+        errorLog <<"save(fstream &file) - Failed to save clusterer settings to file!" << std::endl;
         return false;
     }
     
@@ -247,7 +247,7 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
 	if( tree != NULL ){
     	file << "Tree:\n";
     	if( !tree->save( file ) ){
-        	errorLog << "saveModelToFile(fstream &file) - Failed to save tree to file!" << std::endl;
+        	errorLog << "save(fstream &file) - Failed to save tree to file!" << std::endl;
         	return false;
     	}
 	}
@@ -255,13 +255,13 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
 	return true;
 }
     
-bool ClusterTree::loadModelFromFile( std::fstream &file ){
+bool ClusterTree::load( std::fstream &file ){
     
 	clear();
 
 	if(!file.is_open())
 	{
-    	errorLog << "loadModelFromFile(string filename) - Could not open file to load model" << std::endl;
+    	errorLog << "load(string filename) - Could not open file to load model" << std::endl;
     	return false;
 	}
 
@@ -270,47 +270,47 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
 	//Find the file type header
 	file >> word;
 	if(word != "GRT_CLUSTER_TREE_MODEL_FILE_V1.0"){
-    	errorLog << "loadModelFromFile(string filename) - Could not find Model File Header" << std::endl;
+    	errorLog << "load(string filename) - Could not find Model File Header" << std::endl;
     	return false;
 	}
 
 	//Load the base settings from the file
 	if( !loadClustererSettingsFromFile(file) ){
-    	errorLog << "loadModelFromFile(string filename) - Failed to load base settings from file!" << std::endl;
+    	errorLog << "load(string filename) - Failed to load base settings from file!" << std::endl;
     	return false;
 	}
 
 	file >> word;
 	if(word != "NumSplittingSteps:"){
-    	errorLog << "loadModelFromFile(string filename) - Could not find the NumSplittingSteps!" << std::endl;
+    	errorLog << "load(string filename) - Could not find the NumSplittingSteps!" << std::endl;
     	return false;
 	}
 	file >> numSplittingSteps;
 
 	file >> word;
 	if(word != "MinNumSamplesPerNode:"){
-    	errorLog << "loadModelFromFile(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
+    	errorLog << "load(string filename) - Could not find the MinNumSamplesPerNode!" << std::endl;
     	return false;
 	}
 	file >> minNumSamplesPerNode;
 
 	file >> word;
 	if(word != "MaxDepth:"){
-    	errorLog << "loadModelFromFile(string filename) - Could not find the MaxDepth!" << std::endl;
+    	errorLog << "load(string filename) - Could not find the MaxDepth!" << std::endl;
     	return false;
 	}
 	file >> maxDepth;
 
 	file >> word;
 	if(word != "RemoveFeaturesAtEachSpilt:"){
-    	errorLog << "loadModelFromFile(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
+    	errorLog << "load(string filename) - Could not find the RemoveFeaturesAtEachSpilt!" << std::endl;
     	return false;
 	}
 	file >> removeFeaturesAtEachSplit;
 
 	file >> word;
 	if(word != "TrainingMode:"){
-    	errorLog << "loadModelFromFile(string filename) - Could not find the TrainingMode!" << std::endl;
+    	errorLog << "load(string filename) - Could not find the TrainingMode!" << std::endl;
     	return false;
 	}
     UINT tempTrainingMode = 0;
@@ -319,14 +319,14 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
 
 	file >> word;
 	if(word != "MinRMSErrorPerNode:"){
-    	errorLog << "loadModelFromFile(string filename) - Could not find the MinRMSErrorPerNode!" << std::endl;
+    	errorLog << "load(string filename) - Could not find the MinRMSErrorPerNode!" << std::endl;
     	return false;
 	}	
 	file >> minRMSErrorPerNode;
 
 	file >> word;
 	if(word != "TreeBuilt:"){
-    	errorLog << "loadModelFromFile(string filename) - Could not find the TreeBuilt!" << std::endl;
+    	errorLog << "load(string filename) - Could not find the TreeBuilt!" << std::endl;
     	return false;
     }
 	file >> trained;
@@ -334,7 +334,7 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
 	if( trained ){
     	file >> word;
     	if(word != "Tree:"){
-        		errorLog << "loadModelFromFile(string filename) - Could not find the Tree!" << std::endl;
+        		errorLog << "load(string filename) - Could not find the Tree!" << std::endl;
         		return false;
     	}
 
@@ -343,14 +343,14 @@ bool ClusterTree::loadModelFromFile( std::fstream &file ){
     
     	if( tree == NULL ){
             clear();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to create new RegressionTreeNode!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to create new RegressionTreeNode!" << std::endl;
             return false;
     	}
     
     	tree->setParent( NULL );
     	if( !tree->load( file ) ){
             clear();
-            errorLog << "loadModelFromFile(fstream &file) - Failed to load tree from file!" << std::endl;
+            errorLog << "load(fstream &file) - Failed to load tree from file!" << std::endl;
             return false;
     	}
         

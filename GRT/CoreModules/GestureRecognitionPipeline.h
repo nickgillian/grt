@@ -55,25 +55,25 @@ class GRT_API GestureRecognitionPipeline : public MLBase
 public:
     enum ContextLevels{START_OF_PIPELINE=0,AFTER_PREPROCESSING,AFTER_FEATURE_EXTRACTION,AFTER_CLASSIFIER,END_OF_PIPELINE,NUM_CONTEXT_LEVELS};
 
-	/**
+    /**
      Default Constructor
-	*/
-	GestureRecognitionPipeline(void);
-	
-	/**
-     Copy Constructor. Performs a depp copy of the data from the rhs pipeline into this pipeline.
-	*/
-	GestureRecognitionPipeline(const GestureRecognitionPipeline &rhs);
-	
-	/**
+    */
+    GestureRecognitionPipeline(void);
+    
+    /**
+     Copy Constructor. Performs a deep copy of the data from the rhs pipeline into this pipeline.
+    */
+    GestureRecognitionPipeline(const GestureRecognitionPipeline &rhs);
+    
+    /**
      Default Destructor
-	*/
+    */
     virtual ~GestureRecognitionPipeline(void);
-	
-	/**
-     Equals Constructor. Performs a depp copy of the data from the rhs pipeline into this pipeline.
-	*/
-	GestureRecognitionPipeline& operator=(const GestureRecognitionPipeline &rhs);
+    
+    /**
+     Equals Constructor. Performs a deep copy of the data from the rhs pipeline into this pipeline.
+    */
+    GestureRecognitionPipeline& operator=(const GestureRecognitionPipeline &rhs);
 
     /**
      Adds the preprocessing module to the pipeline, this is the same as calling addPreProcessingModule( module )
@@ -129,9 +129,9 @@ public:
      the Classification module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the classifier was trained successfully, false otherwise.
 
-	@param trainingData: the classification data that will be used to train the classifier at the core of the pipeline
-	@return bool returns true if the classifier was trained successfully, false otherwise
-	*/
+    @param trainingData: the classification data that will be used to train the classifier at the core of the pipeline
+    @return bool returns true if the classifier was trained successfully, false otherwise
+    */
     virtual bool train_(ClassificationData &trainingData) override;
 
     /**
@@ -145,20 +145,20 @@ public:
     */
     virtual bool train(const ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false );
 
-	/**
+    /**
      This is the main training interface for training a Classifier with ClassificationData using K-fold cross validation.  This function will pass
      the trainingData through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the 
      training function of the Classification module that has been added to the GestureRecognitionPipeline.  
      The function will return true if the classifier was trained successfully, false otherwise.
 
-	@param trainingData: the labelled classification training data that will be used to train the classifier at the core of the pipeline
-	@param kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples int the LabelledClassificationData
-	@param useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
-	@return bool returns true if the classifier was trained successfully, false otherwise
-	*/
+    @param trainingData: the labeled classification training data that will be used to train the classifier at the core of the pipeline
+    @param kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples int the LabelledClassificationData
+    @param useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
+    @return bool returns true if the classifier was trained successfully, false otherwise
+    */
     virtual bool train_(ClassificationData &trainingData,const UINT kFoldValue,const bool useStratifiedSampling = false);
 
-	/**
+    /**
      This is the main training interface for training a Classifier with TimeSeriesClassificationData.  This function will pass
      the trainingData through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the 
      training function of the Classification module that has been added to the GestureRecognitionPipeline.  
@@ -166,14 +166,14 @@ public:
 
     @param trainingData: the time-series classification training data that will be used to train the classifier at the core of the pipeline
     @return bool returns true if the classifier was trained successfully, false otherwise
-	*/
+    */
     virtual bool train_(TimeSeriesClassificationData &trainingData) override;
 
     /**
      This is the main training interface for training a Classifier with TimeSeriesClassificationData using K-fold cross validation. This function calls train_(...), so if you
      want to use a more efficient version of the algorithm (and don't care that your training data may get modified) then call train_(...) directly.
      
-     @param trainingData: the labelled time-series classification training data that will be used to train the classifier at the core of the pipeline
+     @param trainingData: the labeled time-series classification training data that will be used to train the classifier at the core of the pipeline
      @param kFoldValue: the number of cross validation folds, this should be a value between in the range of [1 M-1], where M is the number of training samples in the LabelledClassificationData
      @param useStratifiedSampling: sets if stratified sampling should be used during the cross validation training
      @return bool returns true if the classifier was trained and tested successfully, false otherwise
@@ -203,7 +203,7 @@ public:
     */
     virtual bool train_(ClassificationDataStream &trainingData) override;
 
-	/**
+    /**
      This is the main training interface for training a regression module with RegressionData.  This function will pass
      the trainingData through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the 
      training function of the regression module that has been added to the GestureRecognitionPipeline.  
@@ -211,9 +211,9 @@ public:
 
     @param trainingData: the labelled regression training data that will be used to train the regression module at the core of the pipeline
     @return bool returns true if the regression module was trained successfully, false otherwise
-	*/
+    */
     virtual bool train_(RegressionData &trainingData) override;
-	
+    
     /**
      This is the main training interface for training a regression module with a regression training and validation dataset.  This function will pass
      the training and validataion through any PreProcessing or FeatureExtraction modules that have been added to the GestureRecognitionPipeline, and then calls the 
@@ -267,7 +267,7 @@ public:
 
      @param testData: the labelled classification data that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
-	*/
+    */
     virtual bool test(const ClassificationData &testData);
 
     /**
@@ -278,7 +278,7 @@ public:
 
      @param testData: the labelled timeseries classification data that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
-	*/
+    */
     virtual bool test(const TimeSeriesClassificationData &testData);
 
     /**
@@ -289,7 +289,7 @@ public:
 
      @param testData: the timeseries classification data stream that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
-	*/
+    */
     virtual bool test(const ClassificationDataStream &testData);
 
     /**
@@ -300,7 +300,7 @@ public:
 
      @param testData: the labelled regression data that will be used to test the accuracy of the pipeline
      @return bool returns true if the pipeline was tested successfully, false otherwise
-	*/
+    */
     virtual bool test(const RegressionData &testData);
     
     /**
@@ -309,7 +309,7 @@ public:
 
      @param inputVector: the input data that will be passed through the pipeline for classification or regression
      @return bool returns true if the prediction was successful, false otherwise
-	*/
+    */
     virtual bool predict_(VectorFloat &inputVector) override;
     
     /**
@@ -330,7 +330,7 @@ public:
 
      @param inputVector: the input data that will be passed through the pipeline for regression
      @return bool returns true if the regression was successful, false otherwise
-	*/
+    */
     GRT_DEPRECATED_MSG( "map_(VectorFloat &inputVector) is deprecated, use predict_(VectorFloat &inputVector) instead", virtual bool map_(VectorFloat &inputVector) override );
     
     /**
@@ -338,7 +338,7 @@ public:
      the current pipeline.
 
      @return bool returns true if the reset was successful, false otherwise
-	*/
+    */
     virtual bool reset() override;
 
     /**
@@ -369,7 +369,7 @@ public:
      @deprecated use save(std::string &filename) instead
      @param filename: the name of the file you want to save the pipeline to
      @return bool returns true if the pipeline was saved successful, false otherwise
-	*/
+    */
     GRT_DEPRECATED_MSG( "savePipelineToFile(std::string filename) is deprecated, use save(std::string &filename) instead", bool savePipelineToFile(const std::string &filename) const );
 
     /**
@@ -385,7 +385,7 @@ public:
      @deprecated use load(std::string &filename) instead
      @param filename: the name of the file you want to load the pipeline from
      @return bool returns true if the pipeline was loaded successful, false otherwise
-	*/
+    */
     GRT_DEPRECATED_MSG( "loadPipelineFromFile(std::string filename) is deprecated, use load(std::string &filename) instead", bool loadPipelineFromFile(const std::string &filename) );
     
     /**
@@ -401,160 +401,160 @@ public:
      @param inputVector: the input data that should be processed
      @param computeFeatures: sets if just the preprocessing modules should be used (false), or both the preprocessing and feature extraction modules should be used (true)
      @return bool returns true if the data was passed through the preprocessing modules successful, false otherwise
-	*/
+    */
     bool preProcessData(VectorFloat inputVector,bool computeFeatures = true);
     
     /**
     This function returns true if the pipeline has been initialized.  The pipeline is initialized if either a classifier or regressifier module has been set at the core of the pipeline.
     
     @return bool returns true if the pipeline has been initialized, false otherwise.
-	*/
+    */
     virtual bool getIsInitialized() const;
 
     /**
-	 This function returns true if any preprocessing modules have been added to the pipeline.
-	
-	@return bool returns true if any preprocessing modules have been added to the pipeline, false otherwise.
-	*/
+     This function returns true if any preprocessing modules have been added to the pipeline.
+    
+    @return bool returns true if any preprocessing modules have been added to the pipeline, false otherwise.
+    */
     bool getIsPreProcessingSet() const;
 
     /**
-	 This function returns true if any feature extraction modules have been added to the pipeline.
-	
-	@return bool returns true if any feature extraction modules have been added to the pipeline, false otherwise.
-	*/
+     This function returns true if any feature extraction modules have been added to the pipeline.
+    
+    @return bool returns true if any feature extraction modules have been added to the pipeline, false otherwise.
+    */
     bool getIsFeatureExtractionSet() const;
 
     /**
-	 This function returns true if a classifier has been added to the pipeline.
-	
-	@return bool returns true if a classifier has been added to the pipeline, false otherwise.
-	*/
+     This function returns true if a classifier has been added to the pipeline.
+    
+    @return bool returns true if a classifier has been added to the pipeline, false otherwise.
+    */
     bool getIsClassifierSet() const;
 
     /**
-	 This function returns true if a regressifier has been added to the pipeline.
-	
-	@return bool returns true if a regressifier has been added to the pipeline, false otherwise.
-	*/
+     This function returns true if a regressifier has been added to the pipeline.
+    
+    @return bool returns true if a regressifier has been added to the pipeline, false otherwise.
+    */
     bool getIsRegressifierSet() const;
     
     /**
-	 This function returns true if a clusterer has been added to the pipeline.
+     This function returns true if a clusterer has been added to the pipeline.
      
      @return bool returns true if a clusterer has been added to the pipeline, false otherwise.
      */
     bool getIsClustererSet() const;
 
     /**
-	 This function returns true if any post processing modules have been added to the pipeline.
-	
-	@return bool returns true if any post processing modules have been added to the pipeline, false otherwise.
-	*/
+     This function returns true if any post processing modules have been added to the pipeline.
+    
+    @return bool returns true if any post processing modules have been added to the pipeline, false otherwise.
+    */
     bool getIsPostProcessingSet() const;
 
     /**
-	 This function returns true if any context modules have been added to the pipeline.
-	
-	@return bool returns true if any context modules have been added to the pipeline, false otherwise.
-	*/
+     This function returns true if any context modules have been added to the pipeline.
+    
+    @return bool returns true if any context modules have been added to the pipeline, false otherwise.
+    */
     bool getIsContextSet() const;
 
     /**
-	 This function returns true if either a classifier or regressifier has been added to the pipeline.
-	
-	@return bool returns true if either a classifier or regressifier has been added to the pipeline, false otherwise.
-	*/
+     This function returns true if either a classifier or regressifier has been added to the pipeline.
+    
+    @return bool returns true if either a classifier or regressifier has been added to the pipeline, false otherwise.
+    */
     bool getIsPipelineModeSet() const;
 
     /**
-	 This function returns true if a classifier has been added to the pipeline (and the pipeline is therefore in classification mode).
-	
-	@return bool returns true if a classifier has been added to the pipeline, false otherwise.
-	*/
+     This function returns true if a classifier has been added to the pipeline (and the pipeline is therefore in classification mode).
+    
+    @return bool returns true if a classifier has been added to the pipeline, false otherwise.
+    */
     bool getIsPipelineInClassificationMode() const;
 
     /**
-	 This function returns true if a regressifier has been added to the pipeline (and the pipeline is therefore in regression mode).
-	
-	@return bool returns true if a regressifier has been added to the pipeline, false otherwise.
-	*/
+     This function returns true if a regressifier has been added to the pipeline (and the pipeline is therefore in regression mode).
+    
+    @return bool returns true if a regressifier has been added to the pipeline, false otherwise.
+    */
     bool getIsPipelineInRegressionMode() const;
     
     /**
-	 This function returns the size of the expected input Vector to the pipeline.  This size comes from the size of the training data used to train the pipeline.
-	
-	@return UINT representing the size of the input Vector to the pipeline.
-	*/
+     This function returns the size of the expected input Vector to the pipeline.  This size comes from the size of the training data used to train the pipeline.
+    
+    @return UINT representing the size of the input Vector to the pipeline.
+    */
     UINT getInputVectorDimensionsSize() const;
 
     /**
-	 This function returns the size of the expected output Vector from the pipeline.  This size comes from the size of the training data used to train the pipeline.
-	 This is only relevant when the pipeline is in regression mode.
-	
-	@return UINT representing the size of the output Vector from the pipeline.
-	*/
+     This function returns the size of the expected output Vector from the pipeline.  This size comes from the size of the training data used to train the pipeline.
+     This is only relevant when the pipeline is in regression mode.
+    
+    @return UINT representing the size of the output Vector from the pipeline.
+    */
     UINT getOutputVectorDimensionsSize() const;
 
     /**
-	 This function is now depreciated. You should use #getNumClasses() instead. 
-	
-	@return UINT representing the number of classes in the model.
-	*/
+     This function is now depreciated. You should use #getNumClasses() instead. 
+    
+    @return UINT representing the number of classes in the model.
+    */
     UINT getNumClassesInModel() const;
     
     /**
-	 This function returns the number of classes in the model. If the model has not been trained then the number of classes will be zero.
-	 This is only relevant when the pipeline is in classification mode.
+     This function returns the number of classes in the model. If the model has not been trained then the number of classes will be zero.
+     This is only relevant when the pipeline is in classification mode.
      
      @return UINT representing the number of classes in the model.
      */
     UINT getNumClasses() const;
 
     /**
-	 This function returns the number of preprocessing modules that have been added to the pipeline.
-	
-	@return UINT representing the number of preprocessing modules that have been added to the pipeline.
-	*/
+     This function returns the number of preprocessing modules that have been added to the pipeline.
+    
+    @return UINT representing the number of preprocessing modules that have been added to the pipeline.
+    */
     UINT getNumPreProcessingModules() const;
 
     /**
-	 This function returns the number of feature extraction modules that have been added to the pipeline.
-	
-	@return UINT representing the number of feature extraction modules that have been added to the pipeline.
-	*/
+     This function returns the number of feature extraction modules that have been added to the pipeline.
+    
+    @return UINT representing the number of feature extraction modules that have been added to the pipeline.
+    */
     UINT getNumFeatureExtractionModules() const;
 
     /**
-	 This function returns the number of post processing modules that have been added to the pipeline.
-	
-	@return UINT representing the number of post processing modules that have been added to the pipeline.
-	*/
+     This function returns the number of post processing modules that have been added to the pipeline.
+    
+    @return UINT representing the number of post processing modules that have been added to the pipeline.
+    */
     UINT getNumPostProcessingModules() const;
 
     /**
-	 This function returns the current position of the prediction module index. The prediction module index indicates how far along the pipeline a data sample gets before the pipeline 
-	 exits during a prediction.  For example, if you have two preprocessing modules, one feature extraction module, a classifier, and one post processing module in your pipeline and the
-	 prediction module index is 3 after you call the predict(...) function, then the data only got as far as the feature extraction module but did not get passed through the classifier or
-	 post processing modules.
-	
-	@return UINT representing the number of post processing modules that have been added to the pipeline.
-	*/
+     This function returns the current position of the prediction module index. The prediction module index indicates how far along the pipeline a data sample gets before the pipeline 
+     exits during a prediction.  For example, if you have two preprocessing modules, one feature extraction module, a classifier, and one post processing module in your pipeline and the
+     prediction module index is 3 after you call the predict(...) function, then the data only got as far as the feature extraction module but did not get passed through the classifier or
+     post processing modules.
+    
+    @return UINT representing the number of post processing modules that have been added to the pipeline.
+    */
     UINT getPredictionModuleIndexPosition() const;
 
     /**
-	 This function returns the predicted class label from the most recent predict(...) function call.  This value is only relevant when the pipeline is in prediction mode.
-	
-	@return UINT representing the predicted class label from the most recent prediction.
-	*/
+     This function returns the predicted class label from the most recent predict(...) function call.  This value is only relevant when the pipeline is in prediction mode.
+    
+    @return UINT representing the predicted class label from the most recent prediction.
+    */
     UINT getPredictedClassLabel() const;
 
     /**
-	 This function returns the unprocessed predicted class label from the most recent predict(...) function call.  The unprocessed predicted class label is the class label output by
-	 the classifier before any post processing modules filter the value.  This value is only relevant when the pipeline is in prediction mode.
-	
-	@return UINT representing the unprocessed predicted class label from the most recent prediction.
-	*/
+     This function returns the unprocessed predicted class label from the most recent predict(...) function call.  The unprocessed predicted class label is the class label output by
+     the classifier before any post processing modules filter the value.  This value is only relevant when the pipeline is in prediction mode.
+    
+    @return UINT representing the unprocessed predicted class label from the most recent prediction.
+    */
     UINT getUnProcessedPredictedClassLabel() const;
     
     /**
@@ -572,14 +572,14 @@ public:
     UINT getNumTestSamples() const;
     
     /**
-	 This function returns the maximum likelihood value from the most likely class from the most recent prediction.  This value is only relevant when the pipeline is in prediction mode.
-	
-	@return Float representing the maximum likelihood value from the most likely class from the most recent prediction.
-	*/
+     This function returns the maximum likelihood value from the most likely class from the most recent prediction.  This value is only relevant when the pipeline is in prediction mode.
+    
+    @return Float representing the maximum likelihood value from the most likely class from the most recent prediction.
+    */
     Float getMaximumLikelihood() const;
     
     /**
-	 This function returns the estimated gesture phase from the most recent prediction.  This value is only relevant when the pipeline is in timeseries classification mode.
+     This function returns the estimated gesture phase from the most recent prediction.  This value is only relevant when the pipeline is in timeseries classification mode.
      
      @return Float representing the gesture phase value from the most likely class from the most recent prediction.
      */
@@ -593,26 +593,26 @@ public:
     Float getTrainingSetAccuracy() const;
 
     /**
-	 This function returns the cross validation value from the most recent cross validation test.  If the pipeline is in prediction mode, then the cross
+     This function returns the cross validation value from the most recent cross validation test.  If the pipeline is in prediction mode, then the cross
      validation accuracy will be the average accuracy across each fold of testing. If the pipeline is in regression mode, then the cross validation 
      accuracy will be the average RMS error across each fold of testing.
-	
-	@return Float representing the cross validation value from the most recent cross validation test.
-	*/
+    
+    @return Float representing the cross validation value from the most recent cross validation test.
+    */
     Float getCrossValidationAccuracy() const;
 
     /**
-	 This function returns the accuracy value from the most recent test.  This will be a value between [0 100]. This value is only relevant when the pipeline is in prediction mode.
-	
-	@return Float representing the accuracy value from the most recent test.
-	*/
+     This function returns the accuracy value from the most recent test.  This will be a value between [0 100]. This value is only relevant when the pipeline is in prediction mode.
+    
+    @return Float representing the accuracy value from the most recent test.
+    */
     Float getTestAccuracy() const;
 
     /**
-	 This function returns the root mean squared error value from the most recent test.  This value is only relevant when the pipeline is in regression mode.
-	
-	@return Float representing the root mean squared error value from the most recent test.
-	*/
+     This function returns the root mean squared error value from the most recent test.  This value is only relevant when the pipeline is in regression mode.
+    
+    @return Float representing the root mean squared error value from the most recent test.
+    */
     Float getTestRMSError() const;
 
     /**
@@ -623,60 +623,60 @@ public:
     Float getTestSSError() const;
 
     /**
-	 This function returns the f-measure from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
-	 If the classLabel is not valid then the function will return -1.
-	
+     This function returns the f-measure from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
+     If the classLabel is not valid then the function will return -1.
+    
     @param classLabel: the label of the class you want to get the test fMeasure value for
-	@return Float representing the f-measure from the most recent test for the class with the matching classLabel.
-	*/
+    @return Float representing the f-measure from the most recent test for the class with the matching classLabel.
+    */
     Float getTestFMeasure(const UINT classLabel) const;
 
     /**
-	 This function returns the precision from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
-	 If the classLabel is not valid then the function will return -1. 
-	
+     This function returns the precision from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
+     If the classLabel is not valid then the function will return -1. 
+    
     @param classLabel: the label of the class you want to get the test precision value for
-	@return Float representing the precision from the most recent test for the class with the matching classLabel.
-	*/
+    @return Float representing the precision from the most recent test for the class with the matching classLabel.
+    */
     Float getTestPrecision(const UINT classLabel) const;
 
     /**
-	 This function returns the recall from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
-	 If the classLabel is not valid then the function will return -1.
-	
+     This function returns the recall from the most recent test for the class with the matching classLabel.  This value is only relevant when the pipeline is in classification mode.
+     If the classLabel is not valid then the function will return -1.
+    
     @param classLabel: the label of the class you want to get the test recall value for
-	@return Float representing the recall from the most recent test for the class with the matching classLabel.
-	*/
+    @return Float representing the recall from the most recent test for the class with the matching classLabel.
+    */
     Float getTestRecall(const UINT classLabel) const;
 
     /**
-	 This function returns the precision for any null examples in your dataset (examples with the class label of 0) from the most recent test.  
-	 This value is only relevant when the pipeline is in classification mode.
-	
-	@return Float representing the precision for any null examples in your dataset.
-	*/
+     This function returns the precision for any null examples in your dataset (examples with the class label of 0) from the most recent test.  
+     This value is only relevant when the pipeline is in classification mode.
+    
+    @return Float representing the precision for any null examples in your dataset.
+    */
     Float getTestRejectionPrecision() const;
 
     /**
-	 This function returns the recall for any null examples in your dataset (examples with the class label of 0) from the most recent test.  
-	 This value is only relevant when the pipeline is in classification mode.
-	
-	@return Float representing the recall for any null examples in your dataset.
-	*/
+     This function returns the recall for any null examples in your dataset (examples with the class label of 0) from the most recent test.  
+     This value is only relevant when the pipeline is in classification mode.
+    
+    @return Float representing the recall for any null examples in your dataset.
+    */
     Float getTestRejectionRecall() const;
 
     /**
-	 This function returns the total test time (in milliseconds) for the most recent test.
-	
-	@return Float representing the total test time (in milliseconds) for the most recent test.
-	*/
+     This function returns the total test time (in milliseconds) for the most recent test.
+    
+    @return Float representing the total test time (in milliseconds) for the most recent test.
+    */
     Float getTestTime() const;
 
     /**
-	 This function returns the total training time (in milliseconds) for the most recent training.
-	
-	@return Float representing the total training time (in milliseconds) for the most recent training.
-	*/
+     This function returns the total training time (in milliseconds) for the most recent training.
+    
+    @return Float representing the total training time (in milliseconds) for the most recent training.
+    */
     Float getTrainingTime() const;
 
     /**
@@ -694,11 +694,11 @@ public:
     Float getTrainingSSError() const;
 
     /**
-	 This function returns the confusion matrix for the most recent round of testing.  If null rejection is enabled then the first row and column of the confusion matrix will
-	 represent the null class (class label 0).
-	
-	@return MatrixFloat representing the confusion matrix for the most recent round of testing.
-	*/
+     This function returns the confusion matrix for the most recent round of testing.  If null rejection is enabled then the first row and column of the confusion matrix will
+     represent the null class (class label 0).
+    
+    @return MatrixFloat representing the confusion matrix for the most recent round of testing.
+    */
     MatrixFloat getTestConfusionMatrix() const;
     
     /**
@@ -1169,7 +1169,7 @@ public:
      @param pipelineMode: the pipeline mode as a string, i.e. "CLASSIFICATION_MODE"
      @return returns an unsigned integer representing the current pipeline mode
      */
-	UINT getPipelineModeFromString(std::string pipelineMode) const;
+    UINT getPipelineModeFromString(std::string pipelineMode) const;
     
     /**
      Adds a new pre processing module to the pipeline.  The user can specify the position at which the new module should be inserted into the list of preprocessing modules.  
@@ -1181,8 +1181,8 @@ public:
      */
     bool addPreProcessingModule(const PreProcessing &preProcessingModule,UINT insertIndex = INSERT_AT_END_INDEX);
 
-	/**
-	 This function removes any existing pre processing modules, then it adds the new pre processing module.
+    /**
+     This function removes any existing pre processing modules, then it adds the new pre processing module.
      
      @param preProcessingModule: a reference to the pre processing module you want to add
      @return returns true if the preprocessing module was added successfully, false otherwise
@@ -1199,8 +1199,8 @@ public:
      */
     bool addFeatureExtractionModule(const FeatureExtraction &featureExtractionModule,UINT insertIndex = INSERT_AT_END_INDEX);
 
-	/**
-	 This function removes any existing feature extraction modules, then it adds the new feature extraction module.
+    /**
+     This function removes any existing feature extraction modules, then it adds the new feature extraction module.
      
      @param featureExtractionModule: a reference to the feature extraction module you want to add
      @return returns true if the feature extraction module was added successfully, false otherwise
@@ -1241,7 +1241,7 @@ public:
      */
     bool addPostProcessingModule(const PostProcessing &postProcessingModule,UINT insertIndex = INSERT_AT_END_INDEX);
 
-	/**
+    /**
      This function removes any existing post processing modules, then it adds the new post processing module.
      
      @param postProcessingModule: a reference to the post processing module you want to add
@@ -1249,123 +1249,123 @@ public:
      */
     bool setPostProcessingModule(const PostProcessing &postProcessingModule);
     
-	/**
-	 Adds a new context module to the pipeline.  The user can specify the position at which the new module should be inserted into the list of context modules.  
-	 The default position is to insert the new module at the end of the list.
+    /**
+     Adds a new context module to the pipeline.  The user can specify the position at which the new module should be inserted into the list of context modules.  
+     The default position is to insert the new module at the end of the list.
  
      @param contextModule: a reference to the context module that you want to add
      @param contextLevel: the context level where you want to add the new context module
      @param insertIndex: the index of where you want to insert the new context module. Default is to insert the new module at the end of the list
-	 @return returns true if the context module was added successfully, false otherwise
-	 */
-	bool addContextModule(const Context &contextModule,UINT contextLevel,UINT insertIndex = INSERT_AT_END_INDEX);
+     @return returns true if the context module was added successfully, false otherwise
+     */
+    bool addContextModule(const Context &contextModule,UINT contextLevel,UINT insertIndex = INSERT_AT_END_INDEX);
     
     /**
-	 Updates the context module at the specific contextLevel and moduleIndex.  
-	 The user can specify the position at which the new module should be inserted into the list of context modules.  
-	 The default position is to insert the new module at first contextLevel and first moduleIndex
+     Updates the context module at the specific contextLevel and moduleIndex.  
+     The user can specify the position at which the new module should be inserted into the list of context modules.  
+     The default position is to insert the new module at first contextLevel and first moduleIndex
  
      @param contextLevel: the context level that contains the context module you want to update
      @param moduleIndex: the index of the module you want to update
-	 @return returns true if the context module was updated successfully, false otherwise
-	 */
-	bool updateContextModule(bool value,UINT contextLevel = 0,UINT moduleIndex = 0);
+     @return returns true if the context module was updated successfully, false otherwise
+     */
+    bool updateContextModule(bool value,UINT contextLevel = 0,UINT moduleIndex = 0);
 
     /**
-	 Removes all the preprocessing modules from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
+     Removes all the preprocessing modules from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
  
-	 @return returns true if preprocessing modules were removed successfully, false otherwise
-	 */
+     @return returns true if preprocessing modules were removed successfully, false otherwise
+     */
     bool removeAllPreProcessingModules();
 
     /**
-	 Removes the specific preprocessing module at the module index from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
+     Removes the specific preprocessing module at the module index from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
  
      @param moduleIndex: the index of the module you want to remove
-	 @return returns true if the preprocessing module was removed successfully, false otherwise
-	 */
+     @return returns true if the preprocessing module was removed successfully, false otherwise
+     */
     bool removePreProcessingModule(UINT moduleIndex);
 
     /**
-	 Removes all the feature extraction modules from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
+     Removes all the feature extraction modules from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
  
-	 @return returns true if feature extraction modules were removed successfully, false otherwise
-	 */
+     @return returns true if feature extraction modules were removed successfully, false otherwise
+     */
     bool removeAllFeatureExtractionModules();
 
     /**
-	 Removes the specific feature extraction module at the module index from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
+     Removes the specific feature extraction module at the module index from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
  
      @param moduleIndex: the index of the module you want to remove
-	 @return returns true if the feature extraction module was removed successfully, false otherwise
-	 */
+     @return returns true if the feature extraction module was removed successfully, false otherwise
+     */
     bool removeFeatureExtractionModule(UINT moduleIndex);
 
     /**
-	 Removes the classifier from the current pipeline.
+     Removes the classifier from the current pipeline.
  
-	 @return returns true if classifier was removed successfully, false otherwise
-	 */
+     @return returns true if classifier was removed successfully, false otherwise
+     */
     bool removeClassifier(){ deleteClassifier(); return true; }
 
     /**
-	 Removes the regressifier from the current pipeline.
+     Removes the regressifier from the current pipeline.
  
-	 @return returns true if regressifier was removed successfully, false otherwise
-	 */
-	bool removeRegressifier(){ deleteRegressifier(); return true; }
+     @return returns true if regressifier was removed successfully, false otherwise
+     */
+    bool removeRegressifier(){ deleteRegressifier(); return true; }
 
     /**
-	 Removes the clusterer from the current pipeline.
+     Removes the clusterer from the current pipeline.
      
-	 @return returns true if clusterer was removed successfully, false otherwise
-	 */
-	bool removeClusterer(){ deleteClusterer(); return true; }
+     @return returns true if clusterer was removed successfully, false otherwise
+     */
+    bool removeClusterer(){ deleteClusterer(); return true; }
 
-	/**
-	 Removes all the post processing extraction modules from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
+    /**
+     Removes all the post processing extraction modules from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
  
-	 @return returns true if post processing modules were removed successfully, false otherwise
-	 */
+     @return returns true if post processing modules were removed successfully, false otherwise
+     */
     bool removeAllPostProcessingModules();
 
     /**
-	 Removes the specific post processing module at the module index from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
+     Removes the specific post processing module at the module index from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
  
      @param moduleIndex: the index of the module you want to remove
-	 @return returns true if the post processing module was removed successfully, false otherwise
-	 */
+     @return returns true if the post processing module was removed successfully, false otherwise
+     */
     bool removePostProcessingModule(const UINT moduleIndex);
     
     /**
-	 Removes all the context modules from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
+     Removes all the context modules from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
  
-	 @return returns true if context modules were removed successfully, false otherwise
-	 */
+     @return returns true if context modules were removed successfully, false otherwise
+     */
     bool removeAllContextModules();
 
     /**
-	 Removes the specific context module at the module index from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
+     Removes the specific context module at the module index from the current pipeline. If the pipeline has been trained it will need to be retrained before it can be used.
  
      @param contextLevel: the context level that contains the specific context module you want to remove
      @param moduleIndex: the index of the context module you want to remove
-	 @return returns true if the context module was removed successfully, false otherwise
-	 */
+     @return returns true if the context module was removed successfully, false otherwise
+     */
     bool removeContextModule(const UINT contextLevel,const UINT moduleIndex);
 
     /**
      @deprecated This function is now deprecated, you should use clear() instead!
-	 Removes everything from the pipeline.
+     Removes everything from the pipeline.
  
-	 @return returns true if all the modules were removed successfully, false otherwise
-	 */
+     @return returns true if all the modules were removed successfully, false otherwise
+     */
     GRT_DEPRECATED_MSG( "use clear() instead.", bool clearAll() );
     
     /**
-	 Resets all the test results to zero.
+     Resets all the test results to zero.
      
-	 @return returns true if the test results were cleared successfully, false otherwise
-	 */
+     @return returns true if the test results were cleared successfully, false otherwise
+     */
     bool clearTestResults();
     
     /**

@@ -154,8 +154,8 @@ public:
     
     @return returns true if the gamma parameter was updated successfully, false otherwise
     */
-    virtual bool setNullRejectionCoeff(Float nullRejectionCoeff);
-    
+    virtual bool setNullRejectionCoeff(const Float nullRejectionCoeff);
+
     /**
     Sets the numClusters parameter.
     The numClusters parameter sets how many clusters each model will try to find during the training phase.
