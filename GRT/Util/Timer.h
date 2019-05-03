@@ -26,7 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 //Include the platform specific time headers
 #if defined(__GRT_WINDOWS_BUILD__)
-	#include <windows.h>
+//	#include <windows.h>  // already included
     #include <mmsystem.h>
 #endif
 

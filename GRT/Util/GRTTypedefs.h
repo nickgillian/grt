@@ -34,9 +34,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cmath>
 
 #ifdef __GRT_WINDOWS_BUILD__
+#ifdef NOMINMAX
+#include <windows.h>
+#else
 #define NOMINMAX
 #include <windows.h>
+#undef NOMINMAX
 #endif
+#undef min
+#undef max
+#endif
+
 
 #define GRT_BEGIN_NAMESPACE namespace GRT {
 #define GRT_END_NAMESPACE }
@@ -140,7 +148,7 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 #endif
 
 //Remove the min and max macros as they cause lots of issues
-#ifndef NOMINMAX
+#if !defined(NOMINMAX) && !defined(__GRT_WINDOWS_BUILD__)
 #define NOMINMAX
 #endif 
 

@@ -20,12 +20,12 @@
 
 #ifdef __GRT_WINDOWS_BUILD__
 //Include any Windows specific headers
-#include <windows.h>
+// #include <windows.h>  // already included
 //Hey User: Make sure you add the path to the Kernel32.lib to your lib search paths
 //#pragma comment(lib,"Kernel32.lib")
 //The min and max macros cause major headaches, so undefine them
-#undef min
-#undef max
+// #undef min
+// #undef max
 #endif
 
 #ifdef __GRT_OSX_BUILD__
