@@ -240,6 +240,14 @@ public:
     Float getC() const;
     
     /**
+     Gets the current kFold cross validation value.
+     
+     @return returns the current kFold cross validation value.
+     */
+    UINT getKFoldCrossValidationValue() const;
+
+    
+    /**
     Gets the last cross validation result, if the model has been trained and cross validation was enabled.
     
     @return returns the last cross validation result.

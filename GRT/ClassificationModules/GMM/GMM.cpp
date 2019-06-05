@@ -586,7 +586,7 @@ bool GMM::recomputeNullRejectionThresholds(){
     return false;
 }
 
-UINT GMM::getNumMixtureModels(){
+UINT GMM::getNumMixtureModels() const{
     return numMixtureModels;
 }
 
