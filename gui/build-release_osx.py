@@ -1,5 +1,5 @@
 ## BuildRelease_OSX.py
-# This python script builds the release version of the GRT GUI. It also runs the QT macdeploy tool which wraps up any libraries or external dependices needed for the
+# This .python script builds the release version of the GRT GUI. It also runs the QT macdeploy tool which wraps up any libraries or external dependices needed for the
 # GUI within the application itself so the app can run on other OS X machines without having to install QT or the GRT.
 # Before you run this script, you should open the GRT QT project file with QT creator and build the release application (this will generate a make file for your machine)
 # When setting up the build, you should set the name of the build directory to build-release
@@ -7,7 +7,7 @@
 # To use this script you should change the QT lib and bin paths to the locaction on your local machine
 # You can then build the release version by running this file from the terminal
 #You should run this script by passing in the qt bin directory as the first argument, for example:
-#python build-release_osx.py /Users/ngillian/Qt/5.4/clang_64/bin/
+#.python build-release_osx.py /Users/ngillian/Qt/5.4/clang_64/bin/
 
 import os
 import re

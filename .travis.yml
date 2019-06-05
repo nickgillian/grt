@@ -10,12 +10,16 @@ env:
  - CONFIG=Release
  - CONFIG=Debug
 before_install:
- - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update         ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install swig   ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pip3 install numpy  ; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test ; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -cs)-backports main restricted universe multiverse" ; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update ; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq install g++-4.8 ; fi
- - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install cmake ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y cmake swig3.0 python3-dev python3-numpy; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" = "g++" ]]; then sudo apt-get install -qq libstdc++-4.8-dev; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" = "g++" ]]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 before_script:

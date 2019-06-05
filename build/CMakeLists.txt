@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.7)
 
 project(GRT C CXX)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake-modules")
+
 # GRT library
 set(GRT_LIB_NAME grt)
 
@@ -12,6 +14,7 @@ option(BUILD_EXAMPLES “build-examples” ON)
 option(BUILD_TOOLS “build-tools” ON)
 option(BUILD_SHARED_LIB "build-shared-lib" ON)
 option(EXCLUDE_FROM_INSTALL "exclude-from-install" OFF)
+option(BUILD_PYTHON_BINDING "build-python" ON)
 
 #setup the default build flags
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ")
@@ -136,6 +139,11 @@ add_library(${GRT_LIB_NAME}
             ${GRT_SRC}
             ${GRT_HEADERS}
 )
+
+message(STATUS "Build Python bindings: ${BUILD_PYTHON_BINDING}")
+if( BUILD_PYTHON_BINDING )
+    add_subdirectory(python)
+endif()
 
 #Add the options for what should be installed (when the user runs: sudo make install)
 if(NOT EXCLUDE_FROM_INSTALL)
