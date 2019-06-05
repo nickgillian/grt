@@ -67,8 +67,8 @@ def main():
     for i in range(test_data.getNumSamples()):
         pipeline.predict(test_data.get(i).getSample())
 
-    if test_data.get(i).getClassLabel() == pipeline.getPredictedClassLabel():
-        test_accuracy += 1
+        if test_data.get(i).getClassLabel() == pipeline.getPredictedClassLabel():
+            test_accuracy += 1
 
     print("Manual test accuracy: %.3f" % (float(test_accuracy) / float(test_data.getNumSamples()) * 100.0))
 
