@@ -462,7 +462,7 @@ public:
     
     @return returns the minimum change value
     */
-//    Float getMinChange() const;
+    Float getMinChange() const;
     
     /**
     Gets the current learningRate value, this is value used to update the weights at each step of a learning algorithm such as stochastic gradient descent.
@@ -538,7 +538,7 @@ public:
     
     @return returns true if the order of the training dataset should be randomized, false otherwise
     */
-//    bool getRandomiseTrainingOrder() const;
+    bool getRandomiseTrainingOrder() const;
     
     /**
     Gets if the model for the derived class has been succesfully trained.
