@@ -43,7 +43,7 @@ GRT_BEGIN_NAMESPACE
  @brief This file contains the Random class, a useful wrapper for generating cross platform random functions. 
  This includes functions for uniform distributions (both integer and Float) and Gaussian distributions.
 */
-class Random{
+class GRT_API Random{
 public:
 	/**
 	Default constructor. 

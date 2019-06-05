@@ -33,12 +33,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 GRT_BEGIN_NAMESPACE
 
-class GRT_API MatrixFloat : public Matrix< Float >{
+class MatrixFloat : public Matrix< Float >{
 public:
     /**
      Default Constructor
      */
-    MatrixFloat();
+    GRT_API MatrixFloat();
     
     /**
      Constructor, sets the size of the matrix to [rows cols]
@@ -46,33 +46,33 @@ public:
      @param rows: sets the number of rows in the matrix, must be a value greater than zero
      @param cols: sets the number of columns in the matrix, must be a value greater than zero
      */
-    MatrixFloat(const unsigned int rows,const unsigned int cols);
+    GRT_API MatrixFloat(const unsigned int rows,const unsigned int cols);
     
     /**
      Copy Constructor, copies the values from the rhs MatrixFloat to this MatrixFloat instance
      
      @param rhs: the MatrixFloat from which the values will be copied
      */
-    MatrixFloat(const MatrixFloat &rhs);
+    GRT_API MatrixFloat(const MatrixFloat &rhs);
     
     /**
      Copy Constructor, copies the values from the rhs Matrix to this MatrixFloat instance
      
      @param rhs: the Matrix from which the values will be copied
      */
-    MatrixFloat(const Matrix< Float > &rhs);
+    GRT_API MatrixFloat(const Matrix< Float > &rhs);
 
     /**
      Copy Constructor, copies the values from the rhs vector to this MatrixFloat instance
      
      @param rhs: a vector of vectors the values will be copied
      */
-    MatrixFloat(const Vector< VectorFloat > &rhs);
+    GRT_API MatrixFloat(const Vector< VectorFloat > &rhs);
     
     /**
      Destructor, cleans up any memory
      */
-    virtual ~MatrixFloat();
+    virtual GRT_API ~MatrixFloat();
     
     /**
      Defines how the data from the rhs MatrixFloat should be copied to this MatrixFloat
@@ -80,7 +80,7 @@ public:
      @param rhs: another instance of a MatrixFloat
      @return returns a reference to this instance of the MatrixFloat
      */
-    MatrixFloat& operator=(const MatrixFloat &rhs);
+    GRT_API MatrixFloat& operator=(const MatrixFloat &rhs);
     
     /**
      Defines how the data from the rhs Matrix< Float > should be copied to this MatrixFloat
@@ -88,7 +88,7 @@ public:
      @param rhs: an instance of a Matrix< Float >
      @return returns a reference to this instance of the MatrixFloat
      */
-    MatrixFloat& operator=(const Matrix< Float > &rhs);
+    GRT_API MatrixFloat& operator=(const Matrix< Float > &rhs);
     
     /**
      Defines how the data from the rhs Vector of VectorFloats should be copied to this MatrixFloat
@@ -96,7 +96,7 @@ public:
      @param rhs: a Vector of VectorFloats
      @return returns a reference to this instance of the MatrixFloat
      */
-    MatrixFloat& operator=(const Vector< VectorFloat > &rhs);
+    GRT_API MatrixFloat& operator=(const Vector< VectorFloat > &rhs);
 
     /**
      Gets a row vector [1 cols] from the Matrix at the row index r
@@ -104,7 +104,7 @@ public:
      @param r: the index of the row, this should be in the range [0 rows-1]
      @return returns a row vector from the Matrix at the row index r
     */
-    VectorFloat getRow(const unsigned int r) const{
+    GRT_API VectorFloat getRow(const unsigned int r) const{
         VectorFloat rowVector(cols);
         for(unsigned int c=0; c<cols; c++)
             rowVector[c] = dataPtr[r*cols+c];
@@ -117,7 +117,7 @@ public:
      @param c: the index of the column, this should be in the range [0 cols-1]
      @return returns a column vector from the Matrix at the column index c
     */
-    VectorFloat getCol(const unsigned int c) const{
+    GRT_API VectorFloat getCol(const unsigned int c) const{
         VectorFloat columnVector(rows);
         for(unsigned int r=0; r<rows; r++)
             columnVector[r] = dataPtr[r*cols+c];
@@ -139,7 +139,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was saved successful
      */
-    bool save(const std::string &filename) const;
+    GRT_API bool save(const std::string &filename) const;
     
     /**
      Loads a matrix from a CSV file. This assumes that the data has been saved as rows and columns in the CSV file
@@ -150,7 +150,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was loaded successful
      */
-    bool load(const std::string &filename,const char seperator = ',');
+    GRT_API bool load(const std::string &filename,const char seperator = ',');
     
     /**
      Saves the matrix to a CSV file.
@@ -158,7 +158,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was saved successful
      */
-    bool saveToCSVFile(const std::string &filename) const;
+    GRT_API bool saveToCSVFile(const std::string &filename) const;
     
     /**
      Loads a matrix from a CSV file. This assumes that the data has been saved as rows and columns in the CSV file
@@ -167,7 +167,7 @@ public:
      @param filename: the name of the CSV file
      @return returns true or false, indicating if the data was loaded successful
      */
-    bool loadFromCSVFile(const std::string &filename,const char seperator = ',');
+    GRT_API bool loadFromCSVFile(const std::string &filename,const char seperator = ',');
     
     /**
      Prints the MatrixFloat contents to std::cout
@@ -175,28 +175,28 @@ public:
      @param title: sets the title of the data that will be printed to std::cout
      @return returns true or false, indicating if the print was successful
      */
-    bool print(const std::string title="") const;
+    GRT_API bool print(const std::string title="") const;
     
     /**
      Transposes the data.
      
      @return returns true or false, indicating if the transpose was successful
      */
-    bool transpose();
+    GRT_API bool transpose();
     
     /**
      Scales the matrix to a new range given by the min and max targets.
      
      @return returns true if the matrix was scaled, false otherwise
      */
-    bool scale(const Float minTarget,const Float maxTarget);
+    GRT_API bool scale(const Float minTarget,const Float maxTarget);
     
     /**
      Scales the matrix to a new range given by the min and max targets using the ranges as the source ranges.
      
      @return returns true if the matrix was scaled, false otherwise
      */
-    bool scale(const Vector< MinMax > &ranges,const Float minTarget,const Float maxTarget);
+    GRT_API bool scale(const Vector< MinMax > &ranges,const Float minTarget,const Float maxTarget);
     
     /**
      Normalizes each row in the matrix by subtracting the row mean and dividing by the row standard deviation.
@@ -205,35 +205,35 @@ public:
      @param alpha: a small value that will be added to the standard deviation
      @return returns true if the matrix was normalized, false otherwise
      */
-    bool znorm(const Float alpha = 0.001);
+    GRT_API bool znorm(const Float alpha = 0.001);
     
     /**
      Performs the multiplication of the data by the scalar value.
      
      @return returns a new MatrixFloat with the results from the multiplcation
      */
-    MatrixFloat multiple(const Float value) const;
+    GRT_API MatrixFloat multiple(const Float value) const;
     
     /**
-     Performs the multiplcation of this matrix (a) by the vector b.
+     Performs the multiplication of this matrix (a) by the vector b.
      This will return a new vector (c): c = a * b
      
      @param b: the vector to multiple with this matrix
      @return a VectorFloat with the results from the multiplcation
      */
-    VectorFloat multiple(const VectorFloat &b) const;
+    GRT_API VectorFloat multiple(const VectorFloat &b) const;
     
     /**
-     Performs the multiplcation of this matrix (a) by the matrix b.
+     Performs the multiplication of this matrix (a) by the matrix b.
      This will return a new matrix (c): c = a * b
      
      @param b: the matrix to multiple with this matrix
      @return a new MatrixFloat with the results from the multiplcation
      */
-    MatrixFloat multiple(const MatrixFloat &b) const;
+    GRT_API MatrixFloat multiple(const MatrixFloat &b) const;
     
     /**
-     Performs the multiplcation of the matrix a by the matrix b, directly storing the new data in the this matrix instance.
+     Performs the multiplication of the matrix a by the matrix b, directly storing the new data in the this matrix instance.
      This will resize the current matrix if needed.
      This makes this matrix c and gives: c = a * b, or if the aTransposed value is true: c = a' * b
      
@@ -242,7 +242,7 @@ public:
      @param aTranspose: a flag to indicate if matrix a should be transposed
      @return true if the operation was completed successfully, false otherwise
      */
-    bool multiple(const MatrixFloat &a,const MatrixFloat &b,const bool aTranspose = false);
+    GRT_API bool multiple(const MatrixFloat &a,const MatrixFloat &b,const bool aTranspose = false);
     
     /**
      Adds the input matrix data (b) to this matrix (a), giving: a = a + b.
@@ -253,7 +253,7 @@ public:
      @param aTranspose: a flag to indicate if matrix a should be transposed
      @return true if the operation was completed successfully, false otherwise
      */
-    bool add(const MatrixFloat &b);
+    GRT_API bool add(const MatrixFloat &b);
     
     /**
      Adds the input matrix data (a) to the input matrix (b), storing the data in this matrix (c) giving: c = a + b.
@@ -264,7 +264,7 @@ public:
      @param b: the matrix to add with a
      @return true if the operation was completed successfully, false otherwise
      */
-    bool add(const MatrixFloat &a,const MatrixFloat &b);
+    GRT_API bool add(const MatrixFloat &a,const MatrixFloat &b);
     
     /**
      Subtracts the input matrix data (b) from this matrix (a), giving: a = a - b.
@@ -273,7 +273,7 @@ public:
      @param a: the matrix to subtract from this instance
      @return true if the operation was completed successfully, false otherwise
      */
-    bool subtract(const MatrixFloat &b);
+    GRT_API bool subtract(const MatrixFloat &b);
     
     /**
      Subtracts the input matrix data (b) from this matrix (a), giving (c): c = a - b.
@@ -284,56 +284,56 @@ public:
      @param b: the matrix to subtract from a
      @return true if the operation was completed successfully, false otherwise
      */
-    bool subtract(const MatrixFloat &a,const MatrixFloat &b);
+    GRT_API bool subtract(const MatrixFloat &a,const MatrixFloat &b);
     
     /**
      Gets the ranges min value throughout the entire matrix.
      
      @return a Float value containing the minimum matrix value
      */
-    Float getMinValue() const;
+    GRT_API Float getMinValue() const;
     
     /**
      Gets the ranges max value throughout the entire matrix.
      
      @return a Float value containing the maximum matrix value
      */
-    Float getMaxValue() const;
+    GRT_API Float getMaxValue() const;
     
     /**
      Gets the mean of each column in the matrix and returns this as a VectorFloat.
      
      @return a VectorFloat with the mean of each column
      */
-    VectorFloat getMean() const;
+    GRT_API VectorFloat getMean() const;
     
     /**
      Gets the standard deviation of each column in the matrix and returns this as a VectorFloat.
      
      @return a VectorFloat with the standard deviation of each column
      */
-    VectorFloat getStdDev() const;
+    GRT_API VectorFloat getStdDev() const;
     
     /**
      Gets the covariance matrix of this matrix and returns this as a MatrixFloat.
      
      @return a MatrixFloat with the covariance matrix of this matrix
      */
-    MatrixFloat getCovarianceMatrix() const;
+    GRT_API MatrixFloat getCovarianceMatrix() const;
     
     /**
      Gets the ranges (min and max values) of each column in the matrix.
      
      @return a vector with the ranges (min and max values) of each column in the matrix
      */
-    Vector< MinMax > getRanges() const;
+    GRT_API Vector< MinMax > getRanges() const;
     
     /**
      Gets the trace of this matrix.
      
      @return the trace of this matrix as a Float
      */
-    Float getTrace() const;
+    GRT_API Float getTrace() const;
     
 protected:
     

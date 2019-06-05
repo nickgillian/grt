@@ -277,7 +277,7 @@ bool MinDist::recomputeNullRejectionThresholds(){
     return false;
 }
 
-bool MinDist::setNullRejectionCoeff(Float nullRejectionCoeff){
+bool MinDist::setNullRejectionCoeff(const Float nullRejectionCoeff){
     
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;

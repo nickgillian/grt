@@ -55,10 +55,10 @@ int main (int argc, const char * argv[])
     mat.push_back( newRow );
 
     //Reserve a large block of data (1000 rows) such it will be faster to push_back new rows
-	mat.reserve( 1000 );
-	
-	for(UINT i=0; i<100; i++)
-		mat.push_back( newRow );
+    mat.reserve( 1000 );
+    
+    for(UINT i=0; i<100; i++)
+        mat.push_back( newRow );
     
     //Print the values
     cout << "Matrix Data: \n";

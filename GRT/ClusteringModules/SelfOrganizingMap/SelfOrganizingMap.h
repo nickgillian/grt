@@ -35,7 +35,7 @@
 
 GRT_BEGIN_NAMESPACE
     
-class GaussNeuron{
+class GRT_API GaussNeuron{
 public:
     GaussNeuron(){
         numInputs = 0;
@@ -43,7 +43,7 @@ public:
         initialized = false;
     }
     
-    ~GaussNeuron(){
+    virtual ~GaussNeuron(){
         
     }
     

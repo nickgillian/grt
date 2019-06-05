@@ -43,14 +43,14 @@ public:
     /**
      Default Constructor
     */
-	//Vector(){}
+    //Vector(){}
     
     /**
     Constructor, sets the size of the vector
      
      @param size: the size of the vector
     */
-	Vector( const unsigned int size = 0 ):std::vector< T >(size){}
+    Vector( const unsigned int size = 0 ):std::vector< T >(size){}
 
     /**
     Constructor, sets the size of the vector and sets all elements to value
@@ -64,13 +64,13 @@ public:
      
      @param rhs: the Vector from which the values will be copied
     */
-	Vector( const Vector &rhs ){
+    Vector( const Vector &rhs ){
         unsigned int N = rhs.getSize();
         if( N > 0 ){
             this->resize( N );
             std::copy( rhs.begin(), rhs.end(), this->begin() );
         }else this->clear();
-	}
+    }
     
     /**
      Copy Constructor, copies the values from the rhs std::vector to this Vector instance
@@ -88,7 +88,7 @@ public:
     /**
      Destructor, cleans up any memory
     */
-	virtual ~Vector(){ }
+    virtual ~Vector(){ }
     
     /**
      Defines how the data from the rhs Vector should be copied to this Vector
@@ -96,16 +96,16 @@ public:
      @param rhs: another instance of a Vector
      @return returns a reference to this instance of the Vector
     */
-	Vector& operator=(const Vector &rhs){
-		if(this!=&rhs){
+    Vector& operator=(const Vector &rhs){
+        if(this!=&rhs){
             unsigned int N = rhs.getSize();
             if( N > 0 ){
                 this->resize( N );
                 std::copy( rhs.begin(), rhs.end(), this->begin() );
             }else this->clear();
-		}
-		return *this;
-	}
+        }
+        return *this;
+    }
 
     /**
      Defines how the data from the rhs std::vector instance should be copied to this Vector
@@ -198,7 +198,7 @@ public:
      
      @return returns the size of the Vector
     */
-	inline UINT getSize() const{ return static_cast<UINT>(this->size()); }
+    inline UINT getSize() const{ return static_cast<UINT>(this->size()); }
 
     /**
      Gets a pointer to the first element in the vector

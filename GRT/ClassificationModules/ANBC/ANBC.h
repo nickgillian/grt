@@ -165,17 +165,17 @@ public:
     //Setters
     /**
     Sets the nullRejectionCoeff parameter.
-    The nullRejectionCoeff parameter is a multipler controlling the null rejection threshold for each class.
+    The nullRejectionCoeff parameter is a multiplier controlling the null rejection threshold for each class.
     This function will also recompute the null rejection thresholds.
     
     @return returns true if the gamma parameter was updated successfully, false otherwise
     */
-    bool setNullRejectionCoeff(double nullRejectionCoeff);
+    virtual bool setNullRejectionCoeff(const Float nullRejectionCoeff);
     
     /**
     Sets the weights for the training and prediction.
     The dimensionality of the weights should match that of the training data used to train the ANBC models.
-    The weights should be encapsualted into a LabelledClassificationData container, with one training sample for each class.
+    The weights should be encapsulated into a LabelledClassificationData container, with one training sample for each class.
     
     @return returns true if the weights were correctly set, false otherwise
     */

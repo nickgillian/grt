@@ -153,12 +153,12 @@ public:
     
     /**
     Sets the nullRejectionCoeff parameter.
-    The nullRejectionCoeff parameter is a multipler controlling the null rejection threshold for each class.
+    The nullRejectionCoeff parameter is a multiplier controlling the null rejection threshold for each class.
     This function will also recompute the null rejection thresholds.
     
     @return returns true if the gamma parameter was updated successfully, false otherwise
     */
-    bool setNullRejectionCoeff(Float nullRejectionCoeff);
+    virtual bool setNullRejectionCoeff(const Float nullRejectionCoeff);
     
     /**
     Sets the WeakClassifier to use for boosting.

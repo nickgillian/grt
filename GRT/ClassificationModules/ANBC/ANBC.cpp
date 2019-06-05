@@ -549,7 +549,7 @@ VectorFloat ANBC::getNullRejectionThresholds() const{
     return nullRejectionThresholds;
 }
 
-bool ANBC::setNullRejectionCoeff(Float nullRejectionCoeff){
+bool ANBC::setNullRejectionCoeff(const Float nullRejectionCoeff){
     
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;

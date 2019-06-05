@@ -441,7 +441,7 @@ bool AdaBoost::recomputeNullRejectionThresholds(){
     return false;
 }
 
-bool AdaBoost::setNullRejectionCoeff(Float nullRejectionCoeff){
+bool AdaBoost::setNullRejectionCoeff(const Float nullRejectionCoeff){
     
     if( nullRejectionCoeff > 0 ){
         this->nullRejectionCoeff = nullRejectionCoeff;

@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRT_VECTOR_FLOAT_HEADER
 #define GRT_VECTOR_FLOAT_HEADER
 
-#include "..//Util/GRTTypedefs.h"
+#include "../Util/GRTTypedefs.h"
 #include "Vector.h"
 #include "../Util/MinMax.h"
 #include "../Util/DebugLog.h"

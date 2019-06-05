@@ -78,12 +78,12 @@ public:
      It clones the data from the Base Class Clusterer pointer into this instance
      
      @param cluster: a pointer to the Clusterer Base Class, this should be pointing to another ClusterTree instance
-     @return returns true if the clone was successfull, false otherwise
+     @return returns true if the clone was successful, false otherwise
     */
     virtual bool deepCopyFrom(const Clusterer *cluster) override;
     
     /**
-     This trains the ClusterTree model, using the labelled regression data.
+     This trains the ClusterTree model, using the labeled regression data.
      This overrides the train function in the ML base class.
      
      @param trainingData: a reference to the training data
@@ -104,7 +104,7 @@ public:
      This overrides the clear function in the Regressifier base class.
      It will completely clear the ML module, removing any trained model and setting all the base variables to their default values.
      
-     @return returns true if the module was cleared succesfully, false otherwise
+     @return returns true if the module was cleared successfully, false otherwise
      */
     virtual bool clear() override;
     
@@ -173,12 +173,12 @@ public:
     Tree::TrainingMode getTrainingMode() const;
     
     /**
-    Gets the number of steps that will be used to search for the best spliting value for each node.
+    Gets the number of steps that will be used to search for the best splitting value for each node.
     
     If the trainingMode is set to BEST_ITERATIVE_SPILT, then the numSplittingSteps controls how many iterative steps there will be per feature.
     If the trainingMode is set to BEST_RANDOM_SPLIT, then the numSplittingSteps controls how many random searches there will be per feature.
     
-    @return returns the number of steps that will be used to search for the best spliting value for each node
+    @return returns the number of steps that will be used to search for the best splitting value for each node
     */
     UINT getNumSplittingSteps() const;
     

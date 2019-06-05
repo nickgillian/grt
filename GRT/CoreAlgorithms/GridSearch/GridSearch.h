@@ -48,6 +48,8 @@ public:
         this->expired = rhs.expired;
     }
 
+    virtual ~GridSearchRange() {}
+
     T next(){
         if( expired ) return value;
         if( value + inc < max ) value += inc;
@@ -86,6 +88,8 @@ public:
         this->range = rhs.range;
     }
 
+    virtual ~GridSearchParam() {}
+
     bool reset(){
         return range.reset();
     }
@@ -114,9 +118,7 @@ public:
     enum SearchType {MaxValueSearch=0,MinValueSearch};
     GridSearch() : MLBase("GridSearch") {}
     
-    virtual ~GridSearch(){
-        
-    }
+    virtual ~GridSearch(){}
 
     bool addParameter( std::function< bool(unsigned int) > f , GridSearchRange< unsigned int > range ){
         params.push_back( GridSearchParam<unsigned int>( f, range ) );

@@ -383,14 +383,14 @@ Float HierarchicalClustering::computeClusterVariance( const ClusterInfo &cluster
 bool HierarchicalClustering::save( std::fstream &file ) const{
     
     if( !file.is_open() ){
-        errorLog << "saveModelToFile(string filename) - Failed to open file!" << std::endl;
+        errorLog << "save(string filename) - Failed to open file!" << std::endl;
         return false;
     }
     
     file << "GRT_HIERARCHICAL_CLUSTERING_FILE_V1.0\n";
     
     if( !saveClustererSettingsToFile( file ) ){
-        errorLog << "saveModelToFile(fstream &file) - Failed to save cluster settings to file!" << std::endl;
+        errorLog << "save(fstream &file) - Failed to save cluster settings to file!" << std::endl;
         return false;
     }
     
@@ -422,7 +422,7 @@ bool HierarchicalClustering::load( std::fstream &file ){
     }
     
     if( !loadClustererSettingsFromFile( file ) ){
-        errorLog << "loadModelFromFile(fstream &file) - Failed to load cluster settings from file!" << std::endl;
+        errorLog << "load(fstream &file) - Failed to load cluster settings from file!" << std::endl;
         return false;
     }
         

@@ -59,13 +59,13 @@ int main (int argc, const char * argv[])
     cout << "GMM Trained in " << gmm.getNumTrainingIterationsToConverge() << " iterations.\n\n";
     
     //Save the model to a file
-    if( !gmm.save( "GMM.grt" ) ){
+    if( !gmm.save( std::fstream("GMM.grt") ) ){
         cout << "Failed to save model to file!\n";
         return EXIT_FAILURE;
     }
     
     //Load the model back from a file
-    if( !gmm.load( "GMM.grt" ) ){
+    if( !gmm.load( std::fstream("GMM.grt") ) ){
         cout << "Failed to load model from file!\n";
         return EXIT_FAILURE;
     }
