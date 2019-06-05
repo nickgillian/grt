@@ -42,7 +42,7 @@ public:
      
      @param size: sets the size of the vector
      */
-    GRT_API VectorFloat( const size_type size );
+    GRT_API VectorFloat( const std::vector<Float>::size_type size );
 
     /**
      Constructor, sets the size of the vector and sets all elements to value
@@ -50,7 +50,7 @@ public:
      @param size: sets the size of the vector
      @param value: the value that will be written to all elements in the vector
      */
-    GRT_API VectorFloat( const size_type size, const Float &value );
+    GRT_API VectorFloat( const std::vector<Float>::size_type size, const Float &value );
     
     /**
      Copy Constructor, copies the values from the rhs VectorFloat to this VectorFloat instance

@@ -259,6 +259,10 @@ UINT MLBase::getValidationSetSize() const{
     return validationSetSize;
 }
 
+Float MLBase::getMinChange() const{
+    return minChange;
+}
+
 Float MLBase::getLearningRate() const{
     return learningRate;
 }
@@ -308,6 +312,8 @@ bool MLBase::getIsBaseTypeClusterer() const{ return baseType==CLUSTERER; }
 bool MLBase::enableScaling(bool useScaling){ this->useScaling = useScaling; return true; }
 
 bool MLBase::getUseValidationSet() const { return useValidationSet; }
+
+bool MLBase::getRandomiseTrainingOrder() const { return randomiseTrainingOrder; }
 
 bool MLBase::getTrainingLoggingEnabled() const {
     return trainingLog.getInstanceLoggingEnabled();

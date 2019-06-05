@@ -140,7 +140,7 @@ public:
     
     @return returns the number of mixture models in the GMM
     */
-    UINT getNumMixtureModels();
+    UINT getNumMixtureModels() const;
     
     /**
     This function returns a copy of the MixtureModels estimated during the training phase. Each element in the

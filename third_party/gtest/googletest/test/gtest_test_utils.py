@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env .python
 #
 # Copyright 2006, Google Inc.
 # All rights reserved.
@@ -231,11 +231,11 @@ class Subprocess:
 
     # The subprocess module is the preferrable way of running programs
     # since it is available and behaves consistently on all platforms,
-    # including Windows. But it is only available starting in python 2.4.
-    # In earlier python versions, we revert to the popen2 module, which is
-    # available in python 2.0 and later but doesn't provide required
+    # including Windows. But it is only available starting in .python 2.4.
+    # In earlier .python versions, we revert to the popen2 module, which is
+    # available in .python 2.0 and later but doesn't provide required
     # functionality (Popen4) under Windows. This allows us to support Mac
-    # OS X 10.4 Tiger, which has python 2.3 installed.
+    # OS X 10.4 Tiger, which has .python 2.3 installed.
     if _SUBPROCESS_MODULE_AVAILABLE:
       if capture_stderr:
         stderr = subprocess.STDOUT

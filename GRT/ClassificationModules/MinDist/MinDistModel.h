@@ -68,7 +68,7 @@ public:
 	UINT getClassLabel() const;
 	UINT getNumFeatures() const;
 	UINT getNumClusters() const;
-	UINT getDistanceMode() const;
+//	UINT getDistanceMode() const;
     Float getRejectionThreshold() const;
     Float getGamma() const;
     Float getTrainingMu() const;

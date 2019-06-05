@@ -399,9 +399,16 @@ bool SVM::trainSVM(){
     if( model != NULL ){
         trained = true;
         numClasses = getNumClasses();
-        classLabels.resize( getNumClasses() );
-        for(UINT k=0; k<getNumClasses(); k++){
-            classLabels[k] = model->label[k];
+        classLabels.resize( numClasses );
+        
+        if (param.svm_type != ONE_CLASS){
+            for(UINT k=0; k<numClasses; k++){
+                classLabels[k] = model->label[k];
+            }
+        }
+        else
+        {
+            grt_assert(model->label == NULL);
         }
         classLikelihoods.resize(numClasses,DEFAULT_NULL_LIKELIHOOD_VALUE);
         classDistances.resize(numClasses,DEFAULT_NULL_DISTANCE_VALUE);
@@ -1086,6 +1093,10 @@ Float SVM::getC() const{
     return param.gamma;
 }
 
+UINT SVM::getKFoldCrossValidationValue() const{
+    return kFoldValue;
+}
+
 Float SVM::getCrossValidationResult() const{ return crossValidationResult; }
 
 const struct LIBSVM::svm_model* SVM::getLIBSVMModel() const { return model; }
@@ -1093,6 +1104,9 @@ const struct LIBSVM::svm_model* SVM::getLIBSVMModel() const { return model; }
 bool SVM::setSVMType(const SVMType svmType){
     if( validateSVMType(svmType) ){
         param.svm_type = (int)svmType;
+        if (param.svm_type == ONE_CLASS){
+            param.probability = false;
+        }
         return true;
     }
     return false;
@@ -1390,8 +1404,6 @@ bool SVM::loadLegacyModelFromFile( std::fstream &file ){
     model->rho = NULL;
     model->probA = NULL;
     model->probB = NULL;
-    model->label = NULL;
-    model->nSV = NULL;
     model->label = NULL;
     model->nSV = NULL;
     model->free_sv = 0; //This will be set to 1 if everything is loaded OK
