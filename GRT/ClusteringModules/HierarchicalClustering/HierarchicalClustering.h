@@ -214,7 +214,7 @@ public:
      @param file: a reference to the file the HierarchicalClustering model will be saved to
      @return returns true if the model was saved successfully, false otherwise
      */
-    virtual bool saveModelToFile( std::fstream &file ) const;
+    virtual bool save( std::fstream &file ) const;
     
     /**
      This loads a trained HierarchicalClustering model from a file.
@@ -223,7 +223,7 @@ public:
      @param file: a reference to the file the HierarchicalClustering model will be loaded from
      @return returns true if the model was loaded successfully, false otherwise
      */
-    virtual bool loadModelFromFile( std::fstream &file );
+    virtual bool load( std::fstream &file );
     
     bool printModel();
     

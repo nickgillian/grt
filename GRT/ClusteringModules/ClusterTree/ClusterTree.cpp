@@ -219,7 +219,7 @@ bool ClusterTree::print() const{
     return false;
 }
     
-bool ClusterTree::saveModelToFile( std::fstream &file ) const{
+bool ClusterTree::save( std::fstream &file ) const{
     
     if( !file.is_open() )
     {
@@ -255,7 +255,7 @@ bool ClusterTree::saveModelToFile( std::fstream &file ) const{
 	return true;
 }
     
-bool ClusterTree::loadModelFromFile( std::fstream &file ){
+bool ClusterTree::load( std::fstream &file ){
     
 	clear();
 
