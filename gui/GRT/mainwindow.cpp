@@ -1377,7 +1377,8 @@ void MainWindow::updateNumTrainingSamples(const unsigned int numTrainingSamples)
 }
 
 void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::ClassificationSample &trainingSample){
-
+    Q_UNUSED( numTrainingSamples )
+    Q_UNUSED( trainingSample )
 }
 
 void MainWindow::addNewTrainingSample(const GRT::MatrixFloat &trainingSample){
@@ -1387,6 +1388,7 @@ void MainWindow::addNewTrainingSample(const GRT::MatrixFloat &trainingSample){
 }
 
 void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::TimeSeriesClassificationSample &trainingSample){
+    Q_UNUSED( trainingSample )
 
     ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::fromStdString( GRT::Util::toString( numTrainingSamples ) ) );
 
@@ -1563,6 +1565,7 @@ void MainWindow::resetTrainingData(const GRT::UnlabelledData &trainingData){
 }
 
 void MainWindow::handleDatasetClicked(const QModelIndex &index){
+    Q_UNUSED( index )
 
     //QStandardItem *item = model->itemFromIndex(index);
 
@@ -1750,9 +1753,9 @@ void MainWindow::updateClassStatsGraph(){
 
 void MainWindow::updatePCAProjectionGraph(){
 
-    if( pcaGraph != NULL ){
+    if( pcaGraph != nullptr ){
         delete pcaGraph;
-        pcaGraph = NULL;
+        pcaGraph = nullptr;
     }
 
     QCustomPlot *plot = ui->dataLabelingTool_pcaProjectionPlot;
@@ -2021,7 +2024,7 @@ void MainWindow::ctrlRShortcut(){
         break;
         default:
             return;
-        break;
+        // break;
     }
 
     if( core.getRecordStatus() ){
@@ -2112,7 +2115,7 @@ void MainWindow::resetTrainingToolView( const int trainingMode ){
             break;
             case TRAINING_MODE_CROSS_VALIDATION:
                 ui->trainingTool_numCVFolds->setEnabled( true );
-                temp = (unsigned int)floor( numTrainingSamples / double( ui->trainingTool_numCVFolds->value() ) );
+                temp = static_cast<unsigned int>(floor( numTrainingSamples / static_cast<double>( ui->trainingTool_numCVFolds->value() ) ));
                 ui->trainingTool_numTrainingSamples->setText( QString::number( numTrainingSamples - temp ));
                 ui->trainingTool_numTestSamples->setText( QString::number( temp ) );
             break;
@@ -2157,14 +2160,14 @@ void MainWindow::train(){
 void MainWindow::randomTestSliderMoved(const int value){
     ui->trainingTool_randomTestPercentageBox->setText( QString::number( value ) + "%" );
     unsigned int M = core.getNumTrainingSamples();
-    unsigned int N = (unsigned int)floor( M * value / 100.0 );
+    unsigned int N = std::floor( M * static_cast<unsigned int>(value) / 100 );
     ui->trainingTool_numTrainingSamples->setText( QString::number( M-N ) );
     ui->trainingTool_numTestSamples->setText( QString::number( N ) );
 }
 
 void MainWindow::numCVFoldsValueChanged(const int value){
     unsigned int M = core.getNumTrainingSamples();
-    unsigned int N = (unsigned int)floor( M / double( value ) );
+    unsigned int N = static_cast<unsigned int>(floor( M / static_cast<double>(value) ));
     ui->trainingTool_numTrainingSamples->setText( QString::number( M-N ));
     ui->trainingTool_numTestSamples->setText( QString::number( N ) );
 }
@@ -2181,7 +2184,7 @@ void MainWindow::showTrainingToolInfo(){
     infoText += "This is the Data Labelling view. It lets you record, label, and manage your training data.\n\n";
 
     infoText += "Checkout the main GUI wiki for more info: www.nickgillian.com/wiki/pmwiki.php/GRT/GUI \n\n";
-    QMessageBox::information(0, "Information", infoText);
+    QMessageBox::information(nullptr, "Information", infoText);
 }
 
 void MainWindow::pipelineTrainingStarted(){
@@ -2313,7 +2316,7 @@ void MainWindow::pipelineTrainingFinished(const bool result){
 
             if( pipelineMode == Core::CLASSIFICATION_MODE || pipelineMode == Core::TIMESERIES_CLASSIFICATION_MODE ){
                 classLabels = core.getClassLabels();
-                K = (unsigned int)classLabels.size();
+                K = static_cast<unsigned int>(classLabels.size());
 
                 infoText += "- Accuracy:     ";
                 infoText += QString::number( testResult.accuracy );
@@ -2383,7 +2386,7 @@ void MainWindow::pipelineTrainingFinished(const bool result){
 
             if( pipelineMode == Core::CLASSIFICATION_MODE || pipelineMode == Core::TIMESERIES_CLASSIFICATION_MODE ){
                 classLabels = core.getClassLabels();
-                K = (unsigned int)classLabels.size();
+                K = static_cast<unsigned int>(classLabels.size());
 
                 cout << "K: " << crossValidationResults.size() << endl;
                 for(unsigned int k=0; k<crossValidationResults.size(); k++){
@@ -2439,6 +2442,7 @@ void MainWindow::pipelineTestingFinished(const bool result){
 }
 
 void MainWindow::updateTrainingToolLog(const std::string message){
+    Q_UNUSED( message )
 
     //ui->trainingTool_results->append( QString::fromStdString( message ) ); //This seems to be crashing things sometimes, WHY?
 
@@ -2531,7 +2535,7 @@ void MainWindow::updatePrecisionGraph(const GRT::VectorFloat &precision,const ve
 void MainWindow::updateRecallGraph(const GRT::VectorFloat &recall,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_recallGraph;
-    unsigned int K = (unsigned int)classLabels.size();
+    unsigned int K = static_cast<unsigned int>(classLabels.size());
 
     QVector<double> keyData;
     QVector<double> valueData;
@@ -2617,9 +2621,9 @@ void MainWindow::updateFmeasureGraph(const GRT::VectorFloat &fmeasure,const vect
 void MainWindow::updateConfusionMatrixGraph(const GRT::MatrixFloat &confusionMatrix,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_confusionMatrixGraph;
-    const unsigned int K = (unsigned int)classLabels.size();
-    const unsigned int numRows = confusionMatrix.getNumRows();
-    const unsigned int numCols = confusionMatrix.getNumCols();
+    const unsigned int K = static_cast<unsigned int>(classLabels.size());
+    unsigned int numRows = confusionMatrix.getNumRows();
+    unsigned int numCols = confusionMatrix.getNumCols();
     const bool nullRejectionEnabled = numRows != K ? true : false;
     const unsigned int minClassLabel = nullRejectionEnabled ? 0 : GRT::Util::getMin( classLabels );
     const unsigned int maxClassLabel = GRT::Util::getMax( classLabels );
@@ -2638,7 +2642,7 @@ void MainWindow::updateConfusionMatrixGraph(const GRT::MatrixFloat &confusionMat
     QCPColorMap *colorMap = new QCPColorMap(plot->xAxis, plot->yAxis);
     plot->addPlottable( colorMap );
 
-    colorMap->data()->setSize(numRows,numCols);
+    colorMap->data()->setSize(static_cast<int>(numRows), static_cast<int>(numCols));
     colorMap->data()->setRange(QCPRange(minClassLabel, maxClassLabel+1), QCPRange(minClassLabel, maxClassLabel+1));
     colorMap->setInterpolate( false );
     colorMap->setTightBoundary( false );
@@ -3203,13 +3207,13 @@ void MainWindow::updatePipelineConfiguration(){
         unsigned int K = 0;
         unsigned int minClassLabel = 0;
         unsigned int maxClassLabel = 0;
-        GRT::Classifier *classifier = NULL;
+        GRT::Classifier *classifier = nullptr;
 
         switch( core.getPipelineMode() ){
             case Core::CLASSIFICATION_MODE:
                 K = core.getNumClasses();
                 classifier = pipeline.getClassifier();
-                if( classifier != NULL ){
+                if( classifier != nullptr ){
                     minClassLabel = classifier->getNullRejectionEnabled() ? 0 : GRT::Util::getMin( core.getClassLabels() );
                 }else minClassLabel = 0;
                 maxClassLabel = GRT::Util::getMax( core.getClassLabels() );
@@ -3225,7 +3229,7 @@ void MainWindow::updatePipelineConfiguration(){
             case Core::TIMESERIES_CLASSIFICATION_MODE:
                 K = core.getNumClasses();
                 classifier = pipeline.getClassifier();
-                if( classifier != NULL ){
+                if( classifier != nullptr ){
                     minClassLabel = classifier->getNullRejectionEnabled() ? 0 : GRT::Util::getMin( core.getClassLabels() );
                 }else minClassLabel = 0;
                 maxClassLabel = GRT::Util::getMax( core.getClassLabels() );
@@ -3356,7 +3360,7 @@ void MainWindow::setupDefaultCluster(){
 }
 
 void MainWindow::updateClassifier(const unsigned int classifierType,const bool useScaling,const bool useNullRejection,const double nullRejectionCoeff,const double parameter1){
-
+    Q_UNUSED( parameter1 )
     //Setup the classifier view
     ui->pipelineTool_classifierType->setCurrentIndex( classifierType );
     ui->pipelineTool_enableScaling->setChecked( useScaling );
@@ -3674,7 +3678,7 @@ void MainWindow::openGRTDownload(){
 
 void MainWindow::updateCoreRefreshRate(const double rate){
     //Convert the millisecond rate to sleep time
-    unsigned int sleepTime = (unsigned int)(rate * 1000.0);
+    unsigned int sleepTime = static_cast<unsigned int>((rate * 1000.0));
     if( sleepTime == 0 ) sleepTime = 1;
     core.setCoreSleepTime( sleepTime );
 }

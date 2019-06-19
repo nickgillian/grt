@@ -273,7 +273,6 @@ bool Core::loadTrainingDatasetFromFile( const std::string filename ){
 
     {
          std::unique_lock< std::mutex > lock( mutex );
-         unsigned int trainingDataSize = 0;
          tempPipelineMode = pipelineMode;
          switch( pipelineMode ){
              case CLASSIFICATION_MODE:
@@ -282,7 +281,7 @@ bool Core::loadTrainingDatasetFromFile( const std::string filename ){
                  if( classificationTrainingData.getNumDimensions() == numInputDimensions ){
                      numTrainingSamples = classificationTrainingData.getNumSamples();
                      tempClassificationData = classificationTrainingData;
-                     trainingDataSize = classificationTrainingData.getNumDimensions();
+                     classificationTrainingData.getNumDimensions();
                  }else {
                      inputDimensionsSizeError = true;
                      tempDataSize = classificationTrainingData.getNumDimensions();
@@ -305,21 +304,21 @@ bool Core::loadTrainingDatasetFromFile( const std::string filename ){
 
                  numTrainingSamples = regressionTrainingData.getNumSamples();
                  tempRegressionData = regressionTrainingData;
-                 trainingDataSize = regressionTrainingData.getNumInputDimensions();
+                 regressionTrainingData.getNumInputDimensions();
              break;
              case TIMESERIES_CLASSIFICATION_MODE:
                  result = timeseriesClassificationTrainingData.load( filename );
 
                  numTrainingSamples = timeseriesClassificationTrainingData.getNumSamples();
                  tempTimeSeriesData = timeseriesClassificationTrainingData;
-                 trainingDataSize = timeseriesClassificationTrainingData.getNumDimensions();
+                 timeseriesClassificationTrainingData.getNumDimensions();
              break;
              case CLUSTER_MODE:
                 result = clusterTrainingData.load( filename );
 
                 numTrainingSamples = clusterTrainingData.getNumSamples();
                 tempClusterData = clusterTrainingData;
-                trainingDataSize = clusterTrainingData.getNumDimensions();
+                clusterTrainingData.getNumDimensions();
              break;
              default:
                  qDebug() << "ERROR: Unknown pipeline mode!";
@@ -371,7 +370,6 @@ bool Core::loadTrainingDatasetFromFile( const std::string filename ){
 
 bool Core::loadTestDatasetFromFile( const std::string filename ){
     bool result = false;
-    unsigned int numTestSamples = 0;
     GRT::ClassificationData tempClassificationData;
     GRT::RegressionData tempRegressionData;
     GRT::TimeSeriesClassificationData tempTimeSeriesData;
@@ -383,7 +381,7 @@ bool Core::loadTestDatasetFromFile( const std::string filename ){
          switch( pipelineMode ){
              case CLASSIFICATION_MODE:
                 result = classificationTestData.loadDatasetFromFile( filename );
-                numTestSamples = classificationTestData.getNumSamples();
+                classificationTestData.getNumSamples();
                 tempClassificationData = classificationTestData;
                 if( classificationTestData.getNumDimensions() != classificationTrainingData.getNumDimensions() ){
                     result = false;
@@ -392,7 +390,7 @@ bool Core::loadTestDatasetFromFile( const std::string filename ){
              break;
              case REGRESSION_MODE:
                 result = regressionTestData.loadDatasetFromFile( filename );
-                numTestSamples = regressionTestData.getNumSamples();
+                regressionTestData.getNumSamples();
                 tempRegressionData = regressionTestData;
                 if( regressionTestData.getNumInputDimensions() != regressionTrainingData.getNumInputDimensions() ){
                     result = false;
@@ -408,7 +406,7 @@ bool Core::loadTestDatasetFromFile( const std::string filename ){
              break;
              case CLUSTER_MODE:
                 result = clusterTestData.loadDatasetFromFile( filename );
-                numTestSamples = clusterTestData.getNumSamples();
+                clusterTestData.getNumSamples();
                 tempClusterData = clusterTestData;
                 if( clusterTestData.getNumDimensions() != clusterTrainingData.getNumDimensions() ){
                     result = false;
@@ -1361,19 +1359,19 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
 
     if( m.getAddressPattern() == "/SetClassifier" && allowOSCControlCommands ){
         if( m.getNumArgs() >= 4 ){
-            //Get the first 4 parameters, these are classifier type, useScaling, useNullRejection, and null rejection coeff
-            unsigned int classifierType = m[0].getInt();
-            bool useScaling = m[1].getInt() == 1 ? true : false;
-            bool useNullRejection = m[2].getInt() == 1 ? true : false;
-            double nullRejectionCoeff = m[3].getDouble();
+            // Fixme Get the first 4 parameters, these are classifier type, useScaling, useNullRejection, and null rejection coeff
+//            unsigned int classifierType = m[0].getInt();
+//            bool useScaling = m[1].getInt() == 1 ? true : false;
+//            bool useNullRejection = m[2].getInt() == 1 ? true : false;
+//            double nullRejectionCoeff = m[3].getDouble();
 
-            //Get any optional parameters
-            double parameter1 = 0;
-            if( m.getNumArgs() == 5 ){
-                parameter1 = m[4].getDouble();
-            }
+//            //Get any optional parameters
+//            double parameter1 = 0;
+//            if( m.getNumArgs() == 5 ){
+//                parameter1 = m[4].getDouble();
+//            }
 
-            //setClassifierMessageReceived(classifierType,useScaling,useNullRejection,nullRejectionCoeff,parameter1);
+//            setClassifierMessageReceived(classifierType,useScaling,useNullRejection,nullRejectionCoeff,parameter1);
         }else return false;
     }
 

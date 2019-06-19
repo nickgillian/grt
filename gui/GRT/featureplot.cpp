@@ -105,6 +105,7 @@ bool FeaturePlot::plot(){
 
 //resize graph on window resize
 void FeaturePlot::resizeEvent (QResizeEvent *event){
+    Q_UNUSED( event )
     ui->plot->resize(ui->plot->parentWidget()->width()-20,ui->plot->parentWidget()->height()-20);
 }
 
