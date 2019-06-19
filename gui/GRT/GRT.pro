@@ -66,7 +66,7 @@ android {
 
 #Linux pkgconfig
 unix:!macx:!android{
- #Add the defauly include and lib directories (we assume boost and GRT are installed here)
+ #Add the default include and lib directories (we assume boost and GRT are installed here)
  INCLUDEPATH += /usr/local/include
  LIBS += -L/usr/local/lib
 
