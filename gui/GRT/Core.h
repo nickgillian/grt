@@ -105,7 +105,7 @@ signals:
     
 public slots:
     bool resetOSCClient( const std::string clientAddress,const int clientPort );
-    bool resetOSCServer( const int incomingOSCDataPort );
+    bool resetOSCServer( const int in_OSCDataPort );
     bool setVersion( const std::string version );
     bool setEnableOSCInput( const bool state );
     bool setEnableOSCControlCommands( const bool state );

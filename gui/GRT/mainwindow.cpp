@@ -3,7 +3,7 @@
 
 unsigned int MainWindow::numInstances = 0;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), model(NULL), pcaGraph(NULL)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), model(nullptr), pcaGraph(nullptr)
 {
     numInstances++;
     //qDebug() << "NumInstances: " + QString::number( numInstances );
@@ -111,7 +111,7 @@ MainWindow::~MainWindow()
     numInstances--;
 }
 
-unsigned int MainWindow::getCurrentView() const{
+int MainWindow::getCurrentView() const{
     return ui->mainTab->currentIndex();
 }
 
@@ -1014,7 +1014,7 @@ void MainWindow::showSetupViewInfo(){
     infoText += "[1] Select if your machine learning task is a classification, regression, or timeseries task.\n";
     infoText += "[2] Set the number of inputs to your task, and the number of outputs. \n\n";
     infoText += "Checkout the main GUI wiki for me info: www.nickgillian.com/wiki/pmwiki.php/GRT/GUI \n\n";
-    QMessageBox::information(0, "Information", infoText);
+    QMessageBox::information(nullptr, "Information", infoText);
 }
 
 void MainWindow::setNumInputs(const int numInputs){
@@ -1029,7 +1029,7 @@ void MainWindow::setNumOutputs(const int numOutputs){
         ui->setupView_numOutputsSpinBox->setValue( 1 );
         QString infoText;
         infoText += "If your project is in classification mode, timeseries classification mode, or cluster mode then the number of outputs will be 1.\n\n";
-        QMessageBox::information(0, "Information", infoText);
+        QMessageBox::information(nullptr, "Information", infoText);
     }
 }
 
@@ -1222,7 +1222,7 @@ void MainWindow::showDataIOInfo(){
     infoText += "Before you send any data, you should set the number of dimensions in your data. You can do this in the Setup View. \n";
     infoText += "The OSC Output Setup lets you control the ip address and port of where the realtime output of the application will be sent. \n\n";
     infoText += "Checkout the main GUI wiki for more info: www.nickgillian.com/wiki/pmwiki.php/GRT/GUI \n\n";
-    QMessageBox::information(0, "Information", infoText);
+    QMessageBox::information(nullptr, "Information", infoText);
 }
 
 void MainWindow::updateOSCInput(){
@@ -1276,14 +1276,14 @@ void MainWindow::updateNumInputDimensions(const int numInputDimensions){
     ui->dataLabellingTool_featurePlotAxisBSpinBox->setMaximum(numInputDimensions-1);
     ui->dataLabellingTool_featurePlotAxisBSpinBox->setValue(0);
 
-    int numHiddenNeurons = (int)max((numInputDimensions + ui->setupView_numOutputsSpinBox->value()) / 2,2) ;
+    int numHiddenNeurons = std::max((numInputDimensions + ui->setupView_numOutputsSpinBox->value()) / 2,2) ;
     ui->pipelineTool_mlpNumHiddenNeurons->setValue( numHiddenNeurons );
 
     ui->pipelineTool_swipeDetector_swipeIndex->setMaximum( numInputDimensions-1 );
 
     inputDataGraph->init(numInputDimensions,DEFAULT_GRAPH_WIDTH);
 
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::updateNumTargetDimensions(const int numTargetDimensions){
@@ -1303,7 +1303,7 @@ void MainWindow::updateNumTargetDimensions(const int numTargetDimensions){
     ui->dataLabellingTool_targetVectorValueSpinBox->setMaximum( numeric_limits<double>::max() );
 
     //Reset the pipeline tool
-    int numHiddenNeurons = (int)max((ui->setupView_numInputsSpinBox->value() + numTargetDimensions) / 2,2);
+    int numHiddenNeurons = std::max((ui->setupView_numInputsSpinBox->value() + numTargetDimensions) / 2,2);
     ui->pipelineTool_mlpNumHiddenNeurons->setValue( numHiddenNeurons );
 
     updateInfoText( "" );
@@ -1607,7 +1607,7 @@ void MainWindow::showDataLabellingToolInfo(){
     infoText += "This is the Data Labeling view. It lets you record, label, and manage your training and testing data.\n\n";
 
     infoText += "Checkout the main GUI wiki for more info: www.nickgillian.com/wiki/pmwiki.php/GRT/GUI \n\n";
-    QMessageBox::information(0, "Information", infoText);
+    QMessageBox::information(nullptr, "Information", infoText);
 }
 
 void MainWindow::updateDatasetName(){
@@ -2128,7 +2128,7 @@ void MainWindow::resetTrainingToolView( const int trainingMode ){
                 ui->trainingTool_numTestSamples->setEnabled( true );
                 ui->trainingTool_randomTestPercentageSlider->setEnabled( true );
                 ui->trainingTool_randomTestPercentageBox->setEnabled( true );
-                temp = (unsigned int)floor( numTrainingSamples * ui->trainingTool_randomTestPercentageSlider->value() / 100.0 );
+                temp = std::floor( numTrainingSamples * ui->trainingTool_randomTestPercentageSlider->value() / 100.0 );
                 ui->trainingTool_numTrainingSamples->setText( QString::number( numTrainingSamples-temp ) );
                 ui->trainingTool_numTestSamples->setText( QString::number( temp ) );
             break;
@@ -2520,7 +2520,7 @@ void MainWindow::updateTestResults(const GRT::TestInstanceResult &testResult){
 void MainWindow::updatePrecisionGraph(const GRT::VectorFloat &precision,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_precisionGraph;
-    unsigned int K = (unsigned int)classLabels.size();
+    unsigned int K = static_cast<unsigned int>(classLabels.size());
 
     QVector<double> keyData;
     QVector<double> valueData;

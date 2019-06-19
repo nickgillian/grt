@@ -146,7 +146,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     virtual ~MainWindow();
 
-    unsigned int getCurrentView() const;
+    int getCurrentView() const;
 
 private slots:
     ////////////////////////////////// MAIN VIEW FUNCTIONS ////////////////////////////////

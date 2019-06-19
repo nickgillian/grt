@@ -110,10 +110,10 @@ bool Core::stop(){
 bool Core::resetOSCClient( const std::string clientAddress,const int clientPort ){
 
     outgoingOSCAddress = clientAddress;
-    outgoingOSCDataPort = (unsigned int)clientPort;
+    outgoingOSCDataPort = static_cast<unsigned int>(clientPort);
 
     try{
-        socket.reset( new UdpTransmitSocket( IpEndpointName( outgoingOSCAddress.c_str(), (int)outgoingOSCDataPort ) ) );
+        socket.reset( new UdpTransmitSocket( IpEndpointName( outgoingOSCAddress.c_str(), static_cast<int>(outgoingOSCDataPort) ) ) );
     }catch( std::exception const &error  ){
         QString qstr = "ERROR: Core::resetOSCClient() - Exception: ";
         qstr += error.what();
@@ -124,14 +124,14 @@ bool Core::resetOSCClient( const std::string clientAddress,const int clientPort 
     return true;
 }
 
-bool Core::resetOSCServer( const int incomingOSCDataPort ){
+bool Core::resetOSCServer( const int in_OSCDataPort ){
 
     if( getCoreRunning() ){
         //Stop the OSC server
         oscServer.stop();
 
         //Update the OSC port
-        this->incomingOSCDataPort = (unsigned int)incomingOSCDataPort;
+        incomingOSCDataPort = static_cast<unsigned int>(in_OSCDataPort);
         oscServer.setIncomingDataPort( incomingOSCDataPort );
         if( oscServer.start() ){
             emit newInfoMessage( "OSC Server now running on port: " + GRT::Util::toString( incomingOSCDataPort ) );
@@ -141,7 +141,7 @@ bool Core::resetOSCServer( const int incomingOSCDataPort ){
         return false;
     }
 
-    this->incomingOSCDataPort = (unsigned int)incomingOSCDataPort;
+    incomingOSCDataPort = static_cast<unsigned int>(in_OSCDataPort);
 
     return true;
 }
@@ -719,7 +719,7 @@ bool Core::setCoreSleepTime( const unsigned int coreSleepTime ){
     return true;
 }
 
-bool Core::setNumInputDimensions( const int numInputDimensions ){
+bool Core::setNumInputDimensions( const int numInputDim ){
 
     bool result = false;
     GRT::ClassificationData tempClassificationData;
@@ -729,31 +729,31 @@ bool Core::setNumInputDimensions( const int numInputDimensions ){
 
     {
         std::unique_lock< std::mutex > lock( mutex );
-        this->numInputDimensions = (unsigned int)numInputDimensions;
+        numInputDimensions = static_cast<unsigned int>(numInputDim);
         inputData.clear();
-        inputData.resize( numInputDimensions, 0 );
+        inputData.resize( numInputDim, 0 );
 
         switch( pipelineMode ){
             case CLASSIFICATION_MODE:
                 classificationTrainingData.clear();
-                classificationTrainingData.setNumDimensions( numInputDimensions );
+                classificationTrainingData.setNumDimensions( numInputDim );
                 tempClassificationData = classificationTrainingData;
             break;
             case REGRESSION_MODE:
                 targetVector.clear();
                 targetVector.resize( targetVectorSize, 0 );
                 regressionTrainingData.clear();
-                regressionTrainingData.setInputAndTargetDimensions( numInputDimensions, targetVectorSize );
+                regressionTrainingData.setInputAndTargetDimensions( numInputDim, targetVectorSize );
                 tempRegressionData = regressionTrainingData;
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
                 timeseriesClassificationTrainingData.clear();
-                timeseriesClassificationTrainingData.setNumDimensions( numInputDimensions );
+                timeseriesClassificationTrainingData.setNumDimensions( numInputDim );
                 tempTimeSeriesData = timeseriesClassificationTrainingData;
             break;
             case CLUSTER_MODE:
                 clusterTrainingData.clear();
-                clusterTrainingData.setNumDimensions( numInputDimensions );
+                clusterTrainingData.setNumDimensions( numInputDim );
                 tempClusterData = clusterTrainingData;
             break;
             default:
@@ -766,7 +766,7 @@ bool Core::setNumInputDimensions( const int numInputDimensions ){
     }
 
     if( result ){
-        emit numInputDimensionsChanged( numInputDimensions );
+        emit numInputDimensionsChanged( numInputDim );
 
         switch( pipelineMode ){
             case CLASSIFICATION_MODE:
@@ -799,7 +799,7 @@ bool Core::setTargetVectorSize( const int targetVectorSize_ ){
 
     {
         std::unique_lock< std::mutex > lock( mutex );
-        targetVectorSize = (unsigned int)targetVectorSize_;
+        targetVectorSize = static_cast<unsigned int>(targetVectorSize_);
         targetVector.clear();
         targetVector.resize( targetVectorSize, 0 );
         regressionTrainingData.clear();
@@ -875,8 +875,8 @@ bool Core::setTrainingClassLabel( const int trainingClassLabel ){
     bool classLabelUpdated = false;
     {
         std::unique_lock< std::mutex > lock( mutex );
-        if( (unsigned int)trainingClassLabel != this->trainingClassLabel ){
-            this->trainingClassLabel = (unsigned int)trainingClassLabel;
+        if( static_cast<unsigned int>(trainingClassLabel) != this->trainingClassLabel ){
+            this->trainingClassLabel = static_cast<unsigned int>(trainingClassLabel);
             classLabelUpdated = true;
         }
      }
@@ -1252,10 +1252,10 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
             if( setPipelineMode( pipelineMode_ ) ){
                 setNumInputDimensions( numInputDimensions_ );
                 setTargetVectorSize( targetVectorSize_ );
-            }else newErrorMessage( "Failed to set pipeline mode - invalid OSC /Setup message!" );
+            }else emit newErrorMessage( "Failed to set pipeline mode - invalid OSC /Setup message!" );
 
             return true;
-        }else return false;
+        } else return false;
     }
 
     if( m.getAddressPattern() == dataAddress ){
@@ -1641,13 +1641,13 @@ bool Core::trainAndTestOnRandomSubset( const unsigned int randomTestSubsetPercen
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             tempClassificationTrainingData = classificationTrainingData;
-            tempClassificationTestData = tempClassificationTrainingData.partition( 100-randomTestSubsetPercentage, useStratifiedSampling );
+            tempClassificationTestData = tempClassificationTrainingData.split( 100-randomTestSubsetPercentage, useStratifiedSampling );
             trainer.setupTrainingAndTesting( pipeline, tempClassificationTrainingData, tempClassificationTestData );
             result = trainingThread.startNewTraining( trainer );
         break;
         case REGRESSION_MODE:
             tempRegressionTrainingData = regressionTrainingData;
-            tempRegressionTestData = tempRegressionTrainingData.partition( 100-randomTestSubsetPercentage );
+            tempRegressionTestData = tempRegressionTrainingData.split( 100-randomTestSubsetPercentage );
             trainer.setupTrainingAndTesting( pipeline, tempRegressionTrainingData, tempRegressionTestData );
             result = trainingThread.startNewTraining( trainer );
         break;
@@ -1744,7 +1744,7 @@ void Core::sendPreProcessedData( const GRT::VectorFloat &preProcessedData ){
      char msgBuffer[ msgBufferSize ];
      osc::OutboundPacketStream msg( msgBuffer, msgBufferSize );
 
-    const unsigned int N = (unsigned int)preProcessedData.size();
+    const unsigned int N = static_cast<unsigned int>(preProcessedData.size());
     msg << osc::BeginMessage( "/PreProcessedData" ) << int( N );
     for(unsigned int i=0; i<N; i++){
         msg << float( preProcessedData[i] );
@@ -1761,7 +1761,7 @@ void Core::sendFeatureExtractionData( const GRT::VectorFloat &featureData ){
     char msgBuffer[ msgBufferSize ];
     osc::OutboundPacketStream msg( msgBuffer, msgBufferSize );
 
-    const unsigned int N = (unsigned int)featureData.size();
+    const unsigned int N = static_cast<unsigned int>(featureData.size());
     msg << osc::BeginMessage( "/FeatureExtractionData" ) << int( N );
     for(unsigned int i=0; i<N; i++){
         msg << float( featureData[i] );
@@ -1791,7 +1791,7 @@ void Core::sendClassLikelihoods( const GRT::VectorFloat &classLikelihoods ){
     char msgBuffer[ msgBufferSize ];
     osc::OutboundPacketStream msg( msgBuffer, msgBufferSize );
 
-    const unsigned int N = (unsigned int)classLikelihoods.size();
+    const unsigned int N = static_cast<unsigned int>(classLikelihoods.size());
     msg << osc::BeginMessage( "/ClassLikelihoods" ) << int( N );
     for(unsigned int i=0; i<N; i++){
         msg << float( classLikelihoods[i] );
@@ -1808,7 +1808,7 @@ void Core::sendClassDistances( const GRT::VectorFloat &classDistances ){
     char msgBuffer[ msgBufferSize ];
     osc::OutboundPacketStream msg( msgBuffer, msgBufferSize );
 
-    const unsigned int N = (unsigned int)classDistances.size();
+    const unsigned int N = static_cast<unsigned int>(classDistances.size());
     msg << osc::BeginMessage( "/ClassDistances" ) << int( N );
     for(unsigned int i=0; i<N; i++){
         msg << float( classDistances[i] );
@@ -1825,7 +1825,7 @@ void Core::sendClassLabels( const vector< unsigned int > &classLabels ){
     char msgBuffer[ msgBufferSize ];
     osc::OutboundPacketStream msg( msgBuffer, msgBufferSize );
 
-    const unsigned int N = (unsigned int)classLabels.size();
+    const unsigned int N = static_cast<unsigned int>(classLabels.size());
     msg << osc::BeginMessage( "/ClassLabels" ) << int( N );
     for(unsigned int i=0; i<N; i++){
         msg << int( classLabels[i] );
@@ -1842,7 +1842,7 @@ void Core::sendRegressionData( const GRT::VectorFloat &regressionData ){
     char msgBuffer[ msgBufferSize ];
     osc::OutboundPacketStream msg( msgBuffer, msgBufferSize );
 
-    const unsigned int N = (unsigned int)regressionData.size();
+    const unsigned int N = static_cast<unsigned int>(regressionData.size());
     msg << osc::BeginMessage( "/RegressionData" ) << int( N );
     for(unsigned int i=0; i<N; i++){
         msg << float( regressionData[i] );

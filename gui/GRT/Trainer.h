@@ -156,7 +156,7 @@ public:
         pipelineMode = CLASSIFICATION_MODE;
         trainingMode = NO_VALIDATION;
         numFolds = 0;
-        pipeline.clearAll();
+        pipeline.clear();
         classificationTrainingData.clear();
         classificationTestData.clear();
         regressionTrainingData.clear();
