@@ -146,16 +146,9 @@ bool MainWindow::initSetupView(){
     ui->setupView_numInputsSpinBox->setRange( 1, 10000 );
     ui->setupView_numOutputsSpinBox->setRange( 1, 10000 );
 
-    ui->setupView_classificationImage->setPixmap( QPixmap( QPixmap::fromImage( QImage( ":/ClassificationModeImage.png" ) ) ) );
     ui->setupView_classificationImage->setScaledContents( true );
-
-    ui->setupView_regressionImage->setPixmap( QPixmap( QPixmap::fromImage( QImage( ":/RegressionModeImage.png" ) ) ) );
     ui->setupView_regressionImage->setScaledContents( true );
-
-    ui->setupView_timeseriesImage->setPixmap( QPixmap( QPixmap::fromImage( QImage( ":/TimeseriesModeImage.png" ) ) ) );
     ui->setupView_timeseriesImage->setScaledContents( true );
-
-    ui->setupView_clusterImage->setPixmap( QPixmap( QPixmap::fromImage( QImage( ":/ClassificationModeImage.png" ) ) ) );
     ui->setupView_clusterImage->setScaledContents( true );
 
     return true;
@@ -806,9 +799,9 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->settingsView_graphRefreshRate, SIGNAL(valueChanged(double)), this, SLOT(updateMaximumGraphRefreshRate(const double)));
 
     connect(&core, SIGNAL(tick()), this, SLOT(coreTick()));
-    connect(&core, SIGNAL(newInfoMessage(std::string)), this, SLOT(updateInfoText(const std::string)));
-    connect(&core, SIGNAL(newWarningMessage(std::string)), this, SLOT(updateWarningText(const std::string)));
-    connect(&core, SIGNAL(newErrorMessage(std::string)), this, SLOT(updateErrorText(const std::string)));
+    connect(&core, &Core::newInfoMessage, this, [=](std::string s) {updateLogText(s, INFO_LOG_VIEW);} );
+    connect(&core, &Core::newWarningMessage, this, [=](std::string s) {updateLogText(s, WARNING_LOG_VIEW);} );
+    connect(&core, &Core::newErrorMessage, this, [=](std::string s) {updateLogText(s, ERROR_LOG_VIEW);} );
     connect(&core, SIGNAL(newHelpMessage(std::string)), this, SLOT(updateHelpText(const std::string)));
     connect(&core, SIGNAL(newOSCMessage(std::string)), this, SLOT(updateOSCMessageLog(const std::string)));
     connect(&core, SIGNAL(newTrainingResultReceived(const GRT::TrainingResult&)), this, SLOT(updateTrainingResults(const GRT::TrainingResult&)));
@@ -916,40 +909,46 @@ void MainWindow::showSetupView(){
             ui->setupView_clusterModeButton->setChecked( true );
         break;
         default:
-            return;
+            // return;
         break;
     }
 }
 
 void MainWindow::showDataIOView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::showDataLabellingToolView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::showPipelineToolView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::showTrainingToolView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
     resetTrainingToolView( ui->trainingTool_trainingMode->currentIndex() );
 }
 
 void MainWindow::showPredictionView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::showLogView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
-void MainWindow::updateInfoText(const std::string msg){
+void MainWindow::updateLogText(const std::string msg, const LogViewModes log_mode){
     ui->mainWindow_infoTextField->setText( QString::fromStdString( msg ) );
     QPalette p = ui->mainWindow_infoTextField->palette();
     p.setColor(QPalette::Text, Qt::black);
+    if ( log_mode == WARNING_LOG_VIEW ) {
+        p.setColor(QPalette::Text, QColor(200,100,20));
+    }
+    else if ( log_mode == ERROR_LOG_VIEW ) {
+        p.setColor(QPalette::Text, QColor(200,40,20));
+    }
     ui->mainWindow_infoTextField->setPalette(p);
     core.setInfoMessage( msg );
 
@@ -959,48 +958,21 @@ void MainWindow::updateInfoText(const std::string msg){
         std::string t = "[";
         t += GRT::Util::toString(ts.hour) + ":" + GRT::Util::toString(ts.minute) + ":" + GRT::Util::toString(ts.second);
         t += "] ";
-        ui->logView_infoLogScrollView->append( QString::fromStdString( t + msg ) );
         ui->logView_allLogsScrollView->append( QString::fromStdString( t + msg ) );
+        if ( log_mode == INFO_LOG_VIEW ) {
+            ui->logView_infoLogScrollView->append( QString::fromStdString( t + msg ) );
+        }
+        else if ( log_mode == WARNING_LOG_VIEW ) {
+            ui->logView_warnLogScrollView->append( QString::fromStdString( t + msg ) );
+        }
+        else if ( log_mode == ERROR_LOG_VIEW ) {
+            ui->logView_errorLogScrollView->append( QString::fromStdString( t + msg ) );
+        }
     }
-}
-
-void MainWindow::updateWarningText(const std::string msg){
-
-    ui->mainWindow_infoTextField->setText( QString::fromStdString( msg ) );
-    QPalette p = ui->mainWindow_infoTextField->palette();
-    p.setColor(QPalette::Text, QColor(200,100,20));
-    ui->mainWindow_infoTextField->setPalette(p);
-    core.setInfoMessage( msg );
-
-    if( msg.length() > 0 ){
-        GRT::TimeStamp ts;
-        ts.setTimeStampAsNow();
-        std::string t = "[";
-        t += GRT::Util::toString(ts.hour) + ":" + GRT::Util::toString(ts.minute) + ":" + GRT::Util::toString(ts.second);
-        t += "] ";
-        ui->logView_warningLogScrollView->append( QString::fromStdString( t + msg ) );
-        ui->logView_allLogsScrollView->append( QString::fromStdString( t + msg ) );
-    }
-}
-
-void MainWindow::updateErrorText(const std::string msg){
-    return;
-    if( msg.length() > 0 ){
-        GRT::TimeStamp ts;
-        ts.setTimeStampAsNow();
-        std::string t = "[";
-        t += GRT::Util::toString(ts.hour) + ":" + GRT::Util::toString(ts.minute) + ":" + GRT::Util::toString(ts.second);
-        t += "] ";
-        ui->logView_errorLogScrollView->append( QString::fromStdString( t + msg ) );
-        ui->logView_allLogsScrollView->append( QString::fromStdString( t + msg ) );
-    }
-
-    QMessageBox::warning(0, "Error", QString::fromStdString( msg ));
-    core.setInfoMessage( msg );
 }
 
 void MainWindow::updateHelpText(const std::string msg){
-    QMessageBox::information(0, "Information", QString::fromStdString( msg ));
+    QMessageBox::information(nullptr, "Information", QString::fromStdString( msg ));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1182,7 +1154,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->trainingTool_resultsTab->insertTab( 0, trainingToolTabHistory[0], "Results" );
         break;
         default:
-            return;
+            // return;
         break;
     }
 }
@@ -1208,7 +1180,7 @@ void MainWindow::resetAll(){
         break;
     }
 
-    updateInfoText( "Pipeline Reset" );
+    updateLogText( "Pipeline Reset", INFO_LOG_VIEW );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1306,7 +1278,7 @@ void MainWindow::updateNumTargetDimensions(const int numTargetDimensions){
     int numHiddenNeurons = std::max((ui->setupView_numInputsSpinBox->value() + numTargetDimensions) / 2,2);
     ui->pipelineTool_mlpNumHiddenNeurons->setValue( numHiddenNeurons );
 
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::updateOSCMessageLog(const std::string msg){
@@ -2755,7 +2727,7 @@ void MainWindow::savePipelineToFile(){
     QString filenameAndPath = QFileDialog::getSaveFileName(this, tr("Enter filename"), directory.path());
     std::string filename = filenameAndPath.toUtf8().constData();
     if( !core.savePipelineToFile( filename ) )
-        emit updateInfoText( "WARNING: Failed to save pipeline." );
+        updateLogText( "WARNING: Failed to save pipeline.", INFO_LOG_VIEW );
 }
 
 void MainWindow::loadPipelineFromFile(){
@@ -2763,7 +2735,7 @@ void MainWindow::loadPipelineFromFile(){
     QString filenameAndPath = QFileDialog::getOpenFileName(this, tr("Enter filename"), directory.path());
     std::string filename = filenameAndPath.toUtf8().constData();
     if( !core.loadPipelineFromFile( filename ) )
-        emit updateInfoText( "WARNING: Failed to load pipeline." );
+        updateLogText( "WARNING: Failed to load pipeline.", INFO_LOG_VIEW );
 }
 
 void MainWindow::updatePreProcessingView(const int viewIndex){
@@ -2814,7 +2786,7 @@ void MainWindow::updatePreProcessingView(const int viewIndex){
             core.setPreProcessing( GRT::DeadZone( ui->pipelineTool_deadZoneLowerLimitSpinBox->value(), ui->pipelineTool_deadZoneUpperLimitSpinBox->value(), numDimensions ) );
         break;
         default:
-            updateInfoText( "WARNING: Unknown preprocessing mode!" );
+            updateLogText( "WARNING: Unknown preprocessing mode!", INFO_LOG_VIEW );
         break;
     }
 }
@@ -3654,27 +3626,25 @@ void MainWindow::showErrorLog(){
 
 void MainWindow::updateLogView(const unsigned int viewID){
 
+    ui->logView_logFrame->setCurrentIndex( static_cast<int>(viewID) );
+
     switch( viewID ){
         case ALL_LOGS_VIEW:
-            ui->logView_logFrame->setCurrentIndex( 0 );
             ui->logView_infoLogButton->setChecked( false );
             ui->logView_warningLogButton->setChecked( false );
             ui->logView_errorLogButton->setChecked( false );
         break;
         case INFO_LOG_VIEW:
-            ui->logView_logFrame->setCurrentIndex( 1 );
             ui->logView_allLogsButton->setChecked( false );
             ui->logView_warningLogButton->setChecked( false );
             ui->logView_errorLogButton->setChecked( false );
         break;
         case WARNING_LOG_VIEW:
-            ui->logView_logFrame->setCurrentIndex( 2 );
             ui->logView_allLogsButton->setChecked( false );
             ui->logView_infoLogButton->setChecked( false );
             ui->logView_errorLogButton->setChecked( false );
         break;
         case ERROR_LOG_VIEW:
-            ui->logView_logFrame->setCurrentIndex( 3 );
             ui->logView_allLogsButton->setChecked( false );
             ui->logView_infoLogButton->setChecked( false );
             ui->logView_warningLogButton->setChecked( false );
@@ -3792,17 +3762,17 @@ void MainWindow::notify(const GRT::TestingLogMessage &log){
 void MainWindow::notify(const GRT::WarningLogMessage &log){
     std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
-    updateWarningText( message );
+    updateLogText( message, WARNING_LOG_VIEW );
 }
 
 void MainWindow::notify(const GRT::ErrorLogMessage &log){
     std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
-    updateErrorText( message );
+    updateLogText( message, ERROR_LOG_VIEW );
 }
 
 void MainWindow::notify(const GRT::InfoLogMessage &log){
     std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
-    updateInfoText( message );
+    updateLogText( message, INFO_LOG_VIEW );
 }

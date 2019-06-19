@@ -159,9 +159,7 @@ private slots:
     void showTrainingToolView();
     void showPredictionView();
     void showLogView();
-    void updateInfoText(const std::string msg);
-    void updateWarningText(const std::string msg);
-    void updateErrorText(const std::string msg);
+    void updateLogText(const std::string msg, const LogViewModes log_mode);
     void updateHelpText(const std::string msg);
 
     /////////////////////////////////// SETUP VIEW FUNCTIONS /////////////////////////////////
