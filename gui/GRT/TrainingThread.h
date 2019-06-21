@@ -1,13 +1,14 @@
 #ifndef GRT_TRAINING_THREAD_H
 #define GRT_TRAINING_THREAD_H
 
-#include <QObject>
-#include <GRT/GRT.h>
+//#include <GRT/GRT.h>
 //Include the OSC server to get the boost headers and QDebug headers
 #include "OSC/OSCServer.h"
 #include "Trainer.h"
 
-#define DEFAULT_TRAINING_THREAD_SLEEP_TIME 100
+#include <QObject>
+#include <mutex>
+#include <condition_variable>
 
 class TrainingThread : public QObject
 {
@@ -41,14 +42,13 @@ protected:
     bool train();
 
     std::mutex mutex;
-    std::mutex trainingMutex;
     std::shared_ptr< std::thread > mainThread;
-    bool threadRunning;
-    bool stopMainThread;
-    bool verbose;
-    bool debug;
-    bool trainingInProcess;
-    bool startTraining;
+    bool threadRunning = false;
+    bool stopMainThread = false;
+    bool verbose = true;
+    bool debug = false;
+    bool trainingInProcess = false;
+    std::condition_variable startTraining;
 
     GRT::Trainer trainer;
     

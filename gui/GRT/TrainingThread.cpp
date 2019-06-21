@@ -2,12 +2,6 @@
 
 TrainingThread::TrainingThread(QObject *parent) : QObject(parent)
 {
-    threadRunning = false;
-    stopMainThread = false;
-    verbose = true;
-    debug = false;
-    trainingInProcess = false;
-    startTraining = false;
 }
 
 TrainingThread::~TrainingThread(){
@@ -64,10 +58,9 @@ bool TrainingThread::stop(){
     }
 
     //Flag that the core should stop
-    {
-        std::unique_lock< std::mutex > lock( mutex );
-        stopMainThread = true;
-    }
+    std::unique_lock< std::mutex > lock( mutex );
+    stopMainThread = true;
+    startTraining.notify_all();
 
     //Wait for it to stop
     mainThread->join();
@@ -77,24 +70,22 @@ bool TrainingThread::stop(){
 }
 
 bool TrainingThread::getThreadRunning(){
-    std::unique_lock< std::mutex > lock( mutex );
     return threadRunning;
 }
 
 bool TrainingThread::getTrainingInProcess(){
-    std::unique_lock< std::mutex > lock( mutex );
     return trainingInProcess;
 }
 
-bool TrainingThread::startNewTraining(const GRT::Trainer &trainer ){
+bool TrainingThread::startNewTraining(const GRT::Trainer &my_trainer ){
 
     //Check to make sure another training task is not in process
     if( getTrainingInProcess() ) return false;
 
     //Flag that a new training task should be started using the new trainer
     std::unique_lock< std::mutex > lock( mutex );
-    this->startTraining = true;
-    this->trainer = trainer;
+    trainer = my_trainer;
+    startTraining.notify_all();
 
     return true;
 }
@@ -107,76 +98,46 @@ void TrainingThread::mainThreadFunction(){
         threadRunning = true;
         stopMainThread = false;
         trainingInProcess = false;
-        startTraining = false;
     }
 
     //Flag that the core is now running
     emit threadStarted();
 
-    bool keepRunning = true;
+    while( ! stopMainThread ){
 
-    while( keepRunning ){
+        //Wait until main loop starts this
+        std::unique_lock<std::mutex> lock(mutex);
+        startTraining.wait(lock);
 
-        //Check to see if we should start a new training batch
-        bool runTraining = false;
+        //Check to see if we should exit
+        if ( stopMainThread ) break;
 
-        {
-            std::unique_lock< std::mutex > lock( mutex );
-            runTraining = startTraining;
-            if( startTraining ){
-                startTraining = false;
-                trainingInProcess = true;
-            }
+        trainingInProcess = true;
+
+        emit pipelineTrainingStarted();
+
+        //Start the training, the thread will pause here until the training has finished
+        bool result = trainer.train();
+
+        //Flag that the training has stopped
+        trainingInProcess = false;
+
+        //Emit the results
+        if( result ){
+            emit newInfoMessage( "Pipeline trained" );
+        }else{
+            emit newHelpMessage( trainer.getLastErrorMessage() );
         }
 
-        if( runTraining ){
-            emit pipelineTrainingStarted();
+        GRT::GestureRecognitionPipeline tempPipeline;
+        tempPipeline = trainer.getPipeline();
 
-            //Start the training, the thread will pause here until the training has finished
-            bool result = trainer.train();
-
-            //Flag that the training has stopped
-            {
-                std::unique_lock< std::mutex > lock( mutex );
-                trainingInProcess = false;
-            }
-
-            //Emit the results
-            if( result ){
-                emit newInfoMessage( "Pipeline trained" );
-            }else{
-                emit newHelpMessage( trainer.getLastErrorMessage() );
-            }
-
-            GRT::GestureRecognitionPipeline tempPipeline;
-            {
-                std::unique_lock< std::mutex > lock( mutex );
-                tempPipeline = trainer.getPipeline();
-            }
-            emit pipelineUpdated( tempPipeline );
-            emit pipelineTrainingFinished( result );
-        }
-
-        //Let the thread sleep so we don't kill the CPU
-        std::this_thread::sleep_for( std::chrono::milliseconds( DEFAULT_TRAINING_THREAD_SLEEP_TIME ) );
-
-        //Check to see if we should stop the thread
-        {
-            std::unique_lock< std::mutex > lock( mutex );
-            if( stopMainThread ){
-                keepRunning = false;
-            }
-        }
+        emit pipelineUpdated( tempPipeline );
+        emit pipelineTrainingFinished( result );
     }
 
     //Flag that the core has stopped
-    {
-        std::unique_lock< std::mutex > lock( mutex );
-        threadRunning = false;
-        stopMainThread = false;
-        trainingInProcess = false;
-        startTraining = false;
-    }
+    threadRunning = false;
 
     //Signal that the core has stopped
     emit threadStopped();
