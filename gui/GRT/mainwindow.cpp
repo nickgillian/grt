@@ -909,8 +909,8 @@ void MainWindow::showSetupView(){
             ui->setupView_clusterModeButton->setChecked( true );
         break;
         default:
-            // return;
-        break;
+            return;
+        // break;
     }
 }
 
@@ -1154,8 +1154,8 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->trainingTool_resultsTab->insertTab( 0, trainingToolTabHistory[0], "Results" );
         break;
         default:
-            // return;
-        break;
+            return;
+        // break;
     }
 }
 
