@@ -20,8 +20,8 @@ public:
 
     bool start();
     bool stop();
-    bool getThreadRunning();
-    bool getTrainingInProcess();
+    bool getThreadRunning() const { return threadRunning; }
+    bool getTrainingInProcess() const { return trainingInProcess; }
     bool startNewTraining( const GRT::Trainer &trainingContainer );
 
 signals:

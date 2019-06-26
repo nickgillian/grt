@@ -69,14 +69,6 @@ bool TrainingThread::stop(){
     return true;
 }
 
-bool TrainingThread::getThreadRunning(){
-    return threadRunning;
-}
-
-bool TrainingThread::getTrainingInProcess(){
-    return trainingInProcess;
-}
-
 bool TrainingThread::startNewTraining(const GRT::Trainer &my_trainer ){
 
     //Check to make sure another training task is not in process
