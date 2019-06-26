@@ -52,10 +52,8 @@ macx{
  #Add the custom resources file
  ICON = Resources/OSX/GRT.icns
 
- #Flag that we want to use a pre-built version of the GRT library (this should be installed in /user/local/lib
- USE_GRT_LIB = "true"
-
  #Flag that we want to include the GRT library directly as source code
+ #comment to use a pre-built version of the GRT library (this should be installed in /user/local/lib
  #USE_GRT_SOURCE = "true"
 }
 
@@ -78,11 +76,9 @@ unix:!macx:!android{
  CONFIG += link_pkgconfig
  PKGCONFIG += grt
 
- #Flag that we want to use a pre-built version of the GRT library (this should be installed in /user/local/lib
- #USE_GRT_LIB = "true"
-
  #Flag that we want to include the GRT library directly as source code
- USE_GRT_SOURCE_CODE = "true"
+ #comment to use a pre-built version of the GRT library (this should be installed in /user/local/lib
+ #USE_GRT_SOURCE_CODE = "true"
 }
 
 #Windows Include
@@ -101,14 +97,10 @@ win32{
  LIBS += -lwinmm
 }
 
-#If USE_GRT_LIB is defined, then we add the prebuilt GRT lib
-defined(USE_GRT_LIB,var){
- #Add the main GRT library, you should have already compiled and install this (using the main GRT cmake file)
- LIBS += -lgrt
-}
-
 #If USE_GRT_SOURCE_CODE is defined, then we add the GRT source code to the project
 defined(USE_GRT_SOURCE_CODE,var){
+ message( "Build grt lib from source." )
+
  #Include the main GRT header
  HEADERS += ../../GRT/GRT.h
 
@@ -253,6 +245,11 @@ defined(USE_GRT_SOURCE_CODE,var){
  SOURCES += ../../GRT/Util/*.cpp
 
 } #end of USE_GRT_SOURCE_CODE
+else {
+ message( "Use prebuilt grt lib." )
+ #Add the main GRT library, you should have already compiled and install this (using the main GRT cmake file)
+ LIBS += -lgrt
+}
 
 #Add the custom networking code, based on the OS
 unix{
