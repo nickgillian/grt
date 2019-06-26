@@ -567,6 +567,25 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_10">
               <item>
+               <widget class="QPushButton" name="dataLabellingTool_RecordButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Record</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_5">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -642,115 +661,100 @@
                   <property name="title">
                    <string>Classification Recording Controls</string>
                   </property>
-                  <layout class="QGridLayout" name="gridLayout_42">
+                  <layout class="QGridLayout" name="gridLayout_6">
                    <item row="0" column="0">
-                    <layout class="QGridLayout" name="gridLayout_6">
+                    <layout class="QFormLayout" name="formLayout_3">
                      <item row="0" column="0">
-                      <layout class="QVBoxLayout" name="verticalLayout_5">
-                       <item>
-                        <widget class="QPushButton" name="dataLabellingTool_classificationModeRecordButton">
-                         <property name="text">
-                          <string>Record</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <layout class="QFormLayout" name="formLayout_3">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_3">
-                           <property name="text">
-                            <string>Training Class Label:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="1">
-                          <widget class="QSpinBox" name="dataLabellingTool_classLabel"/>
-                         </item>
-                         <item row="1" column="0">
-                          <widget class="QLabel" name="label_4">
-                           <property name="text">
-                            <string>Number of Training Samples:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="1">
-                          <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numTrainingSamples"/>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
+                      <widget class="QLabel" name="label_3">
+                       <property name="text">
+                        <string>Training Class Label:</string>
+                       </property>
+                      </widget>
                      </item>
                      <item row="0" column="1">
-                      <spacer name="horizontalSpacer_7">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
+                      <widget class="QSpinBox" name="dataLabellingTool_classLabel"/>
                      </item>
-                     <item row="0" column="2">
-                      <layout class="QFormLayout" name="formLayout_4">
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="label_23">
-                         <property name="text">
-                          <string>Dataset Name:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_classificationMode_datasetName"/>
-                       </item>
-                       <item row="1" column="0">
-                        <widget class="QLabel" name="label_46">
-                         <property name="text">
-                          <string>Info:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_classificationMode_infoTextField"/>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_15">
-                         <property name="text">
-                          <string>Number of Dimensions:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numInputDimensionsField"/>
-                       </item>
-                       <item row="3" column="0">
-                        <widget class="QLabel" name="label_43">
-                         <property name="text">
-                          <string>Number of Classes:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numClassesField"/>
-                       </item>
-                      </layout>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_4">
+                       <property name="text">
+                        <string>Number of Training Samples:</string>
+                       </property>
+                      </widget>
                      </item>
-                     <item row="0" column="3">
-                      <spacer name="horizontalSpacer_6">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numTrainingSamples"/>
                      </item>
                     </layout>
+                   </item>
+                   <item row="0" column="1">
+                    <spacer name="horizontalSpacer_7">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>222</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item row="0" column="2">
+                    <layout class="QFormLayout" name="formLayout_4">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_23">
+                       <property name="text">
+                        <string>Dataset Name:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_classificationMode_datasetName"/>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_46">
+                       <property name="text">
+                        <string>Info:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_classificationMode_infoTextField"/>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_15">
+                       <property name="text">
+                        <string>Number of Dimensions:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numInputDimensionsField"/>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label_43">
+                       <property name="text">
+                        <string>Number of Classes:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numClassesField"/>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="0" column="3">
+                    <spacer name="horizontalSpacer_6">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>221</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
                   </layout>
                  </widget>
@@ -772,145 +776,146 @@
                   </property>
                   <layout class="QGridLayout" name="gridLayout_9">
                    <item row="0" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_30">
+                    <layout class="QVBoxLayout" name="verticalLayout_5">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_6">
+                      <layout class="QHBoxLayout" name="horizontalLayout_12">
                        <item>
-                        <widget class="QPushButton" name="dataLabellingTool_regressionModeRecordButton">
-                         <property name="text">
-                          <string>Record</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_12">
-                         <item>
-                          <layout class="QFormLayout" name="formLayout_5">
-                           <item row="0" column="0">
-                            <widget class="QLabel" name="label_6">
-                             <property name="text">
-                              <string>Dimension:</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QSpinBox" name="dataLabellingTool_targetVectorDimensionSpinBox"/>
-                           </item>
-                          </layout>
-                         </item>
-                         <item>
-                          <layout class="QFormLayout" name="formLayout_6">
-                           <item row="0" column="0">
-                            <widget class="QLabel" name="label_9">
-                             <property name="text">
-                              <string>Value:</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QDoubleSpinBox" name="dataLabellingTool_targetVectorValueSpinBox"/>
-                           </item>
-                          </layout>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QFormLayout" name="formLayout_7">
+                        <layout class="QFormLayout" name="formLayout_5">
                          <item row="0" column="0">
-                          <widget class="QLabel" name="label_63">
+                          <widget class="QLabel" name="label_6">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="text">
-                            <string>Target Vector:</string>
+                            <string>Dimension:</string>
                            </property>
                           </widget>
                          </item>
                          <item row="0" column="1">
-                          <widget class="QLineEdit" name="dataLabellingTool_targetVectorTextField"/>
+                          <widget class="QSpinBox" name="dataLabellingTool_targetVectorDimensionSpinBox"/>
                          </item>
-                         <item row="1" column="0">
-                          <widget class="QLabel" name="label_62">
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QFormLayout" name="formLayout_6">
+                         <item row="0" column="0">
+                          <widget class="QLabel" name="label_9">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="text">
-                            <string>Number of Training Samples:</string>
+                            <string>Value:</string>
                            </property>
                           </widget>
                          </item>
-                         <item row="1" column="1">
-                          <widget class="QLineEdit" name="dataLabellingTool_regressionMode_numTrainingSamples"/>
+                         <item row="0" column="1">
+                          <widget class="QDoubleSpinBox" name="dataLabellingTool_targetVectorValueSpinBox"/>
                          </item>
                         </layout>
                        </item>
                       </layout>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_8">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <layout class="QFormLayout" name="formLayout_8">
+                      <layout class="QFormLayout" name="formLayout_7">
                        <item row="0" column="0">
-                        <widget class="QLabel" name="label_60">
+                        <widget class="QLabel" name="label_63">
                          <property name="text">
-                          <string>Dataset Name:</string>
+                          <string>Target Vector:</string>
                          </property>
                         </widget>
                        </item>
                        <item row="0" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_regressionMode_datasetName"/>
+                        <widget class="QLineEdit" name="dataLabellingTool_targetVectorTextField"/>
                        </item>
                        <item row="1" column="0">
-                        <widget class="QLabel" name="label_61">
+                        <widget class="QLabel" name="label_62">
                          <property name="text">
-                          <string>Info:</string>
+                          <string>Number of Training Samples:</string>
                          </property>
                         </widget>
                        </item>
                        <item row="1" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_regressionMode_infoTextField"/>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_58">
-                         <property name="text">
-                          <string>Input Data Vector Size:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_regressionMode_numInputDimensionsField"/>
-                       </item>
-                       <item row="3" column="0">
-                        <widget class="QLabel" name="label_75">
-                         <property name="text">
-                          <string>Target Data Vector Size:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_numTargetDimensionsField"/>
+                        <widget class="QLineEdit" name="dataLabellingTool_regressionMode_numTrainingSamples"/>
                        </item>
                       </layout>
                      </item>
-                     <item>
-                      <spacer name="horizontalSpacer_9">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
+                    </layout>
+                   </item>
+                   <item row="0" column="1">
+                    <spacer name="horizontalSpacer_8">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>221</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item row="0" column="2">
+                    <layout class="QFormLayout" name="formLayout_8">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_60">
+                       <property name="text">
+                        <string>Dataset Name:</string>
                        </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_regressionMode_datasetName"/>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_61">
+                       <property name="text">
+                        <string>Info:</string>
                        </property>
-                      </spacer>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_regressionMode_infoTextField"/>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_58">
+                       <property name="text">
+                        <string>Input Data Vector Size:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_regressionMode_numInputDimensionsField"/>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label_75">
+                       <property name="text">
+                        <string>Target Data Vector Size:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_numTargetDimensionsField"/>
                      </item>
                     </layout>
+                   </item>
+                   <item row="0" column="3">
+                    <spacer name="horizontalSpacer_9">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>221</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
                   </layout>
                  </widget>
@@ -925,52 +930,20 @@
                    <string>Timeseries Classification Recording Controls</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_10">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="verticalLayout_7">
-                     <item>
-                      <widget class="QPushButton" name="dataLabellingTool_timeseriesClassificationModeRecordButton">
-                       <property name="text">
-                        <string>Record</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <layout class="QFormLayout" name="formLayout_10">
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="label_155">
-                         <property name="text">
-                          <string>Training Class Label:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="1">
-                        <widget class="QSpinBox" name="dataLabellingTool_timeseriesClassificationMode_classLabel"/>
-                       </item>
-                       <item row="1" column="0">
-                        <widget class="QLabel" name="label_158">
-                         <property name="text">
-                          <string>Training Sample Length:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_timeseriesSampleLength"/>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_154">
-                         <property name="text">
-                          <string>Number of Training Samples:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numTrainingSamples"/>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
+                   <item row="1" column="3">
+                    <spacer name="horizontalSpacer_11">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
-                   <item row="0" column="1">
+                   <item row="1" column="1">
                     <spacer name="horizontalSpacer_10">
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
@@ -983,7 +956,7 @@
                      </property>
                     </spacer>
                    </item>
-                   <item row="0" column="2">
+                   <item row="1" column="2">
                     <layout class="QFormLayout" name="formLayout_9">
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_153">
@@ -1013,7 +986,14 @@
                       </widget>
                      </item>
                      <item row="2" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField"/>
+                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField">
+                       <property name="acceptDrops">
+                        <bool>false</bool>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
                      </item>
                      <item row="3" column="0">
                       <widget class="QLabel" name="label_156">
@@ -1023,22 +1003,64 @@
                       </widget>
                      </item>
                      <item row="3" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numClassesField"/>
+                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numClassesField">
+                       <property name="acceptDrops">
+                        <bool>false</bool>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
-                   <item row="0" column="3">
-                    <spacer name="horizontalSpacer_11">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
+                   <item row="1" column="0">
+                    <layout class="QFormLayout" name="formLayout_10">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_155">
+                       <property name="text">
+                        <string>Training Class Label:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QSpinBox" name="dataLabellingTool_timeseriesClassificationMode_classLabel"/>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_158">
+                       <property name="text">
+                        <string>Training Sample Length:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesSampleLength">
+                       <property name="acceptDrops">
+                        <bool>false</bool>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_154">
+                       <property name="text">
+                        <string>Number of Training Samples:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numTrainingSamples">
+                       <property name="acceptDrops">
+                        <bool>false</bool>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>
@@ -1060,93 +1082,78 @@
                   </property>
                   <layout class="QGridLayout" name="gridLayout_11">
                    <item row="0" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_29">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_8">
-                       <item>
-                        <widget class="QPushButton" name="dataLabellingTool_clusterModeRecordButton">
-                         <property name="text">
-                          <string>Record</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <layout class="QFormLayout" name="formLayout_11">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_130">
-                           <property name="text">
-                            <string>Number of Training Samples:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="1">
-                          <widget class="QLineEdit" name="dataLabellingTool_clusterMode_numTrainingSamples"/>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
+                    <layout class="QFormLayout" name="formLayout_11">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_130">
+                       <property name="text">
+                        <string>Number of Training Samples:</string>
+                       </property>
+                      </widget>
                      </item>
-                     <item>
-                      <spacer name="horizontalSpacer_12">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <layout class="QFormLayout" name="formLayout_12">
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="label_129">
-                         <property name="text">
-                          <string>Dataset Name:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_clusterMode_datasetName"/>
-                       </item>
-                       <item row="1" column="0">
-                        <widget class="QLabel" name="label_132">
-                         <property name="text">
-                          <string>Info:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_clusterMode_infoTextField"/>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_128">
-                         <property name="text">
-                          <string>Number of Dimensions:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_clusterMode_numInputDimensionsField"/>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_13">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_clusterMode_numTrainingSamples"/>
                      </item>
                     </layout>
+                   </item>
+                   <item row="0" column="1">
+                    <spacer name="horizontalSpacer_12">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>222</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item row="0" column="2">
+                    <layout class="QFormLayout" name="formLayout_12">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_129">
+                       <property name="text">
+                        <string>Dataset Name:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_clusterMode_datasetName"/>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_132">
+                       <property name="text">
+                        <string>Info:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_clusterMode_infoTextField"/>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_128">
+                       <property name="text">
+                        <string>Number of Dimensions:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_clusterMode_numInputDimensionsField"/>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="0" column="3">
+                    <spacer name="horizontalSpacer_13">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>221</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
                   </layout>
                  </widget>
@@ -4181,7 +4188,7 @@
             <item>
              <widget class="QStackedWidget" name="predictionWindow_classificationRegressionResultsView">
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page_22">
                <layout class="QGridLayout" name="gridLayout_55">
@@ -5753,11 +5760,9 @@
   <tabstop>dataLabellingTool_classificationMode_numTrainingSamples</tabstop>
   <tabstop>dataLabellingTool_classificationMode_datasetName</tabstop>
   <tabstop>dataLabellingTool_saveButton</tabstop>
-  <tabstop>dataLabellingTool_classificationModeRecordButton</tabstop>
   <tabstop>dataLabellingTool_classLabel</tabstop>
   <tabstop>dataLabellingTool_regressionMode_numInputDimensionsField</tabstop>
   <tabstop>dataLabellingTool_regressionMode_datasetName</tabstop>
-  <tabstop>dataLabellingTool_regressionModeRecordButton</tabstop>
   <tabstop>dataLabellingTool_targetVectorTextField</tabstop>
   <tabstop>pipelineTool_preProcessingType</tabstop>
   <tabstop>pipelineTool_featureExtractionType</tabstop>

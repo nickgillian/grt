@@ -190,18 +190,12 @@ bool MainWindow::initDataIOView(){
 
 bool MainWindow::initDataLabellingToolView(){
 
-    ui->dataLabellingTool_classificationModeRecordButton->setCheckable( true );
-    ui->dataLabellingTool_regressionModeRecordButton->setCheckable( true );
-    ui->dataLabellingTool_timeseriesClassificationModeRecordButton->setCheckable( true );
-    ui->dataLabellingTool_clusterModeRecordButton->setCheckable( true );
+    ui->dataLabellingTool_RecordButton->setCheckable( true );
 
     //Make sure the core is not recording
     core.setRecordingState( false );
 
-    ui->dataLabellingTool_classificationModeRecordButton->setChecked( false );
-    ui->dataLabellingTool_regressionModeRecordButton->setChecked( false );
-    ui->dataLabellingTool_timeseriesClassificationModeRecordButton->setChecked( false );
-    ui->dataLabellingTool_clusterModeRecordButton->setChecked( false );
+    ui->dataLabellingTool_RecordButton->setChecked( false );
 
     ui->dataLabellingTool_classificationMode_infoTextField->setText("");
     ui->dataLabellingTool_classLabel->setValue( core.getTrainingClassLabel() );
@@ -673,10 +667,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->dataIO_oscOutgoingPortSpinBox, SIGNAL(editingFinished()), this, SLOT(resetOSCClient()));
 
     connect(ui->dataLabellingTool_infoButton, SIGNAL(clicked()), this, SLOT(showDataLabellingToolInfo()));
-    connect(ui->dataLabellingTool_classificationModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
-    connect(ui->dataLabellingTool_regressionModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
-    connect(ui->dataLabellingTool_timeseriesClassificationModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
-    connect(ui->dataLabellingTool_clusterModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
+    connect(ui->dataLabellingTool_RecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
     connect(ui->dataLabellingTool_saveButton, SIGNAL(clicked()),this, SLOT(saveTrainingDatasetToFile()));
     connect(ui->dataLabellingTool_loadButton, SIGNAL(clicked()),this, SLOT(loadTrainingDatasetFromFile()));
     connect(ui->dataLabellingTool_clearButton, SIGNAL(clicked()), &core, SLOT(clearTrainingData()));
@@ -1064,7 +1055,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->pipelineTool_postProcessingType->setCurrentIndex( 0 );
 
             //Add the tabs for classification
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Statistics" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[0], "Table View" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 2, dataLabelingToolTabHistory[2], "Class Counter" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 3, dataLabelingToolTabHistory[3], "PCA Projection" );
@@ -1101,7 +1092,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->pipelineTool_postProcessingType_2->setCurrentIndex( 0 );
 
             //Add the tabs for regression
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Statistics" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[0], "Table View" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 2, dataLabelingToolTabHistory[3], "PCA Projection" );
             ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
@@ -1123,7 +1114,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->predictionWindow_classificationRegressionResultsView->setCurrentIndex( TIMESERIES_CLASSIFICATION_VIEW );
 
             //Add the tabs for timeseries classification
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Statistics" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[6], "Timeseries Plot" );
 
             //Add the tabs for classification
@@ -1145,7 +1136,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->predictionWindow_classificationRegressionResultsView->setCurrentIndex( CLUSTER_VIEW );
 
             //Add the data labelling tabs for clustering
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Statistics" );
             //ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[0], "Table View" );
             //ui->dataLabelingTool_trainingDataTab->insertTab( 2, dataLabelingToolTabHistory[3], "PCA Projection" );
             ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
@@ -1332,20 +1323,7 @@ void MainWindow::updateTargetVectorValue(const double value){
 
 void MainWindow::updateRecordStatus(const bool recordStatus){
 
-    switch( core.getPipelineMode() ){
-        case Core::CLASSIFICATION_MODE:
-            ui->dataLabellingTool_classificationModeRecordButton->setChecked( recordStatus );
-        break;
-        case Core::REGRESSION_MODE:
-            ui->dataLabellingTool_regressionModeRecordButton->setChecked( recordStatus );
-        break;
-        case Core::TIMESERIES_CLASSIFICATION_MODE:
-            ui->dataLabellingTool_timeseriesClassificationModeRecordButton->setChecked( recordStatus );
-        break;
-        case Core::CLUSTER_MODE:
-            ui->dataLabellingTool_clusterModeRecordButton->setChecked( recordStatus );
-        break;
-    }
+    ui->dataLabellingTool_RecordButton->setChecked( recordStatus );
 
     if( recordStatus ){
         ui->mainWindow_recordingInfoTextField->setText( "YES" );
@@ -2009,23 +1987,7 @@ void MainWindow::generateFeaturePlot(){
 
 void MainWindow::ctrlRShortcut(){
 
-    switch( core.getPipelineMode() ){
-        case Core::CLASSIFICATION_MODE:
-            ui->dataLabellingTool_classificationModeRecordButton->click();
-        break;
-        case Core::REGRESSION_MODE:
-            ui->dataLabellingTool_regressionModeRecordButton->click();
-        break;
-        case Core::TIMESERIES_CLASSIFICATION_MODE:
-            ui->dataLabellingTool_timeseriesClassificationModeRecordButton->click();
-        break;
-        case Core::CLUSTER_MODE:
-            ui->dataLabellingTool_clusterModeRecordButton->click();
-        break;
-        default:
-            return;
-        // break;
-    }
+    ui->dataLabellingTool_RecordButton->click();
 
     if( core.getRecordStatus() ){
         ui->mainWindow_recordingInfoTextField->setText( "YES" );
