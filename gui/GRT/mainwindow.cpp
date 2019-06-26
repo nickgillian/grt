@@ -197,7 +197,6 @@ bool MainWindow::initDataLabellingToolView(){
 
     ui->dataLabellingTool_RecordButton->setChecked( false );
 
-    ui->dataLabellingTool_classificationMode_infoTextField->setText("");
     ui->dataLabellingTool_classLabel->setValue( core.getTrainingClassLabel() );
     ui->dataLabellingTool_classLabel->setRange(1,100000);
     ui->dataLabellingTool_classificationMode_numInputDimensionsField->setText( QString::number( 1 ) );
@@ -207,7 +206,7 @@ bool MainWindow::initDataLabellingToolView(){
     ui->dataLabellingTool_classificationMode_numClassesField->setText( QString::number( core.getNumClassesInTrainingData() ) );
     ui->dataLabellingTool_classificationMode_numClassesField->setReadOnly( true );
 
-    ui->dataLabellingTool_regressionMode_infoTextField->setText("");
+    ui->dataLabellingTool_infoTextField->setText("");
     ui->dataLabellingTool_regressionMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
     ui->dataLabellingTool_targetVectorTextField->setText("");
     ui->dataLabellingTool_targetVectorTextField->setReadOnly( true );
@@ -217,7 +216,6 @@ bool MainWindow::initDataLabellingToolView(){
     ui->dataLabellingTool_regressionMode_numInputDimensionsField->setText( QString::number( 1 ) );
     ui->dataLabellingTool_regressionMode_numTrainingSamples->setReadOnly( true );
 
-    ui->dataLabellingTool_timeseriesClassificationMode_infoTextField->setText("");
     ui->dataLabellingTool_timeseriesClassificationMode_classLabel->setValue( core.getTrainingClassLabel() );
     ui->dataLabellingTool_timeseriesClassificationMode_classLabel->setRange(1,100000);
     ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
@@ -227,7 +225,6 @@ bool MainWindow::initDataLabellingToolView(){
     ui->dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField->setText( QString::number( 1 ) );
     ui->dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField->setReadOnly( true );
 
-    ui->dataLabellingTool_clusterMode_infoTextField->setText("");
     ui->dataLabellingTool_clusterMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
     ui->dataLabellingTool_clusterMode_numTrainingSamples->setReadOnly( true );
     ui->dataLabellingTool_clusterMode_numInputDimensionsField->setReadOnly( true );
@@ -674,12 +671,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->dataLabellingTool_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(const int)));
     connect(ui->dataLabellingTool_timeseriesClassificationMode_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(const int)));
     connect(ui->dataLabellingTool_targetVectorValueSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateTargetVectorValue(const double)));
-    connect(ui->dataLabellingTool_classificationMode_datasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
-    connect(ui->dataLabellingTool_regressionMode_datasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
-    connect(ui->dataLabellingTool_classificationMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
-    connect(ui->dataLabellingTool_regressionMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
-    connect(ui->dataLabellingTool_timeseriesClassificationMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
-    connect(ui->dataLabellingTool_clusterMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
+    connect(ui->dataLabellingTool_datasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
     connect(ui->dataLabelingTool_trainingDataTab, SIGNAL(currentChanged(int)), this, SLOT(updateTrainingTabView(const int)));
     connect(ui->dataLabellingTool_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(handleDatasetClicked(const QModelIndex)));
     connect(ui->dataLabellingTool_featurePlotButton, SIGNAL(clicked()), this, SLOT(generateFeaturePlot()));
@@ -1382,8 +1374,8 @@ void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,cons
 
 void MainWindow::resetTrainingData(const GRT::ClassificationData &trainingData){
 
-    ui->dataLabellingTool_classificationMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
-    ui->dataLabellingTool_classificationMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
+    ui->dataLabellingTool_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
+    ui->dataLabellingTool_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
     ui->dataLabellingTool_classificationMode_numInputDimensionsField->setText( QString::number( trainingData.getNumDimensions() ) );
     ui->dataLabellingTool_classificationMode_numClassesField->setText( QString::number( trainingData.getNumClasses() ) );
 
@@ -1422,8 +1414,8 @@ void MainWindow::resetTrainingData(const GRT::ClassificationData &trainingData){
 
 void MainWindow::resetTrainingData(const GRT::RegressionData &trainingData){
 
-    ui->dataLabellingTool_regressionMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
-    ui->dataLabellingTool_regressionMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
+    ui->dataLabellingTool_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
+    ui->dataLabellingTool_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
 
     ui->dataLabellingTool_treeView->setRootIsDecorated(false);
     ui->dataLabellingTool_treeView->setAlternatingRowColors(true);
@@ -1467,8 +1459,8 @@ void MainWindow::resetTrainingData(const GRT::RegressionData &trainingData){
 
 void MainWindow::resetTrainingData(const GRT::TimeSeriesClassificationData &trainingData){
 
-    ui->dataLabellingTool_timeseriesClassificationMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
-    ui->dataLabellingTool_timeseriesClassificationMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
+    ui->dataLabellingTool_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
+    ui->dataLabellingTool_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
     ui->dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField->setText( QString::number( trainingData.getNumDimensions() ) );
     ui->dataLabellingTool_timeseriesClassificationMode_numClassesField->setText( QString::number( trainingData.getNumClasses() ) );
 
@@ -1508,8 +1500,8 @@ void MainWindow::resetTrainingData(const GRT::TimeSeriesClassificationData &trai
 
 void MainWindow::resetTrainingData(const GRT::UnlabelledData &trainingData){
 
-    ui->dataLabellingTool_clusterMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
-    ui->dataLabellingTool_clusterMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
+    ui->dataLabellingTool_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
+    ui->dataLabellingTool_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
 
     ui->dataLabellingTool_treeView->setRootIsDecorated(false);
     ui->dataLabellingTool_treeView->setAlternatingRowColors(true);
@@ -1564,40 +1556,11 @@ void MainWindow::showDataLabellingToolInfo(){
 }
 
 void MainWindow::updateDatasetName(){
-
-    switch( core.getPipelineMode() ){
-        case Core::CLASSIFICATION_MODE:
-            core.setDatasetName( ui->dataLabellingTool_classificationMode_datasetName->text().toStdString() );
-        break;
-        case Core::REGRESSION_MODE:
-            core.setDatasetName( ui->dataLabellingTool_regressionMode_datasetName->text().toStdString() );
-        break;
-        case Core::TIMESERIES_CLASSIFICATION_MODE:
-            core.setDatasetName( ui->dataLabellingTool_timeseriesClassificationMode_datasetName->text().toStdString() );
-        break;
-        case Core::CLUSTER_MODE:
-            core.setDatasetName( ui->dataLabellingTool_clusterMode_datasetName->text().toStdString() );
-        break;
-    }
-
+    core.setDatasetName( ui->dataLabellingTool_datasetName->text().toStdString() );
 }
 
 void MainWindow::updateDatasetInfoText(){
-
-    switch( core.getPipelineMode() ){
-        case Core::CLASSIFICATION_MODE:
-            core.setDatasetInfoText( ui->dataLabellingTool_classificationMode_infoTextField->text().toStdString() );
-        break;
-        case Core::REGRESSION_MODE:
-            core.setDatasetInfoText( ui->dataLabellingTool_regressionMode_infoTextField->text().toStdString() );
-        break;
-        case Core::TIMESERIES_CLASSIFICATION_MODE:
-            core.setDatasetInfoText( ui->dataLabellingTool_timeseriesClassificationMode_infoTextField->text().toStdString()  );
-        break;
-        case Core::CLUSTER_MODE:
-            core.setDatasetInfoText( ui->dataLabellingTool_clusterMode_infoTextField->text().toStdString()  );
-        break;
-    }
+    core.setDatasetInfoText( ui->dataLabellingTool_infoTextField->text().toStdString() );
 }
 
 void MainWindow::updateTrainingTabView( const int tabIndex ){
