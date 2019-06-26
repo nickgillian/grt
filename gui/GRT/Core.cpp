@@ -1,32 +1,12 @@
 #include "Core.h"
 
+
+
 Core::Core(QObject *parent) : QObject(parent)
 {
-    coreSleepTime = DEFAULT_CORE_THREAD_SLEEP_TIME;
-    coreRunning = false;
-    stopMainThread = false;
-    verbose = true;
-    debug = false;
-    enableOSCInput = true;
-    enableOSCControlCommands = true;
-    infoMessage = "";
-    version = GRT_GUI_VERSION;
-
-    incomingOSCDataPort = 5000;
-    outgoingOSCDataPort = 5001;
-    outgoingOSCAddress = "127.0.0.1";
     oscServer.setVerbose( false );
-    incomingDataAddress = "/Data";
-
-    numInputDimensions = 1;
-    targetVectorSize = 1;
     inputData.resize( numInputDimensions );
     targetVector.resize( targetVectorSize, 0 );
-    trainingClassLabel = 1;
-    recordTrainingData = false;
-    newDataReceived = false;
-    predictionModeEnabled = true;
-    pipelineMode = CLASSIFICATION_MODE;
 
     //Connect the training thread signals
     connect(&trainingThread, SIGNAL(newInfoMessage(std::string)), this, SIGNAL(newInfoMessage(std::string)));
@@ -91,10 +71,7 @@ bool Core::stop(){
         qDebug() << STRING_TO_QSTRING("Core::stop() - Stopping main thread...");
 
     //Flag that the core should stop
-    {
-        std::unique_lock< std::mutex > lock( mutex );
-        stopMainThread = true;
-    }
+    stopMainThread = true;
 
     //Wait for it to stop
     mainThread->join();
@@ -146,40 +123,27 @@ bool Core::resetOSCServer( const int in_OSCDataPort ){
     return true;
 }
 
-bool Core::addMessaage( const OSCMessagePtr msg ){
-    std::unique_lock< std::mutex > lock( mutex );
+void Core::addMessaage( const OSCMessagePtr msg ){
     oscServer.addMessaage( msg );
-    return true;
 }
 
-bool Core::setVersion( const std::string version ){
-    std::unique_lock< std::mutex > lock( mutex );
+void Core::setVersion( const std::string version ){
     this->version = version;
-    return true;
 }
 
-bool Core::setEnableOSCInput( const bool state ){
-    std::unique_lock< std::mutex > lock( mutex );
+void Core::setEnableOSCInput( const bool state ){
     enableOSCInput = state;
-    return true;
 }
 
-bool Core::setEnableOSCControlCommands( const bool state ){
-    std::unique_lock< std::mutex > lock( mutex );
+void Core::setEnableOSCControlCommands( const bool state ){
     enableOSCControlCommands = state;
-    return true;
 }
 
-bool Core::setPipelineMode( const unsigned int pipelineMode ){
-    bool modeChanged = false;
-    if( pipelineMode != this->pipelineMode ){
-        std::unique_lock< std::mutex > lock( mutex );
-        this->pipelineMode = pipelineMode;
-        modeChanged = true;
+void Core::setPipelineMode( const unsigned int my_pipelineMode ){
+    if( my_pipelineMode != this->pipelineMode ){
+        pipelineMode = my_pipelineMode;
+        emit pipelineModeChanged( my_pipelineMode );
     }
-    if( modeChanged )
-        emit pipelineModeChanged( pipelineMode );
-    return true;
 }
 
 bool Core::setRecordingState( const bool state ){
@@ -510,60 +474,25 @@ void Core::clearTrainingData(){
 ////////////////////////////      GETTERS      ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-bool Core::getCoreRunning(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return coreRunning;
-}
-
-bool Core::getTrained(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getTrained();
-}
-
-bool Core::getTrainingInProcess(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return trainingThread.getTrainingInProcess();
-}
-
-bool Core::getRecordStatus(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return recordTrainingData;
-}
-
-unsigned int Core::getNumInputDimensions(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return numInputDimensions;
-}
-
-unsigned int Core::getPipelineMode(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipelineMode;
-}
-
-unsigned int Core::getTrainingClassLabel(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return trainingClassLabel;
-}
-
 unsigned int Core::getNumTrainingSamples(){
     std::unique_lock< std::mutex > lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTrainingData.getNumSamples();
-        break;
+        // break;
         case REGRESSION_MODE:
             return regressionTrainingData.getNumSamples();
-        break;
+        // break;
         case TIMESERIES_CLASSIFICATION_MODE:
             return timeseriesClassificationTrainingData.getNumSamples();
-        break;
+        // break;
         case CLUSTER_MODE:
             return clusterTrainingData.getNumSamples();
-        break;
+        // break;
         default:
             qDebug() << "ERROR: getNumTrainingSamples() - Unknown pipeline mode!";
             return false;
-        break;
+        // break;
     }
 }
 
@@ -572,26 +501,21 @@ unsigned int Core::getNumTestSamples(){
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTestData.getNumSamples();
-        break;
+        // break;
         case REGRESSION_MODE:
             return regressionTestData.getNumSamples();
-        break;
+        // break;
         case TIMESERIES_CLASSIFICATION_MODE:
             return timeseriesClassificationTestData.getNumSamples();
-        break;
+        // break;
         case CLUSTER_MODE:
             return clusterTestData.getNumSamples();
-        break;
+        // break;
         default:
             qDebug() << "ERROR: getNumTestSamples() - Unknown pipeline mode!";
             return false;
-        break;
+        // break;
     }
-}
-
-unsigned int Core::getNumClasses(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getNumClasses();
 }
 
 unsigned int Core::getNumClassesInTrainingData(){
@@ -599,123 +523,27 @@ unsigned int Core::getNumClassesInTrainingData(){
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTrainingData.getNumClasses();
-        break;
+        // break;
         case REGRESSION_MODE:
             return 0; //There are no classes in regression data
-        break;
+        // break;
         case TIMESERIES_CLASSIFICATION_MODE:
             return timeseriesClassificationTrainingData.getNumClasses();
-        break;
+        // break;
         case CLUSTER_MODE:
             return 0; //There are no classes in cluster mode
-        break;
+        // break;
         default:
             qDebug() << "ERROR: getNumClassesInTrainingData() - Unknown pipeline mode!";
             return false;
-        break;
+        // break;
     }
     return 0;
-}
-
-vector<unsigned int> Core::getClassLabels(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getClassLabels();
-}
-
-GRT::VectorFloat Core::getTargetVector(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return targetVector;
-}
-
-GRT::ClassificationData Core::getClassificationTrainingData(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return classificationTrainingData;
-}
-
-GRT::ClassificationData Core::getClassificationTestData(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return classificationTestData;
-}
-
-GRT::RegressionData Core::getRegressionTrainingData(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return regressionTrainingData;
-}
-
-GRT::RegressionData Core::getRegressionTestData(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return regressionTestData;
-}
-
-GRT::TimeSeriesClassificationData Core::getTimeSeriesClassificationTrainingData(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return timeseriesClassificationTrainingData;
-}
-
-GRT::TimeSeriesClassificationData Core::getTimeSeriesClassificationTestData(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return timeseriesClassificationTestData;
-}
-
-GRT::UnlabelledData Core::getClusterTrainingData(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return clusterTrainingData;
-}
-
-GRT::UnlabelledData Core::getClusterTestData(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return clusterTestData;
-}
-
-double Core::getTestAccuracy(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getTestAccuracy();
-}
-
-double Core::getCrossValidationAccuracy(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getCrossValidationAccuracy();
-}
-
-double Core::getTrainingRMSError(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getTrainingRMSError();
-}
-
-double Core::getTrainingSSError(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getTrainingSSError();
-}
-
-GRT::GestureRecognitionPipeline Core::getPipeline(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline;
-}
-
-GRT::TestResult Core::getTestResults(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getTestResults();
-}
-
-vector< GRT::TestResult > Core::getCrossValidationResults(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getCrossValidationResults();
-}
-
-std::string Core::getModelAsString(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return pipeline.getModelAsString();
 }
 
 ///////////////////////////////////////////////////////////////////////////
 ////////////////////////////      SETTERS      ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-
-bool Core::setCoreSleepTime( const unsigned int coreSleepTime ){
-    std::unique_lock< std::mutex > lock( mutex );
-    this->coreSleepTime = coreSleepTime;
-    return true;
-}
 
 bool Core::setNumInputDimensions( const int numInputDim ){
 
@@ -757,7 +585,7 @@ bool Core::setNumInputDimensions( const int numInputDim ){
             default:
                 qDebug() << "ERROR: setNumInputDimensions() - Unknown pipeline mode!";
                 return false;
-            break;
+            //break;
         }
 
         result = true;
@@ -1057,12 +885,7 @@ bool Core::savePipelineToFile( const std::string filename ){
 
 bool Core::loadPipelineFromFile( const std::string filename ){
 
-    bool result = false;
-
-    {
-        std::unique_lock< std::mutex > lock( mutex );
-        result = pipeline.load( filename );
-    }
+    bool result = pipeline.load( filename );
 
     if( result ){
         emit newInfoMessage( "Pipeline loaded from file" );
@@ -1070,27 +893,6 @@ bool Core::loadPipelineFromFile( const std::string filename ){
     }else emit newWarningMessage( "WARNING: Failed to load pipeline from file" );
 
     return result;
-}
-
-bool Core::setInfoMessage( const std::string infoMessage ){
-    std::unique_lock< std::mutex > lock( mutex );
-    this->infoMessage = infoMessage;
-    return true;
-}
-
-std::string Core::getInfoMessage(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return infoMessage;
-}
-
-std::string Core::getVersion(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return version;
-}
-
-std::string Core::getIncomingDataAddress(){
-    std::unique_lock< std::mutex > lock( mutex );
-    return incomingDataAddress;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1247,10 +1049,9 @@ bool Core::processOSCMessage( const OSCMessagePtr oscMessage  ){
             unsigned int pipelineMode_ = m[0].getInt();
             unsigned int numInputDimensions_ = m[1].getInt();
             unsigned int targetVectorSize_ = m[2].getInt();
-            if( setPipelineMode( pipelineMode_ ) ){
-                setNumInputDimensions( numInputDimensions_ );
-                setTargetVectorSize( targetVectorSize_ );
-            }else emit newErrorMessage( "Failed to set pipeline mode - invalid OSC /Setup message!" );
+            setPipelineMode( pipelineMode_ );
+            setNumInputDimensions( numInputDimensions_ );
+            setTargetVectorSize( targetVectorSize_ );
 
             return true;
         } else return false;
@@ -1650,11 +1451,12 @@ bool Core::trainAndTestOnRandomSubset( const unsigned int randomTestSubsetPercen
             result = trainingThread.startNewTraining( trainer );
         break;
         case TIMESERIES_CLASSIFICATION_MODE:
+            emit newInfoMessage( "Not yet implemented" );
         break;
         default:
             qDebug() << "ERROR: Unknown pipeline mode!";
             return false;
-        break;
+        //break;
     }
 
     return result;
@@ -1684,12 +1486,12 @@ bool Core::trainAndTestOnTestDataset(){
                 return trainingThread.startNewTraining( trainer );
             break;
             case TIMESERIES_CLASSIFICATION_MODE:
-                //result = pipeline.train( timeseriesClassificationTrainingData );
+                return pipeline.train( timeseriesClassificationTrainingData );
             break;
             default:
                 qDebug() << "ERROR: Unknown pipeline mode!";
                 return false;
-            break;
+            //break;
         }
     }
     return false;
@@ -1718,13 +1520,14 @@ bool Core::trainWithCrossValidation( const unsigned int numFolds ){
             result = trainingThread.startNewTraining( trainer );
         break;
         case TIMESERIES_CLASSIFICATION_MODE:
+            emit newInfoMessage( "Not yet implemented" );
             //trainer.setupCVTraining( pipeline, timeseriesClassificationTrainingData, numFolds );
             //result = trainingThread.startNewTraining( trainer );
         break;
         default:
             qDebug() << "ERROR: Unknown pipeline mode!";
             return false;
-        break;
+        //break;
     }
 
     return result;
