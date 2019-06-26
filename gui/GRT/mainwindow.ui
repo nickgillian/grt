@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1268</width>
-    <height>803</height>
+    <width>1245</width>
+    <height>913</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -80,7 +80,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tab_11">
          <attribute name="title">
@@ -624,7 +624,7 @@
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>2</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page_24">
                <layout class="QGridLayout" name="gridLayout_7">
@@ -2007,12 +2007,18 @@
             <item>
              <widget class="QStackedWidget" name="pipelineTool_classifierRegressifierClustererView">
               <property name="currentIndex">
-               <number>3</number>
+               <number>2</number>
               </property>
               <widget class="QWidget" name="page_27">
                <layout class="QGridLayout" name="gridLayout_26">
                 <item row="0" column="0">
                  <widget class="QGroupBox" name="groupBox_14">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>346</height>
+                   </size>
+                  </property>
                   <property name="title">
                    <string>Classifier</string>
                   </property>
@@ -2108,7 +2114,7 @@
                      <item>
                       <widget class="QStackedWidget" name="pipelineTool_classifierOptionsView">
                        <property name="currentIndex">
-                        <number>8</number>
+                        <number>9</number>
                        </property>
                        <widget class="QWidget" name="page_7"/>
                        <widget class="QWidget" name="page_16">
@@ -2538,6 +2544,12 @@
                <layout class="QGridLayout" name="gridLayout_98">
                 <item row="0" column="0">
                  <widget class="QGroupBox" name="groupBox_24">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>346</height>
+                   </size>
+                  </property>
                   <property name="title">
                    <string>Regression</string>
                   </property>
@@ -2726,6 +2738,12 @@
                     <horstretch>0</horstretch>
                     <verstretch>5</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>346</height>
+                   </size>
                   </property>
                   <property name="title">
                    <string>Timeseries Classifier</string>
@@ -3059,6 +3077,12 @@
                <layout class="QGridLayout" name="gridLayout_46">
                 <item row="0" column="0">
                  <widget class="QGroupBox" name="groupBox_4">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>346</height>
+                   </size>
+                  </property>
                   <property name="title">
                    <string>Clusterer</string>
                   </property>
@@ -3125,7 +3149,7 @@
                    <item row="0" column="1">
                     <widget class="QStackedWidget" name="pipelineTool_clusterOptionsView">
                      <property name="currentIndex">
-                      <number>3</number>
+                      <number>0</number>
                      </property>
                      <widget class="QWidget" name="page_48">
                       <layout class="QGridLayout" name="gridLayout_85">
@@ -3227,6 +3251,19 @@
                          </item>
                         </layout>
                        </item>
+                       <item row="0" column="1">
+                        <spacer name="horizontalSpacer_35">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
                       </layout>
                      </widget>
                     </widget>
@@ -3297,47 +3334,49 @@
                        <widget class="QWidget" name="page_18">
                         <layout class="QGridLayout" name="gridLayout">
                          <item row="0" column="0">
-                          <layout class="QVBoxLayout" name="verticalLayout_23">
+                          <layout class="QHBoxLayout" name="horizontalLayout_19">
                            <item>
-                            <widget class="QLabel" name="label_89">
-                             <property name="text">
-                              <string>Class Label Filter Settings</string>
-                             </property>
-                            </widget>
+                            <layout class="QFormLayout" name="formLayout_25">
+                             <item row="0" column="0">
+                              <widget class="QLabel" name="label_88">
+                               <property name="text">
+                                <string>Minimum Count:</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="0" column="1">
+                              <widget class="QSpinBox" name="pipelineTool_classLabelFilterMinCountSpinBox"/>
+                             </item>
+                            </layout>
                            </item>
                            <item>
-                            <layout class="QHBoxLayout" name="horizontalLayout_19">
-                             <item>
-                              <layout class="QFormLayout" name="formLayout_25">
-                               <item row="0" column="0">
-                                <widget class="QLabel" name="label_88">
-                                 <property name="text">
-                                  <string>Minimum Count:</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="0" column="1">
-                                <widget class="QSpinBox" name="pipelineTool_classLabelFilterMinCountSpinBox"/>
-                               </item>
-                              </layout>
+                            <layout class="QFormLayout" name="formLayout_26">
+                             <item row="0" column="0">
+                              <widget class="QLabel" name="label_90">
+                               <property name="text">
+                                <string>Buffer Size:</string>
+                               </property>
+                              </widget>
                              </item>
-                             <item>
-                              <layout class="QFormLayout" name="formLayout_26">
-                               <item row="0" column="0">
-                                <widget class="QLabel" name="label_90">
-                                 <property name="text">
-                                  <string>Buffer Size:</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="0" column="1">
-                                <widget class="QSpinBox" name="pipelineTool_classLabelFilterBufferSizeSpinBox"/>
-                               </item>
-                              </layout>
+                             <item row="0" column="1">
+                              <widget class="QSpinBox" name="pipelineTool_classLabelFilterBufferSizeSpinBox"/>
                              </item>
                             </layout>
                            </item>
                           </layout>
+                         </item>
+                         <item row="0" column="1">
+                          <spacer name="horizontalSpacer_37">
+                           <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>40</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                          </spacer>
                          </item>
                         </layout>
                        </widget>
@@ -3355,58 +3394,60 @@
                        <widget class="QWidget" name="page_39">
                         <layout class="QGridLayout" name="gridLayout_27">
                          <item row="0" column="0">
-                          <layout class="QVBoxLayout" name="verticalLayout_24">
+                          <layout class="QHBoxLayout" name="horizontalLayout_20">
                            <item>
-                            <widget class="QLabel" name="label_92">
-                             <property name="text">
-                              <string>Class Label Timeout Filter Settings</string>
-                             </property>
-                            </widget>
+                            <layout class="QFormLayout" name="formLayout_27">
+                             <item row="0" column="0">
+                              <widget class="QLabel" name="label_93">
+                               <property name="text">
+                                <string>Timeout Duration (ms):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="0" column="1">
+                              <widget class="QSpinBox" name="pipelineTool_classLabelTimeoutFilterTimeoutDurationSpinBox"/>
+                             </item>
+                            </layout>
                            </item>
                            <item>
-                            <layout class="QHBoxLayout" name="horizontalLayout_20">
-                             <item>
-                              <layout class="QFormLayout" name="formLayout_27">
-                               <item row="0" column="0">
-                                <widget class="QLabel" name="label_93">
-                                 <property name="text">
-                                  <string>Timeout Duration (ms):</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="0" column="1">
-                                <widget class="QSpinBox" name="pipelineTool_classLabelTimeoutFilterTimeoutDurationSpinBox"/>
-                               </item>
-                              </layout>
+                            <layout class="QFormLayout" name="formLayout_28">
+                             <item row="0" column="0">
+                              <widget class="QLabel" name="label_94">
+                               <property name="text">
+                                <string>Filter Mode:</string>
+                               </property>
+                              </widget>
                              </item>
-                             <item>
-                              <layout class="QFormLayout" name="formLayout_28">
-                               <item row="0" column="0">
-                                <widget class="QLabel" name="label_94">
-                                 <property name="text">
-                                  <string>Filter Mode:</string>
-                                 </property>
-                                </widget>
+                             <item row="0" column="1">
+                              <widget class="QComboBox" name="pipelineTool_classLabelTimeoutFilterFilterModeList">
+                               <item>
+                                <property name="text">
+                                 <string>All Class Labels</string>
+                                </property>
                                </item>
-                               <item row="0" column="1">
-                                <widget class="QComboBox" name="pipelineTool_classLabelTimeoutFilterFilterModeList">
-                                 <item>
-                                  <property name="text">
-                                   <string>All Class Labels</string>
-                                  </property>
-                                 </item>
-                                 <item>
-                                  <property name="text">
-                                   <string>Independent Class Labels</string>
-                                  </property>
-                                 </item>
-                                </widget>
+                               <item>
+                                <property name="text">
+                                 <string>Independent Class Labels</string>
+                                </property>
                                </item>
-                              </layout>
+                              </widget>
                              </item>
                             </layout>
                            </item>
                           </layout>
+                         </item>
+                         <item row="0" column="1">
+                          <spacer name="horizontalSpacer_36">
+                           <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>40</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                          </spacer>
                          </item>
                         </layout>
                        </widget>
@@ -3848,7 +3889,7 @@
                   </sizepolicy>
                  </property>
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>6</number>
                  </property>
                  <widget class="QWidget" name="tab_6">
                   <attribute name="title">
@@ -4003,13 +4044,19 @@
                    <item row="0" column="1">
                     <widget class="QLineEdit" name="predictionWindow_data">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                       <horstretch>3</horstretch>
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -4023,13 +4070,19 @@
                    <item row="1" column="1">
                     <widget class="QLineEdit" name="predictionWindow_preProcessedData">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                       <horstretch>3</horstretch>
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -4043,13 +4096,19 @@
                    <item row="2" column="1">
                     <widget class="QLineEdit" name="predictionWindow_featureExtractionData">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                       <horstretch>3</horstretch>
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -4059,6 +4118,12 @@
                   <layout class="QVBoxLayout" name="verticalLayout_25">
                    <item>
                     <widget class="QPushButton" name="predictionWindow_plotInputDataButton">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="text">
                       <string>Plot</string>
                      </property>
@@ -4066,6 +4131,12 @@
                    </item>
                    <item>
                     <widget class="QPushButton" name="predictionWindow_plotPreProcessedDataButton">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="text">
                       <string>Plot</string>
                      </property>
@@ -4073,12 +4144,34 @@
                    </item>
                    <item>
                     <widget class="QPushButton" name="predictionWindow_plotFeatureExtractionDataButton">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="text">
                       <string>Plot</string>
                      </property>
                     </widget>
                    </item>
                   </layout>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_40">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Expanding</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>0</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -4088,164 +4181,303 @@
             <item>
              <widget class="QStackedWidget" name="predictionWindow_classificationRegressionResultsView">
               <property name="currentIndex">
-               <number>3</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="page_22">
                <layout class="QGridLayout" name="gridLayout_55">
                 <item row="0" column="0">
                  <widget class="QGroupBox" name="groupBox16">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>553</height>
+                   </size>
+                  </property>
                   <property name="title">
                    <string>Classification Data</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_31">
                    <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="verticalLayout_28">
+                    <layout class="QHBoxLayout" name="horizontalLayout_24">
                      <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_24">
-                       <item>
-                        <layout class="QFormLayout" name="formLayout_30">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_11">
-                           <property name="text">
-                            <string>Predicted Class Label:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="1">
-                          <widget class="QLineEdit" name="predictionWindow_predictedClassLabel"/>
-                         </item>
-                         <item row="1" column="0">
-                          <widget class="QLabel" name="label_50">
-                           <property name="text">
-                            <string>Unprocessed Class Label:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="1">
-                          <widget class="QLineEdit" name="predictionWindow_predictedClassLabel_2"/>
-                         </item>
-                         <item row="2" column="0">
-                          <widget class="QLabel" name="label_12">
-                           <property name="text">
-                            <string>Maximum Likelihood:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="2" column="1">
-                          <widget class="QLineEdit" name="predictionWindow_maximumLikelihood">
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
+                      <layout class="QFormLayout" name="formLayout_30">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="label_11">
+                         <property name="text">
+                          <string>Predicted Class Label:</string>
+                         </property>
+                        </widget>
                        </item>
-                       <item>
-                        <layout class="QVBoxLayout" name="verticalLayout_27">
-                         <item>
-                          <widget class="QPushButton" name="predictionWindow_plotPredictedClassLabelsDataButton">
-                           <property name="text">
-                            <string>Plot</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_198">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                             <horstretch>0</horstretch>
-                             <verstretch>1</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
+                       <item row="0" column="1">
+                        <widget class="QLineEdit" name="predictionWindow_predictedClassLabel">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QLabel" name="label_50">
+                         <property name="text">
+                          <string>Unprocessed Class Label:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="1">
+                        <widget class="QLineEdit" name="predictionWindow_predictedClassLabel_2">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QLabel" name="label_12">
+                         <property name="text">
+                          <string>Maximum Likelihood:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="1">
+                        <widget class="QLineEdit" name="predictionWindow_maximumLikelihood">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="0">
+                        <widget class="QLabel" name="label_13">
+                         <property name="text">
+                          <string>Class Likelihoods:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="1">
+                        <widget class="QLineEdit" name="predictionWindow_classLikelihoods">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="7" column="0">
+                        <widget class="QLabel" name="label_22">
+                         <property name="text">
+                          <string>Class Labels:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="7" column="1">
+                        <widget class="QLineEdit" name="predictionWindow_classLabels">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="8" column="0">
+                        <widget class="QLabel" name="label_14">
+                         <property name="text">
+                          <string>Class Distances:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="8" column="1">
+                        <widget class="QLineEdit" name="predictionWindow_classDistances">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
                        </item>
                       </layout>
                      </item>
                      <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_25">
+                      <layout class="QVBoxLayout" name="verticalLayout_27">
                        <item>
-                        <layout class="QFormLayout" name="formLayout_32">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_13">
-                           <property name="text">
-                            <string>Class Likelihoods:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="1">
-                          <widget class="QLineEdit" name="predictionWindow_classLikelihoods">
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="0">
-                          <widget class="QLabel" name="label_14">
-                           <property name="text">
-                            <string>Class Distances:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="1">
-                          <widget class="QLineEdit" name="predictionWindow_classDistances">
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="2" column="0">
-                          <widget class="QLabel" name="label_22">
-                           <property name="text">
-                            <string>Class Labels:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="2" column="1">
-                          <widget class="QLineEdit" name="predictionWindow_classLabels">
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
+                        <widget class="QPushButton" name="predictionWindow_plotPredictedClassLabelsDataButton">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>Plot</string>
+                         </property>
+                        </widget>
                        </item>
                        <item>
-                        <layout class="QVBoxLayout" name="verticalLayout_26">
-                         <item>
-                          <widget class="QPushButton" name="predictionWindow_plotClassLikelihoodsDataButton">
-                           <property name="text">
-                            <string>Plot</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QPushButton" name="predictionWindow_plotClassDistancesDataButton">
-                           <property name="text">
-                            <string>Plot</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_66">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                             <horstretch>0</horstretch>
-                             <verstretch>1</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
+                        <widget class="QPushButton" name="pushButton_2">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="flat">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButton">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="flat">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="predictionWindow_plotClassLikelihoodsDataButton">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>Plot</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="predictionWindow_plotClassDistancesDataButton">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>Plot</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_3">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="flat">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="verticalSpacer_2">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>20</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </spacer>
                        </item>
                       </layout>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_44">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
                      </item>
                     </layout>
                    </item>
@@ -4258,16 +4490,28 @@
                <layout class="QGridLayout" name="gridLayout_73">
                 <item row="0" column="0">
                  <widget class="QGroupBox" name="groupBox_20">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>553</height>
+                   </size>
+                  </property>
                   <property name="title">
                    <string>Regression Data</string>
                   </property>
-                  <layout class="QGridLayout" name="gridLayout_74">
+                  <layout class="QGridLayout" name="gridLayout_32">
                    <item row="0" column="0">
-                    <layout class="QGridLayout" name="gridLayout_32">
-                     <item row="0" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_25">
+                     <item>
                       <layout class="QFormLayout" name="formLayout_31">
                        <item row="0" column="0">
                         <widget class="QLabel" name="label_59">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
                          <property name="text">
                           <string>Regression Data:</string>
                          </property>
@@ -4275,30 +4519,85 @@
                        </item>
                        <item row="0" column="1">
                         <widget class="QLineEdit" name="predictionWindow_regressionData">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
                       </layout>
                      </item>
-                     <item row="0" column="1">
+                     <item>
                       <layout class="QVBoxLayout" name="verticalLayout_11">
                        <item>
                         <widget class="QPushButton" name="predictionWindow_plotRegressionDataButton">
+                         <property name="enabled">
+                          <bool>true</bool>
+                         </property>
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>80</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="baseSize">
+                          <size>
+                           <width>80</width>
+                           <height>31</height>
+                          </size>
+                         </property>
                          <property name="text">
                           <string>Plot</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLabel" name="label_41">
-                         <property name="text">
-                          <string/>
+                        <spacer name="verticalSpacer_16">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
                          </property>
-                        </widget>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>20</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </spacer>
                        </item>
                       </layout>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_41">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeType">
+                        <enum>QSizePolicy::Preferred</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
                      </item>
                     </layout>
                    </item>
@@ -4308,13 +4607,22 @@
                </layout>
               </widget>
               <widget class="QWidget" name="page_57">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>571</height>
+                </size>
+               </property>
                <layout class="QGridLayout" name="gridLayout_75">
                 <item row="0" column="0">
                  <widget class="QGroupBox" name="groupBox16_3">
+                  <property name="title">
+                   <string>Classification Data</string>
+                  </property>
                   <layout class="QGridLayout" name="gridLayout_76">
                    <item row="0" column="0">
-                    <layout class="QGridLayout" name="gridLayout_33">
-                     <item row="0" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_28">
+                     <item>
                       <layout class="QFormLayout" name="formLayout_33">
                        <item row="0" column="0">
                         <widget class="QLabel" name="label_162">
@@ -4324,7 +4632,20 @@
                         </widget>
                        </item>
                        <item row="0" column="1">
-                        <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_predictedClassLabel"/>
+                        <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_predictedClassLabel">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
                        </item>
                        <item row="1" column="0">
                         <widget class="QLabel" name="label_167">
@@ -4334,7 +4655,20 @@
                         </widget>
                        </item>
                        <item row="1" column="1">
-                        <widget class="QLineEdit" name="predictionWindow_predictedClassLabel_5"/>
+                        <widget class="QLineEdit" name="predictionWindow_predictedClassLabel_5">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
                        </item>
                        <item row="2" column="0">
                         <widget class="QLabel" name="label_166">
@@ -4345,8 +4679,20 @@
                        </item>
                        <item row="2" column="1">
                         <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_maximumLikelihood">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -4359,8 +4705,20 @@
                        </item>
                        <item row="3" column="1">
                         <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_phase">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -4373,8 +4731,20 @@
                        </item>
                        <item row="4" column="1">
                         <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_classLikelihoods">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -4387,28 +4757,52 @@
                        </item>
                        <item row="5" column="1">
                         <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_classDistances">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
                          </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
                         </widget>
                        </item>
-                       <item row="6" column="0">
+                       <item row="8" column="0">
                         <widget class="QLabel" name="label_165">
                          <property name="text">
                           <string>Class Labels:</string>
                          </property>
                         </widget>
                        </item>
-                       <item row="6" column="1">
+                       <item row="8" column="1">
                         <widget class="QLineEdit" name="predictionWindow_timeseriesClassification_classLabels">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
                       </layout>
                      </item>
-                     <item row="0" column="1">
+                     <item>
                       <layout class="QVBoxLayout" name="verticalLayout_29">
                        <item>
                         <widget class="QPushButton" name="predictionWindow_timeseriesClassification_plotPredictedClassLabelsDataButton">
@@ -4425,6 +4819,9 @@
                          <property name="text">
                           <string/>
                          </property>
+                         <property name="flat">
+                          <bool>true</bool>
+                         </property>
                         </widget>
                        </item>
                        <item>
@@ -4434,6 +4831,9 @@
                          </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="flat">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -4445,15 +4845,8 @@
                          <property name="text">
                           <string/>
                          </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="filler_4">
-                         <property name="enabled">
-                          <bool>false</bool>
-                         </property>
-                         <property name="text">
-                          <string/>
+                         <property name="flat">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -4478,6 +4871,19 @@
                         </widget>
                        </item>
                        <item>
+                        <widget class="QPushButton" name="filler_4">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="flat">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
                         <spacer name="verticalSpacer_6">
                          <property name="orientation">
                           <enum>Qt::Vertical</enum>
@@ -4485,12 +4891,25 @@
                          <property name="sizeHint" stdset="0">
                           <size>
                            <width>20</width>
-                           <height>40</height>
+                           <height>0</height>
                           </size>
                          </property>
                         </spacer>
                        </item>
                       </layout>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_42">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
                      </item>
                     </layout>
                    </item>
@@ -4501,15 +4920,21 @@
               </widget>
               <widget class="QWidget" name="page_58">
                <layout class="QGridLayout" name="gridLayout_35">
-                <item row="0" column="0">
+                <item row="0" column="1">
                  <widget class="QGroupBox" name="groupBox16_2">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>553</height>
+                   </size>
+                  </property>
                   <property name="title">
                    <string>Cluster Data</string>
                   </property>
-                  <layout class="QGridLayout" name="gridLayout_77">
+                  <layout class="QGridLayout" name="gridLayout_33" columnstretch="0">
                    <item row="0" column="0">
-                    <layout class="QGridLayout" name="gridLayout_34">
-                     <item row="0" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_27">
+                     <item>
                       <layout class="QFormLayout" name="formLayout_34">
                        <item row="0" column="0">
                         <widget class="QLabel" name="label_28">
@@ -4519,7 +4944,20 @@
                         </widget>
                        </item>
                        <item row="0" column="1">
-                        <widget class="QLineEdit" name="predictionWindow_clusterer_predictedClusterLabel"/>
+                        <widget class="QLineEdit" name="predictionWindow_clusterer_predictedClusterLabel">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
                        </item>
                        <item row="1" column="0">
                         <widget class="QLabel" name="label_139">
@@ -4529,7 +4967,20 @@
                         </widget>
                        </item>
                        <item row="1" column="1">
-                        <widget class="QLineEdit" name="predictionWindow_predictedClassLabel_4"/>
+                        <widget class="QLineEdit" name="predictionWindow_predictedClassLabel_4">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
                        </item>
                        <item row="2" column="0">
                         <widget class="QLabel" name="label_138">
@@ -4540,8 +4991,20 @@
                        </item>
                        <item row="2" column="1">
                         <widget class="QLineEdit" name="predictionWindow_clusterer_maximumLikelihood">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -4554,8 +5017,20 @@
                        </item>
                        <item row="3" column="1">
                         <widget class="QLineEdit" name="predictionWindow_clusterer_clusterLikelihoods">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -4568,8 +5043,20 @@
                        </item>
                        <item row="4" column="1">
                         <widget class="QLineEdit" name="predictionWindow_clusterer_clusterDistances">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -4582,14 +5069,26 @@
                        </item>
                        <item row="5" column="1">
                         <widget class="QLineEdit" name="predictionWindow_clusterer_classLabels">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="acceptDrops">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
                           <string/>
+                         </property>
+                         <property name="readOnly">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
                       </layout>
                      </item>
-                     <item row="0" column="1">
+                     <item>
                       <layout class="QVBoxLayout" name="verticalLayout_30">
                        <item>
                         <widget class="QPushButton" name="predictionWindow_plotPredictedClusterLabelsDataButton">
@@ -4618,6 +5117,9 @@
                          <property name="text">
                           <string/>
                          </property>
+                         <property name="flat">
+                          <bool>true</bool>
+                         </property>
                         </widget>
                        </item>
                        <item>
@@ -4634,12 +5136,15 @@
                          <property name="text">
                           <string/>
                          </property>
+                         <property name="flat">
+                          <bool>true</bool>
+                         </property>
                         </widget>
                        </item>
                        <item>
                         <widget class="QPushButton" name="predictionWindow_plotClusterLikelihoodsDataButton">
                          <property name="sizePolicy">
-                          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                            <horstretch>0</horstretch>
                            <verstretch>0</verstretch>
                           </sizepolicy>
@@ -4652,13 +5157,32 @@
                        <item>
                         <widget class="QPushButton" name="predictionWindow_plotClusterDistancesDataButton">
                          <property name="sizePolicy">
-                          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                            <horstretch>0</horstretch>
                            <verstretch>0</verstretch>
                           </sizepolicy>
                          </property>
                          <property name="text">
                           <string>Plot</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="filler_8">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="flat">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -4670,12 +5194,25 @@
                          <property name="sizeHint" stdset="0">
                           <size>
                            <width>20</width>
-                           <height>40</height>
+                           <height>0</height>
                           </size>
                          </property>
                         </spacer>
                        </item>
                       </layout>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_43">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
                      </item>
                     </layout>
                    </item>
@@ -4699,26 +5236,6 @@
            <layout class="QGridLayout" name="gridLayout_56">
             <item row="0" column="0">
              <layout class="QHBoxLayout" name="horizontalLayout_38">
-              <item>
-               <widget class="QLabel" name="label_114">
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Log&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_18">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
               <item>
                <widget class="QPushButton" name="logView_allLogsButton">
                 <property name="text">
@@ -4819,15 +5336,33 @@
              <string>Settings</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_59">
-             <item row="3" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_47">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_17">
                <item>
-                <spacer name="horizontalSpacer_27">
+                <layout class="QFormLayout" name="formLayout_57">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_188">
+                   <property name="text">
+                    <string>Core Update Rate:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QDoubleSpinBox" name="settingsView_coreUpdateRate">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_18">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Fixed</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -4836,25 +5371,6 @@
                   </size>
                  </property>
                 </spacer>
-               </item>
-               <item>
-                <widget class="QPlainTextEdit" name="plainTextEdit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="acceptDrops">
-                  <bool>false</bool>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                 <property name="plainText">
-                  <string>Sets the time in seconds at which the GRT graphs will refresh.  Limiting the refresh rate helps to reduce the CPU load on your machine. A maximum refresh rate of 0.1, for example, would stop the GRT graphs from refreshing more than 100 times per second.</string>
-                 </property>
-                </widget>
                </item>
               </layout>
              </item>
@@ -4897,43 +5413,78 @@
                </item>
               </layout>
              </item>
-             <item row="0" column="0">
-              <layout class="QFormLayout" name="formLayout_57">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_188">
-                 <property name="text">
-                  <string>Core Update Rate:</string>
-                 </property>
-                </widget>
+             <item row="2" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_26">
+               <item>
+                <layout class="QFormLayout" name="formLayout_56">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_187">
+                   <property name="text">
+                    <string>Maximum Graph Refresh Rate:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QDoubleSpinBox" name="settingsView_graphRefreshRate">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
-               <item row="0" column="1">
-                <widget class="QDoubleSpinBox" name="settingsView_coreUpdateRate">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
+               <item>
+                <spacer name="horizontalSpacer_38">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                </widget>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </item>
-             <item row="2" column="0">
-              <layout class="QFormLayout" name="formLayout_56">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_187">
-                 <property name="text">
-                  <string>Maximum Graph Refresh Rate:</string>
+             <item row="3" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_47">
+               <item>
+                <spacer name="horizontalSpacer_27">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                </widget>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
-               <item row="0" column="1">
-                <widget class="QDoubleSpinBox" name="settingsView_graphRefreshRate">
+               <item>
+                <widget class="QPlainTextEdit" name="plainTextEdit">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="acceptDrops">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                 <property name="plainText">
+                  <string>Sets the time in seconds at which the GRT graphs will refresh.  Limiting the refresh rate helps to reduce the CPU load on your machine. A maximum refresh rate of 0.1, for example, would stop the GRT graphs from refreshing more than 100 times per second.</string>
                  </property>
                 </widget>
                </item>
@@ -5047,6 +5598,19 @@
                </item>
               </layout>
              </item>
+             <item row="0" column="1">
+              <spacer name="horizontalSpacer_39">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
             </layout>
            </widget>
           </item>
@@ -5144,7 +5708,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1268</width>
+     <width>1245</width>
      <height>28</height>
     </rect>
    </property>
@@ -5223,9 +5787,6 @@
   <tabstop>predictionWindow_data</tabstop>
   <tabstop>predictionWindow_preProcessedData</tabstop>
   <tabstop>predictionWindow_featureExtractionData</tabstop>
-  <tabstop>predictionWindow_classLabels</tabstop>
-  <tabstop>predictionWindow_classLikelihoods</tabstop>
-  <tabstop>predictionWindow_classDistances</tabstop>
   <tabstop>predictionWindow_maximumLikelihood</tabstop>
   <tabstop>predictionWindow_predictedClassLabel_2</tabstop>
   <tabstop>predictionWindow_regressionData</tabstop>
