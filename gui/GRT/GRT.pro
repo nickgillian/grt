@@ -19,12 +19,13 @@ macx {
 
 #Linux flags
 unix:!macx {
- QMAKE_CXXFLAGS += -std=c++0x
+ QMAKE_CXXFLAGS += -std=c++11
  QMAKE_CXXFLAGS += -DOSC_HOST_LITTLE_ENDIAN
+ QMAKE_CXXFLAGS += -DGRT_CXX11_ENABLED=true
 }
 
 #Windows flags
-unix:!macx {
+win32 {
  QMAKE_CXXFLAGS += -DOSC_HOST_LITTLE_ENDIAN
 }
 
