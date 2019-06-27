@@ -58,10 +58,11 @@ bool TrainingThread::stop(){
     }
 
     //Flag that the core should stop
-    std::unique_lock< std::mutex > lock( mutex );
-    stopMainThread = true;
-    startTraining.notify_all();
-
+    {
+        std::unique_lock< std::mutex > lock( mutex );
+        stopMainThread = true;
+        startTraining.notify_all();
+    }
     //Wait for it to stop
     mainThread->join();
     mainThread.reset();
