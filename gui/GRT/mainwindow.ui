@@ -80,7 +80,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>7</number>
         </property>
         <widget class="QWidget" name="tab_11">
          <attribute name="title">
@@ -5325,7 +5325,7 @@
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_188">
                    <property name="text">
-                    <string>Core Update Rate:</string>
+                    <string>Core Update Frame Time:</string>
                    </property>
                   </widget>
                  </item>
@@ -5389,7 +5389,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="plainText">
-                  <string>Sets the time in seconds at which the GRT core processes incoming data.  An update rate of 0.1, for example, would set the main core thread to loop at 100Hz (100 times per second).</string>
+                  <string>Sets the time in seconds at which the GRT core processes incoming data.  An update rate of 0.01, for example, would set the main core thread to loop at 100Hz (100 times per second).</string>
                  </property>
                 </widget>
                </item>
@@ -5402,7 +5402,7 @@
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_187">
                    <property name="text">
-                    <string>Maximum Graph Refresh Rate:</string>
+                    <string>Maximum Graph Refresh Frame Time:</string>
                    </property>
                   </widget>
                  </item>
@@ -5466,7 +5466,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="plainText">
-                  <string>Sets the time in seconds at which the GRT graphs will refresh.  Limiting the refresh rate helps to reduce the CPU load on your machine. A maximum refresh rate of 0.1, for example, would stop the GRT graphs from refreshing more than 100 times per second.</string>
+                  <string>Sets the time in seconds at which the GRT graphs will refresh.  Limiting the refresh rate helps to reduce the CPU load on your machine. A maximum refresh rate of 0.01, for example, would stop the GRT graphs from refreshing more than 100 times per second.</string>
                  </property>
                 </widget>
                </item>
