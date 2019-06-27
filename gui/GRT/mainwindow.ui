@@ -563,367 +563,735 @@
          </attribute>
          <layout class="QGridLayout" name="gridLayout_19">
           <item row="0" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout_6">
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_10">
-              <item>
-               <widget class="QPushButton" name="dataLabellingTool_RecordButton">
+             <widget class="QPushButton" name="dataLabellingTool_RecordButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>400</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Record</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="dataLabellingTool_saveButton">
+              <property name="text">
+               <string>Save</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="dataLabellingTool_loadButton">
+              <property name="text">
+               <string>Load</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="dataLabellingTool_clearButton">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="dataLabellingTool_infoButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>info</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <property name="topMargin">
+             <number>6</number>
+            </property>
+            <item>
+             <layout class="QFormLayout" name="formLayout_21">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_60">
+                <property name="text">
+                 <string>Dataset Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="dataLabellingTool_datasetName"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QFormLayout" name="formLayout_32">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_61">
+                <property name="text">
+                 <string>Info:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="dataLabellingTool_infoTextField"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QFormLayout" name="formLayout_52">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_62">
+                <property name="text">
+                 <string># Training Samples:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="dataLabellingTool_numTrainingSamples">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>80</width>
-                  <height>0</height>
-                 </size>
+                <property name="acceptDrops">
+                 <bool>false</bool>
                 </property>
-                <property name="text">
-                 <string>Record</string>
+                <property name="readOnly">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
-              <item>
-               <spacer name="horizontalSpacer_5">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0">
+           <widget class="QStackedWidget" name="dataLabellingTool_recordingControlsWidget">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="currentIndex">
+             <number>2</number>
+            </property>
+            <widget class="QWidget" name="page_24">
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="0" column="0">
+               <widget class="QGroupBox" name="groupBox_19">
+                <property name="enabled">
+                 <bool>true</bool>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="dataLabellingTool_saveButton">
-                <property name="text">
-                 <string>Save</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="dataLabellingTool_loadButton">
-                <property name="text">
-                 <string>Load</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="dataLabellingTool_clearButton">
-                <property name="text">
-                 <string>Clear</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="dataLabellingTool_infoButton">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="text">
-                 <string>info</string>
+                <property name="title">
+                 <string>Classification Recording Controls</string>
                 </property>
+                <layout class="QGridLayout" name="gridLayout_6">
+                 <item row="0" column="0">
+                  <layout class="QFormLayout" name="formLayout_3">
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_3">
+                     <property name="text">
+                      <string>Training Class Label:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QSpinBox" name="dataLabellingTool_classLabel"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="0" column="1">
+                  <spacer name="horizontalSpacer_7">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>302</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="0" column="2">
+                  <layout class="QFormLayout" name="formLayout_4">
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_15">
+                     <property name="text">
+                      <string>Number of Dimensions:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numInputDimensionsField">
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_43">
+                     <property name="text">
+                      <string>Number of Classes:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numClassesField">
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="0" column="3">
+                  <spacer name="horizontalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>301</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_29">
-              <item>
-               <layout class="QFormLayout" name="formLayout_21">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_60">
-                  <property name="text">
-                   <string>Dataset Name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QLineEdit" name="dataLabellingTool_datasetName"/>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QFormLayout" name="formLayout_32">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_61">
-                  <property name="text">
-                   <string>Info:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QLineEdit" name="dataLabellingTool_infoTextField"/>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QStackedWidget" name="dataLabellingTool_recordingControlsWidget">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="currentIndex">
-               <number>1</number>
-              </property>
-              <widget class="QWidget" name="page_24">
-               <layout class="QGridLayout" name="gridLayout_7">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_19">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="title">
-                   <string>Classification Recording Controls</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_6">
+            </widget>
+            <widget class="QWidget" name="page_25">
+             <layout class="QGridLayout" name="gridLayout_108">
+              <item row="2" column="0">
+               <widget class="QGroupBox" name="groupBox_21">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="title">
+                 <string>Regression Recording Controls</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_9">
+                 <item row="0" column="0">
+                  <layout class="QGridLayout" name="gridLayout_42">
                    <item row="0" column="0">
-                    <layout class="QFormLayout" name="formLayout_3">
+                    <layout class="QFormLayout" name="formLayout_7">
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_63">
+                       <property name="text">
+                        <string>Target Vector:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QLineEdit" name="dataLabellingTool_targetVectorTextField">
+                       <property name="acceptDrops">
+                        <bool>false</bool>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
                      <item row="0" column="0">
-                      <widget class="QLabel" name="label_3">
-                       <property name="text">
-                        <string>Training Class Label:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
-                      <widget class="QSpinBox" name="dataLabellingTool_classLabel"/>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_4">
-                       <property name="text">
-                        <string>Number of Training Samples:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numTrainingSamples"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="1">
-                    <spacer name="horizontalSpacer_7">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>222</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="0" column="2">
-                    <layout class="QFormLayout" name="formLayout_4">
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_15">
-                       <property name="text">
-                        <string>Number of Dimensions:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numInputDimensionsField"/>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_43">
-                       <property name="text">
-                        <string>Number of Classes:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_classificationMode_numClassesField"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="3">
-                    <spacer name="horizontalSpacer_6">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>221</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_25">
-               <layout class="QGridLayout" name="gridLayout_108">
-                <item row="2" column="0">
-                 <widget class="QGroupBox" name="groupBox_21">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="title">
-                   <string>Regression Recording Controls</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_9">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="verticalLayout_5">
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_12">
-                       <item>
-                        <layout class="QFormLayout" name="formLayout_5">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_6">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="text">
-                            <string>Dimension:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="1">
-                          <widget class="QSpinBox" name="dataLabellingTool_targetVectorDimensionSpinBox"/>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QFormLayout" name="formLayout_6">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_9">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="text">
-                            <string>Value:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="1">
-                          <widget class="QDoubleSpinBox" name="dataLabellingTool_targetVectorValueSpinBox"/>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QFormLayout" name="formLayout_7">
+                      <layout class="QFormLayout" name="formLayout_6">
                        <item row="0" column="0">
-                        <widget class="QLabel" name="label_63">
+                        <widget class="QLabel" name="label_9">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
                          <property name="text">
-                          <string>Target Vector:</string>
+                          <string>Value:</string>
                          </property>
                         </widget>
                        </item>
                        <item row="0" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_targetVectorTextField"/>
+                        <widget class="QDoubleSpinBox" name="dataLabellingTool_targetVectorValueSpinBox"/>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="1">
+                      <layout class="QFormLayout" name="formLayout_5">
+                       <item row="0" column="1">
+                        <widget class="QSpinBox" name="dataLabellingTool_targetVectorDimensionSpinBox"/>
+                       </item>
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="label_6">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>Dimension:</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="0" column="1">
+                  <spacer name="horizontalSpacer_8">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>267</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="0" column="2">
+                  <layout class="QFormLayout" name="formLayout_8">
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_58">
+                     <property name="text">
+                      <string>Input Data Vector Size:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QLineEdit" name="dataLabellingTool_regressionMode_numInputDimensionsField">
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="0">
+                    <widget class="QLabel" name="label_75">
+                     <property name="text">
+                      <string>Target Data Vector Size:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="1">
+                    <widget class="QLineEdit" name="dataLabellingTool_numTargetDimensionsField">
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="0" column="3">
+                  <spacer name="horizontalSpacer_9">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>267</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="page_4">
+             <layout class="QGridLayout" name="gridLayout_109">
+              <item row="0" column="0">
+               <widget class="QGroupBox" name="groupBox_27">
+                <property name="title">
+                 <string>Timeseries Classification Recording Controls</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_10">
+                 <item row="1" column="3">
+                  <spacer name="horizontalSpacer_11">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="1" column="0">
+                  <layout class="QFormLayout" name="formLayout_10">
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_155">
+                     <property name="text">
+                      <string>Training Class Label:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QSpinBox" name="dataLabellingTool_timeseriesClassificationMode_classLabel">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_158">
+                     <property name="text">
+                      <string>Training Sample Length:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="dataLabellingTool_timeseriesSampleLength">
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="1" column="1">
+                  <spacer name="horizontalSpacer_10">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="1" column="2">
+                  <layout class="QFormLayout" name="formLayout_9">
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_152">
+                     <property name="text">
+                      <string>Number of Dimensions:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField">
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_156">
+                     <property name="text">
+                      <string>Number of Classes:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numClassesField">
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="page_3">
+             <layout class="QGridLayout" name="gridLayout_110">
+              <item row="0" column="0">
+               <widget class="QGroupBox" name="groupBox_26">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>1</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="title">
+                 <string>Cluster Recording Controls</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_11">
+                 <item row="0" column="2">
+                  <spacer name="horizontalSpacer_13">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>323</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="0" column="1">
+                  <layout class="QFormLayout" name="formLayout_12">
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_128">
+                     <property name="text">
+                      <string>Number of Dimensions:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="dataLabellingTool_clusterMode_numInputDimensionsField">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="acceptDrops">
+                      <bool>false</bool>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="0" column="0">
+                  <spacer name="horizontalSpacer_12">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>500</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>1</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Data Sets</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_41">
+             <item row="0" column="0">
+              <widget class="QTabWidget" name="dataLabelingTool_trainingDataTab">
+               <property name="currentIndex">
+                <number>6</number>
+               </property>
+               <widget class="QWidget" name="tab">
+                <attribute name="title">
+                 <string>Page 1</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout_17">
+                 <item row="0" column="0">
+                  <widget class="QTreeView" name="dataLabellingTool_treeView"/>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="tab_2">
+                <attribute name="title">
+                 <string>Page 2</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout_16">
+                 <item row="0" column="0">
+                  <widget class="QTextBrowser" name="dataLabelingTool_datasetStatsView"/>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="tab_3">
+                <attribute name="title">
+                 <string>Page 3</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout_13">
+                 <item row="0" column="0">
+                  <widget class="QCustomPlot" name="dataLabelingTool_classStatsGraph" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="tab_4">
+                <attribute name="title">
+                 <string>Page 4</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout_18">
+                 <item row="0" column="0">
+                  <widget class="QCustomPlot" name="dataLabelingTool_pcaProjectionPlot" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="tab_5">
+                <attribute name="title">
+                 <string>Page 5</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout_15">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="verticalLayout_10">
+                   <item>
+                    <widget class="QCustomPlot" name="dataLabelingTool_timeseriesDataGraph" native="true">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCustomPlot" name="dataLabelingTool_timeseriesLabelGraph" native="true">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QScrollBar" name="dataLabelingTool_timeseriesSlider">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="tab_18">
+                <attribute name="title">
+                 <string>Page 6</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout_12">
+                 <item row="0" column="0">
+                  <layout class="QGridLayout" name="gridLayout_8">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="verticalLayout_9">
+                     <item>
+                      <layout class="QFormLayout" name="formLayout_13">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="label_7">
+                         <property name="text">
+                          <string>X Axis Index:</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QSpinBox" name="dataLabellingTool_featurePlotAxisASpinBox"/>
                        </item>
                        <item row="1" column="0">
-                        <widget class="QLabel" name="label_62">
+                        <widget class="QLabel" name="label_8">
                          <property name="text">
-                          <string>Number of Training Samples:</string>
+                          <string>Y Axis Index:</string>
                          </property>
                         </widget>
                        </item>
                        <item row="1" column="1">
-                        <widget class="QLineEdit" name="dataLabellingTool_regressionMode_numTrainingSamples"/>
+                        <widget class="QSpinBox" name="dataLabellingTool_featurePlotAxisBSpinBox"/>
                        </item>
                       </layout>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="dataLabellingTool_featurePlotButton">
+                       <property name="text">
+                        <string>Plot</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
                    <item row="0" column="1">
-                    <spacer name="horizontalSpacer_8">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>221</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="0" column="2">
-                    <layout class="QFormLayout" name="formLayout_8">
-                     <item row="2" column="0">
-                      <widget class="QLabel" name="label_58">
-                       <property name="text">
-                        <string>Input Data Vector Size:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_regressionMode_numInputDimensionsField"/>
-                     </item>
-                     <item row="3" column="0">
-                      <widget class="QLabel" name="label_75">
-                       <property name="text">
-                        <string>Target Data Vector Size:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_numTargetDimensionsField"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="3">
-                    <spacer name="horizontalSpacer_9">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>221</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_4">
-               <layout class="QGridLayout" name="gridLayout_109">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_27">
-                  <property name="title">
-                   <string>Timeseries Classification Recording Controls</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_10">
-                   <item row="1" column="3">
-                    <spacer name="horizontalSpacer_11">
+                    <spacer name="horizontalSpacer_14">
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
                      </property>
@@ -934,425 +1302,80 @@
                       </size>
                      </property>
                     </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="tab_22">
+                <attribute name="title">
+                 <string>Page 7</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout_64">
+                 <item row="0" column="0">
+                  <layout class="QGridLayout" name="gridLayout_14">
+                   <item row="0" column="0">
+                    <widget class="QCustomPlot" name="dataLabellingTool_timeseriesMode_timeseriesPlot" native="true">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>3</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
                    </item>
                    <item row="1" column="0">
-                    <layout class="QFormLayout" name="formLayout_10">
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_155">
+                    <layout class="QHBoxLayout" name="horizontalLayout_11">
+                     <item>
+                      <widget class="QLabel" name="label_193">
                        <property name="text">
-                        <string>Training Class Label:</string>
+                        <string>Timeseries:</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="0" column="1">
-                      <widget class="QSpinBox" name="dataLabellingTool_timeseriesClassificationMode_classLabel"/>
+                     <item>
+                      <widget class="QSpinBox" name="dataLabellingTool_timeseriesMode_timeseriesIndex"/>
                      </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_158">
+                     <item>
+                      <widget class="QLabel" name="label_194">
                        <property name="text">
-                        <string>Training Sample Length:</string>
+                        <string>Class Label:</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="1" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesSampleLength">
-                       <property name="acceptDrops">
-                        <bool>false</bool>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
+                     <item>
+                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesMode_classLabel"/>
                      </item>
-                     <item row="2" column="0">
-                      <widget class="QLabel" name="label_154">
+                     <item>
+                      <widget class="QLabel" name="label_195">
                        <property name="text">
-                        <string>Number of Training Samples:</string>
+                        <string>Timeseries Length:</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="2" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numTrainingSamples">
-                       <property name="acceptDrops">
-                        <bool>false</bool>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
+                     <item>
+                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesMode_timeseriesLength"/>
                      </item>
-                    </layout>
-                   </item>
-                   <item row="1" column="1">
-                    <spacer name="horizontalSpacer_10">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="1" column="2">
-                    <layout class="QFormLayout" name="formLayout_9">
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_152">
+                     <item>
+                      <widget class="QLabel" name="label_196">
                        <property name="text">
-                        <string>Number of Dimensions:</string>
+                        <string>Number of Samples:</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="0" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField">
-                       <property name="acceptDrops">
-                        <bool>false</bool>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_156">
-                       <property name="text">
-                        <string>Number of Classes:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesClassificationMode_numClassesField">
-                       <property name="acceptDrops">
-                        <bool>false</bool>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
+                     <item>
+                      <widget class="QLineEdit" name="dataLabellingTool_timeseriesMode_numSamples"/>
                      </item>
                     </layout>
                    </item>
                   </layout>
-                 </widget>
-                </item>
-               </layout>
+                 </item>
+                </layout>
+               </widget>
               </widget>
-              <widget class="QWidget" name="page_3">
-               <layout class="QGridLayout" name="gridLayout_110">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_26">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>1</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="title">
-                   <string>Cluster Recording Controls</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_11">
-                   <item row="0" column="0">
-                    <layout class="QFormLayout" name="formLayout_11">
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_130">
-                       <property name="text">
-                        <string>Number of Training Samples:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_clusterMode_numTrainingSamples"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="1">
-                    <spacer name="horizontalSpacer_12">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>222</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="0" column="2">
-                    <layout class="QFormLayout" name="formLayout_12">
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_128">
-                       <property name="text">
-                        <string>Number of Dimensions:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
-                      <widget class="QLineEdit" name="dataLabellingTool_clusterMode_numInputDimensionsField"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="3">
-                    <spacer name="horizontalSpacer_13">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>221</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_3">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>1</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Data Sets</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_41">
-               <item row="0" column="0">
-                <widget class="QTabWidget" name="dataLabelingTool_trainingDataTab">
-                 <property name="currentIndex">
-                  <number>6</number>
-                 </property>
-                 <widget class="QWidget" name="tab">
-                  <attribute name="title">
-                   <string>Page 1</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_17">
-                   <item row="0" column="0">
-                    <widget class="QTreeView" name="dataLabellingTool_treeView"/>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="tab_2">
-                  <attribute name="title">
-                   <string>Page 2</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_16">
-                   <item row="0" column="0">
-                    <widget class="QTextBrowser" name="dataLabelingTool_datasetStatsView"/>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="tab_3">
-                  <attribute name="title">
-                   <string>Page 3</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_13">
-                   <item row="0" column="0">
-                    <widget class="QCustomPlot" name="dataLabelingTool_classStatsGraph" native="true">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="tab_4">
-                  <attribute name="title">
-                   <string>Page 4</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_18">
-                   <item row="0" column="0">
-                    <widget class="QCustomPlot" name="dataLabelingTool_pcaProjectionPlot" native="true">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="tab_5">
-                  <attribute name="title">
-                   <string>Page 5</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_15">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="verticalLayout_10">
-                     <item>
-                      <widget class="QCustomPlot" name="dataLabelingTool_timeseriesDataGraph" native="true">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCustomPlot" name="dataLabelingTool_timeseriesLabelGraph" native="true">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QScrollBar" name="dataLabelingTool_timeseriesSlider">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="tab_18">
-                  <attribute name="title">
-                   <string>Page 6</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_12">
-                   <item row="0" column="0">
-                    <layout class="QGridLayout" name="gridLayout_8">
-                     <item row="0" column="0">
-                      <layout class="QVBoxLayout" name="verticalLayout_9">
-                       <item>
-                        <layout class="QFormLayout" name="formLayout_13">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_7">
-                           <property name="text">
-                            <string>X Axis Index:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="1">
-                          <widget class="QSpinBox" name="dataLabellingTool_featurePlotAxisASpinBox"/>
-                         </item>
-                         <item row="1" column="0">
-                          <widget class="QLabel" name="label_8">
-                           <property name="text">
-                            <string>Y Axis Index:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="1">
-                          <widget class="QSpinBox" name="dataLabellingTool_featurePlotAxisBSpinBox"/>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="dataLabellingTool_featurePlotButton">
-                         <property name="text">
-                          <string>Plot</string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item row="0" column="1">
-                      <spacer name="horizontalSpacer_14">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="tab_22">
-                  <attribute name="title">
-                   <string>Page 7</string>
-                  </attribute>
-                  <layout class="QGridLayout" name="gridLayout_64">
-                   <item row="0" column="0">
-                    <layout class="QGridLayout" name="gridLayout_14">
-                     <item row="0" column="0">
-                      <widget class="QCustomPlot" name="dataLabellingTool_timeseriesMode_timeseriesPlot" native="true">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>3</verstretch>
-                        </sizepolicy>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="0">
-                      <layout class="QHBoxLayout" name="horizontalLayout_11">
-                       <item>
-                        <widget class="QLabel" name="label_193">
-                         <property name="text">
-                          <string>Timeseries:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSpinBox" name="dataLabellingTool_timeseriesMode_timeseriesIndex"/>
-                       </item>
-                       <item>
-                        <widget class="QLabel" name="label_194">
-                         <property name="text">
-                          <string>Class Label:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="dataLabellingTool_timeseriesMode_classLabel"/>
-                       </item>
-                       <item>
-                        <widget class="QLabel" name="label_195">
-                         <property name="text">
-                          <string>Timeseries Length:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="dataLabellingTool_timeseriesMode_timeseriesLength"/>
-                       </item>
-                       <item>
-                        <widget class="QLabel" name="label_196">
-                         <property name="text">
-                          <string>Number of Samples:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="dataLabellingTool_timeseriesMode_numSamples"/>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
+             </item>
+            </layout>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -5709,7 +5732,6 @@
   <tabstop>dataLabellingTool_loadButton</tabstop>
   <tabstop>dataLabellingTool_clearButton</tabstop>
   <tabstop>dataLabellingTool_classificationMode_numInputDimensionsField</tabstop>
-  <tabstop>dataLabellingTool_classificationMode_numTrainingSamples</tabstop>
   <tabstop>dataLabellingTool_saveButton</tabstop>
   <tabstop>dataLabellingTool_classLabel</tabstop>
   <tabstop>dataLabellingTool_regressionMode_numInputDimensionsField</tabstop>

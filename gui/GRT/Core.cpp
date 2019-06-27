@@ -695,17 +695,17 @@ bool Core::setDatasetInfoText( const std::string infoText ){
     return false;
 }
 
-bool Core::setTrainingClassLabel( const int trainingClassLabel ){
+bool Core::setTrainingClassLabel( const int my_ClassLabel ){
     bool classLabelUpdated = false;
     {
         std::unique_lock< std::mutex > lock( mutex );
-        if( static_cast<unsigned int>(trainingClassLabel) != this->trainingClassLabel ){
-            this->trainingClassLabel = static_cast<unsigned int>(trainingClassLabel);
+        if( static_cast<unsigned int>(my_ClassLabel) != trainingClassLabel ){
+            trainingClassLabel = static_cast<unsigned int>(my_ClassLabel);
             classLabelUpdated = true;
         }
      }
      if( classLabelUpdated ){
-        emit trainingClassLabelChanged( trainingClassLabel );
+        emit trainingClassLabelChanged( my_ClassLabel );
      }
      return true;
 }

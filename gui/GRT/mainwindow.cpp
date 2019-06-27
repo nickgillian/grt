@@ -197,42 +197,23 @@ bool MainWindow::initDataLabellingToolView(){
 
     ui->dataLabellingTool_RecordButton->setChecked( false );
     ui->dataLabellingTool_infoTextField->setText("");
+    ui->dataLabellingTool_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
 
     ui->dataLabellingTool_classLabel->setValue( core.getTrainingClassLabel() );
     ui->dataLabellingTool_classLabel->setRange(1,100000);
     ui->dataLabellingTool_classificationMode_numInputDimensionsField->setText( QString::number( 1 ) );
-    ui->dataLabellingTool_classificationMode_numInputDimensionsField->setReadOnly( true );
-    ui->dataLabellingTool_classificationMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
-    ui->dataLabellingTool_classificationMode_numTrainingSamples->setReadOnly( true );
     ui->dataLabellingTool_classificationMode_numClassesField->setText( QString::number( core.getNumClassesInTrainingData() ) );
-    ui->dataLabellingTool_classificationMode_numClassesField->setReadOnly( true );
 
-    ui->dataLabellingTool_regressionMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
     ui->dataLabellingTool_targetVectorTextField->setText("");
-    ui->dataLabellingTool_targetVectorTextField->setReadOnly( true );
     ui->dataLabellingTool_numTargetDimensionsField->setText("");
-    ui->dataLabellingTool_numTargetDimensionsField->setReadOnly( true );
-    ui->dataLabellingTool_regressionMode_numInputDimensionsField->setReadOnly( true );
     ui->dataLabellingTool_regressionMode_numInputDimensionsField->setText( QString::number( 1 ) );
-    ui->dataLabellingTool_regressionMode_numTrainingSamples->setReadOnly( true );
 
     ui->dataLabellingTool_timeseriesClassificationMode_classLabel->setValue( core.getTrainingClassLabel() );
     ui->dataLabellingTool_timeseriesClassificationMode_classLabel->setRange(1,100000);
-    ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
-    ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setReadOnly( true );
     ui->dataLabellingTool_timeseriesSampleLength->setText( QString::number( 0 ) );
-    ui->dataLabellingTool_timeseriesSampleLength->setReadOnly( true );
     ui->dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField->setText( QString::number( 1 ) );
-    ui->dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField->setReadOnly( true );
 
-    ui->dataLabellingTool_clusterMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
-    ui->dataLabellingTool_clusterMode_numTrainingSamples->setReadOnly( true );
-    ui->dataLabellingTool_clusterMode_numInputDimensionsField->setReadOnly( true );
     ui->dataLabellingTool_clusterMode_numInputDimensionsField->setText( QString::number( 1 ) );
-
-    ui->dataLabellingTool_timeseriesMode_classLabel->setReadOnly( true );
-    ui->dataLabellingTool_timeseriesMode_timeseriesLength->setReadOnly( true );
-    ui->dataLabellingTool_timeseriesMode_numSamples->setReadOnly( true );
 
     //Set the graph titles (we need to do this here otherwise we get a new title each time the graph is drawn)
     QCustomPlot *plot;
@@ -1329,10 +1310,7 @@ void MainWindow::updateNumTrainingSamples(const unsigned int numTrainingSamples)
 
     const unsigned int numClasses = core.getNumClassesInTrainingData();
 
-    ui->dataLabellingTool_classificationMode_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
-    ui->dataLabellingTool_regressionMode_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
-    ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
-    ui->dataLabellingTool_clusterMode_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
+    ui->dataLabellingTool_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
 
     ui->dataLabellingTool_classificationMode_numClassesField->setText( QString::number( numClasses ) );
     ui->dataLabellingTool_timeseriesClassificationMode_numClassesField->setText( QString::number( numClasses ) );
@@ -1354,14 +1332,14 @@ void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,cons
 
 void MainWindow::addNewTrainingSample(const GRT::MatrixFloat &trainingSample){
 
-    ui->dataLabellingTool_timeseriesSampleLength->setText( QString::fromStdString( GRT::Util::toString( trainingSample.getNumRows() ) ) );
+    ui->dataLabellingTool_timeseriesSampleLength->setText( QString::number( trainingSample.getNumRows() ) );
 
 }
 
 void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::TimeSeriesClassificationSample &trainingSample){
     Q_UNUSED( trainingSample )
 
-    ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::fromStdString( GRT::Util::toString( numTrainingSamples ) ) );
+    ui->dataLabellingTool_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
 
     if( numTrainingSamples > 0 ){
         resetTrainingToolView( ui->trainingTool_trainingMode->currentIndex() );
