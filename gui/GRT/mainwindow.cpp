@@ -196,6 +196,7 @@ bool MainWindow::initDataLabellingToolView(){
     core.setRecordingState( false );
 
     ui->dataLabellingTool_RecordButton->setChecked( false );
+    ui->dataLabellingTool_infoTextField->setText("");
 
     ui->dataLabellingTool_classLabel->setValue( core.getTrainingClassLabel() );
     ui->dataLabellingTool_classLabel->setRange(1,100000);
@@ -206,7 +207,6 @@ bool MainWindow::initDataLabellingToolView(){
     ui->dataLabellingTool_classificationMode_numClassesField->setText( QString::number( core.getNumClassesInTrainingData() ) );
     ui->dataLabellingTool_classificationMode_numClassesField->setReadOnly( true );
 
-    ui->dataLabellingTool_infoTextField->setText("");
     ui->dataLabellingTool_regressionMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
     ui->dataLabellingTool_targetVectorTextField->setText("");
     ui->dataLabellingTool_targetVectorTextField->setReadOnly( true );
@@ -672,6 +672,7 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->dataLabellingTool_timeseriesClassificationMode_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(const int)));
     connect(ui->dataLabellingTool_targetVectorValueSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateTargetVectorValue(const double)));
     connect(ui->dataLabellingTool_datasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
+    connect(ui->dataLabellingTool_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
     connect(ui->dataLabelingTool_trainingDataTab, SIGNAL(currentChanged(int)), this, SLOT(updateTrainingTabView(const int)));
     connect(ui->dataLabellingTool_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(handleDatasetClicked(const QModelIndex)));
     connect(ui->dataLabellingTool_featurePlotButton, SIGNAL(clicked()), this, SLOT(generateFeaturePlot()));

@@ -658,7 +658,6 @@ bool Core::setMainDataAddress( const std::string address ){
 }
 
 bool Core::setDatasetName( const std::string datasetName ){
-    std::unique_lock< std::mutex > lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTrainingData.setDatasetName( datasetName );
@@ -667,7 +666,7 @@ bool Core::setDatasetName( const std::string datasetName ){
             return regressionTrainingData.setDatasetName( datasetName );
         break;
         case TIMESERIES_CLASSIFICATION_MODE:
-            //TODO
+            return timeseriesClassificationTrainingData.setDatasetName( datasetName );
         break;
         default:
             qDebug() << "ERROR: setDatasetName(std::string datasetName) - Unknown pipeline mode!";
@@ -678,7 +677,6 @@ bool Core::setDatasetName( const std::string datasetName ){
 }
 
 bool Core::setDatasetInfoText( const std::string infoText ){
-    std::unique_lock< std::mutex > lock( mutex );
     switch( pipelineMode ){
         case CLASSIFICATION_MODE:
             return classificationTrainingData.setInfoText( infoText );
