@@ -3684,3 +3684,41 @@ void MainWindow::notify(const GRT::InfoLogMessage &log){
     std::string message = log.getProceedingText() + " " + log.getMessage();
     updateLogText( message, INFO_LOG_VIEW );
 }
+
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    //Close all graph windows
+    if ( inputDataGraph && inputDataGraph->isVisible() ) {
+        inputDataGraph->close();
+    };
+    if ( preProcessedDataGraph && preProcessedDataGraph->isVisible() ) {
+        preProcessedDataGraph->close();
+    };
+    if ( classPredictionsGraph && classPredictionsGraph->isVisible() ) {
+        classPredictionsGraph->close();
+    };
+    if ( featureExtractionDataGraph && featureExtractionDataGraph->isVisible() ) {
+        featureExtractionDataGraph->close();
+    };
+    if ( classLikelihoodsGraph && classLikelihoodsGraph->isVisible() ) {
+        classLikelihoodsGraph->close();
+    };
+    if ( classDistancesGraph && classDistancesGraph->isVisible() ) {
+        classDistancesGraph->close();
+    };
+    if ( regressionGraph && regressionGraph->isVisible() ) {
+        regressionGraph->close();
+    };
+    if ( swipeDetectorGraph && swipeDetectorGraph->isVisible() ) {
+        swipeDetectorGraph->close();
+    };
+    if ( clusterPredictionsGraph && clusterPredictionsGraph->isVisible() ) {
+        inputDataGraph->close();
+    };
+    if ( clusterLikelihoodsGraph && clusterLikelihoodsGraph->isVisible() ) {
+        clusterLikelihoodsGraph->close();
+    };
+    if ( clusterDistancesGraph && clusterDistancesGraph->isVisible() ) {
+        clusterDistancesGraph->close();
+    };
+}

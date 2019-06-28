@@ -316,6 +316,7 @@ private:
     virtual void notify(const GRT::WarningLogMessage &log);
     virtual void notify(const GRT::ErrorLogMessage &log);
     virtual void notify(const GRT::InfoLogMessage &log);
+    void closeEvent(QCloseEvent *);
 
     std::mutex mutex;
     Ui::MainWindow *ui;
