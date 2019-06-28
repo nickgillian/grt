@@ -4,6 +4,7 @@ libgrt.a
 *.DS_Store
 *.o
 moc*
+build/gtest/
 build/examples/
 build/tmp/
 obj/
