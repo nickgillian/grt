@@ -170,7 +170,7 @@
                     <string/>
                    </property>
                    <property name="pixmap">
-                    <pixmap resource="Resources/resource.qrc">:/ClassificationModeImage.png</pixmap>
+                    <pixmap resource="Resources/resource.qrc">:/Images/ClusterModeImage.png</pixmap>
                    </property>
                   </widget>
                  </item>
