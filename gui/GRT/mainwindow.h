@@ -146,7 +146,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     virtual ~MainWindow();
 
-    unsigned int getCurrentView() const;
+    int getCurrentView() const;
 
 private slots:
     ////////////////////////////////// MAIN VIEW FUNCTIONS ////////////////////////////////
@@ -159,9 +159,7 @@ private slots:
     void showTrainingToolView();
     void showPredictionView();
     void showLogView();
-    void updateInfoText(const std::string msg);
-    void updateWarningText(const std::string msg);
-    void updateErrorText(const std::string msg);
+    void updateLogText(const std::string msg, const LogViewModes log_mode);
     void updateHelpText(const std::string msg);
 
     /////////////////////////////////// SETUP VIEW FUNCTIONS /////////////////////////////////
@@ -318,6 +316,7 @@ private:
     virtual void notify(const GRT::WarningLogMessage &log);
     virtual void notify(const GRT::ErrorLogMessage &log);
     virtual void notify(const GRT::InfoLogMessage &log);
+    void closeEvent(QCloseEvent *);
 
     std::mutex mutex;
     Ui::MainWindow *ui;

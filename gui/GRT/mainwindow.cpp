@@ -3,7 +3,7 @@
 
 unsigned int MainWindow::numInstances = 0;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), model(NULL), pcaGraph(NULL)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), model(nullptr), pcaGraph(nullptr)
 {
     numInstances++;
     //qDebug() << "NumInstances: " + QString::number( numInstances );
@@ -111,7 +111,7 @@ MainWindow::~MainWindow()
     numInstances--;
 }
 
-unsigned int MainWindow::getCurrentView() const{
+int MainWindow::getCurrentView() const{
     return ui->mainTab->currentIndex();
 }
 
@@ -146,16 +146,9 @@ bool MainWindow::initSetupView(){
     ui->setupView_numInputsSpinBox->setRange( 1, 10000 );
     ui->setupView_numOutputsSpinBox->setRange( 1, 10000 );
 
-    ui->setupView_classificationImage->setPixmap( QPixmap( QPixmap::fromImage( QImage( ":/ClassificationModeImage.png" ) ) ) );
     ui->setupView_classificationImage->setScaledContents( true );
-
-    ui->setupView_regressionImage->setPixmap( QPixmap( QPixmap::fromImage( QImage( ":/RegressionModeImage.png" ) ) ) );
     ui->setupView_regressionImage->setScaledContents( true );
-
-    ui->setupView_timeseriesImage->setPixmap( QPixmap( QPixmap::fromImage( QImage( ":/TimeseriesModeImage.png" ) ) ) );
     ui->setupView_timeseriesImage->setScaledContents( true );
-
-    ui->setupView_clusterImage->setPixmap( QPixmap( QPixmap::fromImage( QImage( ":/ClassificationModeImage.png" ) ) ) );
     ui->setupView_clusterImage->setScaledContents( true );
 
     return true;
@@ -197,58 +190,30 @@ bool MainWindow::initDataIOView(){
 
 bool MainWindow::initDataLabellingToolView(){
 
-    ui->dataLabellingTool_classificationModeRecordButton->setCheckable( true );
-    ui->dataLabellingTool_regressionModeRecordButton->setCheckable( true );
-    ui->dataLabellingTool_timeseriesClassificationModeRecordButton->setCheckable( true );
-    ui->dataLabellingTool_clusterModeRecordButton->setCheckable( true );
+    ui->dataLabellingTool_RecordButton->setCheckable( true );
 
     //Make sure the core is not recording
     core.setRecordingState( false );
 
-    ui->dataLabellingTool_classificationModeRecordButton->setChecked( false );
-    ui->dataLabellingTool_regressionModeRecordButton->setChecked( false );
-    ui->dataLabellingTool_timeseriesClassificationModeRecordButton->setChecked( false );
-    ui->dataLabellingTool_clusterModeRecordButton->setChecked( false );
+    ui->dataLabellingTool_RecordButton->setChecked( false );
+    ui->dataLabellingTool_infoTextField->setText("");
+    ui->dataLabellingTool_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
 
-    ui->dataLabellingTool_classificationMode_infoTextField->setText("");
     ui->dataLabellingTool_classLabel->setValue( core.getTrainingClassLabel() );
     ui->dataLabellingTool_classLabel->setRange(1,100000);
     ui->dataLabellingTool_classificationMode_numInputDimensionsField->setText( QString::number( 1 ) );
-    ui->dataLabellingTool_classificationMode_numInputDimensionsField->setReadOnly( true );
-    ui->dataLabellingTool_classificationMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
-    ui->dataLabellingTool_classificationMode_numTrainingSamples->setReadOnly( true );
     ui->dataLabellingTool_classificationMode_numClassesField->setText( QString::number( core.getNumClassesInTrainingData() ) );
-    ui->dataLabellingTool_classificationMode_numClassesField->setReadOnly( true );
 
-    ui->dataLabellingTool_regressionMode_infoTextField->setText("");
-    ui->dataLabellingTool_regressionMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
     ui->dataLabellingTool_targetVectorTextField->setText("");
-    ui->dataLabellingTool_targetVectorTextField->setReadOnly( true );
     ui->dataLabellingTool_numTargetDimensionsField->setText("");
-    ui->dataLabellingTool_numTargetDimensionsField->setReadOnly( true );
-    ui->dataLabellingTool_regressionMode_numInputDimensionsField->setReadOnly( true );
     ui->dataLabellingTool_regressionMode_numInputDimensionsField->setText( QString::number( 1 ) );
-    ui->dataLabellingTool_regressionMode_numTrainingSamples->setReadOnly( true );
 
-    ui->dataLabellingTool_timeseriesClassificationMode_infoTextField->setText("");
     ui->dataLabellingTool_timeseriesClassificationMode_classLabel->setValue( core.getTrainingClassLabel() );
     ui->dataLabellingTool_timeseriesClassificationMode_classLabel->setRange(1,100000);
-    ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
-    ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setReadOnly( true );
     ui->dataLabellingTool_timeseriesSampleLength->setText( QString::number( 0 ) );
-    ui->dataLabellingTool_timeseriesSampleLength->setReadOnly( true );
     ui->dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField->setText( QString::number( 1 ) );
-    ui->dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField->setReadOnly( true );
 
-    ui->dataLabellingTool_clusterMode_infoTextField->setText("");
-    ui->dataLabellingTool_clusterMode_numTrainingSamples->setText( QString::number( core.getNumTrainingSamples() ) );
-    ui->dataLabellingTool_clusterMode_numTrainingSamples->setReadOnly( true );
-    ui->dataLabellingTool_clusterMode_numInputDimensionsField->setReadOnly( true );
     ui->dataLabellingTool_clusterMode_numInputDimensionsField->setText( QString::number( 1 ) );
-
-    ui->dataLabellingTool_timeseriesMode_classLabel->setReadOnly( true );
-    ui->dataLabellingTool_timeseriesMode_timeseriesLength->setReadOnly( true );
-    ui->dataLabellingTool_timeseriesMode_numSamples->setReadOnly( true );
 
     //Set the graph titles (we need to do this here otherwise we get a new title each time the graph is drawn)
     QCustomPlot *plot;
@@ -680,22 +645,15 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->dataIO_oscOutgoingPortSpinBox, SIGNAL(editingFinished()), this, SLOT(resetOSCClient()));
 
     connect(ui->dataLabellingTool_infoButton, SIGNAL(clicked()), this, SLOT(showDataLabellingToolInfo()));
-    connect(ui->dataLabellingTool_classificationModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
-    connect(ui->dataLabellingTool_regressionModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
-    connect(ui->dataLabellingTool_timeseriesClassificationModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
-    connect(ui->dataLabellingTool_clusterModeRecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
+    connect(ui->dataLabellingTool_RecordButton, SIGNAL(clicked(bool)), this, SLOT(recordTrainingData(const bool)));
     connect(ui->dataLabellingTool_saveButton, SIGNAL(clicked()),this, SLOT(saveTrainingDatasetToFile()));
     connect(ui->dataLabellingTool_loadButton, SIGNAL(clicked()),this, SLOT(loadTrainingDatasetFromFile()));
     connect(ui->dataLabellingTool_clearButton, SIGNAL(clicked()), &core, SLOT(clearTrainingData()));
     connect(ui->dataLabellingTool_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(const int)));
     connect(ui->dataLabellingTool_timeseriesClassificationMode_classLabel, SIGNAL(valueChanged(int)), &core, SLOT(setTrainingClassLabel(const int)));
     connect(ui->dataLabellingTool_targetVectorValueSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateTargetVectorValue(const double)));
-    connect(ui->dataLabellingTool_classificationMode_datasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
-    connect(ui->dataLabellingTool_regressionMode_datasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
-    connect(ui->dataLabellingTool_classificationMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
-    connect(ui->dataLabellingTool_regressionMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
-    connect(ui->dataLabellingTool_timeseriesClassificationMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
-    connect(ui->dataLabellingTool_clusterMode_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
+    connect(ui->dataLabellingTool_datasetName, SIGNAL(editingFinished()), this, SLOT(updateDatasetName()));
+    connect(ui->dataLabellingTool_infoTextField, SIGNAL(editingFinished()), this, SLOT(updateDatasetInfoText()));
     connect(ui->dataLabelingTool_trainingDataTab, SIGNAL(currentChanged(int)), this, SLOT(updateTrainingTabView(const int)));
     connect(ui->dataLabellingTool_treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(handleDatasetClicked(const QModelIndex)));
     connect(ui->dataLabellingTool_featurePlotButton, SIGNAL(clicked()), this, SLOT(generateFeaturePlot()));
@@ -806,9 +764,9 @@ bool MainWindow::initSignalsAndSlots(){
     connect(ui->settingsView_graphRefreshRate, SIGNAL(valueChanged(double)), this, SLOT(updateMaximumGraphRefreshRate(const double)));
 
     connect(&core, SIGNAL(tick()), this, SLOT(coreTick()));
-    connect(&core, SIGNAL(newInfoMessage(std::string)), this, SLOT(updateInfoText(const std::string)));
-    connect(&core, SIGNAL(newWarningMessage(std::string)), this, SLOT(updateWarningText(const std::string)));
-    connect(&core, SIGNAL(newErrorMessage(std::string)), this, SLOT(updateErrorText(const std::string)));
+    connect(&core, &Core::newInfoMessage, this, [=](std::string s) {updateLogText(s, INFO_LOG_VIEW);} );
+    connect(&core, &Core::newWarningMessage, this, [=](std::string s) {updateLogText(s, WARNING_LOG_VIEW);} );
+    connect(&core, &Core::newErrorMessage, this, [=](std::string s) {updateLogText(s, ERROR_LOG_VIEW);} );
     connect(&core, SIGNAL(newHelpMessage(std::string)), this, SLOT(updateHelpText(const std::string)));
     connect(&core, SIGNAL(newOSCMessage(std::string)), this, SLOT(updateOSCMessageLog(const std::string)));
     connect(&core, SIGNAL(newTrainingResultReceived(const GRT::TrainingResult&)), this, SLOT(updateTrainingResults(const GRT::TrainingResult&)));
@@ -917,39 +875,45 @@ void MainWindow::showSetupView(){
         break;
         default:
             return;
-        break;
+        // break;
     }
 }
 
 void MainWindow::showDataIOView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::showDataLabellingToolView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::showPipelineToolView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::showTrainingToolView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
     resetTrainingToolView( ui->trainingTool_trainingMode->currentIndex() );
 }
 
 void MainWindow::showPredictionView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::showLogView(){
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
-void MainWindow::updateInfoText(const std::string msg){
+void MainWindow::updateLogText(const std::string msg, const LogViewModes log_mode){
     ui->mainWindow_infoTextField->setText( QString::fromStdString( msg ) );
     QPalette p = ui->mainWindow_infoTextField->palette();
     p.setColor(QPalette::Text, Qt::black);
+    if ( log_mode == WARNING_LOG_VIEW ) {
+        p.setColor(QPalette::Text, QColor(200,100,20));
+    }
+    else if ( log_mode == ERROR_LOG_VIEW ) {
+        p.setColor(QPalette::Text, QColor(200,40,20));
+    }
     ui->mainWindow_infoTextField->setPalette(p);
     core.setInfoMessage( msg );
 
@@ -959,48 +923,21 @@ void MainWindow::updateInfoText(const std::string msg){
         std::string t = "[";
         t += GRT::Util::toString(ts.hour) + ":" + GRT::Util::toString(ts.minute) + ":" + GRT::Util::toString(ts.second);
         t += "] ";
-        ui->logView_infoLogScrollView->append( QString::fromStdString( t + msg ) );
         ui->logView_allLogsScrollView->append( QString::fromStdString( t + msg ) );
+        if ( log_mode == INFO_LOG_VIEW ) {
+            ui->logView_infoLogScrollView->append( QString::fromStdString( t + msg ) );
+        }
+        else if ( log_mode == WARNING_LOG_VIEW ) {
+            ui->logView_warnLogScrollView->append( QString::fromStdString( t + msg ) );
+        }
+        else if ( log_mode == ERROR_LOG_VIEW ) {
+            ui->logView_errorLogScrollView->append( QString::fromStdString( t + msg ) );
+        }
     }
-}
-
-void MainWindow::updateWarningText(const std::string msg){
-
-    ui->mainWindow_infoTextField->setText( QString::fromStdString( msg ) );
-    QPalette p = ui->mainWindow_infoTextField->palette();
-    p.setColor(QPalette::Text, QColor(200,100,20));
-    ui->mainWindow_infoTextField->setPalette(p);
-    core.setInfoMessage( msg );
-
-    if( msg.length() > 0 ){
-        GRT::TimeStamp ts;
-        ts.setTimeStampAsNow();
-        std::string t = "[";
-        t += GRT::Util::toString(ts.hour) + ":" + GRT::Util::toString(ts.minute) + ":" + GRT::Util::toString(ts.second);
-        t += "] ";
-        ui->logView_warningLogScrollView->append( QString::fromStdString( t + msg ) );
-        ui->logView_allLogsScrollView->append( QString::fromStdString( t + msg ) );
-    }
-}
-
-void MainWindow::updateErrorText(const std::string msg){
-    return;
-    if( msg.length() > 0 ){
-        GRT::TimeStamp ts;
-        ts.setTimeStampAsNow();
-        std::string t = "[";
-        t += GRT::Util::toString(ts.hour) + ":" + GRT::Util::toString(ts.minute) + ":" + GRT::Util::toString(ts.second);
-        t += "] ";
-        ui->logView_errorLogScrollView->append( QString::fromStdString( t + msg ) );
-        ui->logView_allLogsScrollView->append( QString::fromStdString( t + msg ) );
-    }
-
-    QMessageBox::warning(0, "Error", QString::fromStdString( msg ));
-    core.setInfoMessage( msg );
 }
 
 void MainWindow::updateHelpText(const std::string msg){
-    QMessageBox::information(0, "Information", QString::fromStdString( msg ));
+    QMessageBox::information(nullptr, "Information", QString::fromStdString( msg ));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1014,7 +951,7 @@ void MainWindow::showSetupViewInfo(){
     infoText += "[1] Select if your machine learning task is a classification, regression, or timeseries task.\n";
     infoText += "[2] Set the number of inputs to your task, and the number of outputs. \n\n";
     infoText += "Checkout the main GUI wiki for me info: www.nickgillian.com/wiki/pmwiki.php/GRT/GUI \n\n";
-    QMessageBox::information(0, "Information", infoText);
+    QMessageBox::information(nullptr, "Information", infoText);
 }
 
 void MainWindow::setNumInputs(const int numInputs){
@@ -1029,7 +966,7 @@ void MainWindow::setNumOutputs(const int numOutputs){
         ui->setupView_numOutputsSpinBox->setValue( 1 );
         QString infoText;
         infoText += "If your project is in classification mode, timeseries classification mode, or cluster mode then the number of outputs will be 1.\n\n";
-        QMessageBox::information(0, "Information", infoText);
+        QMessageBox::information(nullptr, "Information", infoText);
     }
 }
 
@@ -1092,7 +1029,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->pipelineTool_postProcessingType->setCurrentIndex( 0 );
 
             //Add the tabs for classification
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Statistics" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[0], "Table View" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 2, dataLabelingToolTabHistory[2], "Class Counter" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 3, dataLabelingToolTabHistory[3], "PCA Projection" );
@@ -1129,7 +1066,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->pipelineTool_postProcessingType_2->setCurrentIndex( 0 );
 
             //Add the tabs for regression
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Statistics" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[0], "Table View" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 2, dataLabelingToolTabHistory[3], "PCA Projection" );
             ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
@@ -1151,7 +1088,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->predictionWindow_classificationRegressionResultsView->setCurrentIndex( TIMESERIES_CLASSIFICATION_VIEW );
 
             //Add the tabs for timeseries classification
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Statistics" );
             ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[6], "Timeseries Plot" );
 
             //Add the tabs for classification
@@ -1173,7 +1110,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
             ui->predictionWindow_classificationRegressionResultsView->setCurrentIndex( CLUSTER_VIEW );
 
             //Add the data labelling tabs for clustering
-            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Dataset Stats" );
+            ui->dataLabelingTool_trainingDataTab->insertTab( 0, dataLabelingToolTabHistory[1], "Statistics" );
             //ui->dataLabelingTool_trainingDataTab->insertTab( 1, dataLabelingToolTabHistory[0], "Table View" );
             //ui->dataLabelingTool_trainingDataTab->insertTab( 2, dataLabelingToolTabHistory[3], "PCA Projection" );
             ui->dataLabelingTool_trainingDataTab->setCurrentIndex( 0 );
@@ -1183,7 +1120,7 @@ void MainWindow::updatePipelineMode(const unsigned int pipelineMode){
         break;
         default:
             return;
-        break;
+        // break;
     }
 }
 
@@ -1208,7 +1145,7 @@ void MainWindow::resetAll(){
         break;
     }
 
-    updateInfoText( "Pipeline Reset" );
+    updateLogText( "Pipeline Reset", INFO_LOG_VIEW );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1222,7 +1159,7 @@ void MainWindow::showDataIOInfo(){
     infoText += "Before you send any data, you should set the number of dimensions in your data. You can do this in the Setup View. \n";
     infoText += "The OSC Output Setup lets you control the ip address and port of where the realtime output of the application will be sent. \n\n";
     infoText += "Checkout the main GUI wiki for more info: www.nickgillian.com/wiki/pmwiki.php/GRT/GUI \n\n";
-    QMessageBox::information(0, "Information", infoText);
+    QMessageBox::information(nullptr, "Information", infoText);
 }
 
 void MainWindow::updateOSCInput(){
@@ -1276,14 +1213,14 @@ void MainWindow::updateNumInputDimensions(const int numInputDimensions){
     ui->dataLabellingTool_featurePlotAxisBSpinBox->setMaximum(numInputDimensions-1);
     ui->dataLabellingTool_featurePlotAxisBSpinBox->setValue(0);
 
-    int numHiddenNeurons = (int)max((numInputDimensions + ui->setupView_numOutputsSpinBox->value()) / 2,2) ;
+    int numHiddenNeurons = std::max((numInputDimensions + ui->setupView_numOutputsSpinBox->value()) / 2,2) ;
     ui->pipelineTool_mlpNumHiddenNeurons->setValue( numHiddenNeurons );
 
     ui->pipelineTool_swipeDetector_swipeIndex->setMaximum( numInputDimensions-1 );
 
     inputDataGraph->init(numInputDimensions,DEFAULT_GRAPH_WIDTH);
 
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::updateNumTargetDimensions(const int numTargetDimensions){
@@ -1303,10 +1240,10 @@ void MainWindow::updateNumTargetDimensions(const int numTargetDimensions){
     ui->dataLabellingTool_targetVectorValueSpinBox->setMaximum( numeric_limits<double>::max() );
 
     //Reset the pipeline tool
-    int numHiddenNeurons = (int)max((ui->setupView_numInputsSpinBox->value() + numTargetDimensions) / 2,2);
+    int numHiddenNeurons = std::max((ui->setupView_numInputsSpinBox->value() + numTargetDimensions) / 2,2);
     ui->pipelineTool_mlpNumHiddenNeurons->setValue( numHiddenNeurons );
 
-    updateInfoText( "" );
+    updateLogText( "", INFO_LOG_VIEW );
 }
 
 void MainWindow::updateOSCMessageLog(const std::string msg){
@@ -1360,20 +1297,7 @@ void MainWindow::updateTargetVectorValue(const double value){
 
 void MainWindow::updateRecordStatus(const bool recordStatus){
 
-    switch( core.getPipelineMode() ){
-        case Core::CLASSIFICATION_MODE:
-            ui->dataLabellingTool_classificationModeRecordButton->setChecked( recordStatus );
-        break;
-        case Core::REGRESSION_MODE:
-            ui->dataLabellingTool_regressionModeRecordButton->setChecked( recordStatus );
-        break;
-        case Core::TIMESERIES_CLASSIFICATION_MODE:
-            ui->dataLabellingTool_timeseriesClassificationModeRecordButton->setChecked( recordStatus );
-        break;
-        case Core::CLUSTER_MODE:
-            ui->dataLabellingTool_clusterModeRecordButton->setChecked( recordStatus );
-        break;
-    }
+    ui->dataLabellingTool_RecordButton->setChecked( recordStatus );
 
     if( recordStatus ){
         ui->mainWindow_recordingInfoTextField->setText( "YES" );
@@ -1386,10 +1310,7 @@ void MainWindow::updateNumTrainingSamples(const unsigned int numTrainingSamples)
 
     const unsigned int numClasses = core.getNumClassesInTrainingData();
 
-    ui->dataLabellingTool_classificationMode_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
-    ui->dataLabellingTool_regressionMode_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
-    ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
-    ui->dataLabellingTool_clusterMode_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
+    ui->dataLabellingTool_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
 
     ui->dataLabellingTool_classificationMode_numClassesField->setText( QString::number( numClasses ) );
     ui->dataLabellingTool_timeseriesClassificationMode_numClassesField->setText( QString::number( numClasses ) );
@@ -1405,18 +1326,20 @@ void MainWindow::updateNumTrainingSamples(const unsigned int numTrainingSamples)
 }
 
 void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::ClassificationSample &trainingSample){
-
+    Q_UNUSED( numTrainingSamples )
+    Q_UNUSED( trainingSample )
 }
 
 void MainWindow::addNewTrainingSample(const GRT::MatrixFloat &trainingSample){
 
-    ui->dataLabellingTool_timeseriesSampleLength->setText( QString::fromStdString( GRT::Util::toString( trainingSample.getNumRows() ) ) );
+    ui->dataLabellingTool_timeseriesSampleLength->setText( QString::number( trainingSample.getNumRows() ) );
 
 }
 
 void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,const GRT::TimeSeriesClassificationSample &trainingSample){
+    Q_UNUSED( trainingSample )
 
-    ui->dataLabellingTool_timeseriesClassificationMode_numTrainingSamples->setText( QString::fromStdString( GRT::Util::toString( numTrainingSamples ) ) );
+    ui->dataLabellingTool_numTrainingSamples->setText( QString::number( numTrainingSamples ) );
 
     if( numTrainingSamples > 0 ){
         resetTrainingToolView( ui->trainingTool_trainingMode->currentIndex() );
@@ -1430,8 +1353,8 @@ void MainWindow::addNewTrainingSample(const unsigned int numTrainingSamples,cons
 
 void MainWindow::resetTrainingData(const GRT::ClassificationData &trainingData){
 
-    ui->dataLabellingTool_classificationMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
-    ui->dataLabellingTool_classificationMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
+    ui->dataLabellingTool_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
+    ui->dataLabellingTool_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
     ui->dataLabellingTool_classificationMode_numInputDimensionsField->setText( QString::number( trainingData.getNumDimensions() ) );
     ui->dataLabellingTool_classificationMode_numClassesField->setText( QString::number( trainingData.getNumClasses() ) );
 
@@ -1470,8 +1393,8 @@ void MainWindow::resetTrainingData(const GRT::ClassificationData &trainingData){
 
 void MainWindow::resetTrainingData(const GRT::RegressionData &trainingData){
 
-    ui->dataLabellingTool_regressionMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
-    ui->dataLabellingTool_regressionMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
+    ui->dataLabellingTool_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
+    ui->dataLabellingTool_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
 
     ui->dataLabellingTool_treeView->setRootIsDecorated(false);
     ui->dataLabellingTool_treeView->setAlternatingRowColors(true);
@@ -1515,8 +1438,8 @@ void MainWindow::resetTrainingData(const GRT::RegressionData &trainingData){
 
 void MainWindow::resetTrainingData(const GRT::TimeSeriesClassificationData &trainingData){
 
-    ui->dataLabellingTool_timeseriesClassificationMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
-    ui->dataLabellingTool_timeseriesClassificationMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
+    ui->dataLabellingTool_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
+    ui->dataLabellingTool_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
     ui->dataLabellingTool_timeseriesClassificationMode_numInputDimensionsField->setText( QString::number( trainingData.getNumDimensions() ) );
     ui->dataLabellingTool_timeseriesClassificationMode_numClassesField->setText( QString::number( trainingData.getNumClasses() ) );
 
@@ -1556,8 +1479,8 @@ void MainWindow::resetTrainingData(const GRT::TimeSeriesClassificationData &trai
 
 void MainWindow::resetTrainingData(const GRT::UnlabelledData &trainingData){
 
-    ui->dataLabellingTool_clusterMode_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
-    ui->dataLabellingTool_clusterMode_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
+    ui->dataLabellingTool_datasetName->setText( QString::fromStdString( trainingData.getDatasetName() ) );
+    ui->dataLabellingTool_infoTextField->setText( QString::fromStdString( trainingData.getInfoText() ) );
 
     ui->dataLabellingTool_treeView->setRootIsDecorated(false);
     ui->dataLabellingTool_treeView->setAlternatingRowColors(true);
@@ -1591,6 +1514,7 @@ void MainWindow::resetTrainingData(const GRT::UnlabelledData &trainingData){
 }
 
 void MainWindow::handleDatasetClicked(const QModelIndex &index){
+    Q_UNUSED( index )
 
     //QStandardItem *item = model->itemFromIndex(index);
 
@@ -1607,44 +1531,15 @@ void MainWindow::showDataLabellingToolInfo(){
     infoText += "This is the Data Labeling view. It lets you record, label, and manage your training and testing data.\n\n";
 
     infoText += "Checkout the main GUI wiki for more info: www.nickgillian.com/wiki/pmwiki.php/GRT/GUI \n\n";
-    QMessageBox::information(0, "Information", infoText);
+    QMessageBox::information(nullptr, "Information", infoText);
 }
 
 void MainWindow::updateDatasetName(){
-
-    switch( core.getPipelineMode() ){
-        case Core::CLASSIFICATION_MODE:
-            core.setDatasetName( ui->dataLabellingTool_classificationMode_datasetName->text().toStdString() );
-        break;
-        case Core::REGRESSION_MODE:
-            core.setDatasetName( ui->dataLabellingTool_regressionMode_datasetName->text().toStdString() );
-        break;
-        case Core::TIMESERIES_CLASSIFICATION_MODE:
-            core.setDatasetName( ui->dataLabellingTool_timeseriesClassificationMode_datasetName->text().toStdString() );
-        break;
-        case Core::CLUSTER_MODE:
-            core.setDatasetName( ui->dataLabellingTool_clusterMode_datasetName->text().toStdString() );
-        break;
-    }
-
+    core.setDatasetName( ui->dataLabellingTool_datasetName->text().toStdString() );
 }
 
 void MainWindow::updateDatasetInfoText(){
-
-    switch( core.getPipelineMode() ){
-        case Core::CLASSIFICATION_MODE:
-            core.setDatasetInfoText( ui->dataLabellingTool_classificationMode_infoTextField->text().toStdString() );
-        break;
-        case Core::REGRESSION_MODE:
-            core.setDatasetInfoText( ui->dataLabellingTool_regressionMode_infoTextField->text().toStdString() );
-        break;
-        case Core::TIMESERIES_CLASSIFICATION_MODE:
-            core.setDatasetInfoText( ui->dataLabellingTool_timeseriesClassificationMode_infoTextField->text().toStdString()  );
-        break;
-        case Core::CLUSTER_MODE:
-            core.setDatasetInfoText( ui->dataLabellingTool_clusterMode_infoTextField->text().toStdString()  );
-        break;
-    }
+    core.setDatasetInfoText( ui->dataLabellingTool_infoTextField->text().toStdString() );
 }
 
 void MainWindow::updateTrainingTabView( const int tabIndex ){
@@ -1778,9 +1673,9 @@ void MainWindow::updateClassStatsGraph(){
 
 void MainWindow::updatePCAProjectionGraph(){
 
-    if( pcaGraph != NULL ){
+    if( pcaGraph != nullptr ){
         delete pcaGraph;
-        pcaGraph = NULL;
+        pcaGraph = nullptr;
     }
 
     QCustomPlot *plot = ui->dataLabelingTool_pcaProjectionPlot;
@@ -2034,23 +1929,7 @@ void MainWindow::generateFeaturePlot(){
 
 void MainWindow::ctrlRShortcut(){
 
-    switch( core.getPipelineMode() ){
-        case Core::CLASSIFICATION_MODE:
-            ui->dataLabellingTool_classificationModeRecordButton->click();
-        break;
-        case Core::REGRESSION_MODE:
-            ui->dataLabellingTool_regressionModeRecordButton->click();
-        break;
-        case Core::TIMESERIES_CLASSIFICATION_MODE:
-            ui->dataLabellingTool_timeseriesClassificationModeRecordButton->click();
-        break;
-        case Core::CLUSTER_MODE:
-            ui->dataLabellingTool_clusterModeRecordButton->click();
-        break;
-        default:
-            return;
-        break;
-    }
+    ui->dataLabellingTool_RecordButton->click();
 
     if( core.getRecordStatus() ){
         ui->mainWindow_recordingInfoTextField->setText( "YES" );
@@ -2128,7 +2007,7 @@ void MainWindow::resetTrainingToolView( const int trainingMode ){
                 ui->trainingTool_numTestSamples->setEnabled( true );
                 ui->trainingTool_randomTestPercentageSlider->setEnabled( true );
                 ui->trainingTool_randomTestPercentageBox->setEnabled( true );
-                temp = (unsigned int)floor( numTrainingSamples * ui->trainingTool_randomTestPercentageSlider->value() / 100.0 );
+                temp = std::floor( numTrainingSamples * ui->trainingTool_randomTestPercentageSlider->value() / 100.0 );
                 ui->trainingTool_numTrainingSamples->setText( QString::number( numTrainingSamples-temp ) );
                 ui->trainingTool_numTestSamples->setText( QString::number( temp ) );
             break;
@@ -2140,7 +2019,7 @@ void MainWindow::resetTrainingToolView( const int trainingMode ){
             break;
             case TRAINING_MODE_CROSS_VALIDATION:
                 ui->trainingTool_numCVFolds->setEnabled( true );
-                temp = (unsigned int)floor( numTrainingSamples / double( ui->trainingTool_numCVFolds->value() ) );
+                temp = static_cast<unsigned int>(floor( numTrainingSamples / static_cast<double>( ui->trainingTool_numCVFolds->value() ) ));
                 ui->trainingTool_numTrainingSamples->setText( QString::number( numTrainingSamples - temp ));
                 ui->trainingTool_numTestSamples->setText( QString::number( temp ) );
             break;
@@ -2185,14 +2064,14 @@ void MainWindow::train(){
 void MainWindow::randomTestSliderMoved(const int value){
     ui->trainingTool_randomTestPercentageBox->setText( QString::number( value ) + "%" );
     unsigned int M = core.getNumTrainingSamples();
-    unsigned int N = (unsigned int)floor( M * value / 100.0 );
+    unsigned int N = std::floor( M * static_cast<unsigned int>(value) / 100 );
     ui->trainingTool_numTrainingSamples->setText( QString::number( M-N ) );
     ui->trainingTool_numTestSamples->setText( QString::number( N ) );
 }
 
 void MainWindow::numCVFoldsValueChanged(const int value){
     unsigned int M = core.getNumTrainingSamples();
-    unsigned int N = (unsigned int)floor( M / double( value ) );
+    unsigned int N = static_cast<unsigned int>(floor( M / static_cast<double>(value) ));
     ui->trainingTool_numTrainingSamples->setText( QString::number( M-N ));
     ui->trainingTool_numTestSamples->setText( QString::number( N ) );
 }
@@ -2209,7 +2088,7 @@ void MainWindow::showTrainingToolInfo(){
     infoText += "This is the Data Labelling view. It lets you record, label, and manage your training data.\n\n";
 
     infoText += "Checkout the main GUI wiki for more info: www.nickgillian.com/wiki/pmwiki.php/GRT/GUI \n\n";
-    QMessageBox::information(0, "Information", infoText);
+    QMessageBox::information(nullptr, "Information", infoText);
 }
 
 void MainWindow::pipelineTrainingStarted(){
@@ -2341,7 +2220,7 @@ void MainWindow::pipelineTrainingFinished(const bool result){
 
             if( pipelineMode == Core::CLASSIFICATION_MODE || pipelineMode == Core::TIMESERIES_CLASSIFICATION_MODE ){
                 classLabels = core.getClassLabels();
-                K = (unsigned int)classLabels.size();
+                K = static_cast<unsigned int>(classLabels.size());
 
                 infoText += "- Accuracy:     ";
                 infoText += QString::number( testResult.accuracy );
@@ -2411,7 +2290,7 @@ void MainWindow::pipelineTrainingFinished(const bool result){
 
             if( pipelineMode == Core::CLASSIFICATION_MODE || pipelineMode == Core::TIMESERIES_CLASSIFICATION_MODE ){
                 classLabels = core.getClassLabels();
-                K = (unsigned int)classLabels.size();
+                K = static_cast<unsigned int>(classLabels.size());
 
                 cout << "K: " << crossValidationResults.size() << endl;
                 for(unsigned int k=0; k<crossValidationResults.size(); k++){
@@ -2467,6 +2346,7 @@ void MainWindow::pipelineTestingFinished(const bool result){
 }
 
 void MainWindow::updateTrainingToolLog(const std::string message){
+    Q_UNUSED( message )
 
     //ui->trainingTool_results->append( QString::fromStdString( message ) ); //This seems to be crashing things sometimes, WHY?
 
@@ -2520,7 +2400,7 @@ void MainWindow::updateTestResults(const GRT::TestInstanceResult &testResult){
 void MainWindow::updatePrecisionGraph(const GRT::VectorFloat &precision,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_precisionGraph;
-    unsigned int K = (unsigned int)classLabels.size();
+    unsigned int K = static_cast<unsigned int>(classLabels.size());
 
     QVector<double> keyData;
     QVector<double> valueData;
@@ -2559,7 +2439,7 @@ void MainWindow::updatePrecisionGraph(const GRT::VectorFloat &precision,const ve
 void MainWindow::updateRecallGraph(const GRT::VectorFloat &recall,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_recallGraph;
-    unsigned int K = (unsigned int)classLabels.size();
+    unsigned int K = static_cast<unsigned int>(classLabels.size());
 
     QVector<double> keyData;
     QVector<double> valueData;
@@ -2645,9 +2525,9 @@ void MainWindow::updateFmeasureGraph(const GRT::VectorFloat &fmeasure,const vect
 void MainWindow::updateConfusionMatrixGraph(const GRT::MatrixFloat &confusionMatrix,const vector< unsigned int > &classLabels){
 
     QCustomPlot *plot = ui->trainingTool_confusionMatrixGraph;
-    const unsigned int K = (unsigned int)classLabels.size();
-    const unsigned int numRows = confusionMatrix.getNumRows();
-    const unsigned int numCols = confusionMatrix.getNumCols();
+    const unsigned int K = static_cast<unsigned int>(classLabels.size());
+    unsigned int numRows = confusionMatrix.getNumRows();
+    unsigned int numCols = confusionMatrix.getNumCols();
     const bool nullRejectionEnabled = numRows != K ? true : false;
     const unsigned int minClassLabel = nullRejectionEnabled ? 0 : GRT::Util::getMin( classLabels );
     const unsigned int maxClassLabel = GRT::Util::getMax( classLabels );
@@ -2666,7 +2546,7 @@ void MainWindow::updateConfusionMatrixGraph(const GRT::MatrixFloat &confusionMat
     QCPColorMap *colorMap = new QCPColorMap(plot->xAxis, plot->yAxis);
     plot->addPlottable( colorMap );
 
-    colorMap->data()->setSize(numRows,numCols);
+    colorMap->data()->setSize(static_cast<int>(numRows), static_cast<int>(numCols));
     colorMap->data()->setRange(QCPRange(minClassLabel, maxClassLabel+1), QCPRange(minClassLabel, maxClassLabel+1));
     colorMap->setInterpolate( false );
     colorMap->setTightBoundary( false );
@@ -2755,7 +2635,7 @@ void MainWindow::savePipelineToFile(){
     QString filenameAndPath = QFileDialog::getSaveFileName(this, tr("Enter filename"), directory.path());
     std::string filename = filenameAndPath.toUtf8().constData();
     if( !core.savePipelineToFile( filename ) )
-        emit updateInfoText( "WARNING: Failed to save pipeline." );
+        updateLogText( "WARNING: Failed to save pipeline.", INFO_LOG_VIEW );
 }
 
 void MainWindow::loadPipelineFromFile(){
@@ -2763,7 +2643,7 @@ void MainWindow::loadPipelineFromFile(){
     QString filenameAndPath = QFileDialog::getOpenFileName(this, tr("Enter filename"), directory.path());
     std::string filename = filenameAndPath.toUtf8().constData();
     if( !core.loadPipelineFromFile( filename ) )
-        emit updateInfoText( "WARNING: Failed to load pipeline." );
+        updateLogText( "WARNING: Failed to load pipeline.", INFO_LOG_VIEW );
 }
 
 void MainWindow::updatePreProcessingView(const int viewIndex){
@@ -2814,7 +2694,7 @@ void MainWindow::updatePreProcessingView(const int viewIndex){
             core.setPreProcessing( GRT::DeadZone( ui->pipelineTool_deadZoneLowerLimitSpinBox->value(), ui->pipelineTool_deadZoneUpperLimitSpinBox->value(), numDimensions ) );
         break;
         default:
-            updateInfoText( "WARNING: Unknown preprocessing mode!" );
+            updateLogText( "WARNING: Unknown preprocessing mode!", INFO_LOG_VIEW );
         break;
     }
 }
@@ -3231,13 +3111,13 @@ void MainWindow::updatePipelineConfiguration(){
         unsigned int K = 0;
         unsigned int minClassLabel = 0;
         unsigned int maxClassLabel = 0;
-        GRT::Classifier *classifier = NULL;
+        GRT::Classifier *classifier = nullptr;
 
         switch( core.getPipelineMode() ){
             case Core::CLASSIFICATION_MODE:
                 K = core.getNumClasses();
                 classifier = pipeline.getClassifier();
-                if( classifier != NULL ){
+                if( classifier != nullptr ){
                     minClassLabel = classifier->getNullRejectionEnabled() ? 0 : GRT::Util::getMin( core.getClassLabels() );
                 }else minClassLabel = 0;
                 maxClassLabel = GRT::Util::getMax( core.getClassLabels() );
@@ -3253,7 +3133,7 @@ void MainWindow::updatePipelineConfiguration(){
             case Core::TIMESERIES_CLASSIFICATION_MODE:
                 K = core.getNumClasses();
                 classifier = pipeline.getClassifier();
-                if( classifier != NULL ){
+                if( classifier != nullptr ){
                     minClassLabel = classifier->getNullRejectionEnabled() ? 0 : GRT::Util::getMin( core.getClassLabels() );
                 }else minClassLabel = 0;
                 maxClassLabel = GRT::Util::getMax( core.getClassLabels() );
@@ -3384,7 +3264,7 @@ void MainWindow::setupDefaultCluster(){
 }
 
 void MainWindow::updateClassifier(const unsigned int classifierType,const bool useScaling,const bool useNullRejection,const double nullRejectionCoeff,const double parameter1){
-
+    Q_UNUSED( parameter1 )
     //Setup the classifier view
     ui->pipelineTool_classifierType->setCurrentIndex( classifierType );
     ui->pipelineTool_enableScaling->setChecked( useScaling );
@@ -3654,27 +3534,25 @@ void MainWindow::showErrorLog(){
 
 void MainWindow::updateLogView(const unsigned int viewID){
 
+    ui->logView_logFrame->setCurrentIndex( static_cast<int>(viewID) );
+
     switch( viewID ){
         case ALL_LOGS_VIEW:
-            ui->logView_logFrame->setCurrentIndex( 0 );
             ui->logView_infoLogButton->setChecked( false );
             ui->logView_warningLogButton->setChecked( false );
             ui->logView_errorLogButton->setChecked( false );
         break;
         case INFO_LOG_VIEW:
-            ui->logView_logFrame->setCurrentIndex( 1 );
             ui->logView_allLogsButton->setChecked( false );
             ui->logView_warningLogButton->setChecked( false );
             ui->logView_errorLogButton->setChecked( false );
         break;
         case WARNING_LOG_VIEW:
-            ui->logView_logFrame->setCurrentIndex( 2 );
             ui->logView_allLogsButton->setChecked( false );
             ui->logView_infoLogButton->setChecked( false );
             ui->logView_errorLogButton->setChecked( false );
         break;
         case ERROR_LOG_VIEW:
-            ui->logView_logFrame->setCurrentIndex( 3 );
             ui->logView_allLogsButton->setChecked( false );
             ui->logView_infoLogButton->setChecked( false );
             ui->logView_warningLogButton->setChecked( false );
@@ -3704,7 +3582,7 @@ void MainWindow::openGRTDownload(){
 
 void MainWindow::updateCoreRefreshRate(const double rate){
     //Convert the millisecond rate to sleep time
-    unsigned int sleepTime = (unsigned int)(rate * 1000.0);
+    unsigned int sleepTime = static_cast<unsigned int>((rate * 1000.0));
     if( sleepTime == 0 ) sleepTime = 1;
     core.setCoreSleepTime( sleepTime );
 }
@@ -3792,17 +3670,55 @@ void MainWindow::notify(const GRT::TestingLogMessage &log){
 void MainWindow::notify(const GRT::WarningLogMessage &log){
     std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
-    updateWarningText( message );
+    updateLogText( message, WARNING_LOG_VIEW );
 }
 
 void MainWindow::notify(const GRT::ErrorLogMessage &log){
     std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
-    updateErrorText( message );
+    updateLogText( message, ERROR_LOG_VIEW );
 }
 
 void MainWindow::notify(const GRT::InfoLogMessage &log){
     std::unique_lock< std::mutex > lock( mutex );
     std::string message = log.getProceedingText() + " " + log.getMessage();
-    updateInfoText( message );
+    updateLogText( message, INFO_LOG_VIEW );
+}
+
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    //Close all graph windows
+    if ( inputDataGraph && inputDataGraph->isVisible() ) {
+        inputDataGraph->close();
+    };
+    if ( preProcessedDataGraph && preProcessedDataGraph->isVisible() ) {
+        preProcessedDataGraph->close();
+    };
+    if ( classPredictionsGraph && classPredictionsGraph->isVisible() ) {
+        classPredictionsGraph->close();
+    };
+    if ( featureExtractionDataGraph && featureExtractionDataGraph->isVisible() ) {
+        featureExtractionDataGraph->close();
+    };
+    if ( classLikelihoodsGraph && classLikelihoodsGraph->isVisible() ) {
+        classLikelihoodsGraph->close();
+    };
+    if ( classDistancesGraph && classDistancesGraph->isVisible() ) {
+        classDistancesGraph->close();
+    };
+    if ( regressionGraph && regressionGraph->isVisible() ) {
+        regressionGraph->close();
+    };
+    if ( swipeDetectorGraph && swipeDetectorGraph->isVisible() ) {
+        swipeDetectorGraph->close();
+    };
+    if ( clusterPredictionsGraph && clusterPredictionsGraph->isVisible() ) {
+        inputDataGraph->close();
+    };
+    if ( clusterLikelihoodsGraph && clusterLikelihoodsGraph->isVisible() ) {
+        clusterLikelihoodsGraph->close();
+    };
+    if ( clusterDistancesGraph && clusterDistancesGraph->isVisible() ) {
+        clusterDistancesGraph->close();
+    };
 }

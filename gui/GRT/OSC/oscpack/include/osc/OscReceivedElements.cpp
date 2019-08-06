@@ -64,22 +64,26 @@ static inline const char* FindStr4End( const char *p )
 // returns 0 if p == end or if the string is unterminated
 static inline const char* FindStr4End( const char *p, const char *end )
 {
-    if( p >= end )
-        return 0;
+    if( p >= end ) {
+        return nullptr;
+    }
 
-	if( p[0] == '\0' )    // special case for SuperCollider integer address pattern
+    if( p[0] == '\0' ) {    // special case for SuperCollider integer address pattern
 		return p + 4;
+    }
 
     p += 3;
     end -= 1;
 
-    while( p < end && *p )
+    while( p < end && *p ) {
         p += 4;
-
-    if( *p )
-        return 0;
-    else
+    }
+    if( *p ) {
+        return nullptr;
+    }
+    else {
         return p + 1;
+    }
 }
 
 

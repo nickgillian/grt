@@ -3,10 +3,15 @@
 
 #define GRT_GUI_VERSION "0.1_18"
 
-#include <QObject>
-#include "OSC/OSCServer.h"
 #include <GRT/GRT.h>
+
+#include "OSC/OSCServer.h"
 #include "TrainingThread.h"
+
+//#include "OSC/OSCMessage.h"
+
+#include <vector>
+#include <QObject>
 
 #define DEFAULT_CORE_THREAD_SLEEP_TIME 10
 
@@ -20,39 +25,39 @@ public:
 
     bool start();
     bool stop();
-    bool addMessaage( const OSCMessagePtr msg );
-    bool getCoreRunning();
-    bool getTrained();
-    bool getTrainingInProcess();
-    bool getRecordStatus();
-    unsigned int getNumInputDimensions();
-    unsigned int getPipelineMode();
-    unsigned int getTrainingClassLabel();
+    void addMessaage( const OSCMessagePtr msg );
+    bool getCoreRunning() const  { return coreRunning; }
+    bool getTrained() const { return pipeline.getTrained(); }
+    bool getTrainingInProcess() const { return trainingThread.getTrainingInProcess(); }
+    bool getRecordStatus() const { return recordTrainingData; }
+    unsigned int getNumInputDimensions() const { return numInputDimensions; }
+    unsigned int getPipelineMode() const { return pipelineMode; }
+    unsigned int getTrainingClassLabel() const { return trainingClassLabel; }
     unsigned int getNumTrainingSamples();
     unsigned int getNumTestSamples();
-    unsigned int getNumClasses();
+    unsigned int getNumClasses() const { return pipeline.getNumClasses(); }
     unsigned int getNumClassesInTrainingData();
-    vector<unsigned int> getClassLabels();
-    GRT::VectorFloat getTargetVector();
-    GRT::ClassificationData getClassificationTrainingData();
-    GRT::ClassificationData getClassificationTestData();
-    GRT::RegressionData getRegressionTrainingData();
-    GRT::RegressionData getRegressionTestData();
-    GRT::TimeSeriesClassificationData getTimeSeriesClassificationTrainingData();
-    GRT::TimeSeriesClassificationData getTimeSeriesClassificationTestData();
-    GRT::UnlabelledData getClusterTrainingData();
-    GRT::UnlabelledData getClusterTestData();
-    double getTestAccuracy();
-    double getCrossValidationAccuracy();
-    double getTrainingRMSError();
-    double getTrainingSSError();
-    GRT::GestureRecognitionPipeline getPipeline();
-    GRT::TestResult getTestResults();
-    vector< GRT::TestResult > getCrossValidationResults();
-    std::string getInfoMessage();
-    std::string getVersion();
-    std::string getIncomingDataAddress();
-    std::string getModelAsString();
+    std::vector<unsigned int> getClassLabels() const { return pipeline.getClassLabels(); }
+    GRT::VectorFloat getTargetVector() const { return targetVector; }
+    GRT::ClassificationData getClassificationTrainingData() const { return classificationTrainingData; }
+    GRT::ClassificationData getClassificationTestData() const { return classificationTestData; }
+    GRT::RegressionData getRegressionTrainingData() const { return regressionTrainingData;}
+    GRT::RegressionData getRegressionTestData() const { return regressionTestData; }
+    GRT::TimeSeriesClassificationData getTimeSeriesClassificationTrainingData() const { return timeseriesClassificationTrainingData; }
+    GRT::TimeSeriesClassificationData getTimeSeriesClassificationTestData() const { return timeseriesClassificationTestData; }
+    GRT::UnlabelledData getClusterTrainingData() const { return clusterTrainingData; }
+    GRT::UnlabelledData getClusterTestData() const { return clusterTestData; }
+    double getTestAccuracy() const { return pipeline.getTestAccuracy(); }
+    double getCrossValidationAccuracy() const { return pipeline.getCrossValidationAccuracy(); }
+    double getTrainingRMSError() const { return pipeline.getTrainingRMSError(); }
+    double getTrainingSSError() const { return pipeline.getTrainingSSError(); }
+    GRT::GestureRecognitionPipeline getPipeline() const { return pipeline; }
+    GRT::TestResult getTestResults() const { return pipeline.getTestResults(); }
+    vector< GRT::TestResult > getCrossValidationResults() const { return pipeline.getCrossValidationResults(); }
+    std::string getInfoMessage() const { return infoMessage; }
+    std::string getVersion() const { return version; }
+    std::string getIncomingDataAddress() const { return incomingDataAddress; }
+    std::string getModelAsString() const { return pipeline.getModelAsString(); }
 
 signals:
     void coreStarted();
@@ -105,11 +110,11 @@ signals:
     
 public slots:
     bool resetOSCClient( const std::string clientAddress,const int clientPort );
-    bool resetOSCServer( const int incomingOSCDataPort );
-    bool setVersion( const std::string version );
-    bool setEnableOSCInput( const bool state );
-    bool setEnableOSCControlCommands( const bool state );
-    bool setPipelineMode( const unsigned int pipelineMode );
+    bool resetOSCServer( const int in_OSCDataPort );
+    void setVersion( const std::string version );
+    void setEnableOSCInput( const bool state );
+    void setEnableOSCControlCommands( const bool state );
+    void setPipelineMode( const unsigned int pipelineMode );
     bool setRecordingState( const bool state );
     bool saveTrainingDatasetToFile( const std::string filename );
     bool loadTrainingDatasetFromFile( const std::string filename );
@@ -121,7 +126,7 @@ public slots:
     bool trainWithCrossValidation( const unsigned int numFolds );
     bool enablePrediction( const bool enable );
 
-    bool setCoreSleepTime( const unsigned int coreSleepTime );
+    void setCoreSleepTime( const unsigned int cST ) { coreSleepTime = cST; }
     bool setNumInputDimensions( const int numInputDimensions );
     bool setTargetVectorSize( const int targetVectorSize );
     bool setTrainingClassLabel( const int trainingClassLabel );
@@ -140,7 +145,7 @@ public slots:
     bool removeAllPostProcessingModules();
     bool savePipelineToFile( const std::string filename );
     bool loadPipelineFromFile( const std::string filename );
-    bool setInfoMessage( const std::string infoMessage );
+    void setInfoMessage( const std::string iM ) { infoMessage = iM; }
 
 protected:
     virtual void notify( const GRT::TrainingResult &data );
@@ -160,32 +165,32 @@ protected:
     //Core Stuff
     std::mutex mutex;
     std::shared_ptr< std::thread > mainThread;
-    bool coreRunning;
-    bool stopMainThread;
-    bool verbose;
-    bool debug;
-    bool enableOSCInput;
-    bool enableOSCControlCommands;
+    bool coreRunning = false;
+    bool stopMainThread = false;
+    bool verbose = true;
+    bool debug = true;
+    bool enableOSCInput = true;
+    bool enableOSCControlCommands = true;
 
     //OSC Stuff
-    unsigned int incomingOSCDataPort;
-    unsigned int outgoingOSCDataPort;
-    string outgoingOSCAddress;
-    string incomingDataAddress;
+    unsigned int incomingOSCDataPort = 5000;
+    unsigned int outgoingOSCDataPort = 5001;
+    string outgoingOSCAddress = "127.0.0.1";
+    string incomingDataAddress = "/Data";
     OSCServer oscServer;
     std::shared_ptr< UdpTransmitSocket > socket;
 
     //Data Stuff
-    unsigned int coreSleepTime;
-    unsigned int numInputDimensions;
-    unsigned int targetVectorSize;
-    unsigned int trainingClassLabel;
-    unsigned int pipelineMode;
+    unsigned int coreSleepTime = DEFAULT_CORE_THREAD_SLEEP_TIME;
+    unsigned int numInputDimensions = 1;
+    unsigned int targetVectorSize = 1;
+    unsigned int trainingClassLabel = 1;
+    unsigned int pipelineMode = CLASSIFICATION_MODE;
     GRT::VectorFloat inputData;
     GRT::VectorFloat targetVector;
-    bool newDataReceived;
-    bool recordTrainingData;
-    bool predictionModeEnabled;
+    bool newDataReceived = false;
+    bool recordTrainingData = false;
+    bool predictionModeEnabled = true;
     GRT::ClassificationData classificationTrainingData;
     GRT::ClassificationData classificationTestData;
     GRT::RegressionData regressionTrainingData;
@@ -199,7 +204,7 @@ protected:
     GRT::WarningLog warningLog;
     GRT::ErrorLog errorLog;
     std::string infoMessage;
-    std::string version;
+    std::string version = GRT_GUI_VERSION;
 
     TrainingThread trainingThread;
 

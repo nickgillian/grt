@@ -129,6 +129,8 @@ bool TimeseriesGraph::setYAxisRanges(const double minRange,const double maxRange
 
 //resize graph on window resize
 void TimeseriesGraph::resizeEvent (QResizeEvent *event){
+    Q_UNUSED( event )
+
     int width = ui->graph->parentWidget()->width();
     int height = ui->graph->parentWidget()->height();
     ui->graph->setGeometry(5,5,width-10,height-50);
