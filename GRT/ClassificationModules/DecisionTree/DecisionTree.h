@@ -302,7 +302,7 @@ protected:
     bool loadLegacyModelFromFile_v3( std::fstream &file );
     
     bool trainTree( ClassificationData trainingData, const ClassificationData &trainingDataCopy, const ClassificationData &validationData, Vector< UINT > features );
-    DecisionTreeNode* buildTree(ClassificationData &trainingData, DecisionTreeNode *parent, Vector< UINT > features, const Vector< UINT > &classLabels, UINT nodeID );
+    DecisionTreeNode* buildTree(ClassificationData &trainingData, DecisionTreeNode *parent, Vector< UINT > features, const Vector< UINT > &classLabels );
     Float getNodeDistance( const VectorFloat &x, const UINT nodeID );
     Float getNodeDistance( const VectorFloat &x, const VectorFloat &y );
     
@@ -321,6 +321,10 @@ protected:
 private:
     static RegisterClassifierModule< DecisionTree > registerModule;
     static const std::string id;
+
+	// Need a copy of the current ID so we know 
+	// what ID's to set the children to
+	int currentID;
 };
 
 GRT_END_NAMESPACE
