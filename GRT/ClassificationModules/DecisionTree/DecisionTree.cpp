@@ -41,6 +41,7 @@ DecisionTree::DecisionTree(const DecisionTreeNode &decisionTreeNode,const UINT m
     this->numSplittingSteps = numSplittingSteps;
     this->useScaling = useScaling;
     this->supportsNullRejection = true;
+	this->currentID = 0;
     this->numTrainingIterationsToConverge = 20; //Retrain the model 20 times and pick the best one
     classifierMode = STANDARD_CLASSIFIER_MODE;
 }
@@ -312,9 +313,9 @@ bool DecisionTree::trainTree( ClassificationData trainingData, const Classificat
     const unsigned int M = trainingData.getNumSamples();
 
     //Build the tree
-    UINT nodeID = 0;
-    tree = buildTree( trainingData, NULL, features, classLabels, nodeID );
-    
+    tree = buildTree( trainingData, NULL, features, classLabels );
+
+
     if( tree == NULL ){
         clear();
         errorLog << __GRT_LOG__ << " Failed to build tree!" << std::endl;
@@ -864,14 +865,14 @@ bool DecisionTree::setDecisionTreeNode( const DecisionTreeNode &node ){
     return true;
 }
 
-DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,DecisionTreeNode *parent,Vector< UINT > features,const Vector< UINT > &classLabels, UINT nodeID){
+DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,DecisionTreeNode *parent,Vector< UINT > features,const Vector< UINT > &classLabels ){
     
     const UINT M = trainingData.getNumSamples();
     const UINT N = trainingData.getNumDimensions();
     
     //Update the nodeID
-    nodeID++;
-    
+	this->currentID++;
+
     //Get the depth
     UINT depth = 0;
     
@@ -892,7 +893,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     VectorFloat classProbs = trainingData.getClassProbabilities( classLabels );
     
     //Set the parent
-    node->initNode( parent, depth, nodeID );
+    node->initNode( parent, depth, this->currentID );
     
     //If all the training data belongs to the same class or there are no features left then create a leaf node and return
     if( trainingData.getNumClasses() == 1 || features.size() == 0 || M < minNumSamplesPerNode || depth >= maxDepth ){
@@ -902,7 +903,7 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
         
         //Build the null cluster if null rejection is enabled
         if( useNullRejection ){
-            nodeClusters[ nodeID ] = trainingData.getMean();
+            nodeClusters[ this->currentID ] = trainingData.getMean();
         }
         
         std::string info = "Reached leaf node.";
@@ -963,22 +964,12 @@ DecisionTreeNode* DecisionTree::buildTree(ClassificationData &trainingData,Decis
     }
     
     //Clear the parent dataset so we do not run out of memory with very large datasets (with very deep trees)
-    trainingData.clear();
-    
-    //Get the new node IDs for the children
-    UINT leftNodeID = ++nodeID;
-    UINT rightNodeID = ++nodeID;
-    
+    trainingData.clear();   
+
     //Run the recursive tree building on the children
-    node->setLeftChild( buildTree( lhs, node, features, classLabels, leftNodeID ) );
-    node->setRightChild( buildTree( rhs, node, features, classLabels, rightNodeID ) );
-    
-    //Build the null clusters for the rhs and lhs nodes if null rejection is enabled
-    if( useNullRejection ){
-        nodeClusters[ leftNodeID ] = lhs.getMean();
-        nodeClusters[ rightNodeID ] = rhs.getMean();
-    }
-    
+    node->setLeftChild( buildTree( lhs, node, features, classLabels ) );
+    node->setRightChild( buildTree( rhs, node, features, classLabels ));
+   
     return node;
 }
 
