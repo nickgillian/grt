@@ -1,10 +1,10 @@
-##Build
+## Build
 This folder contains a CMakeLists.txt that can be used to generate a makefile for building the GRT (as a shared or static library) and also for building the GRT examples.
 
-##Supported Operating Systems
+## Supported Operating Systems
 This CMakeLists file has been tested on Windows, Linux (Ubuntu 14.04), and OSX (10.9).
 
-##C++11
+## C++11
 The default build of the GRT uses C++11, you should therefore ensure you add C++11 support to any project using the GRT.
 
 If it is difficult to add C++11 to your setup, then you can still build the by disabling GRT C++11 functionality (note, this will limit the full functionality of the toolkit).
@@ -34,13 +34,13 @@ int main (int argc, const char * argv[])
 }
 ```
 
-##Build Instructions
+## Build Instructions
 
 - [Linux Build Instructions](#linux-build-instructions)
 - [OSX Build Instructions](#osx-build-instructions)
 - [Windows Build Instructions](#windows-build-instructions)
 
-##Linux Build Instructions
+## Linux Build Instructions
 
 Note, you will need to install make (http://www.gnu.org/software/make/) and cmake (http://www.cmake.org/) and a compiler that supports C++11 (such as g++ 4.7 and later).
 
@@ -93,7 +93,7 @@ $ pkg-config --cflags --libs grt
 - the GRT examples will be: build/examples 
 
 
-##OSX Build Instructions
+## OSX Build Instructions
 
 Note, you will need to install make (http://www.gnu.org/software/make/) and cmake (http://www.cmake.org/) and a compiler that supports C++11 (such as g++ 4.7 and later).
 
@@ -165,7 +165,7 @@ int main (int argc, const char * argv[])
 }
 ```
 
-##Windows Build Instructions
+## Windows Build Instructions
 
 Note, you will need to download and install the cmake Windows installer (http://www.cmake.org/) and a compiler that supports C++11 (such as VisualStudio 2015).
 
@@ -240,7 +240,7 @@ int main (int argc, const char * argv[])
 - select the 'Linker','Input', 'Additional Dependencies' and add the GRT static library (grt.lib)
 - click 'Apply', you should now be able to build your custom project and link against the GRT
 
-##Contributors
+## Contributors
 Thanks to:
 
 - Romain Guillemot for creating the original CMake file and for improving the support for Windows!
