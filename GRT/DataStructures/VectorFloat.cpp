@@ -40,6 +40,13 @@ VectorFloat::VectorFloat(const size_type size, const Float &value){
   errorLog.setKey("[ERROR VectorFloat]");
   resize(size, value);
 }
+
+VectorFloat::VectorFloat(const std::vector<Float>& values){
+  warningLog.setKey("[WARNING VectorFloat]");
+  errorLog.setKey("[ERROR VectorFloat]");
+  *this = Vector<Float>(values);
+}
+
     
 VectorFloat::VectorFloat(const VectorFloat &rhs):Vector(rhs){
   warningLog.setKey("[WARNING VectorFloat]");
