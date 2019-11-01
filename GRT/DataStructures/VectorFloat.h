@@ -53,6 +53,13 @@ public:
     GRT_API VectorFloat( const std::vector<Float>::size_type size, const Float &value );
     
     /**
+     Constructor, initializes the VectorFloat from a std::vector<Float>
+     
+     @param value: the values that will be written to all elements in the vector
+     */
+    GRT_API VectorFloat( const std::vector<Float>& values );
+
+    /**
      Copy Constructor, copies the values from the rhs VectorFloat to this VectorFloat instance
      
      @param rhs: the VectorFloat from which the values will be copied
